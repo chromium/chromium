@@ -259,7 +259,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="22091350895006575">Gebruikersnaam toevoegen</translation>
 <translation id="221494669172414749">Als je Chrome opent zonder profielvergrendeling, worden je opgeslagen wachtwoorden en betaalmethoden uit de auto verwijderd. Met een profielvergrendeling beveilig je deze gegevens.</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Tabbladgroep <ph name="TAB_GROUP_TITLE" /> heeft nieuwe activiteit</translation>
 <translation id="2230777942707397948">Leeg venster</translation>
 <translation id="223356358902285214">Web- en app-activiteit</translation>
 <translation id="2234827758954819389">Privacygids</translation>
@@ -853,7 +852,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4912413785358399818">Tabblad verplaatsen</translation>
 <translation id="4913169188695071480">Vernieuwen stopzetten</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Je wachtwoorden worden geëxporteerd en gedownload als tekstbestand. Ze zijn zichtbaar voor iedereen en elke app met toegang tot de bestemmingsmap.</translation>
 <translation id="4926901776383726965">Je kunt afbeeldingen en bestanden opslaan om ze offline te bekijken of in andere apps te delen</translation>
 <translation id="4932247056774066048">Omdat je uitlogt van een account dat wordt beheerd door <ph name="DOMAIN_NAME" />, worden je Chrome-gegevens verwijderd. De gegevens blijven in je Google-account staan.</translation>
 <translation id="4943703118917034429">Virtual reality</translation>
@@ -894,6 +892,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5114895953710637392">Blad voor app-filter is gesloten.</translation>
 <translation id="5115811374190515607">naar <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Je kunt Chrome gebruiken als je op links in berichten, documenten en andere apps tikt</translation>
+<translation id="5118713593561876160">Interesses</translation>
 <translation id="5122378528687922675">Vraag zo nodig je ouder (<ph name="PARENT_NAME_1" /> of <ph name="PARENT_NAME_2" />) om hulp</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5139940364318403933">Meer informatie over het gebruik van Google Drive</translation>
@@ -1100,6 +1099,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6087286598828478206">Blokkeren en groep verlaten?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> uur resterend</translation>
 <translation id="6095578583683628124">Als Google ook je standaard zoekmachine is, krijg je betere, contextueel relevante suggesties te zien.</translation>
+<translation id="6104768972315313991">QR-code gegenereerd</translation>
 <translation id="610630277578876674">Open snel links in berichten en meer</translation>
 <translation id="6108923351542677676">Instellen wordt uitgevoerd...</translation>
 <translation id="6112702117600201073">Pagina vernieuwen</translation>
@@ -1549,6 +1549,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7963646190083259054">Leverancier:</translation>
 <translation id="7965838025086216108">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Toegevoegd aan leeslijst</translation>
+<translation id="7968982339740310781">Details bekijken</translation>
 <translation id="7971136598759319605">1 dag geleden actief</translation>
 <translation id="7975379999046275268">Pagina bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Waarschuwt je als je een wachtwoord gebruikt dat is gevonden bij een gegevenslek.</translation>
@@ -1681,7 +1682,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8497242791509864205">Sorteeropties openen</translation>
 <translation id="8497480609928300907">Uitleg over privacygids</translation>
 <translation id="8497726226069778601">Hier is nog niets te zien</translation>
-<translation id="8503559462189395349">Chrome-wachtwoorden</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8505766168025405649">Bekijk de melding voor de downloadstatus</translation>
 <translation id="8506357771923193001">Hier vind je je downloads</translation>
@@ -1716,6 +1716,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8635399646025169806">Tabbladgroep behouden?</translation>
 <translation id="8636825310635137004">Zet synchronisatie aan om de tabbladen op je andere apparaten te bekijken</translation>
 <translation id="864544049772947936">Vensters beheren (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Inloggen op <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
 <translation id="8672883760227492369">Sommige wachtwoorden op dit apparaat werken binnenkort niet meer. Je kunt deze wachtwoorden verplaatsen naar Google Wachtwoordmanager.</translation>
 <translation id="8676276370198826499">Aanmelden bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

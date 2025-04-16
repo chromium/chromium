@@ -259,7 +259,6 @@
 <translation id="22091350895006575">ୟୁଜରନେମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="221494669172414749">ଏକ ପ୍ରୋଫାଇଲ ଲକ ବିନା Chrome ଖୋଲିବା ଫଳରେ ଏହା କାରରୁ ଆପଣଙ୍କ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡ ଏବଂ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେବ। ଏକ ପ୍ରୋଫାଇଲ ଲକ ବ୍ୟବହାର କରିବା ଏହି ଡାଟାକୁ ସୁରକ୍ଷିତ ରଖିଥାଏ।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ଭାବେ ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ଟାବ ଗ୍ରୁପରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ଅଛି</translation>
 <translation id="2230777942707397948">ଖାଲି ୱିଣ୍ଡୋ</translation>
 <translation id="223356358902285214">ୱେବ ଓ ଆପ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="2234827758954819389">ଗୋପନୀୟତା ଗାଇଡ</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ଟାବ୍ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="4913169188695071480">ରିଫ୍ରେସ୍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4925120120285606924">ସ୍କ୍ରିନସଟ୍ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଏକ୍ସପୋର୍ଟ କରାଯାଇ ଟେକ୍ସଟ୍ ଫାଇଲ୍ ଭାବେ ଡାଉନଲୋଡ୍ କରାଯିବ। ସେଗୁଡ଼ିକ ଡେଷ୍ଟିନେସନ୍ ଫୋଲ୍ଡରକୁ ଆକ୍ସେସ୍ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ଏବଂ ଆପକୁ ଦେଖାଯିବ।</translation>
 <translation id="4926901776383726965">ଅଫଲାଇନରେ ଭ୍ୟୁ କରିବାକୁ କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରେ ସେୟାର କରିବା ପାଇଁ ଆପଣ ଇମେଜ ଏବଂ ଫାଇଲଗୁଡ଼ିକୁ ସେଭ କରିପାରିବେ</translation>
 <translation id="4932247056774066048">ଯେହେତୁ ଆପଣ <ph name="DOMAIN_NAME" />ଙ୍କ ଦ୍ଵାରା ପରିଚାଳିତ ଏକ ଆକାଉଣ୍ଟରୁ ସାଇନ୍ ଆଉଟ୍ କରୁଛନ୍ତି, ଏହି ଡିଭାଇସ୍‌ରୁ ଆପଣଙ୍କର Chrome ଡାଟା ଡିଲିଟ୍ କରାଯିବ। ଏହା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ରହିବ।</translation>
 <translation id="4943703118917034429">ଭର୍ଚୁଆଲ୍ ରିଅଲିଟି</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">ଆପ ଫିଲ୍ଟର ସିଟ ବନ୍ଦ ଅଛି।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />କୁ</translation>
 <translation id="5116239826668864748">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଯେ କୌଣସି ସମୟରେ Chromeକୁ ବ୍ୟବହାର କରିପାରିବେ</translation>
+<translation id="5118713593561876160">ଆଗ୍ରହ</translation>
 <translation id="5122378528687922675">ଯଦି ତୁମେ ସହାୟତା ଆବଶ୍ୟକ କର, ତେବେ ତୁମ ବାପାମା (<ph name="PARENT_NAME_1" /> କିମ୍ବା <ph name="PARENT_NAME_2" />)ଙ୍କୁ କୁହ</translation>
 <translation id="5123685120097942451">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="5139940364318403933">Google Drive କିପରି ବ୍ୟବହାର କରିବେ, ତାହା ଜାଣନ୍ତୁ</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">ବ୍ଲକ କରି ଗ୍ରୁପରୁ ବାହାରିଯିବେ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="6095578583683628124">ଯଦି Google ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ମଧ୍ୟ ହୋଇଥାଏ, ତେବେ ଆପଣ ଆହୁରି ଭଲ, ପ୍ରାସଙ୍ଗିକ ପରାମର୍ଶ ଦେଖିବେ</translation>
+<translation id="6104768972315313991">ଜେନେରେଟ କରାଯାଇଥିବା QR କୋଡ</translation>
 <translation id="610630277578876674">ମେସେଜ ଏବଂ ଆହୁରି ଅନେକ କିଛିରେ ଶୀଘ୍ର ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="6108923351542677676">ସେଟ୍ ଅପ୍ ପ୍ରକ୍ରିୟା ଚାଲିଛି…</translation>
 <translation id="6112702117600201073">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ ହେଉଛି</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">ବିକ୍ରେତା:</translation>
 <translation id="7965838025086216108">ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆପଣ ଯେ କୌଣସି ଡିଭାଇସରେ ବ୍ୟବହାର କରିପାରିବେ। <ph name="ACCOUNT" />ର Google Password Managerରେ ସେଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି।</translation>
 <translation id="7968014550143838305">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରାଯାଇଛି</translation>
+<translation id="7968982339740310781">ବିବରଣୀଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
 <translation id="7971136598759319605">1 ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ପୃଷ୍ଠାର ପୂର୍ବାବଲୋକନ କରନ୍ତୁ</translation>
 <translation id="7977451675950311423">ଯଦି ଆପଣ କୌଣସି ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଚୋରି ହୋଇଯାଇଥିବା ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତି ତେବେ ଏହା ଚେତାବନୀ ଦିଏ।</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">ସର୍ଟ କରିବା ବିକଳ୍ପଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8497480609928300907">ଗୋପନୀୟତା ଗାଇଡର ବ୍ୟାଖ୍ୟା</translation>
 <translation id="8497726226069778601">ଏପର୍ଯ୍ୟନ୍ତ ସୁଦ୍ଧା …ଏଠାରେ ଦେଖିବାକୁ କିଛି ନାହିଁ</translation>
-<translation id="8503559462189395349">Chrome ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8505766168025405649">ଡାଉନଲୋଡ୍ ସ୍ଥିତି ପାଇଁ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ</translation>
 <translation id="8506357771923193001">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ଡାଉନଲୋଡଗୁଡ଼ିକ ପାଇବେ</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">ଟାବ ଗ୍ରୁପ ରଖିବେ?</translation>
 <translation id="8636825310635137004">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‍ରୁ ନିଜର ଟାବ୍‍ଗୁଡ଼ିକୁ ପ୍ରାପ୍ତ କରିବାକୁ, ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="864544049772947936">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କର (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />ରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="8672883760227492369">ଏହି ଡିଭାଇସରେ କିଛି ପାସୱାର୍ଡ ଶୀଘ୍ର କାମ କରିବା ବନ୍ଦ କରିଦେବ। ଆପଣ ଏହି ପାସୱାର୍ଡଗୁଡ଼ିକୁ Google Password Managerକୁ ମୁଭ କରିପାରିବେ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ସାଇନ ଅପ କରନ୍ତୁ</translation>

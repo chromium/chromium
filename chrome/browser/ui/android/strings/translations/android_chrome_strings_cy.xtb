@@ -259,7 +259,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="22091350895006575">Ychwanegu enw defnyddiwr</translation>
 <translation id="221494669172414749">Bydd agor Chrome heb glo proffil yn tynnu'ch cyfrineiriau a'ch dulliau talu sydd wedi'u cadw o'r car. Mae defnyddio clo proffil yn cadw'r data hyn yn ddiogel.</translation>
 <translation id="2227444325776770048">Parhau fel <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Mae gan y grŵp tabiau <ph name="TAB_GROUP_TITLE" /> weithgarwch newydd</translation>
 <translation id="2230777942707397948">Ffenestr wag</translation>
 <translation id="223356358902285214">Gweithgarwch ar y We ac Apiau</translation>
 <translation id="2234827758954819389">Canllaw Preifatrwydd</translation>
@@ -853,7 +852,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4912413785358399818">Symud tab</translation>
 <translation id="4913169188695071480">Stopio ail-lwytho</translation>
 <translation id="4925120120285606924">Sgrinlun <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Bydd eich cyfrineiriau'n cael eu hallforio a'u lawrlwytho fel ffeil testun. Byddant yn weladwy i unrhyw un ac unrhyw ap sydd â mynediad at y ffolder cyrchfan.</translation>
 <translation id="4926901776383726965">Gallwch gadw lluniau a ffeiliau i'w gweld all-lein neu eu rhannu mewn apiau eraill</translation>
 <translation id="4932247056774066048">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="DOMAIN_NAME" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd yn aros yn eich Cyfrif Google.</translation>
 <translation id="4943703118917034429">Rhithwirionedd</translation>
@@ -894,6 +892,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5114895953710637392">Mae taflen hidlo ap ar gau.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
+<translation id="5118713593561876160">Diddordebau</translation>
 <translation id="5122378528687922675">Os oes angen help arnat, gofynna i dy riant (<ph name="PARENT_NAME_1" /> neu <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab anhysbys</translation>
 <translation id="5139940364318403933">Dysgu sut i ddefnyddio Google Drive</translation>
@@ -1100,6 +1099,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6087286598828478206">Rhwystro a gadael y grŵp?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> awr ar ôl</translation>
 <translation id="6095578583683628124">Os mai Google yw eich peiriant chwilio diofyn hefyd, byddwch yn gweld awgrymiadau gwell sy'n berthnasol yn eu cyd-destun</translation>
+<translation id="6104768972315313991">Cod QR wedi'i gynhyrchu</translation>
 <translation id="610630277578876674">Agorwch ddolenni mewn negeseuon a mwy yn gyflym</translation>
 <translation id="6108923351542677676">Wrthi'n gosod…</translation>
 <translation id="6112702117600201073">Ail-lwytho'r dudalen</translation>
@@ -1549,6 +1549,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7963646190083259054">Gwerthwr:</translation>
 <translation id="7965838025086216108">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ychwanegwyd at y rhestr ddarllen</translation>
+<translation id="7968982339740310781">Gweld y manylion</translation>
 <translation id="7971136598759319605">Yma 1 diwrnod yn ôl</translation>
 <translation id="7975379999046275268">Tudalen rhagolwg <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
@@ -1681,7 +1682,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8497242791509864205">Agor opsiynau didoli</translation>
 <translation id="8497480609928300907">Esboniad canllaw preifatrwydd</translation>
 <translation id="8497726226069778601">Dim i'w weld yma… eto</translation>
-<translation id="8503559462189395349">Cyfrineiriau Chrome</translation>
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8505766168025405649">Gweld hysbysiad ar gyfer y statws lawrlwytho</translation>
 <translation id="8506357771923193001">Byddwch yn gweld eich lawrlwythiadau yma</translation>
@@ -1716,6 +1716,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8635399646025169806">Cadw'r grŵp tabiau?</translation>
 <translation id="8636825310635137004">I gael eich tabiau o'ch dyfeisiau eraill, trowch gysoni ymlaen.</translation>
 <translation id="864544049772947936">Rheoli ffenestri (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Mewngofnodi i <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Mae'r enw ffeil eisoes yn bodoli</translation>
 <translation id="8672883760227492369">Bydd rhai cyfrineiriau ar y ddyfais hon yn stopio gweithio cyn bo hir. Gallwch symud y cyfrineiriau hyn i'r Rheolwr Cyfrineiriau Google.</translation>
 <translation id="8676276370198826499">Cofrestru ar gyfer <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

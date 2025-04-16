@@ -1545,7 +1545,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">號碼</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
-<translation id="3671117652518853176">在關閉狀態下，系統基於安全考量，可能會偶爾要求你進行驗證</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 發生錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">網路設備</translation>
@@ -1597,7 +1596,6 @@
 <translation id="3739842843727261045">按讚可對這些結果給予正面評價</translation>
 <translation id="3740447166056383374">複製檔案前請務必確認</translation>
 <translation id="374325029554577103">健身科技產品</translation>
-<translation id="3743765582345153106">使用自動填入功能時一律驗證</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744212718085287312">下次要使用更加安全的虛擬卡片嗎？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> 傳送的憑證受到干擾，造成 Chromium 無法處理，因此你目前無法造訪該網站。網路錯誤和攻擊通常是暫時性狀態，因此這個網頁可能稍後就會恢復正常運作。</translation>
@@ -1976,7 +1974,6 @@
 <translation id="4358461427845829800">管理付款方式...</translation>
 <translation id="4359160567981085931">你剛才在詐騙網站上輸入了密碼。Chrome 能夠幫助你。如要變更密碼並通知 Google 你的帳戶可能面臨風險，請按一下 [保護帳戶]。</translation>
 <translation id="4363222835916186793">這項產品的快訊已關閉</translation>
-<translation id="4363729811203340554">如果這是共用裝置，Chrome 可以在每次透過自動填入功能付款時，要求你驗證身分</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="4369179505195332608">編輯駕照</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
@@ -2573,7 +2570,6 @@
 <translation id="5452923259299906094">使用電子錢包和 Pix 付款</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
 <translation id="5456428544444655325">永不顯示</translation>
-<translation id="5456839782162429664">每次透過自動填入功能付款都要手動驗證身分</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資訊}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資訊}}</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
@@ -2682,7 +2678,6 @@
 <translation id="5632485077360054581">顯示操作說明</translation>
 <translation id="563324245173044180">已封鎖欺騙性內容。</translation>
 <translation id="563371367637259496">行動網路</translation>
-<translation id="5634725266554983459">要啟用手動驗證嗎？</translation>
 <translation id="5635478143789726479">賣家的條款及細則</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">音響系統與設備</translation>
@@ -3323,6 +3318,7 @@
 <translation id="6739943577740687354">這項功能採用 AI 技術，執行的結果不一定符合需求</translation>
 <translation id="6740851646645036700">「幫我寫」功能目前已達使用上限，請稍後再試。</translation>
 <translation id="674375294223700098">不明的伺服器憑證錯誤。</translation>
+<translation id="6743841972744298686">同步處理設定</translation>
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">電話會議</translation>
@@ -3450,7 +3446,6 @@
 <translation id="6973988895180423160">3.5 x 5 吋</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6978236010531171013">一律分享</translation>
-<translation id="6978722349058177832">如果這是共用裝置，Chromium 可以在每次透過自動填入功能付款時，要求你驗證身分</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979302985396162258">管理第三方 Cookie 存取權</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>

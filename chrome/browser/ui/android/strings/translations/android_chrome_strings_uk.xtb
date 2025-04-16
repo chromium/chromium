@@ -259,7 +259,6 @@
 <translation id="22091350895006575">Додати ім’я користувача</translation>
 <translation id="221494669172414749">Якщо відкрити Chrome, коли блокування профілю автомобіля не налаштовано, з профілю буде вилучено всі збережені паролі й способи оплати. Блокування профілю захищає ці дані.</translation>
 <translation id="2227444325776770048">Продовжити як <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Нові дії в групі вкладок "<ph name="TAB_GROUP_TITLE" />"</translation>
 <translation id="2230777942707397948">Порожнє вікно</translation>
 <translation id="223356358902285214">Історія додатків і вебпошуку</translation>
 <translation id="2234827758954819389">Посібник із конфіденційності</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">Перемістити вкладку</translation>
 <translation id="4913169188695071480">Припинити оновлення</translation>
 <translation id="4925120120285606924">Знімок екрана: <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Ваші паролі буде експортовано й завантажено як текстовий файл. Цей файл зможуть переглядати всі користувачі й додатки, які мають доступ до папки, де його збережено.</translation>
 <translation id="4926901776383726965">Ви можете зберігати зображення й файли, щоб переглядати їх у режимі офлайн або ділитися ними в інших додатках</translation>
 <translation id="4932247056774066048">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="DOMAIN_NAME" />, ваші дані Chrome буде видалено з цього пристрою. Вони залишаться у вашому обліковому записі Google.</translation>
 <translation id="4943703118917034429">Віртуальна реальність</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">Панель фільтра додатків закрито.</translation>
 <translation id="5115811374190515607">в <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Ви можете відкривати в Chrome посилання з повідомлень, документів і інших додатків</translation>
+<translation id="5118713593561876160">Інтереси</translation>
 <translation id="5122378528687922675">Якщо тобі потрібна допомога, звернися до батька або матері (<ph name="PARENT_NAME_1" /> чи <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Анонімна вкладка</translation>
 <translation id="5139940364318403933">Як користуватися Google Диском</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">Заблокувати користувача й вийти з групи?</translation>
 <translation id="60923314841986378">Залишилося <ph name="HOURS" /> год</translation>
 <translation id="6095578583683628124">Якщо Google є вашою пошуковою системою за умовчанням, ви бачитимете кращі та доречніші за контекстом пропозиції</translation>
+<translation id="6104768972315313991">Згенерований QR-код</translation>
 <translation id="610630277578876674">Швидко відкривайте посилання в повідомленнях тощо</translation>
 <translation id="6108923351542677676">Виконується налаштування…</translation>
 <translation id="6112702117600201073">Оновлення сторінки</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">Постачальник:</translation>
 <translation id="7965838025086216108">Збережені паролі можна використовувати на будь-якому пристрої. Вони зберігаються в Google Менеджері паролів для облікового запису <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Додано в список читання</translation>
+<translation id="7968982339740310781">Переглянути деталі</translation>
 <translation id="7971136598759319605">У мережі 1 день тому</translation>
 <translation id="7975379999046275268">Переглянути сторінку <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">Відкрити параметри сортування</translation>
 <translation id="8497480609928300907">Пояснення про посібник щодо конфіденційності</translation>
 <translation id="8497726226069778601">Тут ще нічого немає…</translation>
-<translation id="8503559462189395349">Паролі Chrome</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8505766168025405649">Щоб перевірити статус завантаження, перегляньте сповіщення</translation>
 <translation id="8506357771923193001">Тут відображатимуться ваші завантаження</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">Зберегти групу вкладок?</translation>
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="864544049772947936">Керувати вікнами (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Увійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
 <translation id="8672883760227492369">Деякі паролі на цьому пристрої незабаром припинять працювати. Ви можете перемістити їх у Google Менеджер паролів.</translation>
 <translation id="8676276370198826499">Зареєструйтеся на сайті <ph name="SITE_ETLD_PLUS_ONE" />, використовуючи обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

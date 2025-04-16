@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">کچھ نیا شروع کریں یا فلو میں مدد حاصل کریں۔</translation>
 <translation id="1054048317165655285">اپنے فون پر سیٹ اپ مکمل کریں</translation>
 <translation id="1054153489933238809">اصل &amp;تصویر نئے ٹیب میں کھولیں</translation>
-<translation id="1054187194995068149">آداب. یہ ایک پیش منظر ہے</translation>
 <translation id="1054502481659725522">ایپس، ویب سائٹس اور سسٹم سروسز آپ کا مقام استعمال کر سکتی ہیں</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> 1 ہفتہ کے اندر اپ ڈیٹ کریں}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر اپ ڈیٹ کریں}}</translation>
 <translation id="1055606969515662982">کاسٹنگ روکنے کیلئے ریموٹ کا استعمال کریں</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">شارٹ کٹ شامل ہو گیا</translation>
 <translation id="1174366174291287894">‏جب تک کہ Chrome آپ کو بصورت دیگر کچھ نہیں بتاتا ہے تب تک آپ کا کنکشن ہمیشہ محفوظ رہتا ہے</translation>
 <translation id="1175131936083782305">آپ کے منتظم نے اس خصوصیت کو غیر فعال کر دیا ہے۔</translation>
+<translation id="1175277108283187866">کسی سائٹ پر ملاحظہ کریں یا ایڈریس بار میں تلاش شروع کریں</translation>
 <translation id="1175364870820465910">&amp;پرنٹ کریں…</translation>
 <translation id="1175572348579024023">اسکرول کریں</translation>
 <translation id="1175914831232945926">ہندسے</translation>
@@ -479,7 +479,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">کسی بھی اوپن ٹیبز سمیت، آپ تمام سائٹس سے سائن آوٹ ہو جائیں گے</translation>
 <translation id="1313705515580255288">‏آپ کے بُک مارکس، سرگزشت اور دیگر ترتیبات کی آپ کے Google اکاؤنٹ سے مطابقت پذیری کی جائے گی۔</translation>
-<translation id="1315184295353569363">گروپ کو غیر محفوظ کریں</translation>
 <translation id="1316136264406804862">تلاش ہو رہی ہے…</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> سے منسلک نہیں کیا جا سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1316495628809031177">مطابقت پذیری موقوف ہے</translation>
@@ -2753,6 +2752,7 @@
 <translation id="2878889940310164513">سیلولر شامل کریں...</translation>
 <translation id="288042212351694283">‏اپنے یونیورسل 2nd فیکٹر آلات تک رسائی حاصل کریں</translation>
 <translation id="2881076733170862447">جب آپ ایکسٹینشن پر کلک کرتے ہیں</translation>
+<translation id="2882530630263790933">آڈیو اور ویڈیو</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> تھوڑی دیر کیلئے دوبارہ شروع ہو جائے گا اور دوبارہ ترتیب دیا جائے گا</translation>
 <translation id="2884070497102362193">‏اپنی بیٹری، CPU، میموری، کنیکٹیویٹی اور مزید کی جانچ کریں</translation>
 <translation id="2885129935310217435">اسی نام کا ایک بٹن موجود ہے۔ براہ کرم کوئی دوسرا منتخب کریں۔</translation>
@@ -3053,7 +3053,6 @@
 <translation id="310297983047869047">پچھلی سلائیڈ</translation>
 <translation id="3103451787721578293">براہ کرم اس ڈیٹا کو اپ لوڈ کرنے کی وجہ درج کریں:</translation>
 <translation id="3103512663951238230">‏Alt + کلک</translation>
-<translation id="3104763887980088552">سرگرمی کا لاگ</translation>
 <translation id="3104948640446684649">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />میٹرکس کے بارے میں مزید جانیں<ph name="BEGIN_LINK2_END" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">آخری ناکام اپ ڈیٹ</translation>
 <translation id="3105796011181310544">‏Google پر واپس جائیں؟</translation>
@@ -4708,7 +4707,6 @@
 <translation id="4268025649754414643">کلید کی خفیہ کاری</translation>
 <translation id="4268516942564021145">یہ ترتیب آپ کے اکاؤنٹ کیلئے دستیاب نہیں ہے۔</translation>
 <translation id="4270393598798225102">ورژن <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">گروپ محفوظ کریں</translation>
 <translation id="4274667386947315930">سائن ان ڈیٹا</translation>
 <translation id="4274673989874969668">آپ کے کسی سائٹ سے باہر جانے بعد تصاویر اپ لوڈ کرنے یا چیٹ پیغام بھیجنے جیسے ٹاسکس مکمل کرنے کے لیے یہ مطابقت پذیری کا عمل جاری رکھتی ہے</translation>
 <translation id="4275291496240508082">اسٹارٹ اپ کی آواز</translation>
@@ -6171,7 +6169,6 @@
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5319712128756744240">نئے آلے کا جوڑا بنائیں</translation>
 <translation id="5320135788267874712">نئے آلے کا نام</translation>
-<translation id="5320261549977878764">گروپ کو غیر محفوظ کریں</translation>
 <translation id="532247166573571973">ممکن ہے کہ سرور ناقابل رسائی ہو۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="5323328004379641163">‏Chrome اور اس صفحہ کی ہئیت کو حسب ضرورت بنائیں</translation>
 <translation id="5324300749339591280">ایپس کی فہرست</translation>
@@ -6955,7 +6952,6 @@
 <translation id="5901069264981746702">آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">کیپچر کرنے والے ٹیب پر سوئچ کریں</translation>
 <translation id="5901494423252125310">پرنٹر کا دروازہ کھلا ہے</translation>
-<translation id="5901526412306322179">سرگرمی کا لاگ</translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5902892210366342391">پوشیدگی وضع میں غیر محفوظ سائٹس پر جانے سے پہلے وارننگز دیکھیں</translation>
 <translation id="5904614460720589786">کنفیگریشن میں مسئلہ پیش آنے کی وجہ سے <ph name="APP_NAME" /> کو سیٹ اپ نہیں کیا جا سکا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -7441,6 +7437,7 @@
 <translation id="6248988683584659830">تلاش کی ترتیبات</translation>
 <translation id="6249200942125593849">‏a11y کا نظم کریں</translation>
 <translation id="6250186368828697007">آپ کی جانب سے اپنی اسکرین کے اشتراک کے دوران تفصیلات پوشیدہ ہوتی ہیں</translation>
+<translation id="6250887692313997958">اسپلٹ ویو میں شامل کرنے کے لیے ایک ٹیب کا انتخاب کریں</translation>
 <translation id="6251870443722440887">‏GDI ہینڈلز</translation>
 <translation id="6251924700383757765">رازداری کی پالیسی</translation>
 <translation id="625369703868467034">نیٹ ورک کی صحت</translation>
@@ -8092,6 +8089,7 @@
 <translation id="6728528977475057549">‏<ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا IBAN</translation>
 <translation id="6729192290958770680">اپنا صارف نام درج کریں</translation>
 <translation id="6729280095610283088">آرورا بوریالِس کی جنگل میں چمکدار ندیاں۔</translation>
+<translation id="6729493062119577923">اشتراک کردہ ٹیب گروپ کی سرگرمی</translation>
 <translation id="6731320427842222405">اس میں چند منٹ لگ سکتے ہیں</translation>
 <translation id="6732956960067639542">‏اس کے بجائے ایک نیا Chrome براؤزر سیشن کھولیں۔</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10511,7 +10509,6 @@
 <translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8425492902634685834">ٹاسک بار میں پن کریں</translation>
 <translation id="8425768983279799676">‏اپنے آلہ کو غیر مقفل کرنے کے لیے آپ اپنا PIN استعمال کر سکتے ہیں۔</translation>
-<translation id="8426111352542548860">گروپ محفوظ کریں</translation>
 <translation id="8427213022735114808">‏کسی بھی متنی فیلڈ میں آواز کے ذریعے ٹائپنگ کی اجازت دینے کیلئے املا آپ کی آواز Google کو بھیجتا ہے۔</translation>
 <translation id="8427292751741042100">کسی بھی میزبان پر سرایت کیا گیا</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
@@ -11513,6 +11510,7 @@
 <translation id="9113240369465613386">صرف طاق صفحات</translation>
 <translation id="9113469270512809735">حال ہی میں بند کیے گئے آئٹمز کو ٹوگل کریں</translation>
 <translation id="9113529408970052045">"لکھنے میں میری مدد کریں" خصوصیت خودکار طور پر کھل سکتی ہے جب کسی سائٹ پر موجود ٹیکسٹ باکس میں مختصر مواد بھرا جا سکے</translation>
+<translation id="9114210796909453187">اپنے اسپلٹ ویو کو مکمل کریں</translation>
 <translation id="9114663181201435112">آسانی سے سائن ان کریں</translation>
 <translation id="9115675100829699941">&amp;بُک مارکس</translation>
 <translation id="9116366756388192417">ایک موضوع منتخب کریں</translation>

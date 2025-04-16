@@ -259,7 +259,6 @@
 <translation id="22091350895006575">Дадаць імя карыстальніка</translation>
 <translation id="221494669172414749">Калі адкрыць Chrome без блакіроўкі профілю, паролі і спосабы аплаты, захаваныя для гэтага аўтамабіля, будуць выдалены. Блакіроўка профілю дазваляе абараніць гэты даныя.</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">У групе ўкладак "<ph name="TAB_GROUP_TITLE" />" новае дзеянне</translation>
 <translation id="2230777942707397948">Пустое акно</translation>
 <translation id="223356358902285214">Дзеянні ў інтэрнэце і праграмах</translation>
 <translation id="2234827758954819389">Дапаможнік па прыватнасці</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">Перамясціць укладку</translation>
 <translation id="4913169188695071480">Спыніць абнаўленне</translation>
 <translation id="4925120120285606924">Здымак экрана <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Паролі будуць экспартаваны і спампаваны як тэкставы файл. Яны будуць бачныя ўсім карыстальнікам і праграмам з доступам да папкі, у якую гэты файл будзе захаваны.</translation>
 <translation id="4926901776383726965">Вы можаце захоўваць відарысы і файлы для прагляду па-за сеткай ці абагульваць іх з іншымі праграмамі</translation>
 <translation id="4932247056774066048">Даныя Chrome будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="DOMAIN_NAME" />. Яны застануцца ва Уліковым запісе Google.</translation>
 <translation id="4943703118917034429">Віртуальная рэальнасць</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">Аркуш фільтрацыі па праграме закрыты.</translation>
 <translation id="5115811374190515607">куды: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Вы можаце выкарыстоўваць Chrome кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах</translation>
+<translation id="5118713593561876160">Інтарэсы</translation>
 <translation id="5122378528687922675">Калі табе патрабуецца дапамога, звярніся да аднаго з бацькоў (<ph name="PARENT_NAME_1" /> або <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5139940364318403933">Даведайцеся, як карыстацца Google Дыскам</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">Заблакіраваць і выйсці з групы?</translation>
 <translation id="60923314841986378">Засталося <ph name="HOURS" /> гадз</translation>
 <translation id="6095578583683628124">Калі Google з’яўляецца вашай стандартнай пошукавай сістэмай, вам будуць паказвацца больш адпаведныя кантэксту прапановы.</translation>
+<translation id="6104768972315313991">Згенерыраваны QR-код</translation>
 <translation id="610630277578876674">Хутка адкрывайце спасылкі ў паведамленнях і не толькі</translation>
 <translation id="6108923351542677676">Ідзе наладка…</translation>
 <translation id="6112702117600201073">Абнаўленне старонкі</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">Пастаўшчык:</translation>
 <translation id="7965838025086216108">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Паролі захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Дададзена ў спіс чытання</translation>
+<translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
 <translation id="7971136598759319605">Апошнія дзеянні: дзень таму</translation>
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">Адкрыць параметры сартавання</translation>
 <translation id="8497480609928300907">Тлумачэнні адносна дапаможніка па прыватнасці</translation>
 <translation id="8497726226069778601">Тут нічога няма… пакуль што</translation>
-<translation id="8503559462189395349">Паролі Chrome</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8505766168025405649">Стан спампоўкі можна паглядзець у апавяшчэнні</translation>
 <translation id="8506357771923193001">Тут з’явяцца вашы спампоўкі</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">Захаваць групу ўкладак?</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="864544049772947936">Кіраваць вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Выберыце ўліковы запіс для ўваходу ў <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
 <translation id="8672883760227492369">Некаторыя паролі на гэтай прыладзе неўзабаве перастануць працаваць. Вы можаце перамясціць іх у Менеджар пароляў Google.</translation>
 <translation id="8676276370198826499">Зарэгіструйцеся на вэб-сайце <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>

@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Sites can ask for your location</translation>
 <translation id="3658847490588580244">Default browser bottom sheet</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}}</translation>
+<translation id="3670480940339182416">Sites can use the V8 optimiser</translation>
 <translation id="3676777756440746804">Sites are blocked from asking you to use information that they've saved about you</translation>
 <translation id="3697164069658504920">When on, sites can ask to use USB devices. When off, sites can't use USB devices.</translation>
+<translation id="3703430731944883733">Manage your feed</translation>
 <translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3708684582558000260">Don't allow closed sites to finish sending or receiving data</translation>
 <translation id="3709818294139939629">Removed site's access to file</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Camera is turned off in Android settings</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Sites can show sign-in prompts from identity services</translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
 <translation id="5750869797196646528">Hand tracking</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5876056640971328065">Pause video</translation>
 <translation id="5877248419911025165">Collapse all requests</translation>
+<translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
 <translation id="5884085660368669834">Site preference</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
 <translation id="5908617755156109052">Don't allow sites to create a 3D map of your surroundings or track camera position</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Revoke device permission</translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' is out of date. Please re-install the app.</translation>
+<translation id="847433688444405067">Browse across devices</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="848952951823693243">Always request mobile site</translation>
 <translation id="8492822722330266509">Sites can send pop-ups and use redirects</translation>

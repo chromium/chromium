@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Laman boleh meminta lokasi anda</translation>
 <translation id="3658847490588580244">Helaian bawah penyemak imbas lalai</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
+<translation id="3670480940339182416">Laman boleh menggunakan pengoptimum V8</translation>
 <translation id="3676777756440746804">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3697164069658504920">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti USB. Apabila dimatikan, laman tidak dapat menggunakan peranti USB.</translation>
+<translation id="3703430731944883733">Urus suapan anda</translation>
 <translation id="3707034683772193706">Laman yang anda lawati boleh menyimpan sedikit maklumat dengan Chrome, terutamanya untuk mengesahkan bahawa anda bukan bot</translation>
 <translation id="3708684582558000260">Jangan benarkan laman yang telah ditutup menyelesaikan penghantaran atau penerimaan data</translation>
 <translation id="3709818294139939629">Akses laman kepada fail dialih keluar</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kamera dimatikan dalam tetapan Android</translation>
 <translation id="5700761515355162635">Kuki pihak ketiga dibenarkan</translation>
 <translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti</translation>
 <translation id="5723967018671998714">Kuki pihak ketiga disekat dalam mod Inkognito</translation>
 <translation id="5740126560802162366">Laman boleh menyimpan data pada peranti anda</translation>
+<translation id="5743425052258407233">Dapatkan sejarah anda pada semua peranti anda agar anda boleh menyambung semula pada tempat anda berhenti dengan mudah</translation>
 <translation id="5750869797196646528">Penjejakan tangan</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Hidupkan</translation>
 <translation id="5876056640971328065">Jeda video</translation>
 <translation id="5877248419911025165">Kuncupkan semua permintaan</translation>
+<translation id="5878945009165002849">Sekat gesaan log masuk daripada perkhidmatan identiti</translation>
 <translation id="5884085660368669834">Pilihan laman</translation>
 <translation id="5887687176710214216">Terakhir dilawati semalam</translation>
 <translation id="5908617755156109052">Jangan benarkan laman membuat peta 3D persekitaran anda atau menjejaki kedudukan kamera</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Batalkan kebenaran peranti</translation>
 <translation id="8471525937465764768">Tapak biasanya menyambung kepada peranti USB untuk ciri seperti mencetak dokumen atau menyimpan pada peranti storan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah lapuk. Sila pasang semula apl.</translation>
+<translation id="847433688444405067">Semak imbas merentas peranti</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="848952951823693243">Sentiasa minta laman mudah alih</translation>
 <translation id="8492822722330266509">Tapak boleh menghantar tetingkap timbul dan menggunakan ubah hala</translation>

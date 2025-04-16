@@ -1547,7 +1547,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">નંબર</translation>
 <translation id="3670229581627177274">Bluetooth ચાલુ કરો</translation>
-<translation id="3671117652518853176">બંધ કરેલું હોય ત્યારે, સુરક્ષા હેતુઓ માટે તમને અવારનવાર ચકાસણી કરવાનું કહેવામાં આવી શકે છે</translation>
 <translation id="3671540257457995106">કદ બદલવાની મંજૂરી આપીએ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />માં ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">નેટવર્કિંગનું સાધન</translation>
@@ -1599,7 +1598,6 @@
 <translation id="3739842843727261045">થમ્બ્સ અપ, આ પરિણામો તમને પસંદ આવ્યા એવો પ્રતિસાદ સબમિટ કરે છે</translation>
 <translation id="3740447166056383374">કૉપિ કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
 <translation id="374325029554577103">ફિટનેસ ટેક્નોલોજી પ્રોડક્ટ</translation>
-<translation id="3743765582345153106">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરતી વખતે હંમેશાં ચકાસણી કરો</translation>
 <translation id="3744111561329211289">બૅકગ્રાઉન્ડ સિંક</translation>
 <translation id="3744212718085287312">શું આગલી વખતે કોઈ વર્ચ્યુઅલ કાર્ડ વડે તેને વધુ સુરક્ષિત કરવા માગો છો?</translation>
 <translation id="3744899669254331632">તમે અત્યારે <ph name="SITE" />ની મુલાકાત લઈ શકતા નથી કારણ કે વેબસાઇટે સમજાય નહીં તેવા ઓળખાણપત્રો મોકલ્યાં છે જેના પર Chromium પ્રક્રિયા કરી શકતું નથી. નેટવર્ક ભૂલો અને હુમલાઓ સામાન્ય રીતે અસ્થાયી હોય છે, તેથી આ પેજ સંભવિત રીતે પછીથી કાર્ય કરશે.</translation>
@@ -1978,7 +1976,6 @@
 <translation id="4358461427845829800">ચુકવણી પદ્ધતિઓ મેનેજ કરો…</translation>
 <translation id="4359160567981085931">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. Chrome સહાય કરી શકે છે. તમારો પાસવર્ડ બદલવા માટે અને Googleને એ જાણ કરવા માટે કે તમારું એકાઉન્ટ જોખમમાં હોઈ શકે છે, એકાઉન્ટ સુરક્ષિત કરો પર ક્લિક કરો.</translation>
 <translation id="4363222835916186793">આ પ્રોડક્ટ માટેના અલર્ટ બંધ કરવામાં આવ્યા છે</translation>
-<translation id="4363729811203340554">જો તમે આ ડિવાઇસ શેર કરતા હો, તો જ્યારે પણ તમે ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરીને ચુકવણી કરો, ત્યારે Chrome તમને ચકાસણી કરવા માટે કહી શકે છે</translation>
 <translation id="4366943895537458493">પ્લેટ</translation>
 <translation id="4369179505195332608">ડ્રાઇવિંગ લાઇસન્સની માહિતીમાં ફેરફાર કરો</translation>
 <translation id="437040971055499437">સુરક્ષા ઇવેન્ટ થવા પર</translation>
@@ -2575,7 +2572,6 @@
 <translation id="5452923259299906094">ઇ-વૉલેટ અને Pix વડે ચુકવણી કરો</translation>
 <translation id="5455374756549232013">ખરાબ પૉલિસી ટાઇમસ્ટેમ્પ</translation>
 <translation id="5456428544444655325">ક્યારેય બતાવશો નહીં</translation>
-<translation id="5456839782162429664">જ્યારે પણ તમે ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરીને ચુકવણી કરો, ત્યારે મેન્યુઅલી ચકાસણી કરો</translation>
 <translation id="5457113250005438886">અમાન્ય</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}one{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}other{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}}</translation>
 <translation id="5463625433003343978">ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
@@ -2684,7 +2680,6 @@
 <translation id="5632485077360054581">મને બતાવો કે કેવી રીતે</translation>
 <translation id="563324245173044180">ભ્રામક કન્ટેન્ટ બ્લૉક કરી</translation>
 <translation id="563371367637259496">મોબાઇલ</translation>
-<translation id="5634725266554983459">મેન્યુઅલી ચકાસણી ચાલુ કરીએ?</translation>
 <translation id="5635478143789726479">વિક્રેતાના નિયમો અને શરતો</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">સ્ટીરિયો સિસ્ટમ અને ઘટકો</translation>
@@ -3325,6 +3320,7 @@
 <translation id="6739943577740687354">આ સુવિધા AIનો ઉપયોગ કરે છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી</translation>
 <translation id="6740851646645036700">તમે અત્યારે તમારી લેખન સંબંધી સહાયની મર્યાદા સુધી પહોંચી ગયા છો. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="674375294223700098">અજ્ઞાત સર્વર પ્રમાણપત્ર ભૂલ.</translation>
+<translation id="6743841972744298686">સિંક સેટિંગ</translation>
 <translation id="6745592621698551453">હવે અપડેટ કરો</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ટેલીકૉન્ફરન્સિંગ</translation>
@@ -3452,7 +3448,6 @@
 <translation id="6973988895180423160">3.5 x 5 ઇંચ</translation>
 <translation id="6978121630131642226">શોધ એન્જિન</translation>
 <translation id="6978236010531171013">કોઈપણ રીતે શેર કરો</translation>
-<translation id="6978722349058177832">જો તમે આ ડિવાઇસ શેર કરતા હો, તો જ્યારે પણ તમે ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરીને ચુકવણી કરો, ત્યારે Chromium તમને ચકાસણી કરવા માટે કહી શકે છે</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">ત્રીજા પક્ષની કુકીના ઍક્સેસને મેનેજ કરો</translation>
 <translation id="6979440798594660689">મ્યૂટ કરો (ડિફૉલ્ટ)</translation>

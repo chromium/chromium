@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Započnite nešto novo ili dobijte pomoć u započetom zadatku.</translation>
 <translation id="1054048317165655285">Završite postavljanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori originalnu sl&amp;iku u novoj kartici</translation>
-<translation id="1054187194995068149">Zdravo, ovo je pregled</translation>
 <translation id="1054502481659725522">Vašu lokaciju mogu koristiti aplikacije, web lokacije i sistemske usluge</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od 1 sedmice}one{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}few{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}other{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmica}}</translation>
 <translation id="1055606969515662982">Koristite daljinski upravljač da zaustavite emitiranje</translation>
@@ -263,6 +262,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1174073918202301297">Prečica je dodana</translation>
 <translation id="1174366174291287894">Vaša veza je uvijek sigurna osim ako vas Chrome ne obavijesti o suprotnom</translation>
 <translation id="1175131936083782305">Administrator je onemogućio ovu funkciju.</translation>
+<translation id="1175277108283187866">Posjetite web lokaciju ili pokrenite pretraživanje u traci za adresu</translation>
 <translation id="1175364870820465910">Štam&amp;panje...</translation>
 <translation id="1175572348579024023">Klizanje</translation>
 <translation id="1175914831232945926">Cifre</translation>
@@ -481,7 +481,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="131364520783682672">Velika slova</translation>
 <translation id="1313660246522271310">Odjavit ćete se sa svih web lokacija, uključujući otvorene kartice</translation>
 <translation id="1313705515580255288">Vaše oznake, historija i druge postavke će se sinhronizirati s vašim Google računom.</translation>
-<translation id="1315184295353569363">Poništi pohranjivanje grupe</translation>
 <translation id="1316136264406804862">Pretraživanje…</translation>
 <translation id="1316248800168909509">Povezivanje s uređajem <ph name="DEVICE" /> nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="1316495628809031177">Sinhronizacija je pauzirana</translation>
@@ -2763,6 +2762,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2878889940310164513">Dodavanje mobilne mreže...</translation>
 <translation id="288042212351694283">Pristupa vašim uređajima s univerzalnom dvofaktorskom autentifikacijom</translation>
 <translation id="2881076733170862447">Kada kliknete na ekstenziju</translation>
+<translation id="2882530630263790933">Zvuk i videozapis</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> će se ponovo pokrenuti i momentalno vratiti na zadano</translation>
 <translation id="2884070497102362193">Testirajte bateriju, procesor, memoriju, povezivost i još mnogo toga</translation>
 <translation id="2885129935310217435">Već postoji dugme s istim nazivom. Odaberite drugi naziv.</translation>
@@ -3063,7 +3063,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="310297983047869047">Prethodni slajd</translation>
 <translation id="3103451787721578293">Unesite razlog za otpremanje ovih podataka:</translation>
 <translation id="3103512663951238230">Alt + klik</translation>
-<translation id="3104763887980088552">Zapisnik aktivnosti</translation>
 <translation id="3104948640446684649">Šaljite podatke o upotrebi i dijagnostici. Uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. Ovo će doprinijeti stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Određeni zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ako vam je uključena postavka za dodatnu Aktivnost na webu i u aplikacijama, ovi podaci će se možda sačuvati na Google račun. <ph name="BEGIN_LINK2" />Saznajte više o pokazateljima<ph name="BEGIN_LINK2_END" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Posljednje neuspješno ažuriranje</translation>
 <translation id="3105796011181310544">Vratiti na Google?</translation>
@@ -4720,7 +4719,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4268025649754414643">Šifriranje ključa</translation>
 <translation id="4268516942564021145">Ova postavka nije dostupna za vaš račun.</translation>
 <translation id="4270393598798225102">Verzija <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Sačuvaj grupu</translation>
 <translation id="4274667386947315930">Podaci za prijavu</translation>
 <translation id="4274673989874969668">Nakon što napustite web lokaciju, sinhronizacija se može nastaviti da se završe zadaci, kao što je otpremanje fotografija ili slanje poruke chata</translation>
 <translation id="4275291496240508082">Zvuk prilikom pokretanja</translation>
@@ -6185,7 +6183,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319712128756744240">Uparivanje novog uređaja</translation>
 <translation id="5320135788267874712">Novi naziv uređaja</translation>
-<translation id="5320261549977878764">Poništi pohranjivanje grupe</translation>
 <translation id="532247166573571973">Možda nije moguće doprijeti do servera. Pokušajte ponovo kasnije.</translation>
 <translation id="5323328004379641163">Prilagodite izgled Chromea i ove stranice</translation>
 <translation id="5324300749339591280">Lista aplikacija</translation>
@@ -6970,7 +6967,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5901069264981746702">Vaši podaci otiska prsta su sigurno pohranjeni i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Pređi na snimanje kartice</translation>
 <translation id="5901494423252125310">Otvoren je poklopac štampača</translation>
-<translation id="5901526412306322179">Zapisnik aktivnosti</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5902892210366342391">Prikazuj upozorenja prije odlaska na nesigurne web lokacije u anonimnom načinu rada</translation>
 <translation id="5904614460720589786">Postavljanje aplikacije <ph name="APP_NAME" /> nije uspjelo zbog problema s konfiguracijom. Kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
@@ -7456,6 +7452,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6248988683584659830">Pretražite postavke</translation>
 <translation id="6249200942125593849">Upravljanje funkcijama pristupačnosti</translation>
 <translation id="6250186368828697007">Detalji će biti skriveni tokom dijeljenja ekrana</translation>
+<translation id="6250887692313997958">Odaberite karticu koju želite dodati u podijeljeni prikaz</translation>
 <translation id="6251870443722440887">GDI obrađivači</translation>
 <translation id="6251924700383757765">Pravila privatnosti</translation>
 <translation id="625369703868467034">Stanje mreže</translation>
@@ -8111,6 +8108,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6728528977475057549">IBAN se završava ciframa <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Unesite korisničko ime</translation>
 <translation id="6729280095610283088">Svijetle trake polarne svjetlosti iznad šume.</translation>
+<translation id="6729493062119577923">Aktivnost dijeljene grupe kartica</translation>
 <translation id="6731320427842222405">Ovo može potrajati nekoliko minuta</translation>
 <translation id="6732956960067639542">Umjesto toga, otvorite novu sesiju u pregledniku Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10532,7 +10530,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8425213833346101688">Izmijeni</translation>
 <translation id="8425492902634685834">Zakači na programsku traku</translation>
 <translation id="8425768983279799676">Možete koristiti PIN da otključate uređaj.</translation>
-<translation id="8426111352542548860">Sačuvaj grupu</translation>
 <translation id="8427213022735114808">Diktiranje šalje vaš glas Googleu kako bi se omogućilo pisanje govorom u bilo kojoj rubrici za tekst.</translation>
 <translation id="8427292751741042100">ugrađeno na bilo kojem host računaru</translation>
 <translation id="8428213095426709021">Postavke</translation>
@@ -11536,6 +11533,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9113240369465613386">Samo neparne stranice</translation>
 <translation id="9113469270512809735">Uključi/isključi nedavno zatvorene stavke</translation>
 <translation id="9113529408970052045">"Pomoć u pisanju" se može automatski otvoriti kada se okvir za tekst na web lokaciji može popuniti sadržajem kratkog formata</translation>
+<translation id="9114210796909453187">Dovršite podijeljeni prikaz</translation>
 <translation id="9114663181201435112">Jednostavna prijava</translation>
 <translation id="9115675100829699941">&amp;Oznake</translation>
 <translation id="9116366756388192417">Odaberite predmet</translation>

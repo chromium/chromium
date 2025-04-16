@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Atļaut vietnēm pieprasīt atļauju piekļūt jūsu atrašanās vietas datiem</translation>
 <translation id="3658847490588580244">Noklusējuma pārlūka ekrāna apakšdaļas lapa</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="RWS_MEMBERS_COUNT" /> vietņu domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="RWS_MEMBERS_COUNT" /> vietnes domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>
+<translation id="3670480940339182416">Vietnēs drīkst izmantot V8 optimizētāju</translation>
 <translation id="3676777756440746804">Vietnēm ir liegts pieprasīt atļauju izmantot par jums saglabāto informāciju.</translation>
 <translation id="3697164069658504920">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot USB ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot USB ierīces.</translation>
+<translation id="3703430731944883733">Plūsmas pārvaldība</translation>
 <translation id="3707034683772193706">Vietne, ko apmeklējat, pārlūkā Chrome var saglabāt nelielu informācijas daudzumu, galvenokārt, lai apstiprinātu, ka neesat robots</translation>
 <translation id="3708684582558000260">Neļaut aizvērtajām vietnēm pabeigt datu sūtīšanu vai saņemšanu</translation>
 <translation id="3709818294139939629">Noņemta vietnes piekļuve failam</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Android iestatījumos ir izslēgta kameras atļauja</translation>
 <translation id="5700761515355162635">Trešo pušu sīkfailu ir atļauti</translation>
 <translation id="5706552988683188916">Tiks dzēsti sīkfaili un citi vietnes <ph name="WEBSITE" /> dati</translation>
+<translation id="571222594670061844">Vietnēs drīkst rādīt pierakstīšanās uzvednes, ko nodrošina identitātes pakalpojumi</translation>
 <translation id="5723967018671998714">Trešo pušu sīkfaili ir bloķēti inkognito režīmā</translation>
 <translation id="5740126560802162366">Vietnes var saglabāt datus jūsu ierīcē</translation>
+<translation id="5743425052258407233">Iegūstiet savu vēsturi visās savās ierīcēs, lai varētu ērti turpināt iesākto.</translation>
 <translation id="5750869797196646528">Roku kustību izsekošana</translation>
 <translation id="5771720122942595109">Bloķēta: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Atļaujas</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5876056640971328065">Apturēt video atskaņošanu</translation>
 <translation id="5877248419911025165">Sakļaut visus pieprasījumus</translation>
+<translation id="5878945009165002849">Bloķēt identitātes pakalpojumu pierakstīšanās uzvednes</translation>
 <translation id="5884085660368669834">Vietnes preference</translation>
 <translation id="5887687176710214216">Pēdējoreiz apmeklēta vakar</translation>
 <translation id="5908617755156109052">Neļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Atsaukt ierīces atļauju</translation>
 <translation id="8471525937465764768">Parasti vietnēs savienojums ar USB ierīcēm tiek veidots, lai nodrošinātu noteiktas funkcijas, piemēram, dokumentu drukāšanu vai saglabāšanu atmiņas ierīcē.</translation>
 <translation id="8473055640493819707">Lietotne <ph name="APP_NAME" /> ir novecojusi. Lūdzu, atkārtoti instalējiet lietotni.</translation>
+<translation id="847433688444405067">Pārlūkošana dažādās ierīcēs</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
 <translation id="848952951823693243">Vienmēr pieprasīt vietni mobilajām ierīcēm</translation>
 <translation id="8492822722330266509">Atļaut vietnēm sūtīt uznirstošos elementus un izmantot novirzīšanu</translation>

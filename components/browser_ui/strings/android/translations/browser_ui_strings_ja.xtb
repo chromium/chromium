@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">位置情報へのアクセス権限がサイトからリクエストされる場合があります</translation>
 <translation id="3658847490588580244">デフォルトのブラウザのボトムシート</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}other{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}}</translation>
+<translation id="3670480940339182416">サイトでの V8 オプティマイザーの使用を許可する</translation>
 <translation id="3676777756440746804">サイトがあなたに関する保存済みの情報の使用を要求できないようにする</translation>
 <translation id="3697164069658504920">オンにすると、サイトは USB デバイスの使用を要求できます。オフにすると、サイトは USB デバイスを使用できません。</translation>
+<translation id="3703430731944883733">フィードを管理</translation>
 <translation id="3707034683772193706">アクセス先のサイトは、主にあなたが bot でないことを確認する少量の情報を Chrome に保存できます。</translation>
 <translation id="3708684582558000260">閉じたサイトにデータの送受信の完了を許可しない</translation>
 <translation id="3709818294139939629">ファイルへのサイトのアクセス権を削除しました</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> の Cookie などのサイトデータが削除されます</translation>
+<translation id="571222594670061844">サイトで ID サービスからのログイン メッセージを表示できるようにする</translation>
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5740126560802162366">サイトはデバイスにデータを保存できます</translation>
+<translation id="5743425052258407233">すべてのデバイスで履歴にアクセスできるため、作業を中断したところから簡単に再開できます</translation>
 <translation id="5750869797196646528">ハンド トラッキング</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5876056640971328065">動画を一時停止</translation>
 <translation id="5877248419911025165">すべてのリクエストを閉じる</translation>
+<translation id="5878945009165002849">ID サービスからのログイン メッセージをブロックする</translation>
 <translation id="5884085660368669834">サイトの設定</translation>
 <translation id="5887687176710214216">最終アクセス日: 昨日</translation>
 <translation id="5908617755156109052">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可しない</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">デバイスの許可を取り消します</translation>
 <translation id="8471525937465764768">多くのサイトは、ドキュメントを印刷したりストレージ デバイスに保存するために USB デバイスに接続します。</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」は最新ではありません。アプリを再インストールしてください。</translation>
+<translation id="847433688444405067">複数のデバイスでブラウジング</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="848952951823693243">常にモバイル版サイトを表示する</translation>
 <translation id="8492822722330266509">サイトがポップアップを送信したりリダイレクトを使用したりできるようにする</translation>

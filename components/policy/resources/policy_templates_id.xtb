@@ -975,13 +975,6 @@ Nilai minimumnya adalah 1 menit.
 <translation id="1639673466479276550">Aktifkan screensaver di layar login.</translation>
 <translation id="1640824698339859203">Aktifkan SSO Mengambang dan pindahkan autentikasi layanan web pengguna ke perangkat baru</translation>
 <translation id="1641117061932613266">Mengaktifkan Layanan <ph name="PRODUCT_NAME" /> V2</translation>
-<translation id="1641394008743444477">Memungkinkan Anda menetapkan daftar fitur <ph name="PRODUCT_OS_NAME" /> untuk dinonaktifkan.
-
-      Jika salah satu fitur ini dinonaktifkan, pengguna tidak dapat mengaksesnya dari UI dan akan melihatnya sebagai "dinonaktifkan oleh admin". Pengalaman pengguna fitur yang dinonaktifkan ditentukan oleh <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
-
-       Jika kebijakan tidak disetel, semua fitur <ph name="PRODUCT_OS_NAME" /> akan diaktifkan secara default dan pengguna dapat menggunakan semua fitur tersebut.
-
-      Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkannya melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
 <translation id="1643642938972654829">Mengizinkan akses ke halaman pengujian kebijakan</translation>
 <translation id="1644373745741524038">Untuk alasan keamanan,
 <ph name="REQUEST_FULLSCREEN_API_NAME" /> web API
@@ -1006,6 +999,7 @@ untuk memanggil API ini.</translation>
       Jika nilai kebijakan disetel ke 0, ukuran cache default akan digunakan dan pengguna tidak dapat mengubahnya.
 
       Jika kebijakan tidak disetel, ukuran cache default akan digunakan dan pengguna dapat mengubahnya dengan tanda --media-cache-size.</translation>
+<translation id="1647775511451132916">Nonaktifkan fitur kontrol dengan wajah di layar login</translation>
 <translation id="1648816843164517573">Daftar nama yang akan melewati pemeriksaan kebijakan HSTS</translation>
 <translation id="1651197070942919276">Jangan izinkan perangkat menjalankan mesin virtual</translation>
 <translation id="1651216316133158002">Kebijakan ini memungkinkan admin menentukan aplikasi yang bertindak sebagai handler default untuk setiap ekstensi file
@@ -2570,7 +2564,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
       Jika kebijakan ini tidak disetel atau disetel ke benar (true), penampil PDF akan dapat menganotasi PDF.
 
       Jika kebijakan ini disetel ke salah (false), penampil PDF tidak akan dapat menganotasi PDF.</translation>
-<translation id="2769199041812510302">URL Logo Perusahaan</translation>
 <translation id="2769952903507981510">Mengonfigurasi nama domain yang dibutuhkan untuk hosting akses jarak jauh</translation>
 <translation id="2770376586681635746">Mengontrol apakah pengguna dapat menambahkan akun Kerberos.
 
@@ -2862,6 +2855,17 @@ Jika nilai disetel ke <ph name="ENABLED_ENUM_VALUE" />, entity akan terdeteksi, 
 Jika nilai disetel ke <ph name="DISABLED_ENUM_VALUE" />, entity tidak akan terdeteksi dan tidak dapat ditindaklanjuti.
 Jika nilai disetel ke <ph name="LONGPRESSONLY_ENUM_VALUE" />, entity akan terdeteksi dan hanya dapat ditindaklanjuti dengan menekan lama.</translation>
 <translation id="3010907817113180883">Interval pengumpulan heartbeat aktivitas perangkat dalam milidetik.</translation>
+<translation id="3015732569734756809">Jika fitur kontrol dengan wajah aktif, Anda dapat menggunakan kepala untuk mengontrol kursor mouse dan
+menggunakan gestur wajah untuk melakukan tindakan sistem. Hal ini memungkinkan Anda mengontrol perangkat
+secara handsfree.
+
+Jika kebijakan ini disetel ke benar (true), fitur kontrol dengan wajah akan selalu diaktifkan di layar login.
+
+Jika kebijakan ini disetel ke salah (false), fitur kontrol dengan wajah akan selalu dinonaktifkan di layar login.
+
+Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.
+
+Jika kebijakan ini tidak disetel, fitur kontrol dengan wajah mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3016585641676676461">Memblokir mode layar penuh otomatis di situs ini</translation>
 <translation id="3017578958356048910">Penampil PDF dapat menganotasi PDF</translation>
 <translation id="3020623128585817424">Nonaktifkan pemeriksaan browser default saat browser dimulai</translation>
@@ -3394,13 +3398,6 @@ Kebijakan ini terbatas untuk 1.000 entri.
 Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="3405997282295704902">Jangan izinkan pengguna menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Jangan tanya pengguna (download langsung dimulai)</translation>
-<translation id="3408078762098350617">Mengontrol pengalaman pengguna fitur yang dinonaktifkan yang tercantum di <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Jika kebijakan ini disetel ke "diblokir", fitur yang dinonaktifkan tidak akan dapat digunakan tetapi tetap terlihat oleh pengguna.
-
-      Jika kebijakan ini disetel ke "tersembunyi", fitur yang dinonaktifkan tidak akan dapat digunakan dan tidak terlihat oleh pengguna.
-
-      Jika kebijakan in tidak disetel atau disetel ke nilai yang tidak valid, mode nonaktif dari fitur sistem akan menjadi "diblokir".</translation>
 <translation id="3411947169047929182">Mengontrol konfigurasi terkait WebRtc</translation>
 <translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
@@ -4669,7 +4666,6 @@ Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpenga
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, mode pengisian daya baterai lanjutan akan dinonaktifkan.
 
       Pengguna tidak dapat mengubah setelan ini.</translation>
-<translation id="4307479555111916927">Menetapkan label perusahaan kustom</translation>
 <translation id="4309091698378414920">Aktifkan sorotan tanda sisipan</translation>
 <translation id="4311141497190183490">Jika kebijakan disetel ke 1, situs akan dapat melacak lokasi fisik pengguna secara default. Jika kebijakan disetel ke 2, situs tidak akan dapat melacak lokasi fisik pengguna secara default. Anda dapat menyetel kebijakan untuk menanyakan setiap kali situs ingin melacak lokasi fisik pengguna.
 
@@ -4677,27 +4673,6 @@ Jika kebijakan tidak disetel, kebijakan <ph name="ASK_GEOLOCATION_POLICY_NAME" /
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4311662690937656540">Terapkan login online di layar login dan layar kunci</translation>
 <translation id="4313767483634435271">Alamat MAC dok yang ditetapkan untuk perangkat</translation>
-<translation id="4313778862255986189">Fitur ini dalam versi beta. Karena fitur sedang dalam pengembangan dan tersedia untuk penguji tepercaya kami, perlu diketahui bahwa fitur ini dapat mengalami perubahan dan update.
-
-Kebijakan ini memungkinkan administrator menyetel agregator penelusuran perusahaan khusus yang akan memberikan rekomendasi dan hasil penelusuran dalam kolom URL saat dipicu oleh kata kunci tertentu. Pengguna dapat memulai penelusuran dengan mengetik kata kunci yang ditentukan di kolom <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> dengan atau tanpa imbuhan @ (mis. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), diikuti dengan Spasi atau Tab, di kolom URL.
-
-Kolom berikut diperlukan: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Kolom <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> berkaitan dengan nama mesin telusur yang ditampilkan kepada pengguna di kolom URL.
-
-Kolom <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> berkaitan dengan kata kunci yang dimasukkan pengguna untuk memicu penelusuran. Pintasan dapat berisi kata dan karakter biasa, tetapi tidak boleh menyertakan spasi atau diawali dengan simbol @. Pintasan harus unik.
-
-Kolom <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan URL yang akan ditelusuri. Masukkan alamat web untuk halaman hasil mesin telusur, lalu gunakan <ph name="SEARCH_TERM_MARKER" /> sebagai pengganti kueri.
-
-Kolom <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan URL yang menyediakan saran penelusuran. Jika <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> berisi <ph name="SEARCH_TERM_MARKER" />, Chrome akan mendapatkan saran penelusuran melalui permintaan GET ke URL yang mengganti <ph name="SEARCH_TERM_MARKER" /> dengan kueri penelusuran pengguna. Jika tidak, permintaan POST akan dibuat dan kueri pengguna akan diteruskan dalam parameter POST di bagian kunci <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Kolom <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan URL ke gambar yang akan digunakan di saran penelusuran. Ikon default akan digunakan jika kolom ini tidak disetel. Sebaiknya gunakan favicon (contoh <ph name="ICON_URL_EXAMPLE" />). Format file gambar yang didukung: JPEG, PNG, dan ICO.
-
-Kolom <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan apakah kolom URL <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> diperlukan untuk melihat rekomendasi penelusuran. Jika kolom ini tidak disetel, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> kolom URL tidak diperlukan.
-
-Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Nonaktifkan pencarian CNAME selama autentikasi Kerberos</translation>
 <translation id="4320592646346933548">WiFi</translation>
 <translation id="43213511254881626">Kebijakan ini mengontrol apakah pengelola sandi bawaan dapat menghapus sandi yang tidak dapat didekripsi dari database-nya. Tindakan ini diperlukan untuk memulihkan fungsi penuh pengelola sandi bawaan, tetapi hal ini dapat menyebabkan kehilangan data permanen. Nilai sandi yang tidak dapat didekripsi tidak akan dapat didekripsi dengan sendirinya. Jika perbaikan dapat dilakukan, biasanya diperlukan tindakan pengguna yang kompleks.
@@ -7656,7 +7631,6 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid (se
 <translation id="6287128640500683781">Izinkan semua pengguna login</translation>
 <translation id="6287310684159482272">Setelan cookie</translation>
 <translation id="6287742528823584153">Aktifkan Layanan <ph name="PRODUCT_NAME" /> dan luncurkan desktop jarak jauh saat login</translation>
-<translation id="6288152932495466841">Memberi tahu pengguna tentang versi browser yang diganti</translation>
 <translation id="6299147100249359151">Izinkan deteksi cakupan Kebijakan.</translation>
 <translation id="6299554629216555326">Setelan Pengelolaan Jendela</translation>
 <translation id="6302021021024941085">Nonaktifkan alat pemecahan masalah Kios.</translation>
@@ -8495,11 +8469,6 @@ Browser akan otomatis menghapus jenis data yang dipilih yang lebih lama dari <ph
 Penghapusan data yang habis masa berlakunya akan dilakukan 15 detik setelah browser dimulai, lalu setiap 30 menit saat browser sedang berjalan.
 
 Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true). Mulai Chrome 115, menyetel kebijakan ini akan menonaktifkan sinkronisasi untuk setiap jenis data jika `<ph name="CHROME_SYNC_NAME" />` tidak dinonaktifkan dengan menyetel kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> atau <ph name="BROWSER_SIGNIN_POLICY_NAME" /> dinonaktifkan.</translation>
-<translation id="6762635531429930846">Menentukan usia rilis minimum yang melampaui notifikasi peluncuran kembali yang lebih agresif. Usia dihitung sejak versi yang sedang berjalan terakhir kali ditampilkan kepada klien.
-
-Jika versi baru tertunda, browser perlu diluncurkan kembali atau perangkat perlu dimulai ulang, dan versi saat ini yang telah digantikan selama lebih dari jumlah hari yang ditentukan oleh setelan ini, kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />-nya akan diganti dengan 2 jam. Jika kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> disetel ke 1 ('Diperlukan'), pengguna akan dipaksa untuk meluncurkan kembali atau memulai ulang perangkat pada akhir periode.
-
-Jika kebijakan tidak disetel, atau jika usia rilis tidak dapat ditentukan, kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> akan digunakan untuk semua update.</translation>
 <translation id="6763023079133439068">Izinkan sertifikat yang tidak dilengkapi ekstensi subjectAlternativeName saat dikeluarkan oleh trust anchor lokal</translation>
 <translation id="6766216162565713893">Izinkan situs meminta pengguna memberikan akses ke perangkat Bluetooth di sekitar</translation>
 <translation id="6770454900105963262">Melaporkan informasi tentang sesi kios aktif</translation>
@@ -9223,6 +9192,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
       Jika kebijakan ini tidak disetel, kebijakan<ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> akan berlaku, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="7238335422094660594">Mengaktifkan penyedia <ph name="UIA_NAME" />.</translation>
+<translation id="7241016798422122577">Aktifkan fitur kontrol dengan wajah di layar login</translation>
 <translation id="7242191282517459095">YouTube (didukung sejak versi 135)</translation>
 <translation id="7244600351241637530">Jika setelan ini diaktifkan, pengguna yang telah memilih untuk menggunakan Phone Hub akan dapat melihat dan mendownload foto serta video yang terakhir diambil di ponselnya di ChromeOS.
 
@@ -9475,7 +9445,6 @@ Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, l
 
       Jika tidak disetel, interval default 3 menit akan berlaku.</translation>
 <translation id="7469554574977894907">Aktifkan saran penelusuran</translation>
-<translation id="7471938371309017725">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, web store, canvas, jelajahi, crosh, galeri, terminal, dan fitur perekam suara untuk dinonaktifkan</translation>
 <translation id="7472547030234093862">Menentukan domain yang akan di-resolve menggunakan DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="7476030153540156377">Memilih apakah fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.</translation>

@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Du kannst dich von Anfang an unterstützen lassen oder dir später Hilfe dazuholen.</translation>
 <translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
-<translation id="1054187194995068149">Hallo. Dies ist eine Vorschau.</translation>
 <translation id="1054502481659725522">Apps, Websites und Systemdienste können deinen Standort verwenden</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
 <translation id="1055606969515662982">Fernbedienung verwenden, um das Streamen zu beenden</translation>
@@ -263,6 +262,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1174073918202301297">Verknüpfung hinzugefügt</translation>
 <translation id="1174366174291287894">Deine Verbindung ist immer sicher, solange Chrome dich nicht auf eine unsichere Verbindung hinweist</translation>
 <translation id="1175131936083782305">Dein Administrator hat diese Funktion deaktiviert.</translation>
+<translation id="1175277108283187866">Rufe eine Website auf oder starte in der Adressleiste eine Suche</translation>
 <translation id="1175364870820465910">&amp;Drucken...</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1175914831232945926">Ziffern</translation>
@@ -479,7 +479,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="131364520783682672">Feststelltaste</translation>
 <translation id="1313660246522271310">Du wirst von allen Websites abgemeldet, auch auf offenen Tabs</translation>
 <translation id="1313705515580255288">Deine Lesezeichen, der Verlauf und andere Einstellungen werden mit deinem Google-Konto synchronisiert.</translation>
-<translation id="1315184295353569363">Gruppe entfernen</translation>
 <translation id="1316136264406804862">Suche läuft...</translation>
 <translation id="1316248800168909509">Es konnte keine Verbindung zu <ph name="DEVICE" /> hergestellt werden. Versuche es erneut.</translation>
 <translation id="1316495628809031177">Synchronisierung pausiert</translation>
@@ -2748,6 +2747,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2878889940310164513">Mobilfunknetz hinzufügen...</translation>
 <translation id="288042212351694283">Auf deine Universal 2nd Factor-Geräte zugreifen</translation>
 <translation id="2881076733170862447">Wenn die Erweiterung angeklickt wird</translation>
+<translation id="2882530630263790933">Audio und Video</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wird in wenigen Augenblicken neu gestartet und zurückgesetzt.</translation>
 <translation id="2884070497102362193">Akku, CPU, Arbeitsspeicher, Verbindungen und mehr testen</translation>
 <translation id="2885129935310217435">Eine Schaltfläche mit diesem Namen ist bereits vorhanden. Bitte leg einen anderen Namen fest.</translation>
@@ -3048,7 +3048,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3103451787721578293">Bitte gib einen Grund für das Hochladen dieser Daten an:</translation>
 <translation id="3103512663951238230">Alt + Klick</translation>
-<translation id="3104763887980088552">Aktivitätsprotokoll</translation>
 <translation id="3104948640446684649">Nutzungs- und Diagnosedaten senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Letztes fehlgeschlagenes Update</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
@@ -4703,7 +4702,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4268025649754414643">Schlüsselverschlüsselung</translation>
 <translation id="4268516942564021145">Diese Einstellung ist nicht für dein Konto verfügbar.</translation>
 <translation id="4270393598798225102">Version <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Gruppe speichern</translation>
 <translation id="4274667386947315930">Anmeldedaten</translation>
 <translation id="4274673989874969668">Wenn du eine Website verlässt, kann die Synchronisierung trotzdem fortgesetzt werden, um Aufgaben wie das Hochladen von Fotos oder das Versenden einer Chatnachricht zu beenden</translation>
 <translation id="4275291496240508082">Einschaltton</translation>
@@ -6166,7 +6164,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319712128756744240">Neues Gerät koppeln</translation>
 <translation id="5320135788267874712">Neuer Gerätename</translation>
-<translation id="5320261549977878764">Gruppe entfernen</translation>
 <translation id="532247166573571973">Der Server ist eventuell nicht erreichbar. Versuche es später noch einmal.</translation>
 <translation id="5323328004379641163">Anzeige von Chrome und dieser Seite anpassen</translation>
 <translation id="5324300749339591280">Apps-Liste</translation>
@@ -6949,7 +6946,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5901069264981746702">Dein Fingerabdruck wird sicher und niemals außerhalb deines Geräts (<ph name="DEVICE_TYPE" />) gespeichert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Zum empfangenden Tab wechseln</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
-<translation id="5901526412306322179">Aktivitätsprotokoll</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5902892210366342391">Vor dem Aufrufen unsicherer Websites im Inkognitomodus Warnungen einblenden</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -7434,6 +7430,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6248988683584659830">In Einstellungen suchen</translation>
 <translation id="6249200942125593849">Bedienungshilfen verwalten</translation>
 <translation id="6250186368828697007">Details sind während des Bildschirmteilens verborgen</translation>
+<translation id="6250887692313997958">Tab zum Einfügen in die geteilte Ansicht auswählen</translation>
 <translation id="6251870443722440887">GDI-Handles</translation>
 <translation id="6251924700383757765">Datenschutzerklärung</translation>
 <translation id="625369703868467034">Netzwerkzustand</translation>
@@ -8085,6 +8082,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6728528977475057549">IBAN, die mit <ph name="LAST_FOUR_DIGITS" /> endet</translation>
 <translation id="6729192290958770680">Nutzername eingeben</translation>
 <translation id="6729280095610283088">Helle Polarlichter über einem Wald.</translation>
+<translation id="6729493062119577923">Aktivitäten der geteilten Tabgruppe</translation>
 <translation id="6731320427842222405">Dies kann einige Minuten dauern.</translation>
 <translation id="6732956960067639542">Öffne stattdessen eine neue Chrome-Browsersitzung.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10506,7 +10504,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8425213833346101688">Ändern</translation>
 <translation id="8425492902634685834">An Taskleiste anpinnen</translation>
 <translation id="8425768983279799676">Mit deiner PIN kannst du dein Gerät entsperren.</translation>
-<translation id="8426111352542548860">Gruppe speichern</translation>
 <translation id="8427213022735114808">Die Diktierfunktion sendet deine Spracheingaben an Google, damit sie in das entsprechende Textfeld eingetragen werden können.</translation>
 <translation id="8427292751741042100">auf beliebigem Host eingebettet</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
@@ -11508,6 +11505,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9113240369465613386">Nur ungerade Seitenzahlen</translation>
 <translation id="9113469270512809735">Kürzlich geschlossene Elemente ein-/ausblenden</translation>
 <translation id="9113529408970052045">„Formuliere für mich“ kann automatisch geöffnet werden, wenn sich ein Textfeld auf einer Website mit Kurzinhalten füllen lässt</translation>
+<translation id="9114210796909453187">Geteilte Ansicht fertigstellen</translation>
 <translation id="9114663181201435112">Einfach anmelden</translation>
 <translation id="9115675100829699941">&amp;Lesezeichen</translation>
 <translation id="9116366756388192417">Motiv auswählen</translation>

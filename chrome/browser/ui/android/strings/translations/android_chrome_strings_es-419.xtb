@@ -259,7 +259,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="22091350895006575">Agregar nombre de usuario</translation>
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">El grupo de pestañas <ph name="TAB_GROUP_TITLE" /> tiene actividad nueva</translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
 <translation id="223356358902285214">Actividad web y de aplicaciones</translation>
 <translation id="2234827758954819389">Guía de privacidad</translation>
@@ -853,7 +852,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4912413785358399818">Mover pestaña</translation>
 <translation id="4913169188695071480">Detener actualización</translation>
 <translation id="4925120120285606924">Captura de pantalla del <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Se exportarán tus contraseñas y se descargarán como un archivo de texto. Las personas y las apps que tengan acceso a la carpeta de destino podrán ver estas contraseñas.</translation>
 <translation id="4926901776383726965">Puedes guardar imágenes y archivos para verlos sin conexión o compartirlos en otras apps</translation>
 <translation id="4932247056774066048">Estás saliendo de una cuenta administrada por <ph name="DOMAIN_NAME" />. Se borrarán tus datos de Chrome de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
 <translation id="4943703118917034429">Realidad virtual</translation>
@@ -894,6 +892,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5114895953710637392">La hoja de filtros de apps está cerrada.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos y otras apps</translation>
+<translation id="5118713593561876160">Intereses</translation>
 <translation id="5122378528687922675">Si necesitas ayuda, pídele a tu madre o padre (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
 <translation id="5139940364318403933">Aprender a usar Google Drive</translation>
@@ -1100,6 +1099,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6087286598828478206">¿Quieres bloquear a ese miembro y salir del grupo?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> horas restantes</translation>
 <translation id="6095578583683628124">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relevantes según el contexto</translation>
+<translation id="6104768972315313991">Código QR generado</translation>
 <translation id="610630277578876674">Abre rápidamente vínculos en mensajes y mucho más</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6112702117600201073">Actualizando la página</translation>
@@ -1549,6 +1549,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7963646190083259054">Proveedor:</translation>
 <translation id="7965838025086216108">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
+<translation id="7968982339740310781">Ver los detalles</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
@@ -1681,7 +1682,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8497242791509864205">Abrir opciones de orden</translation>
 <translation id="8497480609928300907">Explicación de la guía sobre privacidad</translation>
 <translation id="8497726226069778601">Aún no hay elementos para ver</translation>
-<translation id="8503559462189395349">Contraseñas de Chrome</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8505766168025405649">Consulta la notificación para conocer el estado de la descarga.</translation>
 <translation id="8506357771923193001">Encontrarás tus descargas aquí</translation>
@@ -1716,6 +1716,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8635399646025169806">¿Quieres conservar el grupo de pestañas?</translation>
 <translation id="8636825310635137004">Activa la sincronización para obtener las pestañas de tus otros dispositivos.</translation>
 <translation id="864544049772947936">Administrar ventanas (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Accede a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Ya existe el nombre del archivo</translation>
 <translation id="8672883760227492369">Algunas contraseñas de este dispositivo dejarán de funcionar pronto. Puedes mover estas contraseñas al Administrador de contraseñas de Google.</translation>
 <translation id="8676276370198826499">Accede a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

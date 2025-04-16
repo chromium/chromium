@@ -259,7 +259,6 @@
 <translation id="22091350895006575">افزودن نام کاربری</translation>
 <translation id="221494669172414749">‏باز کردن Chrome بدون قفل نمایه باعث می‌شود گذرواژه‌ها و روش‌های پرداخت ذخیره‌شده‌تان از خودرو حذف شود. استفاده از قفل نمایه امنیت این داده‌ها را حفظ می‌کند.</translation>
 <translation id="2227444325776770048">ادامه دادن به‌عنوان <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">گروه برگه <ph name="TAB_GROUP_TITLE" /> فعالیت جدیدی دارد</translation>
 <translation id="2230777942707397948">پنجره خالی</translation>
 <translation id="223356358902285214">فعالیت‌ها در وب و برنامه</translation>
 <translation id="2234827758954819389">راهنمای حریم خصوصی</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">انتقال برگه</translation>
 <translation id="4913169188695071480">توقف تازه‌سازی</translation>
 <translation id="4925120120285606924">نماگرفت <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">گذرواژه‌هایتان به‌صورت فایل نوشتاری صادر و بارگیری خواهد شد. گذرواژه‌هایتان برای همه افراد و برنامه‌هایی که به پوشه مقصد دسترسی دارند نمایان خواهد بود.</translation>
 <translation id="4926901776383726965">می‌توانید تصاویر و فایل‌ها را برای مشاهده آفلاین یا هم‌رسانی در برنامه‌های دیگر ذخیره کنید</translation>
 <translation id="4932247056774066048">‏از آنجایی‌که درحال خروج از سیستم حساب مدیریت‌شده توسط <ph name="DOMAIN_NAME" /> هستید، داده‌های Chrome شما از این دستگاه حذف می‌شود. این مورد در حساب Google شما باقی می‌ماند.</translation>
 <translation id="4943703118917034429">واقعیت مجازی</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">برگ فیلتر کردن برنامه بسته شد.</translation>
 <translation id="5115811374190515607">به <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">‏در هرزمانی با تک‌ضرب زدن روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها می‌توانید از Chrome استفاده کنید</translation>
+<translation id="5118713593561876160">علایق</translation>
 <translation id="5122378528687922675">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">برگه ناشناس</translation>
 <translation id="5139940364318403933">‏آشنایی با نحوه استفاده از Google Drive</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">گروه را مسدود و ترک می‌کنید؟</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ساعت باقی‌مانده است</translation>
 <translation id="6095578583683628124">‏اگر موتور جستجوی پیش‌فرضتان هم Google باشد، پیشنهادهای بهتر و مرتبط‌تری درباره موضوع خواهید دید</translation>
+<translation id="6104768972315313991">رمزینه پاسخ‌سریع تولیدشده</translation>
 <translation id="610630277578876674">پیوندهای موجود در پیام‌ها را به‌سرعت باز کنید و از مزایای دیگری بهره‌مند شوید</translation>
 <translation id="6108923351542677676">تنظیم در حال انجام است...</translation>
 <translation id="6112702117600201073">درحال بازآوری صفحه</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">ارائه‌دهنده:</translation>
 <translation id="7965838025086216108">‏گذرواژه‌های ذخیره‌شده را در هر دستگاهی می‌توانید استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /> ذخیره می‌شود.</translation>
 <translation id="7968014550143838305">به فهرست خواندن اضافه شد</translation>
+<translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>
 <translation id="7971136598759319605">آخرین فعالیت: ۱ روز قبل</translation>
 <translation id="7975379999046275268">پیش‌نمایش صفحه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">باز کردن گزینه‌های مرتب‌سازی</translation>
 <translation id="8497480609928300907">شرح «راهنمای حریم خصوصی»</translation>
 <translation id="8497726226069778601">هنوز… چیزی برای دیدن وجود ندارد</translation>
-<translation id="8503559462189395349">‏گذرواژه‌های Chrome</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8505766168025405649">دیدن اعلان وضعیت بارگیری</translation>
 <translation id="8506357771923193001">بارگیری‌هایتان را اینجا خواهید دید</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">گروه برگه نگه داشته شود؟</translation>
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
 <translation id="864544049772947936">مدیریت پنجره‌ها (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> وارد شوید</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
 <translation id="8672883760227492369">‏برخی‌از گذرواژه‌های ذخیره‌شده در این دستگاه به‌زودی ازکار خواهد افتاد. می‌توانید این گذرواژه‌ها را به «مدیر گذرواژه Google» منتقل کنید.</translation>
 <translation id="8676276370198826499">ثبت‌نام در <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

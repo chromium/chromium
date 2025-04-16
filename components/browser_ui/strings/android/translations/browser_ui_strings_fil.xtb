@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Puwedeng hilingin ng mga site ang iyong lokasyon</translation>
 <translation id="3658847490588580244">Bottom sheet ng default browser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="RWS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
+<translation id="3670480940339182416">Puwedeng gamitin ng mga site ang V8 optimizer</translation>
 <translation id="3676777756440746804">Naka-block ang mga site sa paghiling sa iyo na gamitin ang impormasyong na-save ng mga ito tungkol sa iyo</translation>
 <translation id="3697164069658504920">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga USB device. Kapag naka-off, hindi makakagamit ng mga USB device ang mga site.</translation>
+<translation id="3703430731944883733">Pamahalaan ang iyong feed</translation>
 <translation id="3707034683772193706">Puwedeng mag-save ng kaunting impormasyon sa Chrome ang isang site na binibisita mo, para lang ma-validate na hindi ka bot</translation>
 <translation id="3708684582558000260">Huwag payagan ang mga isinarang site na tapusin ang pagpapadala o pagtanggap ng data</translation>
 <translation id="3709818294139939629">Inalis ang file access ng site</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Naka-off ang camera sa mga setting ng Android</translation>
 <translation id="5700761515355162635">Pinapayagan ang third-party na cookies</translation>
 <translation id="5706552988683188916">Dine-delete nito ang cookies at iba pang data ng site para sa <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Puwedeng magpakita ang mga site ng mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan</translation>
 <translation id="5723967018671998714">Bina-block ang third-party na cookies sa Incognito mode</translation>
 <translation id="5740126560802162366">Makakapag-save ang mga site ng data sa iyong device</translation>
 <translation id="5750869797196646528">Pag-track sa kamay</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5876056640971328065">I-pause ang video</translation>
 <translation id="5877248419911025165">I-collapse ang lahat ng request</translation>
+<translation id="5878945009165002849">I-block ang mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan</translation>
 <translation id="5884085660368669834">Preference sa site</translation>
 <translation id="5887687176710214216">Huling binisita kahapon</translation>
 <translation id="5908617755156109052">Huwag payagan ang mga site na gumawa ng 3D na map ng iyong kapaligiran o subaybayan ang posisyon ng camera</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Bawiin ang pahintulot ng device</translation>
 <translation id="8471525937465764768">Karaniwang kumokonekta ang mga site sa mga USB device para sa mga feature gaya ng pag-print ng dokumento o pag-save sa storage device</translation>
 <translation id="8473055640493819707">Luma na ang '<ph name="APP_NAME" />.' Paki-install ulit ang app.</translation>
+<translation id="847433688444405067">Mag-browse sa lahat ng device</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="848952951823693243">Palaging hilingin ang pang-mobile na site</translation>
 <translation id="8492822722330266509">Puwedeng magpadala ng mga pop-up at gumamit ng mga pag-redirect ang mga site</translation>

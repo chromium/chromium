@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">ጣቢያዎች አካባቢዎን ሊጠይቁ ይችላሉ</translation>
 <translation id="3658847490588580244">የነባሪ አሳሽ የግርጌ ሉህ</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="RWS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="RWS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
+<translation id="3670480940339182416">ጣቢያዎች V8 አመቻችን መጠቀም ይችላሉ</translation>
 <translation id="3676777756440746804">ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ከመጠየቅ ታግደዋል</translation>
 <translation id="3697164069658504920">ሲበራ፣ ጣቢያዎች የUSB መሳሪያዎችን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የUSB መሳሪያዎችን መጠቀም አይችሉም።</translation>
+<translation id="3703430731944883733">ምግብዎን ያስተዳድሩ</translation>
 <translation id="3707034683772193706">እርስዎ የሚጎበኙት ጣቢያ በዋነኛነት እርስዎ ቦት አለመሆንዎን ለማረጋገጥ በChrome ትንሽ መጠን ያለው መረጃ ሊያስቀምጥ ይችላል</translation>
 <translation id="3708684582558000260">ዝግ ጣቢያዎች መላክን ወይም መቀበልን እንዲጨርሱ አይፍቀዱ</translation>
 <translation id="3709818294139939629">የተወገደ የጣቢያው የፋይል መዳረሻ</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">ካሜራ በAndroid ቅንብሮች ውስጥ ጠፍቷል</translation>
 <translation id="5700761515355162635">የሦስተኛ ወገን ኩኪዎች ተፈቅደዋል</translation>
 <translation id="5706552988683188916">ይህ ለ<ph name="WEBSITE" /> ኩኪዎችን እና ሌላ የጣቢያ ውሂብን ይሰርዛል</translation>
+<translation id="571222594670061844">ጣቢያዎች ከማንነት አገልግሎቶች የመግቢያ ጥያቄዎችን ማሳየት ይችላሉ</translation>
 <translation id="5723967018671998714">ማንነት በማያሳውቅ ሁነታ ላይ የሦስተኛ ወገን ኩኪዎች ይታገዳሉ</translation>
 <translation id="5740126560802162366">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ ማስቀመጥ ይችላሉ</translation>
 <translation id="5750869797196646528">የእጅ ክትትል</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">አብራ</translation>
 <translation id="5876056640971328065">ቪዲዮ ባለበት አቁም</translation>
 <translation id="5877248419911025165">ሁሉንም ጥያቄዎች ይሰብስቡ</translation>
+<translation id="5878945009165002849">የመግቢያ መጠይቆችን ከማንነት አገልግሎቶች ያግዱ</translation>
 <translation id="5884085660368669834">የጣቢያ ምርጫ</translation>
 <translation id="5887687176710214216">ለመጨረሻ ጊዜ የተጎበኘው ትላንትና</translation>
 <translation id="5908617755156109052">ጣቢያዎች በዙሪያዎ ያሉትን ነገሮች 3ል ካርታ እንዲፈጥሩ ወይም የካሜራ ቦታ እንዲከታተሉ አትፍቅድ</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">የመሣሪያ ፈቃድ ሻር</translation>
 <translation id="8471525937465764768">ጣቢያዎች እንደ ሰነድ ማተም ወይም ወደ የማከማቻ መሣሪያ ማስቀመጥ ያሉ ባህሪያትን ለማግኘት አብዛኛው ጊዜ ከዩኤስቢ መሣሪያዎች ጋር ይገናኛሉ</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» ጊዜው ያለፈበት ነው። እባክዎ መተግበሪያውን እንደገና ይጫኑት።</translation>
+<translation id="847433688444405067">በመላው መሣሪያዎች ላይ ያስሱ</translation>
 <translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>
 <translation id="848952951823693243">ሁልጊዜ የሞባይል ጣቢያን ጠይቅ</translation>
 <translation id="8492822722330266509">ጣቢያዎች ብቅ-ባዮችን መላክ እና ማዞሪያዎችን መጠቀም ይችላሉ</translation>

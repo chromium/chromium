@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">開始新任務，或在工作過程中取得協助。</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
-<translation id="1054187194995068149">你好，這是預覽畫面</translation>
 <translation id="1054502481659725522">應用程式、網站和系統服務可以使用你的位置資訊</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 週內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 週內更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="1055606969515662982">使用遙控器停止投放</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">已新增捷徑</translation>
 <translation id="1174366174291287894">除非 Chrome 另行通知，否則你的連線都安全無虞</translation>
 <translation id="1175131936083782305">管理員已停用這項功能。</translation>
+<translation id="1175277108283187866">造訪網站或在網址列中開始搜尋</translation>
 <translation id="1175364870820465910">列印(&amp;P)...</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1175914831232945926">數字</translation>
@@ -479,7 +479,6 @@
 <translation id="131364520783682672">Caps Lock 鍵</translation>
 <translation id="1313660246522271310">系統會將你登出所有網站，包含已開啟的分頁</translation>
 <translation id="1313705515580255288">系統會將你的書籤、歷史記錄和其他設定與你的 Google 帳戶同步處理。</translation>
-<translation id="1315184295353569363">取消儲存群組</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316248800168909509">無法連線到 <ph name="DEVICE" />，請再試一次。</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
@@ -2751,6 +2750,7 @@
 <translation id="2878889940310164513">新增行動網路...</translation>
 <translation id="288042212351694283">存取你的 Universal 2nd Factor 裝置</translation>
 <translation id="2881076733170862447">當你點選擴充功能時</translation>
+<translation id="2882530630263790933">音訊和影片</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並進行重設</translation>
 <translation id="2884070497102362193">測試電池、CPU、記憶體、連線能力等等</translation>
 <translation id="2885129935310217435">已有名稱相同的按鈕，請選擇其他名稱。</translation>
@@ -3051,7 +3051,6 @@
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上傳這項資料的原因：</translation>
 <translation id="3103512663951238230">Alt + 滑鼠左鍵</translation>
-<translation id="3104763887980088552">活動記錄</translation>
 <translation id="3104948640446684649">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解指標<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">上次更新失敗</translation>
 <translation id="3105796011181310544">要改回 Google 嗎？</translation>
@@ -4704,7 +4703,6 @@
 <translation id="4268025649754414643">金鑰編密</translation>
 <translation id="4268516942564021145">您的帳戶無法使用這項設定。</translation>
 <translation id="4270393598798225102">第 <ph name="NUMBER" /> 版</translation>
-<translation id="4274604968379621964">儲存群組</translation>
 <translation id="4274667386947315930">登入資料</translation>
 <translation id="4274673989874969668">在你離開網站後，網站可以繼續透過同步作業完成各項工作，例如上傳相片或傳送即時通訊訊息等等</translation>
 <translation id="4275291496240508082">啟動音效</translation>
@@ -6167,7 +6165,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
 <translation id="5320135788267874712">新的裝置名稱</translation>
-<translation id="5320261549977878764">取消儲存群組</translation>
 <translation id="532247166573571973">無法連上伺服器，請稍後再試。</translation>
 <translation id="5323328004379641163">自訂 Chrome 和這個網頁的外觀</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
@@ -6950,7 +6947,6 @@
 <translation id="5901069264981746702">你的指紋資料會安全地儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">切換至目前擷取的分頁</translation>
 <translation id="5901494423252125310">印表機的蓋子處於開啟狀態</translation>
-<translation id="5901526412306322179">活動記錄</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5902892210366342391">在無痕模式下前往不安全的網站前發出警告</translation>
 <translation id="5904614460720589786">配置作業發生問題，因此無法設定「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -7434,6 +7430,7 @@
 <translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6249200942125593849">管理無障礙功能</translation>
 <translation id="6250186368828697007">分享螢幕畫面時會隱藏詳細資料</translation>
+<translation id="6250887692313997958">選擇要新增到分割檢視畫面的分頁</translation>
 <translation id="6251870443722440887">GDI 控制代碼</translation>
 <translation id="6251924700383757765">隱私權政策</translation>
 <translation id="625369703868467034">網路健康狀態</translation>
@@ -8085,6 +8082,7 @@
 <translation id="6728528977475057549">末四碼為 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>
 <translation id="6729192290958770680">請輸入你的使用者名稱</translation>
 <translation id="6729280095610283088">明亮的北極光照射在森林上空。</translation>
+<translation id="6729493062119577923">共用分頁群組活動</translation>
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6732956960067639542">請改為開啟新的 Chrome 瀏覽器工作階段。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10505,7 +10503,6 @@
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">你可以使用 PIN 碼將裝置解鎖。</translation>
-<translation id="8426111352542548860">儲存群組</translation>
 <translation id="8427213022735114808">語音輸入功能會將你的語音資料傳送給 Google，讓你使用自己的語音在任何文字欄位中輸入內容。</translation>
 <translation id="8427292751741042100">嵌入任何主機</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -11507,6 +11504,7 @@
 <translation id="9113240369465613386">僅限奇數頁</translation>
 <translation id="9113469270512809735">顯示/隱藏最近關閉的項目</translation>
 <translation id="9113529408970052045">當網站上的文字方塊可填入簡短內容時，「幫我寫」功能會自動開啟</translation>
+<translation id="9114210796909453187">完成分割檢視畫面</translation>
 <translation id="9114663181201435112">輕鬆登入</translation>
 <translation id="9115675100829699941">書籤(&amp;B)</translation>
 <translation id="9116366756388192417">選擇主題</translation>

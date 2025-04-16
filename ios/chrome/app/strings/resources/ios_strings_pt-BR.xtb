@@ -481,6 +481,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2962516096219646456">Mostrar todos os dados de preenchimento automático</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
+<translation id="297667759942911166">Colaborar em grupos de guias</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="2996291259634659425">Criar senha longa</translation>
@@ -1859,6 +1860,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8697136149718343437">Mover barra de endereço para baixo</translation>
 <translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8706806585855470492">Você poderá compartilhar, participar e colaborar em grupos de guias</translation>
 <translation id="8709409604518538305">As guias foram fechadas</translation>
 <translation id="8712534545803964353">Localizar na página…</translation>
 <translation id="8712637175834984815">Entendi</translation>
@@ -2008,7 +2010,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de leitura</translation>
 <translation id="959066944189734975">Você está seguindo este canal: <ph name="CHANNEL_NAME" /></translation>
-<translation id="961856697154696964">Excluir dados de naveg.</translation>
+<translation id="961856697154696964">Excluir dados de navegação</translation>
 <translation id="963102227019621224">Atividade na Web e de apps</translation>
 <translation id="966593914872420832">Pesquisa por voz</translation>
 <translation id="968653181266955408">Receber notificações de conteúdo</translation>

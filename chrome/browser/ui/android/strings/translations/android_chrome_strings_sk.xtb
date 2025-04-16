@@ -259,7 +259,6 @@
 <translation id="22091350895006575">Pridať používateľské meno</translation>
 <translation id="221494669172414749">Ak otvoríte Chrome bez zámky profilu, odstránite heslá a spôsoby platby uložené v aute. Pomocou zámky profilu sú tieto údaje uchované v bezpečí.</translation>
 <translation id="2227444325776770048">Pokračovať ako <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">V skupine kariet <ph name="TAB_GROUP_TITLE" /> je nová aktivita</translation>
 <translation id="2230777942707397948">Prázdne okno</translation>
 <translation id="223356358902285214">Aktivita na internete a v aplikáciách</translation>
 <translation id="2234827758954819389">Sprievodca ochranou súkromia</translation>
@@ -853,7 +852,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4912413785358399818">Presunúť kartu</translation>
 <translation id="4913169188695071480">Zastaviť obnovovanie</translation>
 <translation id="4925120120285606924">Snímka obrazovky <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Vaše heslá budú exportované a stiahnuté ako textový súbor. Budú viditeľné pre všetkých používateľov aj aplikácie s prístupom k cieľovému priečinku.</translation>
 <translation id="4926901776383726965">Obrázky a súbory si môžete uložiť a prezerať offline alebo ich zdieľať v iných aplikáciách</translation>
 <translation id="4932247056774066048">Keďže sa odhlasujete z účtu spravovaného doménou <ph name="DOMAIN_NAME" />, budú údaje Chromu z tohto zariadenia odstránené. Zostanú vo vašom účte Google.</translation>
 <translation id="4943703118917034429">Virtuálna realita</translation>
@@ -894,6 +892,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5114895953710637392">Hárok filtrov aplikácií je zavretý.</translation>
 <translation id="5115811374190515607">do služby <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách</translation>
+<translation id="5118713593561876160">Záujmy</translation>
 <translation id="5122378528687922675">Ak potrebuješ pomoc, požiadaj rodiča (<ph name="PARENT_NAME_1" /> alebo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Karta inkognito</translation>
 <translation id="5139940364318403933">Ako používať Disk Google</translation>
@@ -1100,6 +1099,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6087286598828478206">Chcete skupinu zablokovať a opustiť?</translation>
 <translation id="60923314841986378">Zostáva: <ph name="HOURS" /> h</translation>
 <translation id="6095578583683628124">Ak je Google aj váš predvolený vyhľadávač, budú sa vám zobrazovať lepšie a kontextovo relevantnejšie návrhy</translation>
+<translation id="6104768972315313991">Vygenerovaný QR kód</translation>
 <translation id="610630277578876674">Rýchlo otvárajte odkazy v správach a viac</translation>
 <translation id="6108923351542677676">Inštaluje sa...</translation>
 <translation id="6112702117600201073">Obnovenie stránky</translation>
@@ -1549,6 +1549,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7963646190083259054">Dodávateľ:</translation>
 <translation id="7965838025086216108">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Pridané do čitateľského zoznamu</translation>
+<translation id="7968982339740310781">Zobraziť podrobnosti</translation>
 <translation id="7971136598759319605">Aktívne včera</translation>
 <translation id="7975379999046275268">Zobraziť ukážku stránky <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorní vás, keď použijete heslo, ktoré bolo prezradené v rámci porušenia ochrany údajov.</translation>
@@ -1681,7 +1682,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8497242791509864205">Otvoriť možnosti zoradenia</translation>
 <translation id="8497480609928300907">Vysvetlenie sprievodcu ochranou súkromia</translation>
 <translation id="8497726226069778601">Zatiaľ tu nič nie je…</translation>
-<translation id="8503559462189395349">Heslá Chromu</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8505766168025405649">Pozrite si stav sťahovania v upozornení</translation>
 <translation id="8506357771923193001">Tu nájdete svoje stiahnuté súbory</translation>
@@ -1716,6 +1716,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8635399646025169806">Chcete skupinu kariet ponechať?</translation>
 <translation id="8636825310635137004">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu.</translation>
 <translation id="864544049772947936">Spravovať okná (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Prihláste sa do služby poskytovateľa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Súbor s takým názvom už existuje</translation>
 <translation id="8672883760227492369">Niektoré heslá v tomto zariadení čoskoro prestanú fungovať. Môžete ich presunúť do Správcu hesiel Google.</translation>
 <translation id="8676276370198826499">Zaregistrujte sa na webe <ph name="SITE_ETLD_PLUS_ONE" /> poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

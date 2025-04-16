@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Saytlar joylashuv axborotingizni talab qilishi mumkin</translation>
 <translation id="3658847490588580244">Birlamchi brauzer quyi ekrani</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}other{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}}</translation>
+<translation id="3670480940339182416">V8 optimizer ishlatishi mumkin saytlar</translation>
 <translation id="3676777756440746804">Saytlarga saqlangan shaxsiy maʼlumotlardan foydalanishga ruxsat soʻrash taqiqlanadi</translation>
 <translation id="3697164069658504920">Yoqilsa, saytlar USB qurilmalardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
+<translation id="3703430731944883733">Tasmani boshqarish</translation>
 <translation id="3707034683772193706">Siz ochadigan sayt Chrome orqali real foydalanuvchi ekaningizni tasdiqlovchi axborotni saqlashi mumkin.</translation>
 <translation id="3708684582558000260">Yopilgan saytlarga maʼlumotlarni oxirigacha yuborish yoki qabul qilishni taqiqlash</translation>
 <translation id="3709818294139939629">Saytning faylga ruxsati yopildi</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kamera Android sozlamalarida yoqilmagan</translation>
 <translation id="5700761515355162635">Tashqi cookie fayllarga ruxsat berilgan</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> uchun cookie fayllar va sayt maʼlumotlarini oʻchiradi</translation>
+<translation id="571222594670061844">Saytlar shaxsni tasdiqlash xizmatlariga kirish oynalarini chiqarishi mumkin</translation>
 <translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5740126560802162366">Saytlar maʼlumotlarni qurilmangizda saqlashi mumkin</translation>
+<translation id="5743425052258407233">Brauzer tarixini barcha qurilmalarda oling va ishni kelgan joyidan oson davom ettiring</translation>
 <translation id="5750869797196646528">Qoʻllar holatini kuzatish</translation>
 <translation id="5771720122942595109">Bloklandi: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5876056640971328065">Videoni pauza qilish</translation>
 <translation id="5877248419911025165">Barcha soʻrovlarni yigʻish</translation>
+<translation id="5878945009165002849">Shaxsni tasdiqlash xizmatlariga kirish oynalarini bloklash</translation>
 <translation id="5884085660368669834">Sayt sozlamasi</translation>
 <translation id="5887687176710214216">Oxirgi tashrif: kecha</translation>
 <translation id="5908617755156109052">Saytlarga atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatish taqiqlansin</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Qurilma ruxsatini bekor qilish</translation>
 <translation id="8471525937465764768">Saytlar odatda hujjatni chop etish yoki tashqi xotiraga saqlash maqsadida USB qurilmalarga ulanadi</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” eskirgan. Ilovani qayta oʻrnating.</translation>
+<translation id="847433688444405067">Barcha qurilmalarda varaqlash</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="848952951823693243">Har doim mobil versiya ochilsin</translation>
 <translation id="8492822722330266509">Saytlar oynalarni qalqib chiqarishi va sahifalarni yoʻnaltirishi mumkin</translation>

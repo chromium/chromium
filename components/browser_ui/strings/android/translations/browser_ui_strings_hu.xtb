@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">A webhelyek lekérhetik az Ön helyadatait</translation>
 <translation id="3658847490588580244">Alapértelmezett böngésző alsó lapja</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
+<translation id="3670480940339182416">A webhelyek használhatják a V8 optimalizálót</translation>
 <translation id="3676777756440746804">A webhelyek nem kérhetik Öntől az Önről elmentett adatok használatát</translation>
 <translation id="3697164069658504920">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek USB-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak USB-eszközöket.</translation>
+<translation id="3703430731944883733">A feed kezelése</translation>
 <translation id="3707034683772193706">A felkeresett webhelyek menthetnek kis mennyiségű adatot a Chrome-ban, elsősorban annak ellenőrzéséhez, hogy Ön nem robot.</translation>
 <translation id="3708684582558000260">A bezárt webhelyek nem fejezhetik be az adatküldést és -fogadást</translation>
 <translation id="3709818294139939629">Webhely fájlhozzáférése megvonva</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
 <translation id="5706552988683188916">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat és egyéb webhelyadatokat</translation>
+<translation id="571222594670061844">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket</translation>
 <translation id="5723967018671998714">A harmadik felektől származó cookie-k le vannak tiltva Inkognitó módban</translation>
 <translation id="5740126560802162366">Webhelyek menthetnek adatokat az eszközére</translation>
+<translation id="5743425052258407233">Előzményeihez minden eszközén hozzáférhet, így könnyen folytathatja ott, ahol abbahagyta</translation>
 <translation id="5750869797196646528">Kézmozgás követése</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5876056640971328065">Videó szüneteltetése</translation>
 <translation id="5877248419911025165">Az összes kérelem összecsukása</translation>
+<translation id="5878945009165002849">Az identitásszolgáltatásoktól származó bejelentkezési értesítések letiltása</translation>
 <translation id="5884085660368669834">Webhelybeállítás</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
 <translation id="5908617755156109052">A webhelyek nem készíthetnek 3D-s térképet az Ön környezetéről, valamint nem követhetik a kamera pozícióját</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Eszközengedély visszavonása</translation>
 <translation id="8471525937465764768">A webhelyek általában bizonyos funkciók (például dokumentumok nyomtatásának vagy tárolóeszközön való mentésének) végrehajtása érdekében csatlakoznak USB-eszközökhöz</translation>
 <translation id="8473055640493819707">A(z) „<ph name="APP_NAME" />” elavult. Telepítse újra az alkalmazást.</translation>
+<translation id="847433688444405067">Böngészés több eszközön</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="848952951823693243">Mindig a mobilwebhely kérése</translation>
 <translation id="8492822722330266509">A webhelyek megjeleníthetnek előugró ablakokat, és használhatnak átirányításokat</translation>

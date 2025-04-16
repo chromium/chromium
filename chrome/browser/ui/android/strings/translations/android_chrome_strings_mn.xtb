@@ -259,7 +259,6 @@
 <translation id="22091350895006575">Хэрэглэгчийн нэр нэмэх</translation>
 <translation id="221494669172414749">Chrome-г профайлын түгжээгүйгээр нээх нь таны хадгалсан нууц үг болон төлбөрийн хэрэгслүүдийг автомашинаас хасна. Профайлын түгжээг ашиглах нь энэ өгөгдлийг аюулгүй байлгана.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />-р үргэлжлүүлэх</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> табын бүлэгт шинэ үйл ажиллагаа байна</translation>
 <translation id="2230777942707397948">Хоосон цонх</translation>
 <translation id="223356358902285214">Веб, аппын үйл ажиллагаа</translation>
 <translation id="2234827758954819389">Нууцлалын хөтөч</translation>
@@ -853,7 +852,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4912413785358399818">Таб зөөх</translation>
 <translation id="4913169188695071480">Дахин боловсруулахыг зогсоох</translation>
 <translation id="4925120120285606924">Дэлгэцийн агшин <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Таны нууц үгийг текст файлаар экспорт хийж, татна. Татаж оруулах фолдер нь үүнд хандах эрхтэй хүн бүр болон дурын аппад харагдана.</translation>
 <translation id="4926901776383726965">Та офлайн үед харах эсвэл бусад аппад хуваалцах зураг болон файлуудыг хадгалах боломжтой</translation>
 <translation id="4932247056774066048">Та <ph name="DOMAIN_NAME" />-с удирдаж буй бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Энэ нь таны Google бүртгэлд үлдэнэ.</translation>
 <translation id="4943703118917034429">Виртуал бодит байдал</translation>
@@ -894,6 +892,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5114895953710637392">Аппын шүүлтүүрийн хүснэгтийг хаасан.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> хаягт</translation>
 <translation id="5116239826668864748">Та мессеж, баримт бичиг болон бусад апп дахь холбоосыг товших бүрдээ Chrome-г ашиглах боломжтой</translation>
+<translation id="5118713593561876160">Сонирхол</translation>
 <translation id="5122378528687922675">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ (<ph name="PARENT_NAME_1" /> эсвэл <ph name="PARENT_NAME_2" />) хүснэ үү</translation>
 <translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5139940364318403933">Google Драйв хэрхэн ашиглах талаар үзнэ үү</translation>
@@ -1100,6 +1099,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6087286598828478206">Бүлгийг блоклоод, гарах уу?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> цаг үлдсэн</translation>
 <translation id="6095578583683628124">Хэрэв Google нь таны өгөгдмөл хайлтын систем бол та хам сэдэвтэй холбоотой илүү сайн зөвлөмжүүдийг харах болно</translation>
+<translation id="6104768972315313991">QR код үүсгэсэн</translation>
 <translation id="610630277578876674">Мессеж болон бусад зүйл дэх холбоосыг түргэн нээгээрэй</translation>
 <translation id="6108923351542677676">Тохиргоо хийгдэж байна...</translation>
 <translation id="6112702117600201073">Хуудсыг дахин сэргээж байна</translation>
@@ -1549,6 +1549,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7963646190083259054">Бэлтгэн нийлүүлэгч:</translation>
 <translation id="7965838025086216108">Та дурын төхөөрөмж дээр хадгалсан нууц үгнүүдийг ашиглах боломжтой. Тэдгээрийг <ph name="ACCOUNT" />-д зориулж Google Password Manager-т хадгалдаг.</translation>
 <translation id="7968014550143838305">Унших жагсаалтад нэмсэн</translation>
+<translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Таныг өгөгдлийн зөрчилд алдагдсан нууц үгийг ашигласан тохиолдолд танд сануулна.</translation>
@@ -1681,7 +1682,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8497242791509864205">Эрэмбэлэх сонголтыг нээх</translation>
 <translation id="8497480609928300907">Нууцлалын хөтчийн тайлбар</translation>
 <translation id="8497726226069778601">Энд одоохондоо юу ч алга...</translation>
-<translation id="8503559462189395349">Chrome-н нууц үг</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8505766168025405649">Таталтын төлөвийн мэдэгдлийг харах</translation>
 <translation id="8506357771923193001">Та татаж авсан файлаа эндээс олно</translation>
@@ -1716,6 +1716,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8635399646025169806">Табын бүлгийг үлдээх үү?</translation>
 <translation id="8636825310635137004">Бусад төхөөрөмжөөс чихтэй хуудсаа авахын тулд синкийг асаана уу.</translation>
 <translation id="864544049772947936">Цонхнуудыг удирдах (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-д нэвтрэх</translation>
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
 <translation id="8672883760227492369">Энэ төхөөрөмж дээрх зарим нууц үг удахгүй ажиллахаа болино. Та эдгээр нууц үгийг Google Нууц үгний менежер лүү зөөх боломжтой.</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" />-д <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р бүртгүүлээрэй</translation>

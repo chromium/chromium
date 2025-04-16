@@ -259,7 +259,6 @@
 <translation id="22091350895006575">صارف نام شامل کریں</translation>
 <translation id="221494669172414749">‏پروفائل لاک کے بغیر Chrome کھولنے سے، کار سے آپ کے محفوظ کردہ پاس ورڈز اور ادائیگی کے طریقے ہٹ جائیں گے۔ پروفائل لاک کا استعمال کرنے سے یہ ڈیٹا محفوظ رہتا ہے۔</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> کے بطور جاری رکھیں</translation>
-<translation id="2230288123399603508">‫<ph name="TAB_GROUP_TITLE" /> ٹیب گروپ میں نئی سرگرمی ہے</translation>
 <translation id="2230777942707397948">خالی ونڈو</translation>
 <translation id="223356358902285214">ویب اور ایپ سرگرمی</translation>
 <translation id="2234827758954819389">رازداری کی گائیڈ</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ٹیب کو منتقل کریں</translation>
 <translation id="4913169188695071480">ریفریش کرنا بند کریں</translation>
 <translation id="4925120120285606924">اسکرین شاٹ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">آپ کے پاس ورڈز کو برآمد اور ٹیکسٹ فائل کے بطور ڈاؤن لوڈ کیا جائے گا۔ وہ منزل والے فولڈر تک رسائی کے ساتھ کسی بھی شخص اور ایپ کے لیے مرئی ہوں گے۔</translation>
 <translation id="4926901776383726965">آپ تصاویر اور فائلز کو آف لائن دیکھنے یا دیگر ایپس میں ان کا اشتراک کرنے کے لیے محفوظ کر سکتے ہیں۔</translation>
 <translation id="4932247056774066048">‏چونکہ آپ <ph name="DOMAIN_NAME" /> کے زیر نظم اکاؤنٹ سے سائن آؤٹ ہو رہے ہیں اسلئے آپ کا Chrome ڈیٹا اس آلہ سے حذف کردیا جائے گا۔ یہ آپ کے Google اکاؤنٹ میں باقی رہے گا۔</translation>
 <translation id="4943703118917034429">ورچوئل رئیلٹی</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">ایپ فلٹر شیٹ بند ہے۔</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> تک</translation>
 <translation id="5116239826668864748">‏آپ جب بھی پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں</translation>
+<translation id="5118713593561876160">دلچسپیاں</translation>
 <translation id="5122378528687922675">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />) سے پوچھیں</translation>
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5139940364318403933">‏Google Drive استعمال کرنے کا طریقہ جانیں</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">مسدود کریں اور گروپ چھوڑ دیں؟</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> گھنٹے باقی</translation>
 <translation id="6095578583683628124">‏اگر Google بھی آپ کا ڈیفالٹ سرچ انجن ہے تو آپ کو بہتر، سیاق و سباق کے لحاظ سے متعلقہ تجاویز دکھائی دیں گی</translation>
+<translation id="6104768972315313991">‏تخلیق کردہ QR کوڈ</translation>
 <translation id="610630277578876674">پیغامات اور بہت کچھ میں لنکس کو جلدی سے کھولیں</translation>
 <translation id="6108923351542677676">سیٹ اپ جاری ہے…</translation>
 <translation id="6112702117600201073">صفحہ کو ریفریش کرنا</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">وینڈر:</translation>
 <translation id="7965838025086216108">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="ACCOUNT" /> کے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں۔</translation>
 <translation id="7968014550143838305">پڑھنے کی فہرست میں شامل کیا گیا</translation>
+<translation id="7968982339740310781">تفصیلات دیکھیں</translation>
 <translation id="7971136598759319605">1 دن پہلے فعال تھا</translation>
 <translation id="7975379999046275268">صفحے کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">ترتیب دینے کے اختیارات کھولیں</translation>
 <translation id="8497480609928300907">رازداری کی گائیڈ کی وضاحت</translation>
 <translation id="8497726226069778601">یہاں ابھی تک دیکھنے کیلئے کچھ نہیں ہے…</translation>
-<translation id="8503559462189395349">‏Chrome کے پاس ورڈز</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8505766168025405649">ڈاؤن لوڈ کی صورتحال کے لیے اطلاع دیکھیں</translation>
 <translation id="8506357771923193001">آپ کو اپنے ڈاؤن لوڈز یہاں ملیں گے</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">ٹیب گروپ کو برقرار رکھیں؟</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="864544049772947936">(<ph name="INSTANCE_COUNTS" />) ونڈوز کا نظم کریں</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
 <translation id="8672883760227492369">‏اس آلہ پر کچھ پاس ورڈز جلد ہی کام کرنا بند کر دیں گے۔ آپ ان پاس ورڈز کو Google پاس ورڈ مینیجر میں منتقل کر سکتے ہیں۔</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن اپ کریں</translation>

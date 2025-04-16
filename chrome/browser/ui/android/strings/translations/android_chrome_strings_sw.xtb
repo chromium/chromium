@@ -259,7 +259,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="22091350895006575">Weka jina la mtumiaji</translation>
 <translation id="221494669172414749">Hatua ya kufungua Chrome bila kufuli la wasifu itaondoa manenosiri uliyohifadhi na njia za kulipa kwenye gari. Kutumia kufuli la wasifu huimarisha usalama wa data hii.</translation>
 <translation id="2227444325776770048">Endelea ukitumia <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Kikundi cha vichupo cha <ph name="TAB_GROUP_TITLE" /> kina shughuli mpya</translation>
 <translation id="2230777942707397948">Dirisha tupu</translation>
 <translation id="223356358902285214">Historia ya Shughuli kwenye Wavuti na Programu</translation>
 <translation id="2234827758954819389">Mwongozo wa Faragha</translation>
@@ -853,7 +852,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4912413785358399818">Sogeza kichupo</translation>
 <translation id="4913169188695071480">Acha kuonyesha upya</translation>
 <translation id="4925120120285606924">Picha ya skrini <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Manenosiri yako yatatumwa na kupakuliwa katika muundo wa faili ya maandishi. Programu na mtu yeyote aliye na uwezo wa kufikia folda atayaona.</translation>
 <translation id="4926901776383726965">Unaweza kuhifadhi picha na faili ili utazame ukiwa nje ya mtandao au kushiriki katika programu zingine</translation>
 <translation id="4932247056774066048">Kwa sababu unaondoka katika akaunti inayodhibitiwa na <ph name="DOMAIN_NAME" />, data yako ya Chrome itafutwa kwenye kifaa hiki. Itabaki katika Akaunti yako ya Google.</translation>
 <translation id="4943703118917034429">Uhalisia Pepe</translation>
@@ -894,6 +892,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5114895953710637392">Laha ya kichujio cha programu imefungwa.</translation>
 <translation id="5115811374190515607">kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine</translation>
+<translation id="5118713593561876160">Mambo yanayokuvutia</translation>
 <translation id="5122378528687922675">Ukihitaji usaidizi, mwombe mzazi wako (<ph name="PARENT_NAME_1" /> au <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Kichupo fiche</translation>
 <translation id="5139940364318403933">Pata maelezo ya jinsi ya kutumia Google Drive</translation>
@@ -1100,6 +1099,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6087286598828478206">Ungependa kuzuia na kuondoka kwenye kikundi?</translation>
 <translation id="60923314841986378">Zimesalia saa <ph name="HOURS" /></translation>
 <translation id="6095578583683628124">Ikiwa Google pia ni mtambo wako chaguomsingi wa kutafuta, utaona mapendekezo bora, ya kimuktadha yanayofaa</translation>
+<translation id="6104768972315313991">Msimbo wa QR uliotayarishwa</translation>
 <translation id="610630277578876674">Fungua kwa haraka viungo kwenye ujumbe na zaidi</translation>
 <translation id="6108923351542677676">Usanidi unaendelea...</translation>
 <translation id="6112702117600201073">Inaonyesha upya ukurasa</translation>
@@ -1549,6 +1549,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7963646190083259054">Mchuuzi:</translation>
 <translation id="7965838025086216108">Unaweza kutumia manenosiri uliyohifadhi kwenye kifaa chochote. Manenosiri hayo huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Imewekwa kwenye orodha ya kusoma</translation>
+<translation id="7968982339740310781">Ona maelezo</translation>
 <translation id="7971136598759319605">Ilitumika siku 1 iliyopita</translation>
 <translation id="7975379999046275268">Kagua ukurasa kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
@@ -1681,7 +1682,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8497242791509864205">Fungua chaguo za kupanga</translation>
 <translation id="8497480609928300907">Maelezo kuhusu mwongozo wa faragha</translation>
 <translation id="8497726226069778601">Bado hapana chochote cha kuangalia...</translation>
-<translation id="8503559462189395349">Manenosiri ya Chrome</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="8505766168025405649">Angalia arifa ya hali ya upakuaji</translation>
 <translation id="8506357771923193001">Utapata vipakuliwa vyako hapa</translation>
@@ -1716,6 +1716,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8635399646025169806">Ungependa kuhifadhi kikundi cha vichupo?</translation>
 <translation id="8636825310635137004">Ili upate vichupo kutoka kwenye vifaa vyako vingine, washa kipengele cha usawazishaji.</translation>
 <translation id="864544049772947936">Dhibiti madirisha (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Ingia katika akaunti ya <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Jina la faili tayari lipo</translation>
 <translation id="8672883760227492369">Baadhi ya manenosiri kwenye kifaa hiki yataacha kufanya kazi hivi karibuni. Unaweza kuhamishia manenosiri haya kwenye Kidhibiti cha Manenosiri cha Google.</translation>
 <translation id="8676276370198826499">Jisajili katika <ph name="SITE_ETLD_PLUS_ONE" /> ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

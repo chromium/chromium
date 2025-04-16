@@ -259,7 +259,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="22091350895006575">Pridėti naudotojo vardą</translation>
 <translation id="221494669172414749">Atidarius „Chrome“ be profilio užrakto, išsaugoti slaptažodžiai ir mokėjimo metodai bus pašalinti iš automobilio. Naudojant profilio užraktą šie duomenys apsaugomi.</translation>
 <translation id="2227444325776770048">Tęsti kaip <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Skirtukų grupėje „<ph name="TAB_GROUP_TITLE" />“ yra naujos veiklos</translation>
 <translation id="2230777942707397948">Tuščias langas</translation>
 <translation id="223356358902285214">Žiniatinklio ir programų veikla</translation>
 <translation id="2234827758954819389">Privatumo vadovas</translation>
@@ -853,7 +852,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4912413785358399818">Perkelti skirtuką</translation>
 <translation id="4913169188695071480">Sustabdyti atnaujinimą</translation>
 <translation id="4925120120285606924"><ph name="CURRENT_DATE_ISO" /> ekrano kopija</translation>
-<translation id="49268022542405662">Jūsų slaptažodžiai bus išeksportuoti ir atsisiųsti kaip teksto failas. Juos matys visi ir bet kuri programa, turinti paskirties aplanko prieigą.</translation>
 <translation id="4926901776383726965">Galite išsaugoti vaizdus ir failus, kad galėtumėte peržiūrėti juos neprisijungę arba bendrinti kitose programose</translation>
 <translation id="4932247056774066048">Atsijungiate nuo paskyros, kurią valdo <ph name="DOMAIN_NAME" />, todėl jūsų „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys liks „Google“ paskyroje.</translation>
 <translation id="4943703118917034429">Virtualioji realybė</translation>
@@ -894,6 +892,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5114895953710637392">Programos filtro lapas uždarytas.</translation>
 <translation id="5115811374190515607">į <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
+<translation id="5118713593561876160">Pomėgiai</translation>
 <translation id="5122378528687922675">Jei reikia pagalbos, paprašykite vieno iš tėvų (<ph name="PARENT_NAME_1" /> arba <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5139940364318403933">Sužinokite, kaip naudoti „Google Drive“</translation>
@@ -1100,6 +1099,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6087286598828478206">Blokuoti ir išeiti iš grupės?</translation>
 <translation id="60923314841986378">Liko <ph name="HOURS" /> val.</translation>
 <translation id="6095578583683628124">Jei „Google“ taip pat yra jūsų numatytasis paieškos variklis, matysite geresnius, kontekstą atitinkančius pasiūlymus</translation>
+<translation id="6104768972315313991">Sugeneruotas QR kodas</translation>
 <translation id="610630277578876674">Greitai atidarykite nuorodas pranešimuose ir kt.</translation>
 <translation id="6108923351542677676">Nustatoma…</translation>
 <translation id="6112702117600201073">Puslapio atnaujinimas</translation>
@@ -1549,6 +1549,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7963646190083259054">Paslaugos teikėjas:</translation>
 <translation id="7965838025086216108">Išsaugotus slaptažodžius galite naudoti bet kuriame įrenginyje. Jie išsaugomi „Google“ slaptažodžių tvarkyklėje kaip priskirti el. pašto adresui <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Pridėta prie skaitymo sąrašo</translation>
+<translation id="7968982339740310781">Žiūrėti išsamią informaciją</translation>
 <translation id="7971136598759319605">Aktyvus prieš 1 d.</translation>
 <translation id="7975379999046275268">Peržiūrėti puslapį <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Įspėjama, jei naudojate slaptažodį, kuris pažeistas dėl duomenų saugos pažeidimo.</translation>
@@ -1681,7 +1682,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8497242791509864205">Išskleisti rūšiavimo parinktis</translation>
 <translation id="8497480609928300907">Privatumo vadovo paaiškinimas</translation>
 <translation id="8497726226069778601">Čia dar nėra nieko, ką galėtumėte peržiūrėti…</translation>
-<translation id="8503559462189395349">„Chrome“ slaptažodžiai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8505766168025405649">Žr. pranešimą apie atsisiuntimo būseną</translation>
 <translation id="8506357771923193001">Čia rasite atsisiuntimus</translation>
@@ -1716,6 +1716,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8635399646025169806">Išsaugoti skirtukų grupę?</translation>
 <translation id="8636825310635137004">Jei norite pasiekti skirtukus iš kitų įrenginių, įjunkite sinchronizavimą.</translation>
 <translation id="864544049772947936">Tvarkyti langus (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Prisijungimas prie „<ph name="SITE_ETLD_PLUS_ONE" />“</translation>
 <translation id="8664979001105139458">Failas pavadinimas jau yra</translation>
 <translation id="8672883760227492369">Kai kurie slaptažodžiai netrukus nebeveiks šiame įrenginyje. Šiuos slaptažodžius galite perkelti į „Google“ slaptažodžių tvarkyklę.</translation>
 <translation id="8676276370198826499">Prisiregistruokite naudoti „<ph name="SITE_ETLD_PLUS_ONE" />“ su „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“</translation>

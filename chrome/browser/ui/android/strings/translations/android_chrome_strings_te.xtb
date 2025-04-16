@@ -259,7 +259,6 @@
 <translation id="22091350895006575">యూజర్‌నేమ్‌ను జోడించండి</translation>
 <translation id="221494669172414749">ప్రొఫైల్ లాక్ లేకుండా Chromeను తెరవడం వలన మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లు, పేమెంట్ ఆప్షన్‌లు కారు నుండి తీసివేయబడతాయి. ప్రొఫైల్ లాక్‌ను ఉపయోగించడం వల్ల ఈ డేటా సురక్షితంగా ఉంటుంది.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />గా కొనసాగించండి</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ట్యాబ్ గ్రూప్‌లో కొత్త యాక్టివిటీ ఉంది</translation>
 <translation id="2230777942707397948">ఖాళీ విండో</translation>
 <translation id="223356358902285214">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
 <translation id="2234827758954819389">గోప్యతా గైడ్</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ట్యాబ్‌ను తరలించండి</translation>
 <translation id="4913169188695071480">రీఫ్రెష్ చేయడం ఆపివేయి</translation>
 <translation id="4925120120285606924">స్క్రీన్‌షాట్ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">మీ పాస్‌వర్డ్‌లు ఎగుమతి చేయబడతాయి, టెక్స్ట్ ఫైల్ లాగా డౌన్‌లోడ్ చేయబడతాయి. గమ్యస్థానం ఫోల్డర్‌కు యాక్సెస్ ఉన్న ఎవరికైనా, ఏ యాప్‌కైనా అవి కనిపిస్తాయి.</translation>
 <translation id="4926901776383726965">మీరు ఇమేజ్‌లు, ఫైల్స్‌ను సేవ్ చేసి ఆఫ్‌లైన్‌లో చూడవచ్చు లేదా ఇతర యాప్‌లలో వాటిని షేర్ చేయవచ్చు</translation>
 <translation id="4932247056774066048">మీరు <ph name="DOMAIN_NAME" /> నిర్వహణలోని ఖాతా నుండి సైన్ అవుట్ చేస్తున్నందున, ఈ పరికరం నుండి మీ Chrome డేటా తొలగించబడుతుంది. అది మీ Google ఖాతాలో అలాగే భద్రపరచబడుతుంది.</translation>
 <translation id="4943703118917034429">వర్చువల్ రియాలిటీ</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">యాప్ ఫిల్టర్ షీట్ మూసివేయబడింది.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />కు</translation>
 <translation id="5116239826668864748">మెసేజ్‌లు, డాక్యుమెంట్‌లు, ఇతర యాప్‌లలో మీరు లింక్‌లను ట్యాప్ చేసేటప్పుడు ఎప్పుడైనా Chromeను ఉపయోగించవచ్చు</translation>
+<translation id="5118713593561876160">ఆసక్తులు</translation>
 <translation id="5122378528687922675">మీకు సహాయం అవసరమైతే, మీ తల్లి/తండ్రి (<ph name="PARENT_NAME_1" /> లేదా <ph name="PARENT_NAME_2" />)ని అడగండి</translation>
 <translation id="5123685120097942451">అజ్ఞాత ట్యాబ్</translation>
 <translation id="5139940364318403933">Google Driveను ఎలా ఉపయోగించాలో తెలుసుకోండి</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">బ్లాక్ చేసి గ్రూప్ నుండి నిష్క్రమించాలా?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> గంటలు మిగిలి ఉంది</translation>
 <translation id="6095578583683628124">అలాగే Google మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ అయితే, మీకు మరింత సందర్భోచితమైన సూచనలు కనిపిస్తాయి</translation>
+<translation id="6104768972315313991">జెనరేట్ అయిన QR కోడ్</translation>
 <translation id="610630277578876674">మెసేజ్‌లలో, మరిన్నింటిలో లింక్‌లను వేగంగా తెరవండి</translation>
 <translation id="6108923351542677676">సెటప్ ప్రోగ్రెస్‌లో ఉంది...</translation>
 <translation id="6112702117600201073">పేజీని రిఫ్రెష్ చేస్తోంది</translation>
@@ -1547,6 +1547,7 @@
 <translation id="7963646190083259054">విక్రేత:</translation>
 <translation id="7965838025086216108">మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను ఏ పరికరంలోనైనా ఉపయోగించవచ్చు. <ph name="ACCOUNT" /> కోసం అవి Google Password Managerలో సేవ్ చేయబడతాయి.</translation>
 <translation id="7968014550143838305">చదవాల్సిన లిస్ట్‌కు జోడించబడింది</translation>
+<translation id="7968982339740310781">వివరాలను చూడండి</translation>
 <translation id="7971136598759319605">1 రోజు క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> పేజీని ప్రివ్యూ చేయండి</translation>
 <translation id="7977451675950311423">మీరు డేటా ఉల్లంఘనలో చోరీకి గురైన పాస్‌వర్డ్‌ని ఉపయోగిస్తే అది మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
@@ -1679,7 +1680,6 @@
 <translation id="8497242791509864205">క్రమబద్ధీకరణ ఆప్షన్‌లను తెరుస్తుంది</translation>
 <translation id="8497480609928300907">గోప్యతా గైడ్ వివరణ</translation>
 <translation id="8497726226069778601">ఇక్కడ చూడటానికి ఏమీ లేదు… ఇప్పటికీ</translation>
-<translation id="8503559462189395349">Chrome పాస్‌వర్డ్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌నేమ్</translation>
 <translation id="8505766168025405649">డౌన్‌లోడ్ స్టేటస్‌కు సంబంధించిన నోటిఫికేషన్‌ను చూడండి</translation>
 <translation id="8506357771923193001">మీ డౌన్‌లోడ్‌లను ఇక్కడ కనుగొనవచ్చు</translation>
@@ -1714,6 +1714,7 @@
 <translation id="8635399646025169806">ట్యాబ్ గ్రూప్‌ను ఉంచాలా?</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="864544049772947936">విండోలను మేనేజ్ చేయండి (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />‌కి సైన్ ఇన్ చేయండి</translation>
 <translation id="8664979001105139458">ఫైల్ పేరు ఇప్పటికే ఉంది</translation>
 <translation id="8672883760227492369">ఈ పరికరంలో కొన్ని పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోతాయి. మీరు ఈ పాస్‌వర్డ్‌లను Google Password Managerకు తరలించవచ్చు.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌కు సైన్ అప్ చేయండి</translation>

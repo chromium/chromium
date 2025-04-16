@@ -1547,7 +1547,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">နံပါတ်</translation>
 <translation id="3670229581627177274">ဘလူးတုသ်ကို ဖွင့်ရန်</translation>
-<translation id="3671117652518853176">ပိတ်ထားပါက လုံခြုံရေးကိစ္စရပ်များအတွက် အတည်ပြုရန် သင့်ကို အခါအားလျော်စွာ တောင်းဆိုပါမည်</translation>
 <translation id="3671540257457995106">အရွယ်အစားပြန်ပြင်ရန် ခွင့်ပြုမလား။</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> ၌ မှားနေသည်- <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">ကွန်ပျူတာကွန်ရက် ချိတ်ဆက်သည့် ကိရိယာ</translation>
@@ -1599,7 +1598,6 @@
 <translation id="3739842843727261045">‘လက်မထောင်’ ပေးပို့ပြီး ဤရလဒ်များကို သင်နှစ်သက်ကြောင်း တုံ့ပြန်နိုင်သည်</translation>
 <translation id="3740447166056383374">မိတ္တူမကူးမီ စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="374325029554577103">ကြံ့ခိုင်ရေးဆိုင်ရာ နည်းပညာထုတ်ကုန်</translation>
-<translation id="3743765582345153106">အော်တိုဖြည့်သုံးသောအခါ အမြဲတမ်း အတည်ပြုရန်</translation>
 <translation id="3744111561329211289">နောက်ခံတွင် စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="3744212718085287312">နောက်တစ်ကြိမ်တွင် ပကတိအသွင်ကတ်ဖြင့် ပိုလုံခြုံအောင်လုပ်မလား။</translation>
 <translation id="3744899669254331632">ဝက်ဘ်ဆိုက်က ဗလုံးဗထွေး ပို့လိုက်သည့် အထောက်အထားများကို Chromium ဖက်မှ စီမံဆောင်ရွက် မရနိုင်သောကြောင့် သင်သည် <ph name="SITE" /> ကို ယခုချက်ချင်း ဝင်မရနိုင်ပါ။ ကွန်ရက် အမှားများ နှင့် တိုက်ခိုက်မှုများမှာ ယာယီမျှသာ ဖြစ်ကြတာမို့လို့၊ ဒီစာမျက်နှာသည် နောက်ပိုင်းမှာ အလုပ်လုပ်နိုင်ပါမည်။</translation>
@@ -1979,7 +1977,6 @@
 <translation id="4358461427845829800">ငွေပေးချေနည်းလမ်းများကို စီမံရန်...</translation>
 <translation id="4359160567981085931">လှည့်ဖြားတတ်သော ဝဘ်ဆိုက်တစ်ခုတွင် သင့်စကားဝှက်ကို သင်က ယခုလေးတွင် ထည့်လိုက်သည်။ Chrome က ကူညီနိုင်ပါသည်။ သင်၏စကားဝှက် ပြောင်းရန်နှင့် သင့်အကောင့်အန္တရာယ်ရှိနိုင်ကြောင်း Google သို့ အသိပေးရန် 'အကောင့် ကာကွယ်ရေး' ကို နှိပ်ပါ။</translation>
 <translation id="4363222835916186793">ဤထုတ်ကုန်အတွက် သတိပေးချက်များကို ပိတ်ထားသည်</translation>
-<translation id="4363729811203340554">ဤစက်ကို မျှဝေပါက အော်တိုဖြည့်သုံး၍ ပေးချေချိန်တိုင်း Chrome သည် သင့်ကို အတည်ပြုခိုင်းပါမည်</translation>
 <translation id="4366943895537458493">ပန်းကန်ပြား</translation>
 <translation id="4369179505195332608">ယာဉ်မောင်းလိုင်စင် တည်းဖြတ်ခြင်း</translation>
 <translation id="437040971055499437">လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ် ရှိသည်</translation>
@@ -2576,7 +2573,6 @@
 <translation id="5452923259299906094">eWallet နှင့် Pix တို့ဖြင့် ငွေပေးချေပါ</translation>
 <translation id="5455374756549232013">ညံ့ဖျင်းသည့် မူဝါဒ အချိန်ဖော်ပြချက်</translation>
 <translation id="5456428544444655325">ဘယ်တော့မှ မပြပါနှင့်</translation>
-<translation id="5456839782162429664">အော်တိုဖြည့်သုံးပြီး ပေးချေချိန်တိုင်း လူကိုယ်တိုင် အတည်ပြုရန်</translation>
 <translation id="5457113250005438886">မမှန်ပါ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">စက်များ ရှာနေသည်...</translation>
@@ -2685,7 +2681,6 @@
 <translation id="5632485077360054581">လုပ်နည်း ပြရန်</translation>
 <translation id="563324245173044180">လှည့်ဖြားတတ်သည့် အကြောင်းအရာများကို ပိတ်ထားပါသည်။</translation>
 <translation id="563371367637259496">မိုဘိုင်းလ်</translation>
-<translation id="5634725266554983459">လူကိုယ်တိုင် အတည်ပြုချက် ဖွင့်မလား။</translation>
 <translation id="5635478143789726479">ရောင်းသူ၏ ဝန်ဆောင်မှုစည်းမျဉ်းများ</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />။ <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">စတီရီယိုစနစ်နှင့် အစိတ်အပိုင်း</translation>
@@ -3325,6 +3320,7 @@
 <translation id="6739943577740687354">ဤဝန်ဆောင်မှုသည် AI ကိုသုံးပြီး အမြဲတမ်း မှန်ကန်မည်မဟုတ်ပါ</translation>
 <translation id="6740851646645036700">ကူရေးပေးနိုင်သောအကြိမ်ရေ ကန့်သတ်ချက်သို့ ရောက်သွားပါပြီ။ နောက်မှထပ်စမ်းပါ။</translation>
 <translation id="674375294223700098">အမည်မသိ ဆာဗာ အသိမှတ်ပြုလက်မှတ် မှားယွင်းမှု</translation>
+<translation id="6743841972744298686">စင့်ခ်ဆက်တင်များ</translation>
 <translation id="6745592621698551453">ယခု မွမ်းမံပါ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">တယ်လီအစည်းအဝေးလုပ်ခြင်း</translation>
@@ -3452,7 +3448,6 @@
 <translation id="6973988895180423160">၃.၅ x ၅ လက်မ</translation>
 <translation id="6978121630131642226">ရှာဖွေရေး အင်ဂျင်များ</translation>
 <translation id="6978236010531171013">မည်သို့ပင်ဖြစ်စေ မျှဝေရန်</translation>
-<translation id="6978722349058177832">ဤစက်ကို မျှဝေပါက အော်တိုဖြည့်သုံး၍ ပေးချေချိန်တိုင်း Chromium သည် သင့်ကို အတည်ပြုခိုင်းပါမည်</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ သုံးခွင့်ကို စီမံရန်</translation>
 <translation id="6979440798594660689">အသံပိတ်ရန် (မူရင်း)</translation>

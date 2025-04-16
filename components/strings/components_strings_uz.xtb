@@ -1542,7 +1542,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Batafsil<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Raqam</translation>
 <translation id="3670229581627177274">Bluetooth aloqasini yoqish</translation>
-<translation id="3671117652518853176">Yoqilmasa, xavfsizlik maqsadlarida ora-orada tasdiqlash talab qilinishi mumkin</translation>
 <translation id="3671540257457995106">Oʻlchami oʻzgaraversinmi?</translation>
 <translation id="3672568546897166916">Xato: <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Tarmoq uskunalari</translation>
@@ -1594,7 +1593,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3739842843727261045">Ijobiy baho bosilsa, bu natijalarning sizga yoqqani haqida fikr-mulohaza yuboriladi</translation>
 <translation id="3740447166056383374">Nusxalashdan oldin tekshirilishi lozim</translation>
 <translation id="374325029554577103">Fitnes texnologiyasi mahsulotlari</translation>
-<translation id="3743765582345153106">Avtomatik kiritishda har doim tasdiqlansin</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
 <translation id="3744212718085287312">Keyingi safar himoyasi virtual karta bilan oshirilsinmi?</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> saytiga o‘tib bo‘lmadi, chunki veb-sayt shifrlangan hisob ma’lumotlarini yubordi, Chromium ular bilan ishlay olmaydi. Tarmoq xatoligi yoki saytga hujumlar odatda vaqtinchalik bo‘ladi, shu sababli bu sahifa keyinroq ishga tushishi mumkin.</translation>
@@ -1973,7 +1971,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4358461427845829800">To‘lov usullarini boshqarish</translation>
 <translation id="4359160567981085931">Hozirgina shubhali saytda parol kiritdingiz. Chrome yordamga tayyor. Parolni almashtirish va Googlega bu hisob xavf ostida ekanini xabar qilish uchun Hisobni himoyalash ustiga bosing.</translation>
 <translation id="4363222835916186793">Bu mahsulot uchun ogohlantirishlar oʻchirilgan</translation>
-<translation id="4363729811203340554">Bu qurilmadan bir nechta shaxs foydalansa, Chrome har safar avtomatik kiritish orqali toʻlovlar tasdiqlanishini soʻraydi</translation>
 <translation id="4366943895537458493">Tablichka</translation>
 <translation id="4369179505195332608">Haydovchilik guvohnomasini tahrirlash</translation>
 <translation id="437040971055499437">Xavfsizlik hodisasi yuz berdi</translation>
@@ -2570,7 +2567,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5452923259299906094">eWallet va Pix bilan toʻlash</translation>
 <translation id="5455374756549232013">Siyosat vaqti belgisi buzilgan</translation>
 <translation id="5456428544444655325">Hech qachon chiqmasin</translation>
-<translation id="5456839782162429664">Avtomatik kiritish orqali toʻlovlar har safar mustaqil tasdiqlansin</translation>
 <translation id="5457113250005438886">Yaroqsiz</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ta}other{<ph name="CONTACT_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ta}}</translation>
 <translation id="5463625433003343978">Qurilmalar qidirilmoqda...</translation>
@@ -2679,7 +2675,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5632485077360054581">Koʻrsatish</translation>
 <translation id="563324245173044180">Soxta kontent bloklandi.</translation>
 <translation id="563371367637259496">Mobil</translation>
-<translation id="5634725266554983459">Mustail tasdiqlash yoqilsinmi?</translation>
 <translation id="5635478143789726479">Sotuvchining foydalanish shartlari</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo tizimlar va komponentlar</translation>
@@ -3319,6 +3314,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6739943577740687354">Bu funksiya AI ishlatadi va ishlashida xatolar chiqishi mumkin</translation>
 <translation id="6740851646645036700">Matn yordamchisidan foydalanish kunlik limitiga yetdi. Keyinroq qayta urining.</translation>
 <translation id="674375294223700098">Sertifikat serverida noma’lum xato</translation>
+<translation id="6743841972744298686">Sinxronizatsiya sozlamalari</translation>
 <translation id="6745592621698551453">Hozir yangilash</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferensiyalar</translation>
@@ -3446,7 +3442,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6973988895180423160">3.5 x 5 in</translation>
 <translation id="6978121630131642226">Qidiruv tizimlari</translation>
 <translation id="6978236010531171013">Ulashish</translation>
-<translation id="6978722349058177832">Bu qurilmadan bir nechta shaxs foydalansa, Chromium har safar avtomatik kiritish orqali toʻlovlar tasdiqlanishini soʻraydi</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">tashqi cookie fayllarga ruxsatni boshqarish</translation>
 <translation id="6979440798594660689">Ovozsiz (birlamchi)</translation>

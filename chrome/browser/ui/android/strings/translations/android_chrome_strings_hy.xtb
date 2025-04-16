@@ -259,7 +259,6 @@
 <translation id="22091350895006575">Ավելացնել օգտանուն</translation>
 <translation id="221494669172414749">Եթե դուք բացեք Chrome-ը առանց պրոֆիլի կողպման, ձեր պահված գաղտնաբառերը և վճարման եղանակները կհեռացվեն մեքենայից։ Տվյալները պաշտպանելու համար օգտագործեք պրոֆիլի կողպում։</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Ներդիրների «<ph name="TAB_GROUP_TITLE" />» խմբում նոր գործողություններ կան</translation>
 <translation id="2230777942707397948">Դատարկ պատուհան</translation>
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
 <translation id="2234827758954819389">Տվյալների պաշտպանության ուղեցույց</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">Տեղափոխել ներդիրը</translation>
 <translation id="4913169188695071480">Դադարեցնել թարմացումը</translation>
 <translation id="4925120120285606924">Սքրինշոթ՝ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Ձեր գաղտնաբառերը կարտահանվեն և կներբեռնվեն տեքստային ֆայլի տեսքով։ Դրանք տեսանելի կլինեն բոլոր օգտատերերին և հավելվածներին, որոնց հասանելի է նպատակային պանակը։</translation>
 <translation id="4926901776383726965">Դուք կարող եք պահել պատկերներն ու ֆայլերը՝ անցանց դիտելու կամ այլ հավելվածներում բացելու համար</translation>
 <translation id="4932247056774066048">Դուք դուրս եք գալիս <ph name="DOMAIN_NAME" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Chrome-ի ձեր տվյալները կհեռացվեն այս սարքից, սակայն կպահպանվեն Google հաշվում:</translation>
 <translation id="4943703118917034429">Վիրտուալ իրականություն</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">Ըստ հավելվածի զտման աղյուսակը փակված է։</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chrome-ում</translation>
+<translation id="5118713593561876160">Հետաքրքրություններ</translation>
 <translation id="5122378528687922675">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME_1" /> կամ <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
 <translation id="5139940364318403933">Իմացեք, թե ինչպես օգտագործել Google Drive-ը</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">Արգելափակե՞լ և լքել խումբը</translation>
 <translation id="60923314841986378">Մնացել է <ph name="HOURS" /> ժամ</translation>
 <translation id="6095578583683628124">Եթե Google-ը նաև ձեր կանխադրված որոնողական համակարգն է, դուք կտեսնեք ավելի լավ և համապատասխան առաջարկներ</translation>
+<translation id="6104768972315313991">Գեներացված QR կոդ</translation>
 <translation id="610630277578876674">Արագ բացեք հղումները հաղորդագրություններում և ավելին</translation>
 <translation id="6108923351542677676">Կարգավորումն ընթացքի մեջ է…</translation>
 <translation id="6112702117600201073">Էջի թարմացում</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">Մատակարար՝</translation>
 <translation id="7965838025086216108">Պահված գաղտնաբառերը կարող եք օգտագործել ցանկացած սարքում։ Դրանք պահված են <ph name="ACCOUNT" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="7968014550143838305">Ավելացվեց ընթերցանության ցանկում</translation>
+<translation id="7968982339740310781">Դիտել մանրամասները</translation>
 <translation id="7971136598759319605">Ակտիվ է եղել 1 օր առաջ</translation>
 <translation id="7975379999046275268">Նախադիտել էջը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Զգուշացնում է ձեզ, երբ տվյալների արտահոսքի հետևանքով կոտրված գաղտնաբառ եք օգտագործում։</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">Բացել տեսակավորման տարբերակները</translation>
 <translation id="8497480609928300907">Տեղեկություններ տվյալների պաշտպանության ուղեցույցի մասին</translation>
 <translation id="8497726226069778601">Առայժմ ոչինչ չկա</translation>
-<translation id="8503559462189395349">Chrome-ի գաղտնաբառեր</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8505766168025405649">Ներբեռնման կարգավիճակը կարող եք տեսնել ծանուցման մեջ</translation>
 <translation id="8506357771923193001">Ձեր ներբեռնումները կտեսնեք այստեղ</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">Պահպանե՞լ ներդիրների խումբը</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
 <translation id="864544049772947936">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
 <translation id="8672883760227492369">Այս սարքում պահված որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի։ Դուք կարող եք տեղափոխել այս գաղտնաբառերը Google գաղտնաբառերի կառավարիչ։</translation>
 <translation id="8676276370198826499">Գրանցվեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքում <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>

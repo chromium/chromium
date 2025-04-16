@@ -1545,7 +1545,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />További információ.<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Szám</translation>
 <translation id="3670229581627177274">Bluetooth bekapcsolása</translation>
-<translation id="3671117652518853176">Kikapcsolása esetén előfordulhat, hogy a rendszer biztonsági okokból időnként megerősítést kér Öntől.</translation>
 <translation id="3671540257457995106">Engedélyezi az újraméretezést?</translation>
 <translation id="3672568546897166916">Hiba: <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Hálózati felszerelések</translation>
@@ -1597,7 +1596,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3739842843727261045">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy tetszenek Önnek ezek a találatok.</translation>
 <translation id="3740447166056383374">Másolás előtt ellenőrzés szükséges</translation>
 <translation id="374325029554577103">Fitnesztechnikai termékek</translation>
-<translation id="3743765582345153106">Mindig ellenőrizze az automatikus kitöltés használatakor</translation>
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3744212718085287312">Szeretné legközelebb növelni a biztonságot egy virtuális kártyával?</translation>
 <translation id="3744899669254331632">Most nem keresheti fel a(z) <ph name="SITE" /> webhelyet, mert az zavaros, a Chromium által nem feldolgozható hitelesítő adatokat küldött. A hálózati hibák és támadások általában ideiglenesek, úgyhogy az oldal később valószínűleg megfelelően fog működni.</translation>
@@ -1975,7 +1973,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4358461427845829800">Fizetési módok kezelése…</translation>
 <translation id="4359160567981085931">Megtévesztő webhelyen adta meg jelszavát. A Chrome segíthet. Ha módosítani szeretné jelszavát, és értesíteni szeretné a Google-t arról, hogy fiókja veszélyben lehet, kattintson a Fiók védelme gombra.</translation>
 <translation id="4363222835916186793">A termékhez tartozó értesítések ki vannak kapcsolva</translation>
-<translation id="4363729811203340554">Ha Ön másokkal is megosztja ezt az eszközt, a Chrome automatikus kitöltéssel való fizetés esetén minden alkalommal igazolást kérhet.</translation>
 <translation id="4366943895537458493">Lemez</translation>
 <translation id="4369179505195332608">Vezetői engedély szerkesztése</translation>
 <translation id="437040971055499437">Biztonsági esemény történik</translation>
@@ -2572,7 +2569,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5452923259299906094">Fizetés elektronikus pénztárca és Pix használatával</translation>
 <translation id="5455374756549232013">Hibás az irányelv időbélyege</translation>
 <translation id="5456428544444655325">Soha nem látszik</translation>
-<translation id="5456839782162429664">Manuális ellenőrzés minden alkalommal, amikor automatikus kitöltés használatával fizet</translation>
 <translation id="5457113250005438886">Érvénytelen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Eszközök keresése…</translation>
@@ -2681,7 +2677,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5632485077360054581">Bemutató</translation>
 <translation id="563324245173044180">Megtévesztő tartalom letiltva.</translation>
 <translation id="563371367637259496">Mobil</translation>
-<translation id="5634725266554983459">Bekapcsolja a manuális ellenőrzést?</translation>
 <translation id="5635478143789726479">Az eladó általános szerződési feltételei</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Hanglejátszó rendszerek és azok részei</translation>
@@ -3322,6 +3317,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6739943577740687354">Ez a funkció AI-t használ, és nem mindig működik megfelelően</translation>
 <translation id="6740851646645036700">Egyelőre elérte az írással kapcsolatos segítség korlátját. Próbálkozzon újra később.</translation>
 <translation id="674375294223700098">Ismeretlen szervertanúsítvány-hiba.</translation>
+<translation id="6743841972744298686">Szinkronizálási beállítások</translation>
 <translation id="6745592621698551453">Frissítés most</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencia</translation>
@@ -3449,7 +3445,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6973988895180423160">3,5 × 5 hüvelyk</translation>
 <translation id="6978121630131642226">Keresők</translation>
 <translation id="6978236010531171013">Megosztás mindenképp</translation>
-<translation id="6978722349058177832">Ha Ön másokkal is megosztja ezt az eszközt, a Chromium automatikus kitöltéssel való fizetés esetén minden alkalommal igazolást kérhet.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">a harmadik féltől származó cookie-khoz való hozzáférés kezeléséhez</translation>
 <translation id="6979440798594660689">Némítás (alapértelmezett)</translation>

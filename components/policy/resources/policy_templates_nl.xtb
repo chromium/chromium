@@ -933,13 +933,6 @@ De minimum drempelwaarde is 1 minuut.
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
 <translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2-service aanzetten</translation>
-<translation id="1641394008743444477">Hiermee kun je een lijst van <ph name="PRODUCT_OS_NAME" />-functies instellen die worden uitgezet.
-
-      Als je een van deze functies uitzet, heeft de gebruiker hiertoe geen toegang meer vanuit de UI en wordt de functie getoond als Uitgezet door beheerder. De gebruikerservaring voor uitgezette functies wordt bepaald door <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
-
-      Als je het beleid niet instelt, staan alle <ph name="PRODUCT_OS_NAME" />-functies standaard aan en kan de gebruiker ze allemaal gebruiken.
-
-      Opmerking: De scanfunctie staat momenteel standaard uit via een functievlag. Als de gebruiker deze functie aanzet via de functievlag, kan de functie nog altijd worden uitgezet door dit beleid.</translation>
 <translation id="1643642938972654829">Toegang geven tot de testpagina voor beleid</translation>
 <translation id="1644373745741524038">Om veiligheidsredenen moet voor de web-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukt deze. De persoonlijke instellingen van gebruikers kunnen toestaan dat bepaalde oorsprongen deze API aanroepen zonder eerder gebruikersgebaar, zoals beschreven in <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
 
@@ -956,6 +949,7 @@ Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen
       Als je de waarde van dit beleid instelt op 0, wordt de standaard cachegrootte gebruikt, maar kunnen gebruikers deze niet wijzigen.
 
       Als je dit beleid niet instelt, wordt de standaardgrootte gebruikt en kunnen gebruikers deze wijzigen met de markering --media-cache-size.</translation>
+<translation id="1647775511451132916">Gezichtsbediening op het inlogscherm uitzetten</translation>
 <translation id="1648816843164517573">Lijst met namen die de controle van het HSTS-beleid overslaan</translation>
 <translation id="1651197070942919276">Het apparaat niet toestaan virtuele machines uit te voeren</translation>
 <translation id="1651216316133158002">Met dit beleid kunnen beheerders apps aangeven die fungeren als standaardhandlers voor de betreffende bestandsextensies op <ph name="PRODUCT_OS_NAME" /> die gebruikers niet kunnen wijzigen.
@@ -2442,7 +2436,6 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
       Als dit beleid niet is ingesteld of is ingesteld op true, kunnen met de pdf-viewer annotaties in pdf's worden gemaakt.
 
       Als dit beleid is ingesteld op false, kunnen met de pdf-viewer geen annotaties in pdf's worden gemaakt.</translation>
-<translation id="2769199041812510302">URL voor zakelijk logo</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
 <translation id="2770376586681635746">Bepaalt of gebruikers Kerberos-accounts mogen toevoegen.
 
@@ -2725,6 +2718,15 @@ Als je de waarde instelt op <ph name="ENABLED_ENUM_VALUE" />, worden entiteiten 
 Als je de waarde instelt op <ph name="DISABLED_ENUM_VALUE" />, worden entiteiten niet waargenomen en kunnen er geen acties worden uitgevoerd.
 Als je de waarde instelt op <ph name="LONGPRESSONLY_ENUM_VALUE" />, worden entiteiten waargenomen en kunnen ze alleen actie ondernemen bij lang indrukken.</translation>
 <translation id="3010907817113180883">Snelheid voor verzameling van hartslag voor apparaatactiviteit in milliseconden.</translation>
+<translation id="3015732569734756809">Als gezichtsbediening actief is, kun je je hoofd gebruiken om de muiscursor te bedienen en gezichtsgebaren gebruiken om systeemacties uit te voeren. Zo kun je je apparaat handsfree bedienen.
+
+Als dit beleid is ingesteld op waar, staat gezichtsbediening altijd aan op het inlogscherm.
+
+Als dit beleid is ingesteld op onwaar, staat gezichtsbediening altijd uit op het inlogscherm.
+
+Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
+
+Als je dit beleid niet instelt, staat gezichtsbediening in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk moment aanzetten.</translation>
 <translation id="3016585641676676461">Automatisch volledig scherm blokkeren op deze sites</translation>
 <translation id="3017578958356048910">De pdf-viewer mag pdf's annoteren</translation>
 <translation id="3020623128585817424">De check voor de standaardbrowser bij het opstarten uitzetten</translation>
@@ -3251,13 +3253,6 @@ Dit beleid is beperkt tot 1000 items.
 Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-on VPN met strikte modus actief is en het VPN geen verbinding heeft.</translation>
 <translation id="3405997282295704902">Niet toestaan dat gebruikers <ph name="PRODUCT_NAME" /> gebruiken</translation>
 <translation id="3406122462682235653">De gebruiker niet vragen (downloads beginnen meteen)</translation>
-<translation id="3408078762098350617">Hiermee beheer je de gebruikerservaring voor uitgezette functies die worden vermeld in <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Als je dit beleid instelt op Geblokkeerd, kunnen gebruikers de uitgezette functies niet gebruiken maar wel zien.
-
-      Als je dit beleid instelt op Verborgen, kunnen gebruikers de uitgezette functies niet gebruiken en niet zien.
-
-      Als je dit beleid niet instelt of instelt op een ongeldige waarde, wordt de stand voor het uitzetten van systeemfuncties geblokkeerd.</translation>
 <translation id="3411947169047929182">Beheert de configuratie voor WebRTC</translation>
 <translation id="341285788698114069">Met dit beleid bepaal je de prioriteit van het audioproces in Windows.
       Als je dit beleid toepast, wordt het audioproces uitgevoerd met een hogere prioriteit dan normaal.
@@ -4470,7 +4465,6 @@ Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alle
       Als je het beleid niet toepast of niet instelt, blijft de geavanceerde batterijoplaadmodus uit.
 
 Gebruikers kunnen deze instelling niet wijzigen.</translation>
-<translation id="4307479555111916927">Een aangepast bedrijfslabel instellen</translation>
 <translation id="4309091698378414920">Inlastekenmarkering aanzetten</translation>
 <translation id="4311141497190183490">Als je het beleid instelt op 1, kunnen sites de fysieke locatie van gebruikers standaard bijhouden. Als je het beleid instelt op 2, wordt het bijhouden van de fysieke locatie van gebruikers standaard geblokkeerd. Je kunt het beleid zo instellen dat om goedkeuring wordt gevraagd als een site de fysieke locatie van gebruikers wil bijhouden.
 
@@ -4478,27 +4472,6 @@ Als je het beleid niet instelt, is het beleid <ph name="ASK_GEOLOCATION_POLICY_N
 <translation id="4311195029067684288">Full</translation>
 <translation id="4311662690937656540">Online inloggen afdwingen op de inlog- en vergrendelschermen</translation>
 <translation id="4313767483634435271">Toegewezen MAC-adres van dock van apparaat</translation>
-<translation id="4313778862255986189">Dit is een bètafunctie. Omdat dit een functie in ontwikkeling is die beschikbaar is voor onze betrouwbare testers, moet je er rekening mee houden dat de functie kan worden gewijzigd en geüpdatet.
-
-Met dit beleid kunnen beheerders een aangewezen zakelijke verzamelsite voor zoeken instellen die zoekaanbevelingen en -resultaten in de adresbalk geeft indien geactiveerd door een specifiek zoekwoord. Gebruikers kunnen een zoekopdracht starten door het aangegeven zoekwoord in het veld <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> met of zonder het voorvoegsel @ (bijvoorbeeld <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
-
-De volgende velden zijn vereist: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Het veld <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> komt overeen met de naam van de zoekmachine die aan de gebruiker wordt getoond in de adresbalk.
-
-Het veld <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> komt overeen met het zoekwoord dat de gebruiker invoert om de zoekopdracht te activeren. De snelkoppeling kan gewone woorden en tekens bevatten, maar mag geen spaties bevatten of beginnen met het symbool @. Snelkoppelingen moeten uniek zijn.
-
-Het veld <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan waarop moet worden gezocht. Voer het webadres voor de resultatenpagina van de zoekmachine in en gebruik <ph name="SEARCH_TERM_MARKER" /> in plaats van de zoekopdracht.
-
-Het veld <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan die zoeksuggesties levert. Als <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> <ph name="SEARCH_TERM_MARKER" /> bevat, krijgt Chrome zoeksuggesties via een GET-verzoek aan de URL, waarbij <ph name="SEARCH_TERM_MARKER" /> wordt vervangen door de zoekopdracht van de gebruiker. Anders wordt een POST-verzoek verstuurd en wordt de zoekopdracht van de gebruiker doorgegeven in de POST-parameters onder de sleutel <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Het veld <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan van een afbeelding die wordt gebruikt voor de zoeksuggesties. Er wordt een standaardicoon gebruikt als dit veld niet is ingesteld. We raden je aan een favicon te gebruiken (bijvoorbeeld <ph name="ICON_URL_EXAMPLE" />). Ondersteunde bestandsindelingen voor afbeeldingen: jpeg, png en ico.
-
-Het veld <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft aan of de adresbalk <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> vereist is om zoekaanbevelingen te bekijken. Als je dit veld niet instelt, is de adresbalk <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> niet vereist.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">CNAME-lookup tijdens Kerberos-verificatie uitzetten</translation>
 <translation id="4320592646346933548">Wifi</translation>
 <translation id="43213511254881626">Met dit beleid bepaal je of de ingebouwde wachtwoordmanager niet-ontsleutelbare wachtwoorden mag verwijderen uit de bijbehorende database. Dit is vereist om de volledige functionaliteit van de ingebouwde wachtwoordmanager te herstellen, maar er kan permanent gegevensverlies optreden. Niet-ontsleutelbare wachtwoordwaarden worden niet automatisch ontsleutelbaar. Als ze kunnen worden gecorrigeerd, zijn er meestal complexe gebruikersacties nodig.
@@ -7310,7 +7283,6 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="6287128640500683781">Elke gebruiker toestaan in te loggen</translation>
 <translation id="6287310684159482272">Instellingen voor cookies</translation>
 <translation id="6287742528823584153"><ph name="PRODUCT_NAME" />-service aanzetten en extern bureau starten bij inloggen</translation>
-<translation id="6288152932495466841">Gebruikers informeren over vervangen browserversies</translation>
 <translation id="6299147100249359151">Detectie van beleidsbereik toestaan.</translation>
 <translation id="6299554629216555326">Instellingen voor vensterbeheer</translation>
 <translation id="6302021021024941085">Kiosk-tools voor probleemoplossing uitzetten.</translation>
@@ -8088,11 +8060,6 @@ De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder 
 De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elke 30 minuten terwijl de browser actief is.
 
 Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
-<translation id="6762635531429930846">Geeft de minimale releaseleeftijd aan waarna meldingen voor herstarten agressiever worden. De leeftijd wordt berekend vanaf het moment dat de huidige versie voor het laatst aan clients is geleverd.
-
-Als een nieuwe versie in behandeling is, een browser moet worden herstart of een apparaat opnieuw moet worden opgestart en de huidige versie al langer is vervangen dan het aantal dagen dat is aangegeven in deze instelling, wordt het beleid <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> overschreven naar 2 uur. Als het beleid <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> is ingesteld op 1 (Vereist), worden gebruikers gedwongen om aan het einde van de periode te herstarten of opnieuw op te starten.
-
-Als je dit beleid niet instelt of als de releaseleeftijd niet kan worden bepaald, wordt het beleid <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> gebruikt voor alle updates.</translation>
 <translation id="6763023079133439068">Certificaten zonder de extensie subjectAlternativeName toestaan als deze worden uitgegeven door lokale vertrouwensankers</translation>
 <translation id="6766216162565713893">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een Bluetooth-apparaat in de buurt</translation>
 <translation id="6770454900105963262">Informatie over actieve kiosk-sessies melden</translation>
@@ -8767,6 +8734,7 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 
       Als je het beleid niet instelt, is het beleid <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="7238335422094660594">De provider van <ph name="UIA_NAME" /> aanzetten.</translation>
+<translation id="7241016798422122577">Gezichtsbediening op het inlogscherm aanzetten</translation>
 <translation id="7242191282517459095">YouTube (ondersteund vanaf versie 135)</translation>
 <translation id="7244600351241637530">Als je deze instelling aanzet, kunnen gebruikers die Telefoonhub al hebben toegestaan, recente foto's en video's die ze op hun telefoon hebben gemaakt, bekijken en downloaden via Chrome OS.
 
@@ -9018,7 +8986,6 @@ Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioni
 
       Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>
 <translation id="7469554574977894907">Zoeksuggesties aanzetten</translation>
-<translation id="7471938371309017725">Instellen welke functies moeten worden uitgezet in de camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas, Ontdekken, crosh, Galerij, Terminal en Recorder</translation>
 <translation id="7472547030234093862">Vermeld domeinen die moeten worden omgezet via DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op deze sites terugzetten</translation>
 <translation id="7476030153540156377">Kies of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.</translation>

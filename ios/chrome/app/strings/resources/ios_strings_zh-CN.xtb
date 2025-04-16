@@ -440,7 +440,7 @@
 <translation id="2761898608071930085">使用另一账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
-<translation id="2773344962924806829">电子邮件通知</translation>
+<translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">请求切换到桌面版网站</translation>
@@ -481,6 +481,7 @@
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
+<translation id="297667759942911166">在标签页分组中协作</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="2996291259634659425">创建密码</translation>
@@ -1859,6 +1860,7 @@
 <translation id="8697136149718343437">将地址栏移到底部</translation>
 <translation id="8703372953981978786">此链接无效</translation>
 <translation id="8706253136355675497">温度</translation>
+<translation id="8706806585855470492">您将能够分享、加入标签页分组并在其中协作</translation>
 <translation id="8709409604518538305">标签页已关闭</translation>
 <translation id="8712534545803964353">在当前页面中查找…</translation>
 <translation id="8712637175834984815">知道了</translation>

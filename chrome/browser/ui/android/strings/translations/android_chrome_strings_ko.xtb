@@ -259,7 +259,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="22091350895006575">사용자 이름 추가</translation>
 <translation id="221494669172414749">프로필 잠금 없이 Chrome을 열면 저장된 비밀번호와 결제 수단이 차량에서 삭제됩니다. 프로필 잠금을 사용하면 이 데이터가 안전하게 보호됩니다.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />(으)로 계속</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> 탭 그룹에 새로운 활동이 있습니다.</translation>
 <translation id="2230777942707397948">빈 창</translation>
 <translation id="223356358902285214">웹 및 앱 활동</translation>
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
@@ -853,7 +852,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4912413785358399818">탭 이동</translation>
 <translation id="4913169188695071480">새로고침 중지</translation>
 <translation id="4925120120285606924">스크린샷 <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">내보낸 비밀번호는 텍스트 파일로 다운로드됩니다. 비밀번호가 저장된 폴더에 대한 액세스 권한이 있는 모든 사용자와 앱에 표시됩니다.</translation>
 <translation id="4926901776383726965">이미지와 파일을 저장하여 오프라인으로 보거나 다른 앱에서 공유할 수 있습니다.</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" />이(가) 관리하는 계정에서 로그아웃하면 Chrome 데이터가 이 기기에서 삭제됩니다. Google 계정에서는 데이터가 삭제되지 않습니다.</translation>
 <translation id="4943703118917034429">가상 현실</translation>
@@ -894,6 +892,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5114895953710637392">앱 필터 시트가 닫혔습니다.</translation>
 <translation id="5115811374190515607">이동 위치: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
+<translation id="5118713593561876160">관심분야</translation>
 <translation id="5122378528687922675">도움이 필요하면 부모님(<ph name="PARENT_NAME_1" /> 또는 <ph name="PARENT_NAME_2" />)께 요청하세요</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5139940364318403933">Google Drive 사용 방법 알아보기</translation>
@@ -1100,6 +1099,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6087286598828478206">차단하고 그룹에서 나가시겠습니까?</translation>
 <translation id="60923314841986378"><ph name="HOURS" />시간 남음</translation>
 <translation id="6095578583683628124">Google이 기본 검색엔진이면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
+<translation id="6104768972315313991">생성된 QR 코드</translation>
 <translation id="610630277578876674">메시지에서 링크를 빠르게 여는 등의 기능을 이용하세요</translation>
 <translation id="6108923351542677676">설정 진행 중...</translation>
 <translation id="6112702117600201073">페이지 새로고침</translation>
@@ -1549,6 +1549,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7963646190083259054">공급업체:</translation>
 <translation id="7965838025086216108">저장된 비밀번호는 모든 기기에서 사용할 수 있습니다. <ph name="ACCOUNT" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="7968014550143838305">읽기 목록에 추가됨</translation>
+<translation id="7968982339740310781">세부정보 보기</translation>
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
@@ -1681,7 +1682,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8497242791509864205">정렬 옵션 열기</translation>
 <translation id="8497480609928300907">개인 정보 보호 가이드 설명</translation>
 <translation id="8497726226069778601">아직 표시할 내용 없음</translation>
-<translation id="8503559462189395349">Chrome 비밀번호</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8505766168025405649">알림에서 다운로드 상태를 확인하세요.</translation>
 <translation id="8506357771923193001">여기에서 다운로드한 파일을 확인할 수 있습니다.</translation>
@@ -1716,6 +1716,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="864544049772947936">창 관리(<ph name="INSTANCE_COUNTS" />개)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />에 로그인</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8672883760227492369">이 기기의 일부 비밀번호가 곧 작동하지 않게 됩니다. 이러한 비밀번호를 Google 비밀번호 관리자로 이동할 수 있습니다.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" />에 가입하기</translation>

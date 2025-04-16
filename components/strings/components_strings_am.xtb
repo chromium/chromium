@@ -1546,7 +1546,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">ቁጥር</translation>
 <translation id="3670229581627177274">ብሉቱዝን አብራ</translation>
-<translation id="3671117652518853176">በሚጠፋበት ጊዜ ለደህንነት ዓላማዎች ሲባል በየጊዜው እንዲያረጋግጡ ሊጠየቁ ይችላሉ</translation>
 <translation id="3671540257457995106">መጠን መቀየር ይፈቀድ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> ላይ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">የአውታረ መረብ መሣሪያዎች</translation>
@@ -1598,7 +1597,6 @@
 <translation id="3739842843727261045">አሪፍ የሚለው እርስዎ እነዚህን ውጤቶች እንደወደዱ ግብረመልስ ያቀርባል</translation>
 <translation id="3740447166056383374">ከመቅዳት በፊት ግምገማ ያስፈልጋል</translation>
 <translation id="374325029554577103">የአካል ብቃት ቴክኖሎጂ ምርቶች</translation>
-<translation id="3743765582345153106">ራስ-ሙላ በሚጠቀሙበት ጊዜ ሁልጊዜ ያረጋግጡ</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3744212718085287312">በቀጣይ ጊዜ በምናባዊ ካርድ ደህንነቱ ይበልጥ የተጠበቀ ይሁን?</translation>
 <translation id="3744899669254331632">የድር ጣቢያው Chromium ሊያስኬዳቸው የማይችሉ የተዘበራረቁ ምስክርነቶችን ስለላከ አሁን ላይ <ph name="SITE" />ን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች ብዙውን ጊዜ ጊዜያዊ ናቸው፣ ስለዚህ ይህ ገፅ በኋላ ላይ ምናልባት ሊሰራ ይችል ይሆናል።</translation>
@@ -1977,7 +1975,6 @@
 <translation id="4358461427845829800">የመክፈያ ዘዴዎችን ያቀናብሩ...</translation>
 <translation id="4359160567981085931">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። Chrome ሊያግዝ ይችላል። የእርስዎን የይለፍ ቃል ለመለወጥ እና የእርስዎ መለያ ስጋት ውስጥ እንዳለ ለGoogle ለማሳወቅ፣ መለያን ከጥቃት ተከላከል የሚለው ላይ ጠቅ ያድርጉ።</translation>
 <translation id="4363222835916186793">የዚህ ምርት ማንቂያዎች ጠፍተዋል</translation>
-<translation id="4363729811203340554">ይህን መሣሪያ ካጋሩት Chrome እርስዎ ራስ ሙላን በመጠቀም በከፈሉ ቁጥር እንዲያረጋግጡ ሊጠይቅዎት ይችላል</translation>
 <translation id="4366943895537458493">ሳህን</translation>
 <translation id="4369179505195332608">የመንጃ ፈቃድ ያርትዑ</translation>
 <translation id="437040971055499437">የደህንነት ክስተት ሲከሰት</translation>
@@ -2574,7 +2571,6 @@
 <translation id="5452923259299906094">በኢ-ኪስ ቦርሳ እና Pix ይክፈሉ</translation>
 <translation id="5455374756549232013">መጥፎ የመምሪያ ጊዜ ማህተም</translation>
 <translation id="5456428544444655325">በጭራሽ አታሳይ</translation>
-<translation id="5456839782162429664">ራስ-ሙላን በመጠቀም በሚከፍሉበት ጊዜ ሁሉ ራስዎ ያረጋግጡ</translation>
 <translation id="5457113250005438886">ልክ ያልሆነ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}one{<ph name="CONTACT_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}other{<ph name="CONTACT_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}}</translation>
 <translation id="5463625433003343978">መሣሪያዎችን በማግኘት ላይ...</translation>
@@ -2683,7 +2679,6 @@
 <translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="563324245173044180">አታላይ ይዘት ታግዷል።</translation>
 <translation id="563371367637259496">ተንቀሳቃሽ ስልክ</translation>
-<translation id="5634725266554983459">በሰው ማረጋገጥ ይብራ?</translation>
 <translation id="5635478143789726479">የሻጭ የአግልግሎት ውል</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />። <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">የስቴሪዮ ስርዓቶች እና ክፍሎች</translation>
@@ -3324,6 +3319,7 @@
 <translation id="6739943577740687354">ይህ ባህሪ ሰው ሠራሽ አስተውሎት ይጠቀማል እና ሁልጊዜ ትክክል አይሆንም</translation>
 <translation id="6740851646645036700">ለአሁን የመጻፍ እገዛ ገደብዎ ላይ ደርሰዋል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="674375294223700098">ያልታወቀ የአገልጋይ እውቅና ማረጋገጫ ስህተት።</translation>
+<translation id="6743841972744298686">ቅንብሮችን ያስምሩ</translation>
 <translation id="6745592621698551453">አሁን አዘምን</translation>
 <translation id="6751487147225428522">አርኦሲ 8ኬ</translation>
 <translation id="6752086006821653994">ቴሌኮንፈረንሲንግ</translation>
@@ -3451,7 +3447,6 @@
 <translation id="6973988895180423160">3.5 x 5 ኢንች</translation>
 <translation id="6978121630131642226">የፍለጋ ፕሮግራሞች</translation>
 <translation id="6978236010531171013">ለማንኛወም አጋራ</translation>
-<translation id="6978722349058177832">ይህን መሣሪያ ካጋሩት Chromium እርስዎ ራስ ሙላን በመጠቀም በከፈሉ ቁጥር እንዲያረጋግጡ ሊጠይቅዎት ይችላል</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">የሦስተኛ ወገን ኩኪዎችን መዳረሻ ያስተዳድሩ</translation>
 <translation id="6979440798594660689">ድምጸ-ከል አድርግ (ነባሪ)</translation>

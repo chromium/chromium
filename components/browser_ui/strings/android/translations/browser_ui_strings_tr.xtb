@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Siteler konum bilginizi isteyebilir</translation>
 <translation id="3658847490588580244">Varsayılan tarayıcı alt sayfası</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}other{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}}</translation>
+<translation id="3670480940339182416">Siteler, V8 optimize ediciyi kullanabilir</translation>
 <translation id="3676777756440746804">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellendi</translation>
 <translation id="3697164069658504920">Bu düğme açıkken siteler USB cihazları kullanmak isteyebilir. Düğme kapalıyken siteler USB cihazları kullanamaz.</translation>
+<translation id="3703430731944883733">Feed'inizi yönetin</translation>
 <translation id="3707034683772193706">Ziyaret ettiğiniz bir site, esasen bot olmadığınızı doğrulayan az miktarda bilgiyi Chrome'a kaydedebilir</translation>
 <translation id="3708684582558000260">Kapatılan sitelerin veri gönderme veya alma işlemini bitirmesine izin verme</translation>
 <translation id="3709818294139939629">Sitenin dosya erişimi kaldırıldı</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kamera, Android ayarlarında kapatıldı</translation>
 <translation id="5700761515355162635">Üçüncü taraf çerezlerine izin verildi</translation>
 <translation id="5706552988683188916">Bu işlem, <ph name="WEBSITE" /> için çerezleri ve diğer site verilerini siler</translation>
+<translation id="571222594670061844">Siteler, kimlik hizmetlerinden gelen oturum açma istemlerini gösterebilir</translation>
 <translation id="5723967018671998714">Gizli modda üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="5740126560802162366">Siteler, cihazınıza veri kaydedebilir</translation>
 <translation id="5750869797196646528">El takibi</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5876056640971328065">Videoyu duraklat</translation>
 <translation id="5877248419911025165">Tüm istekleri daralt</translation>
+<translation id="5878945009165002849">Kimlik hizmetlerinden gelen oturum açma istemlerini engelleyin</translation>
 <translation id="5884085660368669834">Site tercihi</translation>
 <translation id="5887687176710214216">En son dün ziyaret edildi</translation>
 <translation id="5908617755156109052">Sitelerin, çevremin 3D haritasını oluşturmasına veya kameramın konumunu takip etmesine izin verme</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Cihaz iznini iptal et</translation>
 <translation id="8471525937465764768">Doküman yazdırma veya depolama cihazına kaydetme gibi özelliklerin kullanılması için siteler genellikle USB cihazlara bağlanır</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' güncel değil. Lütfen uygulamayı yeniden yükleyin.</translation>
+<translation id="847433688444405067">Farklı cihazlarda göz atın</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="848952951823693243">Her zaman mobil siteyi iste</translation>
 <translation id="8492822722330266509">Siteler pop-up'lar gönderip yönlendirmeler kullanabilir</translation>

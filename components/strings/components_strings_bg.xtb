@@ -1547,7 +1547,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Научете повече<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3670229581627177274">Включване на Bluetooth</translation>
-<translation id="3671117652518853176">Когато настройката е изключена, е възможно да е необходимо периодично потвърждаване от съображения за сигурност</translation>
 <translation id="3671540257457995106">Да се разреши ли преоразмеряване?</translation>
 <translation id="3672568546897166916">Грешка в(ъв) <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Мрежово оборудване</translation>
@@ -1599,7 +1598,6 @@
 <translation id="3739842843727261045">Чрез бутона „Харесва ми“ отбелязвате, че харесвате съответните резултати</translation>
 <translation id="3740447166056383374">Изисква се преглед преди копиране</translation>
 <translation id="374325029554577103">Технологични продукти за фитнес</translation>
-<translation id="3743765582345153106">Потвърждаване при всяко използване на автоматичното попълване</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3744212718085287312">Искате ли да повишите сигурността чрез виртуална карта следващия път?</translation>
 <translation id="3744899669254331632">В момента не можете да посетите <ph name="SITE" />, защото уебсайтът изпрати кодирани идентификационни данни, които Chromium не може да обработи. Обикновено грешките в мрежата и атаките срещу нея са временни, така че тази страница вероятно ще работи по-късно.</translation>
@@ -1978,7 +1976,6 @@
 <translation id="4358461427845829800">Управление на начините на плащане...</translation>
 <translation id="4359160567981085931">Току-що въведохте паролата си в измамнически сайт. Chrome може да помогне. За да промените паролата си и да уведомите Google за това, че профилът ви може да е изложен на риск, кликнете върху „Защита на профила“.</translation>
 <translation id="4363222835916186793">Сигналите за този продукт са изключени</translation>
-<translation id="4363729811203340554">Ако споделяте това устройство, Chrome може да извежда запитване за потвърждаване всеки път, когато плащате чрез автоматично попълване</translation>
 <translation id="4366943895537458493">Плака</translation>
 <translation id="4369179505195332608">Редактиране на шофьорската книжка</translation>
 <translation id="437040971055499437">Възникване на събитие, свързано със сигурността</translation>
@@ -2575,7 +2572,6 @@
 <translation id="5452923259299906094">Плащане с eWallet и Pix</translation>
 <translation id="5455374756549232013">Невалидно клеймо за дата и час на правилото</translation>
 <translation id="5456428544444655325">Да не се показва никога</translation>
-<translation id="5456839782162429664">Ръчно потвърждаване при всяко плащане чрез автоматично попълване</translation>
 <translation id="5457113250005438886">Невалидно</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Търсят се устройства...</translation>
@@ -2684,7 +2680,6 @@
 <translation id="5632485077360054581">Покажете ми как</translation>
 <translation id="563324245173044180">Блокирахме измамно съдържание.</translation>
 <translation id="563371367637259496">Мобилна мрежа</translation>
-<translation id="5634725266554983459">Да се включи ли ръчното потвърждаване?</translation>
 <translation id="5635478143789726479">Общи условия на продавача</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стереосистеми и компоненти</translation>
@@ -3325,6 +3320,7 @@
 <translation id="6739943577740687354">Тази функция използва AI и понякога греши.</translation>
 <translation id="6740851646645036700">Достигнахте моментното ограничение за помощ при писане. Опитайте отново по-късно.</translation>
 <translation id="674375294223700098">Неизвестна грешка в сертификата на сървъра.</translation>
+<translation id="6743841972744298686">Настройки за синхронизиране</translation>
 <translation id="6745592621698551453">Актуализиране сега</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
@@ -3452,7 +3448,6 @@
 <translation id="6973988895180423160">3,5 x 5 инча</translation>
 <translation id="6978121630131642226">Търсещи машини</translation>
 <translation id="6978236010531171013">Споделяне въпреки това</translation>
-<translation id="6978722349058177832">Ако споделяте това устройство, Chromium може да извежда запитване за потвърждаване всеки път, когато плащате чрез автоматично попълване</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979302985396162258">управление на достъпа до „бисквитки“ на трети страни</translation>
 <translation id="6979440798594660689">Заглушаване (стандартно)</translation>

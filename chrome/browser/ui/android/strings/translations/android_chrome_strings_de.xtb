@@ -259,7 +259,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="22091350895006575">Nutzername hinzufügen</translation>
 <translation id="221494669172414749">Wenn du Chrome ohne Profilsperre öffnest, werden deine gespeicherten Passwörter und Zahlungsmethoden aus dem Auto entfernt. Durch das Verwenden einer Profilsperre werden diese Daten geschützt.</translation>
 <translation id="2227444325776770048">Als <ph name="USER_FULL_NAME" /> fortfahren</translation>
-<translation id="2230288123399603508">Die Tabgruppe „<ph name="TAB_GROUP_TITLE" />“ hat eine neue Aktivität</translation>
 <translation id="2230777942707397948">Leeres Fenster</translation>
 <translation id="223356358902285214">Web- &amp; App-Aktivitäten</translation>
 <translation id="2234827758954819389">Datenschutz-Leitfaden</translation>
@@ -853,7 +852,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4912413785358399818">Tab verschieben</translation>
 <translation id="4913169188695071480">Aktualisierung anhalten</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Deine Passwörter werden als Textdatei exportiert und heruntergeladen. Sie sind für jeden Nutzer und jede App mit Zugriff auf den Zielordner sichtbar.</translation>
 <translation id="4926901776383726965">Du kannst Bilder und Dateien speichern, um sie offline anzusehen oder in anderen Apps zu teilen</translation>
 <translation id="4932247056774066048">Da du dich von einem Konto abmeldest, das von <ph name="DOMAIN_NAME" /> verwaltet wird, werden deine Chrome-Daten auf diesem Gerät gelöscht. Die Daten bleiben jedoch in deinem Google-Konto.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
@@ -894,6 +892,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5114895953710637392">Die App-Filtertabelle ist geschlossen.</translation>
 <translation id="5115811374190515607">zu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="5118713593561876160">Interessen</translation>
 <translation id="5122378528687922675">Wenn du Hilfe benötigst, sprich mit deinen Eltern (<ph name="PARENT_NAME_1" /> oder <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5139940364318403933">So nutzt du Google Drive</translation>
@@ -1100,6 +1099,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6087286598828478206">Blockieren und Gruppe verlassen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> Stunden übrig</translation>
 <translation id="6095578583683628124">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
+<translation id="6104768972315313991">Generierter QR-Code</translation>
 <translation id="610630277578876674">Links in Nachrichten und anderen Inhalten schnell öffnen</translation>
 <translation id="6108923351542677676">Einrichtung läuft...</translation>
 <translation id="6112702117600201073">Aktualisierung der Seite</translation>
@@ -1549,6 +1549,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7963646190083259054">Anbieter:</translation>
 <translation id="7965838025086216108">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="7968014550143838305">Zur Leseliste hinzugefügt</translation>
+<translation id="7968982339740310781">Details ansehen</translation>
 <translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
@@ -1681,7 +1682,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8497242791509864205">Sortierungsoptionen öffnen</translation>
 <translation id="8497480609928300907">Erläuterungen zum Datenschutz-Leitfaden</translation>
 <translation id="8497726226069778601">Noch keine Seiten</translation>
-<translation id="8503559462189395349">Chrome-Passwörter</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8505766168025405649">Den Downloadstatus findest du in der Benachrichtigung</translation>
 <translation id="8506357771923193001">Hier findest du deine Downloads</translation>
@@ -1716,6 +1716,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8635399646025169806">Tabgruppe beibehalten?</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="864544049772947936">Fenster verwalten (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">In <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
 <translation id="8672883760227492369">Einige Passwörter auf diesem Gerät funktionieren bald nicht mehr. Du kannst diese Passwörter in den Google Passwortmanager verschieben.</translation>
 <translation id="8676276370198826499">Bei <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>

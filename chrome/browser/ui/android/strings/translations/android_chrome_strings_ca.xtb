@@ -259,7 +259,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="22091350895006575">Afegeix un nom d'usuari</translation>
 <translation id="221494669172414749">Si obres Chrome sense un bloqueig de perfil, se suprimiran del cotxe les formes de pagament i les contrasenyes desades. Utilitza un bloqueig de perfil per protegir aquestes dades.</translation>
 <translation id="2227444325776770048">Continua com a <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">El grup de pestanyes <ph name="TAB_GROUP_TITLE" /> té activitat nova</translation>
 <translation id="2230777942707397948">Finestra buida</translation>
 <translation id="223356358902285214">Activitat al web i en aplicacions</translation>
 <translation id="2234827758954819389">Guia de privadesa</translation>
@@ -853,7 +852,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4912413785358399818">Mou la pestanya</translation>
 <translation id="4913169188695071480">Deixa d'actualitzar</translation>
 <translation id="4925120120285606924">Captura de pantalla del dia <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Les teves contrasenyes s'exportaran i es baixaran com a fitxer de text. Qualsevol persona o aplicació que tingui accés a la carpeta de destinació podrà veure també les teves contrasenyes.</translation>
 <translation id="4926901776383726965">Pots desar imatges i fitxers per veure'ls sense connexió o per compartir-los en altres aplicacions</translation>
 <translation id="4932247056774066048">Com que estàs tancant la sessió d'un compte gestionat per <ph name="DOMAIN_NAME" />, les teves dades de Chrome se suprimiran d'aquest dispositiu. Tanmateix, es conservaran al teu Compte de Google.</translation>
 <translation id="4943703118917034429">Realitat virtual</translation>
@@ -894,6 +892,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5114895953710637392">El full de filtratge per aplicació està tancat.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
+<translation id="5118713593561876160">Interessos</translation>
 <translation id="5122378528687922675">Si necessites ajuda, demana-la al teu pare o mare (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
 <translation id="5139940364318403933">Obtén informació sobre com pots utilitzar Google Drive</translation>
@@ -1100,6 +1099,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6087286598828478206">Vols bloquejar aquest membre i sortir del grup?</translation>
 <translation id="60923314841986378">Queden <ph name="HOURS" /> hores</translation>
 <translation id="6095578583683628124">Si Google també és el teu motor de cerca predeterminat, veuràs suggeriments millors i més rellevants per al context</translation>
+<translation id="6104768972315313991">Codi QR generat</translation>
 <translation id="610630277578876674">Obre ràpidament enllaços dels missatges i més</translation>
 <translation id="6108923351542677676">Configuració en curs...</translation>
 <translation id="6112702117600201073">S'està actualitzant la pàgina</translation>
@@ -1549,6 +1549,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7963646190083259054">Proveïdor:</translation>
 <translation id="7965838025086216108">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
+<translation id="7968982339740310781">Mostra els detalls</translation>
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">T'avisa si utilitzes una contrasenya que està en perill a causa d'una violació de les dades.</translation>
@@ -1681,7 +1682,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8497242791509864205">Obre les opcions d'ordenació</translation>
 <translation id="8497480609928300907">Explicació de la guia de privadesa</translation>
 <translation id="8497726226069778601">Aquí encara no hi ha contingut per mostrar</translation>
-<translation id="8503559462189395349">Contrasenyes de Chrome</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8505766168025405649">Consulta la notificació de l'estat de la baixada</translation>
 <translation id="8506357771923193001">Trobaràs les baixades aquí</translation>
@@ -1716,6 +1716,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8635399646025169806">Vols conservar el grup de pestanyes?</translation>
 <translation id="8636825310635137004">Activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis.</translation>
 <translation id="864544049772947936">Gestiona les finestres (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">El nom del fitxer ja existeix</translation>
 <translation id="8672883760227492369">Algunes contrasenyes d'aquest dispositiu deixaran de funcionar aviat. Pots moure-les al gestor de contrasenyes de Google.</translation>
 <translation id="8676276370198826499">Registra't a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -1547,7 +1547,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Matuto pa<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3670229581627177274">I-on ang Bluetooth</translation>
-<translation id="3671117652518853176">Kapag naka-off, posibleng hilingin sa iyo paminsan-minsan na mag-verify para sa mga layuning panseguridad</translation>
 <translation id="3671540257457995106">Payagan ang pag-resize?</translation>
 <translation id="3672568546897166916">Error sa <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Kasangkapan sa Networking</translation>
@@ -1599,7 +1598,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3739842843727261045">Nagsusumite ang thumbs up ng feedback na gusto mo ang mga resultang ito</translation>
 <translation id="3740447166056383374">Kinakailangan ang pagsusuri bago kopyahin</translation>
 <translation id="374325029554577103">Mga Produkto ng Teknolohiya sa Fitness</translation>
-<translation id="3743765582345153106">Palaging mag-verify kapag ginagamit ang autofill</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3744212718085287312">Gawin itong mas secure gamit ang isang virtual card sa susunod?</translation>
 <translation id="3744899669254331632">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil nagpadala ang website ng mga pinaghalong kredensyal na hindi maproseso ng Chromium. Karaniwang pansamantala ang mga error at pag-atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
@@ -1978,7 +1976,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4358461427845829800">Pamahalaan ang mga paraan ng pagbabayad...</translation>
 <translation id="4359160567981085931">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Makakatulong ang Chrome. Para palitan ang iyong password at abisuhan ang Google na posibleng nasa panganib ang iyong account, i-click ang Protektahan ang Account.</translation>
 <translation id="4363222835916186793">Na-off ang mga alerto para sa produktong ito</translation>
-<translation id="4363729811203340554">Kung ishe-share mo ang device na ito, puwedeng hilingin sa iyo ng Chrome na mag-verify sa tuwing magbabayad ka gamit ang autofill</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="4369179505195332608">I-edit ang lisensya sa pagmamaneho</translation>
 <translation id="437040971055499437">Nagkaroon ng event tungkol sa seguridad</translation>
@@ -2575,7 +2572,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5452923259299906094">Magbayad gamit ang eWallet at Pix</translation>
 <translation id="5455374756549232013">Maling timestamp ng patakaran</translation>
 <translation id="5456428544444655325">Huwag kailanman ipakita</translation>
-<translation id="5456839782162429664">Manual na i-verify sa tuwing magbabayad ka gamit ang autofill</translation>
 <translation id="5457113250005438886">Di-wasto</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}one{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}other{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}}</translation>
 <translation id="5463625433003343978">Naghahanap ng mga device...</translation>
@@ -2684,7 +2680,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
 <translation id="563324245173044180">Na-block ang mapanlinlang na content.</translation>
 <translation id="563371367637259496">Mobile</translation>
-<translation id="5634725266554983459">I-on ang manual na pag-verify?</translation>
 <translation id="5635478143789726479">Mga tuntunin at kundisyon ng nagbebenta</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Mga Stereo System at Component</translation>
@@ -3325,6 +3320,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6739943577740687354">Gumagamit ang feature na ito ng AI at hindi ito palaging tama</translation>
 <translation id="6740851646645036700">Naabot mo na ang iyong limitasyon sa tulong sa pagsusulat sa ngayon. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="674375294223700098">Hindi alam na error sa certificate ng server</translation>
+<translation id="6743841972744298686">Mga setting ng pag-sync</translation>
 <translation id="6745592621698551453">Mag-update ngayon</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencing</translation>
@@ -3452,7 +3448,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6973988895180423160">3.5 x 5 in</translation>
 <translation id="6978121630131642226">Mga Search Engine</translation>
 <translation id="6978236010531171013">Ibahagi pa rin</translation>
-<translation id="6978722349058177832">Kung ishe-share mo ang device na ito, puwedeng hilingin sa iyo ng Chromium na mag-verify sa tuwing magbabayad ka gamit ang autofill</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">pamahalaan ang access sa third-party na cookies</translation>
 <translation id="6979440798594660689">I-mute (default)</translation>

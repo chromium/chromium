@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Sajtet mund të pyesin për vendndodhjen tënde</translation>
 <translation id="3658847490588580244">Fleta e poshtme e shfletuesit të parazgjedhur</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="RWS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
+<translation id="3670480940339182416">Sajtet mund të përdorin optimizuesin e V8</translation>
 <translation id="3676777756440746804">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3697164069658504920">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet USB. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet USB.</translation>
+<translation id="3703430731944883733">Menaxho furnizimin tënd</translation>
 <translation id="3707034683772193706">Një sajt që ti viziton mund të ruajë një sasi të vogël informacionesh me Chrome, kryesisht për të vërtetuar që nuk je një robot</translation>
 <translation id="3708684582558000260">Mos lejo që sajtet e mbyllura të përfundojnë dërgimin ose marrjen e të dhënave</translation>
 <translation id="3709818294139939629">Qasja e sajtit te skedari u hoq</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kamera është çaktivizuar në cilësimet e Android</translation>
 <translation id="5700761515355162635">Kukit e palëve të treta lejohen</translation>
 <translation id="5706552988683188916">Kjo fshin kukit dhe të dhënat e tjera të sajtit për <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Sajtet mund të shfaqin kërkesat për identifikimin nga shërbimet e identitetit</translation>
 <translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
 <translation id="5740126560802162366">Sajtet mund të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5876056640971328065">Vendose videon në pauzë</translation>
 <translation id="5877248419911025165">Palos të gjitha kërkesat</translation>
+<translation id="5878945009165002849">Blloko kërkesat për identifikim nga shërbimet e identitetit</translation>
 <translation id="5884085660368669834">Preferenca e sajtit</translation>
 <translation id="5887687176710214216">Vizituar së fundi dje</translation>
 <translation id="5908617755156109052">Mos lejo që sajtet të krijojnë një hartë 3D të ambientit tënd rrethues apo të monitorojnë pozicionin e kamerës</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Revoko lejen e pajisjes</translation>
 <translation id="8471525937465764768">Sajtet lidhen zakonisht me pajisjet me USB për veçoritë si printimi i një dokumenti ose ruajtja te një pajisje e hapësirës ruajtëse</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> nuk është përditësuar. Riinstalo aplikacionin.</translation>
+<translation id="847433688444405067">Shfleto nëpër pajisje</translation>
 <translation id="8487700953926739672">Mundësohet offline</translation>
 <translation id="848952951823693243">Kërko gjithmonë sajtin për celular</translation>
 <translation id="8492822722330266509">Sajtet mund të dërgojnë dritare kërcyese dhe të përdorin ridrejtimet</translation>

@@ -259,7 +259,6 @@
 <translation id="22091350895006575">ইউজারনেম যোগ করুন</translation>
 <translation id="221494669172414749">প্রোফাইল লক ছাড়া Chrome খুললে, আপনার সেভ করা পাসওয়ার্ড ও পেমেন্ট পদ্ধতি গাড়ি থেকে মুছে ফেলা হবে। প্রোফাইল লক ব্যবহার করা হলে এই ডেটা সুরক্ষিত থাকবে।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি দেখা গেছে</translation>
 <translation id="2230777942707397948">ফাঁকা উইন্ডো</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ট্যাব সরান</translation>
 <translation id="4913169188695071480">রিফ্রেশ করা বন্ধ করুন</translation>
 <translation id="4925120120285606924">স্ক্রিনশট <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">আপনার পাসওয়ার্ড এক্সপোর্ট করা হবে এবং টেক্সট ফাইল হিসেবে ডাউনলোড করা হবে। যে ফোল্ডারে ডাউনলোড হবে সেখানের অ্যাক্সেস সহ সেগুলি সবাই দেখতে পাবে এবং সব অ্যাপে দেখা যাবে।</translation>
 <translation id="4926901776383726965">অফলাইনে দেখতে বা অন্য অ্যাপের সাথে শেয়ার করতে, আপনি ছবি ও ফাইল সেভ করে রাখতে পারবেন</translation>
 <translation id="4932247056774066048">যেহেতু আপনি <ph name="DOMAIN_NAME" />-এর ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করছেন তাই এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে ফেলা হবে। এটি আপনার Google অ্যাকাউন্টে থাকবে।</translation>
 <translation id="4943703118917034429">ভার্চুয়াল রিয়ালিটি</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">অ্যাপ ফিল্টার শিট বন্ধ করা হয়েছে।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />-এ</translation>
 <translation id="5116239826668864748">আপনি মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ যেকোনও সময় Chrome ব্যবহার করতে পারবেন</translation>
+<translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5122378528687922675">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো (<ph name="PARENT_NAME_1" /> বা <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">ছদ্মবেশী ট্যাব</translation>
 <translation id="5139940364318403933">Google ড্রাইভ কীভাবে ব্যবহার করবেন জানুন</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">ব্লক করে গ্রুপ ছেড়ে বেরিয়ে যেতে চান?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
 <translation id="6095578583683628124">তাছাড়া, Google আপনার ডিফল্ট সার্চ ইঞ্জিন হিসেবে সেট করা থাকলে, আপনি আরও ভাল ও প্রাসঙ্গিক সাজেশন দেখতে পাবেন</translation>
+<translation id="6104768972315313991">QR কোড জেনারেট করা হয়েছে</translation>
 <translation id="610630277578876674">মেসেজ ও আরও অনেক কিছুতে দ্রুত লিঙ্ক খুলুন</translation>
 <translation id="6108923351542677676">সেটআপ চলছে...</translation>
 <translation id="6112702117600201073">রিফ্রেশ পৃষ্ঠা</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">বিক্রেতা:</translation>
 <translation id="7965838025086216108">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="ACCOUNT" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে।</translation>
 <translation id="7968014550143838305">পড়ার তালিকায় যোগ করা হয়েছে</translation>
+<translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
 <translation id="7971136598759319605">১ দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="7977451675950311423">আপনি যদি এমন কোনও পাসওয়ার্ড ব্যবহার করেন যা ডেটার নিরাপত্তা লঙ্ঘনের কারণে সুরক্ষিত নয়, সেক্ষেত্রে এটি আপনাকে সতর্ক করে।</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">সাজানোর বিকল্প খুলুন</translation>
 <translation id="8497480609928300907">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা</translation>
 <translation id="8497726226069778601">এখানে... দেখার মতো এখনো কিছু নেই</translation>
-<translation id="8503559462189395349">Chrome পাসওয়ার্ডগুলি</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8505766168025405649">ডাউনলোড স্ট্যাটাস সম্পর্কিত বিজ্ঞপ্তি দেখুন</translation>
 <translation id="8506357771923193001">আপনার ডাউনলোড করা ফাইল এখানে দেখতে পাবেন</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">ট্যাব গ্রুপ রেখে দেবেন?</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="864544049772947936">উইন্ডো ম্যানেজ করুন (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8672883760227492369">এই ডিভাইসে কিছু পাসওয়ার্ড খুব শীঘ্রই কাজ করা বন্ধ করে দেবে আপনি Google Password Manager-এ এইসব পাসওয়ার্ড সরাতে পারবেন।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-আপ করুন</translation>

@@ -259,7 +259,6 @@
 <translation id="22091350895006575">新增使用者名稱</translation>
 <translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
 <translation id="2227444325776770048">以「<ph name="USER_FULL_NAME" />」的身分繼續</translation>
-<translation id="2230288123399603508">「<ph name="TAB_GROUP_TITLE" />」分頁群組中有新活動</translation>
 <translation id="2230777942707397948">空白視窗</translation>
 <translation id="223356358902285214">網路和應用程式活動</translation>
 <translation id="2234827758954819389">隱私權指南</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">移動分頁</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">系統會匯出你的密碼並下載為文字檔案。擁有目的地資料夾存取權的使用者和應用程式將可查看你的密碼。</translation>
 <translation id="4926901776383726965">你可以儲存圖片和檔案，方便離線查看或分享到其他應用程式</translation>
 <translation id="4932247056774066048">你即將登出由 <ph name="DOMAIN_NAME" /> 管理的帳戶，因此系統會將你的 Chrome 資料從這個裝置上刪除，但是這些資料會繼續保留在你的 Google 帳戶中。</translation>
 <translation id="4943703118917034429">虛擬實境</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">應用程式篩選功能表已關閉。</translation>
 <translation id="5115811374190515607">移至<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">你隨時可以輕觸訊息、文件或其他應用程式中的連結，使用 Chrome 開啟</translation>
+<translation id="5118713593561876160">興趣喜好</translation>
 <translation id="5122378528687922675">如需協助，請找家長 (<ph name="PARENT_NAME_1" /> 或 <ph name="PARENT_NAME_2" />) 幫忙</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5139940364318403933">瞭解如何使用 Google 雲端硬碟</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">要封鎖成員並退出群組嗎？</translation>
 <translation id="60923314841986378">還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6095578583683628124">如果 Google 也是預設的搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
+<translation id="6104768972315313991">產生的 QR code</translation>
 <translation id="610630277578876674">快速開啟訊息中的連結及其他項目</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6112702117600201073">重新整理網頁</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">供應商：</translation>
 <translation id="7965838025086216108">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具。</translation>
 <translation id="7968014550143838305">已加入閱讀清單</translation>
+<translation id="7968982339740310781">查看詳細資料</translation>
 <translation id="7971136598759319605">上次使用時間：1 天前</translation>
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">開啟排序選項</translation>
 <translation id="8497480609928300907">隱私權指南說明</translation>
 <translation id="8497726226069778601">目前還沒有任何常用網頁…</translation>
-<translation id="8503559462189395349">Chrome 密碼</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8505766168025405649">查看下載狀態通知</translation>
 <translation id="8506357771923193001">這裡會顯示你的下載內容</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
 <translation id="864544049772947936">管理視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>
+<translation id="8662474268934425487">登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
 <translation id="8672883760227492369">這部裝置上的部分密碼不久後將無法存取，你可以將這些密碼移到 Google 密碼管理工具。</translation>
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>

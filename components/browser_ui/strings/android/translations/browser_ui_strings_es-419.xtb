@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación</translation>
 <translation id="3658847490588580244">Hoja inferior del navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio en el grupo de sitios de <ph name="RWS_OWNER" /> puede ver tu actividad en el grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios en el grupo de sitios de <ph name="RWS_OWNER" /> pueden ver tu actividad en el grupo}}</translation>
+<translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
 <translation id="3676777756440746804">Los sitios no podrán solicitarte usar la información que guardaron sobre ti</translation>
 <translation id="3697164069658504920">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos USB. Cuando está desactivada, los sitios no pueden usar dispositivos USB.</translation>
+<translation id="3703430731944883733">Administra tu feed</translation>
 <translation id="3707034683772193706">Un sitio que visitas puede guardar una pequeña cantidad de información con Chrome, principalmente para validar que no eres un bot.</translation>
 <translation id="3708684582558000260">No permitir que los sitios cerrados terminen de enviar o recibir datos</translation>
 <translation id="3709818294139939629">Sitio sin acceso al archivo</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
 <translation id="5700761515355162635">Se permiten las cookies de terceros</translation>
 <translation id="5706552988683188916">Esta acción borra las cookies y otros datos de sitios para <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad</translation>
 <translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
 <translation id="5750869797196646528">Seguimiento de manos</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5876056640971328065">Pausar video</translation>
 <translation id="5877248419911025165">Contraer todas las solicitudes</translation>
+<translation id="5878945009165002849">Bloquear los mensajes de acceso de servicios de identidad</translation>
 <translation id="5884085660368669834">Preferencia de sitio</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5908617755156109052">No permitir que los sitios creen un mapa 3D de tu entorno ni hagan un seguimiento de la posición de la cámara</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Revocar permiso para el dispositivo</translation>
 <translation id="8471525937465764768">Por lo general los sitios se conectan a dispositivos USB para habilitar funciones, como imprimir un documento o guardar datos en un dispositivo de almacenamiento.</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" está desactualizada. Vuelve a instalar la app.</translation>
+<translation id="847433688444405067">Navega en distintos dispositivos</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="848952951823693243">Solicitar siempre el sitio móvil</translation>
 <translation id="8492822722330266509">Permitir que los sitios abran ventanas emergentes y usen redireccionamientos</translation>

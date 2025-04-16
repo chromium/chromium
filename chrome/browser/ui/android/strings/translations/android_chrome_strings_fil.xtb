@@ -259,7 +259,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="22091350895006575">Magdagdag ng username</translation>
 <translation id="221494669172414749">Kapag binuksan ang Chrome nang walang lock ng profile, maaalis ang iyong mga naka-save na password at mga paraan ng pagbabayad sa kotse. Kapag gumamit ng lock ng profile, mananatiling secure ang data na ito.</translation>
 <translation id="2227444325776770048">Magpatuloy bilang si <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">May bagong aktibidad ang grupo ng tab na <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="2230777942707397948">Walang lamang window</translation>
 <translation id="223356358902285214">Aktibidad sa Web at App</translation>
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
@@ -853,7 +852,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4912413785358399818">Ilipat ang tab</translation>
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Ie-export ang iyong mga password at ida-download ang mga ito bilang text file. Magiging visible ang mga ito sa sinuman at sa anumang app na may access sa folder ng destinasyon.</translation>
 <translation id="4926901776383726965">Puwede kang mag-save ng mga larawan at file na titingnan offline o ishe-share sa iba pang app</translation>
 <translation id="4932247056774066048">Dahil nagsa-sign out ka sa isang account na pinapamahalaan ng <ph name="DOMAIN_NAME" />, made-delete ang data ng Chrome sa device na ito. Mananatili ito sa iyong Google Account.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
@@ -894,6 +892,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5114895953710637392">Nakasara ang sheet para sa filter ng app.</translation>
 <translation id="5115811374190515607">sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Magagamit mo ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
+<translation id="5118713593561876160">Mga Interes</translation>
 <translation id="5122378528687922675">Kung kailangan mo ng tulong, magpatulong sa iyong magulang (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
 <translation id="5139940364318403933">Alamin kung paano gamitin ang Google Drive</translation>
@@ -1100,6 +1099,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6087286598828478206">I-block ang grupo at umalis?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6095578583683628124">Kung Google din ang iyong default na search engine, makakakita ka ng mga suhestyong mas maganda at nauugnay sa konteksto</translation>
+<translation id="6104768972315313991">Nabuong QR Code</translation>
 <translation id="610630277578876674">Mabilis na magbukas ng mga link sa mga mensahe at higit pa</translation>
 <translation id="6108923351542677676">Kasalukuyang sine-setup…</translation>
 <translation id="6112702117600201073">Nire-refresh ang page</translation>
@@ -1549,6 +1549,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7965838025086216108">Puwede mong gamitin ang mga naka-save na password sa anumang device. Sine-save ang mga ito sa Google Password Manager para sa <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Idinagdag sa list ng babasahin</translation>
+<translation id="7968982339740310781">Tingnan ang mga detalye</translation>
 <translation id="7971136598759319605">Aktibo 1 araw ang nakalipas</translation>
 <translation id="7975379999046275268">I-preview ang page na <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Babalaan ka kung gagamit ka ng password na nakompromiso sa isang paglabag sa data.</translation>
@@ -1681,7 +1682,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8497242791509864205">Buksan ang mga opsyon sa pagbubukod-bukod</translation>
 <translation id="8497480609928300907">Paliwanag sa gabay sa privacy</translation>
 <translation id="8497726226069778601">Walang makikita dito... sa ngayon</translation>
-<translation id="8503559462189395349">Mga Password sa Chrome</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8505766168025405649">Tingnan ang notification para sa status ng pag-download</translation>
 <translation id="8506357771923193001">Makikita mo ang mga download mo rito</translation>
@@ -1716,6 +1716,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8635399646025169806">Panatilihin ang grupo ng tab?</translation>
 <translation id="8636825310635137004">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang pag-sync.</translation>
 <translation id="864544049772947936">Pamahalaan ang mga window (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>
 <translation id="8672883760227492369">Malapit nang hindi gumana ang ilang password sa device na ito. Puwede mong ilipat sa Google Password Manager ang mga password na ito.</translation>
 <translation id="8676276370198826499">Mag-sign up sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

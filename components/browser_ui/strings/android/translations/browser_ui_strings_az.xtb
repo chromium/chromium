@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Saytlar məkanınızı tələb edə bilər</translation>
 <translation id="3658847490588580244">Defolt brauzerin aşağıdakı vərəqi</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}other{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}}</translation>
+<translation id="3670480940339182416">Saytlar V8 optimallaşdırıcısından istifadə edə bilər</translation>
 <translation id="3676777756440746804">Saytların haqqınızda yadda saxlanılan məlumatdan istifadə üçün icazə istəməsi bloklanıb</translation>
 <translation id="3697164069658504920">Aktiv ediləndə saytlar USB cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar USB cihazlarından istifadə edə bilməz.</translation>
+<translation id="3703430731944883733">Lenti idarə edin</translation>
 <translation id="3707034683772193706">Daxil olduğunuz sayt bot olmadığınızı doğrulamaq üçün Chrome ilə az miqdarda məlumat yadda saxlaya bilər</translation>
 <translation id="3708684582558000260">Bağlanmış saytlara data göndərmək və ya qəbul etmək icazəsi verməyin</translation>
 <translation id="3709818294139939629">Saytın fayla girişi silindi</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
 <translation id="5706552988683188916">Bu, <ph name="WEBSITE" /> üçün kukiləri və digər sayt datasını silir</translation>
+<translation id="571222594670061844">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər</translation>
 <translation id="5723967018671998714">Üçüncü tərəf kukiləri Anonim rejimdə bloklanır</translation>
 <translation id="5740126560802162366">Saytlar cihazınızda data saxlaya bilər</translation>
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5876056640971328065">Videoya pauza verin</translation>
 <translation id="5877248419911025165">Bütün sorğuları yığcamlaşdırın</translation>
+<translation id="5878945009165002849">Kimlik xidmətlərindən daxil olma sorğularını bloklayın</translation>
 <translation id="5884085660368669834">Sayt tərcihi</translation>
 <translation id="5887687176710214216">Son ziyarət dünən olub</translation>
 <translation id="5908617755156109052">Saytlara ətrafın 3D xəritəsini yaratmaq və ya kameranın mövqeyini izləmək icazəsi verməyin</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Cihaz icazəsini ləğv edin</translation>
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" köhnəlib. Tətbiqi yenidən quraşdırın.</translation>
+<translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="848952951823693243">Həmişə mobil sayt tələb edin</translation>
 <translation id="8492822722330266509">Saytlar ani bildirişlər göndərə və yönləndirmələrdən istifadə edə bilər</translation>

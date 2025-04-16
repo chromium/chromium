@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">网站可以请求取得您的位置信息</translation>
 <translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
+<translation id="3670480940339182416">网站可以使用 V8 优化工具</translation>
 <translation id="3676777756440746804">禁止网站向您请求使用其保存的与您相关的信息</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
+<translation id="3703430731944883733">管理信息流</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
 <translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
 <translation id="3709818294139939629">已撤消网站对文件的访问权限</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
+<translation id="571222594670061844">网站可以显示来自身份服务的登录提示</translation>
 <translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
+<translation id="5743425052258407233">在您的所有设备上同步历史记录，以便您轻松继续未完成的操作</translation>
 <translation id="5750869797196646528">手部跟踪</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">启用</translation>
 <translation id="5876056640971328065">暂停视频</translation>
 <translation id="5877248419911025165">收起所有请求</translation>
+<translation id="5878945009165002849">屏蔽来自身份服务的登录提示</translation>
 <translation id="5884085660368669834">网站偏好设置</translation>
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
 <translation id="5908617755156109052">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">撤消设备权限</translation>
 <translation id="8471525937465764768">网站通常会连接到 USB 设备以实现某些功能（例如打印文档或保存到存储设备）</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />”版本过旧。请重新安装该应用。</translation>
+<translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="848952951823693243">始终请求访问移动网站</translation>
 <translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>

@@ -259,7 +259,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="22091350895006575">Engadir nome de usuario</translation>
 <translation id="221494669172414749">Se abres Chrome sen un bloqueo de perfil, os teus métodos de pago e contrasinais gardados quitaranse do coche. O bloqueo de perfil protexe estes datos.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">O grupo de pestanas "<ph name="TAB_GROUP_TITLE" />" ten nova actividade</translation>
 <translation id="2230777942707397948">Ventá baleira</translation>
 <translation id="223356358902285214">Actividade web e das aplicacións</translation>
 <translation id="2234827758954819389">Guía de privacidade</translation>
@@ -853,7 +852,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4912413785358399818">Mover pestana</translation>
 <translation id="4913169188695071480">Deter a actualización</translation>
 <translation id="4925120120285606924">Captura de pantalla (<ph name="CURRENT_DATE_ISO" />)</translation>
-<translation id="49268022542405662">Os teus contrasinais exportaranse e descargaranse como ficheiro de texto. Poderá velos calquera persoa e calquera aplicación con acceso ao cartafol de destino.</translation>
 <translation id="4926901776383726965">Podes gardar imaxes e ficheiros para velos sen conexión ou compartilos noutras aplicacións</translation>
 <translation id="4932247056774066048">Dado que estás pechando sesión nunha conta xestionada por <ph name="DOMAIN_NAME" />, os teus datos de Chrome eliminaranse deste dispositivo. Permanecerá na túa Conta de Google.</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
@@ -894,6 +892,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5114895953710637392">A folla para filtrar por aplicación está pechada.</translation>
 <translation id="5115811374190515607">á seguinte localización: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Podes utilizar Chrome cando toques as ligazóns en mensaxes, en documentos e noutras aplicacións</translation>
+<translation id="5118713593561876160">Intereses</translation>
 <translation id="5122378528687922675">Se necesitas axuda, pídella ao teu pai ou á túa nai (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestana do modo de incógnito</translation>
 <translation id="5139940364318403933">Aprender a utilizar Google Drive</translation>
@@ -1100,6 +1099,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6087286598828478206">Queres proceder ao bloqueo e saír do grupo?</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
 <translation id="6095578583683628124">Se o teu motor de busca predeterminado tamén é Google, recibirás mellores suxestións que serán relevantes segundo o contexto</translation>
+<translation id="6104768972315313991">Código QR xerado</translation>
 <translation id="610630277578876674">Abre rapidamente ligazóns en mensaxes e moito máis</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6112702117600201073">Actualizando a páxina</translation>
@@ -1549,6 +1549,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7963646190083259054">Vendedor:</translation>
 <translation id="7965838025086216108">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Engadiuse á lista de lectura</translation>
+<translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
@@ -1681,7 +1682,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8497242791509864205">Abrir opcións de ordenación</translation>
 <translation id="8497480609928300907">Explicación sobre a Guía de privacidade</translation>
 <translation id="8497726226069778601">Aínda non hai contido para mostrar</translation>
-<translation id="8503559462189395349">Contrasinais de Chrome</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8505766168025405649">Para ver o estado da descarga, consulta a notificación</translation>
 <translation id="8506357771923193001">Aquí atoparás as túas descargas</translation>
@@ -1716,6 +1716,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="864544049772947936">Xestionar ventás (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8672883760227492369">Algúns contrasinais deste dispositivo deixarán de funcionar en breve. Podes movelos ao xestor de contrasinais de Google.</translation>
 <translation id="8676276370198826499">Rexístrate en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

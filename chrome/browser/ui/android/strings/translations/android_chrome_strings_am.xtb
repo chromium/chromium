@@ -259,7 +259,6 @@
 <translation id="22091350895006575">የተጠቃሚ ስም አክል</translation>
 <translation id="221494669172414749">Chrome ያለ የመገለጫ መቆለፊያ መክፈት የተቀመጡ የእርስዎን የይለፍ ቃላት እና የመክፈያ ዘዴዎችን ከመኪናው ያስወግዳል። የመገለጫ መቆለፊያን መጠቀም ይህን ውሂብ ደህንነቱ የተጠበቀ ያደርገዋል።</translation>
 <translation id="2227444325776770048">እንደ <ph name="USER_FULL_NAME" /> ሆነው ይቀጥሉ</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> የትር ቡድን አዲስ እንቅስቃሴ አለው</translation>
 <translation id="2230777942707397948">ባዶ መስኮት</translation>
 <translation id="223356358902285214">የድር እና የመተግበሪያ እንቅስቃሴ</translation>
 <translation id="2234827758954819389">የግላዊነት መመሪያ</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ትርን ውሰድ</translation>
 <translation id="4913169188695071480">ማደስ አቁም</translation>
 <translation id="4925120120285606924">ቅጽበታዊ ገፅ ዕይታ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">የይለፍ ቃላትዎ ወደ ውጭ ይላካና እንደ የጽሑፍ ፋይል ይወርዳሉ። የመድረሻ አቃፊ መዳረሻ ላለው ማንኛውም ሰው እና ለማንኛውም መተግበሪያ ይታያሉ።</translation>
 <translation id="4926901776383726965">ከመስመር ውጭ ለመመልከት ወይም በሌሎች መተግበሪያዎች ውስጥ ለማጋራት ምስሎችን እና ፋይሎችን ማስቀመጥ ይችላሉ</translation>
 <translation id="4932247056774066048">በ<ph name="DOMAIN_NAME" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ የChrome ውሂብዎ ከዚህ መሣሪያ ይሰረዛል። በGoogle መለያዎ ውስጥ እንዳለ ይቆያል።</translation>
 <translation id="4943703118917034429">ምናባዊ እውነታ</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">የመተግበሪያ ማጣሪያ ሉህ ተዘግቷል።</translation>
 <translation id="5115811374190515607">ወደ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት በማንኛውም ጊዜ Chrome መጠቀም ይችላሉ</translation>
+<translation id="5118713593561876160">ዝንባሌዎች</translation>
 <translation id="5122378528687922675">እገዛ ካስፈለገዎት ወላጅዎን ይጠይቁ (<ph name="PARENT_NAME_1" /> ወይም <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
 <translation id="5139940364318403933">እንዴት Google Driveን መጠቀም እንደሚችሉ ይወቁ</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">ይታገድ እና ከቡድኑ ለቅቀው ይውጡ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ሰዓቶች ይቀራሉ</translation>
 <translation id="6095578583683628124">Google እንዲሁ የእርስዎ ነባሪ የፍለጋ ፕሮግራምዎ ከሆነ፣ የተሻለ፣ ከአውድ ጋር ተዛማጅነት ያላቸውን አስተያየቶች ያያሉ።</translation>
+<translation id="6104768972315313991">የመነጨ የQR ኮድ</translation>
 <translation id="610630277578876674">በመልዕክቶች ውስጥ አገናኞችን በፍጥነት ይክፈቱ እና ሌሎችንም ያድርጉ</translation>
 <translation id="6108923351542677676">ማዋቀር በሂደት ላይ…</translation>
 <translation id="6112702117600201073">ገፅ በማደስ ላይ</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">አቅራቢ፦</translation>
 <translation id="7965838025086216108">በማንኛውም መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ። ለ<ph name="ACCOUNT" /> ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ይቀመጣሉ።</translation>
 <translation id="7968014550143838305">ወደ የንባብ ዝርዝር ታክሏል</translation>
+<translation id="7968982339740310781">ዝርዝሮችን ይመልከቱ</translation>
 <translation id="7971136598759319605">1 ቀን በፊት ንቁ ነበር</translation>
 <translation id="7975379999046275268">ገፅ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ቅድሚያ ይመልከቱ</translation>
 <translation id="7977451675950311423">በውሂብ ጥሰት ውስጥ የተጠለፈ የይለፍ ቃል ከተጠቀሙ ያስጠነቅቅዎታል።</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">የአደራደር አማራጮችን ክፈት</translation>
 <translation id="8497480609928300907">የግላዊነት መመሪያ ማብራሪያ</translation>
 <translation id="8497726226069778601">እዚህ ምንም የሚታይ ነገር የለም... ገና</translation>
-<translation id="8503559462189395349">የChrome ይለፍ ቃላት</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8505766168025405649">ለማውረድ ሁኔታ ማሳወቂያዎችን ይመልከቱ</translation>
 <translation id="8506357771923193001">ውርዶችዎን እዚህ ማግኘት ይችላሉ</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">የትር ቡድን ይቆይ?</translation>
 <translation id="8636825310635137004">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት ስምረትን ያብሩ።</translation>
 <translation id="864544049772947936">መስኮቶችን (<ph name="INSTANCE_COUNTS" />) ያቀናብሩ</translation>
+<translation id="8662474268934425487">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይግቡ</translation>
 <translation id="8664979001105139458">የፋይል ስም አስቀድሞ አለ</translation>
 <translation id="8672883760227492369">አንዳንድ በዚህ መሣሪያ ላይ ያሉ የይለፍ ቃላት በቅርቡ መሥራት ያቆማሉ። እነዚህን የይለፍ ቃላት ወደ Google የይለፍ ቃል አስተዳዳሪ ማንቀሳቀስ ይችላሉ።</translation>
 <translation id="8676276370198826499">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይመዝገቡ</translation>

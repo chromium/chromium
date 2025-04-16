@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Os sitios poden pedirche permiso para acceder á localización</translation>
 <translation id="3658847490588580244">Panel inferior do navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="RWS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="RWS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
+<translation id="3670480940339182416">Os sitios poden usar o optimizador de V8</translation>
 <translation id="3676777756440746804">Os sitios non poderán pedirche usar a información que garden sobre ti</translation>
 <translation id="3697164069658504920">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos USB. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos USB.</translation>
+<translation id="3703430731944883733">Xestionar o feed</translation>
 <translation id="3707034683772193706">Calquera sitio que visites poderá gardar unha pequena cantidade de información con Chrome, basicamente, para confirmar que non es un bot</translation>
 <translation id="3708684582558000260">Non permitir que os sitios pechados rematen de enviar nin de recibir datos</translation>
 <translation id="3709818294139939629">Quitouse o acceso ao ficheiro</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">A cámara está desactivada na sección Configuración de Android</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidas</translation>
 <translation id="5706552988683188916">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade</translation>
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
 <translation id="5740126560802162366">Os sitios poden gardar datos no teu dispositivo</translation>
+<translation id="5743425052258407233">Accede ao teu historial en todos os teus dispositivos para que poidas continuar onde o deixaches</translation>
 <translation id="5750869797196646528">Seguimento das mans</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> (bloqueado)</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5876056640971328065">Pór en pausa o vídeo</translation>
 <translation id="5877248419911025165">Contraer todas as solicitudes</translation>
+<translation id="5878945009165002849">Bloquear as solicitudes de inicio de sesión dos servizos de identidade</translation>
 <translation id="5884085660368669834">Preferencia do sitio</translation>
 <translation id="5887687176710214216">Visitouse onte por última vez</translation>
 <translation id="5908617755156109052">Non permitir que os sitios creen un mapa 3D do que te rodee nin fagan o seguimento da posición da cámara</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Revoga o permiso do dispositivo</translation>
 <translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>
 <translation id="8473055640493819707">A aplicación <ph name="APP_NAME" /> está desactualizada. Volve instalala.</translation>
+<translation id="847433688444405067">Navega en varios dispositivos</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="848952951823693243">Solicitar sempre o sitio para móbiles</translation>
 <translation id="8492822722330266509">Os sitios poden mostrar ventás emerxentes e usar redireccións</translation>

@@ -1547,7 +1547,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Lisateave<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3670229581627177274">Lülita Bluetooth sisse</translation>
-<translation id="3671117652518853176">Kui see seade on välja lülitatud, võidakse teilt turvalisuse huvides aeg-ajalt kinnitust küsida</translation>
 <translation id="3671540257457995106">Kas lubada suuruse muutmine?</translation>
 <translation id="3672568546897166916">Viga asukohas <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Võrguseadmed</translation>
@@ -1599,7 +1598,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3739842843727261045">Meeldivaks märkimine saadab tagasisidet, et need tulemused meeldivad teile</translation>
 <translation id="3740447166056383374">Enne kopeerimist on ülevaatus nõutav</translation>
 <translation id="374325029554577103">Treeningu- ja tervisejälgimisseadmed</translation>
-<translation id="3743765582345153106">Automaattäite kasutamisel kontrolli alati</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3744212718085287312">Kas soovite selle muuta järgmisel korral virtuaalkaardiga veelgi turvalisemaks?</translation>
 <translation id="3744899669254331632">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait saatis tagasi arusaamatud mandaadid, mida Chromium ei saa töödelda. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
@@ -1978,7 +1976,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4358461427845829800">Halda makseviise …</translation>
 <translation id="4359160567981085931">Sisestasite äsja oma parooli petturlikule saidile. Chrome saab teid aidata. Oma parooli muutmiseks ja Google'i teavitamiseks sellest, et teie konto võib olla ohus, klõpsake valikul Konto kaitsmine.</translation>
 <translation id="4363222835916186793">Selle toote teavitused on välja lülitatud</translation>
-<translation id="4363729811203340554">Kui jagate seda seadet, võib Chrome teilt paluda kinnitust iga kord, kui kasutate maksmiseks automaattäidet</translation>
 <translation id="4366943895537458493">Plaat</translation>
 <translation id="4369179505195332608">Juhiloa muutmine</translation>
 <translation id="437040971055499437">Esineb turvalisusega seotud sündmus</translation>
@@ -2575,7 +2572,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5452923259299906094">Maksmine e-rahakoti ja Pixiga</translation>
 <translation id="5455374756549232013">Reegli ajatempel on sobimatu</translation>
 <translation id="5456428544444655325">Ära kunagi kuva</translation>
-<translation id="5456839782162429664">Käsitsi kinnitamine iga kord, kui kasutate maksmisel automaattäidet</translation>
 <translation id="5457113250005438886">Kehtetu</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Seadmete otsimine …</translation>
@@ -2684,7 +2680,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5632485077360054581">Kuva juhised</translation>
 <translation id="563324245173044180">Petlik sisu blokeeriti.</translation>
 <translation id="563371367637259496">Mobiil</translation>
-<translation id="5634725266554983459">Kas lülitada sisse käsitsi kinnitamine?</translation>
 <translation id="5635478143789726479">Müüja nõuded ja tingimused</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereosüsteemid ja komponendid</translation>
@@ -3325,6 +3320,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6739943577740687354">See funktsioon kasutab AI-d ja ei paku alati õigeid tulemusi</translation>
 <translation id="6740851646645036700">Teie abitaotluste limiit on praeguseks täis. Proovige hiljem uuesti.</translation>
 <translation id="674375294223700098">Serveri sertifikaadi tundmatu viga.</translation>
+<translation id="6743841972744298686">Sünkroonimisseaded</translation>
 <translation id="6745592621698551453">Värskenda kohe</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonverents</translation>
@@ -3452,7 +3448,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6973988895180423160">3,5 × 5 tolli</translation>
 <translation id="6978121630131642226">Otsingumootorid</translation>
 <translation id="6978236010531171013">Jaga ikkagi</translation>
-<translation id="6978722349058177832">Kui jagate seda seadet, võib Chromium teilt paluda kinnitust iga kord, kui kasutate maksmiseks automaattäidet</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">hallata juurdepääsu kolmanda osapoole küpsisefailidele</translation>
 <translation id="6979440798594660689">Vaigista (vaikeseade)</translation>

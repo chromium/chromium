@@ -1548,7 +1548,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">نمبر</translation>
 <translation id="3670229581627177274">بلوٹوتھ آن کریں</translation>
-<translation id="3671117652518853176">آف ہونے پر، آپ سے سیکیورٹی کے مقاصد کے لیے بعض اوقات توثیق کے لیے کہا جا سکتا ہے</translation>
 <translation id="3671540257457995106">سائز تبدیل کرنے کی اجازت دیں؟</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> میں خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">نیٹ ورکنگ کے ساز و سامان</translation>
@@ -1600,7 +1599,6 @@
 <translation id="3739842843727261045">اظہار پسندیدگی تاثرات جمع کراتا ہے کہ آپ کو یہ نتائج پسند ہیں</translation>
 <translation id="3740447166056383374">کاپی کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="374325029554577103">تندرستی ٹیکنالوجی کے پروڈکٹس</translation>
-<translation id="3743765582345153106">آٹو فل استعمال کرتے ہوئے ہمیشہ توثیق کریں</translation>
 <translation id="3744111561329211289">پس منظر کی مطابقت پذیری</translation>
 <translation id="3744212718085287312">اگلی بار ورچوئل کارڈ کے ساتھ اسے مزید محفوظ بنائیں؟</translation>
 <translation id="3744899669254331632">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ نے جلد بازی والی اسنادات بھیجی ہیں جس پر Chromium کارروائی نہیں کر سکتا ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
@@ -1979,7 +1977,6 @@
 <translation id="4358461427845829800">ادائیگیوں کے طریقوں کا نظم کریں...</translation>
 <translation id="4359160567981085931">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome مدد کر سکتا ہے۔ اپنا پاس ورڈ تبدیل کرنے اور Google کو یہ مطلع کرنے کے لیے کہ آپ کا اکاؤنٹ خطرے میں ہو سکتا ہے، 'اکاؤنٹ کا تحفظ کریں' پر کلک کریں۔</translation>
 <translation id="4363222835916186793">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے</translation>
-<translation id="4363729811203340554">‏اگر آپ اس آلے کا اشتراک کرتے ہیں تو جب بھی آپ آٹو فل کا استعمال کرتے ہوئے ادائیگی کرتے ہیں تو Chrome آپ سے توثیق کرنے کو کہہ سکتا ہے</translation>
 <translation id="4366943895537458493">پلیٹ</translation>
 <translation id="4369179505195332608">ڈرائیونگ لائسنس کی معلومات میں ترمیم کریں</translation>
 <translation id="437040971055499437">سیکیورٹی ایونٹ ہوتا ہے</translation>
@@ -2576,7 +2573,6 @@
 <translation id="5452923259299906094">‏‫eWallet اور Pix سے ادائیگی کریں</translation>
 <translation id="5455374756549232013">غلط پالیسی ٹائم اسٹامپ</translation>
 <translation id="5456428544444655325">کبھی نہ دکھائیں</translation>
-<translation id="5456839782162429664">جب بھی آپ آٹو فل کا استعمال کرتے ہوئے ادائیگی کرتے ہیں تو دستی طور پر توثیق کریں</translation>
 <translation id="5457113250005438886">غلط</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{<ph name="CONTACT_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
 <translation id="5463625433003343978">آلات تلاش کئے جا رہے ہیں...</translation>
@@ -2685,7 +2681,6 @@
 <translation id="5632485077360054581">مجھے طریقہ دکھائیں</translation>
 <translation id="563324245173044180">پُر فریب مواد مسدود ہے۔</translation>
 <translation id="563371367637259496">موبائل</translation>
-<translation id="5634725266554983459">دستی توثیق آن کریں؟</translation>
 <translation id="5635478143789726479">فروخت کنندہ کی شرائط و ضوابط</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />۔ <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">اسٹیریو سسٹمز اور اجزاء</translation>
@@ -3327,6 +3322,7 @@
 <translation id="6739943577740687354">‏یہ خصوصیت AI کا استعمال کرتی ہے اور یہ ہمیشہ درست نہیں ہوگی</translation>
 <translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="674375294223700098">سرور سرٹیفکیٹ میں نامعلوم خرابی۔</translation>
+<translation id="6743841972744298686">مطابقت پذیری کی ترتیبات</translation>
 <translation id="6745592621698551453">ابھی اپ ڈیٹ کریں</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ٹیلی کانفرنسنگ</translation>
@@ -3454,7 +3450,6 @@
 <translation id="6973988895180423160">‏‎3.5 x 5 انچ</translation>
 <translation id="6978121630131642226">سرچ انجن</translation>
 <translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
-<translation id="6978722349058177832">‏اگر آپ اس آلے کا اشتراک کرتے ہیں تو جب بھی آپ آٹو فل کا استعمال کرتے ہوئے ادائیگی کرتے ہیں تو Chromium آپ سے توثیق کرنے کے لیے کہہ سکتا ہے</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">فریق ثالث کوکیز تک رسائی کا نظم کریں</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>

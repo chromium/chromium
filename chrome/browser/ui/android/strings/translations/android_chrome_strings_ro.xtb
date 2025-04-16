@@ -259,7 +259,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="22091350895006575">Adaugă un nume de utilizator</translation>
 <translation id="221494669172414749">Dacă deschizi Chrome fără o blocare a profilului, parolele salvate și metodele de plată vor fi eliminate din mașină. Dacă folosești o blocare a profilului, aceste date sunt păstrate în siguranță.</translation>
 <translation id="2227444325776770048">Continuă ca <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> grup de file are activitate nouă</translation>
 <translation id="2230777942707397948">Fereastră goală</translation>
 <translation id="223356358902285214">Activitatea de pe web și din aplicații</translation>
 <translation id="2234827758954819389">Ghid privind confidențialitatea</translation>
@@ -853,7 +852,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4912413785358399818">Mută fila</translation>
 <translation id="4913169188695071480">Oprește actualizarea</translation>
 <translation id="4925120120285606924">Captură de ecran <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Parolele vor fi exportate și descărcate ca fișier text. Acestea vor fi vizibile pentru oricine și pentru orice aplicație care are acces la dosarul de destinație.</translation>
 <translation id="4926901776383726965">Poți să salvezi imagini și fișiere ca să le vezi offline sau să le trimiți în alte aplicații</translation>
 <translation id="4932247056774066048">Întrucât te deconectezi de la un cont gestionat de <ph name="DOMAIN_NAME" />, datele Chrome vor fi șterse de pe dispozitiv. Acestea vor fi păstrate în Contul tău Google.</translation>
 <translation id="4943703118917034429">Realitate virtuală</translation>
@@ -894,6 +892,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5114895953710637392">Foaia de filtrare după aplicație este închisă.</translation>
 <translation id="5115811374190515607">în <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații</translation>
+<translation id="5118713593561876160">Interese</translation>
 <translation id="5122378528687922675">Dacă ai nevoie de ajutor, vorbește cu un părinte (<ph name="PARENT_NAME_1" /> sau <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
 <translation id="5139940364318403933">Află cum să folosești Google Drive</translation>
@@ -1100,6 +1099,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6087286598828478206">Blochezi și ieși din grup?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rămase</translation>
 <translation id="6095578583683628124">Dacă Google este și motorul tău de căutare prestabilit, vei vedea sugestii mai bune și mai relevante din punct de vedere contextual</translation>
+<translation id="6104768972315313991">Cod QR generat</translation>
 <translation id="610630277578876674">Deschide rapid linkuri din mesaje și multe altele</translation>
 <translation id="6108923351542677676">Configurare în curs...</translation>
 <translation id="6112702117600201073">Se actualizează pagina</translation>
@@ -1549,6 +1549,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7963646190083259054">Producător:</translation>
 <translation id="7965838025086216108">Poți folosi parolele salvate pe orice dispozitiv. Acestea sunt salvate în Managerul de parole Google pentru <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">S-a adăugat în lista de lectură</translation>
+<translation id="7968982339740310781">Afișați detaliile</translation>
 <translation id="7971136598759319605">Activ acum o zi</translation>
 <translation id="7975379999046275268">Previzualizează pagina <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te avertizează dacă folosești o parolă care a fost compromisă printr-o încălcare a securității datelor.</translation>
@@ -1681,7 +1682,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8497242791509864205">Deschide opțiunile de sortare</translation>
 <translation id="8497480609928300907">Prezentare a Ghidului privind confidențialitatea</translation>
 <translation id="8497726226069778601">Nu este nimic de văzut aici... deocamdată</translation>
-<translation id="8503559462189395349">Parole Chrome</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8505766168025405649">Vezi notificarea pentru starea descărcării</translation>
 <translation id="8506357771923193001">Aici vei vedea descărcările</translation>
@@ -1716,6 +1716,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8635399646025169806">Păstrezi grupul de file?</translation>
 <translation id="8636825310635137004">Pentru a accesa filele de pe alte dispozitive, activează sincronizarea.</translation>
 <translation id="864544049772947936">Gestionează ferestrele (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Conectează-te la <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Numele fișierului există deja</translation>
 <translation id="8672883760227492369">În curând, unele parole de pe acest dispozitiv nu vor mai funcționa. Poți muta parolele în Managerul de parole Google.</translation>
 <translation id="8676276370198826499">Înscrie-te la <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -259,7 +259,6 @@
 <translation id="22091350895006575">Добавяне на потребителското име</translation>
 <translation id="221494669172414749">Когато отворите Chrome без опция за заключване на потребителския профил, запазените ви пароли и начини на плащане ще бъдат премахнати от автомобила. Използването на опция за заключване на потребителския профил защитава тези данни.</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">За групата раздели „<ph name="TAB_GROUP_TITLE" />“ има нова активност</translation>
 <translation id="2230777942707397948">Празен прозорец</translation>
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
 <translation id="2234827758954819389">Ръководство за поверителност</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">Преместване на раздел</translation>
 <translation id="4913169188695071480">Спиране на опресняването</translation>
 <translation id="4925120120285606924">Екранна снимка от <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Паролите ви ще бъдат експортирани и изтеглени като текстов файл. Те ще бъдат видими за всички хора и приложения, които имат достъп до целевата папка.</translation>
 <translation id="4926901776383726965">Можете да запазвате изображения и файлове, за да ги преглеждате офлайн или да ги споделяте в други приложения</translation>
 <translation id="4932247056774066048">Тъй като излизате от профил, управляван от <ph name="DOMAIN_NAME" />, данните ви в Chrome ще бъдат изтрити от това устройство. Те ще останат в профила ви в Google.</translation>
 <translation id="4943703118917034429">Виртуална реалност</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">Листът за филтриране по приложение е затворен.</translation>
 <translation id="5115811374190515607">до <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Можете да използвате Chrome всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
+<translation id="5118713593561876160">Интереси</translation>
 <translation id="5122378528687922675">Ако се нуждаете от помощ, попитайте родителя си (<ph name="PARENT_NAME_1" /> или <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
 <translation id="5139940364318403933">Научете как да използвате Google Диск</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">Искате ли да блокирате потребителя и да напуснете групата?</translation>
 <translation id="60923314841986378">Остават <ph name="HOURS" /> часа</translation>
 <translation id="6095578583683628124">Ако Google е и търсещата ви машина по подразбиране, ще виждате по-добри и контекстуално уместни предложения</translation>
+<translation id="6104768972315313991">Генериран QR код</translation>
 <translation id="610630277578876674">Бързо отваряйте връзки в съобщения и др.</translation>
 <translation id="6108923351542677676">Извършва се настройване…</translation>
 <translation id="6112702117600201073">Опресняване на страницата</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">Доставчик:</translation>
 <translation id="7965838025086216108">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в Google Мениджър на пароли за <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Добавено към списъка за четене</translation>
+<translation id="7968982339740310781">Преглед на подробностите</translation>
 <translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Предупреждава ви, ако използвате парола, която е компрометирана при нарушение на сигурността на данните.</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">Отваряне на опциите за сортиране</translation>
 <translation id="8497480609928300907">Обяснение на ръководството за поверителност</translation>
 <translation id="8497726226069778601">Тук няма нищо… засега</translation>
-<translation id="8503559462189395349">Пароли в Chrome</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8505766168025405649">Вижте известието за състоянието на изтегляне</translation>
 <translation id="8506357771923193001">Тук ще намерите изтеглянията си</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">Искате ли да запазите групата раздели?</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
 <translation id="864544049772947936">Управление на прозорците (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Вход в(ъв) <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
 <translation id="8672883760227492369">Някои пароли на това устройство скоро ще спрат да работят. Можете да преместите тези пароли в Google Мениджър на пароли.</translation>
 <translation id="8676276370198826499">Регистрирайте се за <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

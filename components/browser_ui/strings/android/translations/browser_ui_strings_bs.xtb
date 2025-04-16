@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Web lokacije mogu tražiti vašu lokaciju</translation>
 <translation id="3658847490588580244">Donja tabela zadanog preglednika</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
+<translation id="3670480940339182416">Web lokacije mogu koristiti V8 optimizator</translation>
 <translation id="3676777756440746804">Blokirali ste da vas web lokacije pitaju da koriste sačuvane informacije o vama</translation>
 <translation id="3697164069658504920">Kada je postavka uključena, web lokacije mogu zatražiti da koriste USB uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti USB uređaje.</translation>
+<translation id="3703430731944883733">Upravljajte sažetkom sadržaja</translation>
 <translation id="3707034683772193706">Web lokacija koju posjećujete može putem Chromea sačuvati malu količinu informacija uglavnom da potvrdi da niste bot</translation>
 <translation id="3708684582558000260">Nemoj dozvoliti zatvorenim web lokacijama završavanje slanja ili primanje podataka</translation>
 <translation id="3709818294139939629">Pristup fajlu je uklonjen</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kamera je isključena u postavkama Androida</translation>
 <translation id="5700761515355162635">Kolačići treće strane su dozvoljeni</translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci web lokacije za <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Web lokacije vam mogu prikazati upite za prijavu koji potiču od usluga identiteta</translation>
 <translation id="5723967018671998714">Kolačići trećih strana su blokirani u anonimnom načinu rada</translation>
 <translation id="5740126560802162366">Web lokacije mogu pohranjivati podatke na vaš uređaj</translation>
+<translation id="5743425052258407233">Dobijajte historiju na svim svojim uređajima da možete lako nastaviti tamo gdje ste stali</translation>
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Odobrenja</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5876056640971328065">Pauziranje videozapisa</translation>
 <translation id="5877248419911025165">Suzi sve zahtjeve</translation>
+<translation id="5878945009165002849">Blokiraj upite za prijavu koji potiču od usluga identiteta</translation>
 <translation id="5884085660368669834">Postavka web lokacije</translation>
 <translation id="5887687176710214216">Posljednji put je posjećeno jučer</translation>
 <translation id="5908617755156109052">Nemoj dozvoliti web lokacijama da kreiraju 3D mapu okruženja niti da prate položaj kamere</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Opozivanje dozvole za uređaj</translation>
 <translation id="8471525937465764768">Web lokacije se obično povezuju s USB uređajima radi funkcija kao što je štampanje dokumenta ili pohranjivanje na uređaj za pohranu</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarjela. Ponovo instalirajte aplikaciju.</translation>
+<translation id="847433688444405067">Pregledajte na uređajima</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvijek zatraži verziju web lokacije za mobilni uređaj</translation>
 <translation id="8492822722330266509">Web lokacije mogu slati skočne prozore i koristiti preusmjeravanja</translation>

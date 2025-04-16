@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Site-urile pot solicita permisiunea de a accesa locația</translation>
 <translation id="3658847490588580244">Foaia din partea de jos a browserului prestabilit</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="RWS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="RWS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="RWS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
+<translation id="3670480940339182416">Site-urile pot folosi instrumentul de optimizare pentru V8</translation>
 <translation id="3676777756440746804">Site-urile nu au permisiunea de a-ți solicita să folosească informațiile pe care le-au salvat despre tine</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
+<translation id="3703430731944883733">Gestionează feedul</translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
 <translation id="3708684582558000260">Nu permite site-urilor închise să finalizeze trimiterea sau primirea datelor</translation>
 <translation id="3709818294139939629">S-a eliminat accesul site-ului</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Camera foto este dezactivată în setările Android</translation>
 <translation id="5700761515355162635">Sunt permise cookie-urile terță parte</translation>
 <translation id="5706552988683188916">Astfel, se șterg cookie-urile și alte date privind site-urile pentru <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Site-urile pot afișa solicitări de conectare de la servicii de identitate</translation>
 <translation id="5723967018671998714">Cookie-urile terță parte sunt blocate în modul Incognito</translation>
 <translation id="5740126560802162366">Site-urile pot salva date pe dispozitiv</translation>
+<translation id="5743425052258407233">Istoricul apare pe toate dispozitivele tale. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="5750869797196646528">Urmărirea mâinilor</translation>
 <translation id="5771720122942595109">S-a blocat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5876056640971328065">Întrerupe videoclipul</translation>
 <translation id="5877248419911025165">Restrânge toate solicitările</translation>
+<translation id="5878945009165002849">Blochează solicitările de conectare de la serviciile de identitate</translation>
 <translation id="5884085660368669834">Preferință pentru site</translation>
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
 <translation id="5908617755156109052">Nu permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Revocă permisiunea de accesare a dispozitivului</translation>
 <translation id="8471525937465764768">Site-urile se conectează de obicei la dispozitive USB pentru funcții cum ar fi imprimarea unui document sau salvarea pe un dispozitiv de stocare</translation>
 <translation id="8473055640493819707">Aplicația <ph name="APP_NAME" /> este învechită. Reinstalează aplicația.</translation>
+<translation id="847433688444405067">Navighează pe mai multe dispozitive</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="848952951823693243">Solicită întotdeauna site-ul mobil</translation>
 <translation id="8492822722330266509">Site-urile pot să afișeze ferestre pop-up și să folosească redirecționări</translation>

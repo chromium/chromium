@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
 <translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
+<translation id="3670480940339182416">網站可以使用 V8 最佳化工具</translation>
 <translation id="3676777756440746804">已禁止網站要求使用與你相關的既有資訊</translation>
 <translation id="3697164069658504920">如果啟用，網站就可以要求使用 USB 裝置。如果停用，網站將無法使用 USB 裝置。</translation>
+<translation id="3703430731944883733">管理動態消息</translation>
 <translation id="3707034683772193706">你造訪的網站可將少量資訊儲存在 Chrome，主要用來證明你不是機器人</translation>
 <translation id="3708684582558000260">禁止已關閉的網站完成資料收發作業</translation>
 <translation id="3709818294139939629">網站的檔案存取權已移除</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">已關閉 Android 設定中的攝影機</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
+<translation id="571222594670061844">網站可以顯示身分識別服務的登入提示</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可將資料儲存到裝置</translation>
+<translation id="5743425052258407233">在所有裝置上存取歷史記錄，輕鬆接續瀏覽進度</translation>
 <translation id="5750869797196646528">手勢追蹤</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">啟用</translation>
 <translation id="5876056640971328065">暫停影片</translation>
 <translation id="5877248419911025165">收合所有要求</translation>
+<translation id="5878945009165002849">封鎖身分識別服務的登入提示</translation>
 <translation id="5884085660368669834">網站偏好設定</translation>
 <translation id="5887687176710214216">上次造訪日期：昨天</translation>
 <translation id="5908617755156109052">不允許網站建立你周遭環境的 3D 地圖或追蹤攝影機位置</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">撤銷裝置權限</translation>
 <translation id="8471525937465764768">網站通常會連線至 USB 裝置，以提供列印文件或儲存至裝置等功能</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」版本過舊，請重新安裝應用程式。</translation>
+<translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求行動版網站</translation>
 <translation id="8492822722330266509">網頁可以傳送彈出式視窗和使用重新導向</translation>

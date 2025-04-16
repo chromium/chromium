@@ -1544,7 +1544,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">ਨੰਬਰ</translation>
 <translation id="3670229581627177274">ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
-<translation id="3671117652518853176">ਬੰਦ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਦੇ ਉਦੇਸ਼ਾਂ ਲਈ ਕਦੇ-ਕਦਾਈਂ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3671540257457995106">ਕੀ ਆਕਾਰ ਬਦਲਣ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> ਵਿੱਚ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">ਨੈੱਟਵਰਕਿੰਗ ਦੇ ਉਪਕਰਨ</translation>
@@ -1596,7 +1595,6 @@
 <translation id="3739842843727261045">'ਸਲਾਹੋ' ਬਟਨ ਨਾਲ ਇਹ ਵਿਚਾਰ ਸਪੁਰਦ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਇਹ ਨਤੀਜੇ ਪਸੰਦ ਹਨ</translation>
 <translation id="3740447166056383374">ਕਾਪੀ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="374325029554577103">ਫਿੱਟਨੈੱਸ ਤਕਨਾਲੋਜੀ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
-<translation id="3743765582345153106">ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਹਮੇਸ਼ਾਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="3744111561329211289">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
 <translation id="3744212718085287312">ਕੀ ਇਸਨੂੰ ਅਗਲੀ ਵਾਰ ਆਭਾਸੀ ਕਾਰਡ ਨਾਲ ਹੋਰ ਸੁਰੱਖਿਅਤ ਬਣਾਉਣਾ ਹੈ?</translation>
 <translation id="3744899669254331632">ਤੁਸੀਂ ਇਸ ਵੇਲੇ <ph name="SITE" /> ਤੇ ਵਿਜਿਟ ਨਹੀਂ ਕਰ ਸਕਦੇ ਕਿਉਂਕਿ ਵੈੱਬਸਾਈਟ ਨੇ ਸਕ੍ਰੈਂਬਲ ਕੀਤੇ ਕ੍ਰੈਡੈਂਸ਼ੀਅਲਸ ਭੇਜੇ ਸਨ ਜਿਹਨਾਂ ਨਾਲ Chromium ਪ੍ਰਕਿਰਿਆ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਨੈਟਵਰਕ ਅਸ਼ੁੱਧੀਆਂ ਅਤੇ ਹਮਲੇ ਆਮ ਤੌਰ ਤੇ ਅਸਥਾਈ ਹੁੰਦੇ ਹਨ, ਇਸਲਈ ਇਹ ਸਫ਼ਾ ਸ਼ਾਇਦ ਬਾਅਦ ਵਿੱਚ ਕੰਮ ਕਰੇਗਾ।</translation>
@@ -1975,7 +1973,6 @@
 <translation id="4358461427845829800">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="4359160567981085931">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਾਊ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chrome ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ। ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਣ ਅਤੇ ਆਪਣੇ ਖਾਤੇ ਦੇ ਜੋਖਮ ਵਿੱਚ ਹੋਣ ਬਾਰੇ Google ਨੂੰ ਸੂਚਿਤ ਕਰਨ ਲਈ, 'ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="4363222835916186793">ਇਸ ਉਤਪਾਦ ਲਈ ਅਲਰਟਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
-<translation id="4363729811203340554">ਜੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਨ ਵੇਲੇ, Chrome ਤੁਹਾਨੂੰ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
 <translation id="4366943895537458493">ਪਲੇਟ</translation>
 <translation id="4369179505195332608">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="437040971055499437">ਸੁਰੱਖਿਆ ਇਵੈਂਟ ਹੋਣ 'ਤੇ</translation>
@@ -2572,7 +2569,6 @@
 <translation id="5452923259299906094">ਈ-ਵਾਲੇਟ ਅਤੇ Pix ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="5455374756549232013">ਖ਼ਰਾਬ ਨੀਤੀ ਟਾਈਮਸਟੈਂਪ</translation>
 <translation id="5456428544444655325">ਕਦੇ ਨਾ ਦਿਖਾਓ</translation>
-<translation id="5456839782162429664">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਹਰ ਵਾਰ ਹੱਥੀਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="5457113250005438886">ਅਵੈਧ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}other{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}}</translation>
 <translation id="5463625433003343978">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
@@ -2681,7 +2677,6 @@
 <translation id="5632485077360054581">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
 <translation id="563324245173044180">ਭਰਮਾਊ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ।</translation>
 <translation id="563371367637259496">ਮੋਬਾਈਲ</translation>
-<translation id="5634725266554983459">ਕੀ ਹੱਥੀਂ ਪੁਸ਼ਟੀਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5635478143789726479">ਵਿਕਰੇਤਾ ਦੇ ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ਸਟੀਰੀਓ ਸਿਸਟਮ ਅਤੇ ਉਸਦੇ ਹਿੱਸੇ</translation>
@@ -3321,6 +3316,7 @@
 <translation id="6739943577740687354">ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ AI ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ ਅਤੇ ਇਹ ਜ਼ਰੂਰੀ ਨਹੀਂ ਕਿ ਇਹ ਹਮੇਸ਼ਾਂ ਸਹੀ ਹੋਵੇ</translation>
 <translation id="6740851646645036700">ਤੁਹਾਡੀ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡੀ ਲਿਖਣ ਸੰਬੰਧੀ ਸਹਾਇਤਾ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="674375294223700098">ਅਗਿਆਤ ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਗੜਬੜ।</translation>
+<translation id="6743841972744298686">ਸਿੰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="6745592621698551453">ਹੁਣ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ਟੈਲੀਕਾਨਫਰੰਸਿੰਗ</translation>
@@ -3448,7 +3444,6 @@
 <translation id="6973988895180423160">3.5 x 5 ਇੰਚ</translation>
 <translation id="6978121630131642226">ਖੋਜ ਇੰਜਣ</translation>
 <translation id="6978236010531171013">ਫਿਰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="6978722349058177832">ਜੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਨ ਵੇਲੇ, Chromium ਤੁਹਾਨੂੰ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਤੱਕ ਪਹੁੰਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>

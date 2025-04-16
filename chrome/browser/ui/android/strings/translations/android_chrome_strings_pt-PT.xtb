@@ -259,7 +259,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="22091350895006575">Adicionar nome de utilizador</translation>
 <translation id="221494669172414749">Abrir o Chrome sem um bloqueio do perfil remove as palavras-passe guardadas e os métodos de pagamento do carro. A utilização de um bloqueio do perfil mantém estes dados seguros.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">O grupo de separadores <ph name="TAB_GROUP_TITLE" /> tem nova atividade</translation>
 <translation id="2230777942707397948">Janela vazia</translation>
 <translation id="223356358902285214">Atividade da Web e de apps</translation>
 <translation id="2234827758954819389">Guia de privacidade</translation>
@@ -853,7 +852,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4912413785358399818">Mover separador</translation>
 <translation id="4913169188695071480">Parar a atualização</translation>
 <translation id="4925120120285606924">Captura de ecrã <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">As suas palavras-passe serão exportadas e transferidas como um ficheiro de texto. Serão visíveis para qualquer pessoa e qualquer app com acesso à pasta de destino.</translation>
 <translation id="4926901776383726965">Pode guardar imagens e ficheiros para ver offline ou partilhar noutras apps</translation>
 <translation id="4932247056774066048">Uma vez que está a terminar sessão numa conta gerida pelo domínio <ph name="DOMAIN_NAME" />, os dados do Chrome serão eliminados deste dispositivo. Estes irão permanecer na sua Conta Google.</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
@@ -894,6 +892,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5114895953710637392">A página para filtrar por app está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Pode usar o Chrome sempre que tocar em links de mensagens, documentos e outras apps</translation>
+<translation id="5118713593561876160">Interesses</translation>
 <translation id="5122378528687922675">Se precisares de ajuda, pede à pessoa adulta responsável (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Separador de navegação anónima</translation>
 <translation id="5139940364318403933">Saiba como utilizar o Google Drive</translation>
@@ -1100,6 +1099,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6087286598828478206">Bloquear e sair do grupo?</translation>
 <translation id="60923314841986378">Faltam <ph name="HOURS" /> horas</translation>
 <translation id="6095578583683628124">Se o Google também for o seu motor de pesquisa predefinido, verá melhores sugestões contextualmente relevantes</translation>
+<translation id="6104768972315313991">Código QR gerado</translation>
 <translation id="610630277578876674">Abra rapidamente links em mensagens e muito mais</translation>
 <translation id="6108923351542677676">Configuração em curso…</translation>
 <translation id="6112702117600201073">A atualizar a página</translation>
@@ -1549,6 +1549,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7963646190083259054">Fornecedor:</translation>
 <translation id="7965838025086216108">Pode usar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de Palavras-passe da Google de <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
+<translation id="7968982339740310781">Ver detalhes</translation>
 <translation id="7971136598759319605">Ativo há 1 dia</translation>
 <translation id="7975379999046275268">Pré-visualizar página <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Envia-lhe um aviso se usar uma palavra-passe que tenha sido comprometida numa violação de dados.</translation>
@@ -1681,7 +1682,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8497242791509864205">Abrir opções de ordenação</translation>
 <translation id="8497480609928300907">Explicação do guia de privacidade</translation>
 <translation id="8497726226069778601">Ainda não há nada para ver aqui</translation>
-<translation id="8503559462189395349">Palavras-passe do Chrome</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8505766168025405649">Veja a notificação para obter o estado da transferência</translation>
 <translation id="8506357771923193001">As suas transferências são apresentadas aqui</translation>
@@ -1716,6 +1716,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8635399646025169806">Manter o grupo de separadores?</translation>
 <translation id="8636825310635137004">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
 <translation id="864544049772947936">Gerir janelas (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">O nome do ficheiro já existe</translation>
 <translation id="8672883760227492369">Algumas palavras-passe neste dispositivo vão deixar de funcionar em breve. Pode mover estas palavras-passe para o Gestor de Palavras-passe da Google.</translation>
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

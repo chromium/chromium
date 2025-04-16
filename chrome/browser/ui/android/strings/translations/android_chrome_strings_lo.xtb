@@ -259,7 +259,6 @@
 <translation id="22091350895006575">ເພີ່ມຊື່ຜູ້ໃຊ້</translation>
 <translation id="221494669172414749">ການເປີດ Chrome ໂດຍບໍ່ໃຊ້ການລັອກໂປຣໄຟລ໌ຈະລຶບລະຫັດຜ່ານ ແລະ ວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້ຂອງທ່ານອອກຈາກລົດ. ການໃຊ້ການລັອກໂປຣໄຟລ໌ຈະຊ່ວຍໃຫ້ຂໍ້ມູນນີ້ປອດໄພ.</translation>
 <translation id="2227444325776770048">ສືບຕໍ່ໃຊ້ໃນຊື່ <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">ກຸ່ມແຖບ <ph name="TAB_GROUP_TITLE" /> ມີກິດຈະກຳໃໝ່</translation>
 <translation id="2230777942707397948">ໜ້າຈໍຫວ່າງເປົ່າ</translation>
 <translation id="223356358902285214">ການເຄື່ອນໄຫວເວັບ ແລະ ແອັບ</translation>
 <translation id="2234827758954819389">ຄູ່ມືຄວາມເປັນສ່ວນຕົວ</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ຍ້າຍແຖບ</translation>
 <translation id="4913169188695071480">ຢຸດການໂຫຼດຄືນໃໝ່</translation>
 <translation id="4925120120285606924">ຮູບຖ່າຍໜ້າຈໍ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">ລະຫັດຂອງທ່ານຈະຖືກສົ່ງອອກ ແລະ ດາວໂຫຼດເປັນໄຟລ໌ຂໍ້ຄວາມ. ທຸກຄົນ ແລະ ແອັບຕ່າງໆທີ່ມີສິດເຂົ້າເຖິງໂຟນເດີປາຍທາງຈະສາມາດເບິ່ງເຫັນພວກມັນໄດ້.</translation>
 <translation id="4926901776383726965">ທ່ານສາມາດບັນທຶກຮູບ ແລະ ໄຟລ໌ເພື່ອເບິ່ງແບບອອບລາຍ ຫຼື ແບ່ງປັນໃນແອັບອື່ນໆໄດ້</translation>
 <translation id="4932247056774066048">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="DOMAIN_NAME" />, ຂໍ້ມູນ Chrome ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ມັນຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="4943703118917034429">ເວີຊົວ ຣິອາລິຕີ</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">ປິດຊີດຕົວກັ່ນຕອງແອັບແລ້ວ.</translation>
 <translation id="5115811374190515607">ຫາ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">ທ່ານສາມາດໃຊ້ Chrome ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ</translation>
+<translation id="5118713593561876160">ຄວາມສົນໃຈ</translation>
 <translation id="5122378528687922675">ກະລຸນາຂໍຄວາມຊ່ວຍເຫຼືອຈາກຜູ້ປົກຄອງ (<ph name="PARENT_NAME_1" /> ຫຼື <ph name="PARENT_NAME_2" />) ຂອງທ່ານ, ຫາກທ່ານຕ້ອງການ</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="5139940364318403933">ຮຽນຮູ້ວິທີໃຊ້ Google Drive</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">ບລັອກ ແລະ ອອກຈາກກຸ່ມບໍ?</translation>
 <translation id="60923314841986378">ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6095578583683628124">ຫາກ Google ເປັນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານນຳ, ທ່ານຈະເຫັນການແນະນຳທີ່ກ່ຽວຂ້ອງແບບຕາມບໍລິບົດທີ່ດີຂຶ້ນ</translation>
+<translation id="6104768972315313991">ສ້າງລະຫັດ QR ແລ້ວ</translation>
 <translation id="610630277578876674">ເປີດລິ້ງໃນຂໍ້ຄວາມ ແລະ ອື່ນໆໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="6108923351542677676">ກຳລັງດຳເນີນການຕັ້ງຄ່າ...</translation>
 <translation id="6112702117600201073">ການ​ຣີ​ເຟ​ຣ​ຊ​ໜ້າ</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">ຜູ້ຂາຍ:</translation>
 <translation id="7965838025086216108">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນໃດກໍໄດ້. ພວກມັນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="ACCOUNT" /> ແລ້ວ.</translation>
 <translation id="7968014550143838305">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານແລ້ວ</translation>
+<translation id="7968982339740310781">ເບິ່ງລາຍ​ລະ​ອຽດ​</translation>
 <translation id="7971136598759319605">ນຳໃຊ້ເມື່ອ 1 ມື້ກ່ອນ</translation>
 <translation id="7975379999046275268">ສະແດງຕົວຢ່າງໜ້າ <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ເຕືອນທ່ານຫາກທ່ານໃຊ້ລະຫັດຜ່ານທີ່ຖືກລະເມີດໃນການລະເມີດຂໍ້ມູນ.</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">ເປີດຕົວເລືອກການຈັດຮຽງ</translation>
 <translation id="8497480609928300907">ຄຳອະທິບາຍຄູ່ມືຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="8497726226069778601">ບໍ່​ມີ​ອັນໃດ​ຈະ​ເບິ່ງຢູ່​ທີ່​ນີ້​..​.ເທື່ອ</translation>
-<translation id="8503559462189395349">ລະຫັດຜ່ານຂອງ Chrome</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8505766168025405649">ເບິ່ງການແຈ້ງເຕືອນສຳລັບສະຖານະດາວໂຫຼດ</translation>
 <translation id="8506357771923193001">ທ່ານຈະພົບການດາວໂຫຼດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">ເກັບກຸ່ມແຖບໄວ້ບໍ?</translation>
 <translation id="8636825310635137004">ເພື່ອໂຫຼດແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນ, ໃຫ້ເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="864544049772947936">ຈັດການໜ້າຈໍ (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">ເຂົ້າສູ່ລະບົບ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">ມີຊື່ໄຟລ໌ນີ້ຢູ່ແລ້ວ</translation>
 <translation id="8672883760227492369">ລະຫັດຜ່ານບາງລາຍການໃນອຸປະກອນນີ້ເທົ່ານັ້ນທີ່ຈະຢຸດເຮັດວຽກໃນໄວໆນີ້. ທ່ານສາມາດຍ້າຍລະຫັດຜ່ານເຫຼົ່ານີ້ໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ໄດ້.</translation>
 <translation id="8676276370198826499">ລົງທະບຽນໃຊ້ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

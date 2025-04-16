@@ -259,7 +259,6 @@
 <translation id="22091350895006575">เพิ่มชื่อผู้ใช้</translation>
 <translation id="221494669172414749">การเปิด Chrome โดยไม่ใช้การล็อกโปรไฟล์จะนำรหัสผ่านและวิธีการชำระเงินที่บันทึกไว้ออกจากรถ การใช้การล็อกโปรไฟล์จะช่วยให้ข้อมูลนี้ปลอดภัย</translation>
 <translation id="2227444325776770048">ดำเนินการต่อในชื่อ <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">กลุ่มแท็บ <ph name="TAB_GROUP_TITLE" /> มีกิจกรรมใหม่</translation>
 <translation id="2230777942707397948">หน้าต่างว่าง</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ย้ายแท็บ</translation>
 <translation id="4913169188695071480">หยุดรีเฟรช</translation>
 <translation id="4925120120285606924">ภาพหน้าจอ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">ระบบจะส่งออกรหัสผ่านให้ดาวน์โหลดเป็นไฟล์ข้อความ ซึ่งใครหรือแอปใดก็ตามที่มีสิทธิ์เข้าถึงโฟลเดอร์ที่บันทึกไฟล์ไว้จะเห็นรหัสผ่านเหล่านี้ได้</translation>
 <translation id="4926901776383726965">คุณบันทึกรูปภาพและไฟล์เพื่อดูแบบออฟไลน์หรือแชร์ในแอปอื่นๆ ได้</translation>
 <translation id="4932247056774066048">เนื่องจากคุณกำลังจะออกจากระบบบัญชีที่จัดการโดย <ph name="DOMAIN_NAME" /> ข้อมูลใน Chrome จะถูกลบออกจากอุปกรณ์นี้ แต่จะยังคงอยู่ในบัญชี Google</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">ชีตตัวกรองแอปปิดอยู่</translation>
 <translation id="5115811374190515607">ไปยัง<ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">คุณจะใช้ Chrome ได้ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
+<translation id="5118713593561876160">ความสนใจ</translation>
 <translation id="5122378528687922675">โปรดขอความช่วยเหลือจากผู้ปกครอง (<ph name="PARENT_NAME_1" /> หรือ <ph name="PARENT_NAME_2" />) หากต้องการ</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5139940364318403933">ดูวิธีใช้ Google ไดรฟ์</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">บล็อกและออกจากกลุ่มใช่ไหม</translation>
 <translation id="60923314841986378">เหลือ <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6095578583683628124">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
+<translation id="6104768972315313991">คิวอาร์โค้ดที่สร้างขึ้น</translation>
 <translation id="610630277578876674">เปิดลิงก์ในข้อความและอื่นๆ อย่างรวดเร็ว</translation>
 <translation id="6108923351542677676">กำลังดำเนินการตั้งค่า…</translation>
 <translation id="6112702117600201073">กำลังรีเฟรชหน้า</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">ผู้ขาย:</translation>
 <translation id="7965838025086216108">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="7968014550143838305">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
+<translation id="7968982339740310781">ดูรายละเอียด</translation>
 <translation id="7971136598759319605">ใช้งานเมื่อ 1 วันที่ผ่านมา</translation>
 <translation id="7975379999046275268">พรีวิวหน้า <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">เปิดตัวเลือกการจัดเรียง</translation>
 <translation id="8497480609928300907">คำอธิบายคู่มือความเป็นส่วนตัว</translation>
 <translation id="8497726226069778601">ที่นี่ยังไม่มีอะไรให้ดู… เลย</translation>
-<translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8505766168025405649">ดูสถานะการดาวน์โหลดได้ที่การแจ้งเตือน</translation>
 <translation id="8506357771923193001">คุณจะเห็นการดาวน์โหลดที่นี่</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">เก็บกลุ่มแท็บไว้ใช่ไหม</translation>
 <translation id="8636825310635137004">เปิดการซิงค์เพื่อรับแท็บจากอุปกรณ์เครื่องอื่นๆ ของคุณ</translation>
 <translation id="864544049772947936">จัดการหน้าต่าง (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">มีชื่อไฟล์นี้อยู่แล้ว</translation>
 <translation id="8672883760227492369">รหัสผ่านบางรายการในอุปกรณ์นี้จะหยุดทำงานเร็วๆ นี้ คุณย้ายรหัสผ่านดังกล่าวไปยังเครื่องมือจัดการรหัสผ่านบน Google ได้</translation>
 <translation id="8676276370198826499">ลงชื่อสมัครใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

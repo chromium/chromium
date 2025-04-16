@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Webbplatser får fråga efter din plats</translation>
 <translation id="3658847490588580244">Ark på nedre delen av standardwebbläsaren</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
+<translation id="3670480940339182416">Webbplatser kan använda V8-optimeraren</translation>
 <translation id="3676777756440746804">Webbplatser hindras från att be dig använda uppgifter som de har sparat om dig</translation>
 <translation id="3697164069658504920">När detta är aktiverat kan webbplatser be om att få använda USB-enheter. När detta är inaktiverat får webbplatser inte använda USB-enheter.</translation>
+<translation id="3703430731944883733">Hantera ditt flöde</translation>
 <translation id="3707034683772193706">En webbplats du besöker kan spara mycket information med Chrome, främst för att kontrollera att du inte är en bot</translation>
 <translation id="3708684582558000260">Tillåt inte att stängda webbplatser fortsätter skicka eller ta emot data</translation>
 <translation id="3709818294139939629">Tog bort webbplatsens åtkomst</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
 <translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
 <translation id="5706552988683188916">Cookies och annan webbplatsdata för <ph name="WEBSITE" /> raderas</translation>
+<translation id="571222594670061844">Webbplatser får visa inloggningsmeddelanden från identitetstjänster</translation>
 <translation id="5723967018671998714">Cookies från tredje part blockeras i inkognitoläge</translation>
 <translation id="5740126560802162366">Webbplatser kan spara data på enheten</translation>
+<translation id="5743425052258407233">Få din historik på alla dina enheter så att du enkelt kan fortsätta där du slutade</translation>
 <translation id="5750869797196646528">Handspårning</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockeras</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5876056640971328065">Pausa video</translation>
 <translation id="5877248419911025165">Komprimera alla förfrågningar</translation>
+<translation id="5878945009165002849">Blockera inloggningsmeddelanden från identitetstjänster</translation>
 <translation id="5884085660368669834">Webbplatsinställning</translation>
 <translation id="5887687176710214216">Besöktes senast i går</translation>
 <translation id="5908617755156109052">Tillåt inte att webbplatser skapar en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Återkalla enhetsbehörighet</translation>
 <translation id="8471525937465764768">Åtkomst till USB-enheter brukar kunna behövas för funktioner som att skriva ut dokument eller spara filer på en lagringsenhet</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> är inaktuell. Installera om appen.</translation>
+<translation id="847433688444405067">Bläddra bland enheter</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="848952951823693243">Begär alltid mobilversionen</translation>
 <translation id="8492822722330266509">Webbplatser får öppna popup-fönster och använda omdirigering</translation>

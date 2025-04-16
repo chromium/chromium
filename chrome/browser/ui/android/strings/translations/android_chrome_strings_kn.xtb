@@ -259,7 +259,6 @@
 <translation id="22091350895006575">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="221494669172414749">ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಇಲ್ಲದೆ Chrome ಅನ್ನು ತೆರೆಯುವುದರಿಂದ ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಕಾರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ಬಳಸುವುದರಿಂದ ಈ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು ಹೊಸ ಚಟುವಟಿಕೆಯನ್ನು ಹೊಂದಿದೆ</translation>
 <translation id="2230777942707397948">ಖಾಲಿ ವಿಂಡೋ</translation>
 <translation id="223356358902285214">ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
 <translation id="2234827758954819389">ಗೌಪ್ಯತೆ ಗೈಡ್</translation>
@@ -852,7 +851,6 @@
 <translation id="4912413785358399818">ಟ್ಯಾಬ್ ಸರಿಸಿ</translation>
 <translation id="4913169188695071480">ರಿಫ್ರೆಶ್ ಮಾಡುವಿಕೆ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4925120120285606924">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಪಠ್ಯ ಫೈಲ್ ಆಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗತ್ತದೆ. ಗಮ್ಯಸ್ಥಾನ ಫೋಲ್ಡರ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುವ ಪ್ರತಿಯೊಬ್ಬರಿಗೂ ಮತ್ತು ಪ್ರತಿಯೊಂದು ಆ್ಯಪ್‌ಗೂ ಅವುಗಳು ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="4926901776383726965">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ವೀಕ್ಷಿಸಲು ಅಥವಾ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲು ನೀವು ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಬಹುದು</translation>
 <translation id="4932247056774066048">ನೀವು <ph name="DOMAIN_NAME" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುವ ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತಿರುವ ಕಾರಣ, ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಇದು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಯುತ್ತದೆ.</translation>
 <translation id="4943703118917034429">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ</translation>
@@ -893,6 +891,7 @@
 <translation id="5114895953710637392">ಆ್ಯಪ್ ಫಿಲ್ಟರ್ ಶೀಟ್ ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> ಗೆ</translation>
 <translation id="5116239826668864748">ಸಂದೇಶಗಳು, ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು</translation>
+<translation id="5118713593561876160">ಆಸಕ್ತಿಗಳು</translation>
 <translation id="5122378528687922675">ನಿಮಗೆ ಸಹಾಯ ಬೇಕಿದ್ದರೆ, ನಿಮ್ಮ ಪೋಷಕರನ್ನು ಕೇಳಿ (<ph name="PARENT_NAME_1" /> ಅಥವಾ <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
 <translation id="5139940364318403933">Google ಡ್ರೈವ್‌‌ ಅನ್ನು ಹೇಗೆ ಬಳಸುವುದು ಎಂದು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
@@ -1099,6 +1098,7 @@
 <translation id="6087286598828478206">ಗುಂಪನ್ನು ನಿರ್ಬಂಧಿಸಿ, ತೊರೆಯಬೇಕೇ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ಗಂಟೆಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="6095578583683628124">Google ಸಹ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿದ್ದರೆ, ನಿಮಗೆ ಉತ್ತಮವಾದ, ಸಾಂದರ್ಭಿಕವಾಗಿ ಸೂಕ್ತವಾದ ಸಲಹೆಗಳು ಕಾಣಿಸುತ್ತವೆ</translation>
+<translation id="6104768972315313991">QR ಕೋಡ್ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="610630277578876674">ಸಂದೇಶಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ ಮತ್ತು ಇತ್ಯಾದಿ</translation>
 <translation id="6108923351542677676">ಸೆಟಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
 <translation id="6112702117600201073">ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -1548,6 +1548,7 @@
 <translation id="7963646190083259054">ಮಾರಾಟಗಾರ:</translation>
 <translation id="7965838025086216108">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೀವು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು. ಅವುಗಳನ್ನು <ph name="ACCOUNT" /> ನ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7968014550143838305">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7971136598759319605">1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="7975379999046275268">ಪುಟ ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಬಳಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
@@ -1680,7 +1681,6 @@
 <translation id="8497242791509864205">ವಿಂಗಡಣೆ ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8497480609928300907">ಗೌಪ್ಯತಾ ಮಾರ್ಗದರ್ಶಿ ವಿವರಣೆ</translation>
 <translation id="8497726226069778601">ಇಲ್ಲಿ ನೋಡಲು ಇನ್ನೂ ಏನೂ ಇಲ್ಲ...</translation>
-<translation id="8503559462189395349">Chrome ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="8505766168025405649">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಿತಿಗಾಗಿ ಅಧಿಸೂಚನೆಯನ್ನು ನೋಡಿ</translation>
 <translation id="8506357771923193001">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
@@ -1715,6 +1715,7 @@
 <translation id="8635399646025169806">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಬೇಕೆ?</translation>
 <translation id="8636825310635137004">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="864544049772947936">ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8664979001105139458">ಫೈಲ್ ಹೆಸರು ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="8672883760227492369">ಈ ಸಾಧನದಲ್ಲಿನ ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ. ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google Password Manager ಗೆ ಸರಿಸಬಹುದು.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗೆ <ph name="SITE_ETLD_PLUS_ONE" /> ಗೆ ಸೈನ್ ಅಪ್ ಮಾಡಿ</translation>

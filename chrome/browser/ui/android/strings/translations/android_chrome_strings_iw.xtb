@@ -259,7 +259,6 @@
 <translation id="22091350895006575">הוספה של שם המשתמש</translation>
 <translation id="221494669172414749">‏פתיחת Chrome בלי נעילת פרופיל תגרום להסרת הסיסמאות ואמצעי התשלום השמורים מהמכונית. שימוש בנעילת פרופיל עוזר לשמור על אבטחת הנתונים האלה.</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">יש פעילות חדשה בקבוצת הכרטיסיות <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="2230777942707397948">חלון ריק</translation>
 <translation id="223356358902285214">פעילות באינטרנט ובאפליקציות</translation>
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">העברת הכרטיסייה</translation>
 <translation id="4913169188695071480">הפסקת הרענון</translation>
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">המערכת תייצא את הסיסמאות ותוריד אותן כקובץ טקסט. הן יהיו גלויות לכל המשתמשים והאפליקציות שיש להם גישה לתיקיית היעד.</translation>
 <translation id="4926901776383726965">אפשר לשמור תמונות וקבצים לצפייה במצב אופליין או לשיתוף באפליקציות אחרות</translation>
 <translation id="4932247056774066048">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="DOMAIN_NAME" />, נתוני Chrome שלך יימחקו מהמכשיר הזה. הם יישמרו בחשבון Google שלך.</translation>
 <translation id="4943703118917034429">מציאות מדומה</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">גיליון הסינון לפי אפליקציות סגור.</translation>
 <translation id="5115811374190515607">אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">‏אפשר להשתמש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="5118713593561876160">תחומי עניין</translation>
 <translation id="5122378528687922675">אם צריך עזרה, אפשר לבקש עזרה מהורה (<ph name="PARENT_NAME_1" /> או <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
 <translation id="5139940364318403933">‏איך משתמשים ב-Google Drive</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">לחסום את הקבוצה ולצאת ממנה?</translation>
 <translation id="60923314841986378">נותרו <ph name="HOURS" /> שעות</translation>
 <translation id="6095578583683628124">‏אם Google הוא גם מנוע החיפוש המוגדר אצלך כברירת מחדל, יוצגו לך הצעות משופרות ורלוונטיות מבחינת הקשר.</translation>
+<translation id="6104768972315313991">‏קוד QR שנוצר</translation>
 <translation id="610630277578876674">פתיחת קישורים בהודעות במהירות ועוד</translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">ספק:</translation>
 <translation id="7965838025086216108">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google לחשבון <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
+<translation id="7968982339740310781">הצגת פרטים</translation>
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">פתיחה של אפשרויות המיון</translation>
 <translation id="8497480609928300907">הסבר על המדריך בנושא פרטיות</translation>
 <translation id="8497726226069778601">אין מה לראות כאן… בינתיים</translation>
-<translation id="8503559462189395349">‏סיסמאות Chrome</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8505766168025405649">סטטוס ההורדה מוצג בהתראות</translation>
 <translation id="8506357771923193001">ההורדות יופיעו כאן</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">לשמור את קבוצת הכרטיסיות?</translation>
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
 <translation id="864544049772947936">ניהול החלונות (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">כניסה אל <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
 <translation id="8672883760227492369">‏חלק מהסיסמאות במכשיר הזה יפסיקו לפעול בקרוב. אפשר להעביר את הסיסמאות האלה למנהל הסיסמאות של Google.</translation>
 <translation id="8676276370198826499">יש לך אפשרות להירשם לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

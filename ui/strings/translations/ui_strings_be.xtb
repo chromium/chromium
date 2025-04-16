@@ -145,6 +145,7 @@
 <translation id="5768079895599174203">{DAYS,plural, =1{1 дзень і }one{# дзень і }few{# дні і }many{# дзён і }other{# дня і }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Відарыс.</translation>
+<translation id="5860491529813859533">Уключыць</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{праз 1 г.}one{праз # г.}few{праз # г.}many{праз # г.}other{праз # г.}}</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Засталася 1 секунда}one{Засталася # секунда}few{Засталося # секунды}many{Засталося # секунд}other{Засталося # секунды}}</translation>

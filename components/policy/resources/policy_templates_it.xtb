@@ -966,13 +966,6 @@ La soglia minima è di 1 minuto.
 <translation id="1639673466479276550">Attiva il salvaschermo nella schermata di accesso.</translation>
 <translation id="1640824698339859203">Attiva il servizio SSO mobile e trasferisci le autenticazioni del web service dell'utente sul nuovo dispositivo</translation>
 <translation id="1641117061932613266">Attiva il servizio <ph name="PRODUCT_NAME" /> V2</translation>
-<translation id="1641394008743444477">Consente di impostare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
-
-      Se una qualsiasi di queste funzionalità viene disattivata, l'utente non può accedervi dall'UI e la vede contrassegnata come "disattivata dall'amministratore". L'esperienza utente delle funzionalità disattivate è decisa da <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
-
-      Se la policy non viene configurata, tutte le funzionalità di <ph name="PRODUCT_OS_NAME" /> vengono attivate per impostazione predefinita e l'utente le può utilizzare.
-
-      Nota: al momento la funzionalità di scansione è disattivata per impostazione predefinita tramite un flag funzionalità. Se l'utente attiva la funzionalità tramite il flag funzionalità, questa può comunque essere disattivata dalla policy.</translation>
 <translation id="1643642938972654829">Consenti l'accesso alla pagina di test delle policy</translation>
 <translation id="1644373745741524038">Per motivi di sicurezza,
 l'API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
@@ -997,6 +990,7 @@ attivazione dall'utente per chiamare questa API.</translation>
       Se il valore della policy viene impostato su 0, vengono utilizzate le dimensioni della cache predefinite e gli utenti non possono apportare modifiche.
 
       Se la policy non viene configurata, vengono utilizzate le dimensioni della cache predefinite e gli utenti possono apportare modifiche con il flag --media-cache-size.</translation>
+<translation id="1647775511451132916">Disattiva i controlli con il volto nella schermata di accesso</translation>
 <translation id="1648816843164517573">Elenco di nomi che eviteranno il controllo delle policy HSTS</translation>
 <translation id="1651197070942919276">Non consentire al dispositivo di eseguire macchine virtuali</translation>
 <translation id="1651216316133158002">Questa policy consente agli amministratori di specificare le app che fungono da gestori predefiniti per le rispettive estensioni dei file
@@ -2507,7 +2501,6 @@ Se la policy viene disattivata o se non viene configurata, gli utenti possono tr
       Quando questa policy non è impostata o è impostata su true, il visualizzatore PDF può aggiungere annotazioni nei PDF.
 
       Quando questa policy è impostata su false, il visualizzatore PDF non può aggiungere annotazioni sui PDF.</translation>
-<translation id="2769199041812510302">URL logo aziendale</translation>
 <translation id="2769952903507981510">Configura il nome di dominio richiesto per gli host di accesso remoto</translation>
 <translation id="2770376586681635746">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
 
@@ -2798,6 +2791,17 @@ Se il valore è impostato su <ph name="ENABLED_ENUM_VALUE" />, le entità vengon
 Se il valore viene impostato su <ph name="DISABLED_ENUM_VALUE" />, le entità non vengono rilevate e non sono utilizzabili.
 Se il valore è impostato su <ph name="LONGPRESSONLY_ENUM_VALUE" />, le entità vengono rilevate e sono utilizzabili solo mediante la pressione prolungata.</translation>
 <translation id="3010907817113180883">Frequenza del rilevamento dell'heartbeat dell'attività del dispositivo in millisecondi.</translation>
+<translation id="3015732569734756809">Quando i controlli con il volto sono attivi, puoi usare la testa per controllare il cursore del mouse e usare
+le espressioni facciali per eseguire azioni di sistema. In questo modo puoi controllare il dispositivo
+senza usare le mani.
+
+Se questa policy viene impostata su true, i controlli con il volto saranno sempre attivi nella schermata di accesso.
+
+Se viene impostata su false, i controlli con il volto saranno sempre disattivati nella schermata di accesso.
+
+Se configuri questa policy, gli utenti non potranno modificarla o eseguirne l'override.
+
+Se la policy non viene configurata, inizialmente il controllo con il volto sarà disattivato nella schermata di accesso, ma l'utente potrà attivarlo in qualsiasi momento.</translation>
 <translation id="3016585641676676461">Blocca lo schermo intero automatico su questi siti</translation>
 <translation id="3017578958356048910">Il visualizzatore PDF può aggiungere annotazioni nei PDF</translation>
 <translation id="3020623128585817424">Disattiva il controllo del browser predefinito all'avvio</translation>
@@ -3323,13 +3327,6 @@ Per questa policy è possibile definire al massimo 1000 voci.
 Se la policy non viene impostata, non è possibile navigare nel browser se è attiva la VPN sempre attiva in modalità con restrizioni e la VPN non è connessa.</translation>
 <translation id="3405997282295704902">Non consentire agli utenti di utilizzare <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Non chiedere all'utente (il download inizia immediatamente)</translation>
-<translation id="3408078762098350617">Consente di controllare l'esperienza utente delle funzionalità disattivate elencate nella policy <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Se la policy viene impostata su "blocked", le funzionalità disattivate non saranno utilizzabili, ma rimarranno visibili per gli utenti.
-
-      Se la policy viene impostata su "hidden", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
-
-      Se la policy non viene configurata o presenta un valore non valido, la modalità di disattivazione delle funzionalità di sistema sarà "blocked".</translation>
 <translation id="3411947169047929182">Controlla la configurazione correlata a WebRTC</translation>
 <translation id="341285788698114069">Questa policy consente di stabilire la priorità del processo audio su Windows.
       Se la policy viene attivata, il processo audio verrà eseguito con priorità sopra la norma.
@@ -4557,7 +4554,6 @@ L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto
       Se la policy viene impostata su Disabled o se non viene configurata, la modalità di ricarica avanzata della batteria rimane disattivata.
 
       Gli utenti non possono modificare questa impostazione.</translation>
-<translation id="4307479555111916927">Imposta un'etichetta aziendale personalizzata</translation>
 <translation id="4309091698378414920">Attiva l'evidenziazione del cursore</translation>
 <translation id="4311141497190183490">Se la policy viene impostata su 1, i siti possono tracciare la posizione fisica dell'utente come stato predefinito. Se la policy viene impostata su 2, il tracciamento viene negato per impostazione predefinita. Puoi impostare la policy per chiedere ogni volta che un sito vuole tracciare la posizione fisica degli utenti.
 
@@ -4565,27 +4561,6 @@ Se la policy non viene configurata, si applica la policy <ph name="ASK_GEOLOCATI
 <translation id="4311195029067684288">Full</translation>
 <translation id="4311662690937656540">Applica in modo forzato gli accessi online nelle schermate di accesso e di blocco</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
-<translation id="4313778862255986189">Questa è una funzionalità beta. Poiché si tratta di una funzionalità in fase di sviluppo, disponibile per i nostri trusted tester, tieni presente che potrebbe subire modifiche e aggiornamenti.
-
-Questa policy consente agli amministratori di impostare un aggregatore di ricerca aziendale designato che fornirà consigli e risultati di ricerca nella barra degli indirizzi quando viene attivato da una parola chiave specifica. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la parola chiave specificata nel campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o senza il prefisso @ (ad es. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) e premendo la barra spaziatrice o il tasto Tab.
-
-I seguenti campi sono obbligatori: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Il campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde al nome del motore di ricerca mostrato all'utente nella barra degli indirizzi.
-
-Il campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde alla parola chiave inserita dall'utente per attivare la ricerca. La scorciatoia può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Le scorciatoie devono essere univoche.
-
-Il campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL in cui cercare. Inserisci l'indirizzo web della pagina dei risultati del motore di ricerca e usa <ph name="SEARCH_TERM_MARKER" /> al posto della query.
-
-Il campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL che fornisce suggerimenti di ricerca. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome otterrà i suggerimenti di ricerca tramite una richiesta GET all'URL sostituendo <ph name="SEARCH_TERM_MARKER" /> con la query di ricerca dell'utente. In caso contrario, verrà eseguita una richiesta POST e la query dell'utente verrà inserita nei parametri POST sotto la chiave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Il campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL di un'immagine che verrà utilizzata nei suggerimenti di ricerca. Se questo campo non viene impostato, verrà utilizzata un'icona predefinita. Consigliamo di utilizzare una favicon (ad esempio <ph name="ICON_URL_EXAMPLE" />). Formati di file immagine supportati: JPEG, PNG e ICO.
-
-Il campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica se la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> è obbligatoria per visualizzare i suggerimenti di ricerca. Se questo campo non viene impostato, la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> non è obbligatoria.
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Disattiva ricerca CNAME durante l'autenticazione Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Questa policy consente di stabilire se il gestore delle password integrato può eliminare le password non decifrabili dal relativo database. Questa operazione è necessaria per ripristinare la funzionalità completa del gestore delle password integrato, ma potrebbe comportare la perdita definitiva dei dati. I valori delle password non decifrabili non diventeranno decifrabili da soli e, se è possibile correggerli, in genere sono necessarie azioni complesse da parte dell'utente.
@@ -7445,7 +7420,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla v
 <translation id="6287128640500683781">Consenti a qualsiasi utente di accedere</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
 <translation id="6287742528823584153">Attiva il servizio <ph name="PRODUCT_NAME" /> e avvia la scrivania remota all'accesso</translation>
-<translation id="6288152932495466841">Avvisa gli utenti in caso di versioni del browser superate</translation>
 <translation id="6299147100249359151">Consenti il rilevamento dell'ambito delle policy.</translation>
 <translation id="6299554629216555326">Impostazioni di gestione delle finestre</translation>
 <translation id="6302021021024941085">Disattiva gli strumenti per la risoluzione dei problemi relativi a Kiosk.</translation>
@@ -8266,11 +8240,6 @@ Il browser rimuoverà automaticamente i dati dei tipi selezionati che sono antec
 I dati scaduti vengono eliminati 15 secondi dopo l'avvio del browser, dopodiché ogni 30 minuti mentre il browser è in esecuzione.
 
 Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
-<translation id="6762635531429930846">Specifica l'età minima della release oltre la quale le notifiche di riavvio sono più aggressive. La durata viene calcolata a partire dall'ultima volta che la versione attualmente in esecuzione è stata pubblicata ai client.
-
-Se è in attesa una nuova versione, è necessario riavviare il browser o il dispositivo e la versione corrente è stata sostituita per più del numero di giorni specificato da questa impostazione, la policy <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> viene forzata su 2 ore. Se la policy <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostata su 1 (obbligatorio), gli utenti saranno costretti a riavviare o ricominciare alla fine del periodo.
-
-Se non viene configurata o se l'età della release non può essere determinata, la policy <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> verrà utilizzata per tutti gli aggiornamenti.</translation>
 <translation id="6763023079133439068">Consenti i certificati privi di un'estensione subjectAlternativeName se sono stati emessi da trust anchor locali</translation>
 <translation id="6766216162565713893">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo Bluetooth nelle vicinanze.</translation>
 <translation id="6770454900105963262">Segnala informazioni sulle sessioni kiosk attive</translation>
@@ -8961,6 +8930,7 @@ Il supporto di questa impostazione delle policy terminerà con <ph name="PRODUCT
 
       Se la policy non viene configurata, si applica la policy <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />, ma gli utenti possono cambiare l'impostazione.</translation>
 <translation id="7238335422094660594">Attiva il provider di <ph name="UIA_NAME" />.</translation>
+<translation id="7241016798422122577">Attiva i controlli con il volto nella schermata di accesso</translation>
 <translation id="7242191282517459095">YouTube (supportato dalla versione 135)</translation>
 <translation id="7244600351241637530">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono visualizzare e scaricare su ChromeOS foto e video recenti acquisiti sul proprio telefono.
 
@@ -9210,7 +9180,6 @@ Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-p
 
       Se la policy non viene configurata, viene applicato l'intervallo predefinito di 3 minuti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
-<translation id="7471938371309017725">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria, Terminal e Registratore da disattivare</translation>
 <translation id="7472547030234093862">Specifica i domini da risolvere tramite DNS over HTTPS</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
 <translation id="7476030153540156377">Scegli se attivare o meno la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>

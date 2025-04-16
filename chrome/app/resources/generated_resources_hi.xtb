@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">कुछ नया शुरू करें या मौजूदा काम में मदद पाएं.</translation>
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
-<translation id="1054187194995068149">नमस्ते. यह एक झलक है</translation>
 <translation id="1054502481659725522">ऐप्लिकेशन, वेबसाइटें, और सिस्टम की सेवाएं आपकी जगह की जानकारी का इस्तेमाल कर सकती हैं</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को 1 हफ़्ते में अपडेट करें}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में अपडेट करें}}</translation>
 <translation id="1055606969515662982">कास्टिंग रोकने के लिए रिमोट का इस्तेमाल करें</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">शॉर्टकट जोड़ा गया</translation>
 <translation id="1174366174291287894">जब तक Chrome से कोई चेतावनी न मिले, तब तक आपका कनेक्शन सुरक्षित है</translation>
 <translation id="1175131936083782305">आपके एडमिन ने इस सुविधा को बंद कर दिया है.</translation>
+<translation id="1175277108283187866">किसी साइट पर जाएं या पता बार में खोजना शुरू करें</translation>
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
 <translation id="1175572348579024023">स्क्रोल करें</translation>
 <translation id="1175914831232945926">अंक</translation>
@@ -480,7 +480,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">आप सभी साइटों और खुले हुए टैब से साइन आउट हो जाएंगे</translation>
 <translation id="1313705515580255288">आपके बुकमार्क, इतिहास, और अन्य सेटिंग को आपके Google खाते में समन्वयित किया जाएगा</translation>
-<translation id="1315184295353569363">ग्रुप को हटाएं</translation>
 <translation id="1316136264406804862">खोज रहा है...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> से कनेक्ट नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="1316495628809031177">सिंक रोका हुआ है</translation>
@@ -2765,6 +2764,7 @@
 <translation id="2878889940310164513">सेल्युलर जोड़ें...</translation>
 <translation id="288042212351694283">अपने यूनीवर्सल सेकंड फ़ैक्टर डिवाइस एक्सेस करें</translation>
 <translation id="2881076733170862447">जब आप एक्सटेंशन को क्लिक करते हैं</translation>
+<translation id="2882530630263790933">ऑडियो और वीडियो</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> फिर से प्रारंभ होगा और जल्‍दी ही रीेसेट हो जाएगा</translation>
 <translation id="2884070497102362193">बैटरी, सीपीयू, मेमोरी, कनेक्टिविटी वगैरह की जांच करें</translation>
 <translation id="2885129935310217435">इस नाम का एक बटन पहले से है. कृपया कोई और नाम चुनें.</translation>
@@ -3065,7 +3065,6 @@
 <translation id="310297983047869047">पिछली स्लाइड</translation>
 <translation id="3103451787721578293">कृपया इस डेटा को अपलोड करने की वजह बताएं:</translation>
 <translation id="3103512663951238230">Alt+क्लिक</translation>
-<translation id="3104763887980088552">गतिविधि लॉग</translation>
 <translation id="3104948640446684649">इस्तेमाल और गड़बड़ी की जानकारी से जुड़ा डेटा भेजें. फ़िलहाल, इस डिवाइस पर गड़बड़ी की जानकारी, डिवाइस की जानकारी, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा, Google को अपने-आप भेजने की सुविधा चालू है. इससे सिस्टम और ऐप्लिकेशन के काम करने के तरीके के साथ-साथ, दूसरी सुविधाओं को बेहतर बनाने में मदद मिलेगी. इकट्ठा किए गए कुछ डेटा से, Google के ऐप्लिकेशन और Android डेवलपर जैसे पार्टनर को भी मदद मिलेगी. अगर अन्य वेब और ऐप्लिकेशन गतिविधि वाली सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />मेट्रिक के बारे में ज़्यादा जानें<ph name="BEGIN_LINK2_END" />ज़्यादा जानें<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">पिछला अपडेट, जो पूरा नहीं हो सका</translation>
 <translation id="3105796011181310544">इसे बदलकर फिर से Google करें?</translation>
@@ -4721,7 +4720,6 @@
 <translation id="4268025649754414643">कुंजी कूटलेखन</translation>
 <translation id="4268516942564021145">यह सेटिंग आपके खाते के लिए उपलब्ध नहीं है.</translation>
 <translation id="4270393598798225102">वर्शन <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">ग्रुप सेव करें</translation>
 <translation id="4274667386947315930">साइन इन करने के लिए डेटा</translation>
 <translation id="4274673989874969668">जब आप कोई साइट छोड़ते हैं, तो वह कुछ कामों को पूरा करने के लिए, सिंक करने की सुविधा का इस्तेमाल जारी रख सकती है, जैसे कि फ़ोटो अपलोड करना या चैट मैसेज भेजना</translation>
 <translation id="4275291496240508082">डिवाइस शुरू होने की आवाज़</translation>
@@ -6184,7 +6182,6 @@
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5319712128756744240">नया डिवाइस जोड़ें</translation>
 <translation id="5320135788267874712">नए डिवाइस का नाम</translation>
-<translation id="5320261549977878764">ग्रुप को हटाएं</translation>
 <translation id="532247166573571973">हो सकता है कि सर्वर तक पहुंचा नहीं जा सकता हो. बाद में फिर से प्रयास करें.</translation>
 <translation id="5323328004379641163">Chrome और इस पेज के लुक को पसंद के मुताबिक बनाएं</translation>
 <translation id="5324300749339591280">ऐप्लिकेशन की सूची</translation>
@@ -6969,7 +6966,6 @@
 <translation id="5901069264981746702">आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है और यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">कैप्चर करने वाले टैब पर जाएं</translation>
 <translation id="5901494423252125310">प्रिंटर का दरवाज़ा खुला है</translation>
-<translation id="5901526412306322179">गतिविधि लॉग</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5902892210366342391">गुप्त मोड में असुरक्षित साइटों पर जाने से पहले चेतावनियां दिखेंगी</translation>
 <translation id="5904614460720589786">कॉन्फ़िगर करते समय हुई गड़बड़ी की वजह से <ph name="APP_NAME" /> को सेट अप नहीं किया जा सका. कृपया अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
@@ -7455,6 +7451,7 @@
 <translation id="6248988683584659830">सेटिंग में खोजें</translation>
 <translation id="6249200942125593849">सुलभता प्रबंधित करें</translation>
 <translation id="6250186368828697007">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट नहीं दिखता</translation>
+<translation id="6250887692313997958">स्प्लिट व्यू में जोड़ने के लिए कोई टैब चुनें</translation>
 <translation id="6251870443722440887">GDI हैंडल</translation>
 <translation id="6251924700383757765">निजता नीति</translation>
 <translation id="625369703868467034">नेटवर्क हेल्थ</translation>
@@ -8108,6 +8105,7 @@
 <translation id="6728528977475057549"><ph name="LAST_FOUR_DIGITS" /> से खत्म होने वाला IBAN</translation>
 <translation id="6729192290958770680">अपना उपयोगकर्ता नाम डालें</translation>
 <translation id="6729280095610283088">जंगल के ऊपर, चमकदार ऑरोरा बोरिऐलिस का शानदार नज़ारा दिख रहा है.</translation>
+<translation id="6729493062119577923">शेयर किए गए टैब ग्रुप की गतिविधि</translation>
 <translation id="6731320427842222405">इसमें कुछ मिनट लग सकते हैं</translation>
 <translation id="6732956960067639542">इसके बजाय, Chrome ब्राउज़र का नया सेशन खोलें.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (आईडी: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10527,7 +10525,6 @@
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8425492902634685834">टास्कबार में पिन करें</translation>
 <translation id="8425768983279799676">आप अपने पिन का इस्तेमाल अपने डिवाइस को अनलॉक करने के लिए कर सकते हैं.</translation>
-<translation id="8426111352542548860">ग्रुप सेव करें</translation>
 <translation id="8427213022735114808">'डिक्टेशन (आप जो बोलते हैं उसे लिखना)' सुविधा आपकी आवाज़ Google को भेजती है ताकि किसी भी लेख फ़ील्ड में बोलकर लिखा जा सके.</translation>
 <translation id="8427292751741042100">किसी भी होस्ट पर एम्बेड किया गया</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
@@ -11530,6 +11527,7 @@
 <translation id="9113240369465613386">सिर्फ़ विषम संख्या वाले पेज प्रिंट करें</translation>
 <translation id="9113469270512809735">हाल ही में बंद किए गए आइटम दिखाएं/छिपाएं</translation>
 <translation id="9113529408970052045">जब किसी साइट पर मौजूद टेक्स्ट बॉक्स में कम शब्दों वाला कॉन्टेंट लिखा जाता है, तब "लिखने में मेरी मदद करो" सुविधा अपने-आप चालू हो सकती है</translation>
+<translation id="9114210796909453187">स्प्लिट व्यू में कोई नया टैब जोड़ें</translation>
 <translation id="9114663181201435112">आसानी से साइन इन करें</translation>
 <translation id="9115675100829699941">&amp;बुकमार्क</translation>
 <translation id="9116366756388192417">कोई विषय चुनें</translation>

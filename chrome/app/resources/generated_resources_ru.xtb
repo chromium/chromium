@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Находите то, что вам нужно, не закрывая клавиатуру.</translation>
 <translation id="1054048317165655285">Завершите настройку на телефоне</translation>
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
-<translation id="1054187194995068149">Привет. Это проверка голоса</translation>
 <translation id="1054502481659725522">Сайты, приложения и системные службы могут использовать данные о вашем местоположении</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Обновите <ph name="DEVICE_TYPE" /> в течение 1 недели}one{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}few{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}many{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}other{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}}</translation>
 <translation id="1055606969515662982">Чтобы остановить трансляцию, используйте пульт ДУ</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">Ярлык добавлен</translation>
 <translation id="1174366174291287894">Если подключение небезопасно, браузер Chrome предупредит вас об этом.</translation>
 <translation id="1175131936083782305">Ваш администратор отключил эту функцию.</translation>
+<translation id="1175277108283187866">Откройте какой-нибудь сайт или введите поисковый запрос в адресную строку.</translation>
 <translation id="1175364870820465910">&amp;Печать...</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1175914831232945926">по цифрам</translation>
@@ -482,7 +482,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Вы автоматически выйдете из аккаунтов на всех сайтах, в том числе на открытых вкладках.</translation>
 <translation id="1313705515580255288">Ваши закладки, история просмотров и настройки синхронизируются с аккаунтом Google.</translation>
-<translation id="1315184295353569363">Отменить сохранение группы</translation>
 <translation id="1316136264406804862">Поиск...</translation>
 <translation id="1316248800168909509">Не удалось подключиться к устройству "<ph name="DEVICE" />". Повторите попытку.</translation>
 <translation id="1316495628809031177">Синхронизация приостановлена</translation>
@@ -2753,6 +2752,7 @@
 <translation id="2878889940310164513">Добавить мобильную сеть</translation>
 <translation id="288042212351694283">С доступом к устройствам Universal 2nd Factor</translation>
 <translation id="2881076733170862447">При нажатии на расширение</translation>
+<translation id="2882530630263790933">Аудио и видео</translation>
 <translation id="2882943222317434580">Сейчас будет выполнен перезапуск и сброс настроек <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="2884070497102362193">Проверить батарею, процессор, память, функции связи и другую диагностическую информацию</translation>
 <translation id="2885129935310217435">Это название кнопки уже используется. Выберите другой вариант.</translation>
@@ -3053,7 +3053,6 @@
 <translation id="310297983047869047">Предыдущий слайд</translation>
 <translation id="3103451787721578293">Укажите причину, по которой вы загружаете эти данные:</translation>
 <translation id="3103512663951238230">Alt + Левая кнопка мыши</translation>
-<translation id="3104763887980088552">Журнал активности</translation>
 <translation id="3104948640446684649">Передача данных об использовании и диагностике. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти сведения позволяют нам повышать стабильность приложений и системы, а также внедрять другие улучшения. Некоторые агрегированные данные используются для улучшения приложений Google или передаются нашим партнерам, например разработчикам Android. Если включена дополнительная история приложений и веб-поиска, эта информация может сохраняться в вашем аккаунте Google. <ph name="BEGIN_LINK2" />Узнать больше о сборе данных<ph name="BEGIN_LINK2_END" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Последний сбой при обновлении</translation>
 <translation id="3105796011181310544">Вернуться к Google?</translation>
@@ -4710,7 +4709,6 @@
 <translation id="4268025649754414643">Шифрование ключей</translation>
 <translation id="4268516942564021145">Этот параметр недоступен в вашем аккаунте.</translation>
 <translation id="4270393598798225102">Версия <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Сохранить группу</translation>
 <translation id="4274667386947315930">Учетные данные</translation>
 <translation id="4274673989874969668">После того как вы закроете сайт, он может продолжить выполнять синхронизацию, пока не завершит выполнение некоторых задач, например загрузку снимков или отправку сообщения в чате.</translation>
 <translation id="4275291496240508082">Звук при включении</translation>
@@ -6174,7 +6172,6 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319712128756744240">Подключить новое устройство</translation>
 <translation id="5320135788267874712">Введите название</translation>
-<translation id="5320261549977878764">Отменить сохранение группы</translation>
 <translation id="532247166573571973">Сервер недоступен. Повторите попытку позже.</translation>
 <translation id="5323328004379641163">Настройте внешний вид Chrome и этой страницы.</translation>
 <translation id="5324300749339591280">Список приложений</translation>
@@ -6959,7 +6956,6 @@
 <translation id="5901069264981746702">Данные отпечатков пальцев хранятся только на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Перейти на записываемую вкладку</translation>
 <translation id="5901494423252125310">Дверца принтера открыта</translation>
-<translation id="5901526412306322179">Журнал активности</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5902892210366342391">Показывать предупреждения о переходе на незащищенные сайты в режиме инкогнито</translation>
 <translation id="5904614460720589786">Не удалось настроить <ph name="APP_NAME" /> из-за проблем с конфигурацией. Обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -7445,6 +7441,7 @@
 <translation id="6248988683584659830">Поиск настроек</translation>
 <translation id="6249200942125593849">Настройки специальных возможностей</translation>
 <translation id="6250186368828697007">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
+<translation id="6250887692313997958">Выберите, какую вкладку добавить в режим Split View</translation>
 <translation id="6251870443722440887">GDI-дескрипторы</translation>
 <translation id="6251924700383757765">Политика конфиденциальности</translation>
 <translation id="625369703868467034">Состояние сети</translation>
@@ -8102,6 +8099,7 @@
 <translation id="6728528977475057549">Код IBAN заканчивается на <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Введите имя пользователя.</translation>
 <translation id="6729280095610283088">Яркие полосы северного сияния над лесом.</translation>
+<translation id="6729493062119577923">Действия в общей группе вкладок</translation>
 <translation id="6731320427842222405">Это может занять несколько минут</translation>
 <translation id="6732956960067639542">Запустите новый сеанс браузера Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (идентификатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10522,7 +10520,6 @@
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8425492902634685834">Закрепить на панели задач</translation>
 <translation id="8425768983279799676">Вы можете использовать PIN-код, чтобы разблокировать устройство.</translation>
-<translation id="8426111352542548860">Сохранить группу</translation>
 <translation id="8427213022735114808">Запись вашего голоса отправляется в Google. Это позволяет использовать голосовой набор для любого текстового поля.</translation>
 <translation id="8427292751741042100">встроено на любом хосте</translation>
 <translation id="8428213095426709021">Настройки</translation>
@@ -11527,6 +11524,7 @@
 <translation id="9113240369465613386">Только нечетные страницы</translation>
 <translation id="9113469270512809735">Показать или скрыть недавно закрытые элементы</translation>
 <translation id="9113529408970052045">Генератор текстов может открываться автоматически, когда в поле на сайте можно написать короткий текст</translation>
+<translation id="9114210796909453187">Добавьте вкладку в режим Split View</translation>
 <translation id="9114663181201435112">Удобный вход</translation>
 <translation id="9115675100829699941">&amp;Закладки</translation>
 <translation id="9116366756388192417">Выбрать тему</translation>

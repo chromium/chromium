@@ -1547,7 +1547,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">कार्ड नंबर</translation>
 <translation id="3670229581627177274">ब्लूटूथ चालू करें</translation>
-<translation id="3671117652518853176">इस सुविधा के बंद होने पर, सुरक्षा से जुड़े कामों के लिए आपको कभी-कभी पुष्टि करने के लिए कहा जा सकता है</translation>
 <translation id="3671540257457995106">डिसप्ले का साइज़ बदलना चाहते हैं?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> में गड़बड़ी: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">नेटवर्किंग इक्विपमेंट</translation>
@@ -1599,7 +1598,6 @@
 <translation id="3739842843727261045">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको ये नतीजे पसंद हैं</translation>
 <translation id="3740447166056383374">कॉपी करने से पहले, समीक्षा करना ज़रूरी है</translation>
 <translation id="374325029554577103">फ़िटनेस टेक्नोलॉजी प्रॉडक्ट</translation>
-<translation id="3743765582345153106">जानकारी ऑटोमैटिक भरने की सुविधा का इस्तेमाल करते समय, हमेशा पुष्टि करें</translation>
 <translation id="3744111561329211289">बैकग्राउंड सिंक</translation>
 <translation id="3744212718085287312">क्या अगली बार वर्चुअल कार्ड का इस्तेमाल करके, इसे और सुरक्षित बनाना है?</translation>
 <translation id="3744899669254331632">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्‍योंकि वेबसाइट ने ऐसे अव्‍यवस्‍थित क्रेडेंशियल भेजे थे जिन्‍हें क्रोमियम प्रोसेस नहीं कर सकता. नेटवर्क की गड़बड़ी और हमले आमतौर पर कुछ समय के लिए होते हैं, इसलिए हो सकता है कि यह पेज बाद में काम करेगा.</translation>
@@ -1978,7 +1976,6 @@
 <translation id="4358461427845829800">भुगतान विधियां प्रबंधित करें...</translation>
 <translation id="4359160567981085931">आपने अभी-अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. Chrome इसमें आपकी मदद कर सकता है. अपना पासवर्ड बदलने और Google को यह बताने के लिए कि आपका खाता सुरक्षित नहीं है, 'खाता सुरक्षित करें' पर क्लिक करें.</translation>
 <translation id="4363222835916186793">इस प्रॉडक्ट के लिए, सूचनाएं पाने की सुविधा बंद कर दी गई है</translation>
-<translation id="4363729811203340554">अगर आपने इस डिवाइस को शेयर किया, तो ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, Chrome आपसे हर बार पुष्टि करने के लिए कह सकता है</translation>
 <translation id="4366943895537458493">प्लेट</translation>
 <translation id="4369179505195332608">ड्राइविंग लाइसेंस की जानकारी में बदलाव करें</translation>
 <translation id="437040971055499437">सुरक्षा से जुड़ी गतिविधि होती है</translation>
@@ -2575,7 +2572,6 @@
 <translation id="5452923259299906094">इलेक्ट्रॉनिक वॉलेट और Pix से पेमेंट करें</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
 <translation id="5456428544444655325">कभी न दिखाएं</translation>
-<translation id="5456839782162429664">ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, हर बार मैन्युअल तरीके से पुष्टि करें</translation>
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
 <translation id="5463625433003343978">डिवाइस ढूंढे जा रहे हैं...</translation>
@@ -2684,7 +2680,6 @@
 <translation id="5632485077360054581">मुझे इसका तरीका दिखाएं</translation>
 <translation id="563324245173044180">भ्रामक सामग्री ब्लॉक की गई.</translation>
 <translation id="563371367637259496">मोबाइल</translation>
-<translation id="5634725266554983459">क्या आपको मैन्युअल तरीके से पुष्टि करने की सुविधा चालू करनी है?</translation>
 <translation id="5635478143789726479">विक्रेता के नियम और शर्तें</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">स्टीरियो सिस्टम और कॉम्पोनेंट</translation>
@@ -3325,6 +3320,7 @@
 <translation id="6739943577740687354">यह सुविधा, एआई का इस्तेमाल करती है. इसलिए, ज़रूरी नहीं है कि यह हमेशा सही हो</translation>
 <translation id="6740851646645036700">फ़िलहाल, लिखने में मदद पाने की तय सीमा पूरी हो गई है. बाद में कोशिश करें.</translation>
 <translation id="674375294223700098">अज्ञात सर्वर प्रमाणपत्र गड़बड़ी.</translation>
+<translation id="6743841972744298686">सिंक सेटिंग</translation>
 <translation id="6745592621698551453">अभी अपडेट करें</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेली कॉन्फ़्रेंसिंग</translation>
@@ -3452,7 +3448,6 @@
 <translation id="6973988895180423160">3.5 x 5 इंच</translation>
 <translation id="6978121630131642226">सर्च इंजन</translation>
 <translation id="6978236010531171013">फिर भी शेयर करें</translation>
-<translation id="6978722349058177832">अगर आपने इस डिवाइस को शेयर किया, तो ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, Chromium आपसे हर बार पुष्टि करने के लिए कह सकता है</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">तीसरे पक्ष की कुकी का ऐक्सेस मैनेज करें</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>

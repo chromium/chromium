@@ -259,7 +259,6 @@
 <translation id="22091350895006575">إضافة اسم مستخدِم</translation>
 <translation id="221494669172414749">‏سيؤدي فتح Chrome بدون قفل للملف الشخصي إلى إزالة كلمات المرور وطُرق الدفع المحفوظة من السيارة. ويؤدي استخدام قفل للملف الشخصي إلى الحفاظ على أمان هذه البيانات.</translation>
 <translation id="2227444325776770048">المتابعة بحساب "<ph name="USER_FULL_NAME" />"</translation>
-<translation id="2230288123399603508">هناك نشاط جديد في مجموعة علامات التبويب "<ph name="TAB_GROUP_TITLE" />"</translation>
 <translation id="2230777942707397948">نافذة فارغة</translation>
 <translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2234827758954819389">دليل الخصوصية</translation>
@@ -855,7 +854,6 @@
 <translation id="4912413785358399818">نقل علامة التبويب</translation>
 <translation id="4913169188695071480">إيقاف إعادة التحميل</translation>
 <translation id="4925120120285606924">لقطة شاشة بتاريخ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">سيتم تصدير كلمات المرور الخاصة بك وتنزيلها كملف نصي. وستكون مرئية لأي شخص وأي تطبيق لديه إمكانية الوصول إلى هذا الملف النصي.</translation>
 <translation id="4926901776383726965">يمكنك حفظ الصور والملفات لعرضها بلا اتصال بالإنترنت أو مشاركتها في تطبيقات أخرى.</translation>
 <translation id="4932247056774066048">‏لأنك بصدد الخروج من حساب تتم إدارته من خلال <ph name="DOMAIN_NAME" />، سيتم حذف بيانات Chrome من هذا الجهاز. وستظل البيانات في حسابك على Google.</translation>
 <translation id="4943703118917034429">الواقع الافتراضي</translation>
@@ -896,6 +894,7 @@
 <translation id="5114895953710637392">تم إغلاق ورقة بيانات فلتر التطبيقات.</translation>
 <translation id="5115811374190515607">إلى "<ph name="PRODUCT_NAME" />"</translation>
 <translation id="5116239826668864748">‏يمكنك استخدام Chrome في أي وقت تنقر فيه على روابط في الرسائل والمستندات والتطبيقات الأخرى</translation>
+<translation id="5118713593561876160">الاهتمامات</translation>
 <translation id="5122378528687922675">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك (<ph name="PARENT_NAME_1" /> أو <ph name="PARENT_NAME_2" />).</translation>
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
 <translation id="5139940364318403933">‏التعرّف على كيفية استخدام Google Drive</translation>
@@ -1102,6 +1101,7 @@
 <translation id="6087286598828478206">هل تريد حظر هذا الحساب ومغادرة المجموعة؟</translation>
 <translation id="60923314841986378">عدد الساعات المتبقية: <ph name="HOURS" /></translation>
 <translation id="6095578583683628124">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها.</translation>
+<translation id="6104768972315313991">رمز الاستجابة السريعة الذي تم إنشاؤه</translation>
 <translation id="610630277578876674">فتح الروابط في الرسائل بسرعة وغير ذلك</translation>
 <translation id="6108923351542677676">الإعداد قيد التقدّم…</translation>
 <translation id="6112702117600201073">يتم الآن إعادة تحميل الصفحة</translation>
@@ -1552,6 +1552,7 @@
 <translation id="7963646190083259054">المورّد:</translation>
 <translation id="7965838025086216108">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في تطبيق "مدير كلمات المرور في Google" لدى <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">تمت الإضافة إلى قائمة القراءة.</translation>
+<translation id="7968982339740310781">عرض التفاصيل</translation>
 <translation id="7971136598759319605">نشط قبل يوم واحد</translation>
 <translation id="7975379999046275268">معاينة صفحة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
@@ -1685,7 +1686,6 @@
 <translation id="8497242791509864205">فتح خيارات الترتيب</translation>
 <translation id="8497480609928300907">شرح دليل الخصوصية</translation>
 <translation id="8497726226069778601">لا يوجد شيء هنا... حتى الآن</translation>
-<translation id="8503559462189395349">‏كلمات المرور في Chrome</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8505766168025405649">يمكنك الاطّلاع على حالة عملية التنزيل من خلال الإشعارات.</translation>
 <translation id="8506357771923193001">ستظهر هنا عمليات التنزيل.</translation>
@@ -1720,6 +1720,7 @@
 <translation id="8635399646025169806">هل تريد الاحتفاظ بمجموعة علامات التبويب؟</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="864544049772947936">إدارة النوافذ (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8672883760227492369">‏ستفقد قريبًا إمكانية الوصول إلى بعض كلمات المرور المحفوظة على هذا الجهاز. لذا يمكنك نقل كلمات المرور هذه إلى "مدير كلمات المرور في Google".</translation>
 <translation id="8676276370198826499">الاشتراك في <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">नवीन काहीतरी सुरू करा किंवा फ्लोमध्ये मदत मिळवा.</translation>
 <translation id="1054048317165655285">तुमच्या फोनवर सेटअप पूर्ण करा</translation>
 <translation id="1054153489933238809">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
-<translation id="1054187194995068149">हॅलो. हे पूर्वावलोकन आहे</translation>
 <translation id="1054502481659725522">अ‍ॅप्स, वेबसाइट आणि सिस्टीम सेवा तुमचे स्थान वापरू शकतात</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{एका आठवड्याच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}other{{NUM_WEEKS} आठवड्यांच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}}</translation>
 <translation id="1055606969515662982">कास्ट करणे थांबवण्यासाठी रिमोट वापरा</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">शॉर्टकट जोडला</translation>
 <translation id="1174366174291287894">Chrome तुम्हाला सांगत नाही तोपर्यंत तुमचे कनेक्शन नेहमी सुरक्षित असते</translation>
 <translation id="1175131936083782305">तुमचा अ‍ॅडमिनिस्ट्रेटरने हे वैशिष्‍ट्य बंद केले आहे.</translation>
+<translation id="1175277108283187866">साइटला भेट द्या किंवा अ‍ॅड्रेस बारमध्ये शोध सुरू करा</translation>
 <translation id="1175364870820465910">&amp;मुद्रण...</translation>
 <translation id="1175572348579024023">स्क्रोल करा</translation>
 <translation id="1175914831232945926">अंक</translation>
@@ -479,7 +479,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">तुम्हाला उघड्या असलेल्या टॅबसह सर्व साइटमधून साइन आउट केले जाईल</translation>
 <translation id="1313705515580255288">तुमचे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आपल्या Google खात्यामध्ये संकालित केल्या जातील.</translation>
-<translation id="1315184295353569363">गट अनसेव्ह करा</translation>
 <translation id="1316136264406804862">शोधत आहे...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> शी कनेक्ट करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="1316495628809031177">सिंक थांबवले आहे</translation>
@@ -2763,6 +2762,7 @@
 <translation id="2878889940310164513">सेल्युलर जोडा...</translation>
 <translation id="288042212351694283">तुमच्या सर्वकष 2 रा घटक डिव्हाइस ॲक्सेस करा</translation>
 <translation id="2881076733170862447">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
+<translation id="2882530630263790933">ऑडिओ आणि व्हिडिओ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> रीस्टार्ट होईल आणि क्षणभरात रीसेट होईल</translation>
 <translation id="2884070497102362193">तुमची बॅटरी, सीपीयू, मेमरी, कनेक्टिव्हिटी आणि आणखी बऱ्याच गोष्टींची चाचणी करा</translation>
 <translation id="2885129935310217435">याच नावाचे बटण आहे. कृपया दुसरे नाव निवडा.</translation>
@@ -3063,7 +3063,6 @@
 <translation id="310297983047869047">मागील स्लाइड</translation>
 <translation id="3103451787721578293">कृपया हा डेटा अपलोड करण्यासाठीचे कारण एंटर करा:</translation>
 <translation id="3103512663951238230">Alt+Click</translation>
-<translation id="3104763887980088552">अ‍ॅक्टिव्हिटी लॉग</translation>
 <translation id="3104948640446684649">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवत आहे. हे सिस्टीम आणि अ‍ॅप स्थिरता व इतर सुधारणांसाठी मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यासारख्या भागीदारांनादेखील मदत करेल. जर तुमची अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो. <ph name="BEGIN_LINK2" />मेट्रिक <ph name="BEGIN_LINK2_END" /> बद्दल अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">शेवटचे अयशस्वी अपडेट</translation>
 <translation id="3105796011181310544">Google वर परत बदलायचे आहे का?</translation>
@@ -4718,7 +4717,6 @@
 <translation id="4268025649754414643">की एनसिफरमेन्ट</translation>
 <translation id="4268516942564021145">हे सेटिंग तुमच्या खात्यासाठी उपलब्ध नाही.</translation>
 <translation id="4270393598798225102">आवृत्ती <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">गट सेव्ह करा</translation>
 <translation id="4274667386947315930">साइन-इन डेटा</translation>
 <translation id="4274673989874969668">तुम्ही साइट बंद केल्यानंतर ती फोटो अपलोड करणे किंवा चॅट मेसेज पाठवणे यांसारख्या टास्क पूर्ण करण्यासाठी सिंक करणे सुरू ठेवू शकते</translation>
 <translation id="4275291496240508082">स्टार्टअप आवाज</translation>
@@ -6183,7 +6181,6 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319712128756744240">नवीन डिव्हाइस पेअर करा</translation>
 <translation id="5320135788267874712">नवीन डिव्हाइसचे नाव</translation>
-<translation id="5320261549977878764">गट अनसेव्ह करा</translation>
 <translation id="532247166573571973">सर्व्हर कदाचित आवाक्याबाहेर असू शकते. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5323328004379641163">Chrome आणि या पेजचे स्वरूप कस्टमाइझ करा</translation>
 <translation id="5324300749339591280">अ‍ॅप्स सूची</translation>
@@ -6968,7 +6965,6 @@
 <translation id="5901069264981746702">तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला आहे आणि तो तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">कॅप्चर करणाऱ्या टॅबवर स्विच करा</translation>
 <translation id="5901494423252125310">प्रिंटरचे दार उघडे आहे</translation>
-<translation id="5901526412306322179">ॲक्टिव्हिटी लॉग</translation>
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5902892210366342391">गुप्त मोडमध्ये असुरक्षित साइटवर जाण्यापूर्वी चेतावण्या पहा</translation>
 <translation id="5904614460720589786">कॉन्फिगरेशनच्या समस्येमुळे <ph name="APP_NAME" /> सेट करता आले नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -7457,6 +7453,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6248988683584659830">शोध सेटिंग्ज</translation>
 <translation id="6249200942125593849">a11y व्यवस्थापित करा</translation>
 <translation id="6250186368828697007">तुम्ही तुमची स्क्रीन शेअर करत असताना तपशील लपवले जातात</translation>
+<translation id="6250887692313997958">विभाजित दृश्यामध्ये जोडण्यासाठी टॅब निवडा</translation>
 <translation id="6251870443722440887">GDI हँडल</translation>
 <translation id="6251924700383757765">गोपनीयता धोरण</translation>
 <translation id="625369703868467034">नेटवर्क हेल्थ</translation>
@@ -8108,6 +8105,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6728528977475057549"><ph name="LAST_FOUR_DIGITS" /> ने संपणारा IBAN</translation>
 <translation id="6729192290958770680">तुमचे वापरकर्ता नाव एंटर करा</translation>
 <translation id="6729280095610283088">जंगलावर ऑरोरा बोरिॲलिसचा प्रखर प्रकाश.</translation>
+<translation id="6729493062119577923">शेअर केलेल्या टॅब गटाची अ‍ॅक्टिव्हिटी</translation>
 <translation id="6731320427842222405">यास काही मिनिटे लागतील</translation>
 <translation id="6732956960067639542">त्याऐवजी नवीन Chrome ब्राउझर सेशन उघडा.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (आयडी: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10527,7 +10525,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8425492902634685834">टास्कबारवर पिन करा</translation>
 <translation id="8425768983279799676">तुमचे डिव्हाइस अनलॉक करण्यासाठी तुम्ही तुमचा पिन वापरू शकता.</translation>
-<translation id="8426111352542548860">गट सेव्ह करा</translation>
 <translation id="8427213022735114808">कोणत्याही मजकूर फील्डमध्ये व्हॉइस टायपिंगची अनुमती देण्यासाठी डिक्टेशन तुमचा व्हॉइस Google ला पाठवेल.</translation>
 <translation id="8427292751741042100">कोणत्याही होस्टवर एंबेड होण्यासारखे आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
@@ -11530,6 +11527,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9113240369465613386">फक्त विषम संख्या असलेली पेज</translation>
 <translation id="9113469270512809735">अलीकडे बंद केलेले आयटम टॉगल करा</translation>
 <translation id="9113529408970052045">साइटवरील टेक्स्ट बॉक्स हा लघु स्वरूपातील आशयाने भरला जाऊ शकतो, तेव्हा "मला लिहिण्यास मदत करा" हे आपोआप उघडू शकते</translation>
+<translation id="9114210796909453187">तुमचे विभाजित दृश्य पूर्ण करा</translation>
 <translation id="9114663181201435112">सहजपणे साइन इन करा</translation>
 <translation id="9115675100829699941">&amp;बुकमार्क</translation>
 <translation id="9116366756388192417">विषय निवडा</translation>

@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Սկսեք որևէ նոր բան կամ ստացեք օգնություն աշխատահոսքի համար։</translation>
 <translation id="1054048317165655285">Ավարտեք կարգավորումը ձեր հեռախոսում</translation>
 <translation id="1054153489933238809">Բացել &amp;պատկերի բնօրինակը նոր ներդիրով</translation>
-<translation id="1054187194995068149">Ողջույն։ Սա նախնական տարբերակ է։</translation>
 <translation id="1054502481659725522">Միայն հավելվածները, կայքերը և համակարգային ծառայությունները կարող են օգտագործել ձեր տեղադրության մասին տվյալները</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը 1 շաբաթվա ընթացքում}one{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}other{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}}</translation>
 <translation id="1055606969515662982">Կանգնեցրեք հեռարձակումը հեռակառավարման վահանակի միջոցով</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">Դյուրանցումն ավելացվեց</translation>
 <translation id="1174366174291287894">Chrome-ը կզգուշացնի ձեզ, եթե միացումը վտանգավոր լինի</translation>
 <translation id="1175131936083782305">Ձեր ադմինիստրատորն անջատել է այս գործառույթը։</translation>
+<translation id="1175277108283187866">Այցելեք որևէ կայք կամ որոնեք հասցեագոտում</translation>
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1175914831232945926">Թվանշաններ</translation>
@@ -481,7 +481,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Դուք դուրս կգաք հաշվից բոլոր կայքերում, այդ թվում բաց ներդիրներում։</translation>
 <translation id="1313705515580255288">Ձեր էջանիշները, պատմությունը և այլ կարգավորումները կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
-<translation id="1315184295353569363">Հեռացնել խումբը</translation>
 <translation id="1316136264406804862">Որոնում...</translation>
 <translation id="1316248800168909509">Չհաջողվեց միանալ <ph name="DEVICE" /> սարքին։ Նորից փորձեք։</translation>
 <translation id="1316495628809031177">Համաժամացումն ընդհատված է</translation>
@@ -2751,6 +2750,7 @@
 <translation id="2878889940310164513">Ավելացնել բջջային ցանց...</translation>
 <translation id="288042212351694283">Universal 2nd Factor սարքերն օգտագործելու իրավունք</translation>
 <translation id="2881076733170862447">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
+<translation id="2882530630263790933">Աուդիո և վիդեո</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" />-ը կվերագործարկվի և անմիջապես կվերակայվի</translation>
 <translation id="2884070497102362193">Ստուգեք ձեր մարտկոցը, պրոցեսորը, հիշողությունը, կապը և այլն</translation>
 <translation id="2885129935310217435">Նույն անվանմամբ կոճակ արդեն կա։ Ընտրեք այլ անվանում։</translation>
@@ -3051,7 +3051,6 @@
 <translation id="310297983047869047">Նախորդ սլայդը</translation>
 <translation id="3103451787721578293">Նշեք, թե որն է այս տվյալները վերբեռնելու պատճառը՝</translation>
 <translation id="3103512663951238230">Alt + սեղմում</translation>
-<translation id="3104763887980088552">Գործողությունների մատյան</translation>
 <translation id="3104948640446684649">Օգտագործման և դիագնոստիկ տվյալների ուղարկում։ Ներկայումս այս սարքը դիագնոստիկայի, սարքի և հավելվածի օգտագործման տվյալներն ավտոմատ ուղարկում է Google-ին։ Դա կօգնի բարելավել համակարգի ու հավելվածների աշխատանքի կայունությունը։ Ագրեգացված տվյալների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Եթե միացնեք Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը, այս տվյալները կարող են պահվել ձեր Google հաշվում։ <ph name="BEGIN_LINK2" />Իմանալ ավելին ցուցանիշների մասին<ph name="BEGIN_LINK2_END" />Իմանալ ավելին<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Վերջին անհաջող թարմացումը</translation>
 <translation id="3105796011181310544">Վերադառնա՞լ Google-ին</translation>
@@ -4706,7 +4705,6 @@
 <translation id="4268025649754414643">Բանալիների կոդավորում</translation>
 <translation id="4268516942564021145">Այս կարգավորումը հասանելի չէ ձեր հաշվի համար։</translation>
 <translation id="4270393598798225102">Տարբերակ <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Պահել խումբը</translation>
 <translation id="4274667386947315930">Մուտքի տվյալներ</translation>
 <translation id="4274673989874969668">Երբ կայքից դուրս գաք, համաժամացումը կարող է շարունակվել այնքան ժամանակ, մինչև առաջադրանքները (օրինակ՝ լուսանկարների վերբեռնումը և հաղորդագրության ուղարկումը) չավարտվեն</translation>
 <translation id="4275291496240508082">Գործարկման ձայնը</translation>
@@ -6170,7 +6168,6 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319712128756744240">Նոր սարքի զուգակցում</translation>
 <translation id="5320135788267874712">Սարքի նոր անվանումը</translation>
-<translation id="5320261549977878764">Հեռացնել խումբը</translation>
 <translation id="532247166573571973">Սերվերն անհասանելի է: Փորձեք մի փոքր ուշ:</translation>
 <translation id="5323328004379641163">Անհատականացրեք Chrome-ի և այս էջի միջերեսը</translation>
 <translation id="5324300749339591280">Հավելվածների ցանկ</translation>
@@ -6953,7 +6950,6 @@
 <translation id="5901069264981746702">Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Անցնել «լուսանկարում» ներդիր</translation>
 <translation id="5901494423252125310">Տպիչի դռնակը բաց է</translation>
-<translation id="5901526412306322179">Գործողությունների մատյան</translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5902892210366342391">Նախքան ինկոգնիտո ռեժիմում ոչ ապահով կայքեր մտնելը տեսնել նախազգուշացումներ</translation>
 <translation id="5904614460720589786">Կազմաձևման խնդրի պատճառով չհաջողվեց կարգավորել <ph name="APP_NAME" /> հավելվածը։ Դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
@@ -7438,6 +7434,7 @@
 <translation id="6248988683584659830">Որոնման կարգավորումներ</translation>
 <translation id="6249200942125593849">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="6250186368828697007">Էկրանի ցուցադրման ժամանակ ծանուցումների մանրամասները թաքցվում են</translation>
+<translation id="6250887692313997958">Ընտրեք ներդիր՝ տրոհված էկրանի ռեժիմում ավելացնելու համար</translation>
 <translation id="6251870443722440887">GDI նկարագրիչներ</translation>
 <translation id="6251924700383757765">Գաղտնիության քաղաքականություն</translation>
 <translation id="625369703868467034">Ցանցի կարգավիճակը</translation>
@@ -8091,6 +8088,7 @@
 <translation id="6728528977475057549"><ph name="LAST_FOUR_DIGITS" /> թվանշաններով ավարտվող IBAN</translation>
 <translation id="6729192290958770680">Մուտքագրեք ձեր օգտանունը</translation>
 <translation id="6729280095610283088">Հյուսիսային բևեռափայլի վառ շողերը՝ անտառի վերևում։</translation>
+<translation id="6729493062119577923">Ընդհանուր ներդիրների խմբի գործունեություն</translation>
 <translation id="6731320427842222405">Սա կարող է մի քանի րոպե տևել</translation>
 <translation id="6732956960067639542">Բացեք Chrome դիտարկիչի նոր աշխատաշրջան։</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID՝ <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10509,7 +10507,6 @@
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8425492902634685834">Ամրացնել խնդրագոտուն</translation>
 <translation id="8425768983279799676">Դուք կարող եք օգտագործել ձեր PIN կոդը՝ ձեր սարքն ապակողպելու համար:</translation>
-<translation id="8426111352542548860">Պահել խումբը</translation>
 <translation id="8427213022735114808">Թելադրելու գործառույթն ուղարկում է ձեր ձայնը Google-ին, ինչը թույլ է տալիս թելադրելով լրացնել տեքստային դաշտերը։</translation>
 <translation id="8427292751741042100">ներկառուցված է ցանկացած խնամորդում</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
@@ -11512,6 +11509,7 @@
 <translation id="9113240369465613386">Միայն կենտ թվերով էջերը</translation>
 <translation id="9113469270512809735">Ցուցադրել/թաքցնել վերջերս փակված տարրերը</translation>
 <translation id="9113529408970052045">Տեքստագրիչն ավտոմատ կարող է բացվել, երբ կայքում տեքստային դաշտը կարող է լրացվել կարճ բովանդակությամբ</translation>
+<translation id="9114210796909453187">Ավելացրեք ներդիր տրոհված էկրանի ռեժիմում</translation>
 <translation id="9114663181201435112">Մուտք գործեք ավելի արագ</translation>
 <translation id="9115675100829699941">&amp;Էջանիշներ</translation>
 <translation id="9116366756388192417">Ընտրեք թեմա</translation>

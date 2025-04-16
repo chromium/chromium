@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
+<translation id="3670480940339182416">Websites kan anvende V8-optimering</translation>
 <translation id="3676777756440746804">Websites kan ikke anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3697164069658504920">Når dette er slået til, kan websites anmode om tilladelse til at bruge USB-enheder. Når dette er slået fra, kan websites ikke anvende USB-enheder.</translation>
+<translation id="3703430731944883733">Administrer dit feed</translation>
 <translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
 <translation id="3708684582558000260">Tillad ikke, at lukkede websites kan afslutte afsendingen eller modtagelsen af data</translation>
 <translation id="3709818294139939629">Websitets adgang til filen er fjernet</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
 <translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
 <translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
 <translation id="5877248419911025165">Skjul alle anmodninger</translation>
+<translation id="5878945009165002849">Bloker loginmeddelelser fra identitetstjenester</translation>
 <translation id="5884085660368669834">Websitepræference</translation>
 <translation id="5887687176710214216">Senest besøgt i går</translation>
 <translation id="5908617755156109052">Tillad ikke, at websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" er forældet. Geninstaller appen.</translation>
+<translation id="847433688444405067">Få samme indhold på flere enheder</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
 <translation id="8492822722330266509">Websites kan sende pop op-vinduer og bruge omdirigeringer</translation>

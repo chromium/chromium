@@ -259,7 +259,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="22091350895006575">Thêm tên người dùng</translation>
 <translation id="221494669172414749">Nếu bạn mở Chrome mà không cần khoá hồ sơ, mật khẩu và phương thức thanh toán đã lưu sẽ bị xoá khỏi ô tô. Sử dụng khoá hồ sơ giúp giữ an toàn cho dữ liệu này.</translation>
 <translation id="2227444325776770048">Tiếp tục bằng tài khoản của <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Nhóm thẻ <ph name="TAB_GROUP_TITLE" /> có hoạt động mới</translation>
 <translation id="2230777942707397948">Cửa sổ trống</translation>
 <translation id="223356358902285214">Hoạt động trên web và ứng dụng</translation>
 <translation id="2234827758954819389">Hướng dẫn về quyền riêng tư</translation>
@@ -853,7 +852,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4912413785358399818">Di chuyển thẻ</translation>
 <translation id="4913169188695071480">Ngừng làm mới</translation>
 <translation id="4925120120285606924">Ảnh chụp màn hình <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Mật khẩu của bạn sẽ được xuất và tải xuống dưới dạng tệp văn bản. Mật khẩu sẽ hiển thị với bất kỳ ai và bất kỳ ứng dụng nào có quyền truy cập vào thư mục đích.</translation>
 <translation id="4926901776383726965">Bạn có thể lưu hình ảnh và tệp để xem khi không có mạng hoặc chia sẻ trong các ứng dụng khác</translation>
 <translation id="4932247056774066048">Vì bạn đang đăng xuất khỏi một tài khoản thuộc quản lý của <ph name="DOMAIN_NAME" /> nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này. Tuy nhiên, dữ liệu đó sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
 <translation id="4943703118917034429">Thực tế ảo</translation>
@@ -894,6 +892,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5114895953710637392">Đã đóng bảng lọc theo ứng dụng.</translation>
 <translation id="5115811374190515607">đến <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
+<translation id="5118713593561876160">Sở thích</translation>
 <translation id="5122378528687922675">Nếu bạn cần trợ giúp, hãy nhờ cha mẹ (<ph name="PARENT_NAME_1" /> hoặc <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5139940364318403933">Tìm hiểu cách sử dụng Google Drive</translation>
@@ -1100,6 +1099,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6087286598828478206">Chặn và rời khỏi nhóm?</translation>
 <translation id="60923314841986378">Còn <ph name="HOURS" /> giờ</translation>
 <translation id="6095578583683628124">Nếu bạn cũng dùng Google làm công cụ tìm kiếm mặc định, thì bạn sẽ nhận được các nội dung đề xuất phù hợp và có liên quan đến ngữ cảnh hơn</translation>
+<translation id="6104768972315313991">Đã tạo mã QR</translation>
 <translation id="610630277578876674">Mở nhanh đường liên kết trong thông báo và nhiều tính năng khác</translation>
 <translation id="6108923351542677676">Đang thiết lập…</translation>
 <translation id="6112702117600201073">Làm mới trang</translation>
@@ -1549,6 +1549,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7963646190083259054">Nhà cung cấp:</translation>
 <translation id="7965838025086216108">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu cho tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
+<translation id="7968982339740310781">Xem chi tiết</translation>
 <translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Cảnh báo bạn nếu bạn sử dụng mật khẩu đã bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
@@ -1681,7 +1682,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8497242791509864205">Mở tuỳ chọn sắp xếp</translation>
 <translation id="8497480609928300907">Giải thích hướng dẫn về quyền riêng tư</translation>
 <translation id="8497726226069778601">Chưa có gì để xem ở đây...</translation>
-<translation id="8503559462189395349">Mật khẩu Chrome</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8505766168025405649">Xem thông báo để biết trạng thái tải xuống</translation>
 <translation id="8506357771923193001">Bạn sẽ thấy tệp đã tải xuống ở đây</translation>
@@ -1716,6 +1716,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8635399646025169806">Giữ lại nhóm thẻ?</translation>
 <translation id="8636825310635137004">Để có các thẻ từ các thiết bị khác của bạn, hãy bật đồng bộ hóa.</translation>
 <translation id="864544049772947936">Quản lý cửa sổ (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
 <translation id="8672883760227492369">Một số mật khẩu trên thiết bị này sắp ngừng hoạt động. Bạn có thể di chuyển các mật khẩu này sang Trình quản lý mật khẩu của Google.</translation>
 <translation id="8676276370198826499">Đăng ký trên <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

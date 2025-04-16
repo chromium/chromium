@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Start et nyt projekt, eller få hjælp undervejs.</translation>
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
-<translation id="1054187194995068149">Hej! Dette er et preview</translation>
 <translation id="1054502481659725522">Apps, websites og systemtjenester kan bruge din lokation</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Opdater <ph name="DEVICE_TYPE" /> inden for 1 uge}one{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}other{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uger}}</translation>
 <translation id="1055606969515662982">Brug fjernbetjeningen til at stoppe med at caste</translation>
@@ -263,6 +262,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1174073918202301297">Genvejen blev tilføjet</translation>
 <translation id="1174366174291287894">Din forbindelse er altid sikker, medmindre Chrome angiver andet.</translation>
 <translation id="1175131936083782305">Din administrator har deaktiveret denne funktion.</translation>
+<translation id="1175277108283187866">Gå til et website, eller start en søgning i adresselinjen</translation>
 <translation id="1175364870820465910">&amp;Udskriv...</translation>
 <translation id="1175572348579024023">Rul</translation>
 <translation id="1175914831232945926">Cifre</translation>
@@ -480,7 +480,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Du logges ud af alle websites, også i åbne faner</translation>
 <translation id="1313705515580255288">Dine bogmærker, din historik og dine andre indstillinger bliver synkroniseret med din Google-konto.</translation>
-<translation id="1315184295353569363">Fjern gruppe</translation>
 <translation id="1316136264406804862">Søger...</translation>
 <translation id="1316248800168909509">Der kunne ikke oprettes forbindelse til <ph name="DEVICE" />. Prøv igen.</translation>
 <translation id="1316495628809031177">Synkroniseringen er sat på pause</translation>
@@ -2766,6 +2765,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2878889940310164513">Tilføj mobilnetværk...</translation>
 <translation id="288042212351694283">Får adgang til dine Universal 2nd Factor-enheder</translation>
 <translation id="2881076733170862447">Når du klikker på udvidelsen</translation>
+<translation id="2882530630263790933">Lyd og video</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> Genstart og nulstilling påbegyndes om et øjeblik</translation>
 <translation id="2884070497102362193">Test batteriet, CPU'en, hukommelsen, forbindelsen og meget mere</translation>
 <translation id="2885129935310217435">Der er en knap med samme navn. Vælg en anden.</translation>
@@ -3066,7 +3066,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="310297983047869047">Forrige dias</translation>
 <translation id="3103451787721578293">Angiv en årsag til upload af disse data:</translation>
 <translation id="3103512663951238230">Alt + klik</translation>
-<translation id="3104763887980088552">Aktivitetshistorik</translation>
 <translation id="3104948640446684649">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Noget dataaggregering hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger om metrics<ph name="BEGIN_LINK2_END" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Seneste mislykkede opdatering</translation>
 <translation id="3105796011181310544">Vil du skifte tilbage til Google?</translation>
@@ -4723,7 +4722,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4268025649754414643">Omsætning af nøgle til kode</translation>
 <translation id="4268516942564021145">Denne indstilling er ikke tilgængelig for din konto.</translation>
 <translation id="4270393598798225102">Version <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Gem gruppe</translation>
 <translation id="4274667386947315930">Logindata</translation>
 <translation id="4274673989874969668">Når du forlader et website, kan websitet fortsætte med at synkronisere for at afslutte opgaver såsom upload af billeder eller afsendelse af en chatbesked</translation>
 <translation id="4275291496240508082">Lyd ved opstart</translation>
@@ -6188,7 +6186,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319712128756744240">Par en ny enhed</translation>
 <translation id="5320135788267874712">Navn på ny enhed</translation>
-<translation id="5320261549977878764">Fjern gruppe</translation>
 <translation id="532247166573571973">Serveren kan være utilgængelig. Prøv igen senere.</translation>
 <translation id="5323328004379641163">Tilpas, hvordan Chrome og denne side skal se ud</translation>
 <translation id="5324300749339591280">Liste med apps</translation>
@@ -6973,7 +6970,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5901069264981746702">Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Skift til den fane, der registreres</translation>
 <translation id="5901494423252125310">Lågen på printeren er åben</translation>
-<translation id="5901526412306322179">Aktivitetshistorik</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5902892210366342391">Få advarsler, inden du går til usikre websites i inkognitotilstand</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> kunne ikke konfigureres, da der opstod et konfigurationsproblem. Kontakt din administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -7459,6 +7455,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6248988683584659830">Søg i indstillinger</translation>
 <translation id="6249200942125593849">Administrer a11y</translation>
 <translation id="6250186368828697007">Oplysningerne er skjulte, når du deler din skærm</translation>
+<translation id="6250887692313997958">Vælg en fane, der skal føjes til delt visning</translation>
 <translation id="6251870443722440887">GDI-håndtag</translation>
 <translation id="6251924700383757765">Privatlivspolitik</translation>
 <translation id="625369703868467034">Netværkets tilstand</translation>
@@ -8112,6 +8109,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6728528977475057549">IBAN-nummer, der slutter med <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Angiv dit brugernavn</translation>
 <translation id="6729280095610283088">Lysende nordlys over en skov.</translation>
+<translation id="6729493062119577923">Aktivitet i delt fanegruppe</translation>
 <translation id="6731320427842222405">Dette kan tage et par minutter</translation>
 <translation id="6732956960067639542">Åbn en ny Chrome-browsersession i stedet.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (id: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10532,7 +10530,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8425492902634685834">Fastgør til proceslinje</translation>
 <translation id="8425768983279799676">Du kan bruge pinkoden til at låse din enhed op.</translation>
-<translation id="8426111352542548860">Gem gruppe</translation>
 <translation id="8427213022735114808">Diktering sender din stemme til Google, så du kan indtale tekst i alle tekstfelter.</translation>
 <translation id="8427292751741042100">indlejret på hvilken som helst host</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
@@ -11536,6 +11533,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9113240369465613386">Kun ulige sider</translation>
 <translation id="9113469270512809735">Slå nyligt lukkede elementer til/fra</translation>
 <translation id="9113529408970052045">"Hjælp mig med at skrive" kan åbnes automatisk, når et tekstfelt på et website kan udfyldes med indhold i kort format</translation>
+<translation id="9114210796909453187">Fuldfør din opdelte visning</translation>
 <translation id="9114663181201435112">Log nemt ind</translation>
 <translation id="9115675100829699941">&amp;Bogmærker</translation>
 <translation id="9116366756388192417">Vælg et motiv</translation>

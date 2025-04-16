@@ -1548,7 +1548,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Тоо</translation>
 <translation id="3670229581627177274">Bluetooth асаах</translation>
-<translation id="3671117652518853176">Унтраасан үед танаас аюулгүй байдлын зорилгоор үе үе баталгаажуулахыг хүсэж магадгүй</translation>
 <translation id="3671540257457995106">Хэмжээг өөрчлөхийг зөвшөөрөх үү?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" />-д алдаа гарлаа: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Сүлжээний тоног төхөөрөмж</translation>
@@ -1600,7 +1599,6 @@
 <translation id="3739842843727261045">Сайн тэмдэглэгээ нь танд эдгээр илэрц таалагдсан талаарх санал хүсэлтийг илгээнэ</translation>
 <translation id="3740447166056383374">Хуулахаас өмнө шалгах шаардлагатай</translation>
 <translation id="374325029554577103">Фитнесийн технологийн бүтээгдэхүүнүүд</translation>
-<translation id="3743765582345153106">Автоматаар бөглөх хэсгийг ашиглаж байх үед үргэлж баталгаажуулах</translation>
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
 <translation id="3744212718085287312">Үүнийг дараагийн удаа виртуал картаар илүү аюулгүй болгох уу?</translation>
 <translation id="3744899669254331632">Сайтаас эргэлзээтэй мэдээлэл илгээсэн учраас та <ph name="SITE" /> руу орж болохгүй. Үүнээс болж Chromium нь  сүлжээний алдааг боловсруулж чадахгүй байна.  Иймэрхүү дайралтууд түр зуурын шинжтэй байдаг учраас энэ хуудас хэсэг хугацааны дараа хэвийн ажиллаж магадгүй.</translation>
@@ -1979,7 +1977,6 @@
 <translation id="4358461427845829800">Төлбөрийн хэрэгслийг удирдах...</translation>
 <translation id="4359160567981085931">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Chrome туслах боломжтой. Нууц үгээ өөрчилж, таны бүртгэл эрсдэлд oрсон байж болзошгүй тухай Google-д мэдэгдэхийн тулд Бүртгэлийг хамгаалах гэснийг товшино уу.</translation>
 <translation id="4363222835916186793">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан</translation>
-<translation id="4363729811203340554">Хэрэв та энэ төхөөрөмжийг дундаа ашигладаг бол Chrome таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд баталгаажуулахыг хүснэ</translation>
 <translation id="4366943895537458493">Хавтан</translation>
 <translation id="4369179505195332608">Жолооны үнэмлэхийг засах</translation>
 <translation id="437040971055499437">Аюулгүй байдлын үйлдэл тохиолдсон</translation>
@@ -2576,7 +2573,6 @@
 <translation id="5452923259299906094">Цахим хэтэвч, Pix-р төлөх</translation>
 <translation id="5455374756549232013">Журмын кодлол сул байна</translation>
 <translation id="5456428544444655325">Хэзээ ч бүү харуул</translation>
-<translation id="5456839782162429664">Таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд гар аргаар баталгаажуулах</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Төхөөрөмжүүдийг хайж байна...</translation>
@@ -2685,7 +2681,6 @@
 <translation id="5632485077360054581">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="563324245173044180">Хуурамч агуулгыг блоклосон.</translation>
 <translation id="563371367637259496">Мобайл</translation>
-<translation id="5634725266554983459">Гар аргаар баталгаажуулахыг асаах уу?</translation>
 <translation id="5635478143789726479">Борлуулагчийн үйлчилгээний ерөнхий нөхцөл</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео систем болон бүрэлдэхүүн хэсгүүд</translation>
@@ -3325,6 +3320,7 @@
 <translation id="6739943577740687354">Энэ онцлог ХОУ-ыг ашигладаг бөгөөд үргэлж зөв хийхгүй</translation>
 <translation id="6740851646645036700">Та одоогоор бичих тусламжийн хязгаартаа хүрлээ. Дараа дахин оролдоно уу.</translation>
 <translation id="674375294223700098">Серверийн гэрчилгээний алдаа танигдахгүй байна.</translation>
+<translation id="6743841972744298686">Синкийн тохиргоо</translation>
 <translation id="6745592621698551453">Одоо шинэчилнэ үү</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Теле хурал</translation>
@@ -3452,7 +3448,6 @@
 <translation id="6973988895180423160">3.5 x 5 инч</translation>
 <translation id="6978121630131642226">Хайлтын систем</translation>
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
-<translation id="6978722349058177832">Хэрэв та энэ төхөөрөмжийг дундаа ашигладаг бол Chromium таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд баталгаажуулахыг хүснэ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">гуравдагч талын күүкинүүдийн хандалтыг удирдах</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>

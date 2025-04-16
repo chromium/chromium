@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Saidid saavad küsida teie asukohta</translation>
 <translation id="3658847490588580244">Vaikebrauseri alumine leht</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sait domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="RWS_MEMBERS_COUNT" /> saiti domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>
+<translation id="3670480940339182416">Saidid võivad kasutada V8 optimeerijat</translation>
 <translation id="3676777756440746804">Saidid on blokeeritud küsimast luba kasutada teie kohta salvestatud teavet</translation>
 <translation id="3697164069658504920">Kui see on sisse lülitatud, võivad saidid küsida luba USB-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid USB-seadmeid kasutada.</translation>
+<translation id="3703430731944883733">Voo haldamine</translation>
 <translation id="3707034683772193706">Külastatav sait võib Chrome’iga salvestada väikese hulga teavet, peamiselt kinnitamaks, et te pole robot.</translation>
 <translation id="3708684582558000260">Ära luba suletud saitidel viia andmete saatmist või vastuvõtmist lõpule</translation>
 <translation id="3709818294139939629">Saidi juurdepääs failile on eemaldatud</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kaamera on Androidi seadetes välja lülitatud</translation>
 <translation id="5700761515355162635">Kolmanda osapoole küpsisefailid on lubatud</translation>
 <translation id="5706552988683188916">See kustutab saidi <ph name="WEBSITE" /> puhul küpsisefailid ja muud saidiandmed</translation>
+<translation id="571222594670061844">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid</translation>
 <translation id="5723967018671998714">Kolmanda osapoole küpsisefailid on inkognito režiimis blokeeritud</translation>
 <translation id="5740126560802162366">Saidid võivad teie seadmesse andmeid salvestada</translation>
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5876056640971328065">Video peatamine</translation>
 <translation id="5877248419911025165">Ahenda kõik taotlused</translation>
+<translation id="5878945009165002849">Sisselogimisviibad identiteedihaldusteenustest blokeeritakse</translation>
 <translation id="5884085660368669834">Saidi eelistus</translation>
 <translation id="5887687176710214216">Viimati külastati eile</translation>
 <translation id="5908617755156109052">Ärge lubage saitidel luua oma ümbrusest 3D-kaarti ega jälgida kaamera asendit</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Seadme loa tühistamine</translation>
 <translation id="8471525937465764768">Saidid loovad USB-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, näiteks dokumentide printimiseks või salvestusseadmele talletamiseks</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on aegunud. Installige rakendus uuesti.</translation>
+<translation id="847433688444405067">Sirvige mitmes seadmes</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
 <translation id="8492822722330266509">Saidid saavad saata hüpikaknaid ja kasutada ümbersuunamisi</translation>

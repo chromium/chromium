@@ -145,6 +145,7 @@
 <translation id="5768079895599174203">{DAYS,plural, =1{1 diena un }zero{# dienas un }one{# diena un }other{# dienas un }}</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5843690142429128814">Attēls.</translation>
+<translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{pēc 1 g.}zero{pēc # g.}one{pēc # g.}other{pēc # g.}}</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Atlikusi 1 sekunde}zero{Atlikušas # sekundes}one{Atlikusi # sekunde}other{Atlikušas # sekundes}}</translation>

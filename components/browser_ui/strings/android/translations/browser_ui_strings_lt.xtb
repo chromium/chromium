@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Svetainės gali klausti jūsų vietovės</translation>
 <translation id="3658847490588580244">Numatytosios naršyklės apatinis lapas</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}one{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}few{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}many{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}other{<ph name="RWS_MEMBERS_COUNT" /> svetainių, priklausančių <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}}</translation>
+<translation id="3670480940339182416">Svetainėse galima naudoti V8 optimizavimo priemonę</translation>
 <translation id="3676777756440746804">Svetainės blokuojamos, kad neprašytų naudoti savo išsaugotos informacijos apie jus</translation>
 <translation id="3697164069658504920">Įjungus svetainėse gali būti prašoma naudoti USB įrenginius. Išjungus svetainėse negalima naudoti USB įrenginių.</translation>
+<translation id="3703430731944883733">Sklaidos kanalo tvarkymas</translation>
 <translation id="3707034683772193706">Svetainė, kurioje lankotės, gali išsaugoti nedidelį kiekį informacijos „Chrome“, kad būtų galima patvirtinti, jog nesate robotas</translation>
 <translation id="3708684582558000260">Neleisti uždarytoms svetainėms užbaigti duomenų siuntimo ar gavimo proceso</translation>
 <translation id="3709818294139939629">Pašalinta prieiga prie failo</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Fotoaparatas išjungtas „Android“ nustatymuose</translation>
 <translation id="5700761515355162635">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="5706552988683188916">Bus ištrinti <ph name="WEBSITE" /> slapukai ir kiti svetainės duomenys</translation>
+<translation id="571222594670061844">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų</translation>
 <translation id="5723967018671998714">Trečiosios šalies slapukai užblokuoti inkognito režimu</translation>
 <translation id="5740126560802162366">Svetainės gali išsaugoti duomenis įrenginyje</translation>
+<translation id="5743425052258407233">Gaukite istoriją visuose įrenginiuose, kad galėtumėte lengvai tęsti darbą nuo ten, kur baigėte</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>
 <translation id="5771720122942595109">Užblokuota: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Leidimai</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Įjungti</translation>
 <translation id="5876056640971328065">Pristabdyti vaizdo įrašą</translation>
 <translation id="5877248419911025165">Sutraukti visas užklausas</translation>
+<translation id="5878945009165002849">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų</translation>
 <translation id="5884085660368669834">Svetainės nuostata</translation>
 <translation id="5887687176710214216">Paskutinį kartą lankytasi vakar</translation>
 <translation id="5908617755156109052">Neleisti svetainėms sukurti aplinkos 3D žemėlapio ir stebėti vaizdo kameros padėties</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Anuliuoti įrenginio leidimą</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>
 <translation id="8473055640493819707">„<ph name="APP_NAME" />“ pasenusi. Iš naujo įdiekite programą.</translation>
+<translation id="847433688444405067">Naršymas įrenginiuose</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
 <translation id="848952951823693243">Visada galite pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="8492822722330266509">Svetainėse galima siųsti iššokančiuosius langus ir naudoti peradresavimus</translation>

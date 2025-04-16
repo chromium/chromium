@@ -259,7 +259,6 @@
 <translation id="22091350895006575">ব্যৱহাৰকাৰীৰ নাম যোগ দিয়ক</translation>
 <translation id="221494669172414749">এটা প্ৰ’ফাইল লকৰ অবিহনে Chrome খোলাটোৱে গাড়ীখনৰ পৰা আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পৰিশোধ পদ্ধতিসমূহ আঁতৰাব। এটা প্ৰ’ফাইল লক ব্যৱহাৰ কৰাটোৱে এই ডেটাখিনি সুৰক্ষিত কৰি ৰাখে।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> নামৰ টেবৰ গোটটোত নতুন কাৰ্যকলাপ আছে</translation>
 <translation id="2230777942707397948">খালী ৱিণ্ড’</translation>
 <translation id="223356358902285214">ৱেব আৰু এপৰ কাৰ্যকলাপ</translation>
 <translation id="2234827758954819389">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনা</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">টেব স্থানান্তৰ কৰক</translation>
 <translation id="4913169188695071480">ৰিফ্রে’শ্ব কৰাটো বন্ধ কৰক</translation>
 <translation id="4925120120285606924">স্ক্ৰীনশ্বট <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">আপোনাৰ পাছৱৰ্ডসমূহ ৰপ্তানি কৰা হ’ব আৰু এটা পাঠ ফাইল হিচাপে ডাউনল’ড কৰা হ’ব। গন্তব্যস্থানৰ ফ’ল্ডাৰটোৰ এক্সেছ থকা যিকোনো লোক আৰু এপে সেয়া দেখা পাব।</translation>
 <translation id="4926901776383726965">আপুনি অফলাইনত চাবলৈ অথবা অন্য এপত শ্বেয়াৰ কৰিবলৈ প্ৰতিচ্ছবি আৰু ফাইল ছেভ কৰিব পাৰে</translation>
 <translation id="4932247056774066048">আপুনি যিহেতু <ph name="DOMAIN_NAME" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ লৈছে, সেয়ে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। এইটো আপোনাৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="4943703118917034429">ভাৰ্ছুৱেল ৰিয়েলিটি</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">এপ্ ফিল্টাৰ কৰা শ্বীট বন্ধ কৰা আছে।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />লৈ</translation>
 <translation id="5116239826668864748">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে</translation>
+<translation id="5118713593561876160">আগ্ৰহ</translation>
 <translation id="5122378528687922675">আপোনাক সহায়ৰ প্ৰয়োজন হ’লে আপোনাৰ অভিভাৱক (<ph name="PARENT_NAME_1" /> অথবা <ph name="PARENT_NAME_2" />)ক কওক</translation>
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
 <translation id="5139940364318403933">Google Drive কেনেকৈ ব্যৱহাৰ কৰিব সেয়া জানক</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">অৱৰোধ কৰিব আৰু গোটৰ পৰা বাহিৰ ওলাবনে?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ঘণ্টা বাকী আছে</translation>
 <translation id="6095578583683628124">লগতে যদি Google আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিন, তেন্তে আপুনি উন্নত, প্ৰাসংগিক পৰামৰ্শসমূহ দেখা পাব</translation>
+<translation id="6104768972315313991">সৃষ্টি কৰা কিউআৰ ক’ড</translation>
 <translation id="610630277578876674">বাৰ্তা আৰু আন বহুতত ক্ষিপ্ৰতাৰে লিংকসমূহ খোলক</translation>
 <translation id="6108923351542677676">ছেট আপ প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="6112702117600201073">পৃষ্ঠা ৰিফ্ৰেশ্ব কৰি থকা হৈছে</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">বিক্ৰেতা:</translation>
 <translation id="7965838025086216108">আপুনি ছেভ হৈ থকা পাছৱৰ্ড যিকোনো ডিভাইচত ব্যৱহাৰ কৰিব পাৰে। সেইসমূহ <ph name="ACCOUNT" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়।</translation>
 <translation id="7968014550143838305">পঢ়াৰ তালিকাত যোগ দিয়া হ’ল</translation>
+<translation id="7968982339740310781">সবিশেষ চাওক</translation>
 <translation id="7971136598759319605">১দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="7975379999046275268">পৃষ্ঠাটো পূৰ্বদৰ্শন কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">যদি আপুনি কোনো ডেটা উলংঘনত আপোচ কৰা হোৱা এটা পাছৱৰ্ড ব্যৱহাৰ কৰে, তেন্তে আপোনাক সকীয়নি দিয়ে।</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">সজোৱাৰ বিকল্প খোলক</translation>
 <translation id="8497480609928300907">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="8497726226069778601">ইয়াত চাবলৈ এতিয়ালৈকে একো নাই…</translation>
-<translation id="8503559462189395349">Chromeৰ পাছৱৰ্ড</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8505766168025405649">ডাউনল’ডৰ স্থিতি জানিবলৈ জাননী চাওক</translation>
 <translation id="8506357771923193001">আপুনি ইয়াত ডাউনল’ড কৰা অধিক ফাইল পাব</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">টেবৰ গোটটো ৰাখিবনে?</translation>
 <translation id="8636825310635137004">আপোনাৰ অন্য ডিভাইচৰ টেবসমূহ পাবলৈ ছিংক অন কৰক।</translation>
 <translation id="864544049772947936">ৱিণ্ড’ পৰিচালনা কৰক (<ph name="INSTANCE_COUNTS" /> টা)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক</translation>
 <translation id="8664979001105139458">এই ফাইলৰ নামটো ইতিমধ্যে আছে</translation>
 <translation id="8672883760227492369">এই ডিভাইচটোত কিছুমান পাছৱৰ্ডে সোনকালেই কাম কৰা বন্ধ কৰিব। আপুনি এই পাছৱৰ্ডসমূহ Google Password Managerলৈ স্থানান্তৰ কৰিব পাৰে।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন আপ কৰক</translation>

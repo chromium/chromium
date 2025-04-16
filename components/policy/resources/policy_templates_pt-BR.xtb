@@ -971,13 +971,6 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1639673466479276550">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="1640824698339859203">Ativar o SSO flutuante e mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
 <translation id="1641117061932613266">Ativar o serviço <ph name="PRODUCT_NAME" /> V2</translation>
-<translation id="1641394008743444477">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
-
-      Desativar um desses recursos significa que o usuário não poderá acessá-lo pela interface, onde será exibido como "desativado pelo administrador". A experiência do usuário com recursos desativados é decidida por <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
-
-      Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.
-
-      Observação: no momento, o recurso de digitalização está desativado por padrão por uma flag de recurso. Se o usuário ativá-lo pela sinalização, o recurso ainda pode estar desativado por esta política.</translation>
 <translation id="1643642938972654829">Permitir acesso à página de teste da política</translation>
 <translation id="1644373745741524038">Por motivos de segurança, a
 API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
@@ -2564,7 +2557,6 @@ Se a política for definida como desativada ou não for definida, o usuário pod
       Quando esta política é deixada sem definição ou é definida como verdadeira, o visualizador de PDF pode fazer anotações em PDFs.
 
       Quando esta política é definida como falsa, o visualizador de PDF não pode fazer anotações em PDFs.</translation>
-<translation id="2769199041812510302">URL do logotipo corporativo</translation>
 <translation id="2769952903507981510">Configurar o nome de domínio obrigatório para hosts de acesso remoto</translation>
 <translation id="2770376586681635746">Controla se os usuários podem adicionar contas do Kerberos.
 
@@ -3383,13 +3375,6 @@ Esta política tem um limite de 1.000 entradas.
 Se a política for deixada sem definição, a navegação no navegador será bloqueada enquanto a VPN sempre ativada com modo restrito estiver ativada e não conectada.</translation>
 <translation id="3405997282295704902">Não permitir o uso do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Não perguntar ao usuário (o download começa imediatamente)</translation>
-<translation id="3408078762098350617">Controla a experiência do usuário com recursos desativados na <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Se a política for bloqueada, os recursos desativados não poderão ser usados, mas vão ficar visíveis para os usuários.
-
-      Se ela for ocultada, os recursos desativados não poderão ser usados e vão ficar invisíveis para os usuários.
-
-      Se a política for deixada sem definição ou tiver um valor inválido, o modo de desativação de recursos do sistema vai ser "bloqueado".</translation>
 <translation id="3411947169047929182">Controla a configuração relacionada ao WebRTC</translation>
 <translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
       Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
@@ -4658,7 +4643,6 @@ A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá e
       Se a política for desativada ou deixada sem definição, o modo avançado de carregamento da bateria vai ficar desativado.
 
       Os usuários não poderão mudar essa configuração.</translation>
-<translation id="4307479555111916927">Definir um rótulo corporativo personalizado</translation>
 <translation id="4309091698378414920">Ativar destaque do sinal de interpolação</translation>
 <translation id="4311141497190183490">Se a política for definida como 1, os sites poderão rastrear a localização física dos usuários como o estado padrão. Se a política for definida como 2, será negado o rastreamento como padrão. É possível definir a política para perguntar sempre que um site quiser rastrear a localização física dos usuários.
 
@@ -4666,27 +4650,6 @@ Se a política não for definida, a <ph name="ASK_GEOLOCATION_POLICY_NAME" /> se
 <translation id="4311195029067684288">Completa</translation>
 <translation id="4311662690937656540">Usar logins on-line nas telas de login e de bloqueio</translation>
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
-<translation id="4313778862255986189">Este é um recurso Beta. Como ele está em desenvolvimento e disponível para nossos trusted testers, pode sofrer mudanças e atualizações.
-
-Esta política permite que os administradores definam um agregador de pesquisa corporativo designado para fornecer recomendações e resultados de pesquisa na barra de endereço quando for acionado por uma palavra-chave específica. É possível iniciar uma pesquisa digitando a palavra-chave especificada no campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> com ou sem o prefixo @ (por exemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), seguida da barra de espaço ou tecla Tab, na barra de endereço.
-
-Estes campos são obrigatórios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-O campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde ao nome do mecanismo de pesquisa mostrado ao usuário na barra de endereço.
-
-O campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde à palavra-chave inserida pelo usuário para acionar a pesquisa. O atalho pode incluir palavras e caracteres simples, mas não pode ter espaços nem começar com o símbolo @. Os atalhos precisam ser exclusivos.
-
-O campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL em que a pesquisa será feita. Digite o endereço da Web da página de resultados do mecanismo de pesquisa e use <ph name="SEARCH_TERM_MARKER" /> no lugar da consulta.
-
-O campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL que fornece sugestões de pesquisa. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> tiver <ph name="SEARCH_TERM_MARKER" />, o Chrome vai receber sugestões de pesquisa por uma solicitação GET no URL, substituindo <ph name="SEARCH_TERM_MARKER" /> pela consulta de pesquisa do usuário. Caso contrário, uma solicitação POST será feita, e a consulta do usuário será transmitida nos parâmetros POST na chave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-O campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL de uma imagem que será usada nas sugestões de pesquisa. Um ícone padrão será usado quando esse campo não estiver definido. Recomendamos usar um favicon (por exemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de arquivos de imagem aceitos: JPEG, PNG e ICO.
-
-O campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica se a barra de endereço <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> é necessária para mostrar as recomendações de pesquisa. Se esse campo não for definido, a barra de endereço <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> não será obrigatória.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Desativar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Esta política controla se o gerenciador de senhas integrado pode excluir senhas não descriptografáveis do banco de dados. Isso é necessário para restaurar a funcionalidade completa do gerenciador de senhas integrado, mas pode incluir uma perda permanente de dados. Se for possível corrigir os valores de senhas não descriptografáveis para que possam ser descriptografados, geralmente será necessário que o usuário realize ações complexas.
@@ -7636,7 +7599,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="6287128640500683781">Permitir que qualquer usuário faça login</translation>
 <translation id="6287310684159482272">Configurações de cookies</translation>
 <translation id="6287742528823584153">Ativar o serviço <ph name="PRODUCT_NAME" /> e iniciar o espaço de trabalho remoto após o login</translation>
-<translation id="6288152932495466841">Notificar usuários de versões do navegador substituídas</translation>
 <translation id="6299147100249359151">Permitir a detecção do escopo da política.</translation>
 <translation id="6299554629216555326">Configurações de gerenciamento de janelas</translation>
 <translation id="6302021021024941085">Desativar as ferramentas de solução de problemas em quiosques.</translation>
@@ -8474,11 +8436,6 @@ O navegador vai excluir automaticamente os tipos de dados selecionados com mais 
 Os dados expirados serão excluídos 15 segundos após a inicialização do navegador e a cada 30 minutos enquanto ele estiver em execução.
 
 Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NAME" /> fosse definida como "true" (verdadeira). No Chrome 115 e versões mais recentes, a definição desta política vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> não for desativada pela configuração da <ph name="SYNC_DISABLED_POLICY_NAME" />, e a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> não for desativada.</translation>
-<translation id="6762635531429930846">Especifica a idade mínima da versão para notificações de reinicialização mais agressivas. A idade é calculada a partir do momento em que a versão atual foi veiculada aos clientes pela última vez.
-
-Se uma nova versão estiver pendente, for necessário reinicializar o navegador/reiniciar o dispositivo e a versão atual tiver sido substituída por mais tempo do que o número de dias especificado por essa configuração, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será substituída por 2 horas. Se a política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> estiver definida como 1 (obrigatória), os usuários precisarão reinicializar ou reiniciar ao final do período.
-
-Se ela estiver sem definição ou não for possível determinar a idade de lançamento, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será usada para todas as atualizações.</translation>
 <translation id="6763023079133439068">Permitir certificados sem uma extensão subjectAlternativeName quando emitidos por âncoras de confiança locais</translation>
 <translation id="6766216162565713893">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo Bluetooth próximo</translation>
 <translation id="6770454900105963262">Denunciar informações sobre sessões de quiosque ativas</translation>
@@ -9447,7 +9404,6 @@ Para conferir informações detalhadas sobre o particionamento de armazenamento 
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
 <translation id="7469554574977894907">Ativar sugestões de pesquisa</translation>
-<translation id="7471938371309017725">Definir a câmera, configurações do navegador, configurações do SO, digitalização, loja on-line, tela, análise, Crosh, galeria, terminal e recursos do Gravador a serem desativados</translation>
 <translation id="7472547030234093862">Especificar domínios a serem resolvidos usando DNS sobre HTTPS</translation>
 <translation id="747275827471712187">Reverter para comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies nesses sites</translation>
 <translation id="7476030153540156377">Escolher se o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> deve ser ativado.</translation>

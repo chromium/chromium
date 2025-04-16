@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Les sites peuvent demander votre position</translation>
 <translation id="3658847490588580244">Bottom sheet du navigateur par défaut</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>
+<translation id="3670480940339182416">Les sites peuvent utiliser l'optimiseur V8</translation>
 <translation id="3676777756440746804">Les sites ne peuvent pas vous demander d'utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="3697164069658504920">Lorsque cette option est activée, les sites peuvent demander à utiliser des périphériques USB. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser de périphérique USB.</translation>
+<translation id="3703430731944883733">Gérer votre flux</translation>
 <translation id="3707034683772193706">Un site auquel vous accédez peut enregistrer une petite quantité d'informations dans Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
 <translation id="3708684582558000260">Ne pas autoriser les sites fermés à terminer l'envoi ni la réception de données</translation>
 <translation id="3709818294139939629">Accès au fichier retiré pour site</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">L'appareil photo est désactivé dans les paramètres Android</translation>
 <translation id="5700761515355162635">Cookies tiers autorisés</translation>
 <translation id="5706552988683188916">Cette action supprimera les cookies et les autres données de site pour <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Les sites peuvent afficher les invites de connexion des services d'identité</translation>
 <translation id="5723967018671998714">Les cookies tiers sont bloqués lorsque vous utilisez le mode navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5876056640971328065">Mettre la vidéo en pause</translation>
 <translation id="5877248419911025165">Réduire toutes les demandes</translation>
+<translation id="5878945009165002849">Bloquer les invites de connexion des services d'identité</translation>
 <translation id="5884085660368669834">Préférence liée au site</translation>
 <translation id="5887687176710214216">Dernière visite : hier</translation>
 <translation id="5908617755156109052">Ne pas autoriser les sites à créer un plan 3D de votre environnement ni à suivre la position de la caméra</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Révoquer l'autorisation d'accès à l'appareil</translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de documents ou l'enregistrement sur un périphérique de stockage</translation>
 <translation id="8473055640493819707">L'appli <ph name="APP_NAME" /> est obsolète. Veuillez la réinstaller.</translation>
+<translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>
 <translation id="848952951823693243">Toujours demander le site mobile</translation>
 <translation id="8492822722330266509">Les sites peuvent afficher des pop-ups et utiliser des redirections</translation>

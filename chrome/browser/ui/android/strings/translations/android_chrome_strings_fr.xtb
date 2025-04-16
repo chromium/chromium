@@ -259,7 +259,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="22091350895006575">Ajouter un nom d'utilisateur</translation>
 <translation id="221494669172414749">Si vous ouvrez Chrome sans verrouillage du profil, vos mots de passe et modes de paiement enregistrés seront supprimés de la voiture. Le verrouillage du profil permet de sécuriser ces données.</translation>
 <translation id="2227444325776770048">Continuer en tant que <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Le groupe d'onglets "<ph name="TAB_GROUP_TITLE" />" a une nouvelle activité</translation>
 <translation id="2230777942707397948">Fenêtre vide</translation>
 <translation id="223356358902285214">Activité sur le Web et les applications</translation>
 <translation id="2234827758954819389">Guide sur la confidentialité</translation>
@@ -853,7 +852,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4912413785358399818">Déplacer l'onglet</translation>
 <translation id="4913169188695071480">Ne plus actualiser</translation>
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Vos mots de passe seront exportés et téléchargés sous forme de fichier texte. Toute personne ou application ayant accès au dossier de destination pourra les voir.</translation>
 <translation id="4926901776383726965">Vous pouvez enregistrer des images et des fichiers pour les consulter hors connexion ou les partager avec d'autres applis</translation>
 <translation id="4932247056774066048">Vous vous déconnectez d'un compte géré par <ph name="DOMAIN_NAME" />. Vos données Chrome seront donc supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="4943703118917034429">Réalité virtuelle</translation>
@@ -894,6 +892,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5114895953710637392">La feuille de filtrage des applis est fermée.</translation>
 <translation id="5115811374190515607">vers <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis</translation>
+<translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5122378528687922675">Si tu as besoin d'aide, demande à ton parent (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5139940364318403933">Découvrez comment utiliser Google Drive</translation>
@@ -1100,6 +1099,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6087286598828478206">Bloquer et quitter le groupe ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> heures restantes</translation>
 <translation id="6095578583683628124">Si Google est aussi votre moteur de recherche par défaut, vous obtiendrez des suggestions plus pertinentes en fonction du contexte</translation>
+<translation id="6104768972315313991">QR code généré</translation>
 <translation id="610630277578876674">Ouvrez rapidement des liens dans des messages, etc.</translation>
 <translation id="6108923351542677676">Configuration en cours…</translation>
 <translation id="6112702117600201073">Actualisation de la page</translation>
@@ -1549,6 +1549,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7963646190083259054">Fournisseur :</translation>
 <translation id="7965838025086216108">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
+<translation id="7968982339740310781">Afficher les détails</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
@@ -1681,7 +1682,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8497242791509864205">Ouvrir les options de tri</translation>
 <translation id="8497480609928300907">Explications du Guide sur la confidentialité</translation>
 <translation id="8497726226069778601">Aucune page à afficher pour le moment</translation>
-<translation id="8503559462189395349">Mots de passe Chrome</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8505766168025405649">Affichez la notification pour connaître l'état du téléchargement</translation>
 <translation id="8506357771923193001">Vos téléchargements s'afficheront ici</translation>
@@ -1716,6 +1716,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8635399646025169806">Conserver le groupe d'onglets ?</translation>
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="864544049772947936">Gérer les fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Se connecter à <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
 <translation id="8672883760227492369">Certains mots de passe sur cet appareil ne fonctionneront bientôt plus. Vous pouvez les déplacer vers le Gestionnaire de mots de passe de Google.</translation>
 <translation id="8676276370198826499">Inscrivez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

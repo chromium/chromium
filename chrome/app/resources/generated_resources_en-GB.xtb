@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Start something new or get help in the flow.</translation>
 <translation id="1054048317165655285">Complete setup on your phone</translation>
 <translation id="1054153489933238809">Open Original &amp;Image in New Tab</translation>
-<translation id="1054187194995068149">Hi. This is a preview</translation>
 <translation id="1054502481659725522">Apps, websites and system services can use your location</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
 <translation id="1055606969515662982">Use remote to stop casting</translation>
@@ -263,6 +262,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1174073918202301297">Shortcut added</translation>
 <translation id="1174366174291287894">Your connection is always secure unless Chrome tells you otherwise</translation>
 <translation id="1175131936083782305">Your administrator has disabled this feature.</translation>
+<translation id="1175277108283187866">Visit a site or start a search in the address bar</translation>
 <translation id="1175364870820465910">&amp;Print...</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1175914831232945926">Digits</translation>
@@ -479,7 +479,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">You'll be signed out of all sites, including in open tabs</translation>
 <translation id="1313705515580255288">Your bookmarks, history and other settings will be synced to your Google Account.</translation>
-<translation id="1315184295353569363">Unsave group</translation>
 <translation id="1316136264406804862">Searching...</translation>
 <translation id="1316248800168909509">Could not connect to <ph name="DEVICE" />. Try again.</translation>
 <translation id="1316495628809031177">Sync is paused</translation>
@@ -2764,6 +2763,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2878889940310164513">Add mobile…</translation>
 <translation id="288042212351694283">Access your Universal 2nd Factor devices</translation>
 <translation id="2881076733170862447">When You Click the Extension</translation>
+<translation id="2882530630263790933">Audio and video</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> will restart and reset momentarily</translation>
 <translation id="2884070497102362193">Test your battery, CPU, memory, connectivity and more</translation>
 <translation id="2885129935310217435">There is a button with the same name. Please choose another one.</translation>
@@ -3064,7 +3064,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="310297983047869047">Previous slide</translation>
 <translation id="3103451787721578293">Please enter a reason for uploading this data:</translation>
 <translation id="3103512663951238230">Alt+click</translation>
-<translation id="3104763887980088552">Activity log</translation>
 <translation id="3104948640446684649">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more about metrics<ph name="BEGIN_LINK2_END" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Last unsuccessful update</translation>
 <translation id="3105796011181310544">Change back to Google?</translation>
@@ -4721,7 +4720,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4268025649754414643">Key Encipherment</translation>
 <translation id="4268516942564021145">This setting isn't available for your account.</translation>
 <translation id="4270393598798225102">Version <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Save group</translation>
 <translation id="4274667386947315930">Sign-in data</translation>
 <translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
 <translation id="4275291496240508082">Start-up sound</translation>
@@ -6186,7 +6184,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319712128756744240">Pair new device</translation>
 <translation id="5320135788267874712">New device name</translation>
-<translation id="5320261549977878764">Unsave group</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5323328004379641163">Customise the appearance of Chrome and this page</translation>
 <translation id="5324300749339591280">Apps list</translation>
@@ -6971,7 +6968,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5901069264981746702">Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Switch to capturing tab</translation>
 <translation id="5901494423252125310">Printer door open</translation>
-<translation id="5901526412306322179">Activity log</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5902892210366342391">See warnings before going to insecure sites in Incognito mode</translation>
 <translation id="5904614460720589786">Couldn't set up <ph name="APP_NAME" /> because of a configuration problem. Please contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
@@ -7457,6 +7453,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6248988683584659830">Search settings</translation>
 <translation id="6249200942125593849">Manage a11y</translation>
 <translation id="6250186368828697007">Details are hidden while you share your screen</translation>
+<translation id="6250887692313997958">Choose a tab to add to split view</translation>
 <translation id="6251870443722440887">GDI handles</translation>
 <translation id="6251924700383757765">Privacy Policy</translation>
 <translation id="625369703868467034">Network health</translation>
@@ -8108,6 +8105,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6728528977475057549">IBAN ending in <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Enter your username</translation>
 <translation id="6729280095610283088">Bright streams of aurora borealis, over a forest.</translation>
+<translation id="6729493062119577923">Shared tab group activity</translation>
 <translation id="6731320427842222405">This may take a few minutes</translation>
 <translation id="6732956960067639542">Open a new Chrome browser session instead.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10486,7 +10484,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8390449457866780408">Server unavailable.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
 <translation id="8391918125842702622">Performance issue alert</translation>
-<translation id="8392726714909453725">Select-to-speak settings</translation>
+<translation id="8392726714909453725">Select to Speak settings</translation>
 <translation id="8393511274964623038">Stop plug-in</translation>
 <translation id="839363317075970734">Bluetooth device details</translation>
 <translation id="8393700583063109961">Send message</translation>
@@ -10529,7 +10527,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8425213833346101688">Change</translation>
 <translation id="8425492902634685834">Pin to task bar</translation>
 <translation id="8425768983279799676">You can use your PIN to unlock your device.</translation>
-<translation id="8426111352542548860">Save Group</translation>
 <translation id="8427213022735114808">Dictation sends your voice to Google to allow voice typing in any text field.</translation>
 <translation id="8427292751741042100">embedded on any host</translation>
 <translation id="8428213095426709021">Settings</translation>
@@ -11531,6 +11528,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9113240369465613386">Odd pages only</translation>
 <translation id="9113469270512809735">Toggle recently closed items</translation>
 <translation id="9113529408970052045">'Help me write' can automatically open when a text box on a site can be filled with short-form content</translation>
+<translation id="9114210796909453187">Complete your split view</translation>
 <translation id="9114663181201435112">Sign in easily</translation>
 <translation id="9115675100829699941">&amp;Bookmarks</translation>
 <translation id="9116366756388192417">Choose a subject</translation>

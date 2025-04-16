@@ -481,6 +481,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2952278131021475699">Lens Kamera ile Arama</translation>
 <translation id="2962516096219646456">Tüm otomatik doldurma verilerini göster</translation>
 <translation id="2969979262385602596">Oturum açılamadı. Daha sonra tekrar deneyin.</translation>
+<translation id="297667759942911166">Sekme gruplarında ortak çalışma yapın</translation>
 <translation id="2989523299700148168">Son ziyaret edilenler</translation>
 <translation id="2989805286512600854">Yeni Sekmede Aç</translation>
 <translation id="2996291259634659425">Parola oluşturun</translation>
@@ -1859,6 +1860,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8697136149718343437">Adres çubuğunu en alta taşı</translation>
 <translation id="8703372953981978786">Bu bağlantı çalışmıyor</translation>
 <translation id="8706253136355675497">Sıcaklık</translation>
+<translation id="8706806585855470492">Sekme gruplarını paylaşabilir, bunlara katılabilir ve gruplarda ortak çalışma yapabilirsiniz</translation>
 <translation id="8709409604518538305">Sekmeler kapatıldı</translation>
 <translation id="8712534545803964353">Sayfada bul…</translation>
 <translation id="8712637175834984815">Anladım</translation>

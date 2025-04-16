@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Sajtovi mogu da vam traže lokaciju</translation>
 <translation id="3658847490588580244">Donja tabela podrazumevanog pregledača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> sajta u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> sajtova u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}}</translation>
+<translation id="3670480940339182416">Sajtovi mogu da koriste V8 optimizator</translation>
 <translation id="3676777756440746804">Sajtovima je onemogućeno da traže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3697164069658504920">Kada je uključeno, sajtovi mogu da traže da koriste USB uređaje. Kada je isključeno, sajtovi ne mogu da koriste USB uređaje.</translation>
+<translation id="3703430731944883733">Upravljajte fidom</translation>
 <translation id="3707034683772193706">Sajt koji posećujete može da sačuva malu količinu informacija u Chrome-u, uglavnom da bi potvrdio da niste bot</translation>
 <translation id="3708684582558000260">Ne dozvoljavaj zatvorenim sajtovima da dovrše slanje ili prijem podataka</translation>
 <translation id="3709818294139939629">Uklonjen je pristup sajta fajlu</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kamera je isključena u Android podešavanjima</translation>
 <translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci o sajtu za <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet</translation>
 <translation id="5723967018671998714">Kolačići treće strane su blokirani u režimu bez arhiviranja</translation>
 <translation id="5740126560802162366">Sajtovi mogu da čuvaju podatke na uređaju</translation>
+<translation id="5743425052258407233">Dobijte istoriju na svim uređajima da biste lako nastavili tamo gde ste stali</translation>
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5771720122942595109">Dozvola <ph name="PERMISSION_1" /> je blokirana</translation>
 <translation id="5804241973901381774">Dozvole</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5876056640971328065">Pauziraj video</translation>
 <translation id="5877248419911025165">Skupi sve zahteve</translation>
+<translation id="5878945009165002849">Blokirajte upite za prijavljivanje koje prikazuju usluge za identitet</translation>
 <translation id="5884085660368669834">Podešavanje sajta</translation>
 <translation id="5887687176710214216">Poslednja poseta: juče</translation>
 <translation id="5908617755156109052">Ne dozvoljavaj sajtovima da prave 3D mapu okruženja ni da prate položaj kamere</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Opozovi dozvolu za uređaj</translation>
 <translation id="8471525937465764768">Sajtovi se obično povezuju sa USB uređajima za potrebe funkcija poput štampanja dokumenata ili čuvanja sadržaja na memorijskim uređajima</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarela. Ponovo instalirajte aplikaciju.</translation>
+<translation id="847433688444405067">Pregledajte na više uređaja</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvek se zahteva mobilni sajt</translation>
 <translation id="8492822722330266509">Sajtovi mogu da prikazuju iskačuće prozore i koriste preusmeravanja</translation>

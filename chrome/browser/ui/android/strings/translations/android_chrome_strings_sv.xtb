@@ -210,7 +210,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1957557050935255529">Läser in PDF …</translation>
 <translation id="1959679933317802873">Väntar på innehåll</translation>
 <translation id="1960290143419248813">Uppdateringar av Chrome stöds inte längre för den här versionen av Android</translation>
-<translation id="1963056249988316027">Identitetskontroll är aktiverad och din identitet kan inte verifieras</translation>
+<translation id="1963056249988316027">Identitetskoll är aktiverad och din identitet kan inte verifieras</translation>
 <translation id="1963976881984600709">Standardskydd</translation>
 <translation id="1966710179511230534">Uppdatera dina inloggningsuppgifter.</translation>
 <translation id="1969037871259811890">Du loggas inte ut från Google-kontot när du raderar webbinformationen. Om du vill göra det ska du <ph name="BEGIN_LINK1" />logga ut från Chrome<ph name="END_LINK1" />.</translation>
@@ -259,7 +259,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="22091350895006575">Lägg till användarnamn</translation>
 <translation id="221494669172414749">Om du öppnar Chrome utan ett profillås tas dina sparade lösenord och betalningsmetoder bort från bilen. Denna data skyddas om du använder ett profillås.</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Flikgruppen <ph name="TAB_GROUP_TITLE" /> har ny aktivitet</translation>
 <translation id="2230777942707397948">Tomt fönster</translation>
 <translation id="223356358902285214">Webb- och appaktivitet</translation>
 <translation id="2234827758954819389">Integritetsguide</translation>
@@ -566,7 +565,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3622349720008044802">Hantera fönster</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Du kan hantera identitetskontrollen i inställningarna för stöldskydd. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
+<translation id="363484704507524488">Du kan hantera identitetskollen i inställningarna för stöldskydd. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
@@ -854,7 +853,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4912413785358399818">Flytta flik</translation>
 <translation id="4913169188695071480">Sluta uppdatera</translation>
 <translation id="4925120120285606924">Skärmbild <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Dina lösenord exporteras och laddas ned som en textfil. De blir synliga för alla personer och appar som har åtkomst till målmappen.</translation>
 <translation id="4926901776383726965">Du kan spara bilder och filer för att se dem offline eller dela dem i andra appar</translation>
 <translation id="4932247056774066048">Eftersom du loggar ut från ett konto som hanteras av <ph name="DOMAIN_NAME" /> raderas din Chrome-data från den här enheten. Den finns kvar på ditt Google-konto.</translation>
 <translation id="4943703118917034429">Virtuell verklighet</translation>
@@ -895,6 +893,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5114895953710637392">Arbetsbladet för appfilter har stängts.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
+<translation id="5118713593561876160">Intressen</translation>
 <translation id="5122378528687922675">Prata med din förälder (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) om du behöver hjälp</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5139940364318403933">Lär dig använda Google Drive</translation>
@@ -1101,6 +1100,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6087286598828478206">Vill du blockera och lämna gruppen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timmar kvar</translation>
 <translation id="6095578583683628124">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>
+<translation id="6104768972315313991">Genererad QR-kod</translation>
 <translation id="610630277578876674">Öppna snabbt länkar i meddelanden och annat</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6112702117600201073">Uppdaterar sidan</translation>
@@ -1550,6 +1550,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7963646190083259054">Leverantör:</translation>
 <translation id="7965838025086216108">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Har lagts till i läslistan</translation>
+<translation id="7968982339740310781">Visa information</translation>
 <translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Varnar dig om du använder ett lösenord som har läckt ut i samband med ett dataintrång.</translation>
@@ -1682,7 +1683,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8497242791509864205">Öppna sorteringsalternativ</translation>
 <translation id="8497480609928300907">Förklaring till integritetsguiden</translation>
 <translation id="8497726226069778601">Det finns inget att se här … än</translation>
-<translation id="8503559462189395349">Lösenord i Chrome</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8505766168025405649">Se avisering för nedladdningsstatus</translation>
 <translation id="8506357771923193001">Du hittar dina nedladdningar här</translation>
@@ -1717,6 +1717,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8635399646025169806">Vill du behålla flikgruppen?</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="864544049772947936">Hantera fönster (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
 <translation id="8672883760227492369">Vissa lösenord på den här enheten slutar snart att fungera. Du kan flytta lösenorden till Google Lösenordshantering.</translation>
 <translation id="8676276370198826499">Registrera dig för <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

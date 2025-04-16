@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Start noe nytt, eller få hjelp på veien.</translation>
 <translation id="1054048317165655285">Fullfør konfigureringen på telefonen din</translation>
 <translation id="1054153489933238809">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
-<translation id="1054187194995068149">Hei. Dette er en forhåndsvisning</translation>
 <translation id="1054502481659725522">Apper, nettsteder og systemtjenester kan bruke posisjonen din</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Oppdater <ph name="DEVICE_TYPE" /> innen én uke}other{Oppdater <ph name="DEVICE_TYPE" /> innen {NUM_WEEKS} uker}}</translation>
 <translation id="1055606969515662982">Bruk fjernkontrollen for å stoppe castingen</translation>
@@ -263,6 +262,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1174073918202301297">Snarveien er lagt til</translation>
 <translation id="1174366174291287894">Tilkoblingen din er alltid sikker så lenge Chrome ikke forteller deg noe annet</translation>
 <translation id="1175131936083782305">Administratoren din har slått av denne funksjonen.</translation>
+<translation id="1175277108283187866">Besøk et nettsted, eller start et søk i adressefeltet</translation>
 <translation id="1175364870820465910">&amp;Skriv ut...</translation>
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1175914831232945926">Siffer</translation>
@@ -479,7 +479,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Du blir logget av alle nettsteder, inkludert i åpne faner</translation>
 <translation id="1313705515580255288">Bokmerkene, loggen og andre innstillinger synkroniseres til Google-kontoen din.</translation>
-<translation id="1315184295353569363">Slett gruppen</translation>
 <translation id="1316136264406804862">Søker …</translation>
 <translation id="1316248800168909509">Kunne ikke koble til <ph name="DEVICE" />. Prøv på nytt.</translation>
 <translation id="1316495628809031177">Synkroniseringen er satt på pause</translation>
@@ -2758,6 +2757,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2878889940310164513">Legg til SIM-kort…</translation>
 <translation id="288042212351694283">Tilgang til de universelle annenfaktorenhetene dine</translation>
 <translation id="2881076733170862447">Når du klikker på utvidelsen</translation>
+<translation id="2882530630263790933">Lyd og video</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> startes på nytt og tilbakestilles øyeblikkelig</translation>
 <translation id="2884070497102362193">Test batteri, prosessor, minne, tilkoblinger med mer</translation>
 <translation id="2885129935310217435">Det finnes en knapp med dette navnet. Velg et annet.</translation>
@@ -3058,7 +3058,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="310297983047869047">Forrige lysbilde</translation>
 <translation id="3103451787721578293">Oppgi en årsak til at du laster opp disse dataene:</translation>
 <translation id="3103512663951238230">Alt + klikk</translation>
-<translation id="3104763887980088552">Aktivitetslogg</translation>
 <translation id="3104948640446684649">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">Siste mislykkede oppdatering</translation>
 <translation id="3105796011181310544">Vil du bytte tilbake til Google?</translation>
@@ -4713,7 +4712,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4268025649754414643">Nøkkelchiffrering</translation>
 <translation id="4268516942564021145">Denne innstillingen er ikke tilgjengelig for kontoen din.</translation>
 <translation id="4270393598798225102">Versjon <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Lagre gruppen</translation>
 <translation id="4274667386947315930">Påloggingsinformasjon</translation>
 <translation id="4274673989874969668">Når du forlater nettsteder, kan de fortsette å synkronisere for å fullføre oppgaver, som å laste opp bilder eller sende chatmeldinger</translation>
 <translation id="4275291496240508082">Oppstartslyd</translation>
@@ -6176,7 +6174,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319712128756744240">Koble til en ny enhet</translation>
 <translation id="5320135788267874712">Nytt enhetsnavn</translation>
-<translation id="5320261549977878764">Slett gruppen</translation>
 <translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="5323328004379641163">Tilpass utseendet til Chrome og denne siden</translation>
 <translation id="5324300749339591280">App-liste</translation>
@@ -6960,7 +6957,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5901069264981746702">Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Bytt til fanen som tar opp</translation>
 <translation id="5901494423252125310">Skriverdekselet er åpent</translation>
-<translation id="5901526412306322179">Aktivitetslogg</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5902892210366342391">Få advarsler før du går til usikre nettsteder i inkognitomodus</translation>
 <translation id="5904614460720589786">Kunne ikke konfigurere <ph name="APP_NAME" /> på grunn av et konfigurasjonsproblem. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
@@ -7446,6 +7442,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6248988683584659830">Søk i innstillingene</translation>
 <translation id="6249200942125593849">Administrer a11y</translation>
 <translation id="6250186368828697007">Detaljene skjules mens du deler skjermen</translation>
+<translation id="6250887692313997958">Velg en fane du vil legge til i delt visning</translation>
 <translation id="6251870443722440887">GDI håndterer</translation>
 <translation id="6251924700383757765">Personvern</translation>
 <translation id="625369703868467034">Nettverkstilstand</translation>
@@ -8097,6 +8094,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6728528977475057549">IBAN-nummer som slutter på <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Skriv inn brukernavnet ditt</translation>
 <translation id="6729280095610283088">Lyse stråler av nordlys over en skog.</translation>
+<translation id="6729493062119577923">Aktivitet i delt fanegruppe</translation>
 <translation id="6731320427842222405">Dette kan ta noen minutter</translation>
 <translation id="6732956960067639542">Åpne en ny økt i Chrome-nettleseren i stedet.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10518,7 +10516,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8425492902634685834">Festet til oppgavelinjen</translation>
 <translation id="8425768983279799676">Du kan bruke PIN-koden til å låse opp enheten.</translation>
-<translation id="8426111352542548860">Lagre gruppen</translation>
 <translation id="8427213022735114808">Diktat sender stemmen din til Google for å muliggjøre stemmestyrt skriving i alle tekstfelt.</translation>
 <translation id="8427292751741042100">innebygd på et hvilket som helst nettsted</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
@@ -11520,6 +11517,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9113240369465613386">Bare oddetallssider</translation>
 <translation id="9113469270512809735">Slå av/på nylig lukkede elementer</translation>
 <translation id="9113529408970052045">«Hjelp meg å skrive» kan åpnes automatisk når et tekstfelt på et nettsted kan fylles med innhold i kort format</translation>
+<translation id="9114210796909453187">Fullfør den delte visningen</translation>
 <translation id="9114663181201435112">Logg på enkelt</translation>
 <translation id="9115675100829699941">&amp;Bokmerker</translation>
 <translation id="9116366756388192417">Velg et emne</translation>

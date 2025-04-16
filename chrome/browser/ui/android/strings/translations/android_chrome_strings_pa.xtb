@@ -259,7 +259,6 @@
 <translation id="22091350895006575">ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="221494669172414749">ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਤੋਂ ਬਿਨਾਂ Chrome ਨੂੰ ਖੋਲ੍ਹਣ ਨਾਲ ਕਾਰ ਤੋਂ ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਪਾਸਵਰਡ ਅਤੇ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਟ ਜਾਣਗੀਆਂ। ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਵਰਤਣ ਨਾਲ ਇਹ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਰਹਿੰਦਾ ਹੈ।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਹੈ</translation>
 <translation id="2230777942707397948">ਖਾਲੀ ਵਿੰਡੋ</translation>
 <translation id="223356358902285214">ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ</translation>
 <translation id="2234827758954819389">ਪਰਦੇਦਾਰੀ ਗਾਈਡ</translation>
@@ -853,7 +852,6 @@
 <translation id="4912413785358399818">ਟੈਬ ਲਿਜਾਓ</translation>
 <translation id="4913169188695071480">ਮੁੜ-ਤਾਜ਼ਾ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4925120120285606924">ਸਕ੍ਰੀਨਸ਼ਾਟ <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕੀਤੇ ਜਾਣਗੇ ਅਤੇ ਲਿਖਤ ਫ਼ਾਈਲ ਵਜੋਂ ਡਾਊਨਲੋਡ ਕੀਤੇ ਜਾਣਗੇ। ਉਹ ਮੰਜ਼ਿਲ ਫੋਲਡਰ ਤੱਕ ਪਹੁੰਚ ਵਾਲੇ ਕਿਸੇ ਵੀ ਵਿਅਕਤੀ ਅਤੇ ਕਿਸੇ ਵੀ ਐਪ ਨੂੰ ਦਿਖਣਯੋਗ ਹੋਣਗੇ।</translation>
 <translation id="4926901776383726965">ਆਫ਼ਲਾਈਨ ਦੇਖਣ ਜਾਂ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਸਾਂਝਾ ਕਰਨ ਲਈ ਤੁਸੀਂ ਚਿੱਤਰ ਅਤੇ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4932247056774066048">ਕਿਉਂਕਿ ਤੁਸੀਂ <ph name="DOMAIN_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chrome ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਪਰ ਇਹ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਬਰਕਰਾਰ ਰਹੇਗਾ।</translation>
 <translation id="4943703118917034429">ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ</translation>
@@ -894,6 +892,7 @@
 <translation id="5114895953710637392">ਐਪ ਫਿਲਟਰ ਸ਼ੀਟ ਬੰਦ ਹੈ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> ਵੱਲ</translation>
 <translation id="5116239826668864748">ਸੁਨੇਹੇ, ਦਸਤਾਵੇਜ਼ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਲਿੰਕ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਵਰਤ ਸਕਦੇ ਹੋ</translation>
+<translation id="5118713593561876160">ਦਿਲਚਸਪੀਆਂ</translation>
 <translation id="5122378528687922675">ਜੇ ਤੁਹਾਨੂੰ ਮਦਦ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਆਪਣੇ ਮਾਂ-ਪਿਓ (<ph name="PARENT_NAME_1" /> ਜਾਂ <ph name="PARENT_NAME_2" />) ਨੂੰ ਕਹੋ</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="5139940364318403933">Google Drive ਨੂੰ ਵਰਤਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -1100,6 +1099,7 @@
 <translation id="6087286598828478206">ਕੀ ਗਰੁੱਪ ਨੂੰ ਬਲਾਕ ਕਰਨਾ ਅਤੇ ਛੱਡਣਾ ਹੈ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ਘੰਟੇ ਬਾਕੀ</translation>
 <translation id="6095578583683628124">ਜੇ Google ਹੀ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਬਿਹਤਰ ਅਤੇ ਸੰਦਰਭੀ ਤੌਰ 'ਤੇ ਢੁਕਵੇਂ ਸੁਝਾਅ ਦੇਖੋਗੇ</translation>
+<translation id="6104768972315313991">ਸਿਰਜਿਆ ਗਿਆ QR ਕੋਡ</translation>
 <translation id="610630277578876674">ਸੁਨੇਹਿਆਂ ਵਿੱਚ ਲਿੰਕਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਖੋਲ੍ਹੋ ਅਤੇ ਹੋਰ ਵੀ ਬਹੁਤ ਕੁਝ</translation>
 <translation id="6108923351542677676">ਸੈਟਅਪ ਚਾਲੂ ਹੈ...</translation>
 <translation id="6112702117600201073">ਸਫ਼ਾ ਤਾਜ਼ਾ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -1549,6 +1549,7 @@
 <translation id="7963646190083259054">ਵੈਂਡਰ:</translation>
 <translation id="7965838025086216108">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਵਰਤ ਸਕਦੇ ਹੋ। ਉਹ <ph name="ACCOUNT" /> ਦੇ ਲਈ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="7968014550143838305">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="7971136598759319605">1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="7975379999046275268">ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ਇਹ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਕਿਤੇ ਤੁਸੀਂ ਉਸ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਤਾਂ ਨਹੀਂ ਕੀਤੀ ਜਿਸ ਨਾਲ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਛੇੜਛਾੜ ਕੀਤੀ ਗਈ ਹੈ।</translation>
@@ -1681,7 +1682,6 @@
 <translation id="8497242791509864205">ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੇ ਵਿਕਲਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="8497480609928300907">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਵਿਆਖਿਆ</translation>
 <translation id="8497726226069778601">ਇੱਥੇ ਦੇਖਣ ਲਈ… ਅਜੇ ਕੁਝ ਨਹੀਂ</translation>
-<translation id="8503559462189395349">Chrome ਪਾਸਵਰਡ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8505766168025405649">ਡਾਊਨਲੋਡ ਸਥਿਤੀ ਲਈ ਸੂਚਨਾ ਦੇਖੋ</translation>
 <translation id="8506357771923193001">ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਊਨਲੋਡ ਇੱਥੇ ਮਿਲਣਗੇ</translation>
@@ -1716,6 +1716,7 @@
 <translation id="8635399646025169806">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="8636825310635137004">ਆਪਣੀਆਂ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ,  ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="864544049772947936">ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="8664979001105139458">ਫ਼ਾਈਲ ਨਾਮ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8672883760227492369">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੌਜੂਦ ਕੁਝ ਪਾਸਵਰਡ ਜਲਦ ਹੀ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੇ। ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਪਾਸਵਰਡਾਂ ਨੂੰ Google Password Manager 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਸਾਈਨ-ਅੱਪ ਕਰੋ</translation>

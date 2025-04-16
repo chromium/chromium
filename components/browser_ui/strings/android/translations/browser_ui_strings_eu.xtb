@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Webguneek kokapena eska dezakete</translation>
 <translation id="3658847490588580244">Pantailaren behealdean ainguratutako orria, arakatzaile lehenetsiari buruzkoa</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> domeinuaren webgune taldeko <ph name="RWS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzake}other{<ph name="RWS_OWNER" /> domeinuaren webgune taldeko <ph name="RWS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzakete}}</translation>
+<translation id="3670480940339182416">Webguneek V8 optimizatzailea erabil dezakete</translation>
 <translation id="3676777756440746804">Zuri buruz gordetako informazioa erabiltzeko baimena eskatzea debekatu zaie webguneei</translation>
 <translation id="3697164069658504920">Aktibatuta dagoenean, webguneek USB bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili USB bidezko gailurik.</translation>
+<translation id="3703430731944883733">Kudeatu zure jarioa</translation>
 <translation id="3707034683772193706">Bisitatzen dituzun webguneek informazio pixka bat gorde dezakete Chrome-rekin, batez ere robot bat ez zarela egiaztatzeko.</translation>
 <translation id="3708684582558000260">Ez eman datuak bidaltzen edo jasotzen amaitzeko baimena itxitako webguneei</translation>
 <translation id="3709818294139939629">Kendu zaio fitxategirako sarbidea webguneari</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kamera erabiltzeko baimena desaktibatuta dago Android-en ezarpenetan</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> webguneko cookieak eta webguneetako bestelako datuak ezabatuko dira</translation>
+<translation id="571222594670061844">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek</translation>
 <translation id="5723967018671998714">Hirugarrenen cookieak blokeatuta daude ezkutuko moduan</translation>
 <translation id="5740126560802162366">Webguneek gailuan datuak gorde ditzakete</translation>
 <translation id="5750869797196646528">Eskuen jarraipena</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Aktibatu</translation>
 <translation id="5876056640971328065">Pausatu bideoa</translation>
 <translation id="5877248419911025165">Tolestu eskaera guztiak</translation>
+<translation id="5878945009165002849">Blokeatu identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak</translation>
 <translation id="5884085660368669834">Webgunerako hobespena</translation>
 <translation id="5887687176710214216">Atzo bisitatu zenuen azkenengoz</translation>
 <translation id="5908617755156109052">Ez eman zure ingurunearen 3D-ko mapa bat sortzeko edo kameraren posizioaren jarraipena egiteko baimena webguneei</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Kendu gailua erabiltzeko baimena</translation>
 <translation id="8471525937465764768">Webguneak USB bidezko gailuetara konektatu ohi dira dokumentu bat inprimatzeko edo biltegiratze-gailu batean gordetzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="8473055640493819707">Zaharkituta dago "<ph name="APP_NAME" />". Instalatu berriro aplikazioa.</translation>
+<translation id="847433688444405067">Arakatu gailu guztietan</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="848952951823693243">Eskatu beti mugikorretarako webgunea</translation>
 <translation id="8492822722330266509">Webguneek leiho gainerakorrak bidali, eta birbideratzeak erabil ditzakete</translation>

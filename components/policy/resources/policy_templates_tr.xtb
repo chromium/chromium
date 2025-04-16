@@ -946,13 +946,6 @@ Minimum eşik 1 dakikadır.
 <translation id="1639673466479276550">Giriş ekranında ekran koruyucuyu etkinleştir.</translation>
 <translation id="1640824698339859203">Kayan TOA'yı etkinleştir ve kullanıcının web hizmeti kimlik doğrulamalarını yeni cihaza taşı</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2 hizmetini etkinleştir</translation>
-<translation id="1641394008743444477">Devre dışı bırakılacak <ph name="PRODUCT_OS_NAME" /> özelliklerini belirlemenize izin verir.
-
-      Bu özelliklerin herhangi birisini iptal etmek, kullanıcının arayüzde ilgili özelliğe erişemeyeceği ve bunu "yönetici tarafından engellendi" olarak göreceği anlamına gelir. Devre dışı bırakılan özelliklerle ilgili kullanıcı deneyimine <ph name="SYSTEM_FEATURES_DISABLE_MODE" /> karar verir
-
-      Politika ayarlanmadan bırakılırsa tüm <ph name="PRODUCT_OS_NAME" /> özellikleri varsayılan olarak etkinleştirilir ve kullanıcı bu özelliklerden herhangi birini kullanabilir.
-
-      Not: Tarama özelliği şu anda bir özellik bayrağı tarafından varsayılan olarak devre dışıdır. Kullanıcı bu özelliği özellik bayrağını kullanarak etkinleştirirse özellik bu politika tarafından yine de devre dışı bırakılabilir.</translation>
 <translation id="1643642938972654829">Politika test sayfasına erişim izni ver</translation>
 <translation id="1644373745741524038"><ph name="REQUEST_FULLSCREEN_API_NAME" /> web API, güvenlik nedenleriyle önceki kullanıcı hareketinin ("geçici etkinleştirme") çağrılmasını zorunlu kılar ve çağrılmadığı takdirde başarısız olur. Kullanıcının kişisel ayarları doğrultusunda, <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" /> adresinde açıklandığı üzere önceki kullanıcı hareketi olmasa da belirli kaynakların bu API'yi çağırmasına izin verilebilir.
 
@@ -2484,7 +2477,6 @@ Politika, Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
       Bu politika ayarlanmadığında veya doğru değerine ayarlandığında PDF görüntüleyici PDF'lere not ekleyebilir.
 
       Bu politika yanlış değerine ayarlandığında PDF görüntüleyici PDF'lere not ekleyemez.</translation>
-<translation id="2769199041812510302">Kurumsal Logo URL'si</translation>
 <translation id="2769952903507981510">Uzaktan erişim ana makineleri için gerekli alan adını yapılandır</translation>
 <translation id="2770376586681635746">Kullanıcının Kerberos hesapları ekleyip ekleyemeyeceğini kontrol eder.
 
@@ -3303,13 +3295,6 @@ Bu politika 1.000 giriş ile sınırlıdır.
 Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açık VPN etkinken ve VPN bağlı değilken tarayıcıda gezinmeyi engeller.</translation>
 <translation id="3405997282295704902">Kullanıcıların <ph name="PRODUCT_NAME" /> kullanmasına izin verme</translation>
 <translation id="3406122462682235653">Kullanıcıya sorma (indirme işlemleri hemen başlar)</translation>
-<translation id="3408078762098350617"><ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> içindeki devre dışı bırakılan özelliklerle ilgili kullanıcı deneyimini kontrol eder.
-
-      Bu politika "engellendi" olarak ayarlanırsa, devre dışı bırakılan özellikler kullanılamaz hale gelir ama yine de kullanıcılar tarafından görülebilir.
-
-      Bu politika "gizli" olarak ayarlanırsa, devre dışı bırakılan özellikler kullanılamaz hale gelir ve kullanıcılar tarafından görülemez.
-
-      Bu politika ayarlanmadan bırakılırsa veya geçersiz bir değer içerirse sistem özelliklerinin devre dışı bırakma modu "engellenir".</translation>
 <translation id="3411947169047929182">WebRTC ile ilgili yapılandırmayı kontrol eder</translation>
 <translation id="341285788698114069">Bu politika, Windows üzerinde ses işleminin önceliğini kontrol eder.
       Bu politika etkinleştirilirse ses işlemi, normal üstü öncelikli çalışır.
@@ -4565,7 +4550,6 @@ Politika Devre Dışı değerine ayarlanırsa Chrome Temizleme aracı düzenli t
       Politika, Devre Dışı değerine ayarlanırsa gelişmiş pil şarj modu kapalı olur.
 
       Kullanıcılar bu ayarı değiştiremez.</translation>
-<translation id="4307479555111916927">Özel kurumsal etiket ayarla</translation>
 <translation id="4309091698378414920">İmleç vurgulamayı etkinleştir</translation>
 <translation id="4311141497190183490">Politikayı 1 değerine ayarlamak sitelerin kullanıcının fiziksel konumunu izlemesine izin verir. Politikayı 2 değerine ayarlamak izlemeyi varsayılan olarak kapatır. Politikayı, web siteleri fiziksel konumunuzu izlemek istediğinde sorması için ayarlayabilirsiniz.
 
@@ -4573,27 +4557,6 @@ Politikayı ayarlamadan bırakırsanız <ph name="ASK_GEOLOCATION_POLICY_NAME" /
 <translation id="4311195029067684288">Tam</translation>
 <translation id="4311662690937656540">Giriş ve kilit ekranlarında çevrimiçi girişleri zorunlu kıl</translation>
 <translation id="4313767483634435271">Cihazın atanmış yuva MAC adresi</translation>
-<translation id="4313778862255986189">Bu bir beta özelliktir. Güvenilir test kullanıcılarımız tarafından kullanılabilen bu özellik geliştirme aşamasında olduğu için özellikte değişiklik ve güncelleme yapılabileceğini hatırlatırız.
-
-Bu politikayla yöneticiler, belirli bir anahtar kelimeyle tetiklendiğinde adres çubuğunda arama önerileri ve sonuçlar gösteren bir kurumsal arama toplayıcı belirleyebilir. Kullanıcılar adres çubuğuna <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanında belirtilen anahtar kelimeyi başına @ ekleyerek veya eklemeden (ör. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) yazıp Boşluk veya Sekme tuşuna basarak arama başlatabilir.
-
-Şu alanlar gereklidir: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, adres çubuğunda kullanıcıya gösterilen arama motoru adına karşılık gelir.
-
-<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, kullanıcının aramayı tetiklemek için girdiği anahtar kelimeye karşılık gelir. Kısayol düz kelimeler ve karakterler içerebilir, ancak boşluk içeremez veya @ sembolüyle başlayamaz. Kısayollar benzersiz olmalıdır.
-
-<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, aramanın yapılacağı URL'yi belirtir. Arama motoru sonuç sayfasının web adresini girin ve sorgu alanında <ph name="SEARCH_TERM_MARKER" /> öğesini kullanın.
-
-<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerileri sağlayan URL'yi belirtir. <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_TERM_MARKER" /> öğesini içeriyorsa Chrome, <ph name="SEARCH_TERM_MARKER" /> yerine kullanıcının arama sorgusunu koyarak URL'ye bir GET isteği yapıp arama önerileri elde eder. Aksi takdirde POST isteği yapılır ve kullanıcının sorgusu, <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" /> anahtarının altındaki POST parametrelerinde iletilir.
-
-<ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerilerinde kullanılacak resmin URL'sini belirtir. Bu alan ayarlanmadığında varsayılan simge kullanılır. Site simgesi (ör. <ph name="ICON_URL_EXAMPLE" />) kullanılması önerilir. Desteklenen resim dosyası biçimleri: JPEG, PNG ve ICO.
-
-<ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> alanı, arama önerilerini görmek için adres çubuğunun (<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />) gerekli olup olmadığını belirtir. Bu alan ayarlanmazsa adres çubuğu (<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />) gerekli değildir.
-
-<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya "<ph name="MS_AAD_NAME" />" alan adına katılmış ya da "<ph name="CHROME_ENTERPRISE_CORE_NAME" />" öğesine kaydolmuş örneklerde kullanılabilir.
-
-<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="4314538398999793073">Kerberos kimlik doğrulaması sırasında CNAME aramasını devre dışı bırak</translation>
 <translation id="4320592646346933548">Kablosuz</translation>
 <translation id="43213511254881626">Bu politika yerleşik şifre yöneticisinin, şifresi çözülemeyen şifreleri veritabanından silip silemeyeceğini kontrol eder. Bu, yerleşik şifre yöneticisinin tam işlevini geri yüklemek için gereklidir ancak kalıcı veri kaybına neden olabilir. Şifresi çözülemeyen şifre değerleri kendiliğinden şifresi çözülebilir hale gelmez ve düzeltilmeleri mümkünse genellikle karmaşık kullanıcı işlemleri yapılması gerekir.
@@ -7453,7 +7416,6 @@ Geçerli <ph name="URL_LABEL" /> kalıpları (sürüm 127'den itibaren) hakkınd
 <translation id="6287128640500683781">Tüm kullanıcıların oturum açmasına izin ver</translation>
 <translation id="6287310684159482272">Çerez ayarları</translation>
 <translation id="6287742528823584153"><ph name="PRODUCT_NAME" /> Hizmeti'ni etkinleştir ve giriş yaptıktan sonra uzaktan masayı başlat</translation>
-<translation id="6288152932495466841">Kullanıcıları geçersiz kılınan tarayıcı sürümleri hakkında bilgilendir</translation>
 <translation id="6299147100249359151">Politika kapsamını algılamaya izin ver.</translation>
 <translation id="6299554629216555326">Pencere yönetimi ayarları</translation>
 <translation id="6302021021024941085">Kiosk sorun giderme araçlarını devre dışı bırak.</translation>
@@ -8265,11 +8227,6 @@ Tarayıcı, <ph name="TIME_TO_LIVE_IN_HOURS" /> saatten daha eski olan seçili v
 Süresi dolan verilerin silinme işlemi, tarayıcı başlatıldıktan 15 saniye sonra gerçekleşir, ardından tarayıcı çalıştığı sürece 30 dakikada bir tekrarlanır.
 
 Bu politika, Chrome 114 sürümüne kadar <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasının doğru değerine ayarlanmasını gerektiriyordu. Chrome 115 sürümünden itibaren <ph name="SYNC_DISABLED_POLICY_NAME" /> politikası ayarlanarak "<ph name="CHROME_SYNC_NAME" />" devre dışı bırakılmadığı veya <ph name="BROWSER_SIGNIN_POLICY_NAME" /> devre dışı olmadığı sürece, bu politika ayarlandığında ilgili veri türleri için senkronizasyon devre dışı bırakılır.</translation>
-<translation id="6762635531429930846">Sonraki sürümlerde yeniden başlatma bildirimlerinin daha agresif olacağı minimum sürüm yaşını belirtir. Bu yaş, geçerli sürümün istemcilere en son sunulduğu zamana göre hesaplanır.
-
-Yeni bir sürüm beklemedeyse, tarayıcının ya da cihazın yeniden başlatılması gerekiyorsa ve geçerli sürüm, bu ayarda belirtilen gün sayısından daha uzun bir süre boyunca geçersiz kılınmışsa <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası geçersiz kılınarak 2 saat olarak ayarlanır. <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> politikası 1 ("Zorunlu") değerine ayarlanırsa kullanıcılar, sürenin sonunda yeniden başlatmaya zorlanır.
-
-Politika ayarlanmazsa veya sürüm yaşı belirlenemezse tüm güncellemelerde <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası kullanılır.</translation>
 <translation id="6763023079133439068">subjectAlternativeName uzantısı olmayıp yerel güven çapaları tarafından verilmiş olan sertifikalara izin ver</translation>
 <translation id="6766216162565713893">Sitelerin, yakınlardaki bir Bluetooth cihazına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="6770454900105963262">Aktif kiosk oturumlarıyla ilgili bilgileri raporla</translation>
@@ -9228,7 +9185,6 @@ Geçerli kalıplar hakkında ayrıntılı bilgi için https://cloud.google.com/d
 
       Ayarlanmazsa 3 dakikalık varsayılan sıklık geçerli olur.</translation>
 <translation id="7469554574977894907">Arama önerilerini etkinleştir</translation>
-<translation id="7471938371309017725">Devre dışı bırakılacak kamera, tarayıcı ayarları, OS ayarları, tarama, web mağazası, tuval, keşfet, crosh, galeri, terminal ve kaydedici özelliklerini yapılandır</translation>
 <translation id="7472547030234093862">DNS-over-HTTPS kullanılarak çözümlenecek alanları belirt</translation>
 <translation id="747275827471712187">Bu sitelerde çerezler için eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri dön</translation>
 <translation id="7476030153540156377"><ph name="PRIVACY_SANDBOX_NAME" /> IP koruması özelliğinin etkinleştirilip etkinleştirilmeyeceğini seç.</translation>

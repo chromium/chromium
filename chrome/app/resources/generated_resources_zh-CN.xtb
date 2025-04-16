@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">开始新任务或在流程中获取帮助。</translation>
 <translation id="1054048317165655285">在您的手机上完成设置</translation>
 <translation id="1054153489933238809">在新标签页中打开原始图片(&amp;I)</translation>
-<translation id="1054187194995068149">您好，这是预览版</translation>
 <translation id="1054502481659725522">应用、网站和系统服务可以使用您的位置信息</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{请在 1 周内更新 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="1055606969515662982">使用遥控器停止投放</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">快捷方式已添加</translation>
 <translation id="1174366174291287894">您的连接始终是安全的，除非 Chrome 另有说明</translation>
 <translation id="1175131936083782305">您的管理员已停用此功能。</translation>
+<translation id="1175277108283187866">在地址栏中访问网站或开始搜索</translation>
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
 <translation id="1175572348579024023">滚动</translation>
 <translation id="1175914831232945926">数字</translation>
@@ -479,7 +479,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">您将会自动退出所有网站（包括已打开的标签页中的网站）</translation>
 <translation id="1313705515580255288">系统会将您的书签、浏览记录和其他设置同步到您的Google账号。</translation>
-<translation id="1315184295353569363">取消保存组</translation>
 <translation id="1316136264406804862">正在搜索...</translation>
 <translation id="1316248800168909509">无法连接到<ph name="DEVICE" />。请重试。</translation>
 <translation id="1316495628809031177">同步已暂停</translation>
@@ -2743,6 +2742,7 @@
 <translation id="2878889940310164513">添加移动网络…</translation>
 <translation id="288042212351694283">访问您的 Universal 2nd Factor 设备</translation>
 <translation id="2881076733170862447">当您点击此扩展程序时</translation>
+<translation id="2882530630263790933">音频和视频</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 将立即重新启动并重置</translation>
 <translation id="2884070497102362193">测试电池、CPU、内存、连接性等方面</translation>
 <translation id="2885129935310217435">已存在具有相同名称的按钮。请选择其他名称。</translation>
@@ -3043,7 +3043,6 @@
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3103451787721578293">请输入上传此数据的原因：</translation>
 <translation id="3103512663951238230">Alt+点击</translation>
-<translation id="3104763887980088552">活动日志</translation>
 <translation id="3104948640446684649">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">上次失败的更新</translation>
 <translation id="3105796011181310544">改回 Google？</translation>
@@ -4697,7 +4696,6 @@
 <translation id="4268025649754414643">密钥加密</translation>
 <translation id="4268516942564021145">您的账号无法使用此设置。</translation>
 <translation id="4270393598798225102">版本 <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">保存组</translation>
 <translation id="4274667386947315930">登录数据</translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4275291496240508082">启动音</translation>
@@ -6160,7 +6158,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">为新设备配对</translation>
 <translation id="5320135788267874712">新的设备名称</translation>
-<translation id="5320261549977878764">取消保存组</translation>
 <translation id="532247166573571973">可能无法连接到服务器，请稍后重试。</translation>
 <translation id="5323328004379641163">自定义 Chrome 和此页面的外观</translation>
 <translation id="5324300749339591280">应用列表</translation>
@@ -6943,7 +6940,6 @@
 <translation id="5901069264981746702">您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" />上，绝不会外泄。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">切换到执行录屏操作的标签页</translation>
 <translation id="5901494423252125310">打印机机盖未关</translation>
-<translation id="5901526412306322179">活动日志</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5902892210366342391">在您以无痕模式访问不安全的网站前发出警告</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -7428,6 +7424,7 @@
 <translation id="6248988683584659830">搜索设置</translation>
 <translation id="6249200942125593849">管理无障碍设置</translation>
 <translation id="6250186368828697007">当您共享屏幕时，系统会隐藏详细信息</translation>
+<translation id="6250887692313997958">选择要添加到拆分视图中的标签页</translation>
 <translation id="6251870443722440887">GDI处理函数</translation>
 <translation id="6251924700383757765">隐私权政策</translation>
 <translation id="625369703868467034">网络状况</translation>
@@ -8079,6 +8076,7 @@
 <translation id="6728528977475057549">尾号为 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>
 <translation id="6729192290958770680">请输入用户名</translation>
 <translation id="6729280095610283088">森林上空闪耀着明亮的北极光。</translation>
+<translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6731320427842222405">这可能需要几分钟时间</translation>
 <translation id="6732956960067639542">请改为打开新的 Chrome 浏览器会话。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
@@ -10500,7 +10498,6 @@
 <translation id="8425213833346101688">更改</translation>
 <translation id="8425492902634685834">固定在任务栏上</translation>
 <translation id="8425768983279799676">您可以使用 PIN 码来解锁您的设备。</translation>
-<translation id="8426111352542548860">保存分组</translation>
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
 <translation id="8428213095426709021">设置</translation>
@@ -11502,6 +11499,7 @@
 <translation id="9113240369465613386">仅限页码为奇数的页面</translation>
 <translation id="9113469270512809735">显示/隐藏最近关闭的项</translation>
 <translation id="9113529408970052045">当网站上的文本框可以填充简短内容时，“帮我写”功能会自动打开</translation>
+<translation id="9114210796909453187">完成视图拆分</translation>
 <translation id="9114663181201435112">轻松登录</translation>
 <translation id="9115675100829699941">书签(&amp;B)</translation>
 <translation id="9116366756388192417">选择主题</translation>

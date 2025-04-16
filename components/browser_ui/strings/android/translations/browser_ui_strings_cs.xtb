@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Weby se mohou dotázat na vaši polohu</translation>
 <translation id="3658847490588580244">Spodní panel výchozího prohlížeče</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="RWS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="RWS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="RWS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
+<translation id="3670480940339182416">Weby mohou používat optimalizátor V8</translation>
 <translation id="3676777756440746804">Weby nemohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3697164069658504920">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení USB. Když je vypnutá, weby zařízení USB používat nemohou.</translation>
+<translation id="3703430731944883733">Spravovat feed</translation>
 <translation id="3707034683772193706">Navštívené weby mohou do Chromu uložit malé množství informací (zejména k ověření, že nejste robot)</translation>
 <translation id="3708684582558000260">Nepovolovat zavřeným webům dokončit odeslání a příjem dat</translation>
 <translation id="3709818294139939629">Odebrán přístup webu k souboru</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastavení zařízení Android</translation>
 <translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="5706552988683188916">Touto akcí smažete soubory cookie a další data webu <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Weby mohou zobrazovat výzvy k přihlášení od služeb ověření identity</translation>
 <translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
 <translation id="5740126560802162366">Weby mohou ukládat data na vašem zařízení</translation>
+<translation id="5743425052258407233">Synchronizujte svou historii do všech svých zařízení, abyste mohli snadno pokračovat, kde jste přestali</translation>
 <translation id="5750869797196646528">Sledování rukou</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5876056640971328065">Pozastavit video</translation>
 <translation id="5877248419911025165">Sbalit všechny žádosti</translation>
+<translation id="5878945009165002849">Blokovat výzvy k přihlášení od služeb ověření identity</translation>
 <translation id="5884085660368669834">Nastavení webu</translation>
 <translation id="5887687176710214216">Naposledy navštíveno včera</translation>
 <translation id="5908617755156109052">Nepovolovat webům vytvářet 3D mapu okolí ani sledovat polohu kamery</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Zrušit oprávnění zařízení</translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8473055640493819707">Aplikace <ph name="APP_NAME" /> je zastaralá. Přeinstalujte ji.</translation>
+<translation id="847433688444405067">Synchronizujte své procházení</translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="848952951823693243">Vždy požadovat zobrazení na mobilu</translation>
 <translation id="8492822722330266509">Weby mohou zobrazovat vyskakovací okna a používat přesměrování</translation>

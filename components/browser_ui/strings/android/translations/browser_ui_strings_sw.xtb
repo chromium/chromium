@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Tovuti zinaweza kuomba maelezo ya mahali ulipo</translation>
 <translation id="3658847490588580244">Safu ya chini ya kivinjari chaguomsingi</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Tovuti <ph name="RWS_MEMBERS_COUNT" /> iliyo katika kikundi cha tovuti za <ph name="RWS_OWNER" /> zinazoweza kuona shughuli zako kwenye kikundi}other{Tovuti <ph name="RWS_MEMBERS_COUNT" /> zilizo katika kikundi cha tovuti za <ph name="RWS_OWNER" /> zinazoweza kuona shughuli zako kwenye kikundi}}</translation>
+<translation id="3670480940339182416">Tovuti zinaweza kutumia kiboreshaji cha V8</translation>
 <translation id="3676777756440746804">Tovuti zimezuiwa ili zisiombe ruhusa ya kutumia taarifa ambazo zimehifadhi kukuhusu</translation>
 <translation id="3697164069658504920">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya USB. Kikizimwa, tovuti haziwezi kutumia vifaa vya USB.</translation>
+<translation id="3703430731944883733">Dhibiti mpasho wako</translation>
 <translation id="3707034683772193706">Tovuti unayotembelea inaweza kuhifadhi kiasi kidogo cha maelezo kwenye Chrome, hasa ili kuthibitisha kuwa wewe si roboti</translation>
 <translation id="3708684582558000260">Usiruhusu tovuti ulizofunga zimalize kutuma au kupokea data</translation>
 <translation id="3709818294139939629">Umeondoa uwezo wa tovuti kufikia faili</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kamera imezimwa katika mipangilio ya Android</translation>
 <translation id="5700761515355162635">Vidakuzi vya mshirika mwingine vimeruhusiwa</translation>
 <translation id="5706552988683188916">Hatua hii hufuta vidakuzi na data nyingine ya tovuti katika <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Tovuti zinaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwenye huduma za utambulisho</translation>
 <translation id="5723967018671998714">Vidakuzi vya washirika wengine vimezuiwa katika Hali Fiche</translation>
 <translation id="5740126560802162366">Tovuti zinaweza kuhifadhi data kwenye kifaa chako</translation>
+<translation id="5743425052258407233">Pata historia kwenye vifaa vyako vyote ili uendelee ulipoachia kwa urahisi</translation>
 <translation id="5750869797196646528">Ufuatiliaji wa mijongeo ya mikono</translation>
 <translation id="5771720122942595109">Umezuia <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Idhini</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Washa</translation>
 <translation id="5876056640971328065">Sitisha video</translation>
 <translation id="5877248419911025165">Kunja maombi yote</translation>
+<translation id="5878945009165002849">Zuia vidokezo vya kuingia katika akaunti kutoka kwenye huduma za utambulisho</translation>
 <translation id="5884085660368669834">Mapendeleo ya tovuti</translation>
 <translation id="5887687176710214216">Ilitembelewa mara ya mwisho jana</translation>
 <translation id="5908617755156109052">Usiruhusu tovuti zitayarishe ramani ya 3D ya mazingira yako au kufuatilia mkao wa kamera</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Batilisha ruhusa ya kifaa</translation>
 <translation id="8471525937465764768">Tovuti huunganisha kwenye vifaa vya USB kwa ajili ya vipengele kama vile kuchapisha hati au kuweka faili kwenye kifaa cha kuhifadhi</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' imepitwa na wakati. Tafadhali weka upya programu hiyo kwenye kifaa.</translation>
+<translation id="847433688444405067">Vinjari kwenye vifaa</translation>
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>
 <translation id="848952951823693243">Omba tovuti katika mwonekano wa kifaa cha mkononi kila wakati</translation>
 <translation id="8492822722330266509">Tovuti zinaweza kutuma madirisha ibukizi na kukuelekeza kwingine</translation>

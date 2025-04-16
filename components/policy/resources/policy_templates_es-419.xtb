@@ -975,13 +975,6 @@ La "Entrada del usuario" se define con las APIs del sistema operativo y comprend
 <translation id="1639673466479276550">Habilitar el protector de pantalla en la pantalla de acceso</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y transferir las autenticaciones del servicio web del usuario al nuevo dispositivo</translation>
 <translation id="1641117061932613266">Habilitar el servicio de <ph name="PRODUCT_NAME" /> V2</translation>
-<translation id="1641394008743444477">Permite establecer una lista de funciones de <ph name="PRODUCT_OS_NAME" /> para que se inhabiliten.
-
-      Si se inhabilita alguna de estas funciones, el usuario no podrá acceder a ella desde la IU y la verá como "inhabilitada por el administrador". <ph name="SYSTEM_FEATURES_DISABLE_MODE" /> determina la experiencia del usuario de las funciones inhabilitadas.
-
-      Si no estableces la política, se habilitarán todas las funciones de <ph name="PRODUCT_OS_NAME" /> de forma predeterminada, y el usuario podrá usar cualquiera de ellas.
-
-      Nota: Por el momento, la función de Análisis está inhabilitada de forma predeterminada mediante una marca de función. Si el usuario habilita la función mediante la marca de función, se podrá inhabilitar a través de la política.</translation>
 <translation id="1643642938972654829">Permitir el acceso a la página de prueba de políticas</translation>
 <translation id="1644373745741524038">Por motivos de seguridad, la
 API web de <ph name="REQUEST_FULLSCREEN_API_NAME" />
@@ -2561,7 +2554,6 @@ Si la inhabilitas o no la estableces, los usuarios podrán transferir archivos a
       Si no estableces esta política o la estableces como verdadera, el lector de PDF podrá agregar anotaciones en archivos PDF.
 
       Si la estableces como falsa, el lector de PDF no podrá agregar anotaciones en archivos PDF.</translation>
-<translation id="2769199041812510302">URL del logotipo de empresa</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
 <translation id="2770376586681635746">Determina si los usuarios pueden agregar cuentas de Kerberos.
 
@@ -3385,13 +3377,6 @@ Esta política se limitará a 1,000 entradas.
 Si no estableces la política, se impedirá la navegación en el navegador cuando la VPN siempre activada con modo estricto esté activa y la VPN no esté conectada.</translation>
 <translation id="3405997282295704902">No permitir que los usuarios usen <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">No preguntar al usuario (las descargas comienzan de inmediato)</translation>
-<translation id="3408078762098350617">Controla la experiencia del usuario de las funciones inhabilitadas que se mencionan en <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Si estableces esta política como bloqueada, las funciones inhabilitadas estarán inutilizables, pero los usuarios aún podrán verlas.
-
-      Si la estableces como oculta, las funciones inhabilitadas estarán inutilizables y los usuarios no podrán verlas.
-
-      Si no estableces esta política o tiene un valor no válido, el modo de inhabilitación de las funciones del sistema estará bloqueado.</translation>
 <translation id="3411947169047929182">Controla la configuración relacionada con WebRtc</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si habilitas la política, se ejecutará el proceso de audio con prioridad por encima de la normal.
@@ -4656,7 +4641,6 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si inhabilitas la política o no la estableces, se mantendrá desactivado el modo avanzado de carga de la batería.
 
       Los usuarios no podrán cambiar esta configuración.</translation>
-<translation id="4307479555111916927">Establecer una etiqueta de empresa personalizada</translation>
 <translation id="4309091698378414920">Habilitar la función para destacar el signo de intercalación</translation>
 <translation id="4311141497190183490">Si estableces la política en 1, los sitios podrán hacer un seguimiento de la ubicación física de los usuarios de forma predeterminada. Si la estableces en 2, se rechazará el seguimiento de forma predeterminada. Puedes establecer que la política solicite permiso cada vez que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios.
 
@@ -4664,27 +4648,6 @@ Si no la estableces, se aplicará la política <ph name="ASK_GEOLOCATION_POLICY_
 <translation id="4311195029067684288">"Full"</translation>
 <translation id="4311662690937656540">Aplicar de manera forzosa accesos en línea a las pantallas de acceso y de bloqueo</translation>
 <translation id="4313767483634435271">Dirección MAC designada para el conector del dispositivo</translation>
-<translation id="4313778862255986189">Esta es una función beta. Como esta función está en desarrollo y está disponible para nuestros verificadores de confianza, ten en cuenta que puede sufrir cambios y actualizaciones.
-
-Esta política permite a los administradores establecer un agregador de búsquedas de la empresa designado que proporcionará recomendaciones de búsqueda y resultados en la barra de direcciones cuando se active una palabra clave específica. Para iniciar una búsqueda, los usuarios pueden escribir en la barra de direcciones la palabra clave especificada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (p. ej., <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, luego, presionar la barra espaciadora o Tab.
-
-Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del motor de búsqueda que se muestra al usuario en la barra de direcciones.
-
-El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que el usuario ingresa para activar la búsqueda. El atajo puede incluir palabras y caracteres simples, pero no puede incluir espacios ni comenzar con el símbolo @. Los atajos deben ser únicos.
-
-El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se realizará la búsqueda. Ingresa la dirección web para la página de resultados del motor de búsqueda y usa <ph name="SEARCH_TERM_MARKER" /> en lugar de la búsqueda.
-
-El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome obtendrá sugerencias de búsqueda a través de una solicitud GET a la URL, reemplazando <ph name="SEARCH_TERM_MARKER" /> con la búsqueda del usuario. De lo contrario, se realizará una solicitud POST y la consulta del usuario se pasará en los parámetros de POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se establece este campo, se usará un ícono predeterminado. Se recomienda usar un ícono de página (por ejemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de archivos de imagen admitidos: JPEG, ICO y PNG.
-
-El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> para ver las recomendaciones de búsqueda. Si no estableces este campo, no se requerirá la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Inhabilitar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Esta política controla si el administrador de contraseñas integrado puede borrar contraseñas que no se pueden desencriptar de su base de datos. Esto es necesario para restablecer la funcionalidad completa del administrador de contraseñas integrado, pero puede incluir la pérdida permanente de datos. Los valores de contraseñas que no se pueden desencriptar no se desencriptarán por sí solos y, si es posible corregirlos, generalmente se requieren acciones complejas del usuario.
@@ -7643,7 +7606,6 @@ Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /
 <translation id="6287128640500683781">Permitir que acceda cualquier usuario</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio de <ph name="PRODUCT_NAME" /> y abrir el escritorio remoto al acceder</translation>
-<translation id="6288152932495466841">Notificar a los usuarios sobre las versiones de navegador sustituidas</translation>
 <translation id="6299147100249359151">Permitir la detección del alcance de la política</translation>
 <translation id="6299554629216555326">Configuración de la Administración de ventanas</translation>
 <translation id="6302021021024941085">Inhabilitar las herramientas de solución de problemas del Kiosco</translation>
@@ -8484,11 +8446,6 @@ El navegador quitará de forma automática los datos de los tipos seleccionados 
 Los datos caducados se borrarán 15 segundos después del inicio del navegador y, luego, cada media hora mientras se esté ejecutando el navegador.
 
 Hasta la versión 114 de Chrome, esta política requería que se estableciera la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera. A partir de la versión 115 de Chrome, si estableces esta política, se inhabilitará la sincronización de los tipos de datos correspondientes si no inhabilitas "<ph name="CHROME_SYNC_NAME" />" al establecer la política <ph name="SYNC_DISABLED_POLICY_NAME" /> ni inhabilitas <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
-<translation id="6762635531429930846">Especifica la antigüedad mínima de lanzamiento a partir de la cual las notificaciones de relanzamiento son más agresivas. La antigüedad se calcula a partir del momento en que se entregó la versión que se está ejecutando para los clientes.
-
-Si hay una versión nueva pendiente, se necesita reiniciar el navegador o el dispositivo, y la versión actual se sustituyó por más de la cantidad de días especificada en esta configuración, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se anulará y se establecerá en 2 horas. Si la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> se establece como 1 ("Obligatorio"), los usuarios deberán volver a iniciar sesión o reiniciar el dispositivo al final del período.
-
-Si no se establece o si no se puede determinar la antigüedad de lanzamiento, se usará la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> para todas las actualizaciones.</translation>
 <translation id="6763023079133439068">Permitir los certificados que carezcan de una extensión subjectAlternativeName cuando son emitidos por anclas de confianza locales</translation>
 <translation id="6766216162565713893">Permitir que los sitios soliciten permiso al usuario para acceder a un dispositivo Bluetooth cercano</translation>
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
@@ -9462,7 +9419,6 @@ Para obtener información detallada sobre la partición de almacenamiento de ter
 
       Si no estableces la política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
-<translation id="7471938371309017725">Inhabilitar las funciones de cámara, configuración del navegador, configuración del SO, escaneo, Web Store, Canvas, Explorar, Crosh, Galería, Terminal y Grabadora</translation>
 <translation id="7472547030234093862">Especificar los dominios que se resolverán con DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Revierte el comportamiento de las cookies en estos sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="7476030153540156377">Elegir si se debe activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>

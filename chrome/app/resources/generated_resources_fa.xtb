@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">کار جدیدی را آغاز کنید یا در جریان کار کمک بگیرید.</translation>
 <translation id="1054048317165655285">تمام کردن راه‌اندازی در تلفن</translation>
 <translation id="1054153489933238809">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
-<translation id="1054187194995068149">سلام. این پیش‌نمایش است</translation>
 <translation id="1054502481659725522">برنامه‌ها، وب‌سایت‌ها، و خدمات سیستم می‌توانند از مکان شما استفاده کنند</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{ظرف ۱ هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}one{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}other{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}}</translation>
 <translation id="1055606969515662982">برای توقف پخش محتوا، از کنترل از دور استفاده کنید</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">میان‌بر اضافه شد</translation>
 <translation id="1174366174291287894">‏اتصال شما همیشه امن است، مگر اینکه Chrome چیز دیگری به شما بگوید</translation>
 <translation id="1175131936083782305">سرپرستتان این ویژگی را غیرفعال کرده است.</translation>
+<translation id="1175277108283187866">از سایتی بازدید کنید یا جستجویی را در نوار نشانی شروع کنید</translation>
 <translation id="1175364870820465910">&amp;چاپ...</translation>
 <translation id="1175572348579024023">پیمایش</translation>
 <translation id="1175914831232945926">ارقام</translation>
@@ -480,7 +480,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">از سیستم همه سایت‌ها، ازجمله برگه‌هایی که اکنون باز هستند خارج خواهید شد</translation>
 <translation id="1313705515580255288">‏نشانک‌ها، سابقه و سایر تنظیماتتان با حساب Google شما همگام خواهند شد.</translation>
-<translation id="1315184295353569363">لغو ذخیره گروه</translation>
 <translation id="1316136264406804862">در حال جستجو...</translation>
 <translation id="1316248800168909509">اتصال به <ph name="DEVICE" /> ناموفق بود. دوباره امتحان کنید.</translation>
 <translation id="1316495628809031177">همگام‌سازی موقتاً متوقف شده است</translation>
@@ -2761,6 +2760,7 @@
 <translation id="2878889940310164513">افزودن شبکه تلفن همراه…</translation>
 <translation id="288042212351694283">‏دسترسی به دستگاه‌های Universal 2nd Factor شما</translation>
 <translation id="2881076733170862447">وقتی روی افزونه کلیک می‌کنید</translation>
+<translation id="2882530630263790933">صدا و تصویر</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> راه‌اندازی مجدد و به صورت لحظه‌ای بازنشانی می‌شود</translation>
 <translation id="2884070497102362193">بررسی باتری، واحد پردازش مرکزی، حافظه، اتصال‌پذیری، و غیره</translation>
 <translation id="2885129935310217435">دکمه‌ای با همین نام وجود دارد. لطفاً یکی دیگر انتخاب کنید.</translation>
@@ -3061,7 +3061,6 @@
 <translation id="310297983047869047">اسلاید قبلی</translation>
 <translation id="3103451787721578293">لطفاً دلیلی برای بارگذاری این داده وارد کنید:</translation>
 <translation id="3103512663951238230">دگرساز+کلیک</translation>
-<translation id="3104763887980088552">گزارش فعالیت</translation>
 <translation id="3104948640446684649">‏داده‌های استفاده و تشخیص خرابی را ارسال کنید. این دستگاه درحال‌حاضر به‌صورت خودکار داده‌های تشخیص خرابی و داده‌های استفاده از دستگاه و برنامه را برای Google ارسال می‌کند. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی‌از داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند توسعه‌دهندگان Android) کمک می‌کند. اگر تنظیم «دیگر فعالیت‌ها در وب و برنامه» روشن باشد، ممکن است این داده‌ها در «حساب Google» شما ذخیره شود. <ph name="BEGIN_LINK2" />درباره سنجه‌ها بیشتر بدانید<ph name="BEGIN_LINK2_END" />بیشتر بدانید<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">آخرین به‌روزرسانی ناموفق</translation>
 <translation id="3105796011181310544">‏به Google تغییر می‌دهید؟</translation>
@@ -4718,7 +4717,6 @@
 <translation id="4268025649754414643">به رمز درآوردن کلید</translation>
 <translation id="4268516942564021145">این تنظیم برای حساب شما دردسترس نیست.</translation>
 <translation id="4270393598798225102">نسخه <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">ذخیره گروه</translation>
 <translation id="4274667386947315930">داده‌های ورود به سیستم</translation>
 <translation id="4274673989874969668">بعداز اینکه از سایتی خارج شدید، آن سایت می‌تواند به همگام‌سازی ادامه دهد تا کارها را تکمیل کند، ازجمله تکمیل بارگذاری عکس‌ها یا ارسال پیام گپ</translation>
 <translation id="4275291496240508082">صدای راه‌اندازی دستگاه</translation>
@@ -6183,7 +6181,6 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319712128756744240">جفت کردن دستگاه جدید</translation>
 <translation id="5320135788267874712">نام دستگاه جدید</translation>
-<translation id="5320261549977878764">لغو ذخیره گروه</translation>
 <translation id="532247166573571973">ممکن است سرور در دسترس نباشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="5323328004379641163">‏سفارشی‌سازی ظاهر Chrome و این صفحه</translation>
 <translation id="5324300749339591280">فهرست برنامه‌ها</translation>
@@ -6968,7 +6965,6 @@
 <translation id="5901069264981746702">داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">رفتن به برگه درحال ضبط</translation>
 <translation id="5901494423252125310">در چاپگر باز است</translation>
-<translation id="5901526412306322179">گزارش فعالیت</translation>
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5902892210366342391">نمایش هشدار قبل‌از رفتن به سایت‌های ناامن «درحالت ناشناس»</translation>
 <translation id="5904614460720589786">به‌دلیل مشکل پیکربندی، <ph name="APP_NAME" /> راه‌اندازی نشد. لطفاً با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -7454,6 +7450,7 @@
 <translation id="6248988683584659830">تنظیمات جستجو</translation>
 <translation id="6249200942125593849">‏مدیریت کردن a11y</translation>
 <translation id="6250186368828697007">درحین هم‌رسانی صفحه، جزئیات پنهان می‌شود</translation>
+<translation id="6250887692313997958">برگه‌ای را برای افزودن به نمای تقسیم‌شده انتخاب کنید</translation>
 <translation id="6251870443722440887">‏کنترل‌کننده‌های GDI</translation>
 <translation id="6251924700383757765">خط‌مشی رازداری</translation>
 <translation id="625369703868467034">سلامت شبکه</translation>
@@ -8107,6 +8104,7 @@
 <translation id="6728528977475057549">‏IBAN با انتهای <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">نام کاربری‌تان را وارد کنید</translation>
 <translation id="6729280095610283088">جریان‌های درخشان شفق شمالی برفراز یک جنگل.</translation>
+<translation id="6729493062119577923">فعالیت گروه برگه هم‌رسانی‌شده</translation>
 <translation id="6731320427842222405">این مرحله ممکن است چند دقیقه طول بکشد</translation>
 <translation id="6732956960067639542">‏به‌جای آن، جلسه جدیدی در مرورگر Chrome باز کنید.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (شناسه: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10527,7 +10525,6 @@
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8425492902634685834">کوچک کردن در نوار وظیفه</translation>
 <translation id="8425768983279799676">می‌توانید برای باز کردن قفل دستگاه، از پینتان استفاده کنید.</translation>
-<translation id="8426111352542548860">ذخیره گروه</translation>
 <translation id="8427213022735114808">‏با دیکته کردن، صدایتان به Google ارسال می‌شود تا بتوانید در هر فیلد نوشتاری تایپ صوتی انجام دهید.</translation>
 <translation id="8427292751741042100">جاسازی‌شده در هر میزبانی</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
@@ -11530,6 +11527,7 @@
 <translation id="9113240369465613386">فقط صفحه‌های فرد</translation>
 <translation id="9113469270512809735">پنهان/ نمایان کردن موارد اخیراً بسته‌شده</translation>
 <translation id="9113529408970052045">وقتی چارگوش نوشتاری در سایتی می‌تواند با محتوای کوتاه پر شود، «کمک گرفتن در نوشتن» می‌تواند به‌طور خودکار باز شود</translation>
+<translation id="9114210796909453187">نمای تقسیم‌شده را کامل کنید</translation>
 <translation id="9114663181201435112">ورود به سیستم آسان</translation>
 <translation id="9115675100829699941">&amp;نشانک ها</translation>
 <translation id="9116366756388192417">موضوعی را انتخاب کنید</translation>

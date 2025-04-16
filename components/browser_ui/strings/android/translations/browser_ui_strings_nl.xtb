@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Sites kunnen om je locatie vragen</translation>
 <translation id="3658847490588580244">Blad onderaan voor standaardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}other{<ph name="RWS_MEMBERS_COUNT" /> sites in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}}</translation>
+<translation id="3670480940339182416">Sites kunnen V8-optimalisatie gebruiken</translation>
 <translation id="3676777756440746804">Sites kunnen je niet vragen om informatie te gebruiken die ze over jou hebben opgeslagen</translation>
 <translation id="3697164069658504920">Als deze optie aanstaat, kunnen sites vragen of ze USB-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen USB-apparaten gebruiken.</translation>
+<translation id="3703430731944883733">Je feed beheren</translation>
 <translation id="3707034683772193706">Een site die je bezoekt, kan een kleine hoeveelheid informatie opslaan in Chrome, voornamelijk om te bevestigen dat je geen bot bent</translation>
 <translation id="3708684582558000260">Niet toestaan dat gesloten sites het sturen of ontvangen van gegevens afronden</translation>
 <translation id="3709818294139939629">Toegang van site tot bestand ingetrokken</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Camera staat uit in de Android-instellingen</translation>
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
+<translation id="571222594670061844">Sites kunnen inlogprompts van identiteitsservices tonen</translation>
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
+<translation id="5743425052258407233">Krijg toegang tot je geschiedenis op al je apparaten, zodat je makkelijk verder kunt gaan waar je gebleven was</translation>
 <translation id="5750869797196646528">Handen volgen</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5876056640971328065">Video pauzeren</translation>
 <translation id="5877248419911025165">Alle verzoeken samenvouwen</translation>
+<translation id="5878945009165002849">Inlogprompts van identiteitsservices blokkeren</translation>
 <translation id="5884085660368669834">Sitevoorkeur</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
 <translation id="5908617755156109052">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Rechten voor apparaat intrekken</translation>
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> is verouderd. Installeer de app opnieuw.</translation>
+<translation id="847433688444405067">Browse op verschillende apparaten</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="848952951823693243">Altijd mobiele site aanvragen</translation>
 <translation id="8492822722330266509">Sites kunnen pop-ups sturen en omleidingen gebruiken</translation>

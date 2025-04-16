@@ -934,13 +934,6 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="1639673466479276550">Activez l'économiseur d'écran pour l'écran de connexion.</translation>
 <translation id="1640824698339859203">Activer le SSO flottant et déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
 <translation id="1641117061932613266">Activer le service <ph name="PRODUCT_NAME" /> V2</translation>
-<translation id="1641394008743444477">Permet de lister les fonctionnalités <ph name="PRODUCT_OS_NAME" /> à désactiver.
-
-      Si vous désactivez l'une de ces fonctionnalités, elle est marquée comme "Désactivé par l'administrateur" et l'utilisateur ne peut pas y accéder depuis l'interface utilisateur. L'expérience utilisateur pour les fonctionnalités désactivées est déterminée par la règle <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
-
-      Si cette règle n'est pas configurée, toutes les fonctionnalités <ph name="PRODUCT_OS_NAME" /> sont activées par défaut et accessibles à l'utilisateur.
-
-      Remarque : la fonctionnalité de numérisation est actuellement désactivée par défaut au moyen d'un flag de fonctionnalité. Si l'utilisateur active la fonctionnalité via ce flag, elle peut toujours être désactivée à l'aide de cette règle.</translation>
 <translation id="1643642938972654829">Autoriser l'accès à la page de test des règles</translation>
 <translation id="1644373745741524038">Pour des raisons de sécurité, l'API Web <ph name="REQUEST_FULLSCREEN_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit. Les paramètres personnels des utilisateurs peuvent autoriser certaines origines à appeler cette API sans geste préalable de l'utilisateur, comme décrit sur <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
 
@@ -2444,7 +2437,6 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
       Si cette règle n'est pas configurée, ou si elle est définie sur "True", la visionneuse de PDF peut annoter ces fichiers.
 
       Si cette règle est définie sur "False", la visionneuse de PDF ne peut pas annoter ces fichiers.</translation>
-<translation id="2769199041812510302">URL du logo Enterprise</translation>
 <translation id="2769952903507981510">Configurer le nom de domaine requis pour les hôtes d'accès à distance</translation>
 <translation id="2770376586681635746">Détermine si les utilisateurs peuvent ajouter des comptes Kerberos.
 
@@ -3255,13 +3247,6 @@ Cette règle est limitée à 1 000 entrées.
 Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'est autorisée tant que le VPN permanent en mode strict est actif et que le VPN n'est pas connecté.</translation>
 <translation id="3405997282295704902">Ne pas autoriser les utilisateurs à se servir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Ne pas demander à l'utilisateur (les téléchargements débutent immédiatement)</translation>
-<translation id="3408078762098350617">Contrôle l'expérience utilisateur des fonctionnalités désactivées répertoriées dans la liste <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Si cette règle est définie sur "bloqué", les utilisateurs peuvent voir les fonctionnalités désactivées, mais ne peuvent pas les utiliser.
-
-      Si elle est configurée sur "masqué", les utilisateurs ne peuvent ni les voir, ni les utiliser.
-
-      Si cette règle n'est pas configurée, ou si elle est définie sur une valeur non valide, le mode de désactivation des fonctionnalités du système est défini sur "bloqué".</translation>
 <translation id="3411947169047929182">Contrôle la configuration liée à WebRTC</translation>
 <translation id="341285788698114069">Cette règle contrôle la priorité du processus audio sous Windows.
       Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la normale.
@@ -4475,7 +4460,6 @@ La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /
       Si cette règle est désactivée ou qu'elle n'est pas configurée, le mode avancé de recharge de la batterie est désactivé.
 
       Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
-<translation id="4307479555111916927">Définir un libellé d'entreprise personnalisé</translation>
 <translation id="4309091698378414920">Activer la mise en surbrillance du curseur de saisie</translation>
 <translation id="4311141497190183490">Si cette règle est définie sur "1", les sites peuvent suivre la position géographique des utilisateurs (état par défaut). Si cette règle est définie sur "2", les sites ne sont pas autorisés à suivre la position par défaut. Vous pouvez définir cette règle de façon qu'un site demande systématiquement l'autorisation de suivre la position des utilisateurs.
 
@@ -4483,27 +4467,6 @@ Si cette règle n'est pas configurée, la règle <ph name="ASK_GEOLOCATION_POLIC
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4311662690937656540">Appliquer les connexions en ligne sur les écrans de connexion et de verrouillage</translation>
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
-<translation id="4313778862255986189">Cette fonctionnalité est en version bêta. Comme elle est en cours de développement et disponible pour nos testeurs de confiance, sachez qu'elle peut être modifiée et mise à jour.
-
-Cette règle permet aux administrateurs de définir un agrégateur de recherche d'entreprise dédié qui fournira des recommandations et des résultats de recherche dans la barre d'adresse lorsqu'il sera déclenché par un mot clé spécifique. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le mot clé indiqué dans le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, avec ou sans le préfixe @ (par exemple, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), puis en appuyant sur la barre d'espace ou la touche de tabulation.
-
-Les champs suivants sont obligatoires : <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> et <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Le champ <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au nom du moteur de recherche que l'utilisateur verra dans la barre d'adresse.
-
-Le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au mot clé que l'utilisateur saisit pour déclencher la recherche. Le raccourci peut contenir des mots et caractères bruts, mais il ne peut pas inclure d'espaces ni commencer par le symbole @. Les raccourcis doivent être uniques.
-
-Le champ <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> spécifie l'URL sur laquelle effectuer la recherche. Saisissez l'adresse Web de la page de résultats du moteur de recherche, et utilisez <ph name="SEARCH_TERM_MARKER" /> à la place de la requête.
-
-Le champ <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL qui fournit des suggestions de recherche. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contient <ph name="SEARCH_TERM_MARKER" />, Chrome obtiendra alors des suggestions de recherche via une demande GET à l'URL, en remplaçant <ph name="SEARCH_TERM_MARKER" /> par la requête de recherche de l'utilisateur. Sinon, une requête POST sera envoyée et la requête de l'utilisateur sera transmise dans les paramètres POST sous la clé <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Le champ <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL d'une image qui sera utilisée dans les suggestions de recherche. Si ce champ n'est pas défini, une icône par défaut sera utilisée. Nous vous conseillons d'utiliser une favicon (exemple : <ph name="ICON_URL_EXAMPLE" />). Formats de fichiers image acceptés : JPEG, PNG et ICO.
-
-Le champ <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique si le <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barre d'adresse est requis pour afficher les recommandations de recherche. Si ce champ n'est pas défini, le <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barre d'adresse n'est pas requis.
-
-Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Désactiver la recherche CNAME lors de l'authentification Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Cette règle détermine si le gestionnaire de mots de passe intégré peut ou non supprimer les mots de passe indéchiffrables de sa base de données. C'est nécessaire pour restaurer toutes les fonctionnalités de ce gestionnaire, mais cela peut entraîner une perte de données définitive. Les valeurs de mots de passe indéchiffrables ne deviendront pas déchiffrables d'elles-mêmes. S'il est possible de les corriger, cela nécessite généralement des actions complexes de la part des utilisateurs.
@@ -7358,7 +7321,6 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides (depuis la v
 <translation id="6287128640500683781">Autoriser tous les utilisateurs à se connecter</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
 <translation id="6287742528823584153">Activer le service <ph name="PRODUCT_NAME" /> et lancer le bureau à distance lors de la connexion</translation>
-<translation id="6288152932495466841">Informer les utilisateurs des versions de navigateurs remplacées</translation>
 <translation id="6299147100249359151">Autorisez la détection du champ d'application des règles.</translation>
 <translation id="6299554629216555326">Paramètres de gestion des fenêtres</translation>
 <translation id="6302021021024941085">Désactiver les outils de dépannage de kiosque.</translation>
@@ -8137,11 +8099,6 @@ Le navigateur supprimera automatiquement les données des types sélectionnés q
 La suppression des données expirées se fera 15 secondes après le démarrage du navigateur, puis toutes les 30 minutes lorsque le navigateur sera en cours d'exécution.
 
 Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "true". À partir de Chrome 115, si vous configurez cette règle, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.</translation>
-<translation id="6762635531429930846">Précise l'ancienneté minimale de la version au-delà de laquelle les notifications de relance deviennent plus fréquentes. L'ancienneté est calculée à partir de la date de dernière diffusion aux clients de la version en cours.
-
-Si une nouvelle version est en attente, qu'un redémarrage du navigateur ou de l'appareil est nécessaire et que la version actuelle a été remplacée depuis plus de jours que le nombre indiqué par ce paramètre, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> est remplacée par deux heures. Si la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> est définie sur 1 ("Obligatoire"), les utilisateurs seront obligés de relancer ou de redémarrer à la fin de la période.
-
-Si elle n'est pas définie ou que l'ancienneté de la version ne peut pas être déterminée, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sera utilisée pour toutes les mises à jour.</translation>
 <translation id="6763023079133439068">Autoriser les certificats sans extension subjectAlternativeName lorsqu'ils sont émis par des ancres de confiance locales</translation>
 <translation id="6766216162565713893">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil Bluetooth à proximité</translation>
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
@@ -9069,7 +9026,6 @@ Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://
 
       Si cette règle n'est pas configurée, la valeur par défaut (trois minutes) est appliquée.</translation>
 <translation id="7469554574977894907">Activer les suggestions de recherche</translation>
-<translation id="7471938371309017725">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, la fonction de scanner, ainsi que les fonctionnalités Web Store, Canevas, Explorer, Crosh, Galerie, Terminal et Enregistreur à désactiver</translation>
 <translation id="7472547030234093862">Définir les domaines pour lesquels utiliser DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur ces sites</translation>
 <translation id="7476030153540156377">Choisir si la fonctionnalité IP Protection de <ph name="PRIVACY_SANDBOX_NAME" /> devrait être activée.</translation>

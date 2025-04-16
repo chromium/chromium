@@ -1547,7 +1547,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Mëso më shumë<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Numri</translation>
 <translation id="3670229581627177274">Aktivizo Bluetooth-in</translation>
-<translation id="3671117652518853176">Kur është i çaktivizuar, mund të të kërkohet herë pas here që ta verifikosh për qëllime sigurie</translation>
 <translation id="3671540257457995106">Të lejohet ndryshimi i përmasave?</translation>
 <translation id="3672568546897166916">Gabim në <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Pajisje rrjeti</translation>
@@ -1599,7 +1598,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3739842843727261045">Opsioni i gishtave tregon se të pëlqejnë këto rezultate</translation>
 <translation id="3740447166056383374">Kërkohet rishikimi përpara kopjimit</translation>
 <translation id="374325029554577103">Produkte të teknologjisë së fitnesit</translation>
-<translation id="3743765582345153106">Verifiko gjithmonë kur përdoret plotësimi automatik</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3744212718085287312">Të bëhet më e sigurt me një kartë virtuale herën tjetër?</translation>
 <translation id="3744899669254331632">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse uebsajti dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chromium. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
@@ -1978,7 +1976,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4358461427845829800">Menaxho mënyrat e pagesës...</translation>
 <translation id="4359160567981085931">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
 <translation id="4363222835916186793">Sinjalizimet për këtë produkt janë çaktivizuar</translation>
-<translation id="4363729811203340554">Nëse e ndan këtë pajisje me të tjerët, Chrome mund të të kërkojë që të verifikohesh sa herë që paguan duke përdorur plotësimin automatik</translation>
 <translation id="4366943895537458493">Pllakë</translation>
 <translation id="4369179505195332608">Modifiko lejen e drejtimit</translation>
 <translation id="437040971055499437">Ndodh ngjarje sigurie</translation>
@@ -2575,7 +2572,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5452923259299906094">Paguaj me "Portofolin elektronik" dhe Pix</translation>
 <translation id="5455374756549232013">Vulë kohore politike e gabuar</translation>
 <translation id="5456428544444655325">Mos shfaq asnjëherë</translation>
-<translation id="5456839782162429664">Verifikohu manualisht sa herë që paguan duke përdorur plotësimin automatik</translation>
 <translation id="5457113250005438886">E pavlefshme</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tjetër}other{<ph name="CONTACT_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> të tjerë}}</translation>
 <translation id="5463625433003343978">Po gjen pajisje...</translation>
@@ -2684,7 +2680,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5632485077360054581">Më trego mënyrën</translation>
 <translation id="563324245173044180">U bllokua një përmbajtje mashtruese.</translation>
 <translation id="563371367637259496">Celulari</translation>
-<translation id="5634725266554983459">Të aktivizohet verifikimi manual?</translation>
 <translation id="5635478143789726479">Kushtet e përgjithshme të shitësit</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Sisteme stereo dhe komponentë</translation>
@@ -3324,6 +3319,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6739943577740687354">Kjo veçori përdor IA-në dhe nuk do të jetë gjithmonë e saktë</translation>
 <translation id="6740851646645036700">Ke arritur kufirin e ndihmës për të shkruarit për momentin. Provo përsëri më vonë.</translation>
 <translation id="674375294223700098">Gabim i panjohur i certifikatës së serverit</translation>
+<translation id="6743841972744298686">Cilësimet e sinkronizimit</translation>
 <translation id="6745592621698551453">Përditësoje tani</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencat</translation>
@@ -3451,7 +3447,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6973988895180423160">3,5 x 5 inç</translation>
 <translation id="6978121630131642226">Motorët e kërkimit</translation>
 <translation id="6978236010531171013">Ndaj gjithsesi</translation>
-<translation id="6978722349058177832">Nëse e ndan këtë pajisje me të tjerët, Chromium mund të të kërkojë që të verifikohesh sa herë që paguan duke përdorur plotësimin automatik</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6979302985396162258">menaxho qasjen në kukit e një pale të tretë</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>

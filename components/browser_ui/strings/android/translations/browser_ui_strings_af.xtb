@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Werwe kan vir jou ligging vra</translation>
 <translation id="3658847490588580244">Onderste blad van verstekblaaier</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> werf in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}other{<ph name="RWS_MEMBERS_COUNT" /> werwe in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}}</translation>
+<translation id="3670480940339182416">Werwe kan die V8-optimeerder gebruik</translation>
 <translation id="3676777756440746804">Werwe word geblokkeer om jou te vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="3697164069658504920">Wanneer dit aan is, kan werwe vra om USB-toestelle te gebruik. Wanneer dit af is, kan werwe nie USB-toestelle gebruik nie.</translation>
+<translation id="3703430731944883733">Bestuur jou stroom</translation>
 <translation id="3707034683772193706">’n Werf wat jy besoek, kan ’n klein hoeveelheid inligting met Chrome deel, hoofsaaklik om te bekragtig dat jy nie ’n bot is nie</translation>
 <translation id="3708684582558000260">Moenie geslote werwe toelaat om data klaar te stuur of te ontvang nie</translation>
 <translation id="3709818294139939629">Werf se toegang tot lêer verwyder</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Kamera is afgeskakel in Android-instellings</translation>
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
 <translation id="5706552988683188916">Dit vee webkoekies en ander werfdata vir <ph name="WEBSITE" /> uit</translation>
+<translation id="571222594670061844">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys</translation>
 <translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
 <translation id="5750869797196646528">Handnasporing</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5876056640971328065">Onderbreek video</translation>
 <translation id="5877248419911025165">Vou alle versoeke in</translation>
+<translation id="5878945009165002849">Blokkeer aanmeldporboodskappe van identiteitsdienste af</translation>
 <translation id="5884085660368669834">Werfvoorkeur</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
 <translation id="5908617755156109052">Moenie werwe toelaat om ’n 3D-kaart van jou omgewing te skep of jou kameraposisie na te spoor nie</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Herroep toesteltoestemming</translation>
 <translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” is verouderd. Herinstalleer die app.</translation>
+<translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="848952951823693243">Versoek altyd mobiele werf</translation>
 <translation id="8492822722330266509">Werwe kan opspringers stuur en herleidings gebruik</translation>

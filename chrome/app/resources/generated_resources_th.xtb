@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">เริ่มทำสิ่งใหม่ๆ หรือรับความช่วยเหลือในระหว่างขั้นตอนการทำงาน</translation>
 <translation id="1054048317165655285">ตั้งค่าในโทรศัพท์ให้เสร็จสมบูรณ์</translation>
 <translation id="1054153489933238809">เ&amp;ปิดภาพต้นฉบับในแท็บใหม่</translation>
-<translation id="1054187194995068149">สวัสดี นี่คือตัวอย่าง</translation>
 <translation id="1054502481659725522">แอป เว็บไซต์ และบริการของระบบจะใช้ตำแหน่งของคุณได้</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน 1 สัปดาห์}other{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน {NUM_WEEKS} สัปดาห์}}</translation>
 <translation id="1055606969515662982">ใช้รีโมตเพื่อหยุดแคสต์</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">เพิ่มทางลัดแล้ว</translation>
 <translation id="1174366174291287894">การเชื่อมต่อของคุณปลอดภัยเสมอ เว้นแต่ Chrome จะบอกเป็นอย่างอื่น</translation>
 <translation id="1175131936083782305">ผู้ดูแลระบบปิดใช้ฟีเจอร์นี้</translation>
+<translation id="1175277108283187866">ไปที่เว็บไซต์หรือเริ่มการค้นหาในแถบที่อยู่</translation>
 <translation id="1175364870820465910">&amp;พิมพ์...</translation>
 <translation id="1175572348579024023">เลื่อน</translation>
 <translation id="1175914831232945926">ตัวเลข</translation>
@@ -479,7 +479,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">คุณจะออกจากระบบของเว็บไซต์ทั้งหมด รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="1313705515580255288">บุ๊กมาร์ก ประวัติการเข้าชม และการตั้งค่าอื่นๆ ของคุณจะได้รับการซิงค์ไปยังบัญชี Google ของคุณ</translation>
-<translation id="1315184295353569363">ยกเลิกการบันทึกกลุ่ม</translation>
 <translation id="1316136264406804862">กำลังค้นหา...</translation>
 <translation id="1316248800168909509">เชื่อมต่อกับ <ph name="DEVICE" /> ไม่ได้ ลองอีกครั้ง</translation>
 <translation id="1316495628809031177">หยุดซิงค์ชั่วคราว</translation>
@@ -2751,6 +2750,7 @@
 <translation id="2878889940310164513">เพิ่มการเชื่อมต่อเครือข่ายมือถือ...</translation>
 <translation id="288042212351694283">เข้าถึงอุปกรณ์ Universal 2nd Factor</translation>
 <translation id="2881076733170862447">เมื่อคุณคลิกส่วนขยาย</translation>
+<translation id="2882530630263790933">เสียงและวิดีโอ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> จะรีสตาร์ทและรีเซ็ตในอีกสักครู่</translation>
 <translation id="2884070497102362193">ทดสอบแบตเตอรี่, CPU, หน่วยความจำ, การเชื่อมต่อ และอื่นๆ</translation>
 <translation id="2885129935310217435">มีปุ่มที่ใช้ชื่อนี้แล้ว โปรดเลือกชื่ออื่น</translation>
@@ -3051,7 +3051,6 @@
 <translation id="310297983047869047">สไลด์ก่อนหน้า</translation>
 <translation id="3103451787721578293">โปรดป้อนเหตุผลของการอัปโหลดข้อมูลนี้</translation>
 <translation id="3103512663951238230">Alt+คลิก</translation>
-<translation id="3104763887980088552">บันทึกกิจกรรม</translation>
 <translation id="3104948640446684649">ส่งข้อมูลการใช้งานและการวินิจฉัย ปัจจุบันอุปกรณ์นี้ส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ ซึ่งจะช่วยปรับปรุงความเสถียรของระบบและแอป และอื่นๆ ข้อมูลรวมบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอป ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของคุณ <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเมตริก<ph name="BEGIN_LINK2_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">การอัปเดตที่ไม่สำเร็จครั้งล่าสุด</translation>
 <translation id="3105796011181310544">ต้องการเปลี่ยนกลับไปใช้ Google ไหม</translation>
@@ -4706,7 +4705,6 @@
 <translation id="4268025649754414643">การเข้ารหัสคีย์</translation>
 <translation id="4268516942564021145">ไม่มีการตั้งค่านี้สำหรับบัญชีของคุณ</translation>
 <translation id="4270393598798225102">รุ่น <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">บันทึกกลุ่ม</translation>
 <translation id="4274667386947315930">ข้อมูลการลงชื่อเข้าใช้</translation>
 <translation id="4274673989874969668">หลังจากที่คุณออกจากเว็บไซต์ไปแล้ว เว็บไซต์ยังสามารถทำการซิงค์ต่อได้จนกว่างานจะเสร็จ เช่น อัปโหลดรูปภาพหรือส่งข้อความแชท</translation>
 <translation id="4275291496240508082">เสียงเปิดเครื่อง</translation>
@@ -6169,7 +6167,6 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319712128756744240">จับคู่อุปกรณ์ใหม่</translation>
 <translation id="5320135788267874712">ชื่ออุปกรณ์ใหม่</translation>
-<translation id="5320261549977878764">ยกเลิกการบันทึกกลุ่ม</translation>
 <translation id="532247166573571973">อาจไม่สามารถเข้าถึงเซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="5323328004379641163">ปรับแต่งรูปลักษณ์ของ Chrome และหน้าเว็บนี้</translation>
 <translation id="5324300749339591280">รายชื่อแอป</translation>
@@ -6952,7 +6949,6 @@
 <translation id="5901069264981746702">ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">เปลี่ยนเป็นแท็บที่ใช้จับภาพ</translation>
 <translation id="5901494423252125310">ฝาเครื่องพิมพ์เปิดอยู่</translation>
-<translation id="5901526412306322179">บันทึกกิจกรรม</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5902892210366342391">ดูคำเตือนก่อนไปยังเว็บไซต์ที่ไม่ปลอดภัยในโหมดไม่ระบุตัวตน</translation>
 <translation id="5904614460720589786">ตั้งค่า <ph name="APP_NAME" /> ไม่ได้เนื่องจากมีปัญหาเกี่ยวกับการกำหนดค่า โปรดติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
@@ -7437,6 +7433,7 @@
 <translation id="6248988683584659830">ค้นหาการตั้งค่า</translation>
 <translation id="6249200942125593849">จัดการการช่วยเหลือพิเศษ</translation>
 <translation id="6250186368828697007">รายละเอียดจะซ่อนอยู่ขณะที่คุณแชร์หน้าจอ</translation>
+<translation id="6250887692313997958">เลือกแท็บที่จะเพิ่มไปยังมุมมองแบบแยก</translation>
 <translation id="6251870443722440887">GDI จัดการ</translation>
 <translation id="6251924700383757765">นโยบายความเป็นส่วนตัว</translation>
 <translation id="625369703868467034">สถานภาพเครือข่าย</translation>
@@ -8088,6 +8085,7 @@
 <translation id="6728528977475057549">IBAN ที่ลงท้ายด้วย <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">ป้อนชื่อผู้ใช้</translation>
 <translation id="6729280095610283088">แสงเหนือสว่างไสวปรากฏอยู่เหนือป่า</translation>
+<translation id="6729493062119577923">กิจกรรมในกลุ่มแท็บที่แชร์</translation>
 <translation id="6731320427842222405">การดำเนินการนี้อาจใช้เวลาสองถึงสามนาที</translation>
 <translation id="6732956960067639542">เปิดเซสชันใหม่ของเบราว์เซอร์ Chrome แทน</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (รหัส: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10508,7 +10506,6 @@
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8425492902634685834">กำหนดลงบนทาสก์บาร์</translation>
 <translation id="8425768983279799676">คุณใช้ PIN เพื่อปลดล็อกอุปกรณ์ได้</translation>
-<translation id="8426111352542548860">บันทึกกลุ่ม</translation>
 <translation id="8427213022735114808">การพิมพ์ตามคำบอกจะส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ด้วยเสียงในช่องข้อความต่างๆ</translation>
 <translation id="8427292751741042100">ฝังในโฮสต์ใดก็ได้</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
@@ -11510,6 +11507,7 @@
 <translation id="9113240369465613386">หน้าเลขคี่เท่านั้น</translation>
 <translation id="9113469270512809735">สลับรายการที่เพิ่งปิดไป</translation>
 <translation id="9113529408970052045">ฟีเจอร์ "ช่วยฉันเขียน" สามารถเปิดโดยอัตโนมัติเมื่อกล่องข้อความในเว็บไซต์สามารถกรอกด้วยเนื้อหาแบบสั้นได้</translation>
+<translation id="9114210796909453187">ตั้งค่ามุมมองแบบแยกให้เสร็จสมบูรณ์</translation>
 <translation id="9114663181201435112">ลงชื่อเข้าใช้ได้อย่างง่ายดาย</translation>
 <translation id="9115675100829699941">&amp;บุ๊กมาร์ก</translation>
 <translation id="9116366756388192417">เลือกเรื่อง</translation>

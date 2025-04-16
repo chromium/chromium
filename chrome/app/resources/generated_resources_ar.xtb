@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">ابدأ مَهمَة جديدة أو احصل على مساعدة أثناء إنجاز المهام.</translation>
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
-<translation id="1054187194995068149">مرحبًا، هذه معاينة</translation>
 <translation id="1054502481659725522">بإمكان التطبيقات والمواقع الإلكترونية وخدمات النظام استخدام موقعك الجغرافي</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوع واحد}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوعَين ({NUM_WEEKS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسابيع}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوعًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}}</translation>
 <translation id="1055606969515662982">يجب استخدام جهاز التحكّم عن بُعد لإيقاف البث</translation>
@@ -263,6 +262,7 @@
 <translation id="1174073918202301297">تمت إضافة الاختصار</translation>
 <translation id="1174366174291287894">‏اتصالك آمن دائمًا ما لم يخبرك Chrome بعكس ذلك.</translation>
 <translation id="1175131936083782305">لقد أوقف مشرفك هذه الميزة.</translation>
+<translation id="1175277108283187866">يُرجى الانتقال إلى موقع إلكتروني أو بدء عملية بحث من خلال شريط العناوين</translation>
 <translation id="1175364870820465910">ط&amp;باعة...</translation>
 <translation id="1175572348579024023">التمرير</translation>
 <translation id="1175914831232945926">أرقام</translation>
@@ -483,7 +483,6 @@
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">سيتم تسجيل خروجك من جميع المواقع الإلكترونية، بما في ذلك المواقع الإلكترونية في علامات التبويب المفتوحة.</translation>
 <translation id="1313705515580255288">‏ستتم مزامنة الإشارات المرجعية والسجل وغير ذلك من الإعدادات مع حسابك على Google.</translation>
-<translation id="1315184295353569363">إلغاء حفظ المجموعة</translation>
 <translation id="1316136264406804862">جارِ البحث...</translation>
 <translation id="1316248800168909509">تعذّر الربط بجهاز <ph name="DEVICE" />. يُرجى إعادة المحاولة.</translation>
 <translation id="1316495628809031177">تم إيقاف المزامنة مؤقتًا</translation>
@@ -2756,6 +2755,7 @@
 <translation id="2878889940310164513">إضافة شبكة جوّال...</translation>
 <translation id="288042212351694283">الوصول إلى أجهزة العامل الثاني العالمي</translation>
 <translation id="2881076733170862447">عند النقر على "الإضافة"</translation>
+<translation id="2882530630263790933">الصوت والفيديو</translation>
 <translation id="2882943222317434580">ستتم إعادة تشغيل <ph name="IDS_SHORT_PRODUCT_NAME" /> وإعادة تعيينه بعد وهلة.</translation>
 <translation id="2884070497102362193">‏اختبار أداء البطارية ووحدة المعالجة المركزية (CPU) والذاكرة والاتصال بالشبكة وغير ذلك</translation>
 <translation id="2885129935310217435">يتوفّر زر يحمل الاسم نفسه. يُرجى اختيار اسم آخر.</translation>
@@ -3056,7 +3056,6 @@
 <translation id="310297983047869047">الشريحة السابقة</translation>
 <translation id="3103451787721578293">يُرجى تحديد سبب لتحميل هذه البيانات:</translation>
 <translation id="3103512663951238230">‏‫Alt + النقر</translation>
-<translation id="3104763887980088552">سجلّ الأنشطة</translation>
 <translation id="3104948640446684649">‏إرسال بيانات الاستخدام والتشخيص: يُرسل هذا الجهاز حاليًا بيانات التشخيص وبيانات استخدام الجهاز والتطبيقات إلى Google تلقائيًا. وسيساعد ذلك في تعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. ستساعد أيضًا بعض البيانات المجمّعة تطبيقات Google وشركاءها، مثل مطوّري تطبيقات Android. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات حول المقاييس<ph name="BEGIN_LINK2_END" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">آخر تغيير غير ناجح</translation>
 <translation id="3105796011181310544">‏هل تريد التغيير مرة أخرى إلى Google؟</translation>
@@ -4711,7 +4710,6 @@
 <translation id="4268025649754414643">ترميز المفتاح</translation>
 <translation id="4268516942564021145">هذا الإعداد غير متوفّر لحسابك.</translation>
 <translation id="4270393598798225102">الإصدار <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">حفظ المجموعة</translation>
 <translation id="4274667386947315930">بيانات تسجيل الدخول</translation>
 <translation id="4274673989874969668">عندما تغادر موقعًا إلكترونيًا، يواصل هذا الموقع الإلكتروني عادةً عملية المزامنة لإكمال المهام، مثل تحميل الصور أو إرسال رسالة محادثة.</translation>
 <translation id="4275291496240508082">الصوت عند بدء التشغيل</translation>
@@ -6176,7 +6174,6 @@
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5319712128756744240">إقران جهاز جديد</translation>
 <translation id="5320135788267874712">الاسم الجديد للجهاز</translation>
-<translation id="5320261549977878764">إلغاء حفظ المجموعة</translation>
 <translation id="532247166573571973">قد يتعذر الوصول إلى الخادم. حاول مرة أخرى.</translation>
 <translation id="5323328004379641163">‏تخصيص مظهر Chrome وهذه الصفحة</translation>
 <translation id="5324300749339591280">قائمة التطبيقات</translation>
@@ -6961,7 +6958,6 @@
 <translation id="5901069264981746702">يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">التبديل إلى علامة التبويب التي تسجّل المحتوى</translation>
 <translation id="5901494423252125310">باب الطابعة مفتوح</translation>
-<translation id="5901526412306322179">سجل الأنشطة</translation>
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5902892210366342391">عرض تحذيرات قبل الانتقال إلى المواقع الإلكترونية غير الآمنة في "وضع التصفُّح المتخفي"</translation>
 <translation id="5904614460720589786">تعذّر إعداد <ph name="APP_NAME" /> بسبب مشكلة في الضبط. يُرجى التواصل مع مشرفك. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
@@ -7447,6 +7443,7 @@
 <translation id="6248988683584659830">بحث في الإعدادات</translation>
 <translation id="6249200942125593849">إدارة إمكانية الوصول</translation>
 <translation id="6250186368828697007">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
+<translation id="6250887692313997958">يُرجى اختيار علامة تبويب لإضافتها إلى وضع تقسيم العرض</translation>
 <translation id="6251870443722440887">معالجات واجهة الجهاز الرسومية</translation>
 <translation id="6251924700383757765">سياسة الخصوصية</translation>
 <translation id="625369703868467034">جودة الشبكة</translation>
@@ -8106,6 +8103,7 @@
 <translation id="6728528977475057549">‏رقم الحساب بصيغة IBAN الذي ينتهي بـ <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">أدخِل اسم المستخدم.</translation>
 <translation id="6729280095610283088">شُعاع من الشفق القطبي فوق غابة</translation>
+<translation id="6729493062119577923">سجلّ نشاط مجموعة علامات التبويب المشترَكة</translation>
 <translation id="6731320427842222405">قد يستغرق ذلك بضع دقائق</translation>
 <translation id="6732956960067639542">‏يمكنك فتح جلسة جديدة في متصفِّح Chrome بدلاً من ذلك.</translation>
 <translation id="6734178081670810314">‫<ph name="EXTENSION_OR_APP_NAME" /> (رقم التعريف: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10528,7 +10526,6 @@
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8425492902634685834">التثبيت على شريط المهام</translation>
 <translation id="8425768983279799676">يمكنك استخدام رقم تعريفك الشخصي لفتح قفل جهازك.</translation>
-<translation id="8426111352542548860">حفظ المجموعة</translation>
 <translation id="8427213022735114808">‏ترسل ميزة "الإملاء" صوتك إلى Google للسماح بالكتابة بالصوت في أي حقل نصي.</translation>
 <translation id="8427292751741042100">مضمن في أي مضيف</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
@@ -11534,6 +11531,7 @@
 <translation id="9113240369465613386">الصفحات الفردية فقط</translation>
 <translation id="9113469270512809735">إخفاء/عرض العناصر المُغلَقة مؤخرًا</translation>
 <translation id="9113529408970052045">يمكن فتح ميزة "ساعدني في الكتابة" تلقائيًا عندما يحتوي مربّع نص في موقع إلكتروني على محتوى قصير</translation>
+<translation id="9114210796909453187">إضافة نافذة أخرى لوضع تقسيم العرض</translation>
 <translation id="9114663181201435112">تسجيل الدخول بسهولة</translation>
 <translation id="9115675100829699941">إ&amp;شارات مرجعية</translation>
 <translation id="9116366756388192417">اختيار موضوع</translation>

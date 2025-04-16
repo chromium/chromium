@@ -259,7 +259,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="22091350895006575">Shto emrin e përdoruesit</translation>
 <translation id="221494669172414749">Hapja e Chrome pa një kyçje të profilit do të heqë të gjitha fjalëkalimet e ruajtura dhe mënyrat e pagesës nga makina. Përdorimi i një kyçjeje profili i mban këto të dhëna të sigurta.</translation>
 <translation id="2227444325776770048">Vazhdo si <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Grupi i skedave "<ph name="TAB_GROUP_TITLE" />" ka një aktivitet të ri</translation>
 <translation id="2230777942707397948">Dritare bosh</translation>
 <translation id="223356358902285214">Aktiviteti i uebit dhe i aplikacioneve</translation>
 <translation id="2234827758954819389">Udhëzuesi i privatësisë</translation>
@@ -853,7 +852,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4912413785358399818">Lëviz skedën</translation>
 <translation id="4913169188695071480">Ndalo rifreskimin</translation>
 <translation id="4925120120285606924">Pamja e ekranit më <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Fjalëkalimet e tua do të eksportohen dhe shkarkohen si skedar teksti. Ato do të jenë të dukshme për këdo dhe çdo aplikacion me qasje në dosjen e destinacionit.</translation>
 <translation id="4926901776383726965">Mund t'i ruash imazhet dhe skedarët që t'i shikosh offline ose t'i ndash në aplikacione të tjera</translation>
 <translation id="4932247056774066048">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="DOMAIN_NAME" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Ato do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="4943703118917034429">Realiteti virtual</translation>
@@ -894,6 +892,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5114895953710637392">Fleta e filtrit të aplikacioneve është mbyllur.</translation>
 <translation id="5115811374190515607">te <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
+<translation id="5118713593561876160">Interesat</translation>
 <translation id="5122378528687922675">Nëse ke nevojë për ndihmë, pyet prindin tënd (<ph name="PARENT_NAME_1" /> ose <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
 <translation id="5139940364318403933">Mëso se si të përdorësh "Diskun e Google"</translation>
@@ -1100,6 +1099,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6087286598828478206">Dëshiron ta bllokosh grupin dhe të largohesh?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> orë të mbetura</translation>
 <translation id="6095578583683628124">Nëse Google është gjithashtu motori yt i parazgjedhur i kërkimit, do të shohësh sugjerime më të mira dhe të përshtatshme me kontekstin</translation>
+<translation id="6104768972315313991">Kodi i gjeneruar QR</translation>
 <translation id="610630277578876674">Hap me shpejtësi lidhjet te mesazhet etj.</translation>
 <translation id="6108923351542677676">Konfigurimi në vazhdim...</translation>
 <translation id="6112702117600201073">Po rifreskon faqen</translation>
@@ -1549,6 +1549,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7963646190083259054">Shitësi:</translation>
 <translation id="7965838025086216108">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato ruhen në "Menaxherin e fjalëkalimeve të Google" për <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">U shtua te lista e leximit</translation>
+<translation id="7968982339740310781">Shiko detajet</translation>
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
 <translation id="7975379999046275268">Shiko paraprakisht faqen <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
@@ -1681,7 +1682,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8497242791509864205">Hap opsionet e renditjes</translation>
 <translation id="8497480609928300907">Shpjegim i udhëzuesit të privatësisë</translation>
 <translation id="8497726226069778601">Ende nuk ka asgjë për të parë këtu</translation>
-<translation id="8503559462189395349">Fjalëkalimet e Chrome</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8505766168025405649">Shiko njoftimin për statusin e shkarkimit</translation>
 <translation id="8506357771923193001">Shkarkimet e tua do t'i gjesh këtu</translation>
@@ -1716,6 +1716,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8635399646025169806">Të mbahet grupi i skedave?</translation>
 <translation id="8636825310635137004">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo sinkronizimin.</translation>
 <translation id="864544049772947936">Menaxho dritaret (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Emri i skedarit ekziston tashmë</translation>
 <translation id="8672883760227492369">Disa fjalëkalime në këtë pajisje nuk do të funksionojnë më së shpejti. Mund t'i zhvendosësh këto fjalëkalime te "Menaxheri i fjalëkalimeve i Google".</translation>
 <translation id="8676276370198826499">Regjistrohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -145,6 +145,7 @@
 <translation id="5768079895599174203">{DAYS,plural, =1{1 araw at }one{# araw at }other{# na araw at }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Larawan.</translation>
+<translation id="5860491529813859533">I-on</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{sa loob ng 1 taon}one{sa loob ng # taon}other{sa loob ng # na taon}}</translation>
 <translation id="588258955323874662">Fullscreen</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 segundo na lang ang natitira}one{# segundo na lang ang natitira}other{# na segundo na lang ang natitira}}</translation>

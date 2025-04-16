@@ -935,13 +935,6 @@ Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ej
 <translation id="1639673466479276550">Habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y mover las autenticaciones de los servicios web del usuario a un dispositivo nuevo</translation>
 <translation id="1641117061932613266">Habilitar la versión 2 del servicio <ph name="PRODUCT_NAME" /></translation>
-<translation id="1641394008743444477">Te permite establecer una lista con funciones de <ph name="PRODUCT_OS_NAME" /> para inhabilitarlas.
-
-      Si se inhabilita cualquiera de estas funciones, el usuario no podrá acceder a ella desde la interfaz y la verá como inhabilitada por el administrador. La experiencia de usuario de las funciones inhabilitadas se decide con <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
-
-      Si no se asigna ningún valor a esta política, todas las funciones de <ph name="PRODUCT_OS_NAME" /> estarán habilitadas de forma predeterminada y el usuario podrá utilizar cualquiera de ellas.
-
-      Nota: Actualmente, la función de análisis está inhabilitada mediante una marca de función. Si el usuario la habilita mediante la marca de función, la función se podrá seguir inhabilitando con esta política.</translation>
 <translation id="1643642938972654829">Permitir el acceso a la página de prueba de políticas</translation>
 <translation id="1644373745741524038">Por motivos de seguridad, para llamar a la API web <ph name="REQUEST_FULLSCREEN_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error. La configuración personal del usuario podría permitir que algunos orígenes llamen a esta API sin un gesto previo del usuario, tal como se describe en <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
 
@@ -958,6 +951,7 @@ Los orígenes no especificados en la política ni en la configuración del usuar
       Si se le asigna el valor "0" a la política, se utilizará el tamaño de caché predeterminado y los usuarios no podrán cambiarlo.
 
       Si no se le asigna ningún valor, se utilizará el tamaño de caché predeterminado y los usuarios podrán cambiarlo con el indicador "--media-cache-size".</translation>
+<translation id="1647775511451132916">Inhabilitar el control con gestos faciales en la pantalla de inicio de sesión</translation>
 <translation id="1648816843164517573">Lista de nombres que omitirán la comprobación de la política de HSTS</translation>
 <translation id="1651197070942919276">No permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="1651216316133158002">Esta política permite a los administradores especificar aplicaciones que actúan como controladores predeterminados de las respectivas extensiones de archivo en <ph name="PRODUCT_OS_NAME" />, que los usuarios no pueden cambiar.
@@ -2445,7 +2439,6 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
       Si no se define esta política o se le asigna el valor true, el visor de PDF podrá anotar PDFs.
 
       Si se le asigna el valor false, el visor de PDF no podrá anotar PDFs.</translation>
-<translation id="2769199041812510302">URL del logotipo de la empresa</translation>
 <translation id="2769952903507981510">Configurar el nombre de dominio obligatorio para hosts de acceso remoto</translation>
 <translation id="2770376586681635746">Controla si los usuarios pueden añadir cuentas de Kerberos.
 
@@ -2730,6 +2723,15 @@ Si se le asigna el valor <ph name="ENABLED_ENUM_VALUE" />, las entidades se dete
 Si se le asigna el valor <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectarán y no se podrá interactuar con ellas.
 Si se le asigna el valor <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectarán las entidades y solo se podrán interactuar con ellas al mantenerlas pulsadas.</translation>
 <translation id="3010907817113180883">Frecuencia de recogida de la señal de latido de actividad de los dispositivos en milisegundos.</translation>
+<translation id="3015732569734756809">Cuando el control con gestos faciales está activo, puedes utilizar la cabeza para controlar el cursor del ratón y usar gestos faciales para realizar acciones del sistema. De esta forma, puedes controlar tu dispositivo sin usar las manos.
+
+Si se le asigna el valor true a esta política, el control con gestos faciales siempre estará habilitado en la pantalla de inicio de sesión.
+
+Si se le asigna el valor false, el control con gestos faciales siempre estará inhabilitado en la pantalla de inicio de sesión.
+
+Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
+
+Si no se le asigna ningún valor, el control con gestos faciales se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="3016585641676676461">Bloquear la activación automática de la pantalla completa en estos sitios</translation>
 <translation id="3017578958356048910">El visor de PDF puede anotar PDFs</translation>
 <translation id="3020623128585817424">Inhabilitar la comprobación de navegador predeterminado al iniciar</translation>
@@ -3261,13 +3263,6 @@ Esta política está limitada a 1000 entradas.
 Si no se define esta política, no se podrá navegar en el navegador mientras la VPN siempre activada en modo Estricto esté activada y no esté conectada.</translation>
 <translation id="3405997282295704902">No permitir que los usuarios usen <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">No preguntar al usuario (las descargas se inician inmediatamente)</translation>
-<translation id="3408078762098350617">Controla la experiencia de usuario de las funciones inhabilitadas que aparecen en <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-      Si a esta política se le asigna el valor "blocked", los usuarios no podrán utilizar las funciones inhabilitadas, pero sí podrán verlas.
-
-      Si se le asigna el valor "hidden", los usuarios no podrán utilizar ni ver las funciones inhabilitadas.
-
-      Si no se le asigna ningún valor o se le asigna un valor no válido, el modo de inhabilitación de funciones del sistema tendrá el valor "blocked".</translation>
 <translation id="3411947169047929182">Controla la configuración relacionada con WebRTC</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si se habilita la política, el proceso de audio se ejecutará con una prioridad superior a la normal.
@@ -4488,7 +4483,6 @@ Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efec
       Si se inhabilita esta política o no se le asigna ningún valor, el modo avanzado de carga de la batería quedará desactivado.
 
       Los usuarios no podrán modificar este ajuste.</translation>
-<translation id="4307479555111916927">Definir una etiqueta de empresa personalizada</translation>
 <translation id="4309091698378414920">Habilitar el resaltado del cursor de texto</translation>
 <translation id="4311141497190183490">Si se asigna el valor 1 a esta política, los sitios web podrán hacer un seguimiento de la ubicación física de los usuarios de forma predeterminada. Si se le asigna el valor 2, se bloqueará este seguimiento de forma predeterminada. Puedes configurar esta política para que pregunte siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios.
 
@@ -4496,27 +4490,6 @@ Si no se establece, se aplicará la política <ph name="ASK_GEOLOCATION_POLICY_N
 <translation id="4311195029067684288">Llena</translation>
 <translation id="4311662690937656540">Requerir que se inicie sesión online en las pantallas de inicio de sesión y de bloqueo</translation>
 <translation id="4313767483634435271">Dirección MAC designada de la base del dispositivo</translation>
-<translation id="4313778862255986189">Esta función está en fase beta. Dado que esta función se encuentra en fase de desarrollo y solo está disponible para testers de confianza, ten en cuenta que puede sufrir cambios y actualizaciones.
-
-Esta política permite a los administradores definir un agregador empresarial de búsqueda determinado que proporcionará recomendaciones y resultados de búsqueda en la barra de direcciones cuando se active mediante una palabra clave específica. Los usuarios pueden iniciar la búsqueda en la barra de direcciones escribiendo la palabra clave indicada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (por ejemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, después, pulsando la barra espaciadora o Tabulador.
-
-Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del buscador que se muestra al usuario en la barra de direcciones.
-
-El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que introduce el usuario para activar la búsqueda. El acceso directo puede incluir palabras y caracteres sin formato, pero no puede incluir espacios ni empezar por el símbolo @. Los accesos directos deben ser únicos.
-
-El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se va a buscar. Introduce la dirección web de la página de resultados del buscador y utiliza <ph name="SEARCH_TERM_MARKER" /> en lugar de la consulta.
-
-El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome obtendrá sugerencias de búsqueda mediante una solicitud GET a la URL sustituyendo <ph name="SEARCH_TERM_MARKER" /> por la consulta de búsqueda del usuario. Si no, se hará una solicitud POST y la consulta del usuario se pasará en los parámetros POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se define este campo, se usará un icono predeterminado. Se recomienda usar un icono de página (por ejemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de archivo de imagen admitidos: JPEG, PNG e ICO.
-
-El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere el <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barra de direcciones para ver recomendaciones de búsqueda. Si no se define este campo, no se requiere el <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barra de direcciones.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Inhabilitar la búsqueda de CNAME durante la autenticación Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Esta política controla si el Gestor de contraseñas integrado puede eliminar de su base de datos las contraseñas que no se pueden descifrar. Esto es necesario para restaurar la funcionalidad completa del Gestor de contraseñas integrado, pero puede implicar la pérdida permanente de datos. Los valores de contraseña que no se pueden descifrar no se convertirán en descifrables por sí solos y, si es posible corregirlos, normalmente se requiere que el usuario realice acciones complejas.
@@ -7386,7 +7359,6 @@ Si quieres obtener información detallada sobre los patrones de <ph name="URL_LA
 <translation id="6287128640500683781">Permitir que cualquier usuario inicie sesión</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio <ph name="PRODUCT_NAME" /> e iniciar el escritorio remoto al iniciar sesión</translation>
-<translation id="6288152932495466841">Notificar a los usuarios sobre versiones de navegador sustituidas</translation>
 <translation id="6299147100249359151">Permite la detección del nivel de las políticas.</translation>
 <translation id="6299554629216555326">Configuración de la gestión de ventanas</translation>
 <translation id="6302021021024941085">Inhabilitar las herramientas de solución de problemas de kiosco.</translation>
@@ -8178,11 +8150,6 @@ El navegador eliminará automáticamente los datos de los tipos seleccionados qu
 Los datos caducados se eliminarán 15 segundos después de iniciarse el navegador y, después, cada 30 minutos mientras se esté ejecutando el navegador.
 
 Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
-<translation id="6762635531429930846">Especifica la antigüedad mínima de lanzamiento más allá de la cual las notificaciones de reinicio son más frecuentes. La antigüedad se calcula desde la última vez que se entregó la versión en ejecución a los clientes.
-
-Si hay una nueva versión pendiente, se necesita reiniciar el navegador o el dispositivo, y si ha pasado más tiempo que el número de días especificado en este ajuste desde la actualización de la versión actual, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se establece a 2 horas. Si se asigna el valor 1 ("Requerido") a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, los usuarios tendrán que reiniciar al final del periodo.
-
-Si no se establece o si no se puede determinar la antigüedad de lanzamiento, se usará la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> para todas las actualizaciones.</translation>
 <translation id="6763023079133439068">Permitir certificados que no tengan una extensión subjectAlternativeName cuando los emitan anclas de confianza locales</translation>
 <translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
@@ -8861,6 +8828,7 @@ Este ajuste de la política dejará de estar disponible en <ph name="PRODUCT_NAM
 
       Si la política no se establece, se aplicará la política <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="7238335422094660594">Habilitar el proveedor de <ph name="UIA_NAME" />.</translation>
+<translation id="7241016798422122577">Habilitar el control con gestos faciales en la pantalla de inicio de sesión</translation>
 <translation id="7242191282517459095">YouTube (compatible desde la versión 135)</translation>
 <translation id="7244600351241637530">Si se habilita esta opción, los usuarios que ya hayan aceptado usar la función Mi teléfono podrán ver y descargar fotos y vídeos recientes hechos con su teléfono en ChromeOS.
 
@@ -9111,7 +9079,6 @@ Para obtener información detallada sobre la partición del almacenamiento de te
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
-<translation id="7471938371309017725">Inhabilitar la cámara, la configuración del navegador, los ajustes del sistema operativo, los análisis, Web Store, Canvas, Explorar, Crosh, Galería, Terminal y las funciones de Grabadora</translation>
 <translation id="7472547030234093862">Especificar los dominios que se resolverán mediante DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
 <translation id="7476030153540156377">Elegir si se habilitará la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>

@@ -1547,7 +1547,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Meer inligting<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3670229581627177274">Skakel Bluetooth aan</translation>
-<translation id="3671117652518853176">Wanneer dit afgeskakel is, kan jy van tyd tot tyd gevra word om vir sekuriteitdoeleindes te verifieer</translation>
 <translation id="3671540257457995106">Laat grootteverandering toe?</translation>
 <translation id="3672568546897166916">Fout by <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Netwerktoerusting</translation>
@@ -1599,7 +1598,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3739842843727261045">Opduim stuur terugvoer dat jy van hierdie resultate hou</translation>
 <translation id="3740447166056383374">Kontrolering word vereis voordat lêers gekopieer word</translation>
 <translation id="374325029554577103">Fiksheidtegnologieprodukte</translation>
-<translation id="3743765582345153106">Verifieer altyd wanneer jy outvul gebruik</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3744212718085287312">Maak dit volgende keer veiliger met ’n virtuele kaart?</translation>
 <translation id="3744899669254331632">Jy kan <ph name="SITE" /> nie nou onmiddelllik besoek nie, omdat die webwerf deurmekaar eiebewyse gestuur het wat Chrome nie kan verwerk nie. Netwerkfoute en -aanvalle is gewoonlik tydelik, so hierdie bladsy sal waarskynlik later werk.</translation>
@@ -1978,7 +1976,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4358461427845829800">Bestuur betaalmetodes …</translation>
 <translation id="4359160567981085931">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome kan help. Klik Beskerm Rekening om jou wagwoord te verander en stel Google in kennis dat jou rekening dalk in gevaar is.</translation>
 <translation id="4363222835916186793">Opletberigte vir hierdie produk is afgeskakel</translation>
-<translation id="4363729811203340554">As jy hierdie toestel deel, kan Chrome jou vra om te verifieer elke keer as jy outovul gebruik om te betaal</translation>
 <translation id="4366943895537458493">Plaat</translation>
 <translation id="4369179505195332608">Wysig rybewys</translation>
 <translation id="437040971055499437">Sekuriteitsgeval vind plaas</translation>
@@ -2575,7 +2572,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5452923259299906094">Betaal met eWallet en Pix</translation>
 <translation id="5455374756549232013">Swak beleidtydstempel</translation>
 <translation id="5456428544444655325">Moet nooit wys nie</translation>
-<translation id="5456839782162429664">Jy moet handmatig verifieer elke keer as jy outovul gebruik om te betaal</translation>
 <translation id="5457113250005438886">Ongeldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Soek tans toestelle …</translation>
@@ -2684,7 +2680,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="563324245173044180">Misleidende inhoud is geblokkeer.</translation>
 <translation id="563371367637259496">Mobiel</translation>
-<translation id="5634725266554983459">Skakel handmatige verifikasie aan?</translation>
 <translation id="5635478143789726479">Verkoper se bepalings en voorwaardes</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereostelsels en -komponente</translation>
@@ -3325,6 +3320,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6739943577740687354">Hierdie kenmerk gebruik AI en sal dit nie altyd regkry nie</translation>
 <translation id="6740851646645036700">Jy het vir eers jou skryfhulplimiet bereik. Probeer later weer.</translation>
 <translation id="674375294223700098">Onbekende bedienersertifikaatfout.</translation>
+<translation id="6743841972744298686">Sinkroniseringinstellings</translation>
 <translation id="6745592621698551453">Dateer nou op</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferensies</translation>
@@ -3452,7 +3448,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6973988895180423160">3,5x5 dm.</translation>
 <translation id="6978121630131642226">Soekenjins</translation>
 <translation id="6978236010531171013">Deel in elk geval</translation>
-<translation id="6978722349058177832">As jy hierdie toestel deel, kan Chromium jou vra om te verifieer elke keer as jy outovul gebruik om te betaal</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">bestuur toegang tot derdepartywebkoekies</translation>
 <translation id="6979440798594660689">Demp (verstek)</translation>

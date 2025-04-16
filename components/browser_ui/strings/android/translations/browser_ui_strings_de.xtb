@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Websites dürfen nach meinem Standort fragen</translation>
 <translation id="3658847490588580244">Ansicht am unteren Rand des Standardbrowsers</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> Website in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen kann}other{<ph name="RWS_MEMBERS_COUNT" /> Websites in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen können}}</translation>
+<translation id="3670480940339182416">Websites können das V8-Optimierungstool verwenden</translation>
 <translation id="3676777756440746804">Websites dürfen nicht darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3697164069658504920">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie USB-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine USB-Geräte verwenden.</translation>
+<translation id="3703430731944883733">Feed verwalten</translation>
 <translation id="3707034683772193706">Von dir besuchte Websites können eine kleine Datenmenge in Chrome speichern, die hauptsächlich dazu dienen, zu belegen, dass du kein Bot bist</translation>
 <translation id="3708684582558000260">Geschlossene Websites dürfen den Datenversand oder -empfang nicht abschließen</translation>
 <translation id="3709818294139939629">Dateizugriff der Website entfernt</translation>
@@ -367,6 +369,7 @@
 <translation id="5690795753582697420">Die Kamera wurde in den Android-Einstellungen deaktiviert</translation>
 <translation id="5700761515355162635">Drittanbieter-Cookies zugelassen</translation>
 <translation id="5706552988683188916">Dadurch werden Cookies und andere Websitedaten für <ph name="WEBSITE" /> gelöscht</translation>
+<translation id="571222594670061844">Websites dürfen Aufforderungen zur Anmeldung von Identitätsdiensten anzeigen</translation>
 <translation id="5723967018671998714">Drittanbieter-Cookies sind im Inkognitomodus blockiert</translation>
 <translation id="5740126560802162366">Websites können Daten auf deinem Gerät speichern</translation>
 <translation id="5750869797196646528">Handtracking</translation>
@@ -381,6 +384,7 @@
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5876056640971328065">Video anhalten</translation>
 <translation id="5877248419911025165">Alle Anfragen minimieren</translation>
+<translation id="5878945009165002849">Aufforderungen zur Anmeldung von Identitätsdiensten blockieren</translation>
 <translation id="5884085660368669834">Websiteeinstellung</translation>
 <translation id="5887687176710214216">Gestern zuletzt besucht</translation>
 <translation id="5908617755156109052">Websites dürfen weder eine 3D-Karte meiner Umgebung erstellen noch die Kameraposition erfassen</translation>
@@ -578,6 +582,7 @@
 <translation id="8447861592752582886">Zugriffsberechtigung auf Gerät widerrufen</translation>
 <translation id="8471525937465764768">Websites verwenden normalerweise USB-Geräte für Funktionen wie das Drucken eines Dokuments oder das Speichern auf einem Speichergerät</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> ist veraltet. Bitte installiere die App neu.</translation>
+<translation id="847433688444405067">Geräteübergreifend surfen</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="848952951823693243">Mobile Website immer anfordern</translation>
 <translation id="8492822722330266509">Websites dürfen Pop-ups senden und Weiterleitungen verwenden</translation>

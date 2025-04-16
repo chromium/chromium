@@ -1543,7 +1543,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Zenbakia</translation>
 <translation id="3670229581627177274">Aktibatu Bluetootha</translation>
-<translation id="3671117652518853176">Desaktibatuta dagoenean, agian egiaztatzeko eskatuko zaizu batzuetan, segurtasun-arrazoiengatik</translation>
 <translation id="3671540257457995106">Tamaina aldatzeko baimena ematen duzu?</translation>
 <translation id="3672568546897166916">Errorea (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Sare-ekipamendua</translation>
@@ -1595,7 +1594,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3739842843727261045">"Gustatu zait" sakatuta, emaitza hauek gustatu zaizkizula esaten duen ohar bat bidaliko da</translation>
 <translation id="3740447166056383374">Kopiatu aurretik, berrikusi egin behar da</translation>
 <translation id="374325029554577103">Fitnesserako produktu teknologikoak</translation>
-<translation id="3743765582345153106">Egiaztatu beti betetze automatikoa erabiltzean</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3744212718085287312">Hurrengoan seguruago bihurtu nahi duzu txartel birtual baten bidez?</translation>
 <translation id="3744899669254331632">Une honetan ezin duzu <ph name="SITE" /> bisitatu, webguneak Chromium-ek prozesatu ezin dituen kredentzial nahasiak bidali baititu. Sareko erroreak eta erasoak aldi baterako izan ohi dira eta, beraz, segur aski orriak geroago funtzionatuko du.</translation>
@@ -1974,7 +1972,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4358461427845829800">Kudeatu ordainketa-metodoak…</translation>
 <translation id="4359160567981085931">Webgune engainagarri batean idatzi duzu pasahitza. Chrome-k lagundu egin diezazuke. Pasahitza aldatzeko eta Google-ri agian kontua arriskuan dagoela jakinarazteko, egin klik Babestu kontua botoian.</translation>
 <translation id="4363222835916186793">Desaktibatu dira produktuari buruzko alertak</translation>
-<translation id="4363729811203340554">Gailua partekatzen baduzu, Chrome-k egiaztapena egiteko eska diezazuke betetze automatikoa erabilita ordaintzen duzun bakoitzean</translation>
 <translation id="4366943895537458493">Plaka</translation>
 <translation id="4369179505195332608">Editatu gidabaimena</translation>
 <translation id="437040971055499437">Segurtasun-gertaera bat hauteman da</translation>
@@ -2571,7 +2568,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5452923259299906094">Ordaindu diru-zorro digitala eta Pix erabilita</translation>
 <translation id="5455374756549232013">Gidalerroaren denbora-zigiluak ez du balio</translation>
 <translation id="5456428544444655325">Ez erakutsi inoiz</translation>
-<translation id="5456839782162429664">Egiaztatu eskuz betetze automatikoa erabilita ordaintzen duzun bakoitzean</translation>
 <translation id="5457113250005438886">Ez du balio</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Gailuak bilatzen…</translation>
@@ -2680,7 +2676,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5632485077360054581">Erakutsi nola</translation>
 <translation id="563324245173044180">Eduki iruzurtia blokeatu da.</translation>
 <translation id="563371367637259496">Sare mugikorra</translation>
-<translation id="5634725266554983459">Eskuz egiaztatzeko aukera aktibatu nahi duzu?</translation>
 <translation id="5635478143789726479">Saltzailearen zehaztapenak eta baldintzak</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Estereo-sistemak eta osagaiak</translation>
@@ -3320,6 +3315,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6739943577740687354">Eginbide honek AA darabil, eta ez du beti dena ongi egingo.</translation>
 <translation id="6740851646645036700">Idazteko laguntzaren mugara iritsi zara oraingoz. Saiatu berriro geroago.</translation>
 <translation id="674375294223700098">Zerbitzari-ziurtagiriaren errore ezezaguna.</translation>
+<translation id="6743841972744298686">Sinkronizazio-ezarpenak</translation>
 <translation id="6745592621698551453">Eguneratu</translation>
 <translation id="6751487147225428522">ROC 8K (Txina)</translation>
 <translation id="6752086006821653994">Bideokonferentziak</translation>
@@ -3447,7 +3443,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6973988895180423160">8,89 × 12,7 cm (3,5 × 5 in)</translation>
 <translation id="6978121630131642226">Bilatzaileak</translation>
 <translation id="6978236010531171013">Partekatu halere</translation>
-<translation id="6978722349058177832">Gailua partekatzen baduzu, Chromium-ek egiaztapena egiteko eska diezazuke betetze automatikoa erabilita ordaintzen duzun bakoitzean</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">hirugarrenen cookieak erabiltzeko baimenak kudeatzeko</translation>
 <translation id="6979440798594660689">Desaktibatu audioa (lehenetsia)</translation>

@@ -1547,7 +1547,6 @@
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">عدد</translation>
 <translation id="3670229581627177274">روشن کردن بلوتوث</translation>
-<translation id="3671117652518853176">وقتی خاموش باشد، ممکن است گاه‌گاهی از شما خواسته شود برای اهداف امنیتی تأیید کنید</translation>
 <translation id="3671540257457995106">تغییر اندازه مجاز باشد؟</translation>
 <translation id="3672568546897166916">خطا در <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">تجهیزات شبکه‌سازی</translation>
@@ -1599,7 +1598,6 @@
 <translation id="3739842843727261045">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این نتایج را می‌پسندید</translation>
 <translation id="3740447166056383374">قبل‌از کپی کردن باید بررسی شود</translation>
 <translation id="374325029554577103">محصولات فناوری تناسب اندام</translation>
-<translation id="3743765582345153106">همیشه هنگام استفاده از تکمیل خودکار تأیید شود</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3744212718085287312">می‌خواهید آن را دفعه بعدی با کارت مجازی ایمن‌تر کنیم؟</translation>
 <translation id="3744899669254331632">‏نمی‌توانید اکنون از <ph name="SITE" /> دیدن کنید زیرا وب‌سایت اعتبارنامه‌های درهمی ارسال کرده که Chromium نمی‌تواند پردازش کند. خطاها و حمله‌های شبکه معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار می‌کند.</translation>
@@ -1978,7 +1976,6 @@
 <translation id="4358461427845829800">مدیریت روش‌های پرداخت…</translation>
 <translation id="4359160567981085931">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chrome می‌تواند کمک کند. برای اینکه گذرواژه‌تان را تغییر دهید و به Google اطلاع دهید که شاید حسابتان درمعرض خطر باشد، روی «محافظت از حساب» کلیک کنید.</translation>
 <translation id="4363222835916186793">هشدارهای این محصول خاموش شد</translation>
-<translation id="4363729811203340554">‏اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، Chrome می‌تواند هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید از شما بخواهد آن را تأیید کنید</translation>
 <translation id="4366943895537458493">صفحه</translation>
 <translation id="4369179505195332608">ویرایش گواهینامه رانندگی</translation>
 <translation id="437040971055499437">رویداد امنیتی اتفاق می‌افتد</translation>
@@ -2575,7 +2572,6 @@
 <translation id="5452923259299906094">‏پرداخت با «کیف پول الکترونیکی» و Pix</translation>
 <translation id="5455374756549232013">مهر زمان خط‌مشی نادرست است</translation>
 <translation id="5456428544444655325">هرگز نشان داده نشود</translation>
-<translation id="5456839782162429664">تأیید دستی همه پرداخت‌هایی که از تکمیل خودکار استفاده می‌کنند</translation>
 <translation id="5457113250005438886">نامعتبر</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}one{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}other{<ph name="CONTACT_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مخاطب دیگر}}</translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
@@ -2684,7 +2680,6 @@
 <translation id="5632485077360054581">نمایش روش انجام کار</translation>
 <translation id="563324245173044180">محتوای گمراه‌کننده مسدود شد.</translation>
 <translation id="563371367637259496">دستگاه همراه</translation>
-<translation id="5634725266554983459">درستی‌سنجی دستی روشن شود؟</translation>
 <translation id="5635478143789726479">شرایط خدمات فروشنده</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">سیستم‌ها و قطعات استریو</translation>
@@ -3325,6 +3320,7 @@
 <translation id="6739943577740687354">این ویژگی از هوش مصنوعی استفاده می‌کند و همیشه درست عمل نمی‌کند</translation>
 <translation id="6740851646645036700">به سقف مجاز کمک در نوشتن رسیده‌اید. بعداً دوباره امتحان کنید.</translation>
 <translation id="674375294223700098">خطای ناشناس گواهی سرور.</translation>
+<translation id="6743841972744298686">تنظیمات همگام‌سازی</translation>
 <translation id="6745592621698551453">اکنون به‌روز کردن</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">کنفرانس ازراه‌دور</translation>
@@ -3452,7 +3448,6 @@
 <translation id="6973988895180423160">۵ × ۳٫۵ اینچ</translation>
 <translation id="6978121630131642226">موتورهای جستجو</translation>
 <translation id="6978236010531171013">درهرصورت هم‌رسانی شود</translation>
-<translation id="6978722349058177832">‏اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، Chromium می‌تواند هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید از شما بخواهد آن را تأیید کنید</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">مدیریت کردن دسترسی به کوکی‌های طرف سوم</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>

@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Situs dapat meminta lokasi Anda</translation>
 <translation id="3658847490588580244">Sheet bawah browser default</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}other{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}}</translation>
+<translation id="3670480940339182416">Situs dapat menggunakan pengoptimal V8</translation>
 <translation id="3676777756440746804">Situs diblokir agar tidak meminta izin Anda untuk menggunakan informasi tentang Anda yang disimpan situs</translation>
 <translation id="3697164069658504920">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat USB. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat USB.</translation>
+<translation id="3703430731944883733">Mengelola feed Anda</translation>
 <translation id="3707034683772193706">Situs yang Anda buka dapat menyimpan info dalam jumlah kecil dengan Chrome, terutama untuk memvalidasi bahwa Anda bukan bot</translation>
 <translation id="3708684582558000260">Jangan izinkan situs yang ditutup untuk menyelesaikan pengiriman atau penerimaan data</translation>
 <translation id="3709818294139939629">Akses situs ke file dihapus</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">Kamera dinonaktifkan di setelan Android</translation>
 <translation id="5700761515355162635">Cookie pihak ketiga diizinkan</translation>
 <translation id="5706552988683188916">Tindakan ini akan menghapus cookie dan data situs lainnya untuk <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Situs dapat menampilkan perintah login dari layanan identitas</translation>
 <translation id="5723967018671998714">Cookie pihak ketiga diblokir dalam mode Samaran</translation>
 <translation id="5740126560802162366">Situs dapat menyimpan data di perangkat Anda</translation>
+<translation id="5743425052258407233">Dapatkan histori Anda di semua perangkat, sehingga Anda dapat melanjutkan dari bagian terakhir yang dibuka dengan mudah</translation>
 <translation id="5750869797196646528">Pelacakan tangan</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> diblokir</translation>
 <translation id="5804241973901381774">Izin</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5876056640971328065">Jeda video</translation>
 <translation id="5877248419911025165">Ciutkan semua permintaan</translation>
+<translation id="5878945009165002849">Blokir perintah login dari layanan identitas</translation>
 <translation id="5884085660368669834">Preferensi situs</translation>
 <translation id="5887687176710214216">Terakhir dibuka kemarin</translation>
 <translation id="5908617755156109052">Jangan izinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Cabut izin perangkat</translation>
 <translation id="8471525937465764768">Situs biasanya terhubung ke perangkat USB untuk fitur seperti pencetakan dokumen atau penyimpanan ke perangkat penyimpanan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah usang. Instal ulang aplikasi.</translation>
+<translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="848952951823693243">Selalu minta situs seluler</translation>
 <translation id="8492822722330266509">Situs dapat menampilkan pop-up dan menggunakan pengalihan</translation>

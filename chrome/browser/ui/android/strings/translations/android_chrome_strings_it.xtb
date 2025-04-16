@@ -259,7 +259,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="22091350895006575">Aggiungi nome utente</translation>
 <translation id="221494669172414749">Se apri Chrome senza un blocco del profilo, le password e i metodi di pagamento salvati verranno rimossi dall'auto. L'utilizzo di un blocco del profilo protegge questi dati.</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> gruppo di schede ha una nuova attività</translation>
 <translation id="2230777942707397948">Finestra vuota</translation>
 <translation id="223356358902285214">Attività web e app</translation>
 <translation id="2234827758954819389">Guida alla privacy</translation>
@@ -853,7 +852,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4912413785358399818">Sposta scheda</translation>
 <translation id="4913169188695071480">Interrompi aggiornamento</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
 <translation id="4926901776383726965">Puoi salvare immagini e file per visualizzarli offline o condividerli in altre app</translation>
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
@@ -894,6 +892,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5114895953710637392">Il foglio di filtro delle app è chiuso.</translation>
 <translation id="5115811374190515607">in <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
+<translation id="5118713593561876160">Interessi</translation>
 <translation id="5122378528687922675">Se hai bisogno di aiuto, rivolgiti al tuo genitore (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
 <translation id="5139940364318403933">Impara a utilizzare Google Drive</translation>
@@ -1100,6 +1099,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6087286598828478206">Bloccare e uscire dal gruppo?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rimanenti</translation>
 <translation id="6095578583683628124">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
+<translation id="6104768972315313991">Codice QR generato</translation>
 <translation id="610630277578876674">Apri rapidamente i link nei messaggi e altro</translation>
 <translation id="6108923351542677676">Configurazione in corso…</translation>
 <translation id="6112702117600201073">Aggiornamento della pagina in corso</translation>
@@ -1549,6 +1549,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7963646190083259054">Fornitore:</translation>
 <translation id="7965838025086216108">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Aggiunto all'elenco di lettura</translation>
+<translation id="7968982339740310781">Mostra dettagli</translation>
 <translation id="7971136598759319605">Attivo 1 giorno fa</translation>
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
@@ -1681,7 +1682,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8497242791509864205">Apri opzioni di ordinamento</translation>
 <translation id="8497480609928300907">Spiegazione della Guida alla privacy</translation>
 <translation id="8497726226069778601">Qui non c'è ancora niente</translation>
-<translation id="8503559462189395349">Password Chrome</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8505766168025405649">Visualizza una notifica per lo stato del download</translation>
 <translation id="8506357771923193001">Qui troverai i tuoi download</translation>
@@ -1716,6 +1716,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8635399646025169806">Mantenere il gruppo di schede?</translation>
 <translation id="8636825310635137004">Attiva la sincronizzazione per trovare le tue schede degli altri dispositivi.</translation>
 <translation id="864544049772947936">Gestisci finestre (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Accedi a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Nome file già esistente</translation>
 <translation id="8672883760227492369">A breve alcune password su questo dispositivo smetteranno di funzionare. Puoi spostare queste password in Gestore delle password di Google.</translation>
 <translation id="8676276370198826499">Registrati a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

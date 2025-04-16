@@ -259,7 +259,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="22091350895006575">Dodaj korisničko ime</translation>
 <translation id="221494669172414749">Otvaranje Chromea bez zaključavanja profila će ukloniti sačuvane lozinke i načine plaćanja iz automobila. Korištenje zaključavanja profila čuva te podatke na sigurnom.</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Grupa kartica <ph name="TAB_GROUP_TITLE" /> ima novu aktivnost</translation>
 <translation id="2230777942707397948">Prazan prozor</translation>
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
 <translation id="2234827758954819389">Vodič za privatnost</translation>
@@ -853,7 +852,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4912413785358399818">Pomjeri karticu</translation>
 <translation id="4913169188695071480">Prestani osvježavati</translation>
 <translation id="4925120120285606924">Snimak ekrana <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Vaše lozinke će se izvesti i preuzeti kao tekstualni fajl. Bit će vidljive svima i svakoj aplikaciji s pristupom odredišnom folderu.</translation>
 <translation id="4926901776383726965">Možete sačuvati slike i fajlove da pregledate offline ili dijelite u drugim aplikacijama</translation>
 <translation id="4932247056774066048">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="DOMAIN_NAME" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Ostat će na vašem Google računu.</translation>
 <translation id="4943703118917034429">Virtuelna realnost</translation>
@@ -894,6 +892,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5114895953710637392">Tabela filtera aplikacija je zatvorena.</translation>
 <translation id="5115811374190515607">u: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama</translation>
+<translation id="5118713593561876160">Interesovanja</translation>
 <translation id="5122378528687922675">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME_1" /> ili <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Anonimna kartica</translation>
 <translation id="5139940364318403933">Naučite koristiti Google Disk</translation>
@@ -1100,6 +1099,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6087286598828478206">Blokirati i napustiti grupu?</translation>
 <translation id="60923314841986378">Broj preostalih sati: <ph name="HOURS" /></translation>
 <translation id="6095578583683628124">Ako je Google vaš zadani pretraživač, vidjet ćete bolje, kontekstualno relevantne prijedloge</translation>
+<translation id="6104768972315313991">Generirani QR kôd</translation>
 <translation id="610630277578876674">Brzo otvarajte linkove u porukama i drugo</translation>
 <translation id="6108923351542677676">U toku je postavljanje…</translation>
 <translation id="6112702117600201073">Osvježavanje stranice</translation>
@@ -1549,6 +1549,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7963646190083259054">Dobavljač:</translation>
 <translation id="7965838025086216108">Sačuvane lozinke možete koristiti na bilo kojem uređaju. Pohranjuju se u Googleovom Upravitelju lozinki za račun <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Dodano u listu za čitanje</translation>
+<translation id="7968982339740310781">Prikaži detalje</translation>
 <translation id="7971136598759319605">Aktivan prije 1 dan</translation>
 <translation id="7975379999046275268">Pregledaj stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku ugroženu narušavanjem podataka.</translation>
@@ -1681,7 +1682,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8497242791509864205">Otvaranje opcija sortiranja</translation>
 <translation id="8497480609928300907">Objašnjenje vodiča za privatnost</translation>
 <translation id="8497726226069778601">Ovdje nema ničega… još uvijek</translation>
-<translation id="8503559462189395349">Chrome lozinke</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8505766168025405649">Status preuzimanja provjerite u obavještenju</translation>
 <translation id="8506357771923193001">Ovdje ćete pronaći preuzimanja</translation>
@@ -1716,6 +1716,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8635399646025169806">Zadržati grupu kartica?</translation>
 <translation id="8636825310635137004">Da dobijete svoje kartice s drugih uređaja, uključite sinhronizaciju.</translation>
 <translation id="864544049772947936">Upravljajte prozorima (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Prijava na uslugu <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Naziv fajla već postoji</translation>
 <translation id="8672883760227492369">Određene lozinke na ovom uređaju će uskoro prestati funkcionirati. Možete prenijeti te lozinke na Google upravitelj lozinki.</translation>
 <translation id="8676276370198826499">Registrirajte se na web lokaciji <ph name="SITE_ETLD_PLUS_ONE" /> s pružaocem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

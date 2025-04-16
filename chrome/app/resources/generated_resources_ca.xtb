@@ -83,7 +83,6 @@
 <translation id="1053898984916097744">Comença alguna cosa nova o obtén ajuda durant el procés.</translation>
 <translation id="1054048317165655285">Completa la configuració al telèfon</translation>
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
-<translation id="1054187194995068149">Hola, això és una mostra</translation>
 <translation id="1054502481659725522">Les aplicacions, els llocs web i els serveis del sistema poden utilitzar la teva ubicació</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini d'1 setmana}other{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_WEEKS} setmanes}}</translation>
 <translation id="1055606969515662982">Utilitza el comandament per aturar l'emissió</translation>
@@ -263,6 +262,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1174073918202301297">La drecera s'ha afegit</translation>
 <translation id="1174366174291287894">La teva connexió és sempre segura tret que Chrome t'indiqui el contrari</translation>
 <translation id="1175131936083782305">El teu administrador ha desactivat aquesta funció.</translation>
+<translation id="1175277108283187866">Visita un lloc web o inicia una cerca a la barra d'adreces</translation>
 <translation id="1175364870820465910">&amp;Imprimeix...</translation>
 <translation id="1175572348579024023">Desplaça</translation>
 <translation id="1175914831232945926">Dígits</translation>
@@ -479,7 +479,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="131364520783682672">Bloq Maj</translation>
 <translation id="1313660246522271310">Se't tancarà la sessió de tots els llocs web, també de les pestanyes obertes</translation>
 <translation id="1313705515580255288">Se sincronitzaran les adreces d'interès, l'historial i la configuració amb el vostre compte de Google</translation>
-<translation id="1315184295353569363">Deixa de desar el grup</translation>
 <translation id="1316136264406804862">S'està cercant...</translation>
 <translation id="1316248800168909509">No s'ha pogut connectar a <ph name="DEVICE" />. Torna-ho a provar.</translation>
 <translation id="1316495628809031177">La sincronització està en pausa</translation>
@@ -2751,6 +2750,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2878889940310164513">Afegeix una connexió mòbil...</translation>
 <translation id="288042212351694283">Accés als dispositius Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Quan facis clic a l'extensió</translation>
+<translation id="2882530630263790933">Àudio i vídeo</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> es reiniciarà i es restablirà temporalment.</translation>
 <translation id="2884070497102362193">Prova la bateria, la CPU, la memòria, la connectivitat i més</translation>
 <translation id="2885129935310217435">Hi ha un botó amb el mateix nom. Tria'n un altre.</translation>
@@ -3051,7 +3051,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3103451787721578293">Introdueix un motiu per penjar aquestes dades:</translation>
 <translation id="3103512663951238230">Alt+clic</translation>
-<translation id="3104763887980088552">Registre d'activitat</translation>
 <translation id="3104948640446684649">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK2" />Més informació sobre les mètriques<ph name="BEGIN_LINK2_END" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="3105339775057145050">L'última actualització no s'ha pogut fer</translation>
 <translation id="3105796011181310544">Vols tornar a utilitzar Google?</translation>
@@ -4705,7 +4704,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4268025649754414643">Encriptació de claus</translation>
 <translation id="4268516942564021145">Aquesta opció de configuració no està disponible per al teu compte.</translation>
 <translation id="4270393598798225102">Versió <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">Desa el grup</translation>
 <translation id="4274667386947315930">Dades d'inici de sessió</translation>
 <translation id="4274673989874969668">Quan surts d'un lloc web, el lloc pot continuar amb la sincronització per finalitzar les taques que estava fent, com ara penjar fotos o enviar un missatge de xat</translation>
 <translation id="4275291496240508082">So a l'inici</translation>
@@ -6169,7 +6167,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319712128756744240">Vincula un dispositiu nou</translation>
 <translation id="5320135788267874712">Nom nou del dispositiu</translation>
-<translation id="5320261549977878764">Deixa de desar el grup</translation>
 <translation id="532247166573571973">És possible que no es pugui accedir al servidor. Torneu-ho a provar més tard.</translation>
 <translation id="5323328004379641163">Personalitza l'aspecte de Chrome i aquesta pàgina</translation>
 <translation id="5324300749339591280">Llista d'aplicacions</translation>
@@ -6953,7 +6950,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5901069264981746702">Les dades de l'empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Canvia a la pestanya en procés de captura</translation>
 <translation id="5901494423252125310">La porta de la impressora és oberta</translation>
-<translation id="5901526412306322179">Registre d'activitat</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5902892210366342391">Mostra advertiments abans d'anar a llocs web no segurs en mode d'incògnit</translation>
 <translation id="5904614460720589786">No s'ha pogut configurar <ph name="APP_NAME" /> a causa d'un problema de configuració. Contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>
@@ -7438,6 +7434,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6248988683584659830">Cerca a la configuració</translation>
 <translation id="6249200942125593849">Gestiona l'accessibilitat</translation>
 <translation id="6250186368828697007">Els detalls estan amagats mentre comparteixes la pantalla</translation>
+<translation id="6250887692313997958">Tria una pestanya per afegir-la a la visualització dividida</translation>
 <translation id="6251870443722440887">Controls GDI</translation>
 <translation id="6251924700383757765">Política de privadesa</translation>
 <translation id="625369703868467034">Estat de la xarxa</translation>
@@ -8089,6 +8086,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6728528977475057549">IBAN acabat en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Introdueix el teu nom d'usuari</translation>
 <translation id="6729280095610283088">Corrents brillants d'aurores boreals sobre un bosc.</translation>
+<translation id="6729493062119577923">Activitat del grup de pestanyes compartit</translation>
 <translation id="6731320427842222405">Això pot trigar una estona</translation>
 <translation id="6732956960067639542">Obre una sessió nova al navegador Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (identificador: <ph name="EXTENSION_OR_APP_ID" />)</translation>
@@ -10511,7 +10509,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8425492902634685834">Fixa a la barra de tasques</translation>
 <translation id="8425768983279799676">Pots utilitzar el PIN per desbloquejar el dispositiu.</translation>
-<translation id="8426111352542548860">Desa el grup</translation>
 <translation id="8427213022735114808">El dictat envia la teva veu a Google per permetre l'escriptura per veu en qualsevol camp de text.</translation>
 <translation id="8427292751741042100">inserida en qualsevol amfitrió</translation>
 <translation id="8428213095426709021">Configuració</translation>
@@ -11513,6 +11510,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9113240369465613386">Només pàgines senars</translation>
 <translation id="9113469270512809735">Commuta els elements tancats recentment</translation>
 <translation id="9113529408970052045">La funció Ajuda'm a escriure es pot obrir automàticament quan un quadre de text d'un lloc web es pot emplenar amb contingut breu</translation>
+<translation id="9114210796909453187">Completa la visualització dividida</translation>
 <translation id="9114663181201435112">Inicia la sessió fàcilment</translation>
 <translation id="9115675100829699941">&amp;Adreces d'interès</translation>
 <translation id="9116366756388192417">Tria un tema</translation>

@@ -259,7 +259,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="22091350895006575">Lisa kasutajanimi</translation>
 <translation id="221494669172414749">Chrome'i avamisel ilma profiililukuta eemaldatakse teie salvestatud paroolid ja makseviisid autost. Profiililuku kasutamine hoiab need andmed turvalisena.</translation>
 <translation id="2227444325776770048">Jätka kasutajana <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508">Vahelehegrupis <ph name="TAB_GROUP_TITLE" /> on uut tegevust</translation>
 <translation id="2230777942707397948">Tühi aken</translation>
 <translation id="223356358902285214">Veebi- ja rakendustegevused</translation>
 <translation id="2234827758954819389">Privaatsusjuhend</translation>
@@ -853,7 +852,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4912413785358399818">Teisalda vaheleht</translation>
 <translation id="4913169188695071480">Peata värskendamine</translation>
 <translation id="4925120120285606924">Ekraanipilt: <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Teie paroolid eksporditakse ja laaditakse alla tekstifailina. Need on nähtavad kõigile ja igale rakendusele, kellel/millel on sihtkaustale juurdepääs.</translation>
 <translation id="4926901776383726965">Saate salvestada pilte ja faile, et neid võrguühenduseta vaadata või teistes rakendustes jagada</translation>
 <translation id="4932247056774066048">Kuna logite välja kontolt, mida haldab <ph name="DOMAIN_NAME" />, kustutatakse sellest seadmest teie Chrome'i andmed. Need jäävad alles teie Google'i kontole.</translation>
 <translation id="4943703118917034429">Virtuaalreaalsus</translation>
@@ -894,6 +892,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5114895953710637392">Rakenduse alusel filtreerimise leht on suletud.</translation>
 <translation id="5115811374190515607">teenusesse <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes</translation>
+<translation id="5118713593561876160">Huvid</translation>
 <translation id="5122378528687922675">Kui vajad abi, küsi vanemalt (<ph name="PARENT_NAME_1" /> või <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
 <translation id="5139940364318403933">Vaadake, kuidas Google Drive'i kasutada</translation>
@@ -1100,6 +1099,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6087286598828478206">Kas blokeerida ja grupist lahkuda?</translation>
 <translation id="60923314841986378">Jäänud on <ph name="HOURS" /> tundi</translation>
 <translation id="6095578583683628124">Kui Google on ka teie vaikeotsingumootor, näete paremaid, konteksti suhtes asjakohaseid soovitusi</translation>
+<translation id="6104768972315313991">Genereeritud QR-kood</translation>
 <translation id="610630277578876674">Avage kiiresti sõnumites olevad lingid ja tehke palju muudki</translation>
 <translation id="6108923351542677676">Seadistamine on pooleli ...</translation>
 <translation id="6112702117600201073">Lehe värskendamine</translation>
@@ -1549,6 +1549,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7963646190083259054">Teenusepakkuja:</translation>
 <translation id="7965838025086216108">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="ACCOUNT" /> puhul Google'i paroolihaldurisse.</translation>
 <translation id="7968014550143838305">Lisati lugemisloendisse</translation>
+<translation id="7968982339740310781">Kuva üksikasjad</translation>
 <translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Hoiatab teid, kui kasutate parooli, mis on andmetega seotud rikkumise tõttu ohtu sattunud.</translation>
@@ -1681,7 +1682,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8497242791509864205">Ava sortimisvalikud</translation>
 <translation id="8497480609928300907">Privaatsusjuhendi selgitus</translation>
 <translation id="8497726226069778601">Siin pole midagi vaadata ... veel</translation>
-<translation id="8503559462189395349">Chrome'i paroolid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8505766168025405649">Vaadake märguannet allalaadimise oleku kohta</translation>
 <translation id="8506357771923193001">Oma allalaadimised leiate siit</translation>
@@ -1716,6 +1716,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8635399646025169806">Kas säilitada vahelehegrupid?</translation>
 <translation id="8636825310635137004">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse.</translation>
 <translation id="864544049772947936">Akende haldamine (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Logi sisse kontole <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Faili nimi on juba olemas</translation>
 <translation id="8672883760227492369">Mõned selle seadme paroolid lakkavad peagi töötamast. Saate need paroolid teisaldada Google'i paroolihaldurisse.</translation>
 <translation id="8676276370198826499">Registreeruge saidi <ph name="SITE_ETLD_PLUS_ONE" /> kasutamiseks kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

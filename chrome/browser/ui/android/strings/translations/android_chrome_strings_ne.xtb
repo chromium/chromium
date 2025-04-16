@@ -259,7 +259,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="22091350895006575">युजरनेम हाल्नुहोस्</translation>
 <translation id="221494669172414749">तपाईंले प्रोफाइल लकविनै Chrome खोल्नुभयो भने तपाईंले सेभ गरेका पासवर्ड तथा भुक्तानी विधिहरू कारबाट हट्ने छन्। प्रोफाइल लक प्रयोग गर्दा यो जानकारी सुरक्षित रहन्छ।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ट्याब समूहमा नयाँ क्रियाकलाप भएको छ</translation>
 <translation id="2230777942707397948">खाली विन्डो</translation>
 <translation id="223356358902285214">वेब तथा एपसम्बन्धी गतिविधि</translation>
 <translation id="2234827758954819389">गोपनीयतासम्बन्धी मार्गदर्शन</translation>
@@ -852,7 +851,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4912413785358399818">ट्याब सार्नुहोस्</translation>
 <translation id="4913169188695071480">पुन: ताजा गर्ने काम रोक्नुहोस्</translation>
 <translation id="4925120120285606924">स्क्रिनसट <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">तपाईंका पासवर्डहरू एक्स्पोर्ट गरी एउटा पाठ फाइलका रूपमा डाउनलोड गरिने छ। गन्तव्य फोल्डर हेर्ने अनुमति भएका जोसुकै व्यक्ति वा जुनसुकै एप यी पासवर्डहरू हेर्न सक्ने छन्।</translation>
 <translation id="4926901776383726965">तपाईं इन्टरनेटविनै हेर्न वा अन्य एपमार्फत सेयर गर्नका निम्ति फोटो तथा फाइलहरू सेभ गर्न सक्नुहुन्छ</translation>
 <translation id="4932247056774066048">तपाईं <ph name="DOMAIN_NAME" /> ले व्यवस्थापन गरेको खाताबाट साइन आउट गरिरहनुभएको हुनाले तपाईंको Chrome को डेटा यस डिभाइसबाट मेटाइने छ। यो डेटा तपाईंको Google खातामै रहिरहने छ।</translation>
 <translation id="4943703118917034429">भर्चुअल रियालिटी</translation>
@@ -893,6 +891,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5114895953710637392">एप फिल्टर सिट बन्द छ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>
 <translation id="5116239826668864748">तपाईंले कुनै म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंकमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्</translation>
+<translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5122378528687922675">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME_1" /> वा <ph name="PARENT_NAME_2" />) लाई अनुरोध गर्नुहोस्</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5139940364318403933">Google Drive प्रयोग गर्ने तरिका सिक्नुहोस्</translation>
@@ -1099,6 +1098,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6087286598828478206">ब्लक गरेर समूह छाड्ने हो?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> घन्टा बाँकी छ</translation>
 <translation id="6095578583683628124">तपाईंको डिफल्ट सर्च इन्जिन Google नै हो भने तपाईं अझ उपयुक्त र सान्दर्भिक सुझावहरू देख्नु हुने छ</translation>
+<translation id="6104768972315313991">जेनेरेट गरिएको QR कोड</translation>
 <translation id="610630277578876674">म्यासेजहरूमा भएका लिंक तुरुन्तै खोल्नुहोस् र थप सुविधाहरू प्राप्त गर्नुहोस्</translation>
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6112702117600201073">पृष्ठ पुनः ताजा गर्दै</translation>
@@ -1548,6 +1548,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7963646190083259054">विक्रेता:</translation>
 <translation id="7965838025086216108">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="ACCOUNT" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
+<translation id="7968982339740310781">विवरणहरू हेर्नुहोस्</translation>
 <translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
@@ -1680,7 +1681,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8497242791509864205">क्रमबद्ध गर्ने विकल्पहरू खोल्नुहोस्</translation>
 <translation id="8497480609928300907">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन</translation>
 <translation id="8497726226069778601">अहिलेसम्म... यहाँ हेर्न केही पनि छैन</translation>
-<translation id="8503559462189395349">Chrome का पासवर्डहरू</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8505766168025405649">डाउनलोड गर्ने कार्यको स्थितिका बारेमा जान्न सूचना हेर्नुहोस्</translation>
 <translation id="8506357771923193001">तपाईंले डाउनलोड गरेका सामग्री यहाँ देखिने छन्</translation>
@@ -1715,6 +1715,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8635399646025169806">ट्याब समूह राखिराख्न चाहनुहुन्छ?</translation>
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई अन गर्नुहोस्।</translation>
 <translation id="864544049772947936">विन्डोहरू व्यवस्थापन गर्नु… (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="8672883760227492369">यो डिभाइसमा सेभ गरिएका केही पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्। तपाईं यी पासवर्डहरू सारेर Google पासवर्ड म्यानेजरमा लैजान सक्नुहुन्छ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन अप गर्नुहोस्</translation>

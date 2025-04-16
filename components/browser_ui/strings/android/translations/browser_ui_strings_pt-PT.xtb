@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">Os sites podem solicitar a sua localização</translation>
 <translation id="3658847490588580244">Secção inferior do navegador predefinido</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site no grupo de sites de <ph name="RWS_OWNER" /> que pode ver a sua atividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sites no grupo de sites de <ph name="RWS_OWNER" /> que podem ver a sua atividade no grupo}}</translation>
+<translation id="3670480940339182416">Os sites podem usar o otimizador do V8</translation>
 <translation id="3676777756440746804">Os sites foram impedidos de lhe pedir para usar as informações que guardaram sobre si</translation>
 <translation id="3697164069658504920">Quando esta opção está ativada, os sites podem pedir para usar dispositivos USB. Quando esta opção está desativada, os sites não podem usar dispositivos USB.</translation>
+<translation id="3703430731944883733">Faça a gestão do seu feed</translation>
 <translation id="3707034683772193706">Um site que visita pode guardar uma pequena quantidade de informações no Chrome, principalmente para validar que não é um bot</translation>
 <translation id="3708684582558000260">Não permitir que os sites fechados concluam o envio ou a receção de dados</translation>
 <translation id="3709818294139939629">Removido acesso do site ao fich.</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">A câmara está desativada nas Definições do Android</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5706552988683188916">Esta ação elimina os cookies e outros dados de sites de <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">Os sites podem mostrar pedidos de início de sessão de serviços de identidade</translation>
 <translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
 <translation id="5740126560802162366">Os sites podem guardar dados no seu dispositivo</translation>
+<translation id="5743425052258407233">Aceda ao histórico em todos os seus dispositivos para que possa continuar facilmente a partir do ponto em que ficou</translation>
 <translation id="5750869797196646528">Monitorização das mãos</translation>
 <translation id="5771720122942595109">Bloqueio de <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5876056640971328065">Colocar vídeo em pausa</translation>
 <translation id="5877248419911025165">Reduzir todos os pedidos</translation>
+<translation id="5878945009165002849">Bloquear pedidos de início de sessão de serviços de identidade</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
 <translation id="5887687176710214216">Última visita ontem</translation>
 <translation id="5908617755156109052">Não permitir que os sites criem um mapa 3D do ambiente à sua volta nem monitorizem a posição da câmara</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Revogar autorização do dispositivo</translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>
 <translation id="8473055640493819707">A app "<ph name="APP_NAME" />" está desatualizada. Reinstale-a.</translation>
+<translation id="847433688444405067">Navegue entre dispositivos</translation>
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="848952951823693243">Peça sempre o site para dispositivos móveis</translation>
 <translation id="8492822722330266509">Os sites podem enviar pop-ups e utilizar redirecionamentos</translation>

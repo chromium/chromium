@@ -211,8 +211,10 @@
 <translation id="3641456520301071208">I siti possono chiederti la posizione</translation>
 <translation id="3658847490588580244">Riquadro inferiore del browser predefinito</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sito del gruppo di siti di <ph name="RWS_OWNER" /> può vedere le tue attività nel gruppo}other{<ph name="RWS_MEMBERS_COUNT" /> siti del gruppo di siti di <ph name="RWS_OWNER" /> possono vedere le tue attività nel gruppo}}</translation>
+<translation id="3670480940339182416">I siti possono utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="3676777756440746804">I siti non possono chiederti di usare le informazioni su di te che hanno salvato</translation>
 <translation id="3697164069658504920">Quando l'opzione è attiva, i siti potrebbero chiedere di usare i dispositivi USB. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi USB.</translation>
+<translation id="3703430731944883733">Gestisci il tuo feed</translation>
 <translation id="3707034683772193706">Un sito che visiti può salvare una piccola quantità di informazioni con Chrome, principalmente per verificare che tu non sia un bot</translation>
 <translation id="3708684582558000260">Non consentire ai siti chiusi di terminare l'invio o la ricezione di dati</translation>
 <translation id="3709818294139939629">Accesso al file rimosso dal sito</translation>
@@ -367,8 +369,10 @@
 <translation id="5690795753582697420">La fotocamera è disattivata nelle impostazioni di Android</translation>
 <translation id="5700761515355162635">Cookie di terze parti consentiti</translation>
 <translation id="5706552988683188916">Vengono eliminati i cookie e altri dati dei siti per <ph name="WEBSITE" /></translation>
+<translation id="571222594670061844">I siti possono mostrare richieste di accesso da servizi di identità</translation>
 <translation id="5723967018671998714">I cookie di terze parti sono bloccati in modalità di navigazione in incognito</translation>
 <translation id="5740126560802162366">I siti possono salvare dati sul dispositivo</translation>
+<translation id="5743425052258407233">Attiva la tua cronologia su tutti i dispositivi, così potrai riprendere facilmente da dove avevi interrotto</translation>
 <translation id="5750869797196646528">Tracciamento delle mani</translation>
 <translation id="5771720122942595109">Autorizzazione <ph name="PERMISSION_1" /> bloccata</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
@@ -381,6 +385,7 @@
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5876056640971328065">Metti in pausa il video</translation>
 <translation id="5877248419911025165">Comprimi tutte le richieste</translation>
+<translation id="5878945009165002849">Blocca le richieste di accesso da servizi di identità</translation>
 <translation id="5884085660368669834">Preferenza sito</translation>
 <translation id="5887687176710214216">Ultima visita: ieri</translation>
 <translation id="5908617755156109052">Non consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
@@ -578,6 +583,7 @@
 <translation id="8447861592752582886">Revoca autorizzazione dispositivo</translation>
 <translation id="8471525937465764768">In genere, i siti si connettono a dispositivi USB per funzionalità come la stampa di un documento o il salvataggio su un dispositivo di archiviazione</translation>
 <translation id="8473055640493819707">L'app "<ph name="APP_NAME" />" è obsoleta. Reinstalla l'app.</translation>
+<translation id="847433688444405067">Naviga su più dispositivi</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="848952951823693243">Richiedi sempre sito mobile</translation>
 <translation id="8492822722330266509">I siti possono inviare popup e usare reindirizzamenti</translation>

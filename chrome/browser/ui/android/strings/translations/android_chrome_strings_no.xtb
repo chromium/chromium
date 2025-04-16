@@ -259,7 +259,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="22091350895006575">Legg til et brukernavn</translation>
 <translation id="221494669172414749">Hvis du åpner Chrome uten profillås, fjernes de lagrede passordene og betalingsmåtene dine fra bilen. Bruk en profillås for å holde disse dataene sikre.</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> fanegruppe har ny aktivitet</translation>
 <translation id="2230777942707397948">Tomt vindu</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
 <translation id="2234827758954819389">Personvernveiledning</translation>
@@ -853,7 +852,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4912413785358399818">Flytt fane</translation>
 <translation id="4913169188695071480">Slutt å laste inn på nytt</translation>
 <translation id="4925120120285606924">Skjermbilde <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Passordene dine blir eksportert og lastet ned som en tekstfil. De blir synlige for alle personer og apper som har tilgang til målmappen.</translation>
 <translation id="4926901776383726965">Du kan lagre bilder og filer for å se dem uten nett eller dele dem i andre apper</translation>
 <translation id="4932247056774066048">Fordi du logger av en konto som administreres av <ph name="DOMAIN_NAME" />, slettes Chrome-dataene dine fra denne enheten. De blir værende i Google-kontoen din.</translation>
 <translation id="4943703118917034429">Virtuell virkelighet</translation>
@@ -894,6 +892,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5114895953710637392">Arket for appfiltrering er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
+<translation id="5118713593561876160">Interesser</translation>
 <translation id="5122378528687922675">Spør forelderen din (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) hvis du trenger hjelp</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5139940364318403933">Finn ut hvordan du bruker Google Disk</translation>
@@ -1100,6 +1099,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6087286598828478206">Vil du blokkere og forlate gruppen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer igjen</translation>
 <translation id="6095578583683628124">Hvis Google også er standardsøkemotoren din, ser du bedre og mer kontekstuelt relevante forslag</translation>
+<translation id="6104768972315313991">QR-koden er generert</translation>
 <translation id="610630277578876674">Åpne linker i meldinger og andre steder raskt</translation>
 <translation id="6108923351542677676">Konfigurasjon pågår …</translation>
 <translation id="6112702117600201073">Oppdaterer siden.</translation>
@@ -1549,6 +1549,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7963646190083259054">Leverandør:</translation>
 <translation id="7965838025086216108">Du kan bruke lagrede passord på alle enheter. De lagres i Google Passordlagring for <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Lagt til på leselisten</translation>
+<translation id="7968982339740310781">Se detaljer</translation>
 <translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7975379999046275268">Forhåndsvis siden <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Advarer deg hvis du bruker passord som er utsatt for databrudd.</translation>
@@ -1681,7 +1682,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8497242791509864205">Åpne sorteringsalternativer</translation>
 <translation id="8497480609928300907">Forklaring til personvernveiledningen</translation>
 <translation id="8497726226069778601">Det er ikke noe her foreløpig</translation>
-<translation id="8503559462189395349">Chrome-passord</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8505766168025405649">Se varsel for nedlastingsstatus</translation>
 <translation id="8506357771923193001">Du finner nedlastingene dine her</translation>
@@ -1716,6 +1716,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8635399646025169806">Vil du beholde fanegruppen?</translation>
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
 <translation id="864544049772947936">Administrer vinduer (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Logg på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Filnavnet finnes allerede</translation>
 <translation id="8672883760227492369">Noen passord på denne enheten slutter snart å fungere. Du kan flytte disse passordene til Google Passordlagring.</translation>
 <translation id="8676276370198826499">Registrer deg for <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

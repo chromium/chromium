@@ -259,7 +259,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="22091350895006575">Add username</translation>
 <translation id="221494669172414749">Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> tab group has new activity</translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
 <translation id="2234827758954819389">Privacy guide</translation>
@@ -853,7 +852,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4912413785358399818">Move tab</translation>
 <translation id="4913169188695071480">Stop refreshing</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.</translation>
 <translation id="4926901776383726965">You can save images and files to view offline or share in other apps</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
@@ -894,6 +892,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5114895953710637392">App filter sheet is closed.</translation>
 <translation id="5115811374190515607">to <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
+<translation id="5118713593561876160">Interests</translation>
 <translation id="5122378528687922675">If you need help, ask your parent (<ph name="PARENT_NAME_1" /> or <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5139940364318403933">Learn how to use Google Drive</translation>
@@ -1100,6 +1099,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6087286598828478206">Block and leave group?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> hours left</translation>
 <translation id="6095578583683628124">If Google is also your default search engine, you’ll see better, contextually relevant suggestions</translation>
+<translation id="6104768972315313991">Generated QR code</translation>
 <translation id="610630277578876674">Quickly open links in messages and more</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6112702117600201073">Refreshing page</translation>
@@ -1549,6 +1549,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7965838025086216108">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Added to reading list</translation>
+<translation id="7968982339740310781">View details</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
@@ -1681,7 +1682,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8497242791509864205">Open sort options</translation>
 <translation id="8497480609928300907">Privacy guide explanation</translation>
 <translation id="8497726226069778601">Nothing to see here… yet</translation>
-<translation id="8503559462189395349">Chrome Passwords</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8505766168025405649">See notification for download status</translation>
 <translation id="8506357771923193001">You'll find your downloads here</translation>
@@ -1716,6 +1716,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
+<translation id="8662474268934425487">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8672883760227492369">Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.</translation>
 <translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
