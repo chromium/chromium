@@ -5187,6 +5187,12 @@ const char kAXTreeFixingDescription[] =
     "is experimental and may cause breaking changes to users of assistive "
     "technology.";
 
+const char kBrowserInitiatedAutomaticPictureInPictureName[] =
+    "Browser initiated automatic picture in picture";
+const char kBrowserInitiatedAutomaticPictureInPictureDescription[] =
+    "When enabled, allows the browser to automatically enter picture in "
+    "picture when a series of conditions are met.";
+
 const char kDialMediaRouteProviderName[] =
     "Allow cast device discovery with DIAL protocol";
 const char kDialMediaRouteProviderDescription[] =

@@ -9374,6 +9374,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(media::kDocumentPictureInPictureAnimateResize)},
 
+    {"browser-initiated-automatic-picture-in-picture",
+     flag_descriptions::kBrowserInitiatedAutomaticPictureInPictureName,
+     flag_descriptions::kBrowserInitiatedAutomaticPictureInPictureDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         blink::features::kBrowserInitiatedAutomaticPictureInPicture)},
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
