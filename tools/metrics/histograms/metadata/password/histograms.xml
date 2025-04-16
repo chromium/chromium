@@ -4559,6 +4559,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
 </histogram>
 
+<histogram name="PasswordManager.UPM.AutoExportedCsvStartupDeletionSuccess"
+    enum="BooleanSuccess" expires_after="2025-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    If there is an auto-exported CSV that hasn't been deleted immediately after
+    the user downlaoded it (e.g. because the deletion failed), the deletion is
+    re-attempted at startup. This histogram is recorded after that deletion
+    attempt and records whether the attempt was successful or not. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Latency"
     units="ms" expires_after="2025-10-12">
   <owner>ioanap@chromium.org</owner>

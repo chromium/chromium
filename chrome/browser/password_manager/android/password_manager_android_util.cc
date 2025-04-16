@@ -18,9 +18,11 @@
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 #include "components/browser_sync/sync_to_signin_migration.h"
+#include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -249,13 +251,22 @@ void MaybeActivateSplitStoresAndLocalUpm(
 }
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-// Called on startup from `MaybeDeactivateSplitStoresAndLocalUpm` to delete the
-// login data files for users migrated to UPM. Must only be called if the value
-// of the state pref `PasswordsUseUPMLocalAndSeparateStores` is `On` and there
-// is no need for deactivation of local UPM.
+// Called on startup to delete the login data files for users migrated to UPM
+// or for users who had all the unmigrated passwords auto-exported.
+// Must only be called if the value of the state pref
+// `PasswordsUseUPMLocalAndSeparateStores` is `On` and there
+// is no need for deactivation of local UPM or if
+// `features::kLoginDbDeprecationAndroid` is enabled and either UPM is already
+// active or unmigrated passwords have already been auto-exported.
 void MaybeDeleteLoginDataFiles(PrefService* prefs,
                                const base::FilePath& login_db_directory) {
-  CHECK(password_manager::UsesSplitStoresAndUPMForLocal(prefs));
+  bool already_active_in_upm =
+      password_manager::UsesSplitStoresAndUPMForLocal(prefs);
+  bool login_db_ready_for_deprecation =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid) &&
+      LoginDbDeprecationReady(prefs);
+  CHECK(already_active_in_upm || login_db_ready_for_deprecation);
 
   base::FilePath profile_db_path =
       login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
@@ -288,6 +299,22 @@ void MaybeDeleteLoginDataFiles(PrefService* prefs,
   }
   base::DeleteFile(account_db_journal_path);
 }
+
+void DeleteAutoExportedCsv(PrefService* prefs,
+                           const base::FilePath& login_db_directory) {
+  base::FilePath csv_path = login_db_directory.Append(
+      FILE_PATH_LITERAL(password_manager::kExportedPasswordsFileName));
+  if (base::PathExists(csv_path)) {
+    bool success = base::DeleteFile(csv_path);
+    if (success) {
+      prefs->SetBoolean(password_manager::prefs::kUpmAutoExportCsvNeedsDeletion,
+                        false);
+    }
+    base::UmaHistogramBoolean(
+        "PasswordManager.UPM.AutoExportedCsvStartupDeletionSuccess", success);
+  }
+}
+
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 // Must only be called if the state pref is kOn or kOffAndMigrationPending, to
@@ -551,7 +578,15 @@ void SetUsesSplitStoresAndUPMForLocal(
     // If the login DB is being deprecated, only record metrics and do not
     // perform the activation algorithm.
     RecordLocalUpmActivationMetrics(pref_service, util_bridge.get());
-
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+    if (LoginDbDeprecationReady(pref_service)) {
+      MaybeDeleteLoginDataFiles(pref_service, login_db_directory);
+    }
+    if (pref_service->GetBoolean(
+            password_manager::prefs::kUpmAutoExportCsvNeedsDeletion)) {
+      DeleteAutoExportedCsv(pref_service, login_db_directory);
+    }
+#endif
     return;
   }
 
