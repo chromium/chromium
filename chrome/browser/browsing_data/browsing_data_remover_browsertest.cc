@@ -669,30 +669,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, WebrtcVideoPerfHistory) {
   }
 }
 
-// TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-// WebView.
-#if !BUILDFLAG(IS_ANDROID)
-#define MAYBE_Database DISABLED_Database
-#else
-#define MAYBE_Database Database
-#endif
-// Verify can modify database after deleting it.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MAYBE_Database) {
-  GURL url = embedded_test_server()->GetURL("/simple_database.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
-
-  RunScriptAndCheckResult("createTable()", "done");
-  RunScriptAndCheckResult("insertRecord('text')", "done");
-  RunScriptAndCheckResult("getRecords()", "text");
-
-  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
-  RunScriptAndCheckResult("createTable()", "done");
-  RunScriptAndCheckResult("insertRecord('text2')", "done");
-  RunScriptAndCheckResult("getRecords()", "text2");
-}
-
 // Verifies that cache deletion finishes successfully. Completes deletion of
 // cache should leave it empty, and partial deletion should leave nonzero
 // amount of data. Note that this tests the integration of BrowsingDataRemover
