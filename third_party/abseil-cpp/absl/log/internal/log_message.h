@@ -159,9 +159,8 @@ class LogMessage {
   LogMessage& operator<<(absl::string_view v);
 
   // Handle stream manipulators e.g. std::endl.
-  LogMessage& operator<<(absl::Nonnull<std::ostream& (*)(std::ostream & os)> m);
-  LogMessage& operator<<(
-      absl::Nonnull<std::ios_base& (*)(std::ios_base & os)> m);
+  LogMessage& operator<<(std::ostream& (*absl_nonnull m)(std::ostream& os));
+  LogMessage& operator<<(std::ios_base& (*absl_nonnull m)(std::ios_base& os));
 
   // Literal strings.  This allows us to record C string literals as literals in
   // the logging.proto.Value.

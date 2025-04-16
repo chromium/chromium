@@ -881,7 +881,7 @@ void HexStringToBytesInternal(const char* absl_nullable from, T to,
 // This is a templated function so that T can be either a char* or a
 // std::string.
 template <typename T>
-void BytesToHexStringInternal(absl::Nullable<const unsigned char*> src, T dest,
+void BytesToHexStringInternal(const unsigned char* absl_nullable src, T dest,
                               size_t num) {
   auto dest_ptr = &dest[0];
   for (auto src_ptr = src; src_ptr != (src + num); ++src_ptr, dest_ptr += 2) {

@@ -1453,10 +1453,20 @@ inline size_t TryFindNewIndexWithoutProbing(size_t h1, size_t old_index,
                                             size_t old_capacity,
                                             ctrl_t* new_ctrl,
                                             size_t new_capacity) {
-  size_t in_floating_group_index = (old_index - h1) & (Group::kWidth - 1);
-  size_t new_index = (h1 + in_floating_group_index) & new_capacity;
-  ABSL_ASSUME(new_index != kProbedElementIndexSentinel);
-  if (ABSL_PREDICT_TRUE((new_index & old_capacity) == old_index)) {
+  size_t index_diff = old_index - h1;
+  // The first probe group starts with h1 & capacity.
+  // All following groups start at (h1 + Group::kWidth * K) & capacity.
+  // We can find an index within the floating group as index_diff modulo
+  // Group::kWidth.
+  // Both old and new capacity are larger than Group::kWidth so we can avoid
+  // computing `& capacity`.
+  size_t in_floating_group_index = index_diff & (Group::kWidth - 1);
+  // By subtracting we will get the difference between the first probe group
+  // and the probe group corresponding to old_index.
+  index_diff -= in_floating_group_index;
+  if (ABSL_PREDICT_TRUE((index_diff & old_capacity) == 0)) {
+    size_t new_index = (h1 + in_floating_group_index) & new_capacity;
+    ABSL_ASSUME(new_index != kProbedElementIndexSentinel);
     return new_index;
   }
   ABSL_SWISSTABLE_ASSERT(((old_index - h1) & old_capacity) >= Group::kWidth);
@@ -3083,6 +3093,9 @@ class raw_hash_set {
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = control();
     while (true) {
+#ifndef ABSL_HAVE_MEMORY_SANITIZER
+      absl::PrefetchToLocalCache(slot_array() + seq.offset());
+#endif
       Group g{ctrl + seq.offset()};
       for (uint32_t i : g.Match(h2)) {
         if (ABSL_PREDICT_TRUE(PolicyTraits::apply(
@@ -3310,6 +3323,9 @@ class raw_hash_set {
     const h2_t h2 = H2(hash);
     const ctrl_t* ctrl = control();
     while (true) {
+#ifndef ABSL_HAVE_MEMORY_SANITIZER
+      absl::PrefetchToLocalCache(slot_array() + seq.offset());
+#endif
       Group g{ctrl + seq.offset()};
       for (uint32_t i : g.Match(h2)) {
         if (ABSL_PREDICT_TRUE(PolicyTraits::apply(
@@ -3555,8 +3571,8 @@ class raw_hash_set {
                                     size_t source_offset, size_t h1)) {
     const size_t new_capacity = common.capacity();
     const size_t old_capacity = PreviousCapacity(new_capacity);
-    ABSL_SWISSTABLE_ASSERT(old_capacity + 1 >= Group::kWidth);
-    ABSL_SWISSTABLE_ASSERT((old_capacity + 1) % Group::kWidth == 0);
+    ABSL_ASSUME(old_capacity + 1 >= Group::kWidth);
+    ABSL_ASSUME((old_capacity + 1) % Group::kWidth == 0);
 
     auto* set = reinterpret_cast<raw_hash_set*>(&common);
     slot_type* old_slots_ptr = to_slot(old_slots);
@@ -3567,7 +3583,7 @@ class raw_hash_set {
 
     for (size_t group_index = 0; group_index < old_capacity;
          group_index += Group::kWidth) {
-      Group old_g(old_ctrl + group_index);
+      GroupFullEmptyOrDeleted old_g(old_ctrl + group_index);
       std::memset(new_ctrl + group_index, static_cast<int8_t>(ctrl_t::kEmpty),
                   Group::kWidth);
       std::memset(new_ctrl + group_index + old_capacity + 1,

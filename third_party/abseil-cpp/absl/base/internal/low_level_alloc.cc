@@ -330,7 +330,7 @@ size_t GetPageSize() {
   GetSystemInfo(&system_info);
   return std::max(system_info.dwPageSize, system_info.dwAllocationGranularity);
 #elif defined(__wasm__) || defined(__asmjs__) || defined(__hexagon__)
-  return getpagesize();
+  return static_cast<size_t>(getpagesize());
 #else
   return static_cast<size_t>(sysconf(_SC_PAGESIZE));
 #endif
