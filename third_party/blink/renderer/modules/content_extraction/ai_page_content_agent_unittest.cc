@@ -3369,5 +3369,68 @@ TEST_F(AIPageContentAgentTest, LinkForClickability) {
   EXPECT_FALSE(invalid.content_attributes->node_interaction_info);
 }
 
+TEST_F(AIPageContentAgentTest, LabelWithForSibling) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      " <input type='checkbox' id='myCheckbox' />"
+      " <label for='myCheckbox'>Check me!</label>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& input = *root.children_nodes[0];
+  CheckFormControlNode(input, mojom::blink::FormControlType::kInputCheckbox);
+  ASSERT_TRUE(input.content_attributes->node_interaction_info);
+  EXPECT_TRUE(input.content_attributes->node_interaction_info->is_clickable);
+
+  const auto& label = *root.children_nodes[1];
+  CheckContainerNode(label);
+  ASSERT_TRUE(label.content_attributes->node_interaction_info);
+  EXPECT_TRUE(label.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_EQ(label.content_attributes->node_interaction_info->for_dom_node_id,
+            input.content_attributes->dom_node_id);
+}
+
+TEST_F(AIPageContentAgentTest, LabelWithForDescendant) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      " <label>"
+      "   <input type='checkbox' id='myCheckbox' />"
+      "Check me!"
+      "</label>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& label = *root.children_nodes[0];
+  EXPECT_EQ(label.children_nodes.size(), 2u);
+  CheckContainerNode(label);
+  ASSERT_TRUE(label.content_attributes->node_interaction_info);
+  EXPECT_TRUE(label.content_attributes->node_interaction_info->is_clickable);
+
+  const auto& input = *label.children_nodes[0];
+  CheckFormControlNode(input, mojom::blink::FormControlType::kInputCheckbox);
+  ASSERT_TRUE(input.content_attributes->node_interaction_info);
+  EXPECT_TRUE(input.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_EQ(label.content_attributes->node_interaction_info->for_dom_node_id,
+            input.content_attributes->dom_node_id);
+
+  CheckTextNode(*label.children_nodes[1], "Check me!");
+}
+
 }  // namespace
 }  // namespace blink

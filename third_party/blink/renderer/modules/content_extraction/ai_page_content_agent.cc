@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
@@ -375,6 +376,25 @@ void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
   auto table_row_data = mojom::blink::AIPageContentTableRowData::New();
   table_row_data->row_type = GetTableRowType(layout_table_row);
   attributes.table_row_data = std::move(table_row_data);
+}
+
+// Adds the control node id if this is a label associated with a form
+// control. This includes both explicit association using for, or
+// implicit association when the input node is a descendant of the label
+// node.
+void AddForDomNodeId(const LayoutObject& object,
+                     mojom::blink::AIPageContentNodeInteractionInfo& info) {
+  auto* label = DynamicTo<HTMLLabelElement>(object.GetNode());
+  if (!label) {
+    return;
+  }
+
+  auto* control = label->Control();
+  if (!control) {
+    return;
+  }
+
+  info.for_dom_node_id = DOMNodeIds::IdForNode(control);
 }
 
 // Records latency metrics for the given latency and total latency.
@@ -1216,6 +1236,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     attributes.node_interaction_info =
         mojom::blink::AIPageContentNodeInteractionInfo::New();
     *attributes.node_interaction_info = node_interaction_info;
+    AddForDomNodeId(object, *attributes.node_interaction_info);
   }
 }
 
