@@ -32,14 +32,14 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.media.MediaSwitches;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for FullscreenVideoPictureInPictureController and related methods. */
@@ -60,17 +60,14 @@ public class FullscreenVideoPictureInPictureControllerTest {
     private static final String VIDEO_ID = "video";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private EmbeddedTestServer mTestServer;
     private ChromeTabbedActivity mActivity;
 
     @Before
     public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
+        mActivityTestRule.startOnTestServerUrl(TEST_PATH);
         mActivity = mActivityTestRule.getActivity();
     }
 
@@ -142,7 +139,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @DisabledTest(message = "b/354013006")
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PATH));
+        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(TEST_PATH));
 
         testExitOn(() -> JavaScriptUtils.executeJavaScript(getWebContents(), "window.close()"));
     }
