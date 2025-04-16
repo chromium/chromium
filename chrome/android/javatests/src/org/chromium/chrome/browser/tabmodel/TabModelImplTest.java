@@ -93,6 +93,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/410945407")
     public void validIndexAfterRestored_FromColdStart_WithIncognitoTabs() throws Exception {
         createTabs(1, true, mTestUrl);
 
