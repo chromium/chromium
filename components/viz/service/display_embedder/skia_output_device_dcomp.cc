@@ -266,20 +266,25 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
 
     gl::DCLayerOverlayParams& params = out_overlays.emplace_back();
 
+    params.background_color = dc_layer.color;
+    params.z_order = dc_layer.plane_z_order;
+
     const gpu::Mailbox& mailbox = dc_layer.mailbox;
     if (!mailbox.IsZero()) {
       std::optional<gl::DCLayerOverlayImage> overlay_image =
           BeginOverlayAccess(mailbox);
-      if (!overlay_image) {
+      if (overlay_image) {
+        params.overlay_image = std::move(overlay_image);
+        scheduled_overlay_mailboxes_.insert(mailbox);
+      } else {
         DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
-        continue;
+#if DCHECK_IS_ON()
+        params.background_color = SkColors::kRed;
+#else
+        params.background_color = SkColors::kWhite;
+#endif
       }
-      params.overlay_image = std::move(overlay_image);
-      scheduled_overlay_mailboxes_.insert(mailbox);
     }
-
-    params.background_color = dc_layer.color;
-    params.z_order = dc_layer.plane_z_order;
 
     // SwapChainPresenter uses the size of the overlay's resource in pixels to
     // calculate its swap chain size. `uv_rect` maps the portion of
