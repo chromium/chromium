@@ -232,7 +232,7 @@
 <translation id="1854156910036166007">עצלנים</translation>
 <translation id="1856388568474281774">חץ למטה</translation>
 <translation id="1858620243986915808">צירוף של צילום מסך</translation>
-<translation id="1860654594958086756">עיבוד תלת-ממד</translation>
+<translation id="1860654594958086756">אפקט תלת-ממד</translation>
 <translation id="1871413952174074704">‏ה-APN לא יכול להכיל יותר מ-<ph name="CHAR_LIMIT" /> תווים</translation>
 <translation id="1871569928317311284">השבתת העיצוב הכהה</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -881,7 +881,7 @@
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
-<translation id="493637535592633700">אוֹר ביולוגי</translation>
+<translation id="493637535592633700">הארה ביולוגית</translation>
 <translation id="494102685638938793">‫<ph name="LINK_TEXT" />, פתיחה בכרטיסייה חדשה</translation>
 <translation id="4946927805998996217">הסיכום בשלבי יצירה</translation>
 <translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
