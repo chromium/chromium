@@ -136,4 +136,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # (Desktop Only)
+  if (!is_android) {
+    sources += [ "desktop_view_manager_unittest.cc" ]
+    deps += [ ":desktop_view_manager" ]
+  }
 }

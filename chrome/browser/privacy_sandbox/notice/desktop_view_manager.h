@@ -4,6 +4,9 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_DESKTOP_VIEW_MANAGER_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_DESKTOP_VIEW_MANAGER_H_
 
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
@@ -30,13 +33,26 @@ class DesktopViewManager {
         std::optional<notice::mojom::PrivacySandboxNotice> next_id) {}
   };
 
+  // Accessors
+  std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
-  // TODO(chrstne): Create a member variable for notice_service when it gets
-  // used.
+  // TODO(chrstne): Remove this and modify tests once MaybeCreateView is called
+  // from EventHandlers.
+  friend class DesktopViewManagerTest;
+
+  // Performs necessary checks to determine if a new view should be created.
+  void MaybeCreateView();
+
+  // Notifies open views to close.
+  void CloseAllOpenViews();
+
   base::ObserverList<Observer>::Unchecked observers_;
+  raw_ptr<PrivacySandboxNoticeServiceInterface> notice_service_;
+  std::vector<notice::mojom::PrivacySandboxNotice> pending_notices_to_show_;
 };
 
 }  // namespace privacy_sandbox
