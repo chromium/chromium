@@ -1813,10 +1813,9 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_library") {
-    java_library_impl(target_name) {
+    java_library(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      type = "java_library"
 
       if (!defined(requires_robolectric)) {
         supports_android = true
@@ -1906,13 +1905,20 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_java_prebuilt") {
-    java_library_impl(target_name) {
+    java_library(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      type = "java_library"
 
       supports_android = true
       requires_android = true
+
+      if (!defined(jar_excluded_patterns)) {
+        jar_excluded_patterns = []
+      }
+      jar_excluded_patterns += [
+        "*/R.class",
+        "*/R\$*.class",
+      ]
     }
   }
 
