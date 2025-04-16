@@ -364,6 +364,18 @@ void FrameSinkVideoCapturerImpl::SetMinSizeChangePeriod(
   oracle_->SetMinSizeChangePeriod(min_period);
 }
 
+void FrameSinkVideoCapturerImpl::SetAnimationFpsLockIn(
+    bool enabled,
+    float majority_damaged_pixel_min_ratio) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TRACE_EVENT_INSTANT("gpu.capture", "SetAnimationFpsLockIn", "enabled",
+                      enabled, "majority_damaged_pixel_min_ratio",
+                      majority_damaged_pixel_min_ratio);
+
+  oracle_->SetAnimationFpsLockIn(enabled, majority_damaged_pixel_min_ratio);
+}
+
 void FrameSinkVideoCapturerImpl::SetResolutionConstraints(
     const gfx::Size& min_size,
     const gfx::Size& max_size,

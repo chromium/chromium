@@ -54,6 +54,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   base::TimeDelta min_capture_period() const {
     return smoothing_sampler_.min_capture_period();
   }
+
   void SetMinCapturePeriod(base::TimeDelta period);
 
   // Sets the range of acceptable capture sizes and whether a fixed aspect ratio
@@ -69,6 +70,19 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   //
   // See: SetMinSizeChangePeriod().
   void SetAutoThrottlingEnabled(bool enabled);
+
+  // Specifies whether the oracle should detect animation and try to target
+  // the animation frame rate. If |enabled|, the oracle will try to detect a
+  // majority damaged rect and its animation frame rate, and will respect the
+  // minimum damaged pixel ratio of the majority rect's area among all damaged
+  // rect areas set by |majority_damaged_pixel_min_ratio|. If the threshold not
+  // met, it will not use the animated content frame rate.
+  void SetAnimationFpsLockIn(bool enabled,
+                             float majority_damaged_pixel_min_ratio) {
+    content_sampler_.SetEnabled(enabled);
+    content_sampler_.SetMajorityDamagedRectMinRatio(
+        majority_damaged_pixel_min_ratio);
+  }
 
   // Get/Update the source content size.  Changes may not have an immediate
   // effect on the proposed capture size, as the oracle will prevent too-
