@@ -31,6 +31,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                       contextStyle:SigninContextStyle::kDefault
                        accessPoint:access_point_
+              prepareChangeProfile:nil
               continuationProvider:NotReachedContinuationProvider()];
     mediator_mock_ = OCMStrictClassMock([ConsistencyPromoSigninMediator class]);
     consistency_default_account_coordinator_mock_ =

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -58,7 +59,22 @@ enum class AuthenticationOperation {
 - (instancetype)init NS_UNAVAILABLE;
 
 // Initializes a command to perform the specified operation with a
-// SigninInteractionController and invoke a possibly-nil callback when finished.
+// SigninCoordinator.
+// In case of profile change, invoke `prepareChangeProfile` before the switch
+// and `provider`’s provided method after. In any other case, invoke
+// `completion` if its non-nil.
+- (instancetype)initWithOperation:(AuthenticationOperation)operation
+                             identity:(id<SystemIdentity>)identity
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                          promoAction:(signin_metrics::PromoAction)promoAction
+                           completion:
+                               (SigninCoordinatorCompletionCallback)completion
+                 prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
+    changeProfileContinuationProvider:
+        (const ChangeProfileContinuationProvider&)provider
+    NS_DESIGNATED_INITIALIZER;
+
+// Initializes a command to perform, without pre-profile-switch.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                              identity:(id<SystemIdentity>)identity
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
@@ -66,8 +82,7 @@ enum class AuthenticationOperation {
                            completion:
                                (SigninCoordinatorCompletionCallback)completion
     changeProfileContinuationProvider:
-        (const ChangeProfileContinuationProvider&)provider
-    NS_DESIGNATED_INITIALIZER;
+        (const ChangeProfileContinuationProvider&)provider;
 
 // Initializes a ShowSigninCommand with the continuation set to do nothing.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
@@ -137,6 +152,9 @@ enum class AuthenticationOperation {
 
 // The user action from the sign-in promo to trigger the sign-in operation.
 @property(nonatomic, readonly) signin_metrics::PromoAction promoAction;
+
+// A block to execute before the change of profile.
+@property(nonatomic, readonly) ProceduralBlock prepareChangeProfile;
 
 // The action to execute after a change of profile. Can be accessed only once.
 @property(nonatomic, readonly)

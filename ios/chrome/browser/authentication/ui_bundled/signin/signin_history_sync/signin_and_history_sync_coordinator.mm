@@ -233,6 +233,7 @@ enum class SignInHistorySyncStep {
                                  browser:self.browser
                             contextStyle:self.contextStyle
                              accessPoint:self.accessPoint
+                    prepareChangeProfile:nil
                     continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =

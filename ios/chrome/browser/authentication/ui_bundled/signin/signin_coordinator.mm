@@ -228,6 +228,8 @@ using signin_metrics::PromoAction;
                                                 accessPoint:
                                                     (signin_metrics::
                                                          AccessPoint)accessPoint
+                                       prepareChangeProfile:
+                                           (ProceduralBlock)prepareChangeProfile
                                        continuationProvider:
                                            (const ChangeProfileContinuationProvider&)
                                                continuationProvider {
@@ -236,6 +238,7 @@ using signin_metrics::PromoAction;
                                 browser:browser
                            contextStyle:contextStyle
                             accessPoint:accessPoint
+                   prepareChangeProfile:prepareChangeProfile
                    continuationProvider:continuationProvider];
 }
 

@@ -77,6 +77,8 @@
 
 @implementation ConsistencyPromoSigninCoordinator {
   ChangeProfileContinuationProvider _continuationProvider;
+  // Block to execute before a change in profile.
+  ProceduralBlock _prepareChangeProfile;
 }
 
 #pragma mark - Public
@@ -85,6 +87,7 @@
                        browser:(Browser*)browser
                   contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
+          prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super initWithBaseViewController:viewController
@@ -93,6 +96,7 @@
                                accessPoint:accessPoint];
   if (self) {
     _continuationProvider = continuationProvider;
+    _prepareChangeProfile = prepareChangeProfile;
   }
   return self;
 }
@@ -102,6 +106,7 @@
                               browser:(Browser*)browser
                          contextStyle:(SigninContextStyle)contextStyle
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
+                 prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
                  continuationProvider:(const ChangeProfileContinuationProvider&)
                                           continuationProvider {
   ProfileIOS* profile = browser->GetProfile();
@@ -124,6 +129,7 @@
                          browser:browser
                     contextStyle:contextStyle
                      accessPoint:accessPoint
+            prepareChangeProfile:prepareChangeProfile
             continuationProvider:continuationProvider];
 }
 
@@ -550,6 +556,9 @@
 }
 
 - (ChangeProfileContinuation)changeProfileContinuation {
+  if (_prepareChangeProfile) {
+    _prepareChangeProfile();
+  };
   // TODO(crbug.com/375605572): Store the provider in the mediator.
   // This currently can’t be done, because OCMock raise exception when a mocked
   // method gets a parameter whose type is a once or repeating callback.

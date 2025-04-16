@@ -2157,6 +2157,8 @@ using UserFeedbackDataCallback =
                                                          command.contextStyle
                                                       accessPoint:
                                                           command.accessPoint
+                                             prepareChangeProfile:
+                                                 command.prepareChangeProfile
                                              continuationProvider:provider];
       break;
     }
@@ -2309,6 +2311,12 @@ using UserFeedbackDataCallback =
   if (!signin::ShouldPresentWebSignin(self.mainInterface.profile)) {
     return;
   }
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  void (^prepareChangeProfile)() = ^() {
+    [browserCoordinatorCommandsHandler closeCurrentTab];
+  };
   ChangeProfileContinuationProvider provider =
       base::BindRepeating(&CreateChangeProfileOpensURLContinuation, url);
   self.signinCoordinator = [SigninCoordinator
@@ -2321,6 +2329,8 @@ using UserFeedbackDataCallback =
                                                   accessPoint:signin_metrics::
                                                                   AccessPoint::
                                                                       kWebSignin
+                                         prepareChangeProfile:
+                                             prepareChangeProfile
                                          continuationProvider:provider];
   if (!self.signinCoordinator) {
     return;

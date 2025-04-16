@@ -332,6 +332,13 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
           };
       ChangeProfileContinuationProvider provider = base::BindRepeating(
           &CreateChangeProfileSendTabToOtherDevice, _url, self.title);
+      id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             BrowserCoordinatorCommands);
+      void (^prepareChangeProfile)() = ^() {
+        [browserCoordinatorCommandsHandler closeCurrentTab];
+      };
+
       ShowSigninCommand* command = [[ShowSigninCommand alloc]
                           initWithOperation:AuthenticationOperation::kSigninOnly
                                    identity:nil
@@ -340,6 +347,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                 promoAction:signin_metrics::PromoAction::
                                                 PROMO_ACTION_NO_SIGNIN_PROMO
                                  completion:completion
+
+                       prepareChangeProfile:prepareChangeProfile
           changeProfileContinuationProvider:provider];
       [self.signinPresenter showSignin:command];
       break;

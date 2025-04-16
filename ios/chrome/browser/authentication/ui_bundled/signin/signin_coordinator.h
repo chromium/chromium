@@ -211,6 +211,8 @@ class PrefRegistrySyncable;
                                                 accessPoint:
                                                     (signin_metrics::
                                                          AccessPoint)accessPoint
+                                       prepareChangeProfile:
+                                           (ProceduralBlock)prepareChangeProfile
                                        continuationProvider:
                                            (const ChangeProfileContinuationProvider&)
                                                continuationProvider;
