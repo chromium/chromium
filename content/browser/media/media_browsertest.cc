@@ -306,6 +306,16 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSSingleFileBear) {
   PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_HLSSingleWithoutExtension DISABLED_HLSSingleWithoutExtension
+#else
+#define MAYBE_HLSSingleWithoutExtension HLSSingleWithoutExtension
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSSingleWithoutExtension) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("hls/mp_ts_avc1.hls");
+}
+
 // TODO(crbug.com/384342045): Failing on win11-arm64.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_HLSMultivariantBitrateBear DISABLED_HLSMultivariantBitrateBear

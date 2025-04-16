@@ -150,6 +150,8 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   if (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
       error == DEMUXER_ERROR_DETECTED_HLS) {
+    hls_fallback_ = true;
+
     // If we've gotten a request to start HLS fallback and logging, we can
     // assert that data source has been set.
     CHECK(data_source_);

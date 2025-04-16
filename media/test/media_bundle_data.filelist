@@ -375,6 +375,7 @@ data/hls/generate_hls.py
 data/hls/hls_support_matrix.html
 data/hls/init_0.mp4
 data/hls/mp_mp4_avc1.m3u8
+data/hls/mp_ts_avc1.hls
 data/hls/mp_ts_avc1.m3u8
 data/hls/multi-bitrate-multivariant-bear/out_0.m3u8
 data/hls/multi-bitrate-multivariant-bear/out_00.ts
