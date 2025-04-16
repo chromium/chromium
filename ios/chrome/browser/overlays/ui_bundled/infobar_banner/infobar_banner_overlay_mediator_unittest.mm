@@ -9,11 +9,11 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_dispatch_callback.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_user_data.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -22,7 +22,7 @@
 
 namespace {
 // Request ConfigType used in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(FakeConfig);
 }  // namespace
 
 // InfobarBannerOverlayMediator subclass used for testing.

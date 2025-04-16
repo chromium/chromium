@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test/fake_overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

@@ -6,13 +6,13 @@
 
 #include "base/functional/bind.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #include "testing/platform_test.h"
 
 namespace {
 // Response info types used in tests.
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(FirstInfo);
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(SecondInfo);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(FirstInfo);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(SecondInfo);
 }  // namespace
 
 // Test fixture for OverlayDispatchCallback.

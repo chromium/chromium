@@ -8,18 +8,18 @@
 #import "ios/chrome/browser/overlays/model/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response_support.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_user_data.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
 // Request ConfigType used for tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(ModalConfig);
 }  // namespace
 
 // Mediator used in tests.

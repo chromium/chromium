@@ -14,9 +14,9 @@
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
@@ -27,7 +27,7 @@
 #import "testing/platform_test.h"
 
 namespace {
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(FakeConfig);
 
 // Creates a matcher callback for ConfigType and config's InfoBar.
 template <class ConfigType>
