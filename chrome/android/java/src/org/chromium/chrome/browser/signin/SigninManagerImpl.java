@@ -398,7 +398,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      */
     private void finishSignInAfterPolicyEnforced() {
         assert mSignInState != null : "SigninState shouldn't be null!";
-        assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)
+        assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                 : "The user should not be already signed in";
 
         // Retain the sign-in callback since pref commit callback will be called after sign-in is
