@@ -339,7 +339,7 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
         AddChildView(BuildMoveGroupToNewWindowButton()));
     AddChildView(BuildSeparator());
     simple_menu_items_.push_back(AddChildView(BuildUngroupButton()));
-    simple_menu_items_.push_back(AddChildView(BuildHideGroupButton()));
+    simple_menu_items_.push_back(AddChildView(BuildCloseGroupButton()));
   } else {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
     simple_menu_items_.push_back(
@@ -360,7 +360,7 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
       simple_menu_items_.push_back(AddChildView(BuildRecentActivityButton()));
     }
 
-    simple_menu_items_.push_back(AddChildView(BuildHideGroupButton()));
+    simple_menu_items_.push_back(AddChildView(BuildCloseGroupButton()));
     AddChildView(BuildSeparator());
 
     if (!IsGroupShared()) {
@@ -489,10 +489,10 @@ TabGroupEditorBubbleView::BuildUngroupButton() {
 }
 
 std::unique_ptr<views::LabelButton>
-TabGroupEditorBubbleView::BuildHideGroupButton() {
+TabGroupEditorBubbleView::BuildCloseGroupButton() {
   std::unique_ptr<views::LabelButton> menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
-      base::BindRepeating(&TabGroupEditorBubbleView::HideGroupPressed,
+      base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon, ui::kColorMenuIcon,
                                      kDefaultIconSize));
@@ -834,7 +834,7 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
   model->RemoveFromGroup(tabs);
 }
 
-void TabGroupEditorBubbleView::HideGroupPressed() {
+void TabGroupEditorBubbleView::CloseGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
 
@@ -855,13 +855,13 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
   if (!tab_group_service) {
-    return HideGroupPressed();
+    return CloseGroupPressed();
   }
 
   std::optional<tab_groups::SavedTabGroup> saved_group =
       tab_group_service->GetGroup(group_);
   if (!saved_group) {
-    return HideGroupPressed();
+    return CloseGroupPressed();
   }
 
   bool is_group_shared = saved_group->is_shared_tab_group();

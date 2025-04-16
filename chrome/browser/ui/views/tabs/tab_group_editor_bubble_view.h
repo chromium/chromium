@@ -112,7 +112,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<ColorPickerView> BuildColorPicker();
   std::unique_ptr<views::LabelButton> BuildNewTabInGroupButton();
   std::unique_ptr<views::LabelButton> BuildUngroupButton();
-  std::unique_ptr<views::LabelButton> BuildHideGroupButton();
+  std::unique_ptr<views::LabelButton> BuildCloseGroupButton();
   std::unique_ptr<views::LabelButton> BuildDeleteGroupButton();
   std::unique_ptr<views::LabelButton> BuildLeaveGroupButton();
   std::unique_ptr<views::LabelButton> BuildMoveGroupToNewWindowButton();
@@ -123,7 +123,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void NewTabInGroupPressed();
   void UngroupPressed();
   void ShareOrManagePressed();
-  void HideGroupPressed();
+  void CloseGroupPressed();
   void DeleteGroupPressed();
   void LeaveGroupPressed();
   void MoveGroupToNewWindowPressed();
