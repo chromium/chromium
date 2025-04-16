@@ -151,6 +151,12 @@ inline CharCategory Category(UChar32 c) {
   return static_cast<CharCategory>(U_GET_GC_MASK(c));
 }
 
+inline bool IsSymbol(UChar32 c) {
+  CharCategory char_category = Category(c);
+  return char_category == kSymbol_Math || char_category == kSymbol_Currency ||
+         char_category == kSymbol_Modifier || char_category == kSymbol_Other;
+}
+
 inline CharDirection Direction(UChar32 c) {
   return static_cast<CharDirection>(u_charDirection(c));
 }
