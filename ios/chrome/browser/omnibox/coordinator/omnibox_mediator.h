@@ -25,38 +25,40 @@ namespace feature_engagement {
 class Tracker;
 }
 
-// A mediator object that updates the omnibox according to the model changes.
+/// A mediator object that updates the omnibox according to the model changes.
 @interface OmniboxMediator : NSObject <OmniboxMutator,
                                        OmniboxTextControllerDelegate,
                                        OmniboxViewControllerPasteDelegate>
 
-- (instancetype)initWithIncognito:(BOOL)isIncognito
-                          tracker:(feature_engagement::Tracker*)tracker
-                    isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
 /// Controller of the omnibox text.
 @property(nonatomic, weak) OmniboxTextController* omniboxTextController;
 
-// The templateURLService used by this mediator to extract whether the default
-// search engine supports search-by-image.
+/// The templateURLService used by this mediator to extract whether the default
+/// search engine supports search-by-image.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
-// The `URLLoadingBrowserAgent` used by this mediator to start search-by-image.
+
+/// The `URLLoadingBrowserAgent` used by this mediator to start search-by-image.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoadingBrowserAgent;
 
-// The consumer for this object. This can change during the lifetime of this
-// object and may be nil.
+/// The consumer for this object. This can change during the lifetime of this
+/// object and may be nil.
 @property(nonatomic, weak) id<OmniboxConsumer> consumer;
 
 @property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
-// The favicon loader.
+/// The favicon loader.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
-// Scene state used by this mediator to log with
-// NonModalDefaultBrowserPromoSchedulerSceneAgent.
+
+/// Scene state used by this mediator to log with
+/// NonModalDefaultBrowserPromoSchedulerSceneAgent.
 @property(nonatomic, weak) SceneState* sceneState;
+
+- (instancetype)initWithIncognito:(BOOL)isIncognito
+                          tracker:(feature_engagement::Tracker*)tracker
+                    isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 /// Sets the image used in image search.
 - (void)setThumbnailImage:(UIImage*)image;
