@@ -34,8 +34,8 @@ void TapIdentityDisc() {
 void OpenAccountMenu() {
   TapIdentityDisc();
   // Ensure the Account Menu is displayed.
-  [[EarlGrey selectElementWithMatcher:AccountMenuMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:AccountMenuMatcher()];
 }
 
 void OpenManageAccountsView() {
