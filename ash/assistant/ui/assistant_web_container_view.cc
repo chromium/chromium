@@ -52,13 +52,14 @@ class AssistantWebContainerClientView : public views::ClientView {
   ~AssistantWebContainerClientView() override = default;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override {
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
     // `NonClientFrameViewAsh` rounds the top corners of the window. The
     // client-view is responsible for rounding the bottom corners.
-
     DCHECK(GetWidget());
 
-    const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+    const gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),
+                                     window_radii.lower_left());
 
     auto* container =
         views::AsViewClass<AssistantWebContainerView>(contents_view());

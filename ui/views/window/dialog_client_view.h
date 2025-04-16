@@ -74,7 +74,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ClientView implementation:
-  void UpdateWindowRoundedCorners(int corner_radius) override;
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Input protection is triggered upon prompt creation and updated on

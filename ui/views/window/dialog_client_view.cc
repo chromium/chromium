@@ -21,6 +21,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -187,16 +188,17 @@ void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
+void DialogClientView::UpdateWindowRoundedCorners(
+    const gfx::RoundedCornersF& window_radii) {
   DCHECK(GetWidget());
 
-  const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
-
-  // Chromeos has rounded windows. A dialog can use native frame i.e look like
+  // ChromeOS has rounded windows. A dialog can use native frame i.e look like
   // a top-level window. For ChromeOS, dialogs use `NonClientFrameViewAsh`
   // as native frame. The top corners will be rounded by the frame_view and
   // client-view is responsible for rounding the bottom corners.
-  SetBackgroundRadii(radii);
+  const gfx::RoundedCornersF background_radii(0, 0, window_radii.lower_right(),
+                                              window_radii.lower_left());
+  SetBackgroundRadii(background_radii);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

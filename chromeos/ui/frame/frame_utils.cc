@@ -14,6 +14,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/hit_test_utils.h"
@@ -110,19 +111,24 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   }
 }
 
-int GetWindowCornerRadius(const aura::Window* window) {
+gfx::RoundedCornersF GetWindowRadii(const aura::Window* window) {
   if (!ShouldWindowHaveRoundedCorners(window)) {
-    return 0;
+    return gfx::RoundedCornersF();
   }
 
   const WindowStateType window_state = window->GetProperty(kWindowStateTypeKey);
-
   if (window_state == WindowStateType::kPip) {
-    return kPipRoundedCornerRadius;
+    return gfx::RoundedCornersF(kPipRoundedCornerRadius);
   }
 
-  return features::IsRoundedWindowsEnabled() ? features::RoundedWindowsRadius()
-                                             : kTopCornerRadiusWhenRestored;
+  const int corner_radius = features::IsRoundedWindowsEnabled()
+                                ? features::RoundedWindowsRadius()
+                                : kTopCornerRadiusWhenRestored;
+
+  const bool rounded_bottom_corners = features::IsRoundedWindowsEnabled();
+  return gfx::RoundedCornersF(corner_radius, corner_radius,
+                              rounded_bottom_corners ? corner_radius : 0,
+                              rounded_bottom_corners ? corner_radius : 0);
 }
 
 bool CanPropertyEffectWindowRadius(const void* class_property_key) {

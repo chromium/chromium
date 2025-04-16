@@ -1034,11 +1034,12 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
 
   aura::Window* window = GetWidget()->GetNativeWindow();
 
-  const int corner_radius = chromeos::GetWindowCornerRadius(window);
-  window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
+  const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
+  window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                      window_radii.upper_left());
 
   if (frame_header_) {
-    frame_header_->SetHeaderCornerRadius(corner_radius);
+    frame_header_->SetHeaderCornerRadius(window_radii.upper_left());
   }
 
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
@@ -1046,13 +1047,11 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
     // drawn above the client view. The container has a background that extends
     // over the curvature of the top-right corner, requiring its rounding.
     caption_button_container_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(0, corner_radius, 0, 0));
+        gfx::RoundedCornersF(0, window_radii.upper_right(), 0, 0));
     caption_button_container_->layer()->SetIsFastRoundedCorner(/*enable=*/true);
   }
 
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
-  }
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
 
 void BrowserNonClientFrameViewChromeOS::LayoutProfileIndicator() {

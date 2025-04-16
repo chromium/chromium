@@ -32,7 +32,8 @@ void BrowserViewAsh::Layout(PassKey) {
   GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
 }
 
-void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
+void BrowserViewAsh::UpdateWindowRoundedCorners(
+    const gfx::RoundedCornersF& window_radii) {
   SidePanel* side_panel = unified_side_panel();
   const bool right_aligned_side_panel_showing =
       side_panel->GetVisible() && side_panel->IsRightAligned();
@@ -42,8 +43,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
   // If side panel is visible, round one of the bottom two corners of the side
   // panel based on its alignment w.r.t to web contents.
   const gfx::RoundedCornersF side_panel_radii(
-      0, 0, right_aligned_side_panel_showing ? corner_radius : 0,
-      left_aligned_side_panel_showing ? corner_radius : 0);
+      0, 0, right_aligned_side_panel_showing ? window_radii.lower_right() : 0,
+      left_aligned_side_panel_showing ? window_radii.lower_left() : 0);
 
   if (side_panel_radii != side_panel->background_radii()) {
     side_panel->SetBackgroundRadii(side_panel_radii);
@@ -59,8 +60,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
   // panel is not visible, we have to round the bottom two corners of side panel
   // irrespective of its docked placement.
   const gfx::RoundedCornersF devtools_webview_radii(
-      0, 0, right_aligned_side_panel_showing ? 0 : corner_radius,
-      left_aligned_side_panel_showing ? 0 : corner_radius);
+      0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
+      left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
 
   if (devtools_webview_radii_ != devtools_webview_radii) {
     devtools_webview_radii_ = devtools_webview_radii;
@@ -92,18 +93,18 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
       IsWindowControlsOverlayEnabled();
 
   const gfx::RoundedCornersF contents_webview_radii(
-      round_content_webview_top_corner ? corner_radius : 0,
-      round_content_webview_top_corner ? corner_radius : 0,
+      round_content_webview_top_corner ? window_radii.upper_left() : 0,
+      round_content_webview_top_corner ? window_radii.upper_right() : 0,
       right_aligned_side_panel_showing ||
               (devtools_showing &&
                devtools_placement != DevToolsDockedPlacement::kLeft)
           ? 0
-          : corner_radius,
+          : window_radii.lower_right(),
       left_aligned_side_panel_showing ||
               (devtools_showing &&
                devtools_placement != DevToolsDockedPlacement::kRight)
           ? 0
-          : corner_radius);
+          : window_radii.lower_left());
 
   CHECK(contents_webview);
   CHECK(contents_webview->holder());

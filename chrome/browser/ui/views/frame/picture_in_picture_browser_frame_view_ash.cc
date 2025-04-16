@@ -30,20 +30,18 @@ PictureInPictureBrowserFrameViewAsh::~PictureInPictureBrowserFrameViewAsh() =
     default;
 
 void PictureInPictureBrowserFrameViewAsh::UpdateWindowRoundedCorners() {
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
-
   aura::Window* window = GetWidget()->GetNativeWindow();
-  const int corner_radius = chromeos::GetWindowCornerRadius(window);
+  const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
 
-  window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
+  window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                      window_radii.upper_left());
 
-  const gfx::RoundedCornersF radii(corner_radius, corner_radius, 0, 0);
+  const gfx::RoundedCornersF radii(window_radii.upper_left(),
+                                   window_radii.upper_right(), 0, 0);
   top_bar_container_view()->SetBackground(views::CreateRoundedRectBackground(
       kColorPipWindowTopBarBackground, radii));
 
-  GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
 
 void PictureInPictureBrowserFrameViewAsh::OnWindowPropertyChanged(
