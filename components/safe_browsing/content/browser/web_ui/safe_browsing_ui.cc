@@ -2080,7 +2080,6 @@ std::string SerializeContentAnalysisRequest(
 
   request_dict.Set(per_profile_request ? "profile_token" : "device_token",
                    request.device_token());
-  request_dict.Set("fcm_notification_token", request.fcm_notification_token());
   request_dict.Set("blocking", request.blocking());
   request_dict.Set("analysis_connector",
                    enterprise_connectors::AnalysisConnector_Name(
