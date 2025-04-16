@@ -799,11 +799,25 @@ source_set("probabilistic_reveal_token_test_issuer") {
     "probabilistic_reveal_token_test_issuer.cc",
     "probabilistic_reveal_token_test_issuer.h",
   ]
-  public_deps = [ ":ip_protection_data_types" ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//components/ip_protection:get_probabilistic_reveal_token_proto",
+  ]
   deps = [
     "//base",
     "//third_party/abseil-cpp:absl",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+source_set("probabilistic_reveal_token_test_issuer_unittest") {
+  testonly = true
+  sources = [ "probabilistic_reveal_token_test_issuer_unittest.cc" ]
+  deps = [
+    ":probabilistic_reveal_token_test_issuer",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 

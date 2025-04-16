@@ -54,6 +54,7 @@ constexpr char kRandomizationTimeHistogram[] =
 constexpr size_t kPRTSize = 79;
 constexpr size_t kPRTPointSize = 33;
 constexpr size_t kEpochIdSize = 8;
+constexpr size_t kPlaintextSize = 29;
 
 // Deserialize a given prt serialized using
 // `IpProtectionProbabilisticRevealTokenManager::SerializePrt()`.
@@ -117,11 +118,23 @@ class MockFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
                          std::string epoch_id) {
     {
       auto maybe_issuer =
-          ProbabilisticRevealTokenTestIssuer::Create(private_key, num_tokens);
+          ProbabilisticRevealTokenTestIssuer::Create(private_key);
       if (!maybe_issuer.has_value()) {
         return maybe_issuer.error();
       }
       issuer_ = std::move(maybe_issuer.value());
+      // Issue and store tokens in issuer_.
+      std::vector<std::string> plaintexts(num_tokens, "");
+      for (std::size_t i = 0; i < num_tokens; ++i) {
+        std::string p = "awesome-prt-" + base::NumberToString(i);
+        plaintexts[i] = p + std::string(kPlaintextSize - p.size(), '-');
+      }
+      base::expected<GetProbabilisticRevealTokenResponse, absl::Status>
+          maybe_response = issuer_->Issue(plaintexts, expiration, next_start,
+                                          num_tokens_with_signal, epoch_id);
+      if (!maybe_response.has_value()) {
+        return maybe_response.error();
+      }
     }
     TryGetProbabilisticRevealTokensOutcome outcome;
     outcome.tokens = issuer_->Tokens();

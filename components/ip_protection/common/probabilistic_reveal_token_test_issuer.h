@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
@@ -25,32 +26,36 @@
 
 namespace ip_protection {
 
-using ::private_join_and_compute::Context;
-using ::private_join_and_compute::ECGroup;
-using ::private_join_and_compute::ECPoint;
-using ::private_join_and_compute::ElGamalDecrypter;
-using ::private_join_and_compute::ElGamalEncrypter;
-using ::private_join_and_compute::elgamal::Ciphertext;
-using ::private_join_and_compute::elgamal::PrivateKey;
-using ::private_join_and_compute::elgamal::PublicKey;
-
 // Implements a PRT issuer server capabilities, used to create/decrypt tokens
 // for tests.
 class ProbabilisticRevealTokenTestIssuer {
  public:
   static base::expected<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>,
                         absl::Status>
-  Create(uint64_t private_key, size_t num_tokens);
+  Create(uint64_t private_key);
 
   ~ProbabilisticRevealTokenTestIssuer();
 
-  // Serialized base64 encoded ECPoints encrypted by the Issuer
-  // to produce `Tokens()`. `Tokens()[i]` is encrypted `Plaintexts()[i]`.
-  const std::vector<std::string>& Plaintexts() const { return plaintexts_; }
+  // Create a response proto type for a given set of arguments. Tokens in
+  // response will contain encrypted `plaintexts`. Returns error if
+  // `plaintexts[i].size()` is not 29. Updates `tokens_` to new ones. `tokens_`
+  // is set to empty in case of failure, already existing ones (if any) are
+  // cleared.
+  base::expected<GetProbabilisticRevealTokenResponse, absl::Status> Issue(
+      std::vector<std::string> plaintexts,
+      base::Time expiration,
+      base::Time next_epoch_start,
+      int32_t num_tokens_with_signal,
+      std::string epoch_id);
 
-  // Ciphertexts produced by the issuer. These are encrypted
-  // `Plaintexts()`. Decrypting Tokens()[i] should yield
-  // Plaintexts()[i].
+  // Decrypt a given `token` and return resulting string. `RevealToken()` will
+  // return `plaintexts[i]` corresponding to the given `token`. See `Issue()`.
+  base::expected<std::string, absl::Status> RevealToken(
+      const ProbabilisticRevealToken& token) const;
+
+  // PRTs produced by the `Issue()` call. These are encrypted
+  // `ECGroup::GetPointByPaddingX(plaintexts[i])`. `RevealToken(Tokens()[i])`
+  // should yield `plaintexts[i]`.
   const std::vector<ProbabilisticRevealToken>& Tokens() const {
     return tokens_;
   }
@@ -66,16 +71,14 @@ class ProbabilisticRevealTokenTestIssuer {
 
  private:
   static absl::StatusOr<std::unique_ptr<ProbabilisticRevealTokenTestIssuer>>
-  CreateInternal(uint64_t private_key, size_t num_tokens);
+  CreateInternal(uint64_t private_key);
 
   ProbabilisticRevealTokenTestIssuer(
-      std::unique_ptr<Context> context,
-      std::unique_ptr<ECGroup> group,
-      std::unique_ptr<ElGamalEncrypter> encrypter,
-      std::unique_ptr<ElGamalDecrypter> decrypter,
-      std::string serialized_public_key,
-      std::vector<std::string> plaintexts,
-      std::vector<ProbabilisticRevealToken> tokens);
+      std::unique_ptr<private_join_and_compute::Context> context,
+      std::unique_ptr<private_join_and_compute::ECGroup> group,
+      std::unique_ptr<private_join_and_compute::ElGamalEncrypter> encrypter,
+      std::unique_ptr<private_join_and_compute::ElGamalDecrypter> decrypter,
+      std::string serialized_public_key);
 
   absl::StatusOr<std::string> DecryptSerializeEncodeInternal(
       const ProbabilisticRevealToken& token);
@@ -83,12 +86,20 @@ class ProbabilisticRevealTokenTestIssuer {
   absl::StatusOr<std::vector<std::string>> DecryptSerializeEncodeInternal(
       const std::vector<ProbabilisticRevealToken>& tokens);
 
-  std::unique_ptr<const Context> context_;
-  std::unique_ptr<const ECGroup> group_;
-  std::unique_ptr<const ElGamalEncrypter> encrypter_;
-  std::unique_ptr<const ElGamalDecrypter> decrypter_;
+  absl::StatusOr<std::string> RevealTokenInternal(
+      const ProbabilisticRevealToken& token) const;
+
+  absl::StatusOr<ProbabilisticRevealToken> IssueInternal(
+      const std::string& plaintext) const;
+
+  absl::StatusOr<private_join_and_compute::ECPoint> Decrypt(
+      const ProbabilisticRevealToken& token) const;
+
+  std::unique_ptr<private_join_and_compute::Context> context_;
+  std::unique_ptr<const private_join_and_compute::ECGroup> group_;
+  std::unique_ptr<const private_join_and_compute::ElGamalEncrypter> encrypter_;
+  std::unique_ptr<const private_join_and_compute::ElGamalDecrypter> decrypter_;
   const std::string serialized_public_key_;
-  std::vector<std::string> plaintexts_;
   std::vector<ProbabilisticRevealToken> tokens_;
 };
 
