@@ -4,6 +4,8 @@
 
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
+#include <inttypes.h>
+
 #include <algorithm>
 #include <bit>
 #include <memory>

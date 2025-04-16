@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/in_memory_url_index.h"
 
+#include <inttypes.h>
+
 #include <cinttypes>
 #include <memory>
 

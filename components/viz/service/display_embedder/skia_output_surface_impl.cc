@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
+#include <inttypes.h>
+
 #include <memory>
 #include <string>
 #include <string_view>

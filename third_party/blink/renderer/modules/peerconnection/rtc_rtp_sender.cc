@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 
+#include <inttypes.h>
+
 #include <memory>
 #include <string>
 #include <tuple>

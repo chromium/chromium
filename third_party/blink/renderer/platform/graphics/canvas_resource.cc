@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 
+#include <inttypes.h>
+
 #include <string>
 #include <utility>
 

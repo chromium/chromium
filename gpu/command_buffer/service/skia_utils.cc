@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/skia_utils.h"
 
+#include <inttypes.h>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"

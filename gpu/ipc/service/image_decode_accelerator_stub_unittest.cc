@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/image_decode_accelerator_stub.h"
 
+#include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
 

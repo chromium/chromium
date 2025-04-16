@@ -4,6 +4,8 @@
 
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 
+#include <inttypes.h>
+
 #include <numeric>
 #include <optional>
 #include <utility>

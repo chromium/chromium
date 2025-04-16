@@ -4,6 +4,7 @@
 
 #include "cc/tiles/software_image_decode_cache.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include <algorithm>

@@ -4,6 +4,8 @@
 
 #include "media/base/frame_buffer_pool.h"
 
+#include <inttypes.h>
+
 #include <algorithm>
 #include <vector>
 
