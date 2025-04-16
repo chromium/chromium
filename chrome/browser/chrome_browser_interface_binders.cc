@@ -317,7 +317,8 @@ void BindSpeechRecognitionRecognizerClientHandler(
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   PrefService* profile_prefs = profile->GetPrefs();
-  if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
+  if ((profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
+       profile_prefs->GetBoolean(prefs::kHeadlessCaptionEnabled)) &&
       captions::IsLiveCaptionFeatureSupported()) {
     captions::LiveCaptionSpeechRecognitionHost::Create(
         frame_host, std::move(client_receiver));

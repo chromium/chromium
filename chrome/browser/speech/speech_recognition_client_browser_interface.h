@@ -64,7 +64,10 @@ class SpeechRecognitionClientBrowserInterface
   // Live Caption Event handling
   void OnLiveCaptionAvailabilityChanged();
   void OnLiveCaptionLanguageChanged();
-  void NotifyLiveCaptionObservers(bool enabled);
+
+  // Notify our observers whether recognition is enabled or not, if the correct
+  // language pack is installed.  If not, then defer until it is.
+  void NotifyLiveCaptionObserversIfNeeded();
 
   mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
       live_caption_availibility_observers_;
