@@ -272,6 +272,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "chrome/browser/contextmenu/context_menu_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
@@ -2343,6 +2344,17 @@ const FeatureEntry::FeatureVariation
         {"(600 dp)", kContextualSearchSuppressShortViewWith600Dp,
          std::size(kContextualSearchSuppressShortViewWith600Dp), nullptr},
 };
+
+const FeatureEntry::FeatureParam kUseRunningCompactDelay_default[] = {
+    {"running_compact_delay_after_tasks", "30"}};
+const FeatureEntry::FeatureParam kUseRunningCompactDelay_immediate[] = {
+    {"running_compact_delay_after_tasks", "2"}};
+
+const FeatureEntry::FeatureVariation kUseRunningCompactDelayOptions[] = {
+    {"default", kUseRunningCompactDelay_default,
+     std::size(kUseRunningCompactDelay_default), nullptr},
+    {"immediate", kUseRunningCompactDelay_immediate,
+     std::size(kUseRunningCompactDelay_immediate), nullptr}};
 
 const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
     {"jump_start_min_away_time_minutes", "1"},
@@ -12073,6 +12085,17 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableShowSaveCardSecurelyMessage)},
+
+    {"background-compact", flag_descriptions::kBackgroundCompactMessageName,
+     flag_descriptions::kBackgroundCompactDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(base::android::kShouldFreezeSelf)},
+
+    {"running-compact", flag_descriptions::kRunningCompactMessageName,
+     flag_descriptions::kRunningCompactDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(base::android::kUseRunningCompact,
+                                    kUseRunningCompactDelayOptions,
+                                    "UseRunningCompactDelay")},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-flat-rate-card-benefits-from-curinos",

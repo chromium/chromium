@@ -3345,6 +3345,16 @@ const char kDeviceBoundSessionAccessObserverSharedRemoteDescription[] =
     "Enables the optimization of reducing unnecessary IPC for cloning "
     "DeviceBoundSessionAccessObserver.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kBackgroundCompactMessageName[] = "Enable Background Compaction";
+const char kBackgroundCompactDescription[] =
+    "Compact memory for all tabs while chrome is backgrounded";
+const char kRunningCompactMessageName[] = "Enable Running Compaction";
+const char kRunningCompactDescription[] =
+    "Compact memory tabs that haven't been used in a while while chrome "
+    "is running.";
+#endif
+
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 const char kRustyPngName[] = "Rust-based PNG image handling";
 const char kRustyPngDescription[] =

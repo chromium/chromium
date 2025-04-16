@@ -15340,6 +15340,7 @@ from previous Chrome versions.
   <int value="400272381" label="LazyFrameLoading:disabled"/>
   <int value="400322063" label="ash-disable-screen-orientation-lock"/>
   <int value="400836553" label="ImeKoreanOnlyModeSwitchOnRightAlt:enabled"/>
+  <int value="401640536" label="ShouldFreezeSelf:enabled"/>
   <int value="401983950" label="enable-spdy4"/>
   <int value="402143634" label="enable-search-button-in-omnibox-always"/>
   <int value="402630521"
@@ -17103,6 +17104,7 @@ from previous Chrome versions.
       label="DawnSIRepsUseClientProvidedInternalUsages:disabled"/>
   <int value="1097339521"
       label="UserDisplayModeSyncStandaloneMitigation:disabled"/>
+  <int value="1097429403" label="ShouldFreezeSelf:disabled"/>
   <int value="1097764935" label="ReadAnythingDocsLoadMoreButton:disabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
   <int value="1097981222" label="OneGoogleBarModalOverlays:disabled"/>
@@ -17327,6 +17329,7 @@ from previous Chrome versions.
   <int value="1190035852" label="MediaRemoting:enabled"/>
   <int value="1190803434"
       label="AccessibilityReducedAnimationsInKiosk:disabled"/>
+  <int value="1191078225" label="UseRunningCompact:enabled"/>
   <int value="1191531211" label="RawClipboard:disabled"/>
   <int value="1192302892" label="gesture-typing"/>
   <int value="1192447565" label="SurfaceSyncFullscreenKillswitch:disabled"/>
@@ -18587,6 +18590,7 @@ from previous Chrome versions.
   <int value="1652798696"
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:disabled"/>
   <int value="1654445970" label="EphemeralTabUsingBottomSheet:enabled"/>
+  <int value="1654501133" label="UseRunningCompact:disabled"/>
   <int value="1654543587" label="AutofillParseAsync:disabled"/>
   <int value="1654949170" label="ArcSwitchToKeyMintOnT:enabled"/>
   <int value="1656768789" label="EnableGetDebugdLogsInParallel:enabled"/>
