@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -77,6 +78,7 @@ import java.util.concurrent.TimeoutException;
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
             AutofillProfile.builder()
+                    .setRecordType(RecordType.LOCAL_OR_SYNCABLE)
                     .setFullName("Seb Doe")
                     .setCompanyName("Google")
                     .setStreetAddress("111 First St")
@@ -128,6 +130,7 @@ public class AutofillProfilesFragmentTest {
         mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(
                 AutofillProfile.builder()
+                        .setRecordType(RecordType.ACCOUNT_HOME)
                         .setFullName("John Doe")
                         .setCompanyName("Google")
                         .setStreetAddress("111 Second St")
@@ -138,7 +141,6 @@ public class AutofillProfilesFragmentTest {
                         .setPhoneNumber("650-253-0000")
                         .setEmailAddress("second@gmail.com")
                         .setLanguageCode("en-US")
-                        .setRecordType(RecordType.ACCOUNT_HOME)
                         .build());
         // Invalid state should not cause a crash on the state dropdown list.
         mHelper.setProfile(
@@ -187,6 +189,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfileEditorPreference addProfile =
                 autofillProfileFragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
         assertNotNull(addProfile);
+        assertFalse(addProfile.getRecordType().isPresent());
 
         // Add a profile.
         updatePreferencesAndWait(
@@ -252,6 +255,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfileEditorPreference addProfile =
                 findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
         assertNotNull(addProfile);
+        assertFalse(addProfile.getRecordType().isPresent());
 
         // Add an incomplete profile.
         updatePreferencesAndWait(
@@ -279,6 +283,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfileEditorPreference addProfile =
                 autofillProfileFragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
         assertNotNull(addProfile);
+        assertFalse(addProfile.getRecordType().isPresent());
 
         // Try to add a profile with invalid phone.
         updatePreferencesAndWait(
@@ -413,6 +418,7 @@ public class AutofillProfilesFragmentTest {
         assertNotNull(johnProfile);
         assertEquals("John Doe", johnProfile.getTitle());
         assertTrue(johnProfile.getIcon().isVisible());
+        assertEquals(RecordType.ACCOUNT_HOME, johnProfile.getRecordType().getAsInt());
 
         // Make sure that the icon is visible for non-HW profiles too.
         AutofillProfileEditorPreference billProfile =
@@ -639,6 +645,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfileEditorPreference addProfile =
                 fragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
         assertNotNull(addProfile);
+        assertFalse(addProfile.getRecordType().isPresent());
 
         // Open AutofillProfileEditorPreference.
         ThreadUtils.runOnUiThreadBlocking(addProfile::performClick);
@@ -687,14 +694,19 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
+        AutofillProfileEditorPreference accountProfilePreference =
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
+        assertFalse(accountProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(accountProfilePreference.getRecordType().isPresent());
+        assertEquals(RecordType.ACCOUNT, accountProfilePreference.getRecordType().getAsInt());
+
+        AutofillProfileEditorPreference localOrSyncProfilePreference =
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
+        assertFalse(localOrSyncProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(localOrSyncProfilePreference.getRecordType().isPresent());
         assertEquals(
-                0,
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
-        assertEquals(
-                0,
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
+                RecordType.LOCAL_OR_SYNCABLE,
+                localOrSyncProfilePreference.getRecordType().getAsInt());
     }
 
     @Test
@@ -706,14 +718,19 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
+        AutofillProfileEditorPreference accountProfilePreference =
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
+        assertFalse(accountProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(accountProfilePreference.getRecordType().isPresent());
+        assertEquals(RecordType.ACCOUNT, accountProfilePreference.getRecordType().getAsInt());
+
+        AutofillProfileEditorPreference localOrSyncProfilePreference =
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
+        assertTrue(localOrSyncProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(localOrSyncProfilePreference.getRecordType().isPresent());
         assertEquals(
-                0,
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
-        assertEquals(
-                R.layout.autofill_local_profile_icon,
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
+                RecordType.LOCAL_OR_SYNCABLE,
+                localOrSyncProfilePreference.getRecordType().getAsInt());
     }
 
     @Test
@@ -725,14 +742,19 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
+        AutofillProfileEditorPreference accountProfilePreference =
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
+        assertFalse(accountProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(accountProfilePreference.getRecordType().isPresent());
+        assertEquals(RecordType.ACCOUNT, accountProfilePreference.getRecordType().getAsInt());
+
+        AutofillProfileEditorPreference localOrSyncProfilePreference =
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
+        assertTrue(localOrSyncProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(localOrSyncProfilePreference.getRecordType().isPresent());
         assertEquals(
-                0,
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
-        assertEquals(
-                R.layout.autofill_local_profile_icon,
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
+                RecordType.LOCAL_OR_SYNCABLE,
+                localOrSyncProfilePreference.getRecordType().getAsInt());
     }
 
     @Test
@@ -744,14 +766,19 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
+        AutofillProfileEditorPreference accountProfilePreference =
+                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL));
+        assertFalse(accountProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(accountProfilePreference.getRecordType().isPresent());
+        assertEquals(RecordType.ACCOUNT, accountProfilePreference.getRecordType().getAsInt());
+
+        AutofillProfileEditorPreference localOrSyncProfilePreference =
+                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL));
+        assertFalse(localOrSyncProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(localOrSyncProfilePreference.getRecordType().isPresent());
         assertEquals(
-                0,
-                findPreference(sAccountProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
-        assertEquals(
-                0,
-                findPreference(sLocalOrSyncProfile.getInfo(FieldType.NAME_FULL))
-                        .getWidgetLayoutResource());
+                RecordType.LOCAL_OR_SYNCABLE,
+                localOrSyncProfilePreference.getRecordType().getAsInt());
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {

@@ -180,6 +180,8 @@ android_resources("autofill_java_resources") {
 # WebView targets.
 android_resources("autofill_browser_resources") {
   sources = [
+    "browser/java/res/drawable/autofill_chevron_right.xml",
+    "browser/java/res/drawable/autofill_external_link.xml",
     "browser/java/res/drawable/home_logo.xml",
     "browser/java/res/drawable/location_on_logo.xml",
     "browser/java/res/drawable/work_logo.xml",
