@@ -3049,9 +3049,6 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[];
 extern const char kAXTreeFixingName[];
 extern const char kAXTreeFixingDescription[];
 
-extern const char kBrowserInitiatedAutomaticPictureInPictureName[];
-extern const char kBrowserInitiatedAutomaticPictureInPictureDescription[];
-
 extern const char kDialMediaRouteProviderName[];
 extern const char kDialMediaRouteProviderDescription[];
 extern const char kDelayMediaSinkDiscoveryName[];

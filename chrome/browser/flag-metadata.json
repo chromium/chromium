@@ -1167,11 +1167,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "browser-initiated-automatic-picture-in-picture",
-    "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "browsing-data-model-clank",
     "owners": [
       "alimariam@google.com",

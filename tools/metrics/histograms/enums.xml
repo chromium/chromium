@@ -9875,8 +9875,6 @@ from previous Chrome versions.
       label="PageInfoAboutThisSiteDescriptionPlaceholder:disabled"/>
   <int value="-1695235937" label="CampbellGlyph:enabled"/>
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
-  <int value="-1694420704"
-      label="BrowserInitiatedAutomaticPictureInPicture:disabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
   <int value="-1693140558" label="FiltersInRecentsV2:disabled"/>
   <int value="-1692974246" label="FilesGoogleDriveSettingsPage:enabled"/>
@@ -11303,8 +11301,6 @@ from previous Chrome versions.
   <int value="-1159154050" label="FilesSinglePartitionFormat:enabled"/>
   <int value="-1159151875" label="RecordWebAppDebugInfo:disabled"/>
   <int value="-1158993534" label="PrintScaling:enabled"/>
-  <int value="-1158929245"
-      label="BrowserInitiatedAutomaticPictureInPicture:enabled"/>
   <int value="-1156950420"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156639003" label="ArcResizeCompat:enabled"/>
