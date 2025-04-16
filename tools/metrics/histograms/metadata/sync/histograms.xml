@@ -1107,6 +1107,29 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
+<histogram name="Sync.EntityTracker.InvalidEntitiesOnLoad{SyncDataType}"
+    units="entities" expires_after="2026-04-01">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of invalid entities in the ProcessorEntityTracker on
+    creation (i.e. on sync startup), for {SyncDataType}. Compare to
+    `Sync.EntityTracker.TotalEntitiesOnLoad.*`.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.EntityTracker.TotalEntitiesOnLoad{SyncDataType}"
+    units="entities" expires_after="2026-04-01">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of entities in the ProcessorEntityTracker on creation
+    (i.e. on sync startup), for {SyncDataType}.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
 <histogram name="Sync.FCMInstanceIdTokenRetrievalStatus"
     enum="InstanceIDResult" expires_after="2025-09-28">
   <owner>rushans@google.com</owner>

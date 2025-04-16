@@ -120,7 +120,8 @@ sync_pb::UniquePosition GenerateUniquePosition(const ClientTagHash& hash) {
 
 class ProcessorEntityTrackerTest : public ::testing::Test {
  public:
-  ProcessorEntityTrackerTest() : entity_tracker_(GenerateDataTypeState(), {}) {}
+  ProcessorEntityTrackerTest()
+      : entity_tracker_(DataType::DEVICE_INFO, GenerateDataTypeState(), {}) {}
   ~ProcessorEntityTrackerTest() override = default;
 
   const ClientTagHash kClientTagHash1 =
@@ -138,8 +139,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldLoadFromMetadata) {
                        GenerateMetadata(kStorageKey1, kClientTagHash1));
   metadata_map.emplace(
       kStorageKey2, GenerateTombstoneMetadata(kStorageKey2, kClientTagHash2));
-  ProcessorEntityTracker entity_tracker(GenerateDataTypeState(),
-                                        std::move(metadata_map));
+  ProcessorEntityTracker entity_tracker(
+      DataType::DEVICE_INFO, GenerateDataTypeState(), std::move(metadata_map));
 
   // Check some getters for the entity tracker.
   EXPECT_EQ(2u, entity_tracker.size());

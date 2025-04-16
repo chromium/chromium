@@ -44,7 +44,8 @@ class ProcessorEntity {
       const std::string& server_id,
       base::Time creation_time);
 
-  // Construct an instance representing an item loaded from storage on init.
+  // Construct an instance representing an item loaded from storage on init. May
+  // return nullptr if the passed-in `metadata` is invalid.
   static std::unique_ptr<ProcessorEntity> CreateFromMetadata(
       const std::string& storage_key,
       sync_pb::EntityMetadata metadata);

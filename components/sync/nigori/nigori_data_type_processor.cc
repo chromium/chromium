@@ -341,7 +341,8 @@ void NigoriDataTypeProcessor::ModelReadyToSync(
     metadata.set_client_tag_hash(kRawNigoriClientTagHash);
     entity_ = ProcessorEntity::CreateFromMetadata(kNigoriStorageKey,
                                                   std::move(metadata));
-  } else {
+  }
+  if (!entity_) {
     // First time syncing or persisted data are corrupted; initialize metadata.
     data_type_state_.mutable_progress_marker()->set_data_type_id(
         sync_pb::EntitySpecifics::kNigoriFieldNumber);

@@ -27,6 +27,11 @@ namespace syncer {
 
 namespace {
 
+bool MetadataIsValid(const sync_pb::EntityMetadata& metadata) {
+  return metadata.has_client_tag_hash() && metadata.has_creation_time() &&
+         metadata.sequence_number() >= metadata.acked_sequence_number();
+}
+
 std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSizeLong(), 0u);
   return base::Base64Encode(
@@ -50,6 +55,7 @@ std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateNew(
   metadata.set_acked_sequence_number(0);
   metadata.set_server_version(kUncommittedVersion);
   metadata.set_creation_time(TimeToProtoTime(creation_time));
+  CHECK(MetadataIsValid(metadata));
 
   return base::WrapUnique(
       new ProcessorEntity(storage_key, std::move(metadata)));
@@ -59,6 +65,9 @@ std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateFromMetadata(
     const std::string& storage_key,
     sync_pb::EntityMetadata metadata) {
   DCHECK(!storage_key.empty());
+  if (!MetadataIsValid(metadata)) {
+    return nullptr;
+  }
   return base::WrapUnique(
       new ProcessorEntity(storage_key, std::move(metadata)));
 }
@@ -68,8 +77,7 @@ ProcessorEntity::ProcessorEntity(const std::string& storage_key,
     : storage_key_(storage_key),
       metadata_(std::move(metadata)),
       commit_requested_sequence_number_(metadata_.acked_sequence_number()) {
-  DCHECK(metadata_.has_client_tag_hash());
-  DCHECK(metadata_.has_creation_time());
+  CHECK(MetadataIsValid(metadata_));
 }
 
 ProcessorEntity::~ProcessorEntity() = default;
