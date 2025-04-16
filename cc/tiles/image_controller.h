@@ -144,6 +144,8 @@ class CC_EXPORT ImageController {
     const base::WeakPtr<ImageController> weak_ptr;
   };
 
+  void ForEachDecodeRequest(base::FunctionRef<void(ImageDecodeRequest&)>);
+
   void StopWorkerTasks();
 
   bool HasReadyToRunTask() const;

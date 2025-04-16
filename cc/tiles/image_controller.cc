@@ -57,6 +57,17 @@ ImageController::WorkerState::WorkerState(
     : origin_task_runner(std::move(origin_task_runner)), weak_ptr(weak_ptr) {}
 ImageController::WorkerState::~WorkerState() = default;
 
+void ImageController::ForEachDecodeRequest(
+    base::FunctionRef<void(ImageDecodeRequest&)> func) {
+  worker_state_->lock.AssertAcquired();
+  std::ranges::for_each(
+      worker_state_->image_decode_queue.begin(),
+      worker_state_->image_decode_queue.end(), func,
+      &std::pair<const ImageDecodeRequestId, ImageDecodeRequest>::second);
+  std::ranges::for_each(orphaned_decode_requests_.begin(),
+                        orphaned_decode_requests_.end(), func);
+}
+
 void ImageController::StopWorkerTasks() {
   // We can't have worker threads without a cache_ or a worker_task_runner_, so
   // terminate early.
@@ -272,12 +283,22 @@ void ImageController::ConvertImagesToTasks(
         (result.can_do_hardware_accelerated_decode &&
          image_type == ImageType::kWEBP);
 
-    if (result.task)
+    if (result.task) {
+      if (scoped_refptr<TileTask>& dependent =
+              result.task->external_dependent()) {
+        ForEachDecodeRequest([&dependent](ImageDecodeRequest& request) -> void {
+          if (request.task == dependent) {
+            request.has_external_dependency = true;
+          }
+        });
+      }
       tasks->push_back(std::move(result.task));
-    if (result.need_unref)
+    }
+    if (result.need_unref) {
       ++it;
-    else
+    } else {
       it = sync_decoded_images->erase(it);
+    }
   }
 }
 
@@ -357,19 +378,11 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
 void ImageController::ExternalDependencyCompletedForTask(
     scoped_refptr<TileTask> task) {
   base::AutoLock hold(worker_state_->lock);
-  auto external_dependency_completed =
-      [&task](ImageDecodeRequest& request) -> void {
+  ForEachDecodeRequest([&task](ImageDecodeRequest& request) -> void {
     if (request.task == task) {
       request.has_external_dependency = false;
     }
-  };
-  std::ranges::for_each(
-      worker_state_->image_decode_queue.begin(),
-      worker_state_->image_decode_queue.end(), external_dependency_completed,
-      &std::pair<const ImageDecodeRequestId, ImageDecodeRequest>::second);
-  std::ranges::for_each(orphaned_decode_requests_.begin(),
-                        orphaned_decode_requests_.end(),
-                        external_dependency_completed);
+  });
   ScheduleImageDecodeOnWorkerIfNeeded();
 }
 
