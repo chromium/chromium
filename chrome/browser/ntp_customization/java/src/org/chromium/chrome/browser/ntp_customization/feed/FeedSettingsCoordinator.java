@@ -9,12 +9,14 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerViewBinder;
@@ -111,6 +113,9 @@ public class FeedSettingsCoordinator {
             View feedListItemsTitle = view.findViewById(R.id.feed_list_items_title);
             feedListItemsTitle.setVisibility(
                     model.get(IS_FEED_LIST_ITEMS_TITLE_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == LEARN_MORE_BUTTON_CLICK_LISTENER) {
+            ImageView learnMoreButton = view.findViewById(R.id.learn_more_button);
+            learnMoreButton.setOnClickListener(model.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
         }
     }
 

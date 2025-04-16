@@ -5,18 +5,21 @@
 package org.chromium.chrome.browser.ntp_customization.feed;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -133,5 +136,12 @@ public class FeedSettingsCoordinatorUnitTest {
         Assert.assertEquals(View.VISIBLE, feedListItemsTitle.getVisibility());
         mPropertyModel.set(IS_FEED_LIST_ITEMS_TITLE_VISIBLE, false);
         Assert.assertEquals(View.GONE, feedListItemsTitle.getVisibility());
+
+        // Verifies that the onClickListener is added to the learn-more button on feed bottom sheet.
+        View.OnClickListener onClickListener = mock(View.OnClickListener.class);
+        mPropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, onClickListener);
+        ImageView learnMoreButton = feedBottomSheet.findViewById(R.id.learn_more_button);
+        learnMoreButton.performClick();
+        verify(onClickListener).onClick(eq(learnMoreButton));
     }
 }

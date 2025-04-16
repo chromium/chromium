@@ -45,6 +45,9 @@ public class NtpCustomizationViewProperties {
             FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER =
                     new PropertyModel.WritableObjectPropertyKey<>();
 
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            LEARN_MORE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyModel.WritableBooleanPropertyKey IS_FEED_SWITCH_CHECKED =
             new PropertyModel.WritableBooleanPropertyKey();
 
@@ -55,6 +58,7 @@ public class NtpCustomizationViewProperties {
             new PropertyKey[] {
                 FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 IS_FEED_SWITCH_CHECKED,
-                IS_FEED_LIST_ITEMS_TITLE_VISIBLE
+                IS_FEED_LIST_ITEMS_TITLE_VISIBLE,
+                LEARN_MORE_BUTTON_CLICK_LISTENER
             };
 }

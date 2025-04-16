@@ -16,11 +16,13 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.ACTIVITY;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.FOLLOWING;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.HIDDEN;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.INTERESTS;
+import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsMediator.handleLearnMoreClick;
 
 import android.app.Activity;
 import android.content.Context;
@@ -116,6 +118,8 @@ public class FeedSettingsMediatorUnitTest {
                         eq(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER),
                         any(OnCheckedChangeListener.class));
         verify(mFeedSettingsPropertyModel).set(eq(IS_FEED_SWITCH_CHECKED), anyBoolean());
+        verify(mFeedSettingsPropertyModel)
+                .set(eq(LEARN_MORE_BUTTON_CLICK_LISTENER), any(View.OnClickListener.class));
     }
 
     @Test
@@ -186,6 +190,14 @@ public class FeedSettingsMediatorUnitTest {
 
         testCreateListContainerViewDelegateImplForSectionListener(
                 delegateForWebFeedEnabled, delegateForWebFeedDisabled);
+    }
+
+    @Test
+    public void testHandleLearnMoreClick() {
+        when(mView.getContext()).thenReturn(mActivity);
+        handleLearnMoreClick(mView);
+        Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
+        assertEquals(intent.getData(), Uri.parse("https://support.google.com/chrome/?p=new_tab"));
     }
 
     /** Verifies that the subtitles of sections are correct. */

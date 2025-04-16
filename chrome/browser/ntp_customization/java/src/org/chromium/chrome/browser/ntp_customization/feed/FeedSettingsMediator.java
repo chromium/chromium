@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.ACTIVITY;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.FOLLOWING;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinato
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -59,6 +61,8 @@ public class FeedSettingsMediator {
             "https://www.google.com/preferences/interests/hidden?sh=n";
     private static final String INTERESTS_CLICK_URL =
             "https://www.google.com/preferences/interests";
+    private static final String LEARN_MORE_CLICK_URL =
+            "https://support.google.com/chrome/?p=new_tab";
     private final PropertyModel mContainerPropertyModel;
     private final PropertyModel mBottomSheetPropertyModel;
     private final PropertyModel mFeedSettingsPropertyModel;
@@ -90,6 +94,8 @@ public class FeedSettingsMediator {
         mFeedSettingsPropertyModel.set(
                 FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 (compoundButton, isChecked) -> onFeedSwitchToggled(isChecked));
+        mFeedSettingsPropertyModel.set(
+                LEARN_MORE_BUTTON_CLICK_LISTENER, FeedSettingsMediator::handleLearnMoreClick);
 
         if (sPrefChangeRegistarForTest != null) {
             mPrefChangeRegistrar = sPrefChangeRegistarForTest;
@@ -104,6 +110,7 @@ public class FeedSettingsMediator {
         mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, null);
         mFeedSettingsPropertyModel.set(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER, null);
+        mFeedSettingsPropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, null);
     }
 
     /**
@@ -261,6 +268,13 @@ public class FeedSettingsMediator {
     private static void handleInterestsClick(View view) {
         FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_MANAGE_INTERESTS);
         launchUriActivity(view.getContext(), INTERESTS_CLICK_URL);
+    }
+
+    @VisibleForTesting
+    static void handleLearnMoreClick(View view) {
+        launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
+        BrowserUiUtils.recordModuleClickHistogram(BrowserUiUtils.ModuleTypeOnStartAndNtp.FEED);
+        FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_LEARN_MORE);
     }
 
     // Launch a new activity in the same task with the given uri as a CCT.
