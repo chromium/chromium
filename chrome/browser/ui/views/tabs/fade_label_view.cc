@@ -23,7 +23,7 @@ void FadeLabel::SetData(const FadeLabelViewData& data) {
   data_ = data;
   std::u16string text = data.text;
   const bool is_filename = data.is_filename;
-  SetElideBehavior(is_filename ? gfx::NO_ELIDE : gfx::ELIDE_TAIL);
+  SetElideBehavior(is_filename ? gfx::NO_ELIDE : data.elide);
   if (is_filename) {
     text = TruncateFilenameToTwoLines(text);
   }

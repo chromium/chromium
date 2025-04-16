@@ -572,7 +572,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   }
 
   title_label_->SetData({title, is_filename});
-  domain_label_->SetData({domain, false});
+  domain_label_->SetData({domain, false, gfx::ELIDE_HEAD});
 
   CollaborationMessagingRowData collaboration_messaging_data =
       GetCollaborationMessagingData(tab_data);

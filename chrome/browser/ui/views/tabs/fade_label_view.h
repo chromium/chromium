@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/tabs/fade_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography.h"
@@ -16,6 +17,7 @@
 struct FadeLabelViewData {
   std::u16string text;
   bool is_filename = false;
+  gfx::ElideBehavior elide = gfx::ELIDE_TAIL;
 };
 
 using FadeWrapper_Label_FadeLabelViewData =
