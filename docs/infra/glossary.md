@@ -23,7 +23,9 @@ infrastructure.
     the child build only runs tests, we call this model a "builder/tester
     split". The child is referred to as the tester, and the parent (confusingly)
     referred to as the builder. The child might also be referred to as a "thin
-    tester" if it only runs tests remotely.
+    tester" if it only runs tests remotely. Read more about builder-tester
+    splits
+    [here](builder_types.md#parent_child-split-a_k_a_builder_tester-split).
   * __CI Builder__ or __Post-submit Builder__: A builder that compiles/tests a
     branch of Chromium. Often triggered when changes to the branch are
     submitted, these post-submit builders run on a continuous basis.
@@ -52,7 +54,9 @@ infrastructure.
     [linux-rel-compilator](https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator)
     is its compilator. This partitioning confines the busy-waiting phases of a
     build (ie: waiting for Swarming tests to finish) to the orchestrator,
-    allowing the compilator to quickly move on and pick up new requests.
+    allowing the compilator to quickly move on and pick up new requests. Read
+    more about orchestrators and compilators
+    [here](builder_types.md#orchestrator_compilator).
   * __Optional Trybot__: A trybot that's not a default CQ builder. These can
     be triggered manually by a developer. Or they can be required by the CQ
     if the CL includes changes to a specific file path. See
