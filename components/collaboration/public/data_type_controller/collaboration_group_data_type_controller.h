@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_COLLABORATION_GROUP_DATA_TYPE_CONTROLLER_H_
-#define COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_COLLABORATION_GROUP_DATA_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_COLLABORATION_GROUP_DATA_TYPE_CONTROLLER_H_
+#define COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_COLLABORATION_GROUP_DATA_TYPE_CONTROLLER_H_
 
 #include <memory>
 
-#include "components/data_sharing/public/data_type_controller/managed_account_precondition_checker.h"
+#include "components/collaboration/public/data_type_controller/managed_account_precondition_checker.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 
@@ -20,7 +20,7 @@ class DataTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
-namespace data_sharing {
+namespace collaboration {
 
 class CollaborationGroupDataTypeController : public syncer::DataTypeController {
  public:
@@ -45,6 +45,6 @@ class CollaborationGroupDataTypeController : public syncer::DataTypeController {
   ManagedAccountPreconditionChecker precondition_checker_;
 };
 
-}  // namespace data_sharing
+}  // namespace collaboration
 
-#endif  // COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_COLLABORATION_GROUP_DATA_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_COLLABORATION_GROUP_DATA_TYPE_CONTROLLER_H_

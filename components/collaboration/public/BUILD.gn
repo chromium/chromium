@@ -43,6 +43,30 @@ static_library("core_public") {
   ]
 }
 
+source_set("data_type_controller") {
+  visibility = [ "//components/browser_sync" ]
+
+  sources = [
+    "data_type_controller/collaboration_group_data_type_controller.cc",
+    "data_type_controller/collaboration_group_data_type_controller.h",
+    "data_type_controller/managed_account_precondition_checker.cc",
+    "data_type_controller/managed_account_precondition_checker.h",
+    "data_type_controller/shared_tab_group_account_data_type_controller.cc",
+    "data_type_controller/shared_tab_group_account_data_type_controller.h",
+    "data_type_controller/shared_tab_group_data_type_controller.cc",
+    "data_type_controller/shared_tab_group_data_type_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/data_sharing/public:features",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ui/base:base",
+  ]
+}
+
 static_library("features") {
   visibility = [ "*" ]
   sources = [

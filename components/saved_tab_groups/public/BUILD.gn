@@ -122,25 +122,6 @@ source_set("string_utils") {
   ]
 }
 
-source_set("data_type_controller") {
-  visibility = [ "//components/browser_sync" ]
-
-  sources = [
-    "shared_tab_group_account_data_type_controller.cc",
-    "shared_tab_group_account_data_type_controller.h",
-    "shared_tab_group_data_type_controller.cc",
-    "shared_tab_group_data_type_controller.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/data_sharing/public:data_type_controller",
-    "//components/signin/public/identity_manager",
-    "//components/sync/base",
-    "//components/sync/service",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [

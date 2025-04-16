@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
-#define COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
+#ifndef COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
+#define COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
-namespace data_sharing {
+namespace collaboration {
 
 // Helper class to determine whether a user is eligible for syncing the
 // SHARED_TAB_GROUP_DATA and COLLABORATION_GROUP sync data types. This is needed
@@ -49,6 +49,6 @@ class ManagedAccountPreconditionChecker : public syncer::SyncServiceObserver {
   std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
 };
 
-}  // namespace data_sharing
+}  // namespace collaboration
 
-#endif  // COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
+#endif  // COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_

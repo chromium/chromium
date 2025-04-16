@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_SHARED_TAB_GROUP_DATA_TYPE_CONTROLLER_H_
-#define COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_SHARED_TAB_GROUP_DATA_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_SHARED_TAB_GROUP_DATA_TYPE_CONTROLLER_H_
+#define COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_SHARED_TAB_GROUP_DATA_TYPE_CONTROLLER_H_
 
 #include <memory>
 
-#include "components/data_sharing/public/data_type_controller/managed_account_precondition_checker.h"
+#include "components/collaboration/public/data_type_controller/managed_account_precondition_checker.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 
@@ -20,7 +20,7 @@ class DataTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
-namespace tab_groups {
+namespace collaboration {
 
 class SharedTabGroupDataTypeController : public syncer::DataTypeController {
  public:
@@ -42,9 +42,9 @@ class SharedTabGroupDataTypeController : public syncer::DataTypeController {
   PreconditionState GetPreconditionState() const override;
 
  private:
-  data_sharing::ManagedAccountPreconditionChecker precondition_checker_;
+  collaboration::ManagedAccountPreconditionChecker precondition_checker_;
 };
 
-}  // namespace tab_groups
+}  // namespace collaboration
 
-#endif  // COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_SHARED_TAB_GROUP_DATA_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_COLLABORATION_PUBLIC_DATA_TYPE_CONTROLLER_SHARED_TAB_GROUP_DATA_TYPE_CONTROLLER_H_

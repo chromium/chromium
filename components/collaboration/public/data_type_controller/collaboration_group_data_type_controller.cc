@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/data_sharing/public/data_type_controller/collaboration_group_data_type_controller.h"
+#include "components/collaboration/public/data_type_controller/collaboration_group_data_type_controller.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "components/data_sharing/public/data_type_controller/managed_account_precondition_checker.h"
+#include "components/collaboration/public/data_type_controller/managed_account_precondition_checker.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 
-namespace data_sharing {
+namespace collaboration {
 
 CollaborationGroupDataTypeController::CollaborationGroupDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -38,4 +38,4 @@ CollaborationGroupDataTypeController::GetPreconditionState() const {
   return precondition_checker_.GetPreconditionState();
 }
 
-}  // namespace data_sharing
+}  // namespace collaboration

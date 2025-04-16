@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/data_sharing/public/data_type_controller/managed_account_precondition_checker.h"
+#include "components/collaboration/public/data_type_controller/managed_account_precondition_checker.h"
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -11,7 +11,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "ui/base/device_form_factor.h"
 
-namespace data_sharing {
+namespace collaboration {
 namespace {
 
 using PreconditionState = syncer::DataTypeController::PreconditionState;
@@ -107,4 +107,4 @@ PreconditionState ManagedAccountPreconditionChecker::
   }
 }
 
-}  // namespace data_sharing
+}  // namespace collaboration
