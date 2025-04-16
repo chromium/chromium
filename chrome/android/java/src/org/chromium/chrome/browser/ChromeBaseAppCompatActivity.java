@@ -412,6 +412,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (BuildInfo.getInstance().isAutomotive) {
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, overrideConfig);
 
+            RecordHistogram.recordSparseHistogram(
+                    "Android.Automotive.UiScalingFactor",
+                    (int) (100 * DisplayUtil.getTargetScalingFactorForAutomotive(baseContext)));
+
             // Enable web ui scaling for automotive devices.
             CommandLine.getInstance()
                     .appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
