@@ -1,5 +1,5 @@
 # Set build timeout to 120 mins rather than the default of 10 mins
-timeout: 7200s
+timeout: 43200s
 
 options:
   machineType: 'E2_HIGHCPU_32'
