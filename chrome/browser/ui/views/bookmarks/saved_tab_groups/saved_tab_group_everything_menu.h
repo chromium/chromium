@@ -64,6 +64,7 @@ class STGEverythingMenu : public views::MenuDelegate,
                        int command_id,
                        const gfx::Point& p,
                        ui::mojom::MenuSourceType source_type) override;
+  bool GetAccelerator(int id, ui::Accelerator* accelerator) const override;
 
  private:
   class AppMenuSubMenuModelDelegate;

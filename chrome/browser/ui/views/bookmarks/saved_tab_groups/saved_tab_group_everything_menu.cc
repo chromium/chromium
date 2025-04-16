@@ -9,6 +9,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/uuid.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -368,6 +370,17 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
       widget_, /*button_controller=*/nullptr, gfx::Rect(p, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, source_type);
   return true;
+}
+
+bool STGEverythingMenu::GetAccelerator(int id,
+                                       ui::Accelerator* accelerator) const {
+  if (id == IDC_CREATE_NEW_TAB_GROUP) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    CHECK(browser_view);
+    return browser_view->GetAccelerator(id, accelerator);
+  }
+
+  return false;
 }
 
 STGEverythingMenu::~STGEverythingMenu() = default;
