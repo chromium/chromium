@@ -100,6 +100,13 @@ void InteractiveFeaturePromoTestPrivate::CommitControllerMode() {
     for (const auto& feature : allow_promos->features) {
       enable.push_back(base::test::FeatureRefAndParams(*feature, {}));
     }
+  } else if (const auto* const allow_promos_with_params =
+                 std::get_if<UseDefaultTrackerAllowingPromosWithParams>(
+                     &tracker_mode_)) {
+    for (const auto& feature_with_params :
+         allow_promos_with_params->features_with_params) {
+      enable.push_back(feature_with_params);
+    }
   }
   switch (*controller_mode_) {
     case ControllerMode::kUserEd25:
@@ -171,10 +178,18 @@ void InteractiveFeaturePromoTestPrivate::SetLastActive(NewTime time) {
 
 void InteractiveFeaturePromoTestPrivate::MaybeWaitForTrackerInitialization(
     Browser* browser) {
-  const auto* const mode =
-      std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode_);
-  if (mode && mode->initialization_mode ==
-                  TrackerInitializationMode::kWaitForMainBrowser) {
+  bool wait_for_browser = false;
+  if (const auto* const mode =
+          std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode_)) {
+    wait_for_browser = mode->initialization_mode ==
+                       TrackerInitializationMode::kWaitForMainBrowser;
+  } else if (const auto* const mode2 =
+                 std::get_if<UseDefaultTrackerAllowingPromosWithParams>(
+                     &tracker_mode_)) {
+    wait_for_browser = mode2->initialization_mode ==
+                       TrackerInitializationMode::kWaitForMainBrowser;
+  }
+  if (wait_for_browser) {
     auto* const tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(
             browser->profile());
