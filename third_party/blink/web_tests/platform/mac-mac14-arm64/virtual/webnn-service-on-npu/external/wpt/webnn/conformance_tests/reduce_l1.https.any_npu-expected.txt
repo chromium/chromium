@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] reduceL1 float32 1D constant tensor empty axes
-  assert_true: assert_array_approx_equals_ulp: test reduceL1 float32 actual -5.50882625579834 should be close enough to expected 5.50882625579834 by the acceptable 1 ULP distance, but they have 2170589340 ULP distance expected true got false
-Harness: the test ran to completion.
-

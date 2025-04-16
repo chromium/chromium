@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] linebreak only
+  assert_equals: expected 192 but got 199
+[FAIL] spaces linebreak
+  assert_equals: expected 192 but got 199
+[FAIL] linebreak spaces
+  assert_equals: expected 192 but got 199
+[FAIL] spaces linebreak spaces
+  assert_equals: expected 192 but got 199
+[FAIL] multiple linebreaks
+  assert_equals: expected 192 but got 199
+[FAIL] multiple linebreaks + spaces
+  assert_equals: expected 192 but got 199
+Harness: the test ran to completion.
+
