@@ -161,6 +161,7 @@
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator_delegate.h"
@@ -224,6 +225,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
@@ -1061,6 +1063,7 @@ enum class ToolbarKind {
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
+    @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
     @protocol(PageInfoCommands),
@@ -2573,6 +2576,25 @@ enum class ToolbarKind {
                          browser:self.browser
                  followedWebSite:followedWebSite];
   [self.firstFollowCoordinator start];
+}
+
+#pragma mark - ReaderModeCommands
+
+- (void)showReaderMode {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(activeWebState);
+  if (!readerModeTabHelper) {
+    return;
+  }
+  readerModeTabHelper->TriggerReaderModeHeuristic();
+}
+
+- (void)hideReaderMode {
+  // TODO(crbug.com/409940117): Hide reader mode UI when requested.
 }
 
 #pragma mark - FindInPageCommands

@@ -38,3 +38,7 @@ const base::TimeDelta ReaderModeDistillerPageLoadDelay() {
 bool IsReaderModeAvailable() {
   return experimental_flags::ShouldForceReaderModeDebugHTMLOverride();
 }
+
+bool IsReaderModeSnackbarEnabled() {
+  return experimental_flags::ShouldForceReaderModeDebugHTMLOverride();
+}

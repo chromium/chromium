@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -15,6 +18,7 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -116,6 +120,38 @@ void RecordReaderModeForAmpDistill(bool is_distillable_page,
                             classification);
 }
 
+// Helper function to generate the snackbar message.
+NSString* GenerateSnackbarMessage(ReaderModeHeuristicResult heuristic_result,
+                                  base::TimeDelta heuristic_latency,
+                                  bool is_distillable_page,
+                                  base::TimeDelta distillation_latency) {
+  std::string message = "Heuristic Result: ";
+  switch (heuristic_result) {
+    case ReaderModeHeuristicResult::kMalformedResponse:
+      message += "Malformed Response";
+      break;
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
+      message += "Not Eligible (Content and Length)";
+      break;
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
+      message += "Not Eligible (Content Only)";
+      break;
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength:
+      message += "Not Eligible (Content Length)";
+      break;
+    case ReaderModeHeuristicResult::kReaderModeEligible:
+      message += "Eligible";
+      break;
+  }
+  message += "\nHeuristic Latency: " +
+             base::NumberToString(heuristic_latency.InMilliseconds()) + "ms";
+  message += "\nDistillation Result: ";
+  message += (is_distillable_page ? "Distillable" : "Not Distillable");
+  message += "\nDistillation Latency: " +
+             base::NumberToString(distillation_latency.InMilliseconds()) + "ms";
+  return base::SysUTF8ToNSString(message);
+}
+
 }  // namespace
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state)
@@ -126,15 +162,20 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state)
 
 ReaderModeTabHelper::~ReaderModeTabHelper() = default;
 
+void ReaderModeTabHelper::SetSnackbarHandler(
+    id<SnackbarCommands> snackbar_handler) {
+  snackbar_handler_ = snackbar_handler;
+}
+
 void ReaderModeTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   CHECK_EQ(web_state, web_state_);
-  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
-    // Reset the overridden URL state if there is a new navigation.
-    if (web_state_->GetVisibleURL() != overridden_url_for_debug_) {
-      overridden_url_for_debug_ = GURL();
-    }
+  // TODO(crbug.com/409940117): If `IsReaderModeAvailable()` then Reader mode is
+  // being debugged, so the heuristic shouldn't be started automatically on page
+  // load. Remove this check when debugging code is cleaned up.
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS &&
+      !IsReaderModeAvailable()) {
     // Guarantee that there is only one trigger heuristic running at a time.
     if (trigger_reader_mode_timer_.IsRunning()) {
       trigger_reader_mode_timer_.Stop();
@@ -179,7 +220,8 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistiller)) {
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistiller) &&
+      !IsReaderModeAvailable()) {
     return;
   }
 
@@ -212,6 +254,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
 
 void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
     const base::TimeDelta& delta) {
+  heuristic_latency_ = delta;
   UMA_HISTOGRAM_TIMES(kReaderModeHeuristicLatencyHistogram, delta);
   const ukm::SourceId source_id =
       ukm::GetSourceIdForWebStateDocument(web_state_);
@@ -223,13 +266,10 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
 }
 
 bool ReaderModeTabHelper::CanTriggerReaderModeHeuristic() {
-  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
-    return false;
+  if (IsReaderModeAvailable()) {
+    return true;
   }
-  // If the Reader Mode HTML has already been overridden for this page, do not
-  // trigger the heuristic again.
-  if (experimental_flags::ShouldForceReaderModeDebugHTMLOverride() &&
-      overridden_url_for_debug_.spec() == web_state_->GetVisibleURL().spec()) {
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
     return false;
   }
   const double page_load_probability =
@@ -272,8 +312,9 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   }
   const ukm::SourceId source_id =
       ukm::GetSourceIdForWebStateDocument(web_state_);
-  RecordReaderModeDistillationLatency(base::TimeTicks::Now() - start_time,
-                                      source_id);
+  const base::TimeDelta distillation_latency =
+      base::TimeTicks::Now() - start_time;
+  RecordReaderModeDistillationLatency(distillation_latency, source_id);
 
   std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result =
       std::make_unique<dom_distiller::proto::DomDistillerResult>();
@@ -293,9 +334,18 @@ void ReaderModeTabHelper::PageDistillationCompleted(
                                           heuristic_result);
   RecordReaderModeForAmpDistill(is_distillable_page, web_state_);
 
-  if (is_distillable_page &&
-      experimental_flags::ShouldForceReaderModeDebugHTMLOverride()) {
-    overridden_url_for_debug_ = web_state_->GetVisibleURL();
+  if (IsReaderModeSnackbarEnabled()) {
+    // Show a snackbar with the heuristic result, latency and page distillation
+    // result and latency.
+    MDCSnackbarMessage* message = [MDCSnackbarMessage
+        messageWithText:GenerateSnackbarMessage(
+                            heuristic_result, heuristic_latency_,
+                            is_distillable_page, distillation_latency)];
+    message.duration = MDCSnackbarMessageDurationMax;
+    [snackbar_handler_ showSnackbarMessage:message];
+  }
+
+  if (IsReaderModeAvailable() && is_distillable_page) {
     web_state_->LoadSimulatedRequest(
         web_state_->GetVisibleURL(),
         base::SysUTF8ToNSString(distiller_result->distilled_content().html()));

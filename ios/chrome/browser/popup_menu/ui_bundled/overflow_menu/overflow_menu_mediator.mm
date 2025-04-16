@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -2360,7 +2361,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Opens the Reader mode UI.
 - (void)startReaderMode {
   [self dismissMenu];
-  // TODO(crbug.com/409935686): open reader mode
+  [self.readerModeHandler showReaderMode];
 }
 
 #pragma mark - Destinations Handlers

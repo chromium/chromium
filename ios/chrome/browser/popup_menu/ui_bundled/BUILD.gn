@@ -66,6 +66,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/popup_menu/ui_bundled/resources",
     "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/ui_bundled:coordinator",
     "//ios/chrome/browser/search_engines/model",
