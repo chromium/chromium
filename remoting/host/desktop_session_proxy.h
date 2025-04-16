@@ -40,6 +40,7 @@
 #include "remoting/protocol/errors.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -182,6 +183,9 @@ class DesktopSessionProxy
   void OnDesktopDisplayChanged(const protocol::VideoLayout& layout) override;
   void OnMouseCursorChanged(const webrtc::MouseCursor& mouse_cursor) override;
   void OnKeyboardLayoutChanged(const protocol::KeyboardLayout& layout) override;
+  void OnLocalMouseMoveDetected(
+      const webrtc::DesktopVector& new_position) override;
+  void OnLocalKeyboardInputDetected(int32_t usb_keycode) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error,

@@ -179,6 +179,10 @@ void DesktopSessionAgent::OnLocalKeyPressed(std::uint32_t usb_keycode) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   remote_input_filter_->LocalKeyPressed(usb_keycode);
+
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnLocalKeyboardInputDetected(usb_keycode);
+  }
 }
 
 void DesktopSessionAgent::OnLocalPointerMoved(
@@ -187,6 +191,13 @@ void DesktopSessionAgent::OnLocalPointerMoved(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   remote_input_filter_->LocalPointerMoved(new_pos, type);
+
+  if (desktop_session_event_handler_) {
+    // |type| is always kMouseMoved, if this changes, we need to convey this
+    // information to the network process.
+    DCHECK_EQ(type, ui::EventType::kMouseMoved);
+    desktop_session_event_handler_->OnLocalMouseMoveDetected(new_pos);
+  }
 }
 
 void DesktopSessionAgent::SetDisableInputs(bool disable_inputs) {
