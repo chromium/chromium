@@ -697,7 +697,7 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       // size parameter.
       if (base::StartsWith(image_url, "https://lh3.googleusercontent.com")) {
         // Check for existing size parameters (e.g., -s128, =w256, -h64).
-        RE2 size_regex("[-=][s|w|h]\\d+");
+        RE2 size_regex("=(?:[swh]\\d+|[^=]*?-[swh]\\d+)");
         if (!RE2::PartialMatch(image_url, size_regex)) {
           image_url += base::Contains(image_url, "=") ? "-s64" : "=s64";
         }

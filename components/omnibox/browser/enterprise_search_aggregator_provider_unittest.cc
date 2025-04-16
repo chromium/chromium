@@ -246,7 +246,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
                 }
               ],
               "displayPhoto": {
-                "url": "https://lh3.googleusercontent.com/some/path"
+                "url": "https://lh3.googleusercontent.com/some/path-s100"
               }
             }
           },
@@ -766,7 +766,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
   EXPECT_EQ(matches[0].contents, u"www.google.com/?q=john%40example.com");
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].image_url,
-            GURL("https://lh3.googleusercontent.com/some/path=s64"));
+            GURL("https://lh3.googleusercontent.com/some/path-s100=s64"));
 
   EXPECT_EQ(matches[1].contents, u"www.google.com/?q=john2%40example.com");
   EXPECT_EQ(matches[1].description, u"John Doe2");
