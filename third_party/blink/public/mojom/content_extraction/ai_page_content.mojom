@@ -31,7 +31,6 @@ enum AIPageContentAttributeType {
 
   // Image chunks.
   kImage,
-  kSVG,
 
   // Structured chunks.
   kForm,
@@ -195,11 +194,6 @@ struct AIPageContentImageInfo {
   url.mojom.Origin? source_origin;
 };
 
-struct AIPageContentSVGData {
-  // Provides the concatenated string for the text inside an SVG node.
-  string inner_text;
-};
-
 // Represents meta tags on the page.
 struct AIPageContentMeta {
   string name;
@@ -329,9 +323,6 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kImage.
   AIPageContentImageInfo? image_info;
-
-  // Only set if attribute_type is kSVG.
-  AIPageContentSVGData? svg_data;
 
   // Only set if attribute_type is kAnchor.
   AIPageContentAnchorData? anchor_data;
