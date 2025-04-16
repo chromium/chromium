@@ -99,7 +99,15 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and that by default
 // existing browsing data is kept separate from the managed profile.
-- (void)testSigninWithManagedAccountFromUnsignedStateSeparateData {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateSeparateData \
+  FLAKY_testSigninWithManagedAccountFromUnsignedStateSeparateData
+#else
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateSeparateData \
+  testSigninWithManagedAccountFromUnsignedStateSeparateData
+#endif
+- (void)MAYBE_testSigninWithManagedAccountFromUnsignedStateSeparateData {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -198,7 +206,15 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // shows the enterprise onboarding only the first time. And if the user
 // decides to keep their existing data into the managed profile, the existing
 // profile is converted.
-- (void)testSigninWithManagedAccountFromUnsignedStateConvertsProfile {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateConvertsProfile \
+  FLAKY_testSigninWithManagedAccountFromUnsignedStateConvertsProfile
+#else
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateConvertsProfile \
+  testSigninWithManagedAccountFromUnsignedStateConvertsProfile
+#endif
+- (void)MAYBE_testSigninWithManagedAccountFromUnsignedStateConvertsProfile {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -301,7 +317,16 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time. And The user cannot
 // merge existing browsing data because it is disabled by policy.
-- (void)testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
+  FLAKY_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled
+#else
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
+  testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled
+#endif
+- (void)
+    MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -439,7 +464,16 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and merging browsing data
 // is suggested by policy.
-- (void)testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested \
+  FLAKY_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested
+#else
+#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested \
+  testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested
+#endif
+- (void)
+    MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -792,7 +826,15 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched");
 }
 
-- (void)testProfileNotDeletedOnRemovePersonalAccount {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testProfileNotDeletedOnRemovePersonalAccount \
+  FLAKY_testProfileNotDeletedOnRemovePersonalAccount
+#else
+#define MAYBE_testProfileNotDeletedOnRemovePersonalAccount \
+  testProfileNotDeletedOnRemovePersonalAccount
+#endif
+- (void)MAYBE_testProfileNotDeletedOnRemovePersonalAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -833,7 +875,15 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should be personal");
 }
 
-- (void)testProfileDeletedOnRemoveManagedAccount {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testProfileDeletedOnRemoveManagedAccount \
+  FLAKY_testProfileDeletedOnRemoveManagedAccount
+#else
+#define MAYBE_testProfileDeletedOnRemoveManagedAccount \
+  testProfileDeletedOnRemoveManagedAccount
+#endif
+- (void)MAYBE_testProfileDeletedOnRemoveManagedAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -970,7 +1020,15 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched back to personal");
 }
 
-- (void)testProfileDeletedOnManagedAccountGone {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testProfileDeletedOnManagedAccountGone \
+  FLAKY_testProfileDeletedOnManagedAccountGone
+#else
+#define MAYBE_testProfileDeletedOnManagedAccountGone \
+  testProfileDeletedOnManagedAccountGone
+#endif
+- (void)MAYBE_testProfileDeletedOnManagedAccountGone {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;

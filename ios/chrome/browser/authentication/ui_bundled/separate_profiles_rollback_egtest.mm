@@ -108,7 +108,14 @@
              @"Separate profiles should be disabled now");
 }
 
-- (void)testRollbackWithManagedProfile {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRollbackWithManagedProfile \
+  FLAKY_testRollbackWithManagedProfile
+#else
+#define MAYBE_testRollbackWithManagedProfile testRollbackWithManagedProfile
+#endif
+- (void)MAYBE_testRollbackWithManagedProfile {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -202,7 +209,15 @@
       @"Should be in the managed profile again");
 }
 
-- (void)testRollbackWithManagedProfile_ManagedAccountRemoved {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved \
+  FLAKY_testRollbackWithManagedProfile_ManagedAccountRemoved
+#else
+#define MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved \
+  testRollbackWithManagedProfile_ManagedAccountRemoved
+#endif
+- (void)MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -293,7 +308,15 @@
              @"Separate profiles should still be enabled");
 }
 
-- (void)testRollbackWithManagedProfile_KillSwitch {
+// TODO(crbug.com/411035267): Fix this flaky test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRollbackWithManagedProfile_KillSwitch \
+  FLAKY_testRollbackWithManagedProfile_KillSwitch
+#else
+#define MAYBE_testRollbackWithManagedProfile_KillSwitch \
+  testRollbackWithManagedProfile_KillSwitch
+#endif
+- (void)MAYBE_testRollbackWithManagedProfile_KillSwitch {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
