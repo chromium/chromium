@@ -92,10 +92,13 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
 
     let whenChanged =
         eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+    let selectedChangedEventPromise =
+        eventToPromise('selected-changed', element);
     let setting;
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     await whenChanged;
+    await selectedChangedEventPromise;
     assertEquals(expectedCategory, category);
     const oppositeSetting =
         expectedEnabled ? ContentSetting.BLOCK : expectedEnabledContentSetting;
@@ -111,10 +114,12 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     element.shadowRoot!.querySelector<HTMLElement>(initialRadioButton)!.click();
     whenChanged =
         eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+    selectedChangedEventPromise = eventToPromise('selected-changed', element);
 
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     await whenChanged;
+    await selectedChangedEventPromise;
     assertEquals(expectedCategory, category);
     const initialSetting =
         expectedEnabled ? expectedEnabledContentSetting : ContentSetting.BLOCK;
