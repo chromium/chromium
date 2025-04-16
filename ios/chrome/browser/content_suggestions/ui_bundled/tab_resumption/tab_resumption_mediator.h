@@ -15,6 +15,7 @@ class Browser;
 class ImpressionLimitService;
 class OptimizationGuideService;
 class PrefService;
+@protocol PriceTrackedItemsCommands;
 class PushNotificationService;
 @protocol SnackbarCommands;
 @protocol TabResumptionHelperDelegate;
@@ -49,7 +50,9 @@ class ShoppingService;
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, SnackbarCommands> dispatcher;
+@property(nonatomic, weak)
+    id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>
+        dispatcher;
 
 // Default initializer.
 - (instancetype)

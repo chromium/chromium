@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -456,7 +457,7 @@ class TabResumptionMediatorProxy {
                        [](__typeof(self) strongSelf, TabResumptionItem* item,
                           BOOL granted, BOOL promptShown, NSError* error) {
                          if (error || !granted) {
-                           [strongSelf onTracked:NO];
+                           [strongSelf onTracked:NO item:item];
                            return;
                          }
                          [strongSelf
@@ -478,15 +479,16 @@ class TabResumptionMediatorProxy {
   bool isNewBookmark = bookmark == nullptr;
   __weak TabResumptionMediator* weakSelf = self;
 
-  auto completionHandler = ^(bool success) {
-    [weakSelf onTracked:success];
-  };
+  auto completionHandler =
+      ^(TabResumptionItem* tabResumptionItem, bool success) {
+        [weakSelf onTracked:success item:tabResumptionItem];
+      };
 
   if (!bookmark) {
     const bookmarks::BookmarkNode* defaultFolder =
         _bookmarkModel->account_mobile_node();
     if (!defaultFolder) {
-      [self onTracked:NO];
+      [self onTracked:NO item:item];
       return;
     }
     bookmark = _bookmarkModel->AddURL(
@@ -496,15 +498,29 @@ class TabResumptionMediatorProxy {
 
   commerce::SetPriceTrackingStateForBookmark(
       _shoppingService, _bookmarkModel, bookmark, true,
-      base::BindOnce(completionHandler), isNewBookmark);
+      base::BindOnce(completionHandler, item), isNewBookmark);
 }
 
-- (void)onTracked:(BOOL)success {
-  [self.dispatcher showSnackbarMessage:[self snackbarMessage:success]];
+- (void)onTracked:(BOOL)success item:(TabResumptionItem*)item {
+  [self.dispatcher showSnackbarMessage:[self snackbarMessage:success
+                                                        item:item]];
 }
 
-- (MDCSnackbarMessage*)snackbarMessage:(BOOL)success {
+- (MDCSnackbarMessage*)snackbarMessage:(BOOL)success
+                                  item:(TabResumptionItem*)item {
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+
+  if (success) {
+    // Tracking was successful. Give option to go to price tracking menu.
+    action.handler = ^{
+      [self.dispatcher showPriceTrackedItems];
+    };
+  } else {
+    // Failed to track - try again.
+    action.handler = ^{
+      [self onNotificationPermissionVerifiedOrGranted:item];
+    };
+  }
 
   if (success) {
     action.title = l10n_util::GetNSString(

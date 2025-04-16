@@ -401,9 +401,9 @@ using segmentation_platform::TipIdentifier;
     _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
-    _tabResumptionMediator.dispatcher =
-        static_cast<id<ApplicationCommands, SnackbarCommands>>(
-            self.browser->GetCommandDispatcher());
+    _tabResumptionMediator.dispatcher = static_cast<
+        id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
+        self.browser->GetCommandDispatcher());
 
     [moduleMediators addObject:_tabResumptionMediator];
   }
