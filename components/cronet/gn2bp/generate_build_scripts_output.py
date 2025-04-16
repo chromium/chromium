@@ -75,10 +75,7 @@ def _build_rust_build_script_actions(out_path: str):
       range(0, len(build_script_actions), _MAX_TARGETS_PER_NINJA_EXECUTION)
   ]
   for chunk in build_script_actions_chunk:
-    if cronet_utils.build_all(out_path, chunk) != 0:
-      raise Exception(
-          f"Failed to build the following build actions scripts chunk: {chunk}."
-      )
+    cronet_utils.build_all(out_path, chunk)
 
 
 def _get_target_name_from_file(file_name: str) -> str:
@@ -122,7 +119,8 @@ def _generate_build_script_outputs_for_arch(arch: str,
   # deal with this small differences.
   target_name_to_build_script_output = {}
   with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-    cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
+    cronet_utils.gn(gn_out_dir,
+                    ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
     _build_rust_build_script_actions(gn_out_dir)
     build_script_output_files = _find_all_host_cargo_flags_files(
         gn_out_dir) if host_variant else _find_all_cargo_flags_files(gn_out_dir)
@@ -136,8 +134,7 @@ def _generate_build_script_outputs_for_arch(arch: str,
 
 
 def _generate_build_scripts_outputs(
-        archs: List[str],
-        targets: List[str]) -> Dict[str, Dict[str, List[str]]]:
+    archs: List[str], targets: List[str]) -> Dict[str, Dict[str, List[str]]]:
   build_scripts_output_per_arch = {}
   with multiprocessing.dummy.Pool(len(archs)) as pool:
     results = [(arch,
@@ -164,9 +161,9 @@ def _generate_build_scripts_outputs(
 
 
 def dump_build_scripts_outputs_to_file(
-        output_file_path: str,
-        archs: List[str],
-        targets_to_build: List[str] = None) -> None:
+    output_file_path: str,
+    archs: List[str],
+    targets_to_build: List[str] = None) -> None:
   """Dumps a JSON formatted string that maps from target
   name to build scripts output.
 
