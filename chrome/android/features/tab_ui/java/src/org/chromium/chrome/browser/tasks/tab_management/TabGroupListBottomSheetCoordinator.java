@@ -116,10 +116,16 @@ public class TabGroupListBottomSheetCoordinator {
                         /* isTabStrip= */ false,
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
+
+        boolean isProfileOffTheRecord = profile.isOffTheRecord();
         FaviconResolver faviconResolver =
-                TabGroupListFaviconResolverFactory.build(context, profile, mTabListFaviconProvider);
+                isProfileOffTheRecord
+                        ? TabGroupListFaviconResolverFactory.buildLocal(
+                                context, profile, mTabListFaviconProvider)
+                        : TabGroupListFaviconResolverFactory.build(
+                                context, profile, mTabListFaviconProvider);
         @Nullable TabGroupSyncService tabGroupSyncService =
-                profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
+                isProfileOffTheRecord ? null : TabGroupSyncServiceFactory.getForProfile(profile);
 
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
