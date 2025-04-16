@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -142,6 +143,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private ShareDelegateSupplier mShareDelegateSupplier;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private UndoBarThrottle mUndoBarThrottle;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -243,7 +245,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mEdgeToEdgeSupplier,
                         /* desktopWindowStateManager= */ null,
                         mShareDelegateSupplier,
-                        mTabBookmarkerSupplier);
+                        mTabBookmarkerSupplier,
+                        mUndoBarThrottle);
         watcher.assertExpected();
 
         mCoordinator.initWithNative();

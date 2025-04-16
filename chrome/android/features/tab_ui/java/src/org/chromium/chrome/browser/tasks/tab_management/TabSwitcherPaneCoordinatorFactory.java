@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -64,6 +65,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @NonNull ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final @NonNull ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final UndoBarThrottle mUndoBarThrottle;
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
     /**
@@ -87,6 +89,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
+     * @param undoBarThrottle Used to throttle the undo bar.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -106,7 +109,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier) {
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            UndoBarThrottle undoBarThrottle) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -129,6 +133,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
+        mUndoBarThrottle = undoBarThrottle;
     }
 
     /**
@@ -182,7 +187,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                 edgeToEdgeSupplier,
                 mDesktopWindowStateManager,
                 mShareDelegateSupplier,
-                mTabBookmarkerSupplier);
+                mTabBookmarkerSupplier,
+                mUndoBarThrottle);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */

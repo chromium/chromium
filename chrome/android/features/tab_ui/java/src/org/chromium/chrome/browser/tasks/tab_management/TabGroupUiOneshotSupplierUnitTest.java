@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -64,6 +65,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private UndoBarThrottle mUndoBarThrottle;
 
     @Mock private Tab mTab;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
@@ -104,10 +106,11 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        mUndoBarThrottle);
         when(mTabManagementDelegate.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                        any(), any()))
+                        any(), any(), any()))
                 .thenReturn(mTabGroupUi);
         TabManagementDelegateProvider.setTabManagementDelegateForTesting(mTabManagementDelegate);
 
@@ -149,7 +152,8 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        mUndoBarThrottle);
         assertNotNull(mTabGroupUiOneshotSupplier.get());
     }
 
@@ -178,7 +182,8 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        mUndoBarThrottle);
         assertNotNull(mTabGroupUiOneshotSupplier.get());
     }
 }

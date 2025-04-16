@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -66,6 +67,8 @@ public interface TabManagementDelegate {
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
      * @param modalDialogManager Used to show confirmation dialogs.
+     * @param themeColorProvider Used to provide the theme.
+     * @param undoBarThrottle Used to suppress the undo bar.
      * @return The {@link TabGroupUi}.
      */
     TabGroupUi createTabGroupUi(
@@ -81,7 +84,8 @@ public interface TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ThemeColorProvider themeColorProvider);
+            @NonNull ThemeColorProvider themeColorProvider,
+            UndoBarThrottle undoBarThrottle);
 
     /**
      * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
@@ -115,6 +119,7 @@ public interface TabManagementDelegate {
      *     the tab's URL when the user selects the "Share" option.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param tabGroupCreationUiFlow Orchestrates the tab group creation UI flow.
+     * @param undoBarThrottle The controller to throttle the undo bar.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -141,7 +146,8 @@ public interface TabManagementDelegate {
             @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow);
+            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow,
+            UndoBarThrottle undoBarThrottle);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

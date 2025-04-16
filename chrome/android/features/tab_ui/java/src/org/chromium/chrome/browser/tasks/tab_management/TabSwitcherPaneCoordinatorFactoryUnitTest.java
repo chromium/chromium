@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
@@ -132,6 +133,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private ShareDelegateSupplier mShareDelegateSupplier;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private UndoBarThrottle mUndoBarThrottle;
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
@@ -203,7 +205,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         /* desktopWindowStateManager= */ null,
                         mEdgeToEdgeSupplier,
                         mShareDelegateSupplier,
-                        mTabBookmarkerSupplier);
+                        mTabBookmarkerSupplier,
+                        mUndoBarThrottle);
     }
 
     @Test

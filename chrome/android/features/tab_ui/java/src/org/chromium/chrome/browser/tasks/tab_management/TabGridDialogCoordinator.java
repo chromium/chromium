@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCard
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -89,6 +90,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final ModalDialogManager mModalDialogManager;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
     private final BottomSheetController mBottomSheetController;
+    private final UndoBarThrottle mUndoBarThrottle;
     private @Nullable final TabLabeller mTabLabeller;
     private ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>(false);
@@ -101,6 +103,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
     private @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
+    private @Nullable Integer mUndoBarThrottleToken;
 
     TabGridDialogCoordinator(
             Activity activity,
@@ -116,7 +119,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ScrimManager scrimManager,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            UndoBarThrottle undoBarThrottle) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             mActivity = activity;
             mComponentName =
@@ -128,6 +132,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
+            mUndoBarThrottle = undoBarThrottle;
 
             Profile originalProfile =
                     mCurrentTabGroupModelFilterSupplier
@@ -504,6 +509,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         boolean startedToShow = mMediator.onReset(tabs);
         if (startedToShow) {
             mShowingOrAnimationSupplier.set(true);
+
+            // Defer any undo snackbars while the dialog is open or animating. While the dialog
+            // is open and not animating all tab closure events get dropped and are handled by
+            // TabGridDialogMediator instead. During animations we should instead queue the
+            // snackbars so that talkback announcements will not get clobbered.
+            throttleUndoBar();
         }
         mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
 
@@ -530,10 +541,14 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     public void postHiding() {
         mTabListCoordinator.postHiding();
         // TODO(crbug.com/40239632): This shouldn't be required if resetWithListOfTabs(null) is
-        // called.
-        // Find out why this helps and fix upstream if possible.
+        // called. Find out why this helps and fix upstream if possible.
         mTabListCoordinator.softCleanup();
         mShowingOrAnimationSupplier.set(false);
+
+        // Stop throttling the undo snackbar and allow any pending snackbars to show. At this
+        // point a11y announcements will work correctly as there isn't an ongoing animation
+        // occluding the snackbar region.
+        stopThrottlingUndoBar();
     }
 
     @Override
@@ -577,5 +592,19 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @Override
     public void setGridContentSensitivity(boolean contentIsSensitive) {
         mMediator.setGridContentSensitivity(contentIsSensitive);
+    }
+
+    private void throttleUndoBar() {
+        if (mUndoBarThrottleToken != null) {
+            mUndoBarThrottle.stopThrottling(mUndoBarThrottleToken);
+        }
+        mUndoBarThrottleToken = mUndoBarThrottle.startThrottling();
+    }
+
+    private void stopThrottlingUndoBar() {
+        if (mUndoBarThrottleToken != null) {
+            mUndoBarThrottle.stopThrottling(mUndoBarThrottleToken);
+            mUndoBarThrottleToken = null;
+        }
     }
 }

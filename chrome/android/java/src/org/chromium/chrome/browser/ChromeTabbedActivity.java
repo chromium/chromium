@@ -1028,7 +1028,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         getCompositorViewHolderSupplier(),
                         getShareDelegateSupplier(),
                         mTabBookmarkerSupplier,
-                        tabGroupCreationUiFlow);
+                        tabGroupCreationUiFlow,
+                        mUndoBarPopupController);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -1138,7 +1139,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             bookmarkClickHandler,
                             /* customTabsBackClickHandler= */ null,
                             archivedTabCountSupplier,
-                            mTabModelNotificationDotManager.getNotificationDotObservableSupplier());
+                            mTabModelNotificationDotManager.getNotificationDotObservableSupplier(),
+                            mUndoBarPopupController);
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.
@@ -4166,5 +4168,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 mLayoutManager, /* animate= */ false, runnable),
                 wrappedSelector,
                 mLayoutStateProviderSupplier);
+    }
+
+    public UndoBarController getUndoBarControllerForTesting() {
+        return mUndoBarPopupController;
     }
 }

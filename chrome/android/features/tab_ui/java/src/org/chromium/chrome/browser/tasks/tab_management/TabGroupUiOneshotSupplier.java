@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -132,6 +133,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
      * @param modalDialogManager Used to show confirmation dialogs.
+     * @param undoBarThrottle Used to suppress the undo bar.
      */
     public TabGroupUiOneshotSupplier(
             ActivityTabProvider activityTabProvider,
@@ -147,7 +149,8 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ModalDialogManager modalDialogManager,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            UndoBarThrottle undoBarThrottle) {
         Runnable setter =
                 () -> {
                     var tabGroupUi =
@@ -165,7 +168,8 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                                             tabCreatorManager,
                                             layoutStateProviderSupplier,
                                             modalDialogManager,
-                                            themeColorProvider);
+                                            themeColorProvider,
+                                            undoBarThrottle);
                     set(tabGroupUi);
                     maybeDestroyTabGroupUiCreationController();
                 };
