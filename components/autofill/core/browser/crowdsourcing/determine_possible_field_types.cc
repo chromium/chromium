@@ -340,9 +340,7 @@ DeterminePossibleFormatStringsForUpload(
       const base::span<const std::unique_ptr<AutofillField>, 3> group =
           fields.subspan(i).first<3>();
       if (!std::ranges::all_of(group, may_be_interesting) ||
-          !may_be_split_date(group) ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+          !may_be_split_date(group)) {
         continue;
       }
       static constexpr std::u16string_view kSeparator = u"-";
