@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
@@ -40,6 +41,7 @@ import org.chromium.chrome.test.transit.settings.SettingsActivityPublicTransitEn
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.io.File;
@@ -108,6 +110,7 @@ public class PasswordsPreferenceTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSomePasswordsNotAccessibleSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(any(), eq(true)))
                 .thenReturn(true);
@@ -122,6 +125,27 @@ public class PasswordsPreferenceTest {
 
         mRenderTestRule.render(
                 passwordsPref.getPrefView(), "passwords_preference_pwds_not_accessible");
+        TransitAsserts.assertFinalDestination(page);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
+    public void testSomePasswordsNotAccessibleSubtitleNotDisplayedOnAuto() throws IOException {
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(any(), eq(true)))
+                .thenReturn(true);
+        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
+        File fakeCsv = File.createTempFile("passwords", null, null);
+        fakeCsv.deleteOnExit();
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+                .thenReturn(fakeCsv.getAbsolutePath());
+
+        SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();
+        PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
+
+        mRenderTestRule.render(
+                passwordsPref.getPrefView(), "passwords_preference_pwds_not_accessible_auto");
         TransitAsserts.assertFinalDestination(page);
     }
 }
