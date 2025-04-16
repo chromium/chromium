@@ -11,7 +11,7 @@
 #include "ui/base/win/atl_module.h"
 
 #define UIA_VALIDATE_TEXTCHILDPROVIDER_CALL() \
-  if (owner()->IsDestroyed())                 \
+  if (!owner()->GetDelegate())                \
     return UIA_E_ELEMENTNOTAVAILABLE;
 
 namespace ui {

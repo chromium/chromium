@@ -338,10 +338,10 @@ enum {
 // should be called on it.
 //
 #define UIA_VALIDATE_CALL()               \
-  if (AXPlatformNodeBase::IsDestroyed())  \
+  if (!AXPlatformNodeBase::GetDelegate()) \
     return UIA_E_ELEMENTNOTAVAILABLE;
 #define UIA_VALIDATE_CALL_1_ARG(arg)      \
-  if (AXPlatformNodeBase::IsDestroyed())  \
+  if (!AXPlatformNodeBase::GetDelegate()) \
     return UIA_E_ELEMENTNOTAVAILABLE;     \
   if (!arg)                               \
     return E_INVALIDARG;                  \

@@ -83,9 +83,8 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
     // const_cast.
     const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
         const_cast<AXPlatformNodeDelegate*>(this)->ChildAtIndex(i));
-    if (!child) {
+    if (!child || !child->GetDelegate())
       continue;
-    }
     text_content += child->GetDelegate()->GetTextContentUTF16();
   }
   return text_content;

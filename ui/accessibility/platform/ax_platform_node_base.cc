@@ -12,8 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/check.h"
-#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
@@ -178,7 +176,6 @@ AXPlatformNodeBase::AXPlatformNodeBase() = default;
 AXPlatformNodeBase::~AXPlatformNodeBase() = default;
 
 void AXPlatformNodeBase::Init(AXPlatformNodeDelegate& delegate) {
-  CHECK(!delegate_);
   delegate_ = &delegate;
 
   // This must be called after assigning our delegate.
@@ -189,86 +186,108 @@ void AXPlatformNodeBase::Init(AXPlatformNodeDelegate& delegate) {
 }
 
 const AXNodeData& AXPlatformNodeBase::GetData() const {
-  return GetDelegate()->GetData();
+  static const base::NoDestructor<AXNodeData> empty_data;
+  if (delegate_) {
+    return delegate_->GetData();
+  }
+  return *empty_data;
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::GetFocus() const {
-  return GetDelegate()->GetFocus();
+  if (delegate_) {
+    return delegate_->GetFocus();
+  }
+  return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::GetParent() const {
-  return GetDelegate()->GetParent();
+  if (delegate_) {
+    return delegate_->GetParent();
+  }
+  return gfx::NativeViewAccessible();
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformParent() const {
-  return FromNativeViewAccessible(GetDelegate()->GetParent());
+  if (delegate_) {
+    return FromNativeViewAccessible(delegate_->GetParent());
+  }
+  return nullptr;
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformTextFieldAncestor() const {
-  return FromNativeViewAccessible(GetDelegate()->GetTextFieldAncestor());
+  if (delegate_) {
+    return FromNativeViewAccessible(delegate_->GetTextFieldAncestor());
+  }
+  return nullptr;
 }
 
 size_t AXPlatformNodeBase::GetChildCount() const {
-  return GetDelegate()->GetChildCount();
+  if (delegate_) {
+    return delegate_->GetChildCount();
+  }
+  return 0;
 }
 
 gfx::NativeViewAccessible AXPlatformNodeBase::ChildAtIndex(size_t index) const {
-  return GetDelegate()->ChildAtIndex(index);
+  if (delegate_) {
+    return delegate_->ChildAtIndex(index);
+  }
+  return gfx::NativeViewAccessible();
 }
 
 std::string AXPlatformNodeBase::GetName() const {
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
-  std::string name = delegate->GetName();
+  if (delegate_) {
+    std::string name = delegate_->GetName();
 
-  // Compute extra name based on the image annotation (generated alt text)
-  // results.
-  std::string extra_text;
-  ax::mojom::ImageAnnotationStatus status =
-      GetData().GetImageAnnotationStatus();
-  switch (status) {
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      extra_text = base::UTF16ToUTF8(
-          delegate->GetLocalizedStringForImageAnnotationStatus(status));
-      break;
+    // Compute extra name based on the image annotation (generated alt text)
+    // results.
+    std::string extra_text;
+    ax::mojom::ImageAnnotationStatus status =
+        GetData().GetImageAnnotationStatus();
+    switch (status) {
+      case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+        extra_text = base::UTF16ToUTF8(
+            delegate_->GetLocalizedStringForImageAnnotationStatus(status));
+        break;
 
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      extra_text =
-          GetStringAttribute(ax::mojom::StringAttribute::kImageAnnotation);
-      break;
+      case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+        extra_text =
+            GetStringAttribute(ax::mojom::StringAttribute::kImageAnnotation);
+        break;
 
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
-  }
-
-  if (!extra_text.empty()) {
-    if (!name.empty()) {
-      name += ". ";
+      case ax::mojom::ImageAnnotationStatus::kNone:
+      case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+      case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+        break;
     }
-    name += extra_text;
-  }
 
-  DCHECK(base::IsStringUTF8AllowingNoncharacters(name)) << "Invalid UTF8";
-  return name;
+    if (!extra_text.empty()) {
+      if (!name.empty())
+        name += ". ";
+      name += extra_text;
+    }
+
+    DCHECK(base::IsStringUTF8AllowingNoncharacters(name)) << "Invalid UTF8";
+    return name;
+  }
+  return std::string();
 }
 
 std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
-  if (!parent) {
+  if (!parent)
     return std::nullopt;
-  }
 
   // If this is the webview, it is not in the child in the list of its parent's
   // child.
   // TODO(jkim): Check if we could remove this after making WebView ignored.
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
-  if (delegate->GetNativeViewAccessible() != GetNativeViewAccessible()) {
+  if (delegate_ &&
+      delegate_->GetNativeViewAccessible() != GetNativeViewAccessible()) {
     return std::nullopt;
   }
 
@@ -285,7 +304,7 @@ std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   // returns -1). Also, delegates may not know the correct answer if this
   // node is the root of a tree that's embedded in another tree, in which
   // case the delegate should return -1 and we'll compute it.
-  auto index = delegate->GetIndexInParent();
+  auto index = delegate_ ? delegate_->GetIndexInParent() : std::nullopt;
   if (index.has_value() && index.value() < child_count)
     return index;
 
@@ -297,9 +316,8 @@ std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   }
 
   // If the parent has a modal dialog, it doesn't count other children.
-  if (parent->GetDelegate()->HasModalDialog()) {
+  if (parent->delegate_ && parent->delegate_->HasModalDialog())
     return std::nullopt;
-  }
 
   DCHECK(false)
       << "Unable to find the child in the list of its parent's children.";
@@ -406,16 +424,23 @@ std::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
 }
 
 AXNodeID AXPlatformNodeBase::GetNodeId() const {
-  return GetDelegate()->GetData().id;
+  if (!delegate_) {
+    return kInvalidAXNodeID;
+  }
+
+  return delegate_->GetData().id;
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetActiveDescendant() const {
+  if (!delegate_)
+    return nullptr;
+
   AXNodeID active_descendant_id;
   AXPlatformNodeBase* active_descendant = nullptr;
   if (GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                       &active_descendant_id)) {
     active_descendant = static_cast<AXPlatformNodeBase*>(
-        GetDelegate()->GetFromNodeID(active_descendant_id));
+        delegate_->GetFromNodeID(active_descendant_id));
   }
 
   if (GetRole() == ax::mojom::Role::kComboBoxSelect) {
@@ -433,7 +458,7 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetActiveDescendant() const {
       if (child->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                                  &active_descendant_id)) {
         active_descendant = static_cast<AXPlatformNodeBase*>(
-            child->GetDelegate()->GetFromNodeID(active_descendant_id));
+            child->delegate_->GetFromNodeID(active_descendant_id));
       }
     }
   }
@@ -450,10 +475,6 @@ void AXPlatformNodeBase::Destroy() {
   GetUniqueIdMap().erase(GetUniqueId());
   delegate_ = nullptr;
   Dispose();
-}
-
-bool AXPlatformNodeBase::IsDestroyed() const {
-  return !delegate_;
 }
 
 void AXPlatformNodeBase::Dispose() {
@@ -485,11 +506,11 @@ void AXPlatformNodeBase::AnnounceTextAs(const std::u16string& text,
 #endif
 
 std::string AXPlatformNodeBase::GetRootURL() const {
-  return GetDelegate()->GetRootURL();
+  return delegate_ ? delegate_->GetRootURL() : std::string();
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeBase::GetDelegate() const {
-  return &CHECK_DEREF(delegate_.get());
+  return delegate_;
 }
 
 bool AXPlatformNodeBase::IsDescendantOf(AXPlatformNode* ancestor) const {
@@ -518,105 +539,153 @@ AXPlatformNodeBase::AXPlatformNodeChildrenEnd() const {
 // Helpers.
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetPreviousSibling() const {
-  return FromNativeViewAccessible(GetDelegate()->GetPreviousSibling());
+  if (!delegate_)
+    return nullptr;
+  return FromNativeViewAccessible(delegate_->GetPreviousSibling());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetNextSibling() const {
-  return FromNativeViewAccessible(GetDelegate()->GetNextSibling());
+  if (!delegate_)
+    return nullptr;
+  return FromNativeViewAccessible(delegate_->GetNextSibling());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetFirstChild() const {
-  return FromNativeViewAccessible(GetDelegate()->GetFirstChild());
+  if (!delegate_)
+    return nullptr;
+  return FromNativeViewAccessible(delegate_->GetFirstChild());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetLastChild() const {
-  return FromNativeViewAccessible(GetDelegate()->GetLastChild());
+  if (!delegate_)
+    return nullptr;
+  return FromNativeViewAccessible(delegate_->GetLastChild());
 }
 
 ax::mojom::Role AXPlatformNodeBase::GetRole() const {
-  return GetDelegate()->GetRole();
+  if (!delegate_)
+    return ax::mojom::Role::kUnknown;
+  return delegate_->GetRole();
 }
 
 bool AXPlatformNodeBase::HasBoolAttribute(
     ax::mojom::BoolAttribute attribute) const {
-  return GetDelegate()->HasBoolAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->HasBoolAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetBoolAttribute(
     ax::mojom::BoolAttribute attribute) const {
-  return GetDelegate()->GetBoolAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->GetBoolAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetBoolAttribute(ax::mojom::BoolAttribute attribute,
                                           bool* value) const {
-  return GetDelegate()->GetBoolAttribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetBoolAttribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasFloatAttribute(
     ax::mojom::FloatAttribute attribute) const {
-  return GetDelegate()->HasFloatAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->HasFloatAttribute(attribute);
 }
 
 float AXPlatformNodeBase::GetFloatAttribute(
     ax::mojom::FloatAttribute attribute) const {
-  return GetDelegate()->GetFloatAttribute(attribute);
+  if (!delegate_)
+    return 0.0f;
+  return delegate_->GetFloatAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                                            float* value) const {
-  return GetDelegate()->GetFloatAttribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetFloatAttribute(attribute, value);
 }
 
 const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
 AXPlatformNodeBase::GetIntAttributes() const {
-  return GetDelegate()->GetIntAttributes();
+  static const base::NoDestructor<
+      const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>>
+      empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetIntAttributes();
 }
 
 bool AXPlatformNodeBase::HasIntAttribute(
     ax::mojom::IntAttribute attribute) const {
-  return GetDelegate()->HasIntAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->HasIntAttribute(attribute);
 }
 
 int AXPlatformNodeBase::GetIntAttribute(
     ax::mojom::IntAttribute attribute) const {
-  return GetDelegate()->GetIntAttribute(attribute);
+  if (!delegate_)
+    return 0;
+  return delegate_->GetIntAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetIntAttribute(ax::mojom::IntAttribute attribute,
                                          int* value) const {
-  return GetDelegate()->GetIntAttribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetIntAttribute(attribute, value);
 }
 
 const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
 AXPlatformNodeBase::GetStringAttributes() const {
-  return GetDelegate()->GetStringAttributes();
+  static const base::NoDestructor<
+      const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>>
+      empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetStringAttributes();
 }
 
 bool AXPlatformNodeBase::HasStringAttribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetDelegate()->HasStringAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->HasStringAttribute(attribute);
 }
 
 const std::string& AXPlatformNodeBase::GetStringAttribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetDelegate()->GetStringAttribute(attribute);
+  if (!delegate_)
+    return base::EmptyString();
+  return delegate_->GetStringAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetStringAttribute(
     ax::mojom::StringAttribute attribute,
     std::string* value) const {
-  return GetDelegate()->GetStringAttribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetStringAttribute(attribute, value);
 }
 
 std::u16string AXPlatformNodeBase::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetDelegate()->GetString16Attribute(attribute);
+  if (!delegate_)
+    return std::u16string();
+  return delegate_->GetString16Attribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetString16Attribute(
     ax::mojom::StringAttribute attribute,
     std::u16string* value) const {
-  return GetDelegate()->GetString16Attribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetString16Attribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasInheritedStringAttribute(
@@ -624,6 +693,10 @@ bool AXPlatformNodeBase::HasInheritedStringAttribute(
   const AXPlatformNodeBase* current_node = this;
 
   do {
+    if (!current_node->delegate_) {
+      return false;
+    }
+
     if (current_node->HasStringAttribute(attribute)) {
       return true;
     }
@@ -641,6 +714,10 @@ const std::string& AXPlatformNodeBase::GetInheritedStringAttribute(
   const AXPlatformNodeBase* current_node = this;
 
   do {
+    if (!current_node->delegate_) {
+      return base::EmptyString();
+    }
+
     if (current_node->HasStringAttribute(attribute)) {
       return current_node->GetStringAttribute(attribute);
     }
@@ -659,6 +736,10 @@ bool AXPlatformNodeBase::GetInheritedStringAttribute(
   const AXPlatformNodeBase* current_node = this;
 
   do {
+    if (!current_node->delegate_) {
+      return false;
+    }
+
     if (current_node->GetStringAttribute(attribute, value)) {
       return true;
     }
@@ -690,67 +771,101 @@ bool AXPlatformNodeBase::GetInheritedString16Attribute(
 
 const std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
 AXPlatformNodeBase::GetIntListAttributes() const {
-  return GetDelegate()->GetIntListAttributes();
+  static const base::NoDestructor<const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>>
+      empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetIntListAttributes();
 }
 
 bool AXPlatformNodeBase::HasIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
-  return GetDelegate()->HasIntListAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->HasIntListAttribute(attribute);
 }
 
 const std::vector<int32_t>& AXPlatformNodeBase::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
-  return GetDelegate()->GetIntListAttribute(attribute);
+  static const base::NoDestructor<std::vector<int32_t>> empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetIntListAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute,
     std::vector<int32_t>* value) const {
-  return GetDelegate()->GetIntListAttribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetIntListAttribute(attribute, value);
 }
 
 bool AXPlatformNodeBase::HasStringListAttribute(
     ax::mojom::StringListAttribute attribute) const {
-  return GetDelegate()->HasStringListAttribute(attribute);
+  if (!delegate_)
+    return false;
+  return delegate_->HasStringListAttribute(attribute);
 }
 
 const std::vector<std::string>& AXPlatformNodeBase::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute) const {
-  return GetDelegate()->GetStringListAttribute(attribute);
+  static const base::NoDestructor<std::vector<std::string>> empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetStringListAttribute(attribute);
 }
 
 bool AXPlatformNodeBase::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute,
     std::vector<std::string>* value) const {
-  return GetDelegate()->GetStringListAttribute(attribute, value);
+  if (!delegate_)
+    return false;
+  return delegate_->GetStringListAttribute(attribute, value);
 }
 
 const base::StringPairs& AXPlatformNodeBase::GetHtmlAttributes() const {
-  return GetDelegate()->GetHtmlAttributes();
+  static const base::NoDestructor<base::StringPairs> empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetHtmlAttributes();
 }
 
 AXTextAttributes AXPlatformNodeBase::GetTextAttributes() const {
-  return GetDelegate()->GetTextAttributes();
+  if (!delegate_)
+    return AXTextAttributes();
+  return delegate_->GetTextAttributes();
 }
 
 bool AXPlatformNodeBase::HasState(ax::mojom::State state) const {
-  return GetDelegate()->HasState(state);
+  if (!delegate_)
+    return false;
+  return delegate_->HasState(state);
 }
 
 ax::mojom::State AXPlatformNodeBase::GetState() const {
-  return GetDelegate()->GetState();
+  if (!delegate_)
+    return ax::mojom::State::kNone;
+  return delegate_->GetState();
 }
 
 bool AXPlatformNodeBase::HasAction(ax::mojom::Action action) const {
-  return GetDelegate()->HasAction(action);
+  if (!delegate_)
+    return false;
+  return delegate_->HasAction(action);
 }
 
 bool AXPlatformNodeBase::HasTextStyle(ax::mojom::TextStyle text_style) const {
-  return GetDelegate()->HasTextStyle(text_style);
+  if (!delegate_)
+    return false;
+  return delegate_->HasTextStyle(text_style);
 }
 
 ax::mojom::NameFrom AXPlatformNodeBase::GetNameFrom() const {
-  return GetDelegate()->GetNameFrom();
+  if (!delegate_)
+    return ax::mojom::NameFrom::kNone;
+  return delegate_->GetNameFrom();
 }
 
 bool AXPlatformNodeBase::HasNameFromOtherElement() const {
@@ -768,11 +883,13 @@ AXPlatformNodeBase* AXPlatformNodeBase::FromNativeViewAccessible(
 
 bool AXPlatformNodeBase::SetHypertextSelection(int start_offset,
                                                int end_offset) {
-  return GetDelegate()->SetHypertextSelection(start_offset, end_offset);
+  if (!delegate_)
+    return false;
+  return delegate_->SetHypertextSelection(start_offset, end_offset);
 }
 
 bool AXPlatformNodeBase::IsPlatformDocument() const {
-  return GetDelegate()->IsPlatformDocument();
+  return delegate_ && delegate_->IsPlatformDocument();
 }
 
 bool AXPlatformNodeBase::IsStructuredAnnotation() const {
@@ -798,10 +915,13 @@ bool AXPlatformNodeBase::IsNonAtomicTextField() const {
 }
 
 bool AXPlatformNodeBase::IsText() const {
-  return GetDelegate()->IsText();
+  return delegate_ && delegate_->IsText();
 }
 
 std::u16string AXPlatformNodeBase::GetHypertext() const {
+  if (!delegate_)
+    return std::u16string();
+
   // Hypertext of platform leaves, which internally are composite objects, are
   // represented with the text content of the internal composite object. These
   // don't exist on non-web content.
@@ -814,11 +934,16 @@ std::u16string AXPlatformNodeBase::GetHypertext() const {
 }
 
 std::u16string AXPlatformNodeBase::GetTextContentUTF16() const {
-  return GetDelegate()->GetTextContentUTF16();
+  if (!delegate_)
+    return std::u16string();
+  return delegate_->GetTextContentUTF16();
 }
 
 int AXPlatformNodeBase::GetTextContentLengthUTF16() const {
-  return GetDelegate()->GetTextContentLengthUTF16();
+  if (!delegate_) {
+    return 0;
+  }
+  return delegate_->GetTextContentLengthUTF16();
 }
 
 std::u16string
@@ -853,88 +978,117 @@ bool AXPlatformNodeBase::IsImageWithMap() const {
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetSelectionContainer() const {
-  return FromNativeViewAccessible(GetDelegate()->GetSelectionContainer());
+  if (!delegate_)
+    return nullptr;
+  return FromNativeViewAccessible(delegate_->GetSelectionContainer());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTable() const {
-  return FromNativeViewAccessible(GetDelegate()->GetTableAncestor());
+  if (!delegate_)
+    return nullptr;
+  return FromNativeViewAccessible(delegate_->GetTableAncestor());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCaption() const {
-  return static_cast<AXPlatformNodeBase*>(GetDelegate()->GetTableCaption());
+  if (!delegate_)
+    return nullptr;
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetTableCaption());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int index) const {
-  std::optional<int32_t> cell_id = GetDelegate()->CellIndexToId(index);
+  if (!delegate_)
+    return nullptr;
+
+  std::optional<int32_t> cell_id = delegate_->CellIndexToId(index);
   if (!cell_id)
     return nullptr;
 
-  return static_cast<AXPlatformNodeBase*>(
-      GetDelegate()->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int row,
                                                      int column) const {
-  std::optional<int32_t> cell_id = GetDelegate()->GetCellId(row, column);
+  if (!delegate_) {
+    return nullptr;
+  }
+
+  std::optional<int32_t> cell_id = delegate_->GetCellId(row, column);
   if (!cell_id)
     return nullptr;
 
-  return static_cast<AXPlatformNodeBase*>(
-      GetDelegate()->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetAriaTableCell(int aria_row,
                                                          int aria_column) const {
+  if (!delegate_) {
+    return nullptr;
+  }
+
   std::optional<int32_t> cell_id =
-      GetDelegate()->GetCellIdAriaCoords(aria_row, aria_column);
+      delegate_->GetCellIdAriaCoords(aria_row, aria_column);
   if (!cell_id) {
     return nullptr;
   }
-  return static_cast<AXPlatformNodeBase*>(
-      GetDelegate()->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableCellIndex() const {
-  return GetDelegate()->GetTableCellIndex();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableCellIndex();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumn() const {
-  return GetDelegate()->GetTableCellColIndex();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableCellColIndex();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumnCount() const {
-  return GetDelegate()->GetTableColCount();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaColumnCount() const {
-  return GetDelegate()->GetTableAriaColCount();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableAriaColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumnSpan() const {
-  return GetDelegate()->GetTableCellColSpan();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableCellColSpan();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRow() const {
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
-  if (delegate->IsTableRow()) {
-    return delegate->GetTableRowRowIndex();
-  }
-  if (delegate->IsTableCellOrHeader()) {
-    return delegate->GetTableCellRowIndex();
-  }
+  if (!delegate_)
+    return std::nullopt;
+  if (delegate_->IsTableRow())
+    return delegate_->GetTableRowRowIndex();
+  if (delegate_->IsTableCellOrHeader())
+    return delegate_->GetTableCellRowIndex();
   return std::nullopt;
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRowCount() const {
-  return GetDelegate()->GetTableRowCount();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaRowCount() const {
-  return GetDelegate()->GetTableAriaRowCount();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableAriaRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRowSpan() const {
-  return GetDelegate()->GetTableCellRowSpan();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetTableCellRowSpan();
 }
 
 std::optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
@@ -955,15 +1109,15 @@ std::optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
 }
 
 bool AXPlatformNodeBase::HasVisibleCaretOrSelection() const {
-  return GetDelegate()->HasVisibleCaretOrSelection();
+  return delegate_ && delegate_->HasVisibleCaretOrSelection();
 }
 
 bool AXPlatformNodeBase::IsLeaf() const {
-  return GetDelegate()->IsLeaf();
+  return delegate_ && delegate_->IsLeaf();
 }
 
 bool AXPlatformNodeBase::IsChildOfLeaf() const {
-  return GetDelegate()->IsChildOfLeaf();
+  return delegate_ && delegate_->IsChildOfLeaf();
 }
 
 bool AXPlatformNodeBase::IsInvisibleOrIgnored() const {
@@ -979,11 +1133,11 @@ bool AXPlatformNodeBase::IsInvisibleOrIgnored() const {
 }
 
 bool AXPlatformNodeBase::IsFocused() const {
-  return FromNativeViewAccessible(GetDelegate()->GetFocus()) == this;
+  return delegate_ && FromNativeViewAccessible(delegate_->GetFocus()) == this;
 }
 
 bool AXPlatformNodeBase::IsFocusable() const {
-  return GetDelegate()->IsFocusable();
+  return delegate_ && delegate_->IsFocusable();
 }
 
 bool AXPlatformNodeBase::IsScrollable() const {
@@ -1016,10 +1170,14 @@ bool AXPlatformNodeBase::IsVerticallyScrollable() const {
 }
 
 std::u16string AXPlatformNodeBase::GetValueForControl() const {
-  return GetDelegate()->GetValueForControl();
+  if (!delegate_)
+    return std::u16string();
+  return delegate_->GetValueForControl();
 }
 
 void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
+  DCHECK(delegate_) << "Many attributes need to be retrieved from our "
+                       "AXPlatformNodeDelegate.";
   // Expose some HTML and ARIA attributes in the IAccessible2 attributes string
   // "display", "tag", and "xml-roles" have somewhat unusual names for
   // historical reasons. Aside from that, virtually every ARIA attribute
@@ -1287,11 +1445,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     }
   }
 
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
-
   // Expose table cell index.
   if (IsCellOrTableHeader(GetRole())) {
-    std::optional<int> index = delegate->GetTableCellIndex();
+    std::optional<int> index = delegate_->GetTableCellIndex();
     if (index) {
       std::string str_index(base::NumberToString(*index));
       AddAttributeToList("table-cell-index", str_index, attributes);
@@ -1303,8 +1459,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   // Expose aria-colcount and aria-rowcount in a table, grid or treegrid if they
   // are different from its physical dimensions.
   if (IsTableLike(GetRole()) &&
-      (delegate->GetTableAriaRowCount() != delegate->GetTableRowCount() ||
-       delegate->GetTableAriaColCount() != delegate->GetTableColCount())) {
+      (delegate_->GetTableAriaRowCount() != delegate_->GetTableRowCount() ||
+       delegate_->GetTableAriaColCount() != delegate_->GetTableColCount())) {
     AddAttributeToList(ax::mojom::IntAttribute::kAriaColumnCount, "colcount",
                        attributes);
     AddAttributeToList(ax::mojom::IntAttribute::kAriaRowCount, "rowcount",
@@ -1317,10 +1473,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     // Note: aria-col/rowindex is 1 based where as table's physical coordinates
     // are 0 based, so we subtract aria-col/rowindex by 1 to compare with
     // table's physical coordinates.
-    std::optional<int> aria_rowindex = delegate->GetTableCellAriaRowIndex();
-    std::optional<int> physical_rowindex = delegate->GetTableCellRowIndex();
-    std::optional<int> aria_colindex = delegate->GetTableCellAriaColIndex();
-    std::optional<int> physical_colindex = delegate->GetTableCellColIndex();
+    std::optional<int> aria_rowindex = delegate_->GetTableCellAriaRowIndex();
+    std::optional<int> physical_rowindex = delegate_->GetTableCellRowIndex();
+    std::optional<int> aria_colindex = delegate_->GetTableCellAriaColIndex();
+    std::optional<int> physical_colindex = delegate_->GetTableCellColIndex();
 
     if (aria_rowindex && physical_rowindex &&
         aria_rowindex.value() - 1 != physical_rowindex.value()) {
@@ -1386,15 +1542,15 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   // Expose dropeffect attribute.
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  if (delegate->HasIntAttribute(
+  if (delegate_->HasIntAttribute(
           ax::mojom::IntAttribute::kDropeffectDeprecated)) {
     NOTREACHED();
   }
 
   // Expose class attribute.
   std::string class_attr;
-  if (delegate->GetStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                   &class_attr)) {
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kClassName,
+                                    &class_attr)) {
     AddAttributeToList("class", class_attr, attributes);
   }
 
@@ -1403,13 +1559,13 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
                      attributes);
 
   std::string id;
-  if (delegate->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
     AddAttributeToList("id", id, attributes);
   }
 
   std::string input_name;
-  if (delegate->GetStringAttribute(ax::mojom::StringAttribute::kHtmlInputName,
-                                   &input_name)) {
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlInputName,
+                                    &input_name)) {
     AddAttributeToList("html-input-name", input_name, attributes);
   }
 
@@ -1419,9 +1575,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("src", src, attributes);
   }
 
-  if (delegate->HasIntAttribute(ax::mojom::IntAttribute::kTextAlign)) {
+  if (delegate_->HasIntAttribute(ax::mojom::IntAttribute::kTextAlign)) {
     auto text_align = static_cast<ax::mojom::TextAlign>(
-        delegate->GetIntAttribute(ax::mojom::IntAttribute::kTextAlign));
+        delegate_->GetIntAttribute(ax::mojom::IntAttribute::kTextAlign));
     switch (text_align) {
       case ax::mojom::TextAlign::kNone:
         break;
@@ -1534,7 +1690,7 @@ void AXPlatformNodeBase::AddAttributeToList(
     PlatformAttributeList* attributes) {
   DCHECK(attributes);
 
-  auto maybe_value = ComputeAttribute(GetDelegate(), attribute);
+  auto maybe_value = ComputeAttribute(delegate_, attribute);
   if (maybe_value.has_value()) {
     std::string str_value = base::NumberToString(maybe_value.value());
     AddAttributeToList(name, str_value, attributes);
@@ -1567,6 +1723,8 @@ AXLegacyHypertext& AXLegacyHypertext::operator=(AXLegacyHypertext&& other) {
 
 // TODO(nektar): To be able to use AXNode in Views, move this logic to AXNode.
 void AXPlatformNodeBase::UpdateComputedHypertext() const {
+  if (!delegate_)
+    return;
   hypertext_ = AXLegacyHypertext();
 
   if (GetData().IsIgnored() || IsLeaf()) {
@@ -1607,11 +1765,15 @@ void AXPlatformNodeBase::AddAttributeToList(const char* name,
 }
 
 std::optional<int> AXPlatformNodeBase::GetPosInSet() const {
-  return GetDelegate()->GetPosInSet();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetPosInSet();
 }
 
 std::optional<int> AXPlatformNodeBase::GetSetSize() const {
-  return GetDelegate()->GetSetSize();
+  if (!delegate_)
+    return std::nullopt;
+  return delegate_->GetSetSize();
 }
 
 bool AXPlatformNodeBase::ScrollToNode(ScrollType scroll_type) {
@@ -1928,7 +2090,7 @@ int AXPlatformNodeBase::GetSelectionAnchor(const AXSelection* selection) {
   DCHECK(selection);
   AXNodeID anchor_id = selection->anchor_object_id;
   AXPlatformNodeBase* anchor_object =
-      static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(anchor_id));
+      static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(anchor_id));
   if (!anchor_object)
     return -1;
 
@@ -1967,7 +2129,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(const AXSelection* selection,
   // If the unignored selection has not been computed yet, compute it now.
   AXSelection unignored_selection;
   if (!selection) {
-    unignored_selection = GetDelegate()->GetUnignoredSelection();
+    unignored_selection = delegate_->GetUnignoredSelection();
     selection = &unignored_selection;
   }
   DCHECK(selection);
@@ -1980,7 +2142,7 @@ int AXPlatformNodeBase::GetCaretOffset() {
   }
 
   // If the unignored selection has not been computed yet, compute it now.
-  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
+  AXSelection unignored_selection = delegate_->GetUnignoredSelection();
   int selection_start, selection_end;
   GetSelectionOffsetsFromTree(&unignored_selection, &selection_start,
                               &selection_end, /*caret_only*/ true);
@@ -2034,7 +2196,7 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
   int* largest_offset =
       (*selection_start <= *selection_end) ? selection_end : selection_start;
   const std::map<int, int>& offset_to_child_index =
-      GetDelegate()->GetHypertextOffsetToHyperlinkChildIndex();
+      delegate_->GetHypertextOffsetToHyperlinkChildIndex();
   auto index_iter = offset_to_child_index.find(*largest_offset);
   if (index_iter == offset_to_child_index.end())
     return;
@@ -2111,7 +2273,7 @@ bool AXPlatformNodeBase::IsText(const std::u16string& text,
 }
 
 bool AXPlatformNodeBase::IsPlatformCheckable() const {
-  return GetData().HasCheckedState();
+  return delegate_ && GetData().HasCheckedState();
 }
 
 void AXPlatformNodeBase::ComputeHypertextRemovedAndInserted(
@@ -2183,9 +2345,10 @@ int AXPlatformNodeBase::FindTextBoundary(
     ax::mojom::MoveDirection direction,
     ax::mojom::TextAffinity affinity) const {
   DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
+  if (!delegate_)
+    return offset;  // Unable to compute text boundary.
 
-  const AXPosition position =
-      GetDelegate()->CreateTextPositionAt(offset, affinity);
+  const AXPosition position = delegate_->CreateTextPositionAt(offset, affinity);
   // On Windows and Linux ATK, searching for a text boundary should always stop
   // at the boundary of the current object.
   AXMovementOptions options{AXBoundaryBehavior::kStopAtAnchorBoundary,
@@ -2302,9 +2465,8 @@ TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
     attributes.emplace_back("auto-generated", "true");
   }
 
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
   int color;
-  if ((color = delegate->GetBackgroundColor())) {
+  if ((color = delegate_->GetBackgroundColor())) {
     unsigned int red = SkColorGetR(color);
     unsigned int green = SkColorGetG(color);
     unsigned int blue = SkColorGetB(color);
@@ -2315,7 +2477,7 @@ TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
     attributes.emplace_back(std::make_pair("background-color", color_value));
   }
 
-  if ((color = delegate->GetColor())) {
+  if ((color = delegate_->GetColor())) {
     unsigned int red = SkColorGetR(color);
     unsigned int green = SkColorGetG(color);
     unsigned int blue = SkColorGetB(color);
@@ -2329,7 +2491,7 @@ TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   // First try to get the inherited font family name from the delegate. If we
   // cannot find any name, fall back to looking the hierarchy of this node's
   // AXNodeData instead.
-  std::string font_family(delegate->GetInheritedFontFamilyName());
+  std::string font_family(GetDelegate()->GetInheritedFontFamilyName());
   if (font_family.empty()) {
     font_family =
         GetInheritedStringAttribute(ax::mojom::StringAttribute::kFontFamily);
@@ -2369,7 +2531,7 @@ TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
     }
   }
 
-  std::string language = delegate->GetLanguage();
+  std::string language = GetDelegate()->GetLanguage();
   if (!language.empty()) {
     SanitizeTextAttributeValue(language, &language);
     attributes.emplace_back(std::make_pair("language", language));
@@ -2472,7 +2634,7 @@ bool AXPlatformNodeBase::IsDescribedByTooltip() const {
 
   for (int id : description_ids) {
     AXPlatformNodeBase* description_object =
-        static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(id));
+        static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(id));
     if (description_object &&
         description_object->GetRole() == ax::mojom::Role::kTooltip) {
       return true;
@@ -2490,10 +2652,9 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
 
   std::set<std::string> details_roles_set;
 
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
   for (int id : details_ids) {
     AXPlatformNodeBase* detail_object =
-        static_cast<AXPlatformNodeBase*>(delegate->GetFromNodeID(id));
+        static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(id));
     if (!detail_object)
       continue;
     switch (detail_object->GetRole()) {

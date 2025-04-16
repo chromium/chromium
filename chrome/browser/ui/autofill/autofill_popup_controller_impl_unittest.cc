@@ -994,7 +994,6 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
   MockAxPlatformNode& operator=(MockAxPlatformNode&) = delete;
   ~MockAxPlatformNode() override = default;
 
-  MOCK_METHOD(bool, IsDestroyed, (), (const override));
   MOCK_METHOD(ui::AXPlatformNodeDelegate*, GetDelegate, (), (const override));
 };
 
@@ -1023,7 +1022,6 @@ class AutofillPopupControllerImplTestAccessibility
     ON_CALL(client().popup_controller(manager()),
             GetRootAXPlatformNodeForWebContents)
         .WillByDefault(Return(&mock_ax_platform_node_));
-    ON_CALL(mock_ax_platform_node_, IsDestroyed).WillByDefault(Return(false));
     ON_CALL(mock_ax_platform_node_, GetDelegate)
         .WillByDefault(Return(&mock_ax_platform_node_delegate_));
     ON_CALL(*client().popup_view(), GetAxUniqueId)
