@@ -216,7 +216,7 @@ source_set("unit_tests") {
   sources = [
     "session_sync_service_factory_unittest.cc",
     "sync_error_browser_agent_unittest.mm",
-    "sync_service_factory_unittest.cc",
+    "sync_service_factory_unittest.mm",
   ]
   deps = [
     ":model",
