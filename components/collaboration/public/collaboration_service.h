@@ -70,8 +70,7 @@ class CollaborationService : public KeyedService,
   // share flows in the same browser instance.
   virtual void StartJoinFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const GURL& url,
-      CollaborationServiceJoinEntryPoint entry) = 0;
+      const GURL& url) = 0;
 
   // Starts a new share or manage flow. This will cancel all existing ongoing
   // flows in the same browser instance. Note: EitherGroupID is either a local
@@ -114,6 +113,15 @@ class CollaborationService : public KeyedService,
   // successfully deleted.
   virtual void LeaveGroup(const data_sharing::GroupId& group_id,
                           base::OnceCallback<void(bool success)> callback) = 0;
+
+  // Check if the given URL should be intercepted.
+  virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
+
+  // Called when a data sharing type URL has been intercepted.
+  virtual void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<data_sharing::ShareURLInterceptionContext> context,
+      CollaborationServiceJoinEntryPoint entry) = 0;
 };
 
 }  // namespace collaboration

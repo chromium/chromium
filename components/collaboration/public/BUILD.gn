@@ -20,6 +20,7 @@ static_library("core_public") {
   visibility = [ ":*" ]
   sources = [
     "collaboration_controller_delegate.h",
+    "collaboration_flow_entry_point.cc",
     "collaboration_flow_entry_point.h",
     "collaboration_flow_type.h",
     "collaboration_service.h",

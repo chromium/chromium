@@ -6,8 +6,6 @@ source_set("model") {
   sources = [
     "data_sharing_service_factory.h",
     "data_sharing_service_factory.mm",
-    "data_sharing_tab_helper.h",
-    "data_sharing_tab_helper.mm",
   ]
   public_deps = [
     "//base",
@@ -15,7 +13,6 @@ source_set("model") {
   ]
   deps = [
     ":context",
-    "//components/collaboration/internal:core_internal",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
     "//ios/chrome/app:tests_hook",

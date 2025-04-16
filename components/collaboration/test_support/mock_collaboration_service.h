@@ -21,8 +21,7 @@ class MockCollaborationService : public CollaborationService {
   MOCK_METHOD(void,
               StartJoinFlow,
               (std::unique_ptr<CollaborationControllerDelegate> delegate,
-               const GURL& url,
-               CollaborationServiceJoinEntryPoint entry),
+               const GURL& url),
               (override));
   MOCK_METHOD(void,
               StartShareOrManageFlow,
@@ -52,6 +51,14 @@ class MockCollaborationService : public CollaborationService {
   MOCK_METHOD2(LeaveGroup,
                void(const data_sharing::GroupId&,
                     base::OnceCallback<void(bool)>));
+  MOCK_METHOD1(ShouldInterceptNavigationForShareURL, bool(const GURL& url));
+  MOCK_METHOD(
+      void,
+      HandleShareURLNavigationIntercepted,
+      (const GURL& url,
+       std::unique_ptr<data_sharing::ShareURLInterceptionContext> context,
+       CollaborationServiceJoinEntryPoint entry),
+      (override));
 };
 
 }  // namespace collaboration

@@ -6673,6 +6673,7 @@ test("unit_tests") {
     "//components/captive_portal/core:buildflags",
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto",
+    "//components/collaboration:test_support",
     "//components/collaboration/internal",
     "//components/collaboration/internal:collaboration_finder",
     "//components/collaboration/public",

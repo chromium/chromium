@@ -250,7 +250,7 @@ public class DataSharingTabManagerUnitTest {
         mockSuccessfulParseDataSharingUrl();
         mDataSharingTabManager.initiateJoinFlow(TEST_URL);
 
-        verify(mCollaborationService).startJoinFlow(any(), eq(TEST_URL), anyInt());
+        verify(mCollaborationService).startJoinFlow(any(), eq(TEST_URL));
     }
 
     @Test

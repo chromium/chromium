@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.collaboration.CollaborationServiceJoinEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -59,10 +58,7 @@ public class CollaborationServiceFactoryTest {
                     }
 
                     @Override
-                    public void startJoinFlow(
-                            CollaborationControllerDelegate delegate,
-                            GURL url,
-                            @CollaborationServiceJoinEntryPoint int entry) {}
+                    public void startJoinFlow(CollaborationControllerDelegate delegate, GURL url) {}
 
                     @Override
                     public void startShareOrManageFlow(

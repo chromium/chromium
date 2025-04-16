@@ -36,6 +36,8 @@ using Flow = CollaborationController::Flow;
 using metrics::CollaborationServiceJoinEvent;
 using metrics::CollaborationServiceShareOrManageEvent;
 using Outcome = signin::AccountManagedStatusFinder::Outcome;
+using ParseUrlResult = data_sharing::DataSharingService::ParseUrlResult;
+using ParseUrlStatus = data_sharing::DataSharingService::ParseUrlStatus;
 
 CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -78,10 +80,8 @@ void CollaborationServiceImpl::RemoveObserver(
 
 void CollaborationServiceImpl::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    const GURL& url,
-    CollaborationServiceJoinEntryPoint entry) {
-  metrics::RecordJoinEntryPoint(data_sharing_service_->GetLogger(), entry);
-  const data_sharing::DataSharingService::ParseUrlResult parse_result =
+    const GURL& url) {
+  const ParseUrlResult parse_result =
       data_sharing_service_->ParseDataSharingUrl(url);
 
   GroupToken token;
@@ -227,6 +227,31 @@ void CollaborationServiceImpl::LeaveGroup(
       base::BindOnce(&CollaborationServiceImpl::OnCollaborationGroupRemoved,
                      weak_ptr_factory_.GetWeakPtr(), group_id,
                      std::move(callback)));
+}
+
+bool CollaborationServiceImpl::ShouldInterceptNavigationForShareURL(
+    const GURL& url) {
+  ParseUrlResult result = data_sharing_service_->ParseDataSharingUrl(url);
+  if (result.has_value()) {
+    return true;
+  }
+  switch (result.error()) {
+    case ParseUrlStatus::kUnknown:
+    case ParseUrlStatus::kHostOrPathMismatchFailure:
+      return false;
+    case ParseUrlStatus::kQueryMissingFailure:
+    case ParseUrlStatus::kSuccess:
+      return true;
+  }
+}
+
+void CollaborationServiceImpl::HandleShareURLNavigationIntercepted(
+    const GURL& url,
+    std::unique_ptr<data_sharing::ShareURLInterceptionContext> context,
+    CollaborationServiceJoinEntryPoint entry) {
+  metrics::RecordJoinEntryPoint(data_sharing_service_->GetLogger(), entry);
+  data_sharing_service_->HandleShareURLNavigationIntercepted(
+      url, std::move(context));
 }
 
 const std::map<data_sharing::GroupToken,

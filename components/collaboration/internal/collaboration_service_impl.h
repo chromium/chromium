@@ -51,8 +51,7 @@ class CollaborationServiceImpl : public CollaborationService,
   void AddObserver(CollaborationService::Observer* observer) override;
   void RemoveObserver(CollaborationService::Observer* observer) override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
-                     const GURL& url,
-                     CollaborationServiceJoinEntryPoint entry) override;
+                     const GURL& url) override;
   void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id,
@@ -71,6 +70,11 @@ class CollaborationServiceImpl : public CollaborationService,
                    base::OnceCallback<void(bool)> callback) override;
   void LeaveGroup(const data_sharing::GroupId& group_id,
                   base::OnceCallback<void(bool)> callback) override;
+  bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
+  void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<data_sharing::ShareURLInterceptionContext> context,
+      CollaborationServiceJoinEntryPoint entry) override;
 
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

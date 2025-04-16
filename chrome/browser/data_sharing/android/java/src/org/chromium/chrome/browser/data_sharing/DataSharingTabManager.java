@@ -40,7 +40,6 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.collaboration.CollaborationServiceJoinEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
@@ -264,8 +263,7 @@ public class DataSharingTabManager {
                 mCollaborationControllerDelegateFactory.create(
                         FlowType.JOIN, switchToTabSwitcherCallback);
         assumeNonNull(mCollaborationService);
-        mCollaborationService.startJoinFlow(
-                mCurrentDelegate, dataSharingUrl, CollaborationServiceJoinEntryPoint.UNKNOWN);
+        mCollaborationService.startJoinFlow(mCurrentDelegate, dataSharingUrl);
     }
 
     /**

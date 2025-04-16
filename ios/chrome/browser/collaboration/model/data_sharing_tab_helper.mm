@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/data_sharing/model/data_sharing_tab_helper.h"
+#import "ios/chrome/browser/collaboration/model/data_sharing_tab_helper.h"
 
 #import "base/check.h"
-#import "components/collaboration/internal/metrics.h"
-#import "components/data_sharing/public/data_sharing_service.h"
-#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -29,12 +29,12 @@ void DataSharingTabHelper::ShouldAllowRequest(
   web::WebState* current_web_state = web_state();
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(current_web_state->GetBrowserState());
-  data_sharing::DataSharingService* data_sharing_service =
-      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
 
   GURL url = net::GURLWithNSURL(request.URL);
-  if (data_sharing_service &&
-      data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
+  if (collaboration_service &&
+      collaboration_service->ShouldInterceptNavigationForShareURL(url)) {
     BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
     std::set<Browser*> regular_browsers =
@@ -54,15 +54,15 @@ void DataSharingTabHelper::ShouldAllowRequest(
 
     CHECK(current_browser, base::NotFatalUntil::M138);
 
-    collaboration::metrics::RecordJoinPageTransitionType(
-        data_sharing_service->GetLogger(), request_info.transition_type);
     // TODO(crbug.com/409825122): Avoid calling
     // HandleShareURLNavigationIntercepted for some navigation cases.
     auto context =
         std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
             current_browser);
-    data_sharing_service->HandleShareURLNavigationIntercepted(
-        url, std::move(context));
+    collaboration_service->HandleShareURLNavigationIntercepted(
+        url, std::move(context),
+        collaboration::GetEntryPointFromPageTransition(
+            request_info.transition_type));
     std::move(callback).Run(PolicyDecision::Cancel());
 
     // Close the tab if the url interception ends with an empty page.

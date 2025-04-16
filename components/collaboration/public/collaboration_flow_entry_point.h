@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_ENTRY_POINT_H_
 #define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_ENTRY_POINT_H_
 
+#include "ui/base/page_transition_types.h"
+
 namespace collaboration {
 
 // Types of entry point to start a join collaboration flow.
@@ -65,6 +67,9 @@ enum class CollaborationServiceLeaveOrDeleteEntryPoint {
   kMaxValue = kUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceLeaveOrDeleteEntryPoint)
+
+CollaborationServiceJoinEntryPoint GetEntryPointFromPageTransition(
+    ui::PageTransition transition_type);
 
 }  // namespace collaboration
 
