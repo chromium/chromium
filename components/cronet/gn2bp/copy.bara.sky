@@ -186,6 +186,10 @@ origin_files = glob([
     # These files may be generated when running local Python scripts locally -
     # make sure we don't accidentally import them.
     "**/__pycache__/**",
+
+    # These files accidentally trigger the "NDK-API-Review" submit requirement
+    # in Android Gerrit. See https://crbug.com/411039623.
+    "**/*.map.txt",
   ]) - glob([
     # https://crbug.com/404202679: last, to make sure we never upload internal code.
     # Cronet does not bundle/depend on any internal code. Having said that, the
