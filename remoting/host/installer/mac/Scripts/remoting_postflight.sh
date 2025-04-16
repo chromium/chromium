@@ -126,8 +126,10 @@ ln -s "$HELPERTOOLS/$HOST_BUNDLE_NAME" "$HELPERTOOLS/$HOST_LEGACY_BUNDLE_NAME"
 
 # Create symlinks to icudtl.dat for sub-bundles. They need the same file in the
 # Resources directory, so we use symlink to save space.
+rm -f "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/$NATIVE_MESSAGING_HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat"
 ln -s "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat" \
     "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/$NATIVE_MESSAGING_HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat"
+rm -f "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/$REMOTE_ASSISTANCE_HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat"
 ln -s "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat" \
     "$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/$REMOTE_ASSISTANCE_HOST_BUNDLE_NAME/Contents/Resources/icudtl.dat"
 
