@@ -18,17 +18,19 @@ namespace {
 constexpr char kUmaClientName[] = "AutofillImageFetcher";
 
 constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("autofill_image_fetcher_card_art_image",
+    net::DefineNetworkTrafficAnnotation("autofill_image_fetcher",
                                         R"(
       semantics {
         sender: "Autofill Image Fetcher"
         description:
-          "Fetches customized card art images for credit cards stored in "
-          "Chrome. Images are hosted on Google static content server, "
-          "the data source may come from third parties (credit card issuers)."
-        trigger: "When new credit card data is sent to Chrome if the card "
-          "has a related card art image, and when the credit card data in "
-          "the web database is refreshed and any card art image is missing."
+          "Fetches images for Chrome Autofill data types like credit cards or "
+          "loyalty cards stored in Chrome. Images are hosted on Google static "
+          "content server, the data source may come from third parties (credit "
+          "card or loyalty card issuers)."
+        trigger: "When a new Autofill entry bundled with a custom image URL is "
+          "sent to Chrome or when an Autofill entry in the web database is "
+          "refreshed and any image is missing. Example: credit cards or "
+          "loyalty cards."
         user_data {
           type: NONE
         }
@@ -39,18 +41,18 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
             email: "chrome-payments-team@google.com"
           }
         }
-        last_reviewed: "2023-05-12"
+        last_reviewed: "2025-04-14"
       }
       policy {
         cookies_allowed: NO
         setting:
           "Users can enable or disable this feature in Chromium settings by "
-          "toggling 'Credit cards and addresses using Google Payments', "
+          "toggling 'Payment methods, offers, and addresses using Google Pay', "
           "under 'Advanced sync settings...'."
         chrome_policy {
-          AutoFillEnabled {
+          AutofillCreditCardEnabled {
             policy_options {mode: MANDATORY}
-            AutoFillEnabled: false
+            AutofillCreditCardEnabled: false
           }
         }
       })");

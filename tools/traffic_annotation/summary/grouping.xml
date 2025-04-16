@@ -594,7 +594,7 @@ after discussions on the right group.
   </group>
   <group name="User Experience" hidden="true">
     <sender name="Autofill">
-      <annotation id="autofill_image_fetcher_card_art_image"/>
+      <annotation id="autofill_image_fetcher"/>
       <annotation id="autofill_query"/>
       <annotation id="autofill_upload"/>
       <annotation id="gstatic_fast_checkout_funnels"/>
