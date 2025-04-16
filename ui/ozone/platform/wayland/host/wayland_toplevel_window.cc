@@ -21,8 +21,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
-#include "ui/ozone/platform/wayland/host/gtk_shell1.h"
-#include "ui/ozone/platform/wayland/host/gtk_surface1.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -157,9 +155,6 @@ void WaylandToplevelWindow::Hide() {
     bubble->Hide();
   }
   WaylandWindow::Hide();
-
-  if (gtk_surface1_)
-    gtk_surface1_.reset();
 
   toplevel_session_.reset();
   xdg_toplevel_.reset();
@@ -298,11 +293,6 @@ void WaylandToplevelWindow::ActivateWithToken(std::string token) {
 }
 
 void WaylandToplevelWindow::Activate() {
-  // Activation is supported through optional protocol extensions and hence may
-  // or may not work depending on the compositor.  The details depend on the
-  // compositor as well; for example, Mutter doesn't bring the window to the top
-  // when it requests focus, but instead shows a system popup notification to
-  // user.
   if (connection()->xdg_activation()) {
     if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
@@ -311,14 +301,8 @@ void WaylandToplevelWindow::Activate() {
           base::BindOnce(&WaylandToplevelWindow::ActivateWithToken,
                          weak_ptr_factory_.GetWeakPtr()));
     }
-  } else if (gtk_surface1_) {
-    gtk_surface1_->RequestFocus();
+    connection()->Flush();
   }
-
-  // This is required as the high level activation might not get a flush for
-  // a while.
-  connection()->Flush();
-
   WaylandWindow::Activate();
 }
 
@@ -400,12 +384,6 @@ void WaylandToplevelWindow::SetInputRegion(
     std::optional<std::vector<gfx::Rect>> region_px) {
   input_region_px_ = region_px;
   root_surface()->set_input_region(region_px);
-}
-
-void WaylandToplevelWindow::NotifyStartupComplete(
-    const std::string& startup_id) {
-  if (auto* gtk_shell = connection()->gtk_shell1())
-    gtk_shell->SetStartupId(startup_id);
 }
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
@@ -894,13 +872,6 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(xdg_toplevel_);
-  // We must not request a new GtkSurface if we already have one, else we get a
-  // "gtk_shell::get_gtk_surface already requested" error. (crbug.com/1380419)
-  if (connection()->gtk_shell1() && !gtk_surface1_) {
-    gtk_surface1_ =
-        connection()->gtk_shell1()->GetGtkSurface1(root_surface()->surface());
-  }
-
   TryAnnounceAppmenu();
 }
 

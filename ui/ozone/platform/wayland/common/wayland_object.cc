@@ -12,7 +12,6 @@
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
-#include <gtk-shell-client-protocol.h>
 #include <idle-client-protocol.h>
 #include <idle-inhibit-unstable-v1-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
@@ -48,15 +47,6 @@
 
 namespace wl {
 namespace {
-
-void delete_gtk_surface1(gtk_surface1* surface) {
-  if (wl::get_version_of_object(surface) >=
-      GTK_SURFACE1_RELEASE_SINCE_VERSION) {
-    gtk_surface1_release(surface);
-  } else {
-    gtk_surface1_destroy(surface);
-  }
-}
 
 void delete_data_device(wl_data_device* data_device) {
   if (wl::get_version_of_object(data_device) >=
@@ -163,8 +153,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_source)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_shell1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(gtk_surface1, delete_gtk_surface1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(org_kde_kwin_appmenu,
                                              delete_appmenu)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_appmenu_manager)

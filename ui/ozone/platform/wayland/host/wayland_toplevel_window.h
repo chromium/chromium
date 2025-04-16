@@ -30,7 +30,6 @@ enum class TooltipTrigger;
 
 namespace ui {
 
-class GtkSurface1;
 class OrgKdeKwinAppmenu;
 class XdgToplevel;
 
@@ -119,7 +118,6 @@ class WaylandToplevelWindow : public WaylandWindow,
       std::optional<std::vector<gfx::Rect>> region_px) override;
   void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px) override;
   bool IsClientControlledWindowMovementSupported() const override;
-  void NotifyStartupComplete(const std::string& startup_id) override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
@@ -236,10 +234,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Title of the ShellToplevel.
   std::u16string window_title_;
-
-  // |gtk_surface1_| is the optional GTK surface that provides better
-  // integration with the desktop shell.
-  std::unique_ptr<GtkSurface1> gtk_surface1_;
 
   // When use_native_frame is false, client-side decoration is set.
   // When use_native_frame is true, server-side decoration is set.

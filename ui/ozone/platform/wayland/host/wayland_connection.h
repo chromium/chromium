@@ -41,7 +41,6 @@ struct KeyboardDevice;
 struct TouchscreenDevice;
 
 class GtkPrimarySelectionDeviceManager;
-class GtkShell1;
 class OrgKdeKwinAppmenuManager;
 class OrgKdeKwinIdle;
 class OverlayPrioritizer;
@@ -68,25 +67,6 @@ class XdgForeignWrapper;
 class XdgSessionManager;
 class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
-
-// These values are persisted to logs.  Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Append new shells before kMaxValue and update LinuxWaylandShell
-// in tools/metrics/histograms/enums.xml accordingly.
-//
-// See also tools/metrics/histograms/README.md#enum-histograms
-enum class UMALinuxWaylandShell {
-  // kZauraShell = 0, // Removed.
-  kGtkShell1 = 1,
-  kOrgKdePlasmaShell = 2,
-  kXdgWmBase = 3,
-  kXdgShellV6 = 4,
-  kZwlrLayerShellV1 = 5,
-  kMaxValue = kZwlrLayerShellV1,
-};
-
-void ReportShellUMA(UMALinuxWaylandShell shell);
 
 class WaylandConnection {
  public:
@@ -219,8 +199,6 @@ class WaylandConnection {
     return gtk_primary_selection_device_manager_.get();
   }
 
-  GtkShell1* gtk_shell1() { return gtk_shell1_.get(); }
-
   OrgKdeKwinAppmenuManager* org_kde_kwin_appmenu_manager() const {
     return org_kde_kwin_appmenu_manager_.get();
   }
@@ -338,7 +316,6 @@ class WaylandConnection {
   // everyone.
   friend class FractionalScaleManager;
   friend class GtkPrimarySelectionDeviceManager;
-  friend class GtkShell1;
   friend class OrgKdeKwinAppmenuManager;
   friend class OrgKdeKwinIdle;
   friend class OverlayPrioritizer;
@@ -491,8 +468,6 @@ class WaylandConnection {
   std::unique_ptr<ZwpPrimarySelectionDeviceManager>
       zwp_primary_selection_device_manager_;
   std::unique_ptr<WaylandClipboard> clipboard_;
-
-  std::unique_ptr<GtkShell1> gtk_shell1_;
 
   // Objects specific to KDE Plasma desktop environment.
   std::unique_ptr<OrgKdeKwinAppmenuManager> org_kde_kwin_appmenu_manager_;
