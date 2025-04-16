@@ -225,12 +225,17 @@ void InProcessFuzzer::RunTestOnMainThread() {
   int argc = argv.size() - 1;
   char** argv2 = argv.data();
   g_test = this;
-  base::IgnoreResult(LLVMFuzzerRunDriver(&argc, &argv2, fuzz_callback));
+  auto res = LLVMFuzzerRunDriver(&argc, &argv2, fuzz_callback);
   if (exit_after_fuzz_case_) {
     LOG(INFO) << "Early exit requested - exiting after LLVMFuzzerRunDriver.";
     exit(0);
   }
-  g_test = nullptr;
+  // Performing exit here allows us to skip the browser shutdown phase thus
+  // avoid potential hangs. This is the behaviour already observed in libfuzzer
+  // which performs exits within LLVMFuzzerRunDriver. It is important to use the
+  // LLVMFuzzerRunDriver return value for the exit value since this helps
+  // centipede determine which input crashed when rerunning inputs one-by-one.
+  exit(res);
 }
 
 int InProcessFuzzer::DoFuzz(const uint8_t* data, size_t size) {
