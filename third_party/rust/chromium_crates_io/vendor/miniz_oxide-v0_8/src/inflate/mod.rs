@@ -9,6 +9,7 @@ pub mod core;
 mod output_buffer;
 #[cfg(not(feature = "rustc-dep-of-std"))]
 pub mod stream;
+#[cfg(not(feature = "rustc-dep-of-std"))]
 use self::core::*;
 
 const TINFL_STATUS_FAILED_CANNOT_MAKE_PROGRESS: i32 = -4;
@@ -23,7 +24,8 @@ const TINFL_STATUS_BLOCK_BOUNDARY: i32 = 3;
 
 /// Return status codes.
 #[repr(i8)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), derive(Hash, Debug))]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum TINFLStatus {
     /// More input data was expected, but the caller indicated that there was no more data, so the
     /// input stream is likely truncated.
@@ -259,6 +261,7 @@ fn decompress_to_vec_inner(
 /// * `zlib_header` if the first slice out of the iterator is expected to have a
 ///   Zlib header. Otherwise the slices are assumed to be the deflate data only.
 /// * `ignore_adler32` if the adler32 checksum should be calculated or not.
+#[cfg(not(feature = "rustc-dep-of-std"))]
 pub fn decompress_slice_iter_to_slice<'out, 'inp>(
     out: &'out mut [u8],
     it: impl Iterator<Item = &'inp [u8]>,

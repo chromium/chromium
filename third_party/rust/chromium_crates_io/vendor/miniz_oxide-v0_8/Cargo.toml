@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "miniz_oxide"
-version = "0.8.7"
+version = "0.8.8"
 authors = [
     "Frommi <daniil.liferenko@gmail.com>",
     "oyvindln <oyvindln@users.noreply.github.com>",
