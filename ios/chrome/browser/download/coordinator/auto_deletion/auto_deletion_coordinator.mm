@@ -135,6 +135,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
 - (void)scheduleFileForDeletion {
   GetApplicationContext()->GetAutoDeletionService()->ScheduleFileForDeletion(
       _downloadTask);
+  [self dismiss];
 }
 
 // Creates a handler that conforms to the AutoDeletionCommands protocol and
