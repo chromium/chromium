@@ -116,12 +116,14 @@ std::string Action::SerializePageUrl() const {
 }
 
 void Action::ParsePageUrl(const std::string& url) {
-  set_page_incognito(base::StartsWith(url, constants::kIncognitoUrl,
-                                      base::CompareCase::SENSITIVE));
-  if (page_incognito())
-    set_page_url(GURL(url.substr(strlen(constants::kIncognitoUrl))));
-  else
+  std::optional<std::string_view> remainder =
+      base::RemovePrefix(url, constants::kIncognitoUrl);
+  set_page_incognito(remainder.has_value());
+  if (remainder) {
+    set_page_url(GURL(*remainder));
+  } else {
     set_page_url(GURL(url));
+  }
 }
 
 std::string Action::SerializeArgUrl() const {
@@ -129,12 +131,14 @@ std::string Action::SerializeArgUrl() const {
 }
 
 void Action::ParseArgUrl(const std::string& url) {
-  set_arg_incognito(base::StartsWith(url, constants::kIncognitoUrl,
-                                     base::CompareCase::SENSITIVE));
-  if (arg_incognito())
-    set_arg_url(GURL(url.substr(strlen(constants::kIncognitoUrl))));
-  else
+  std::optional<std::string_view> remainder =
+      base::RemovePrefix(url, constants::kIncognitoUrl);
+  set_arg_incognito(remainder.has_value());
+  if (remainder) {
+    set_arg_url(GURL(*remainder));
+  } else {
     set_arg_url(GURL(url));
+  }
 }
 
 ExtensionActivity Action::ConvertToExtensionActivity() {

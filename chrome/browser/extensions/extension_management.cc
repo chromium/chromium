@@ -768,10 +768,10 @@ void ExtensionManagement::Refresh() {
       const base::Value::Dict* subdict = iter.second.GetIfDict();
       if (!subdict)
         continue;
-      if (base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
-                           base::CompareCase::SENSITIVE)) {
-        const std::string& update_url =
-            iter.first.substr(strlen(schema_constants::kUpdateUrlPrefix));
+      std::optional<std::string_view> remainder =
+          base::RemovePrefix(iter.first, schema_constants::kUpdateUrlPrefix);
+      if (remainder) {
+        const std::string update_url(*remainder);
         if (!GURL(update_url).is_valid()) {
           LOG(WARNING) << "Invalid update URL: " << update_url << ".";
           continue;
