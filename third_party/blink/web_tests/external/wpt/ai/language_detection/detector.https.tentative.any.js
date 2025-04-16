@@ -77,6 +77,38 @@ promise_test(async t => {
 }, 'Aborting LanguageDetector.create().');
 
 promise_test(async t => {
+  const detector = await LanguageDetector.create();
+
+  const text = 'this string is in English';
+  const promises = [detector.detect(text), detector.measureInputUsage(text)];
+
+  detector.destroy();
+
+  promises.push(detector.detect(text), detector.measureInputUsage(text));
+
+  for (const promise of promises) {
+    await promise_rejects_dom(t, 'AbortError', promise);
+  }
+}, 'Calling LanguageDetector.destroy() aborts calls to detect and measureInputUsage.');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  const detector = await LanguageDetector.create({signal: controller.signal});
+
+  const text = 'this string is in English';
+  const promises = [detector.detect(text), detector.measureInputUsage(text)];
+
+  const error = new Error('The create abort signal was aborted.');
+  controller.abort(error);
+
+  promises.push(detector.detect(text), detector.measureInputUsage(text));
+
+  for (const promise of promises) {
+    await promise_rejects_exactly(t, error, promise);
+  }
+}, 'LanguageDetector.create()\'s abort signal destroys its LanguageDetector after creation.');
+
+promise_test(async t => {
   const controller = new AbortController();
   controller.abort();
 

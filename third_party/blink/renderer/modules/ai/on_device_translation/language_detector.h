@@ -32,7 +32,8 @@ class LanguageDetector final : public ScriptWrappable {
       LanguageDetectorCreateOptions* options,
       ExceptionState& exception_state);
 
-  LanguageDetector(LanguageDetectionModel* language_detection_model,
+  LanguageDetector(ScriptState* script_state,
+                   LanguageDetectionModel* language_detection_model,
                    LanguageDetectorCreateOptions* options,
                    scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~LanguageDetector() override = default;
@@ -44,7 +45,7 @@ class LanguageDetector final : public ScriptWrappable {
       const WTF::String& input,
       LanguageDetectorDetectOptions* options,
       ExceptionState& exception_state);
-  void destroy(ScriptState*);
+  void destroy(ScriptState* script_state);
 
   ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
@@ -54,11 +55,8 @@ class LanguageDetector final : public ScriptWrappable {
 
   double inputQuota() const;
 
-  std::optional<Vector<String>> expectedInputLanguages() const {
-    if (options_->hasExpectedInputLanguages()) {
-      return options_->expectedInputLanguages();
-    }
-    return std::nullopt;
+  const std::optional<Vector<String>>& expectedInputLanguages() const {
+    return expected_input_languages_;
   }
 
   // TODO(crbug.com/349927087): Make the functions below free functions.
@@ -70,9 +68,19 @@ class LanguageDetector final : public ScriptWrappable {
                      DetectLanguageError> result);
 
  private:
+  void DestroyImpl();
+
+  void OnCreateAbortSignalAborted(ScriptState* script_state);
+
+  AbortSignal* CreateCompositeSignal(ScriptState* script_state,
+                                     LanguageDetectorDetectOptions* options);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
-  Member<LanguageDetectorCreateOptions> options_;
+  Member<AbortController> destruction_abort_controller_;
+  Member<AbortSignal> create_abort_signal_;
+  Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
+  std::optional<Vector<String>> expected_input_languages_;
 };
 
 }  // namespace blink

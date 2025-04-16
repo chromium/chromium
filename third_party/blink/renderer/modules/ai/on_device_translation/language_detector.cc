@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
@@ -119,7 +120,7 @@ class LanguageDetectorCreateTask
                                          kNormalizedDownloadProgressMax);
     }
     resolver_->Resolve(MakeGarbageCollected<LanguageDetector>(
-        maybe_model.value(), options_, task_runner_));
+        GetScriptState(), maybe_model.value(), options_, task_runner_));
     Cleanup();
   }
 
@@ -208,16 +209,31 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
 }
 
 LanguageDetector::LanguageDetector(
+    ScriptState* script_state,
     LanguageDetectionModel* language_detection_model,
     LanguageDetectorCreateOptions* options,
     scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),
       language_detection_model_(language_detection_model),
-      options_(options) {}
+      destruction_abort_controller_(AbortController::Create(script_state)),
+      create_abort_signal_(options->getSignalOr(nullptr)) {
+  if (options->hasExpectedInputLanguages()) {
+    expected_input_languages_ = options->expectedInputLanguages();
+  }
+
+  if (create_abort_signal_) {
+    CHECK(!create_abort_signal_->aborted());
+    create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
+        &LanguageDetector::OnCreateAbortSignalAborted, WrapWeakPersistent(this),
+        WrapWeakPersistent(script_state)));
+  }
+}
 
 void LanguageDetector::Trace(Visitor* visitor) const {
   visitor->Trace(language_detection_model_);
-  visitor->Trace(options_);
+  visitor->Trace(destruction_abort_controller_);
+  visitor->Trace(create_abort_signal_);
+  visitor->Trace(create_abort_handle_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -230,16 +246,14 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/399693771): This should be a composite signal of the passed
-  // in abort signal and the create abort signal.
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
+  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
+  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();
   }
 
   auto* resolver = MakeGarbageCollected<
       ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>>(
-      script_state, signal);
+      script_state, composite_signal);
 
   language_detection_model_->DetectLanguage(
       task_runner_, input,
@@ -248,8 +262,25 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
   return resolver->Promise();
 }
 
-void LanguageDetector::destroy(ScriptState*) {
-  // TODO(crbug.com/349927087): Implement the function.
+void LanguageDetector::destroy(ScriptState* script_state) {
+  destruction_abort_controller_->abort(script_state);
+  DestroyImpl();
+}
+
+void LanguageDetector::DestroyImpl() {
+  language_detection_model_ = nullptr;
+  if (create_abort_handle_) {
+    create_abort_signal_->RemoveAlgorithm(create_abort_handle_);
+    create_abort_handle_ = nullptr;
+  }
+}
+
+void LanguageDetector::OnCreateAbortSignalAborted(ScriptState* script_state) {
+  if (script_state) {
+    destruction_abort_controller_->abort(
+        script_state, create_abort_signal_->reason(script_state));
+  }
+  DestroyImpl();
 }
 
 ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
@@ -261,17 +292,14 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/399693771): This should be a composite signal of the passed
-  // in abort signal and the create abort signal.
-  CHECK(options);
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
+  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
+  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();
   }
 
   ResolverWithAbortSignal<IDLDouble>* resolver =
-      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(script_state,
-                                                               signal);
+      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
+          script_state, composite_signal);
 
   task_runner_->PostTask(
       FROM_HERE,
@@ -340,6 +368,21 @@ void LanguageDetector::OnDetectComplete(
         resolver->Reject("Model not available");
     }
   }
+}
+
+AbortSignal* LanguageDetector::CreateCompositeSignal(
+    ScriptState* script_state,
+    LanguageDetectorDetectOptions* options) {
+  HeapVector<Member<AbortSignal>> signals;
+
+  signals.push_back(destruction_abort_controller_->signal());
+
+  CHECK(options);
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  return MakeGarbageCollected<AbortSignal>(script_state, signals);
 }
 
 }  // namespace blink
