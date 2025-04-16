@@ -46,8 +46,6 @@ HttpStreamPool::AttemptManager::QuicTask::QuicTask(
   CHECK(service_endpoint_request());
   CHECK(service_endpoint_request()->EndpointsCryptoReady());
 
-  TRACE_EVENT_INSTANT("net.stream", "QuicTaskStart", manager_->track_, flow_);
-  TRACE_EVENT_BEGIN("net.stream", "QuicTask::QuicTask", track_, flow_);
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_TASK_ALIVE, [&] {
     base::Value::Dict dict;
     dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version_));
@@ -60,8 +58,6 @@ HttpStreamPool::AttemptManager::QuicTask::QuicTask(
 }
 
 HttpStreamPool::AttemptManager::QuicTask::~QuicTask() {
-  TRACE_EVENT_END("net.stream", track_);
-  TRACE_EVENT_INSTANT("net.stream", "QuicTaskEnd", manager_->track_, flow_);
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_TASK_ALIVE);
 }
 
@@ -73,6 +69,10 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
     // TODO(crbug.com/346835898): Support multiple attempts.
     return;
   }
+
+  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptStart", manager_->track_,
+                      flow_);
+  TRACE_EVENT_BEGIN("net.stream", "QuicAttempt", track_, flow_);
 
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
   net_log_.AddEvent(
@@ -116,8 +116,6 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
   std::set<std::string> dns_aliases =
       service_endpoint_request()->GetDnsAliasResults();
 
-  TRACE_EVENT_INSTANT("net.stream", "QuicTask::QuicSessionAttemptStart", track_,
-                      "endpoint", quic_endpoint->ToValue());
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_START,
                     [&] { return quic_endpoint->ToValue(); });
 
@@ -228,8 +226,8 @@ HttpStreamPool::AttemptManager::QuicTask::GetPreferredIPEndPoint(
 
 void HttpStreamPool::AttemptManager::QuicTask::OnSessionAttemptComplete(
     int rv) {
-  TRACE_EVENT_INSTANT("net.stream", "QuicTask::OnSessionAttemptComplete",
-                      track_, "result", rv);
+  TRACE_EVENT_END("net.stream", track_, "result", rv);
+  TRACE_EVENT_INSTANT("net.stream", "QuicAttemptEnd", manager_->track_, flow_);
 
   if (rv == OK) {
     QuicChromiumClientSession* session =
