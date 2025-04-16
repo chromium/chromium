@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/choice_made_location.h"
@@ -146,13 +148,14 @@ enum class SearchEngineChoiceScreenEvents {
 // numeric values should never be reused.
 enum class SearchEngineChoiceWipeReason {
   kProfileWipe = 0,
-  kMissingChoiceVersion = 1,
-  kInvalidChoiceVersion = 2,
-  kReprompt = 3,
+  kMissingMetadataVersion = 1,
+  kInvalidMetadataVersion = 2,
+  kFinchBasedReprompt = 3,
   kCommandLineFlag = 4,
   kDeviceRestored = 5,
+  kInvalidMetadata = 6,
 
-  kMaxValue = kDeviceRestored,
+  kMaxValue = kInvalidMetadata,
 };
 
 // Exposed for testing.
@@ -284,6 +287,24 @@ void RecordUnexpectedSearchProvider(const TemplateURLData& data);
 // version, to ensure the choice screen is shown again.
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
                                  SearchEngineChoiceWipeReason reason);
+
+struct ChoiceCompletionMetadata {
+  enum class ParseError {
+    kAbsent,
+    kMissingVersion,
+    kInvalidVersion,
+    kOther,
+  };
+
+  base::Time timestamp;
+  base::Version version;
+};
+
+base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+GetChoiceCompletionMetadata(const PrefService& prefs);
+
+void SetChoiceCompletionMetadata(PrefService& prefs,
+                                 ChoiceCompletionMetadata metadata);
 
 // Returns the timestamp of search engine choice screen. No value if no choice
 // has been made.

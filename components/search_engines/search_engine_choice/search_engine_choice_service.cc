@@ -8,7 +8,6 @@
 
 #include <memory>
 #include <optional>
-#include <variant>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
@@ -25,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_service.h"
@@ -106,17 +106,14 @@ SearchEngineType GetDefaultSearchEngineType(
 
 // Returns true if all search engine choice prefs are set.
 bool IsSearchEngineChoiceCompleted(const PrefService& prefs) {
-  return prefs.HasPrefPath(
-             prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) &&
-         prefs.HasPrefPath(
-             prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
+  return GetChoiceCompletionMetadata(prefs).has_value();
 }
 
 void MarkSearchEngineChoiceCompleted(PrefService& prefs) {
-  prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-                 base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-  prefs.SetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-                  version_info::GetVersionNumber());
+  SetChoiceCompletionMetadata(prefs, ChoiceCompletionMetadata{
+                                         .timestamp = base::Time::Now(),
+                                         .version = version_info::GetVersion(),
+                                     });
 }
 
 // Returns true if the version is valid and can be compared to the current
@@ -151,6 +148,73 @@ void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
     base::UmaHistogramEnumeration(
         kSearchEngineChoiceRepromptSpecificCountryHistogram, result);
   }
+}
+
+bool ShouldRepromptFromFeatureParams(
+    const base::Version& persisted_choice_version,
+    const CountryId& profile_country_id) {
+  // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
+  const std::string reprompt_params =
+      switches::kSearchEngineChoiceTriggerRepromptParams.Get();
+  if (reprompt_params == switches::kSearchEngineChoiceNoRepromptString) {
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
+                                  RepromptResult::kNoReprompt);
+    return false;
+  }
+
+  std::optional<base::Value::Dict> reprompt_params_json =
+      base::JSONReader::ReadDict(reprompt_params);
+  // Not a valid JSON.
+  if (!reprompt_params_json) {
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
+                                  RepromptResult::kInvalidDictionary);
+    return false;
+  }
+
+  const base::Version& current_version = version_info::GetVersion();
+  const std::string wildcard_string("*");
+  // Explicit country key takes precedence over the wildcard.
+  for (const std::string& key :
+       {std::string(profile_country_id.CountryCode()), wildcard_string}) {
+    bool is_wildcard = key == wildcard_string;
+    const std::string* reprompt_version_string =
+        reprompt_params_json->FindString(key);
+    if (!reprompt_version_string) {
+      // No version string for this country. Fallback to the wildcard.
+      LogSearchRepromptKeyHistograms(RepromptResult::kNoDictionaryKey,
+                                     is_wildcard);
+      continue;
+    }
+
+    base::Version reprompt_version(*reprompt_version_string);
+    if (!IsValidVersionFormat(reprompt_version)) {
+      // The version is ill-formatted.
+      LogSearchRepromptKeyHistograms(RepromptResult::kInvalidVersion,
+                                     is_wildcard);
+      break;
+    }
+
+    // Do not reprompt if the current version is too old, to avoid endless
+    // reprompts.
+    if (current_version < reprompt_version) {
+      LogSearchRepromptKeyHistograms(RepromptResult::kChromeTooOld,
+                                     is_wildcard);
+      break;
+    }
+
+    if (persisted_choice_version >= reprompt_version) {
+      // No need to reprompt, the choice is recent enough.
+      LogSearchRepromptKeyHistograms(RepromptResult::kRecentChoice,
+                                     is_wildcard);
+      break;
+    }
+
+    // Wipe the choice to force a reprompt.
+    LogSearchRepromptKeyHistograms(RepromptResult::kReprompt, is_wildcard);
+    return true;
+  }
+
+  return false;
 }
 
 CountryId GetVariationsCountryId(
@@ -457,6 +521,31 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
 }
 
 void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      completion_metadata = GetChoiceCompletionMetadata(profile_prefs_.get());
+  if (!completion_metadata.has_value()) {
+    switch (completion_metadata.error()) {
+      case ChoiceCompletionMetadata::ParseError::kAbsent:
+        // No choice has been made at all, so there is nothing to reset.
+        return;
+      case ChoiceCompletionMetadata::ParseError::kMissingVersion:
+        WipeSearchEngineChoicePrefs(
+            profile_prefs_.get(),
+            SearchEngineChoiceWipeReason::kMissingMetadataVersion);
+        return;
+      case ChoiceCompletionMetadata::ParseError::kInvalidVersion:
+        WipeSearchEngineChoicePrefs(
+            profile_prefs_.get(),
+            SearchEngineChoiceWipeReason::kInvalidMetadataVersion);
+        return;
+      case ChoiceCompletionMetadata::ParseError::kOther:
+        WipeSearchEngineChoicePrefs(
+            profile_prefs_.get(),
+            SearchEngineChoiceWipeReason::kInvalidMetadata);
+        return;
+    }
+  }
+
   // Allow re-triggering the choice screen for testing the screen itself.
   // This flag is deliberately only clearing the prefs instead of more
   // forcefully triggering the screen because this allows to more easily test
@@ -470,90 +559,15 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
     return;
   }
 
-  // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
-  const std::string reprompt_params =
-      switches::kSearchEngineChoiceTriggerRepromptParams.Get();
-  if (reprompt_params == switches::kSearchEngineChoiceNoRepromptString) {
-    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
-                                  RepromptResult::kNoReprompt);
-    return;
-  }
-
-  std::optional<base::Value::Dict> reprompt_params_json =
-      base::JSONReader::ReadDict(reprompt_params);
-  // Not a valid JSON.
-  if (!reprompt_params_json) {
-    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
-                                  RepromptResult::kInvalidDictionary);
-    return;
-  }
-
-  // If existing prefs are missing or have a wrong format, force a reprompt.
-  if (!profile_prefs_->HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
+  if (ShouldRepromptFromFeatureParams(
+          completion_metadata->version,
+          regional_capabilities_service_->GetCountryId().GetRestricted(
+              regional_capabilities::CountryAccessKey(
+                  regional_capabilities::CountryAccessReason::
+                      kSearchEngineChoiceServiceReprompting)))) {
     WipeSearchEngineChoicePrefs(
         profile_prefs_.get(),
-        SearchEngineChoiceWipeReason::kMissingChoiceVersion);
-    return;
-  }
-
-  base::Version choice_version(profile_prefs_->GetString(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
-  if (!IsValidVersionFormat(choice_version)) {
-    WipeSearchEngineChoicePrefs(
-        profile_prefs_.get(),
-        SearchEngineChoiceWipeReason::kInvalidChoiceVersion);
-    return;
-  }
-
-  const base::Version& current_version = version_info::GetVersion();
-  CountryId country_id =
-      regional_capabilities_service_->GetCountryId().GetRestricted(
-          regional_capabilities::CountryAccessKey(
-              regional_capabilities::CountryAccessReason::
-                  kSearchEngineChoiceServiceReprompting));
-  const std::string wildcard_string("*");
-  // Explicit country key takes precedence over the wildcard.
-  for (const std::string& key :
-       {std::string(country_id.CountryCode()), wildcard_string}) {
-    bool is_wildcard = key == wildcard_string;
-    const std::string* reprompt_version_string =
-        reprompt_params_json->FindString(key);
-    if (!reprompt_version_string) {
-      // No version string for this country. Fallback to the wildcard.
-      LogSearchRepromptKeyHistograms(RepromptResult::kNoDictionaryKey,
-                                     is_wildcard);
-      continue;
-    }
-
-    base::Version reprompt_version(*reprompt_version_string);
-    if (!IsValidVersionFormat(reprompt_version)) {
-      // The version is ill-formatted.
-      LogSearchRepromptKeyHistograms(RepromptResult::kInvalidVersion,
-                                     is_wildcard);
-      break;
-    }
-
-    // Do not reprompt if the current version is too old, to avoid endless
-    // reprompts.
-    if (current_version < reprompt_version) {
-      LogSearchRepromptKeyHistograms(RepromptResult::kChromeTooOld,
-                                     is_wildcard);
-      break;
-    }
-
-    if (choice_version >= reprompt_version) {
-      // No need to reprompt, the choice is recent enough.
-      LogSearchRepromptKeyHistograms(RepromptResult::kRecentChoice,
-                                     is_wildcard);
-      break;
-    }
-
-    // Wipe the choice to force a reprompt.
-    LogSearchRepromptKeyHistograms(RepromptResult::kReprompt, is_wildcard);
-    WipeSearchEngineChoicePrefs(profile_prefs_.get(),
-                                SearchEngineChoiceWipeReason::kReprompt);
-    return;
+        SearchEngineChoiceWipeReason::kFinchBasedReprompt);
   }
 }
 

@@ -396,11 +396,12 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchEngineChoiceWipeReason">
   <int value="0" label="Profile wipe"/>
-  <int value="1" label="Missing choice version"/>
-  <int value="2" label="Invalid choice version"/>
-  <int value="3" label="Force reprompt"/>
+  <int value="1" label="Invalid choice metadata: Missing version"/>
+  <int value="2" label="Invalid choice metadata: Invalid version"/>
+  <int value="3" label="Finch-based reprompt"/>
   <int value="4" label="Command line flag"/>
   <int value="5" label="Device restore (iOS only)"/>
+  <int value="6" label="Invalid choice metadata: Other"/>
 </enum>
 
 <!-- LINT.IfChange(SearchPolicyConflictType) -->

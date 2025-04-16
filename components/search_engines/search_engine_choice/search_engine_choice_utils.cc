@@ -16,8 +16,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
@@ -224,15 +226,59 @@ void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
 #endif
 }
 
+base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+GetChoiceCompletionMetadata(const PrefService& prefs) {
+  if (!prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
+    return base::unexpected(
+        prefs.HasPrefPath(
+            prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)
+            ? ChoiceCompletionMetadata::ParseError::kMissingVersion
+            : ChoiceCompletionMetadata::ParseError::kAbsent);
+  }
+
+  base::Version version(prefs.GetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  if (!version.IsValid() ||
+      version.components().size() !=
+          version_info::GetVersion().components().size()) {
+    return base::unexpected(
+        ChoiceCompletionMetadata::ParseError::kInvalidVersion);
+  }
+
+  // Note: Other error conditions don't have dedicated handling, so we log all
+  // of them as `kOther`.
+
+  base::Time timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(prefs.GetInt64(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)));
+
+  if (timestamp.is_null()) {
+    return base::unexpected(ChoiceCompletionMetadata::ParseError::kOther);
+  }
+
+  return ChoiceCompletionMetadata{
+      .timestamp = timestamp,
+      .version = version,
+  };
+}
+
+void SetChoiceCompletionMetadata(PrefService& prefs,
+                                 ChoiceCompletionMetadata metadata) {
+  prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+                 metadata.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+  prefs.SetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+                  metadata.version.GetString());
+}
+
 std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
     PrefService& prefs) {
-  if (!prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+  auto metadata = GetChoiceCompletionMetadata(prefs);
+  if (!metadata.has_value()) {
     return std::nullopt;
   }
 
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(prefs.GetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)));
+  return metadata->timestamp;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
