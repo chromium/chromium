@@ -17,6 +17,7 @@ try_.defaults.set(
     builder_group = "tryserver.blink",
     pool = try_.DEFAULT_POOL,
     cores = 8,
+    contact_team_email = "chrome-blink-engprod@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
@@ -36,18 +37,25 @@ consoles.list_view(
     branch_selector = branches.selector.DESKTOP_BRANCHES,
 )
 
-def blink_mac_builder(*, name, **kwargs):
+def _mac_rebaseline_builder(*, name, **kwargs):
     kwargs.setdefault("branch_selector", branches.selector.MAC_BRANCHES)
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", None)
     kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", True)
-    return try_.builder(
-        name = name,
-        **kwargs
-    )
+    return _rebaseline_builder(name = name, **kwargs)
 
-try_.builder(
+def _rebaseline_builder(*, name, **kwargs):
+    description_html = "Standalone try builder that {} for web platform changes.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs",
+            "generates new expectations",
+        ),
+    )
+    kwargs.setdefault("description_html", description_html)
+    return try_.builder(name = name, **kwargs)
+
+_rebaseline_builder(
     name = "linux-blink-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -115,7 +123,6 @@ try_.builder(
     ),
     gn_args = "ci/linux-wpt-chromium-rel",
     os = os.LINUX_DEFAULT,
-    contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
 
@@ -128,11 +135,10 @@ try_.builder(
     gn_args = "ci/win10-wpt-chromium-rel",
     builderless = True,
     os = os.WINDOWS_10,
-    contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
 
-try_.builder(
+_rebaseline_builder(
     name = "win10.20h2-blink-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -193,7 +199,7 @@ try_.builder(
     os = os.WINDOWS_ANY,
 )
 
-try_.builder(
+_rebaseline_builder(
     name = "win11-arm64-blink-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -256,7 +262,7 @@ try_.builder(
     siso_remote_linking = True,
 )
 
-try_.builder(
+_rebaseline_builder(
     name = "win11-blink-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -315,7 +321,7 @@ try_.builder(
     os = os.WINDOWS_ANY,
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac11.0-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -367,7 +373,7 @@ blink_mac_builder(
     builderless = False,
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac11.0.arm64-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -421,7 +427,7 @@ blink_mac_builder(
     cpu = cpu.ARM64,
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac12.0-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -473,7 +479,7 @@ blink_mac_builder(
     cpu = cpu.ARM64,
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac12.0.arm64-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -526,7 +532,7 @@ blink_mac_builder(
     cpu = cpu.ARM64,
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac13-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -578,11 +584,10 @@ try_.builder(
     cores = None,
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
-    contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac13.arm64-blink-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -623,7 +628,7 @@ blink_mac_builder(
     cpu = cpu.ARM64,
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac-skia-alt-arm64-blink-rel",
     branch_selector = None,
     mirrors = [
@@ -652,11 +657,8 @@ blink_mac_builder(
     main_list_view = "try",
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac14-blink-rel",
-    description_html = """\
-    Runs web tests against content-shell on Mac 14 (Intel).\
-    """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -693,14 +695,10 @@ blink_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    contact_team_email = "chrome-blink-engprod@google.com",
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac14.arm64-blink-rel",
-    description_html = """\
-    Runs web tests against content-shell on Mac 14 (ARM).\
-    """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -737,15 +735,10 @@ blink_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    contact_team_email = "chrome-blink-engprod@google.com",
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac15-blink-rel",
-    description_html = """\
-    Runs web tests against content-shell on Mac 15 (Intel) as a
-    <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs">standalone trybot to generate new web test expectations</a>.\
-    """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -782,15 +775,10 @@ blink_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    contact_team_email = "chrome-blink-engprod@google.com",
 )
 
-blink_mac_builder(
+_mac_rebaseline_builder(
     name = "mac15.arm64-blink-rel",
-    description_html = """\
-    Runs web tests against content-shell on Mac 15 (Intel) as a
-    <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs">standalone trybot to generate new web test expectations</a>.\
-    """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -827,5 +815,4 @@ blink_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    contact_team_email = "chrome-blink-engprod@google.com",
 )
