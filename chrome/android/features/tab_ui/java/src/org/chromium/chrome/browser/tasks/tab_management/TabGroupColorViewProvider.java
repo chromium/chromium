@@ -177,14 +177,10 @@ public class TabGroupColorViewProvider implements Destroyable {
             size = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_item_size);
             radius = res.getDimension(R.dimen.tab_group_color_icon_item_radius);
         } else {
-            int tabGroupColor =
-                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                            mContext, mColorId, mIsIncognito);
             SharedImageTilesConfig config =
-                    mSharedImageTilesConfigBuilder.setTabGroupColor(tabGroupColor).build();
+                    mSharedImageTilesConfigBuilder.setTabGroupColor(mContext, mColorId).build();
 
-            mSharedImageTilesCoordinator.updateConfig(
-                    mSharedImageTilesConfigBuilder.setTabGroupColor(tabGroupColor).build());
+            mSharedImageTilesCoordinator.updateConfig(config);
 
             final @Px int stroke = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
             size = config.getBorderAndTotalIconSizes(res).second + 2 * stroke;
@@ -227,12 +223,8 @@ public class TabGroupColorViewProvider implements Destroyable {
                 mTransitiveSharedGroupObserver.getGroupSharedStateSupplier().get();
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
-        @ColorInt
-        int tabGroupColor =
-                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                        mContext, mColorId, mIsIncognito);
         mSharedImageTilesConfigBuilder =
-                SharedImageTilesConfig.Builder.createThumbnail(mContext, tabGroupColor);
+                SharedImageTilesConfig.Builder.createThumbnail(mContext, mColorId);
 
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(

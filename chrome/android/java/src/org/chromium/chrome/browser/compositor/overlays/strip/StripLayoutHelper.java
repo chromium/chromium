@@ -116,7 +116,6 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -3221,9 +3220,7 @@ public class StripLayoutHelper
             StripLayoutGroupTitle groupTitle, @TabGroupColorId int newColor) {
         if (groupTitle == null) return;
 
-        groupTitle.updateTint(
-                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                        mContext, newColor, mIncognito));
+        groupTitle.updateTint(newColor);
         updateGroupTitleBitmapIfNeeded(groupTitle);
     }
 

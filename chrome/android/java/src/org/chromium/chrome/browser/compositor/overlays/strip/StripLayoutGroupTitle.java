@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
@@ -105,7 +107,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private int mRootId;
     private final Token mTabGroupId;
     private String mTitle;
-    @ColorInt private int mColor;
+    @TabGroupColorId private int mColorId;
 
     // Bottom indicator variables
     private float mBottomIndicatorWidth;
@@ -208,22 +210,23 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
-     * @return The tint color resource that represents the tab group title indicator background.
+     * @return The tab group color id that represents the tab group title indicator background.
      */
-    public @ColorInt int getTint() {
-        return mColor;
+    public @TabGroupColorId int getTint() {
+        return TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                mContext, mColorId, isIncognito());
     }
 
     /**
-     * @param color The color used when displaying this group.
+     * @param colorId The colorId used when displaying this group.
      */
-    public void updateTint(@ColorInt int color) {
-        mColor = color;
+    public void updateTint(@TabGroupColorId int colorId) {
+        mColorId = colorId;
 
         // Update the shared group avatar border color if a shared image tiles coordinator exists.
         if (mSharedImageTilesCoordinator != null) {
             mSharedImageTilesCoordinator.updateConfig(
-                    mSharedImageTilesConfigBuilder.setTabGroupColor(mColor).build());
+                    mSharedImageTilesConfigBuilder.setTabGroupColor(mContext, colorId).build());
         }
     }
 
@@ -345,7 +348,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         // Initialize the shared image tiles coordinator if it doesn't exist.
         if (mSharedImageTilesCoordinator == null) {
             mSharedImageTilesConfigBuilder =
-                    SharedImageTilesConfig.Builder.createThumbnail(mContext, mColor);
+                    SharedImageTilesConfig.Builder.createThumbnail(mContext, mColorId);
             mSharedImageTilesCoordinator =
                     new SharedImageTilesCoordinator(
                             mContext,

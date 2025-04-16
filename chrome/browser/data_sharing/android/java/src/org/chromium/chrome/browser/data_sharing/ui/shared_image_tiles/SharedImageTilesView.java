@@ -61,9 +61,10 @@ public class SharedImageTilesView extends LinearLayout {
             drawable.setStroke(borderSize, config.borderColor);
         }
 
-        // Style the number tile.
-        mCountTileView.setTextColor(config.textColor);
+        // Style the number tile. Note that textColor must be set after textAppearance in order to
+        // override the color of the text.
         mCountTileView.setTextAppearance(config.textStyle);
+        mCountTileView.setTextColor(config.textColor);
         mCountTileView.setPadding(
                 /* left= */ textPadding, /* top= */ 0, /* right= */ textPadding, /* bottom= */ 0);
     }

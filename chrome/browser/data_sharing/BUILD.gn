@@ -249,6 +249,7 @@ if (is_android) {
       "//components/browser_ui/styles/android:java",
       "//components/collaboration/public:core_java",
       "//components/data_sharing/public:public_java",
+      "//components/tab_groups:tab_groups_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_no_recycler_view_java",

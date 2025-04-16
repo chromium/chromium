@@ -110,13 +110,24 @@ public class TabGroupColorPickerUtils {
         } else if (ColorUtils.inNightMode(context)) {
             return SemanticColorUtils.getColorOnSurfaceInverse(context);
         } else {
-            switch (colorId) {
-                case TabGroupColorId.YELLOW:
-                case TabGroupColorId.ORANGE:
-                    return SemanticColorUtils.getDefaultTextColor(context);
-                default:
-                    return SemanticColorUtils.getDefaultTextColorOnAccent1(context);
+            if (shouldUseDarkTextColorOnTabGroupColor(colorId)) {
+                return SemanticColorUtils.getDefaultTextColor(context);
             }
+            return SemanticColorUtils.getDefaultTextColorOnAccent1(context);
+        }
+    }
+
+    /**
+     * @param colorId The color id corresponding to the color item in the color picker.
+     * @return Whether dark text should be used.
+     */
+    public static boolean shouldUseDarkTextColorOnTabGroupColor(@TabGroupColorId int colorId) {
+        switch (colorId) {
+            case TabGroupColorId.YELLOW:
+            case TabGroupColorId.ORANGE:
+                return true;
+            default:
+                return false;
         }
     }
 }
