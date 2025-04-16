@@ -1199,8 +1199,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   }
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
   if (form_structure && autofill_field &&
+      !context.do_not_generate_autofill_suggestions &&
       GetFieldsFillableByAutofillAi(*form_structure, client())
-          .contains(autofill_field->global_id())) {
+          .contains(field.global_id())) {
     std::move(callback).Run(
         /*show_suggestions=*/true,
         delegate->GetSuggestions(form.global_id(), field.global_id()),
