@@ -18,6 +18,7 @@ page_actions::PageActionState ModelToState(
   return page_actions::PageActionState{
       .action_id = action_id,
       .showing = model.GetVisible(),
+      .chip_showing = model.GetShowSuggestionChip() && model.GetVisible(),
   };
 }
 }  // namespace
@@ -67,9 +68,14 @@ void PageActionObserverImpl::OnPageActionModelChanged(
 
   if (new_page_action_state.showing && !page_action_.showing) {
     base_->OnPageActionIconShown(new_page_action_state);
-  }
-  if (!new_page_action_state.showing && page_action_.showing) {
+  } else if (!new_page_action_state.showing && page_action_.showing) {
     base_->OnPageActionIconHidden(new_page_action_state);
+  }
+
+  if (new_page_action_state.chip_showing && !page_action_.chip_showing) {
+    base_->OnPageActionChipShown(new_page_action_state);
+  } else if (!new_page_action_state.chip_showing && page_action_.chip_showing) {
+    base_->OnPageActionChipHidden(new_page_action_state);
   }
 
   page_action_ = new_page_action_state;

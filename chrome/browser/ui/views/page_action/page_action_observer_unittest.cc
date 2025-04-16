@@ -44,6 +44,14 @@ class MockPageActionObserver : public PageActionObserver {
               OnPageActionIconHidden,
               (const PageActionState&),
               (override));
+  MOCK_METHOD(void,
+              OnPageActionChipShown,
+              (const PageActionState&),
+              (override));
+  MOCK_METHOD(void,
+              OnPageActionChipHidden,
+              (const PageActionState&),
+              (override));
 };
 
 class NotifierPageActionModel : public MockPageActionModel {
@@ -122,6 +130,57 @@ TEST_F(PageActionObserverTest, OnPageActionIconHidden) {
 
   // Further change notifications shouldn't trigger the event anymore.
   EXPECT_CALL(observer(), OnPageActionIconHidden(testing::_)).Times(0);
+  model.NotifyChanged();
+}
+
+TEST_F(PageActionObserverTest, OnPageActionChipShown) {
+  NotifierPageActionModel& model = factory().Get(kTestPageActionId);
+  ON_CALL(model, GetVisible()).WillByDefault(testing::Return(true));
+  ON_CALL(model, GetShowSuggestionChip()).WillByDefault(testing::Return(false));
+  observer().RegisterAsPageActionObserver(controller());
+
+  ON_CALL(model, GetShowSuggestionChip()).WillByDefault(testing::Return(true));
+  EXPECT_CALL(observer(), OnPageActionChipShown(testing::_)).Times(1);
+  EXPECT_CALL(observer(), OnPageActionChipHidden(testing::_)).Times(0);
+  model.NotifyChanged();
+
+  // Further change notifications shouldn't trigger the event anymore.
+  EXPECT_CALL(observer(), OnPageActionChipShown(testing::_)).Times(0);
+  EXPECT_CALL(observer(), OnPageActionChipHidden(testing::_)).Times(0);
+  model.NotifyChanged();
+}
+
+TEST_F(PageActionObserverTest, OnPageActionChipHidden) {
+  NotifierPageActionModel& model = factory().Get(kTestPageActionId);
+  ON_CALL(model, GetVisible()).WillByDefault(testing::Return(true));
+  ON_CALL(model, GetShowSuggestionChip()).WillByDefault(testing::Return(true));
+  observer().RegisterAsPageActionObserver(controller());
+
+  ON_CALL(model, GetShowSuggestionChip()).WillByDefault(testing::Return(false));
+  EXPECT_CALL(observer(), OnPageActionChipHidden(testing::_)).Times(1);
+  EXPECT_CALL(observer(), OnPageActionChipShown(testing::_)).Times(0);
+  model.NotifyChanged();
+
+  // Further change notifications shouldn't trigger the event anymore.
+  EXPECT_CALL(observer(), OnPageActionChipShown(testing::_)).Times(0);
+  EXPECT_CALL(observer(), OnPageActionChipHidden(testing::_)).Times(0);
+  model.NotifyChanged();
+}
+
+TEST_F(PageActionObserverTest,
+       OnPageActionChipVisibilityConsidersIconVisibility) {
+  NotifierPageActionModel& model = factory().Get(kTestPageActionId);
+  ON_CALL(model, GetVisible()).WillByDefault(testing::Return(false));
+  ON_CALL(model, GetShowSuggestionChip()).WillByDefault(testing::Return(true));
+  observer().RegisterAsPageActionObserver(controller());
+
+  ON_CALL(model, GetVisible()).WillByDefault(testing::Return(true));
+  EXPECT_CALL(observer(), OnPageActionChipShown(testing::_)).Times(1);
+  model.NotifyChanged();
+
+  ON_CALL(model, GetVisible()).WillByDefault(testing::Return(false));
+  // Further change notifications shouldn't trigger the event anymore.
+  EXPECT_CALL(observer(), OnPageActionChipHidden(testing::_)).Times(1);
   model.NotifyChanged();
 }
 
