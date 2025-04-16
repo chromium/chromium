@@ -151,6 +151,10 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::ContextualCueing_NudgeDecision::kNudgeDecisionName,
       static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
+
+  // Simulate reload.
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -305,6 +309,26 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(nudge_observer.last_nudge_label_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
+                       TestCueLabelClearedOnErrorPage) {
+  SetUpEnabledHints();
+
+  FakeGlicNudgeObserver nudge_observer;
+  glic_nudge_controller()->AddObserver(&nudge_observer);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ("test label", nudge_observer.last_nudge_label_);
+
+  // Make sure it's cleared on error page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://eeerrrooorrrpage")));
+  EXPECT_EQ("", nudge_observer.last_nudge_label_);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
