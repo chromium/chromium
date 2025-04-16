@@ -198,7 +198,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
                 return new ResourceItem(
-                        R.drawable.infobar_downloading,
+                        R.drawable.download_24px,
                         R.string.automatic_downloads_permission_title,
                         ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
@@ -224,7 +224,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.BACKGROUND_SYNC:
                 return new ResourceItem(
-                                R.drawable.permission_background_sync,
+                                R.drawable.sync_24px,
                                 R.string.background_sync_permission_title,
                                 ContentSettingValues.ALLOW,
                                 ContentSettingValues.BLOCK,
