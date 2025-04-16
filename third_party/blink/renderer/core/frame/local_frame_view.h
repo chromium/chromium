@@ -427,9 +427,6 @@ class CORE_EXPORT LocalFrameView final
 
    private:
     base::AutoReset<bool> resetter_;
-    // The number of |InvalidationDisallowedScope| class instances currently in
-    // existence.
-    static int instance_count_;
   };
   friend class InvalidationDisallowedScope;
 

@@ -248,10 +248,6 @@ constexpr int kCommitDelayDefaultInMs = 500;  // 30 frames @ 60hz
 // returning.
 static const unsigned kMaxUpdatePluginsIterations = 2;
 
-// The number of |InvalidationDisallowedScope| class instances. Used to ensure
-// that no more than one instance of this class exists at any given time.
-int LocalFrameView::InvalidationDisallowedScope::instance_count_ = 0;
-
 LocalFrameView::LocalFrameView(LocalFrame& frame)
     : LocalFrameView(frame, gfx::Rect()) {
   Show();
@@ -1978,14 +1974,10 @@ LocalFrameView::InvalidationDisallowedScope::InvalidationDisallowedScope(
                      .LocalFrameRoot()
                      .View()
                      ->invalidation_disallowed_,
-                true) {
-  DCHECK_EQ(instance_count_, 0);
-  ++instance_count_;
-}
+                true) {}
 
-LocalFrameView::InvalidationDisallowedScope::~InvalidationDisallowedScope() {
-  --instance_count_;
-}
+LocalFrameView::InvalidationDisallowedScope::~InvalidationDisallowedScope() =
+    default;
 
 void LocalFrameView::ScheduleVisualUpdateForVisualOverflowIfNeeded() {
   LocalFrame& local_frame_root = GetFrame().LocalFrameRoot();
