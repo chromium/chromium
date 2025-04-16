@@ -23,11 +23,9 @@ namespace {
 
 std::string FeatureNameToEventName(const base::Feature& feature) {
   constexpr char kIPHPrefix[] = "IPH_";
-  std::string name = feature.name;
-  if (base::StartsWith(name, kIPHPrefix)) {
-    name = name.substr(strlen(kIPHPrefix));
-  }
-  return name;
+  std::string_view name = feature.name;
+  auto remainder = base::RemovePrefix(name, kIPHPrefix);
+  return std::string(remainder.value_or(name));
 }
 
 // Returns whether a comparator is bounded from above.
