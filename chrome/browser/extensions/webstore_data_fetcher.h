@@ -46,6 +46,7 @@ class WebstoreDataFetcher {
   static void SetMockItemSnippetReponseForTesting(
       FetchItemSnippetResponse* mock_response);
 
+  // Starts the request to fetch web store data using the item snippets API.
   void Start(network::mojom::URLLoaderFactory* url_loader_factory);
 
   void set_max_auto_retries(int max_retries) {
@@ -53,9 +54,6 @@ class WebstoreDataFetcher {
   }
 
  private:
-  // Fetch web store data using the item snippets API.
-  void FetchItemSnippet(network::mojom::URLLoaderFactory* url_loader_factory);
-
   // Initializes `simple_url_loader_` for the given `request` and `annotation`.
   void InitializeSimpleLoaderForRequest(
       std::unique_ptr<network::ResourceRequest> request,
