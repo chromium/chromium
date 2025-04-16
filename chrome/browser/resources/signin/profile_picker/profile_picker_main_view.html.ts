@@ -19,11 +19,8 @@ ${function() {
   }()}
 <div class="flex-container">
   <div class="title-container">
-    <div id="images-container">
-      <img id="product-logo" @click="${this.onProductLogoClick_}"
-          src="product_logo.svg" role="presentation">
-      <img id="glic-logo" ?hidden="${!isGlicVersion()}" role="presentation">
-    </div>
+    <img id="picker-logo" @click="${this.onProductLogoClick_}"
+        src="picker_logo.svg" role="presentation">
     <h1 class="title" .innerHTML="${this.getTitle_()}"></h1>
     <div class="subtitle" .innerHTML="${this.getSubtitle_()}"></div>
   </div>

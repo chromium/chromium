@@ -34,7 +34,7 @@ export interface ProfilePickerMainViewElement {
   $: {
     addProfile: HTMLElement,
     askOnStartup: CrCheckboxElement,
-    'product-logo': HTMLElement,
+    'picker-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,
     profilesWrapper: HTMLElement,
@@ -201,7 +201,12 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected onProductLogoClick_() {
-    this.$['product-logo'].animate(
+    // No animation for Glic logo version.
+    if (this.isGlic_) {
+      return;
+    }
+
+    this.$['picker-logo'].animate(
         {
           transform: ['none', 'rotate(-10turn)'],
         },
