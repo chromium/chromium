@@ -25,6 +25,12 @@ ConnectorsService::ConnectorsService(
 
 ConnectorsService::~ConnectorsService() = default;
 
+std::string ConnectorsService::GetManagementDomain() {
+  // TODO(crbug.com/411092942): Determine managment domain (profile or CBCM)
+  // that enables the connectors policies.
+  return std::string();
+}
+
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
   // None of the analysis connector policies are supported on iOS.
   return false;

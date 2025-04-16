@@ -27,6 +27,11 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
                     policy::UserCloudPolicyManager* user_cloud_policy_manager);
   ~ConnectorsService() override;
 
+  // Returns the CBCM domain or profile domain that enables connector policies.
+  // If both set Connector policies, the CBCM domain is returned as it has
+  // precedence.
+  std::string GetManagementDomain();
+
   // ConnectorsServiceBase:
   bool IsConnectorEnabled(AnalysisConnector connector) const override;
   // Returns the DM tokens corresponding to browser management, if one is
