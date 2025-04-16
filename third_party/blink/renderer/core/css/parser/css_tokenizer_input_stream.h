@@ -65,7 +65,7 @@ class CSSTokenizerInputStream {
         ++offset;
       }
     } else {
-      const UChar* characters16 = string_.Characters16();
+      const UChar* characters16 = UNSAFE_TODO(string_.Characters16());
       while ((offset_ + offset) < string_length_ &&
              characterPredicate(UNSAFE_TODO(characters16[offset_ + offset]))) {
         ++offset;

@@ -20,7 +20,7 @@ void CSSTokenizerInputStream::AdvanceUntilNonWhitespace() {
       ++offset_;
     }
   } else {
-    const UChar* characters = string_.Characters16();
+    const UChar* characters = UNSAFE_TODO(string_.Characters16());
     while (offset_ < string_length_ &&
            IsHTMLSpace(UNSAFE_TODO(characters[offset_]))) {
       ++offset_;
