@@ -10,6 +10,8 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
@@ -91,8 +93,8 @@ class MockTransferBuffer : public TransferBufferInterface {
   uint32_t size_;
   uint32_t result_size_;
   uint32_t alignment_;
-  int buffer_ids_[kNumBuffers];
-  scoped_refptr<Buffer> buffers_[kNumBuffers];
+  std::array<int, kNumBuffers> buffer_ids_;
+  std::array<scoped_refptr<Buffer>, kNumBuffers> buffers_;
   int actual_buffer_index_;
   int expected_buffer_index_;
   raw_ptr<void> last_alloc_;

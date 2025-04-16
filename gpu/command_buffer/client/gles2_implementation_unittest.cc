@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -475,7 +476,7 @@ class GLES2ImplementationTest : public testing::Test {
 
   void ResetErrorMessageCallback() { gl_->error_message_callback_.Reset(); }
 
-  TestContext test_contexts_[kNumTestContexts];
+  std::array<TestContext, kNumTestContexts> test_contexts_;
 
   scoped_refptr<ShareGroup> share_group_;
   raw_ptr<MockClientGpuControl> gpu_control_;
@@ -2023,28 +2024,90 @@ TEST_F(GLES2ImplementationTest, GetIntegerCacheRead) {
     GLenum pname;
     GLint expected;
   };
-  const PNameValue pairs[] = {
-      {GL_ACTIVE_TEXTURE, GL_TEXTURE0, },
-      {GL_TEXTURE_BINDING_2D, 0, },
-      {GL_TEXTURE_BINDING_CUBE_MAP, 0, },
-      {GL_TEXTURE_BINDING_EXTERNAL_OES, 0, },
-      {GL_FRAMEBUFFER_BINDING, 0, },
-      {GL_RENDERBUFFER_BINDING, 0, },
-      {GL_ARRAY_BUFFER_BINDING, 0, },
-      {GL_ELEMENT_ARRAY_BUFFER_BINDING, 0, },
-      {GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, kMaxCombinedTextureImageUnits, },
-      {GL_MAX_CUBE_MAP_TEXTURE_SIZE, kMaxCubeMapTextureSize, },
-      {GL_MAX_FRAGMENT_UNIFORM_VECTORS, kMaxFragmentUniformVectors, },
-      {GL_MAX_RENDERBUFFER_SIZE, kMaxRenderbufferSize, },
-      {GL_MAX_TEXTURE_IMAGE_UNITS, kMaxTextureImageUnits, },
-      {GL_MAX_TEXTURE_SIZE, kMaxTextureSize, },
-      {GL_MAX_VARYING_VECTORS, kMaxVaryingVectors, },
-      {GL_MAX_VERTEX_ATTRIBS, kMaxVertexAttribs, },
-      {GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, kMaxVertexTextureImageUnits, },
-      {GL_MAX_VERTEX_UNIFORM_VECTORS, kMaxVertexUniformVectors, },
-      {GL_NUM_COMPRESSED_TEXTURE_FORMATS, kNumCompressedTextureFormats, },
-      {GL_NUM_SHADER_BINARY_FORMATS, kNumShaderBinaryFormats, }, };
-  size_t num_pairs = sizeof(pairs) / sizeof(pairs[0]);
+  const auto pairs = std::to_array<PNameValue>({
+      {
+          GL_ACTIVE_TEXTURE,
+          GL_TEXTURE0,
+      },
+      {
+          GL_TEXTURE_BINDING_2D,
+          0,
+      },
+      {
+          GL_TEXTURE_BINDING_CUBE_MAP,
+          0,
+      },
+      {
+          GL_TEXTURE_BINDING_EXTERNAL_OES,
+          0,
+      },
+      {
+          GL_FRAMEBUFFER_BINDING,
+          0,
+      },
+      {
+          GL_RENDERBUFFER_BINDING,
+          0,
+      },
+      {
+          GL_ARRAY_BUFFER_BINDING,
+          0,
+      },
+      {
+          GL_ELEMENT_ARRAY_BUFFER_BINDING,
+          0,
+      },
+      {
+          GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+          kMaxCombinedTextureImageUnits,
+      },
+      {
+          GL_MAX_CUBE_MAP_TEXTURE_SIZE,
+          kMaxCubeMapTextureSize,
+      },
+      {
+          GL_MAX_FRAGMENT_UNIFORM_VECTORS,
+          kMaxFragmentUniformVectors,
+      },
+      {
+          GL_MAX_RENDERBUFFER_SIZE,
+          kMaxRenderbufferSize,
+      },
+      {
+          GL_MAX_TEXTURE_IMAGE_UNITS,
+          kMaxTextureImageUnits,
+      },
+      {
+          GL_MAX_TEXTURE_SIZE,
+          kMaxTextureSize,
+      },
+      {
+          GL_MAX_VARYING_VECTORS,
+          kMaxVaryingVectors,
+      },
+      {
+          GL_MAX_VERTEX_ATTRIBS,
+          kMaxVertexAttribs,
+      },
+      {
+          GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
+          kMaxVertexTextureImageUnits,
+      },
+      {
+          GL_MAX_VERTEX_UNIFORM_VECTORS,
+          kMaxVertexUniformVectors,
+      },
+      {
+          GL_NUM_COMPRESSED_TEXTURE_FORMATS,
+          kNumCompressedTextureFormats,
+      },
+      {
+          GL_NUM_SHADER_BINARY_FORMATS,
+          kNumShaderBinaryFormats,
+      },
+  });
+  size_t num_pairs =
+      (pairs.size() * sizeof(decltype(pairs)::value_type)) / sizeof(pairs[0]);
   for (size_t ii = 0; ii < num_pairs; ++ii) {
     const PNameValue& pv = pairs[ii];
     GLint v = -1;
@@ -2112,15 +2175,42 @@ TEST_F(GLES2ImplementationTest, GetIntegerCacheWrite) {
   gl_->BindTexture(GL_TEXTURE_CUBE_MAP, 7);
   gl_->BindTexture(GL_TEXTURE_EXTERNAL_OES, 8);
 
-  const PNameValue pairs[] = {{GL_ACTIVE_TEXTURE, GL_TEXTURE4, },
-                              {GL_ARRAY_BUFFER_BINDING, 2, },
-                              {GL_ELEMENT_ARRAY_BUFFER_BINDING, 3, },
-                              {GL_FRAMEBUFFER_BINDING, 4, },
-                              {GL_RENDERBUFFER_BINDING, 5, },
-                              {GL_TEXTURE_BINDING_2D, 6, },
-                              {GL_TEXTURE_BINDING_CUBE_MAP, 7, },
-                              {GL_TEXTURE_BINDING_EXTERNAL_OES, 8, }, };
-  size_t num_pairs = sizeof(pairs) / sizeof(pairs[0]);
+  const auto pairs = std::to_array<PNameValue>({
+      {
+          GL_ACTIVE_TEXTURE,
+          GL_TEXTURE4,
+      },
+      {
+          GL_ARRAY_BUFFER_BINDING,
+          2,
+      },
+      {
+          GL_ELEMENT_ARRAY_BUFFER_BINDING,
+          3,
+      },
+      {
+          GL_FRAMEBUFFER_BINDING,
+          4,
+      },
+      {
+          GL_RENDERBUFFER_BINDING,
+          5,
+      },
+      {
+          GL_TEXTURE_BINDING_2D,
+          6,
+      },
+      {
+          GL_TEXTURE_BINDING_CUBE_MAP,
+          7,
+      },
+      {
+          GL_TEXTURE_BINDING_EXTERNAL_OES,
+          8,
+      },
+  });
+  size_t num_pairs =
+      (pairs.size() * sizeof(decltype(pairs)::value_type)) / sizeof(pairs[0]);
   for (size_t ii = 0; ii < num_pairs; ++ii) {
     const PNameValue& pv = pairs[ii];
     GLint v = -1;
@@ -2332,7 +2422,7 @@ TEST_F(GLES2ImplementationTest, TexImage2DViaTexSubImage2D) {
 }
 
 TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
-  static const GLint unpack_alignments[] = { 1, 2, 4, 8 };
+  static const auto unpack_alignments = std::to_array<GLint>({1, 2, 4, 8});
 
   static const GLenum kFormat = GL_RGB;
   static const GLenum kType = GL_UNSIGNED_BYTE;
@@ -2465,7 +2555,7 @@ TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
 }
 
 TEST_F(GLES3ImplementationTest, SubImage3DUnpack) {
-  static const GLint unpack_alignments[] = { 1, 2, 4, 8 };
+  static const auto unpack_alignments = std::to_array<GLint>({1, 2, 4, 8});
 
   static const GLenum kFormat = GL_RGB;
   static const GLenum kType = GL_UNSIGNED_BYTE;
@@ -3116,17 +3206,17 @@ TEST_F(GLES2ImplementationTest, MultiDrawArraysWEBGLLargerThanTransferBuffer) {
 }
 
 TEST_F(GLES2ImplementationTest, CapabilitiesAreCached) {
-  static const GLenum kStates[] = {
-    GL_DITHER,
-    GL_BLEND,
-    GL_CULL_FACE,
-    GL_DEPTH_TEST,
-    GL_POLYGON_OFFSET_FILL,
-    GL_SAMPLE_ALPHA_TO_COVERAGE,
-    GL_SAMPLE_COVERAGE,
-    GL_SCISSOR_TEST,
-    GL_STENCIL_TEST,
-  };
+  static const auto kStates = std::to_array<GLenum>({
+      GL_DITHER,
+      GL_BLEND,
+      GL_CULL_FACE,
+      GL_DEPTH_TEST,
+      GL_POLYGON_OFFSET_FILL,
+      GL_SAMPLE_ALPHA_TO_COVERAGE,
+      GL_SAMPLE_COVERAGE,
+      GL_SCISSOR_TEST,
+      GL_STENCIL_TEST,
+  });
   struct Cmds {
     cmds::Enable enable_cmd;
   };

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -814,8 +815,9 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   scoped_refptr<ShareGroup> share_group_;
   ShareGroupContextData share_group_context_data_;
 
-  std::unique_ptr<IdAllocator>
-      id_allocators_[static_cast<int>(IdNamespaces::kNumIdNamespaces)];
+  std::array<std::unique_ptr<IdAllocator>,
+             static_cast<int>(IdNamespaces::kNumIdNamespaces)>
+      id_allocators_;
 
   std::unique_ptr<BufferTracker> buffer_tracker_;
   std::unique_ptr<ReadbackBufferShadowTracker> readback_buffer_shadow_tracker_;
