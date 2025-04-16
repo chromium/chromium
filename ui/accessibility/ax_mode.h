@@ -244,8 +244,7 @@ inline constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
 inline constexpr AXMode kAXModeOnScreen(AXMode::kNativeAPIs |
                                             AXMode::kWebContents |
                                             AXMode::kInlineTextBoxes |
-                                            AXMode::kExtendedProperties |
-                                            AXMode::kHTML,
+                                            AXMode::kExtendedProperties,
                                         AXMode::kOnScreenOnly);
 
 // For debugging, test assertions, etc.
