@@ -127,4 +127,8 @@ void InProcessBrowserTestMixinHost::TearDown() {
 }
 
 // Implementation of MixinBasedInProcessBrowserTest.
+#if BUILDFLAG(IS_ANDROID)
+template class InProcessBrowserTestMixinHostSupport<AndroidBrowserTest>;
+#else
 template class InProcessBrowserTestMixinHostSupport<InProcessBrowserTest>;
+#endif

@@ -8,6 +8,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "content/public/test/browser_test_base.h"
 
+class PrefService;
+
 // A base class for browser tests run on Android. It exposes very little API
 // since the majority of the Android UI is accessed through static methods,
 // such as TabModelList.
@@ -31,12 +33,25 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 
   ~AndroidBrowserTest() override;
 
+  // Returns the currently running AndroidBrowserTest.
+  static AndroidBrowserTest* GetCurrent();
+
   // Sets up default command line that will be visible to the code under test.
   // Called by SetUp() after SetUpCommandLine() to add default command line
   // switches. A default implementation is provided in this class. If a test
   // does not want to use the default implementation, it should override this
   // method.
   virtual void SetUpDefaultCommandLine(base::CommandLine* command_line);
+
+  // Initializes the contents of the user data directory. Called by SetUp()
+  // after creating the user data directory, but before any browser is launched.
+  // If a test wishes to set up some initial non-empty state in the user data
+  // directory before the browser starts up, it can do so here. Returns true if
+  // successful. To set initial prefs, see SetUpLocalStatePrefService.
+  [[nodiscard]] virtual bool SetUpUserDataDirectory();
+
+  // Tests can override this to customize the initial local_state.
+  virtual void SetUpLocalStatePrefService(PrefService* local_state) {}
 
   // content::BrowserTestBase implementation.
   void SetUp() override;

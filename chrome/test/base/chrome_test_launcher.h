@@ -54,9 +54,7 @@ class ChromeTestChromeMainDelegate
 
   // ChromeMainDelegateOverrides.
   content::ContentUtilityClient* CreateContentUtilityClient() override;
-#if !BUILDFLAG(IS_ANDROID)
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif

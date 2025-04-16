@@ -11,11 +11,22 @@
 #include "chrome/test/base/test_launcher_utils.h"
 #include "content/public/test/test_utils.h"
 
+namespace {
+AndroidBrowserTest* g_current_test = nullptr;
+}  // namespace
+
 AndroidBrowserTest::AndroidBrowserTest() {
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  g_current_test = this;
 }
 
-AndroidBrowserTest::~AndroidBrowserTest() = default;
+AndroidBrowserTest::~AndroidBrowserTest() {
+  g_current_test = nullptr;
+}
+
+AndroidBrowserTest* AndroidBrowserTest::GetCurrent() {
+  return g_current_test;
+}
 
 void AndroidBrowserTest::SetUp() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -26,6 +37,8 @@ void AndroidBrowserTest::SetUp() {
   InitializeHTTPSTestServer();
   embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
 
+  ASSERT_TRUE(SetUpUserDataDirectory());
+
   BrowserTestBase::SetUp();
 }
 
@@ -34,6 +47,10 @@ void AndroidBrowserTest::SetUpDefaultCommandLine(
   test_launcher_utils::PrepareBrowserCommandLineForTests(command_line);
   test_launcher_utils::PrepareBrowserCommandLineForBrowserTests(
       command_line, /*open_about_blank_on_launch=*/true);
+}
+
+bool AndroidBrowserTest::SetUpUserDataDirectory() {
+  return true;
 }
 
 void AndroidBrowserTest::PreRunTestOnMainThread() {}

@@ -2000,6 +2000,8 @@ if (is_android) {
       "../browser/ssl/cert_verifier_platform_browser_test.h",
       "base/android/android_browser_test.cc",
       "base/android/android_browser_test.h",
+      "base/mixin_based_in_process_browser_test.cc",
+      "base/mixin_based_in_process_browser_test.h",
       "base/platform_browser_test.h",
     ]
     public_deps = [ "//content/test:test_support" ]
