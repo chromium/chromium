@@ -13373,10 +13373,26 @@
     "InvalidationWithDirectMessagesUserRemoteCommands": [
         {
             "platforms": [
-                "chromeos",
+                "android",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserRemoteCommands",
+                        "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InvalidationWithDirectMessagesUserRemoteCommandsChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
             ],
             "experiments": [
                 {
