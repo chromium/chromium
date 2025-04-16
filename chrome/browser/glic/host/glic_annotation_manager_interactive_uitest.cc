@@ -461,9 +461,11 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 }
 
 // This tests a state where GlicFocusedTabManager has no focused tab. It
-// relies on about:blank not being considered as a valid URL by the class.
+// relies on chrome://settings not being considered as a valid URL by the class.
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoFocusedTab) {
   RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(kActiveTabId, GURL("chrome://settings")),
       OpenGlicWindow(GlicWindowMode::kDetached),  //
       WaitUntilGlicFocusedTabIs(std::nullopt),    //
       InsertFakeAnnotationService(),              //

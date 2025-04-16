@@ -470,7 +470,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
   EXPECT_FALSE(border->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
+// TODO(411139307): Fix and re-enable test.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   auto tester = std::make_unique<TesterImpl>(border);

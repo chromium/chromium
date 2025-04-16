@@ -23,6 +23,21 @@ namespace {
 
 constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
 
+// URLs allowed to be focused despite other URL validity checks.
+// Note: other, non-url-based focus checks still apply.
+const base::flat_set<GURL>& GetURLAllowList() {
+  static const base::flat_set<GURL> kURLAllowList = {
+      // Allow 'blank' pages to avoid flicker during tab creation.
+      GURL(),
+      GURL("about:blank"),
+      GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+      GURL(chrome::kChromeUINewTabPageURL),
+      GURL(chrome::kChromeUINewTabURL),
+      GURL(chrome::kChromeUIWhatsNewURL)};
+
+  return kURLAllowList;
+}
+
 }  // namespace
 
 GlicFocusedTabManager::GlicFocusedTabManager(
@@ -355,7 +370,8 @@ bool GlicFocusedTabManager::IsTabStateValid(
 
   auto url =
       const_cast<content::WebContents*>(web_contents)->GetLastCommittedURL();
-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile()) {
+  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
+      GetURLAllowList().contains(url)) {
     return true;
   }
 
