@@ -100,18 +100,20 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
 
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   DCHECK(data);
-
   UserInfo user_info(data->network(), GetCardArtUrl(*data));
 
   std::u16string obfuscated_number =
       data->CardIdentifierStringForManualFilling();
+  std::u16string obfuscated_number_a11y_description =
+      obfuscated_number + u" " + data->NetworkForDisplay();
   // The `text_to_fill` field is set to an empty string as we're populating the
   // `id` of the `UserInfoField` which would be used to determine the type of
   // the card and fill the form accordingly.
   user_info.add_field(
       AccessorySheetField::Builder()
           .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
-          .SetDisplayText(obfuscated_number)
+          .SetDisplayText(std::move(obfuscated_number))
+          .SetA11yDescription(std::move(obfuscated_number_a11y_description))
           .SetId(data->guid())
           .SetSelectable(enabled)
           .Build());
@@ -126,12 +128,14 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   const CreditCard& card = data->card;
   UserInfo user_info(card.network(), GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
+  std::u16string card_number_a11y_description =
+      card_number + u" " + card.NetworkForDisplay();
   user_info.add_field(
       AccessorySheetField::Builder()
           .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
           .SetDisplayText(card.FullDigitsForDisplay())
-          .SetTextToFill(card_number)
-          .SetA11yDescription(card_number)
+          .SetTextToFill(std::move(card_number))
+          .SetA11yDescription(std::move(card_number_a11y_description))
           .SetSelectable(enabled)
           .Build());
   AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
