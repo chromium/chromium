@@ -11,6 +11,7 @@
 #include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -190,7 +191,7 @@ std::u16string TabSharingStatusMessageView::GetMessageText(
 
 TabSharingStatusMessageView::TabSharingStatusMessageView(
     const MessageInfo& info) {
-  AddMessageChildViews(info);
+  SetupMessage(info);
   AddChildView(views::Builder<views::Separator>()
                    .SetProperty(views::kMarginsKey, kSeparatorInsets)
                    .Build());
@@ -205,7 +206,7 @@ TabSharingStatusMessageView::TabSharingStatusMessageView(
 
 TabSharingStatusMessageView::~TabSharingStatusMessageView() = default;
 
-void TabSharingStatusMessageView::AddMessageChildViews(MessageInfo info) {
+void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   // Format the message text and retrieve the offsets to where the replacements
   // should go.
   std::vector<size_t> offsets;
@@ -257,6 +258,10 @@ void TabSharingStatusMessageView::AddMessageChildViews(MessageInfo info) {
     AddChildView(std::make_unique<views::Label>(
         label_text.substr(label_start, label_length)));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  SetAccessibleName(label_text);
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {

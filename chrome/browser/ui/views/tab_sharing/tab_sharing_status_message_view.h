@@ -65,7 +65,7 @@ class TabSharingStatusMessageView : public views::View {
   ~TabSharingStatusMessageView() override;
 
  private:
-  void AddMessageChildViews(MessageInfo info);
+  void SetupMessage(MessageInfo info);
   void AddButton(const EndpointInfo& endpoint_info);
 };
 
