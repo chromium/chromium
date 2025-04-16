@@ -1592,7 +1592,7 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
   // Remove a login by UNIQUE-constrained fields.
   DCHECK(!delete_statement_.empty());
   sql::Statement s(db_.GetCachedStatement(SQL_FROM_HERE, delete_statement_));
-  s.BindString(0, form.url.spec());
+  s.BindString(0, form.url.possibly_invalid_spec());
   s.BindString16(1, form.username_element);
   s.BindString16(2, form.username_value);
   s.BindString16(3, form.password_element);
