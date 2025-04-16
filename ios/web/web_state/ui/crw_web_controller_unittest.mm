@@ -366,6 +366,28 @@ TEST_F(CRWWebControllerTest,
   EXPECT_TRUE(download_started);
 }
 
+// Tests `currentURL` method.
+TEST_F(CRWWebControllerTest, CurrentUrl) {
+  GURL url("http://chromium.test");
+  AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
+
+  [[[mock_web_view_ stub] andReturnBool:NO] hasOnlySecureContent];
+  [static_cast<WKWebView*>([[mock_web_view_ stub] andReturn:@""]) title];
+  SetWebViewURL(@"http://chromium.test");
+
+  // Stub out the injection process.
+  [[mock_web_view_ stub] evaluateJavaScript:OCMOCK_ANY
+                          completionHandler:OCMOCK_ANY];
+
+  // Simulate a page load to trigger a URL update.
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:nil];
+  [fake_wk_list_ setCurrentURL:@"http://chromium.test"];
+  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:nil];
+
+  EXPECT_EQ(url, [web_controller() currentURL]);
+}
+
 // Test fixture to test JavaScriptDialogPresenter.
 class JavaScriptDialogPresenterTest : public WebTestWithWebController {
  protected:
@@ -914,28 +936,6 @@ TEST_F(CRWWebControllerResponseTest, IFrameDownloadWithNSHTTPURLResponse) {
   EXPECT_EQ(-1, task->GetTotalBytes());
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
   EXPECT_EQ("", task->GetMimeType());
-}
-
-// Tests `currentURL` method.
-TEST_F(CRWWebControllerTest, CurrentUrl) {
-  GURL url("http://chromium.test");
-  AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
-
-  [[[mock_web_view_ stub] andReturnBool:NO] hasOnlySecureContent];
-  [static_cast<WKWebView*>([[mock_web_view_ stub] andReturn:@""]) title];
-  SetWebViewURL(@"http://chromium.test");
-
-  // Stub out the injection process.
-  [[mock_web_view_ stub] evaluateJavaScript:OCMOCK_ANY
-                          completionHandler:OCMOCK_ANY];
-
-  // Simulate a page load to trigger a URL update.
-  [navigation_delegate_ webView:mock_web_view_
-      didStartProvisionalNavigation:nil];
-  [fake_wk_list_ setCurrentURL:@"http://chromium.test"];
-  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:nil];
-
-  EXPECT_EQ(url, [web_controller() currentURL]);
 }
 
 // Test fixture to test decidePolicyForNavigationAction:decisionHandler:
