@@ -4962,19 +4962,6 @@ hooks = [
     ],
   },
   {
-    # Ensure we remove any file from disk that is no longer needed (e.g. after
-    # hooks to native GCS deps migration).
-    'name': 'remove_stale_files',
-    'pattern': '.',
-    'action': [
-        'python3',
-        'src/tools/remove_stale_files.py',
-        'src/third_party/test_fonts/test_fonts.tar.gz', # Remove after 20240901
-        'src/third_party/node/node_modules.tar.gz', # TODO: Remove after 20241201, see https://crbug.com/351092787
-        'src/third_party/tfhub_models', # TODO: Remove after 20241211
-    ],
-  },
-  {
     # Ensure that we don't accidentally reference any .pyc files whose
     # corresponding .py files have since been deleted.
     # We could actually try to avoid generating .pyc files, crbug.com/500078.
