@@ -102,6 +102,12 @@ class CONTENT_EXPORT StorageInterestGroups
 class CONTENT_EXPORT InterestGroupCachingStorage {
  public:
   static constexpr base::TimeDelta kMinimumCacheHoldTime = base::Seconds(10);
+
+  // The most the entry will be kept in the cache, even if people keep using
+  // it. (Only effective if clickiness is on, since that requires this for
+  // some degree of freshness).
+  static constexpr base::TimeDelta kMaximumCacheHoldTime = base::Seconds(120);
+
   struct CONTENT_EXPORT CachedOriginsInfo {
     CachedOriginsInfo();
     explicit CachedOriginsInfo(const blink::InterestGroup& group);
@@ -383,7 +389,8 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
   // Start a timer that holds a reference to `groups` so that it stays in memory
   // for a minimum amount of time (kMinimumCacheHoldTime). If such a timer
-  // already exists, restart it.
+  // already exists, restart it. Staying in memory is relevant because
+  // `cached_interest_groups_` contains weak pointers.
   void StartTimerForInterestGroupHold(
       const url::Origin& owner,
       scoped_refptr<StorageInterestGroups> groups);

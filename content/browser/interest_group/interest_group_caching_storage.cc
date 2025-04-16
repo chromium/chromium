@@ -77,6 +77,10 @@ StorageInterestGroups::StorageInterestGroups(
     std::vector<StorageInterestGroup>&& interest_groups)
     : storage_interest_groups_(std::move(interest_groups)) {
   expiry_ = base::Time::Max();
+  if (base::FeatureList::IsEnabled(blink::features::kFledgeClickiness)) {
+    expiry_ =
+        base::Time::Now() + InterestGroupCachingStorage::kMaximumCacheHoldTime;
+  }
   for (const StorageInterestGroup& group : storage_interest_groups_) {
     expiry_ = std::min(expiry_, group.interest_group.expiry);
   }
