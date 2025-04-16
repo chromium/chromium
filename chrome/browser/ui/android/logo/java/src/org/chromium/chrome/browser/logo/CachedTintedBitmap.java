@@ -18,13 +18,17 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.ref.WeakReference;
 
-/** Tinted {@link Bitmap} get updated based on application environment.*/
+/** Tinted {@link Bitmap} get updated based on application environment. */
+@NullMarked
 public class CachedTintedBitmap {
     private final @DrawableRes int mDrawableId;
     private final @ColorRes int mColorId;
-    private WeakReference<Bitmap> mPreviousBitmap;
+    private @Nullable WeakReference<Bitmap> mPreviousBitmap;
     private @ColorInt int mPreviousTint;
 
     /**
@@ -69,7 +73,7 @@ public class CachedTintedBitmap {
         return newBitmap;
     }
 
-    WeakReference<Bitmap> getPreviousBitmapForTesting() {
+    @Nullable WeakReference<Bitmap> getPreviousBitmapForTesting() {
         return mPreviousBitmap;
     }
 

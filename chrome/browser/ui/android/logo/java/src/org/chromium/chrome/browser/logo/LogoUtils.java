@@ -10,10 +10,13 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility classes for {@link LogoView} */
+@NullMarked
 public class LogoUtils {
     /**
      * Used to specify the logo size when the current logo is a google doodle. REGULAR size is used

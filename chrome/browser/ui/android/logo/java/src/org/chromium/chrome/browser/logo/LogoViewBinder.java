@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.logo;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Responsible for building and setting properties on the logo.*/
+/** Responsible for building and setting properties on the logo. */
+@NullMarked
 class LogoViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> {
     @Override
