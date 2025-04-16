@@ -20,7 +20,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_input_receiver_compat.h"
-#include "base/debug/dump_without_crashing.h"
 #include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_token_forwarder.h"
 #include "components/input/android/scoped_input_receiver.h"
@@ -446,7 +445,6 @@ void InputManager::StateOnTouchTransfer(
       UMA_HISTOGRAM_ENUMERATION(
           kStateProcessingResultHistogram,
           InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
-      base::debug::DumpWithoutCrashing();
     }
   } else {
     UMA_HISTOGRAM_ENUMERATION(
