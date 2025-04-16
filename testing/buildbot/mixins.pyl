@@ -401,7 +401,7 @@
     'fail_if_unused': False,
     'swarming': {
       'dimensions': {
-        'device_type': 'e2s',
+        'device_type': 's5e9945',
         'device_os': 'UP1A.231005.007',
         'device_os_type': 'user',
         'os': 'Android',

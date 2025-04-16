@@ -347,6 +347,7 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
       'a23xq',
       'dm1q',  # Samsung S23.
       'devonn',  # Motorola Moto G Power 5G.
+      's5e9945',  # Samsung S24
   }
   dimensions = test_config.get('swarming', {}).get('dimensions')
   assert dimensions is not None

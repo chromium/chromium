@@ -1012,10 +1012,7 @@ targets.mixin(
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
-            # Unfortunately, "s24" is not exposed as a dimension. "e2s" appears
-            # to refer to the S24 specifically, while "s5e9945" is for the
-            # entire S24 family.
-            "device_type": "e2s",
+            "device_type": "s5e9945",
             "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "os": "Android",
