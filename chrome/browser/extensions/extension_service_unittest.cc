@@ -8278,7 +8278,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedComponentExtensions) {
           .SetID(video_player_app)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(video_player_extension.get());
+  registrar()->AddComponentExtension(video_player_extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(video_player_app));
 
   service()->UninstallMigratedExtensionsForTest();
@@ -8297,7 +8297,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsKeepsGoodComponents) {
           .SetID(good0)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(good_extension.get());
+  registrar()->AddComponentExtension(good_extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(good0));
 
   service()->UninstallMigratedExtensionsForTest();
@@ -8316,7 +8316,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsMultipleCalls) {
           .SetID(video_player_app)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  service()->AddComponentExtension(video_player_extension.get());
+  registrar()->AddComponentExtension(video_player_extension.get());
 
   service()->UninstallMigratedExtensionsForTest();
   service()->UninstallMigratedExtensionsForTest();

@@ -735,11 +735,6 @@ void ExtensionService::UnloadExtension(const std::string& extension_id,
   extension_registrar_->RemoveExtension(extension_id, reason);
 }
 
-void ExtensionService::RemoveComponentExtension(
-    const std::string& extension_id) {
-  extension_registrar_->RemoveComponentExtension(extension_id);
-}
-
 void ExtensionService::UnloadAllExtensionsForTest() {
   UnloadAllExtensionsInternal();
 }
@@ -763,10 +758,6 @@ void ExtensionService::SetReadyAndNotifyListeners() {
 
 void ExtensionService::AddExtension(const Extension* extension) {
   extension_registrar_->AddExtension(extension);
-}
-
-void ExtensionService::AddComponentExtension(const Extension* extension) {
-  extension_registrar_->AddComponentExtension(extension);
 }
 
 void ExtensionService::OnExtensionManagementSettingsChanged() {

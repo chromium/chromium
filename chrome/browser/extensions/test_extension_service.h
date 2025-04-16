@@ -34,11 +34,9 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   void CheckForUpdatesSoon() override;
 
   void AddExtension(const extensions::Extension* extension) override;
-  void AddComponentExtension(const extensions::Extension* extension) override;
 
   void UnloadExtension(const std::string& extension_id,
                        extensions::UnloadedExtensionReason reason) override;
-  void RemoveComponentExtension(const std::string& extension_id) override;
 
   bool UserCanDisableInstalledExtension(
       const std::string& extension_id) override;

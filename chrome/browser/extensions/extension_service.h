@@ -113,21 +113,9 @@ class ExtensionServiceInterface {
   // extension has been loaded.
   virtual void AddExtension(const Extension* extension) = 0;
 
-  // Check if we have preferences for the component extension and, if not or if
-  // the stored version differs, install the extension (without requirements
-  // checking) before calling AddExtension.
-  // TODO(crbug.com/408454704): Delete this method. Callers should use
-  // ExtensionRegistrar directly.
-  virtual void AddComponentExtension(const Extension* extension) = 0;
-
   // Unload the specified extension.
   virtual void UnloadExtension(const std::string& extension_id,
                                UnloadedExtensionReason reason) = 0;
-
-  // Remove the specified component extension.
-  // TODO(crbug.com/408454704): Delete this method. Callers should use
-  // ExtensionRegistrar directly.
-  virtual void RemoveComponentExtension(const std::string& extension_id) = 0;
 
   // Whether a user is able to disable a given extension.
   virtual bool UserCanDisableInstalledExtension(
@@ -170,9 +158,7 @@ class ExtensionService : public ExtensionServiceInterface,
   //
   void UnloadExtension(const std::string& extension_id,
                        UnloadedExtensionReason reason) override;
-  void RemoveComponentExtension(const std::string& extension_id) override;
   void AddExtension(const Extension* extension) override;
-  void AddComponentExtension(const Extension* extension) override;
   const Extension* GetPendingExtensionUpdate(
       const std::string& extension_id) const override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,

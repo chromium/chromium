@@ -39,6 +39,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -712,8 +713,8 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
   TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
   EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true)).Times(Exactly(1));
-  service->AddComponentExtension(component_extension.get());
-  service->AddComponentExtension(component_extension_with_options.get());
+  registrar->AddComponentExtension(component_extension.get());
+  registrar->AddComponentExtension(component_extension_with_options.get());
   registrar->AddExtension(regular_extension.get());
   registrar->AddExtension(regular_extension_with_options.get());
   Mock::VerifyAndClearExpectations(launch_manager);
@@ -777,8 +778,8 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
   EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true)).Times(Exactly(1));
-  service1->AddComponentExtension(build_component_extension().get());
-  service1->AddComponentExtension(
+  registrar1->AddComponentExtension(build_component_extension().get());
+  registrar1->AddComponentExtension(
       build_component_extension_with_options().get());
   registrar1->AddExtension(build_regular_extension().get());
   registrar1->AddExtension(build_regular_extension_with_options().get());
@@ -798,7 +799,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   extensions::ExtensionRegistrar* registrar2 =
       extensions::ExtensionRegistrar::Get(profile2);
 
-  service2->AddComponentExtension(build_component_extension().get());
+  registrar2->AddComponentExtension(build_component_extension().get());
   registrar2->AddExtension(build_regular_extension().get());
   registrar2->AddExtension(build_regular_extension_with_options().get());
 

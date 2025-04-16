@@ -47,6 +47,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -124,7 +125,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = CreateExtension(
         app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
-    extension_service_->AddComponentExtension(chrome.get());
+    extensions::ExtensionRegistrar::Get(&profile_)->AddComponentExtension(
+        chrome.get());
     task_environment_.RunUntilIdle();
   }
 
