@@ -9,16 +9,16 @@ import android.util.DisplayMetrics;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 
 /** Utility class providing gesture actions for tests. */
 public final class GestureNavigationTestUtils {
-    private final ChromeTabbedActivityTestRule mActivityTestRule;
+    private final BaseCtaTransitTestRule mActivityTestRule;
     private final NavigationHandler mNavigationHandler;
     private final HistoryNavigationLayout mNavigationLayout;
     private float mEdgeWidthPx;
 
-    public GestureNavigationTestUtils(ChromeTabbedActivityTestRule rule) {
+    public GestureNavigationTestUtils(BaseCtaTransitTestRule rule) {
         mActivityTestRule = rule;
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mActivityTestRule

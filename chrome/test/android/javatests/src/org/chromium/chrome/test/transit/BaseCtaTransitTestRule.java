@@ -21,7 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Base class for integration tests that start {@link ChromeTabbedActivity}. */
 @NullMarked
-class BaseCtaTransitTestRule {
+public class BaseCtaTransitTestRule {
     protected final ChromeTabbedActivityTestRule mActivityTestRule;
 
     BaseCtaTransitTestRule() {
