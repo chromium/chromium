@@ -7,10 +7,10 @@
 
 #include <set>
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
-#include "chrome/browser/ui/views/page_action/page_action_observer.h"
-#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "url/gurl.h"
 
 namespace tabs {
@@ -19,10 +19,30 @@ class TabInterface;
 
 namespace page_actions {
 
+struct PageActionProperties;
+
+// Interface for PageActionMetricsRecorder, used for concrete implementation or
+// a mock for testing.
+class PageActionMetricsRecorderInterface {
+ public:
+  PageActionMetricsRecorderInterface() = default;
+  virtual ~PageActionMetricsRecorderInterface() = default;
+};
+
+class PageActionMetricsRecorderFactory {
+ public:
+  virtual ~PageActionMetricsRecorderFactory() = default;
+  virtual std::unique_ptr<PageActionMetricsRecorderInterface> Create(
+      tabs::TabInterface& tab_interface,
+      const PageActionProperties& properties,
+      PageActionModelInterface& model) = 0;
+};
+
 // Records visibility metrics for a specific page action, scoped to a single
 // ActionId. This class does not handle all page action metrics, only for the
 // one it is instantiated for.
-class PageActionMetricsRecorder : public PageActionModelObserver {
+class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
+                                  public PageActionModelObserver {
  public:
   explicit PageActionMetricsRecorder(tabs::TabInterface& tab_interface,
                                      const PageActionProperties& properties,

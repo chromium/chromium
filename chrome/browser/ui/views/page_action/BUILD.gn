@@ -65,6 +65,8 @@ source_set("unit_tests") {
     "test_support/fake_tab_interface.h",
     "test_support/mock_page_action_model.cc",
     "test_support/mock_page_action_model.h",
+    "test_support/noop_page_action_metrics_recorder.cc",
+    "test_support/noop_page_action_metrics_recorder.h",
     "test_support/test_page_action_properties_provider.cc",
     "test_support/test_page_action_properties_provider.h",
   ]

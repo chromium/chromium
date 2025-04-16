@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/actions/action_id.h"
 
 namespace page_actions {

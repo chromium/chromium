@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
@@ -35,7 +36,8 @@ namespace page_actions {
 class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
-class PageActionMetricsRecorder;
+class PageActionMetricsRecorderFactory;
+class PageActionMetricsRecorderInterface;
 
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
@@ -50,7 +52,8 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
  public:
   explicit PageActionController(
       PinnedToolbarActionsModel* pinned_actions_model,
-      PageActionModelFactory* page_action_model_factory = nullptr);
+      PageActionModelFactory* page_action_model_factory = nullptr,
+      PageActionMetricsRecorderFactory* page_action_metrics_factory = nullptr);
   PageActionController(const PageActionController&) = delete;
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController() override;
@@ -145,14 +148,21 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   std::unique_ptr<PageActionModelInterface> CreateModel(
       actions::ActionId action_id);
+  std::unique_ptr<PageActionMetricsRecorderInterface> CreateMetricsRecorder(
+      tabs::TabInterface& tab_interface,
+      const PageActionProperties& properties,
+      PageActionModelInterface& model);
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
+  const raw_ptr<PageActionMetricsRecorderFactory>
+      page_action_metrics_recorder_factory_ = nullptr;
 
   PageActionModelsMap page_actions_;
 
   // Metrics recorders associated with ephemeral page actions.
   // Each recorder handles logging UMA metrics for one specific action id.
-  std::vector<std::unique_ptr<PageActionMetricsRecorder>> metrics_recorders_;
+  std::vector<std::unique_ptr<PageActionMetricsRecorderInterface>>
+      metrics_recorders_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

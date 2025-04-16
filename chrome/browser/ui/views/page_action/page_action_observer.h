@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_OBSERVER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_OBSERVER_H_
 
-#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include <memory>
+
 #include "ui/actions/action_id.h"
 
 namespace page_actions {
 
 class PageActionObserverImpl;
+class PageActionController;
 
 // This is a simple snapshot of a page action's state.
 // Each feature has a page action *per-tab*; this represents the page action

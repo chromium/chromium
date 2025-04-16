@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
+#include "chrome/browser/ui/views/page_action/test_support/noop_page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -78,8 +79,8 @@ class PageActionObserverTest : public ::testing::Test {
   PageActionObserverTest() : tab_(&profile_) {}
 
   void SetUp() override {
-    controller_ =
-        std::make_unique<PageActionController>(nullptr, &model_factory_);
+    controller_ = std::make_unique<PageActionController>(
+        nullptr, &model_factory_, &metrics_factory_);
     controller_->Initialize(tab_, {kTestPageActionId},
                             TestPageActionPropertiesProvider(kTestProperties));
   }
@@ -94,6 +95,7 @@ class PageActionObserverTest : public ::testing::Test {
   TestingProfile profile_;
   FakeTabInterface tab_;
   MockPageActionModelFactory model_factory_;
+  NoopPageActionMetricsRecorderFactory metrics_factory_;
   std::unique_ptr<PageActionController> controller_;
 };
 

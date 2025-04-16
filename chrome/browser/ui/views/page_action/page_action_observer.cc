@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 
