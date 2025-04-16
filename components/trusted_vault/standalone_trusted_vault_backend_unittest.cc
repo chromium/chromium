@@ -501,8 +501,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::test::SingleThreadTaskEnvironment environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
   EXPECT_CALL(*connection(), DownloadIsRecoverabilityDegraded)
       .WillOnce([](const CoreAccountInfo&,
                    TrustedVaultConnection::IsRecoverabilityDegradedCallback
@@ -514,7 +514,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // The callback should be invoked because GetIsRecoverabilityDegraded() is
   // called with the current primary account.
   EXPECT_CALL(cb, Run(true));
-  backend()->GetIsRecoverabilityDegraded(account_info, cb.Get());
+  backend()->GetIsRecoverabilityDegraded(kAccountInfo, cb.Get());
   environment.FastForwardBy(base::Milliseconds(1));
 }
 
@@ -536,15 +536,15 @@ TEST_F(
   // The callback should not be invoked because GetIsRecoverabilityDegraded()
   // and SetPrimaryAccount() are invoked with different accounts.
   EXPECT_CALL(cb, Run(_)).Times(0);
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user2");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user2");
   // This GetIsRecoverabilityDegraded() is corresponding to a late
   // SetPrimaryAccount(), in this case the callback should be deferred and
   // invoked when SetPrimaryAccount() is called.
-  backend()->GetIsRecoverabilityDegraded(account_info, cb.Get());
+  backend()->GetIsRecoverabilityDegraded(kAccountInfo, cb.Get());
 
   Mock::VerifyAndClearExpectations(&cb);
 
-  ON_CALL(*connection(), DownloadIsRecoverabilityDegraded(Eq(account_info), _))
+  ON_CALL(*connection(), DownloadIsRecoverabilityDegraded(Eq(kAccountInfo), _))
       .WillByDefault([](const CoreAccountInfo&,
                         TrustedVaultConnection::IsRecoverabilityDegradedCallback
                             callback) {
@@ -555,7 +555,7 @@ TEST_F(
   // The callback should be invoked on SetPrimaryAccount() since the last
   // GetIsRecoverabilityDegraded() was called with the same account.
   EXPECT_CALL(cb, Run(true));
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
   environment.FastForwardBy(base::Milliseconds(1));
 }
 
@@ -583,17 +583,17 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   // Callback should be called immediately.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
+  const CoreAccountInfo kAccountInfo1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo2 = MakeAccountInfoWithGaiaId("user2");
 
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
@@ -604,8 +604,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
       initial_data.add_user();
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
       initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia.ToString());
-  user_data2->set_gaia_id(account_info_2.gaia.ToString());
+  user_data1->set_gaia_id(kAccountInfo1.gaia.ToString());
+  user_data2->set_gaia_id(kAccountInfo2.gaia.ToString());
   user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
   user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
   user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
@@ -617,19 +617,19 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
-  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo1, fetch_keys_callback.Get());
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
-  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo2, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {1, 2, 3, 4};
 
   trusted_vault_pb::LocalTrustedVault initial_data;
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data =
       initial_data.add_user();
-  user_data->set_gaia_id(account_info.gaia.ToString());
+  user_data->set_gaia_id(kAccountInfo.gaia.ToString());
   user_data->add_vault_key()->set_key_material(
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
   user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
@@ -641,7 +641,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
@@ -669,15 +669,15 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
+  const CoreAccountInfo kAccountInfo1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo2 = MakeAccountInfoWithGaiaId("user2");
 
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
 
-  backend()->StoreKeys(account_info_1.gaia, {kKey1}, /*last_key_version=*/0);
-  backend()->StoreKeys(account_info_2.gaia, {kKey2, kKey3},
+  backend()->StoreKeys(kAccountInfo1.gaia, {kKey1}, /*last_key_version=*/0);
+  backend()->StoreKeys(kAccountInfo2.gaia, {kKey2, kKey3},
                        /*last_key_version=*/1);
 
   // Reset the backend, which makes it re-read the data stored above.
@@ -687,18 +687,18 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
-  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo1, fetch_keys_callback.Get());
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
-  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo2, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldFetchPreviouslyStoredKeysWithNullConnection) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
 
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
 
-  backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
+  backend()->StoreKeys(kAccountInfo.gaia, {kKey}, /*last_key_version=*/0);
 
   // Reset the backend without a connection, which makes it re-read the data
   // stored above.
@@ -708,24 +708,24 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
+  const CoreAccountInfo kAccountInfo1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo2 = MakeAccountInfoWithGaiaId("user2");
 
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
 
-  backend()->StoreKeys(account_info_1.gaia, {kKey1}, /*last_key_version=*/0);
-  backend()->StoreKeys(account_info_2.gaia, {kKey2, kKey3},
+  backend()->StoreKeys(kAccountInfo1.gaia, {kKey1}, /*last_key_version=*/0);
+  backend()->StoreKeys(kAccountInfo2.gaia, {kKey2, kKey3},
                        /*last_key_version=*/1);
 
   // Make sure that backend handles primary account changes prior
   // UpdateAccountsInCookieJarInfo() call.
-  SetPrimaryAccountWithUnknownAuthError(account_info_1);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo1);
   SetPrimaryAccountWithUnknownAuthError(/*primary_account=*/std::nullopt);
 
   // Keys should be removed immediately if account is not primary and not in
@@ -736,10 +736,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
-  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo1, fetch_keys_callback.Get());
 
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
-  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo2, fetch_keys_callback.Get());
 
   // Read the file from storage and verify that keys were removed.
   trusted_vault_pb::LocalTrustedVault proto =
@@ -749,23 +749,23 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldDeferPrimaryAccountKeysDeletion) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
-  backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  backend()->StoreKeys(kAccountInfo.gaia, {kKey}, /*last_key_version=*/0);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Keys should not be removed immediately.
   backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   // Reset primary account, keys should be deleted from both in-memory and disk
   // storage.
   SetPrimaryAccountWithUnknownAuthError(/*primary_account=*/std::nullopt);
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   // Read the file from storage and verify that keys were removed.
   trusted_vault_pb::LocalTrustedVault proto =
@@ -775,17 +775,17 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldCompletePrimaryAccountKeysDeletionAfterRestart) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
-  backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  backend()->StoreKeys(kAccountInfo.gaia, {kKey}, /*last_key_version=*/0);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Keys should not be removed immediately.
   backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   // Mimic browser restart and reset primary account. Don't use the default
   // connection, otherwise FetchKeys() below would perform a device
@@ -795,9 +795,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   backend()->SetPrimaryAccount(
-      account_info,
+      kAccountInfo,
       StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown);
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   // Read the file from storage and verify that keys were removed.
   trusted_vault_pb::LocalTrustedVault proto =
@@ -806,19 +806,19 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
 
   // Setting the primary account will trigger device registration.
   base::HistogramTester histogram_tester;
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
@@ -826,19 +826,19 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistered." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/false,
       /*expected_bucket_count=*/1);
 
   // Pretend that the registration completed successfully.
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion, true);
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(account_info)->IsRegistered());
+  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)->IsRegistered());
   histogram_tester.ExpectUniqueSample(
       /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess,
       /*expected_bucket_count=*/1);
@@ -846,65 +846,65 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldClearDataAndAttemptDeviceRegistration) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<std::vector<uint8_t>> kInitialVaultKeys = {{1, 2, 3}};
   const int kInitialLastKeyVersion = 1;
 
   // Mimic device previously registered with some keys.
   StoreKeysAndMimicDeviceRegistration(kInitialVaultKeys, kInitialLastKeyVersion,
-                                      account_info);
+                                      kAccountInfo);
 
   // Set primary account to trigger immediate device registration attempt upon
   // reset.
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
-  // Clear data for |account_info|, keys should be removed and registration
+  // Clear data for |kAccountInfo|, keys should be removed and registration
   // attempt should be triggered.
   // TODO(crbug.com/405381481): Note that the fake recovery factor isn't reset
   // by ClearLocalDataForAccount() because it doesn't store its state in the
   // shared storage. Thus, it's reset explicitly here.
-  GetOrCreateRecoveryFactor(account_info)->MarkAsNotRegistered();
-  backend()->ClearLocalDataForAccount(account_info);
+  GetOrCreateRecoveryFactor(kAccountInfo)->MarkAsNotRegistered();
+  backend()->ClearLocalDataForAccount(kAccountInfo);
   // Let the registration attempt fail, so the recovery attempt triggered below
   // returns with "not registered" immediately.
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kLocalDataObsolete,
           kInitialLastKeyVersion + 1, false);
 
-  GetOrCreateRecoveryFactor(account_info)->ResetCallInfo();
+  GetOrCreateRecoveryFactor(kAccountInfo)->ResetCallInfo();
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   // Expect a recovery which fails because the device isn't registered. This
   // doesn't trigger a new registration attempt.
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   EXPECT_TRUE(
-      GetOrCreateRecoveryFactor(account_info)->AttemptRecoveryWasCalled());
+      GetOrCreateRecoveryFactor(kAccountInfo)->AttemptRecoveryWasCalled());
   EXPECT_FALSE(
-      GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
+      GetOrCreateRecoveryFactor(kAccountInfo)->MaybeRegisterWasCalled());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldRetryDeviceRegistrationWhenAuthErrorResolved) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
 
   base::HistogramTester histogram_tester;
   backend()->SetPrimaryAccount(
-      account_info, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+      kAccountInfo, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                         kPersistentAuthError);
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError,
           kLastKeyVersion, true);
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
@@ -914,9 +914,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // When the auth error is resolved, the registration should be retried.
   base::HistogramTester histogram_tester2;
   backend()->SetPrimaryAccount(
-      account_info, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+      kAccountInfo, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                         kNoPersistentAuthErrors);
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion, true);
 
@@ -924,28 +924,28 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // histogram's definition that it should be logged once.
   histogram_tester2.ExpectTotalCount(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*expected_count=*/0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldTryToRegisterDeviceEvenIfLocalKeysAreStale) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
-  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
 
   base::HistogramTester histogram_tester;
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   EXPECT_TRUE(
-      GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
+      GetOrCreateRecoveryFactor(kAccountInfo)->MaybeRegisterWasCalled());
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
@@ -954,20 +954,20 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordLocalKeysAreStale) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
-  GetOrCreateRecoveryFactor(account_info)
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->SetLastRegistrationReturnedLocalDataObsolete(true);
 
   base::HistogramTester histogram_tester;
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale,
@@ -976,42 +976,42 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordLocalKeysAreStale) {
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldRegisterDeviceAlthoughPreviousAttemptFailedUponNewStoredKeys) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialKeys = {1, 2, 3};
   const int kInitialKeysVersion = 5;
   const std::vector<uint8_t> kNewKeys = {1, 2, 3, 4};
   const int kNewKeysVersion = 6;
 
-  backend()->StoreKeys(account_info.gaia, {kInitialKeys}, kInitialKeysVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, {kInitialKeys}, kInitialKeysVersion);
 
-  SetPrimaryAccountWithUnknownAuthError(account_info);
-  GetOrCreateRecoveryFactor(account_info)
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kLocalDataObsolete,
           kInitialKeysVersion, true);
 
   // StoreKeys() should trigger a registration nevertheless.
-  backend()->StoreKeys(account_info.gaia, {kNewKeys}, kNewKeysVersion);
-  GetOrCreateRecoveryFactor(account_info)
+  backend()->StoreKeys(kAccountInfo.gaia, {kNewKeys}, kNewKeysVersion);
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kSuccess, kNewKeysVersion, true);
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(account_info)->IsRegistered());
+  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)->IsRegistered());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleOnFailedDeviceRegistration) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
 
   // Setting the primary account will trigger device registration.
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Mimic transient failure.
   EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kOtherError, 0, true);
   Mock::VerifyAndClearExpectations(connection());
@@ -1020,12 +1020,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester;
   ResetBackend();
   EXPECT_CALL(*connection(), AreRequestsThrottled).WillOnce(Return(true));
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
   EXPECT_TRUE(
-      GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
+      GetOrCreateRecoveryFactor(kAccountInfo)->MaybeRegisterWasCalled());
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide,
@@ -1034,27 +1034,27 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldNotThrottleUponAccessTokenFetchingFailure) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
 
   // Setting the primary account will trigger device registration.
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   base::HistogramTester histogram_tester;
   // Mimic access token fetching failure. The expectation is that the backend
   // doesn't treat this as a failure for throttling.
   EXPECT_CALL(*connection(), RecordFailedRequestForThrottling).Times(0);
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError, 0,
           true);
 
   histogram_tester.ExpectUniqueSample(
       /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationOutcomeForUMA::
@@ -1063,18 +1063,18 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotThrottleUponNetworkError) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
-  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
 
   // Setting the primary account will trigger device registration.
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Mimic network error. This should not throttle.
   EXPECT_CALL(*connection(), RecordFailedRequestForThrottling).Times(0);
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kNetworkError, 0, true);
 }
@@ -1124,14 +1124,14 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 // Unless keys marked as stale, FetchKeys() should be completed immediately,
 // without keys download attempt.
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
   const int kLastKeyVersion = 1;
 
   // Make keys downloading theoretically possible.
   StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
-                                      account_info);
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kAccountInfo);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
 
@@ -1140,7 +1140,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/Eq(kVaultKeys)));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 }
 
 // The server may clean up some stale keys eventually, client should clean them
@@ -1149,26 +1149,26 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
 // reject request with stale keys.
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldCleanUpOldKeysWhenDownloadingNew) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
 
   StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
-                                      kInitialLastKeyVersion, account_info);
-  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kInitialLastKeyVersion, kAccountInfo);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // FetchKeys() should trigger keys downloading.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
 
   // Note that |fetch_keys_callback| should not receive kInitialVaultKey.
   EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kNewVaultKey)));
 
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
           kInitialLastKeyVersion + 1);
@@ -1178,25 +1178,25 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 // first is still ongoing (e.g. keys are being downloaded).
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldDownloadKeysAndCompleteConcurrentFetches) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
 
   StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
-                                      kInitialLastKeyVersion, account_info);
-  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kInitialLastKeyVersion, kAccountInfo);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // FetchKeys() should trigger keys downloading.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback1;
-  backend()->FetchKeys(account_info, fetch_keys_callback1.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback1.Get());
 
   // Mimic second FetchKeys(), note that keys are not downloaded yet and first
   // fetch is not completed.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback2;
-  backend()->FetchKeys(account_info, fetch_keys_callback2.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback2.Get());
 
   // Both fetches should be completed once keys are downloaded.
   std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
@@ -1206,7 +1206,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
               Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
 
   base::HistogramTester histogram_tester;
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           TrustedVaultDownloadKeysStatus::kSuccess,
           {kInitialVaultKey, kNewVaultKey}, kInitialLastKeyVersion + 1);
@@ -1219,22 +1219,22 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldThrottleKeysDownloading) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
 
   StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
-                                      kInitialLastKeyVersion, account_info);
-  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kInitialLastKeyVersion, kAccountInfo);
+  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // FetchKeys() should trigger keys downloading.
-  backend()->FetchKeys(account_info, base::DoNothing());
+  backend()->FetchKeys(kAccountInfo, base::DoNothing());
 
   // Mimic transient failure.
   EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
   base::HistogramTester histogram_tester;
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           TrustedVaultDownloadKeysStatus::kOtherError,
           std::vector<std::vector<uint8_t>>(), 0);
@@ -1248,30 +1248,30 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldThrottleKeysDownloading) {
   // The backend doesn't check for throttling itself, but the fake recovery
   // factor does so. The backend is expected to call AttemptRecovery() again.
   EXPECT_CALL(*connection(), AreRequestsThrottled);
-  GetOrCreateRecoveryFactor(account_info)->ResetCallInfo();
-  backend()->FetchKeys(account_info, base::DoNothing());
+  GetOrCreateRecoveryFactor(kAccountInfo)->ResetCallInfo();
+  backend()->FetchKeys(kAccountInfo, base::DoNothing());
   EXPECT_TRUE(
-      GetOrCreateRecoveryFactor(account_info)->AttemptRecoveryWasCalled());
+      GetOrCreateRecoveryFactor(kAccountInfo)->AttemptRecoveryWasCalled());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleIfDownloadingReturnedNoNewKeys) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
 
   StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
-                                      kInitialLastKeyVersion, account_info);
-  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kInitialLastKeyVersion, kAccountInfo);
+  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // FetchKeys() should trigger keys downloading.
-  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
+  backend()->FetchKeys(kAccountInfo, /*callback=*/base::DoNothing());
 
   // Mimic the server having no new keys.
   EXPECT_CALL(*connection(), RecordFailedRequestForThrottling);
   base::HistogramTester histogram_tester;
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           TrustedVaultDownloadKeysStatus::kNoNewKeys,
           std::vector<std::vector<uint8_t>>(), 0);
@@ -1394,33 +1394,33 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 // successful registration, the client should be able to download keys.
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldSilentlyRegisterDeviceAndDownloadNewKeys) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const int kServerConstantKeyVersion = 100;
 
   // Setting the primary account will trigger device registration.
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // Pretend that the registration completed successfully.
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kSuccess, kServerConstantKeyVersion,
           false);
 
   // Now the device should be registered.
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(account_info)->IsRegistered());
+  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)->IsRegistered());
 
   // FetchKeys() should trigger keys downloading. Note: unlike tests with
   // following regular key rotation, in this case MarkLocalKeysAsStale() isn't
   // called intentionally.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
 
   // Mimic successful key downloading, it should make fetch keys attempt
   // completed.
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {{1, 2, 3}};
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/kNewVaultKeys));
-  GetOrCreateRecoveryFactor(account_info)
+  GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
           kServerConstantKeyVersion + 1);
@@ -1428,30 +1428,30 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldRecordMetricsIfAlreadyRegistered) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
   StoreKeysAndMimicDeviceRegistration({kVaultKey}, kLastKeyVersion,
-                                      account_info);
+                                      kAccountInfo);
 
   // Mimic restart to be able to test histogram recording.
   ResetBackend();
 
   base::HistogramTester histogram_tester;
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
   EXPECT_TRUE(
-      GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
+      GetOrCreateRecoveryFactor(kAccountInfo)->MaybeRegisterWasCalled());
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DeviceRegistered." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
+          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
           "." + security_domain_name_for_uma(),
       /*sample=*/true,
       /*expected_bucket_count=*/1);
@@ -1462,19 +1462,19 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   const int kLastKeyVersion = 1;
   const std::vector<uint8_t> kPublicKey =
       SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
   StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
-                                      account_info);
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kAccountInfo);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       registration_callback;
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(account_info),
+          Eq(kAccountInfo),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
@@ -1491,7 +1491,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
       });
 
   base::MockCallback<base::OnceClosure> completion_callback;
-  backend()->AddTrustedRecoveryMethod(account_info.gaia, kPublicKey,
+  backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, kPublicKey,
                                       kMethodTypeHint,
                                       completion_callback.Get());
 
@@ -1509,20 +1509,20 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
   const int kLastKeyVersion = 0;
   const std::vector<uint8_t> kInvalidPublicKey = {1, 2, 3, 4};
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
   ASSERT_THAT(SecureBoxPublicKey::CreateByImport(kInvalidPublicKey), IsNull());
 
   StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
-                                      account_info);
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+                                      kAccountInfo);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
 
   base::MockCallback<base::OnceClosure> completion_callback;
   EXPECT_CALL(completion_callback, Run());
-  backend()->AddTrustedRecoveryMethod(account_info.gaia, kInvalidPublicKey,
+  backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, kInvalidPublicKey,
                                       kMethodTypeHint,
                                       completion_callback.Get());
 }
@@ -1533,16 +1533,16 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const int kLastKeyVersion = 1;
   const std::vector<uint8_t> kPublicKey =
       SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
-  backend()->StoreKeys(account_info.gaia, kVaultKeys, kLastKeyVersion);
+  backend()->StoreKeys(kAccountInfo.gaia, kVaultKeys, kLastKeyVersion);
   ASSERT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
 
   // No request should be issued while there is no primary account.
   base::MockCallback<base::OnceClosure> completion_callback;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
-  backend()->AddTrustedRecoveryMethod(account_info.gaia, kPublicKey,
+  backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, kPublicKey,
                                       kMethodTypeHint,
                                       completion_callback.Get());
   EXPECT_TRUE(backend()->HasPendingTrustedRecoveryMethodForTesting());
@@ -1554,7 +1554,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(account_info),
+          Eq(kAccountInfo),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
@@ -1573,7 +1573,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
         // to be cancelled.
         return std::make_unique<TrustedVaultConnection::Request>();
       });
-  SetPrimaryAccountWithUnknownAuthError(account_info);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // The operation should be in flight.
   EXPECT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
@@ -1591,22 +1591,22 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const int kLastKeyVersion = 1;
   const std::vector<uint8_t> kPublicKey =
       SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
   // Mimic device previously registered with some keys.
   StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
-                                      account_info);
+                                      kAccountInfo);
 
   // Mimic entering a persistent auth error.
   backend()->SetPrimaryAccount(
-      account_info, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+      kAccountInfo, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                         kPersistentAuthError);
 
   // No request should be issued while there is a persistent auth error.
   base::MockCallback<base::OnceClosure> completion_callback;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
-  backend()->AddTrustedRecoveryMethod(account_info.gaia, kPublicKey,
+  backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, kPublicKey,
                                       kMethodTypeHint,
                                       completion_callback.Get());
 
@@ -1618,7 +1618,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(account_info),
+          Eq(kAccountInfo),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
@@ -1638,7 +1638,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
         return std::make_unique<TrustedVaultConnection::Request>();
       });
   backend()->SetPrimaryAccount(
-      account_info, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+      kAccountInfo, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                         kNoPersistentAuthErrors);
 
   // The operation should be in flight.
