@@ -42,7 +42,9 @@ bool OnDeviceContext::SetInput(MultimodalMessageReadView request) {
   if (!input) {
     return false;
   }
-  session_.reset();
+  // Keep the old session alive until the new session is ready. This prevents
+  // the model from freeing resources that may be needed in the new session.
+  auto old_session = std::move(session_);
   client_.reset();
   input_ = std::move(input->input);
   GetOrCreateSession();  // Start processing
