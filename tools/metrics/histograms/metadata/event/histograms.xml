@@ -37,6 +37,13 @@ chromium-metrics-reviews@google.com.
                due to a user fling)"/>
 </variants>
 
+<variants name="ScrollInputType">
+  <variant name="Autoscroll" summary="autoscroll"/>
+  <variant name="Scrollbar" summary="scrollbar"/>
+  <variant name="Touchscreen" summary="touchscreen"/>
+  <variant name="Wheel" summary="mouse wheel or touchpad"/>
+</variants>
+
 <variants name="ScrollJankOperator">
   <variant name="Max" summary="maximum number of vsyncs a frames was delayed"/>
   <variant name="Sum" summary="sum of missed vsyncs across all frames"/>
@@ -453,6 +460,15 @@ chromium-metrics-reviews@google.com.
     in the renderer.
 
     Team: input-dev@chromium.org.
+  </summary>
+</histogram>
+
+<histogram name="Event.Scroll.{ScrollInputType}" units="ms"
+    expires_after="2026-04-11">
+  <owner>kraskevich@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Tracks total duration of scrolls for {ScrollInputType} input type.
   </summary>
 </histogram>
 
@@ -991,12 +1007,6 @@ chromium-metrics-reviews@google.com.
     <variant name="InertialGestureScrollUpdate"
         summary="gesture-scroll-update events that are inertial (i.e.
                  generated due to a user fling)"/>
-  </token>
-  <token key="ScrollInputType">
-    <variant name="Autoscroll" summary="autoscroll"/>
-    <variant name="Scrollbar" summary="scrollbar"/>
-    <variant name="Touchscreen" summary="touchscreen"/>
-    <variant name="Wheel" summary="mouse wheel or touchpad"/>
   </token>
 </histogram>
 

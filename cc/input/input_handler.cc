@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
@@ -63,6 +64,20 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
   }
 
   return InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
+}
+
+std::string GetScrollInputTypeSuffix(ui::ScrollInputType input_type) {
+  switch (input_type) {
+    case ui::ScrollInputType::kTouchscreen:
+      return "Touchscreen";
+    case ui::ScrollInputType::kWheel:
+      return "Wheel";
+    case ui::ScrollInputType::kAutoscroll:
+      return "Autoscroll";
+    case ui::ScrollInputType::kScrollbar:
+      return "Scrollbar";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -557,6 +572,8 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
 void InputHandler::RecordScrollBegin(
     ui::ScrollInputType input_type,
     ScrollBeginThreadState scroll_start_state) {
+  last_scroll_begin_time_ = base::TimeTicks::Now();
+
   auto tracker_type = GetTrackerTypeForScroll(input_type);
   DCHECK_NE(tracker_type, FrameSequenceTrackerType::kMaxType);
 
@@ -586,6 +603,9 @@ void InputHandler::RecordScrollBegin(
 
 void InputHandler::RecordScrollEnd(ui::ScrollInputType input_type) {
   compositor_delegate_->StopSequence(GetTrackerTypeForScroll(input_type));
+  base::UmaHistogramTimes(
+      "Event.Scroll." + GetScrollInputTypeSuffix(input_type),
+      base::TimeTicks::Now() - last_scroll_begin_time_);
 }
 
 InputHandlerPointerResult InputHandler::MouseMoveAt(
