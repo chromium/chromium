@@ -99,10 +99,10 @@ class CmdRunner(EngineRunner):
 
   def run_full_corpus(self, env: Mapping[str, str], timeout: float,
                       annotation: str, corpus_dir: Optional[str]) -> bool:
-    run_cmd = self.cmd
+    extra_args = []
     if corpus_dir:
-      run_cmd += [corpus_dir]
-    return self._run_command(run_cmd, env, timeout, annotation)
+      extra_args += [corpus_dir]
+    return self._run_command(self.cmd + extra_args, env, timeout, annotation)
 
   def run_testcases(self, env: Mapping[str, str], timeout: float,
                     annotation: str, testcases: Sequence[str]) -> bool:
