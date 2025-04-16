@@ -172,7 +172,11 @@ class PasswordManagerSyncTest : public SyncTest {
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::kFillOnAccountSelect},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            // TODO(crbug.com/407501588): Tests fail with
+            // kPostponeOnLoginSuccessful enabled. Fix tests before launching
+            // the feature.
+            password_manager::features::kPostponeOnLoginSuccessful});
   }
 
   ~PasswordManagerSyncTest() override = default;
