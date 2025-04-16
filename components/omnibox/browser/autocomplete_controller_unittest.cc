@@ -2574,8 +2574,8 @@ TEST_F(AutocompleteControllerTest,
 TEST_F(AutocompleteControllerTest,
        ContextualSearchActionAttachedInZeroSuggest) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      omnibox::kContextualZeroSuggestLensFulfillment);
+  feature_list.InitAndEnableFeature(omnibox_feature_configs::ContextualSearch::
+                                        kContextualZeroSuggestLensFulfillment);
 
   // Create a pedal provider to ensure that the contextual search action takes
   // precedence over the pedal.

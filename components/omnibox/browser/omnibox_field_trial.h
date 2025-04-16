@@ -742,9 +742,6 @@ bool IsStarterPackExpansionEnabled();
 // directing users to certain starter pack engines.
 bool IsStarterPackIPHEnabled();
 
-// Whether the starter pack page scope is enabled.
-bool IsStarterPackPageEnabled();
-
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
 // Android Hub Search -->

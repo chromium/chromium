@@ -1631,8 +1631,8 @@ void AutocompleteController::AttachActions() {
 
   #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Attach the contextual search fulfillment actions in the @page keyword mode.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kContextualZeroSuggestLensFulfillment) &&
+  if (omnibox_feature_configs::ContextualSearch::Get()
+          .contextual_zero_suggest_lens_fulfillment &&
       input_.IsZeroSuggest()) {
     internal_result_.AttachContextualSearchFulfillmentActionToMatches();
   } else if (input_.InKeywordMode()) {

@@ -135,18 +135,6 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
              DISABLED);
 
-// Enables fullfillment of contextual zero-prefix suggestions by delegating the
-// logic to Lens.
-BASE_FEATURE(kContextualZeroSuggestLensFulfillment,
-             "ContextualZeroSuggestLensFulfillment",
-             DISABLED);
-
-// Enables the contextual search provider to wait for the Lens suggest inputs
-// to be ready before making the suggest request.
-BASE_FEATURE(kContextualSearchProviderAsyncSuggestInputs,
-             "ContextualSearchProviderAsyncSuggestInputs",
-             ENABLED);
-
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
 // Incognito / NonIncognito  will only controls behaviors under incognito /
@@ -337,9 +325,6 @@ BASE_FEATURE(kStarterPackExpansion,
 // Enables an informational IPH message at the bottom of the Omnibox directing
 // users to certain starter pack engines.
 BASE_FEATURE(kStarterPackIPH, "StarterPackIPH", DISABLED);
-
-// Enables the @page starter pack scope.
-BASE_FEATURE(kStarterPackPage, "StarterPackPage", DISABLED);
 
 // If enabled, |SearchProvider| will not function in Zero Suggest.
 BASE_FEATURE(kAblateSearchProviderWarmup,

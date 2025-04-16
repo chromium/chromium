@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -120,7 +121,7 @@ void TemplateURLTableModel::Reload() {
              TemplateURLStarterPackData::kGemini &&
          !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
         (template_url->starter_pack_id() == TemplateURLStarterPackData::kPage &&
-         !OmniboxFieldTrial::IsStarterPackPageEnabled())) {
+         !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page)) {
       continue;
     }
 

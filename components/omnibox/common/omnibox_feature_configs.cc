@@ -38,14 +38,66 @@ CalcProvider::CalcProvider() {
           .Get();
 }
 
+// Meta-feature that enables/disables the other related features if set.
+// When not overridden, each feature is enabled/disabled separately.
+BASE_FEATURE(ContextualSearch::kOmniboxContextualSuggestions,
+             "OmniboxContextualSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the @page starter pack scope.
+BASE_FEATURE(ContextualSearch::kStarterPackPage,
+             "StarterPackPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Contextual zero-prefix (aka zero-suggest). There are suggestions based on the
+// user's current URL. Fullfillment of these suggestions is delegated to Lens
+// since Lens provides additional logic for contextualizing the results to the
+// current page, by using more than the URL, i.e. the page content.
+BASE_FEATURE(ContextualSearch::kContextualZeroSuggestLensFulfillment,
+             "ContextualZeroSuggestLensFulfillment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the contextual search provider to wait for the Lens suggest inputs
+// to be ready before making the suggest request.
+BASE_FEATURE(ContextualSearch::kContextualSearchProviderAsyncSuggestInputs,
+             "ContextualSearchProviderAsyncSuggestInputs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature to enable use of the "ctxus" param on zero suggest requests.
 BASE_FEATURE(ContextualSearch::kSendContextualUrlSuggestParam,
              "SendContextualUrlSuggestParam",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
+  // Meta-feature turns on/off other features, but only if it's overridden by
+  // the user. If not then each feature is controlled separately.
+  const std::optional<bool> meta_state =
+      base::FeatureList::GetStateIfOverridden(kOmniboxContextualSuggestions);
+  const bool meta_enabled = meta_state.value_or(false);
+
+  starter_pack_page =
+      meta_enabled || base::FeatureList::IsEnabled(kStarterPackPage);
+  contextual_zero_suggest_lens_fulfillment =
+      meta_enabled ||
+      base::FeatureList::IsEnabled(kContextualZeroSuggestLensFulfillment);
+  csp_async_suggest_inputs =
+      meta_enabled ||
+      base::FeatureList::IsEnabled(kContextualSearchProviderAsyncSuggestInputs);
   // This could be taken from a feature param if needed, but currently it's
   // simply one or none.
   contextual_url_suggest_param =
-      base::FeatureList::IsEnabled(kSendContextualUrlSuggestParam) ? "1" : "";
+      (meta_enabled ||
+       base::FeatureList::IsEnabled(kSendContextualUrlSuggestParam))
+          ? "1"
+          : "";
+
+  if (meta_state.has_value() && !meta_state.value()) {
+    // Turn things off that might have been turned on by group membership, etc.
+    starter_pack_page = false;
+    contextual_zero_suggest_lens_fulfillment = false;
+    csp_async_suggest_inputs = false;
+    contextual_url_suggest_param.clear();
+  }
 }
 
 DocumentProvider::DocumentProvider() {

@@ -15446,6 +15446,7 @@ from previous Chrome versions.
   <int value="439858569" label="OmniboxForceAllowedToBeDefault:enabled"/>
   <int value="439859371" label="WebXRWebGPUBinding:disabled"/>
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
+  <int value="441992617" label="OmniboxContextualSuggestions:enabled"/>
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="442898264"
       label="CrOSLateBootChromeboxUsbPassthroughRestrictions:disabled"/>
@@ -18089,6 +18090,7 @@ from previous Chrome versions.
   <int value="1458583431" label="arc-use-auth-endpoint"/>
   <int value="1459529277" label="disable-text-input-focus-manager"/>
   <int value="1459803015" label="WebRtcEnableCaptureMultiChannelApm:enabled"/>
+  <int value="1459850158" label="OmniboxContextualSuggestions:disabled"/>
   <int value="1460028797"
       label="EnableExtensionsExplicitBrowserSignin:disabled"/>
   <int value="1460266536" label="PulseaudioLoopbackForScreenShare:disabled"/>

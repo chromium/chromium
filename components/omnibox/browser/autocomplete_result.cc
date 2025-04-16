@@ -534,7 +534,8 @@ void AutocompleteResult::SortAndCull(
             suggestion_groups_map_, max_url_suggestions));
         sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
             suggestion_groups_map_, max_search_suggestions));
-        if (OmniboxFieldTrial::IsStarterPackPageEnabled()) {
+        if (omnibox_feature_configs::ContextualSearch::Get()
+                .starter_pack_page) {
           sections.push_back(std::make_unique<DesktopWebZpsActionsSection>(
               suggestion_groups_map_));
         }

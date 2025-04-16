@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -164,8 +165,8 @@ bool ContextualSearchProvider::ShouldAppendExtraParams(
 
 void ContextualSearchProvider::StartSuggestRequest(AutocompleteInput input) {
   if (AreLensSuggestInputsReady(input.lens_overlay_suggest_inputs()) ||
-      !base::FeatureList::IsEnabled(
-          omnibox::kContextualSearchProviderAsyncSuggestInputs)) {
+      !omnibox_feature_configs::ContextualSearch::Get()
+           .csp_async_suggest_inputs) {
     // If the suggest inputs are ready, make the suggest request immediately.
     // Also, skip the async wait if the feature is disabled.
     MakeSuggestRequest(std::move(input));

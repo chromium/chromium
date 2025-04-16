@@ -2895,6 +2895,11 @@ const char kOmniboxSearchAggregatorName[] = "Omnibox search aggregator";
 const char kOmniboxSearchAggregatorDescription[] =
     "Enables omnibox suggestions from the search aggregator provider";
 
+const char kOmniboxContextualSuggestionsName[] =
+    "Omnibox contextual suggestions";
+const char kOmniboxContextualSuggestionsDescription[] =
+    "Enables omnibox contextual suggestions.";
+
 const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
     "Omnibox on-focus suggestions on web and SRP";
 const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =

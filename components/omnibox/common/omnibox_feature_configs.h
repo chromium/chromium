@@ -122,8 +122,21 @@ struct CalcProvider : Config<CalcProvider> {
 struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch();
 
-  // Feature to enable use of the "ctxus" param on zero suggest requests.
+  DECLARE_FEATURE(kOmniboxContextualSuggestions);
+  DECLARE_FEATURE(kStarterPackPage);
+  DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
+  DECLARE_FEATURE(kContextualSearchProviderAsyncSuggestInputs);
   DECLARE_FEATURE(kSendContextualUrlSuggestParam);
+
+  // Whether the starter pack page scope is enabled.
+  bool starter_pack_page;
+
+  // Enables fullfillment of contextual zero-prefix suggestions by delegating
+  // the logic to Lens.
+  bool contextual_zero_suggest_lens_fulfillment;
+
+  // Controls async request handling in `ContextualSearchProvider`.
+  bool csp_async_suggest_inputs;
 
   // This specifies the value for "ctxus" param on zero suggest requests,
   // and is left empty when that parameter is not to be included.
