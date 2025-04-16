@@ -218,9 +218,12 @@ message OmniboxEventProto {
     // The searchbox in the Android Hub.
     ANDROID_HUB = 29;
 
-    // When adding new classifications, please consider adding them in
-    // chromium's chrome/browser/resources/omnibox/omnibox.html
-    // so that these new options are displayed on about:omnibox.
+    // When adding new classifications, please update the `OmniboxPageContext`
+    // variants listed in chromium's
+    // tools/metrics/histograms/metadata/omnibox/histograms.xml and also
+    // consider adding them in chromium's
+    // chrome/browser/resources/omnibox/omnibox.html so that these new options
+    // are displayed in the chrome://omnibox debug UI.
   }
 
   optional PageClassification current_page_classification = 10;
@@ -334,6 +337,11 @@ message OmniboxEventProto {
 
     // A verbatim match for the input.
     VERBATIM_MATCH = 34;
+
+    // Groups of tabs which are available (or opened) locally. These results are
+    // provided by the TabGroupsProvider. Currently only used by Android's hub
+    // search feature.
+    TAB_GROUP_PROVIDER = 35;
   }
 
   // The result set displayed on the completion popup
@@ -435,6 +443,7 @@ message OmniboxEventProto {
       HISTORY_EMBEDDINGS_ANSWER = 40;   // A generated answer based on past
                                         // visits with similar embeddings to the
                                         // query.
+      TAB_GROUP = 41;                   // Tab group suggestion result.
     }
 
     optional ResultType result_type = 2;
@@ -698,6 +707,7 @@ message OmniboxEventProto {
                                                 // site search keyword.
     USER_CREATED_SITE_SEARCH = 5;               // User-created site
                                                 // search keyword.
+    PREPOPULATED = 6;                           // Prepopulated keyword.
   }
 
   optional KeywordType keyword_type = 28;
