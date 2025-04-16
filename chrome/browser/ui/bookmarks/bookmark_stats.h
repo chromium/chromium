@@ -106,6 +106,8 @@ void RecordBookmarkAllTabsWithTabsCount(const Profile* profile, int count);
 
 // Records that a bookmark or bookmarks were dropped. Determines the type of
 // drop operation based on the data and parent node.
+// TODO(crbug.com/410798420): This metric does not record the drop location
+// accurately. Either remove it or update it.
 void RecordBookmarkDropped(const bookmarks::BookmarkNodeData& data,
                            bool is_permanent_parent_node,
                            bool is_reorder);

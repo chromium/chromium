@@ -7,6 +7,8 @@ import '/strings.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {PowerBookmarkRowElement} from './power_bookmark_row.js';
 
 const ROOT_FOLDER_ID = '0';
@@ -30,6 +32,8 @@ class DragSession {
   private lastDropTargetBookmark_: chrome.bookmarks.BookmarkTreeNode|null =
       null;
   private lastPointerWasTouch_ = false;
+  private bookmarksApi_: BookmarksApiProxy =
+      BookmarksApiProxyImpl.getInstance();
 
   constructor(
       delegate: PowerBookmarksDragDelegate,
@@ -106,8 +110,8 @@ class DragSession {
     if (!this.lastDropTargetBookmark_) {
       return;
     }
-    chrome.bookmarkManagerPrivate
-        .drop(this.lastDropTargetBookmark_.id, /* index */ undefined)
+
+    this.bookmarksApi_.dropBookmarks(this.lastDropTargetBookmark_.id)
         .then(() => {
           this.delegate_.onFinishDrop(this.lastDropTargetBookmark_!);
           this.cancel();

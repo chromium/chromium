@@ -81,6 +81,12 @@ interface BookmarksPageHandler {
   // Returns the id of the newly created node.
   CreateFolder(string folder_id, string title) => (string new_folder_id);
 
+  // Drops the dragged bookmarks in the folder corresponding to `folder_id`.
+  // Result callback is called when all nodes are moved, it contains no data.
+  // Relies on BookmarkManagerPrivateDragEventRouter to get the data being
+  // dropped.
+  DropBookmarks(string folder_id) => ();
+
   // Opens the edit bookmark dialog.
   ExecuteEditCommand(array<int64> node_ids, ActionSource source);
 

@@ -7,29 +7,39 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_test_utils.h"
+#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
+#include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/test_web_ui.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
 using bookmarks::test::AddNodesFromModelString;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Pointer;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
@@ -40,7 +50,7 @@ using ::testing::UnorderedElementsAre;
 // `node` since it could be the representation of a merged node. Therefore we
 // only make sure that `node`'s children are a subset of `arg`'s children if
 // `arg` actually contains any children.
-MATCHER_P2(MatchesNode, node, service, "") {
+MATCHER_P2(TreeNodeMatchesNode, node, service, "") {
   const std::string expected_id =
       node->is_folder()
           ? GetFolderSidePanelIDForTesting(
@@ -60,12 +70,17 @@ MATCHER_P2(MatchesNode, node, service, "") {
   // with the same id.
   for (const auto& child : node->children()) {
     EXPECT_THAT(arg->children.value(),
-                Contains(MatchesNode(child.get(), service)))
+                Contains(TreeNodeMatchesNode(child.get(), service)))
         << "Some child nodes of '" << node->GetTitle()
         << "' are not contained in the matching node with the same id.";
   }
 
   return true;
+}
+
+MATCHER_P(MatchesNode, node, "") {
+  return arg->type() == node->type() && arg->GetTitle() == node->GetTitle() &&
+         arg->url() == node->url();
 }
 
 class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
@@ -147,6 +162,12 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {TestingProfile::TestingFactory{
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory()}};
+  }
+
   BookmarksPageHandler* handler() { return handler_.get(); }
   bookmarks::BookmarkModel* model() { return bookmark_model_.get(); }
   bookmarks::ManagedBookmarkService* managed_bookmark_service() {
@@ -157,6 +178,9 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   }
   testing::NiceMock<MockBookmarksPage>& mock_bookmarks_page() {
     return mock_bookmarks_page_;
+  }
+  content::WebContents* side_panel_web_contents() {
+    return fake_side_panel_web_contents_.get();
   }
 
   void CreateHandler(int managed_bookmarks_count = 0) {
@@ -173,10 +197,22 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
     bookmark_merged_service_ = std::make_unique<BookmarkMergedSurfaceService>(
         bookmark_model_.get(), managed_bookmark_service_.get());
 
+    // This is not the actual side panel web contents, but random contents
+    // created in order to attach them to the `bookmarks_ui_`.
+    fake_side_panel_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(
+            profile(), content::SiteInstance::Create(profile()));
+    web_ui_.set_web_contents(fake_side_panel_web_contents_.get());
+    bookmarks_ui_ = std::make_unique<BookmarksSidePanelUI>(&web_ui_);
+
+    extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
+        fake_side_panel_web_contents_.get());
+
     handler_ = std::make_unique<BookmarksPageHandler>(
         mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler>(),
         mock_bookmarks_page_.BindAndGetRemote(),
-        /*bookmarks_ui=*/nullptr, bookmark_merged_service_.get(), browser());
+        /*bookmarks_ui=*/bookmarks_ui_.get(), bookmark_merged_service_.get(),
+        browser());
   }
 
   void LoadBookmarkModel() {
@@ -187,6 +223,9 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   void ClearHandler() {
     handler_.reset();
     mock_bookmarks_page_.Reset();
+    bookmarks_ui_.reset();
+    web_ui_.set_web_contents(nullptr);
+    fake_side_panel_web_contents_.reset();
     bookmark_merged_service_.reset();
     bookmark_model_.reset();
     managed_bookmark_service_.reset();
@@ -205,6 +244,9 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<BookmarkMergedSurfaceService> bookmark_merged_service_;
+  std::unique_ptr<BookmarksSidePanelUI> bookmarks_ui_;
+  std::unique_ptr<content::WebContents> fake_side_panel_web_contents_;
+  content::TestWebUI web_ui_;
 
   testing::NiceMock<MockBookmarksPage> mock_bookmarks_page_;
 
@@ -264,10 +306,12 @@ TEST_F(BookmarksPageHandlerTest,
         EXPECT_THAT(nodes, SizeIs(2));
         // Bookmark is empty but still pushed.
         ASSERT_TRUE(bookmark_bar->children().empty());
-        EXPECT_THAT(nodes, Contains(MatchesNode(bookmark_bar, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(bookmark_bar, service())));
         // Other node is empty but still pushed.
         ASSERT_TRUE(other_node->children().empty());
-        EXPECT_THAT(nodes, Contains(MatchesNode(other_node, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(other_node, service())));
       });
   handler()->GetAllBookmarks(mock_callback.Get());
 }
@@ -296,10 +340,14 @@ TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAllNodes) {
                         nodes) {
         // Total count: 4 - BookmarkBar + Other node + Mobile node + Managed.
         EXPECT_THAT(nodes, SizeIs(4));
-        EXPECT_THAT(nodes, Contains(MatchesNode(bookmark_bar, service())));
-        EXPECT_THAT(nodes, Contains(MatchesNode(other_node, service())));
-        EXPECT_THAT(nodes, Contains(MatchesNode(mobile_node, service())));
-        EXPECT_THAT(nodes, Contains(MatchesNode(managed_node, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(bookmark_bar, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(other_node, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(mobile_node, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(managed_node, service())));
       });
   handler()->GetAllBookmarks(mock_callback.Get());
 }
@@ -334,20 +382,23 @@ TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAccountNodes) {
         // Total count: 3 - BookmarkBar (Merged) + Other node (Merged) + Mobile.
         EXPECT_THAT(nodes, SizeIs(3));
         // Both `bookmark_bar` and `account_bookmark_bar` are merged into one.
-        EXPECT_THAT(nodes, Contains(MatchesNode(bookmark_bar, service())));
         EXPECT_THAT(nodes,
-                    Contains(MatchesNode(account_bookmark_bar, service())));
+                    Contains(TreeNodeMatchesNode(bookmark_bar, service())));
+        EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(account_bookmark_bar,
+                                                        service())));
         // Both `other_node` and `account_other_node` are merged into one.
-        EXPECT_THAT(nodes, Contains(MatchesNode(other_node, service())));
         EXPECT_THAT(nodes,
-                    Contains(MatchesNode(account_other_node, service())));
+                    Contains(TreeNodeMatchesNode(other_node, service())));
+        EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(account_other_node,
+                                                        service())));
         // Both `mobile_node` and `account_mobile_node` are merged into one.
         // Even if `mobile_node` is empty, it is still represented since there
         // are at least one total mobile node.
-        EXPECT_THAT(nodes,
-                    Contains(MatchesNode(account_mobile_node, service())));
+        EXPECT_THAT(nodes, Contains(TreeNodeMatchesNode(account_mobile_node,
+                                                        service())));
         ASSERT_TRUE(mobile_node->children().empty());
-        EXPECT_THAT(nodes, Contains(MatchesNode(mobile_node, service())));
+        EXPECT_THAT(nodes,
+                    Contains(TreeNodeMatchesNode(mobile_node, service())));
       });
   handler()->GetAllBookmarks(mock_callback.Get());
 }
@@ -652,6 +703,185 @@ TEST_F(BookmarksPageHandlerTest, HandlerWithInvalidInputs) {
   EXPECT_TRUE(result.empty());
 
   EXPECT_FALSE(model()->HasBookmarks());
+}
+
+TEST_F(BookmarksPageHandlerTest, DropBookmarks) {
+  const bookmarks::BookmarkNode* node1 =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"title",
+                      GURL("http://www.google.com/"));
+  const bookmarks::BookmarkNode* node2 =
+      model()->AddURL(model()->bookmark_bar_node(), 1, u"title",
+                      GURL("http://www.google.com/"));
+
+  // Create and prepare the bookmark node data to be dropped.
+  bookmarks::BookmarkNodeData data({node1, node2});
+  data.SetOriginatingProfilePath(browser()->profile()->GetPath());
+  extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+      side_panel_web_contents())
+      ->OnDrop(data);
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+
+  // Drop the data. This should move it.
+  base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+  handler()->DropBookmarks(other_side_panel_id, mock_callback.Get());
+
+  EXPECT_TRUE(model()->bookmark_bar_node()->children().empty());
+  EXPECT_THAT(model()->other_node()->children(),
+              ElementsAre(MatchesNode(node1), MatchesNode(node2)));
+}
+
+TEST_F(BookmarksPageHandlerTest, DropManagedBookmark) {
+  const bookmarks::BookmarkNode* node1 =
+      model()->AddURL(managed_bookmark_service()->managed_node(), 0, u"title",
+                      GURL("http://www.google.com/"));
+  const bookmarks::BookmarkNode* node2 =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"title",
+                      GURL("http://www.google.com/"));
+
+  // Create and prepare the bookmark node data to be dropped.
+  bookmarks::BookmarkNodeData data({node1, node2});
+  data.SetOriginatingProfilePath(browser()->profile()->GetPath());
+  extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+      side_panel_web_contents())
+      ->OnDrop(data);
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+
+  // Drop the data. This should not move either of the bookmarks.
+  // TODO(crbug.com/409284055): The data should be copied instead.
+  base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+  handler()->DropBookmarks(other_side_panel_id, mock_callback.Get());
+
+  EXPECT_THAT(managed_bookmark_service()->managed_node()->children(),
+              ElementsAre(MatchesNode(node1)));
+  EXPECT_THAT(model()->bookmark_bar_node()->children(),
+              ElementsAre(MatchesNode(node2)));
+  EXPECT_TRUE(model()->other_node()->children().empty());
+}
+
+TEST_F(BookmarksPageHandlerTest, DropBookmarksInDifferentProfile) {
+  base::HistogramTester histogram_tester;
+
+  // Create and prepare another profile.
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactories(GetTestingFactories());
+  std::unique_ptr<TestingProfile> different_profile = profile_builder.Build();
+  bookmarks::BookmarkModel* different_bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(different_profile.get());
+  bookmarks::test::WaitForBookmarkModelToLoad(different_bookmark_model);
+
+  const bookmarks::BookmarkNode* node1 = different_bookmark_model->AddURL(
+      different_bookmark_model->bookmark_bar_node(), 0, u"title1",
+      GURL("http://www.google1.com/"));
+  const bookmarks::BookmarkNode* node2 = different_bookmark_model->AddURL(
+      different_bookmark_model->bookmark_bar_node(), 1, u"title2",
+      GURL("http://www.google2.com/"));
+
+  // Create and prepare the bookmark node data to be dropped.
+  bookmarks::BookmarkNodeData data({node1, node2});
+  data.SetOriginatingProfilePath(different_profile->GetPath());
+  extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+      side_panel_web_contents())
+      ->OnDrop(data);
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+
+  // Drop the data in the other browser. This should copy it.
+  base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+  handler()->DropBookmarks(other_side_panel_id, mock_callback.Get());
+
+  EXPECT_THAT(different_bookmark_model->bookmark_bar_node()->children(),
+              ElementsAre(MatchesNode(node1), MatchesNode(node2)));
+  EXPECT_THAT(model()->other_node()->children(),
+              ElementsAre(MatchesNode(node1), MatchesNode(node2)));
+
+  histogram_tester.ExpectTotalCount("Bookmarks.AddedPerProfileType", 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, DropBookmarksWithAccountNodes) {
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* node1 =
+      model()->AddURL(model()->account_bookmark_bar_node(), 0, u"title",
+                      GURL("http://www.google.com/"));
+  const bookmarks::BookmarkNode* node2 =
+      model()->AddURL(model()->account_bookmark_bar_node(), 1, u"title",
+                      GURL("http://www.google.com/"));
+
+  // Create and prepare the bookmark node data to be dropped.
+  bookmarks::BookmarkNodeData data({node1, node2});
+  data.SetOriginatingProfilePath(browser()->profile()->GetPath());
+  extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+      side_panel_web_contents())
+      ->OnDrop(data);
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+
+  // Drop the data. This should move it.
+  base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+  handler()->DropBookmarks(other_side_panel_id, mock_callback.Get());
+
+  EXPECT_TRUE(model()->account_bookmark_bar_node()->children().empty());
+  EXPECT_THAT(model()->account_other_node()->children(),
+              ElementsAre(MatchesNode(node1), MatchesNode(node2)));
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       DropBookmarksInDifferentProfileWithAccountNodes) {
+  base::HistogramTester histogram_tester;
+  model()->CreateAccountPermanentFolders();
+
+  // Create and prepare another profile.
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactories(GetTestingFactories());
+  std::unique_ptr<TestingProfile> different_profile = profile_builder.Build();
+  bookmarks::BookmarkModel* different_bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(different_profile.get());
+  bookmarks::test::WaitForBookmarkModelToLoad(different_bookmark_model);
+
+  const bookmarks::BookmarkNode* node1 = different_bookmark_model->AddURL(
+      different_bookmark_model->bookmark_bar_node(), 0, u"title1",
+      GURL("http://www.google1.com/"));
+  const bookmarks::BookmarkNode* node2 = different_bookmark_model->AddURL(
+      different_bookmark_model->bookmark_bar_node(), 1, u"title2",
+      GURL("http://www.google2.com/"));
+
+  // Create and prepare the bookmark node data to be dropped.
+  bookmarks::BookmarkNodeData data({node1, node2});
+  data.SetOriginatingProfilePath(different_profile->GetPath());
+  extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+      side_panel_web_contents())
+      ->OnDrop(data);
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+
+  // Drop the data in the other browser. This should copy it.
+  base::MockCallback<BookmarksPageHandler::DropBookmarksCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run());
+  handler()->DropBookmarks(other_side_panel_id, mock_callback.Get());
+
+  // When available, the bookmark is saved to the account storage.
+  EXPECT_THAT(different_bookmark_model->bookmark_bar_node()->children(),
+              ElementsAre(MatchesNode(node1), MatchesNode(node2)));
+  EXPECT_THAT(model()->account_other_node()->children(),
+              ElementsAre(MatchesNode(node1), MatchesNode(node2)));
+
+  histogram_tester.ExpectTotalCount("Bookmarks.AddedPerProfileType", 1);
 }
 
 }  // namespace

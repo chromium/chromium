@@ -15,6 +15,8 @@ import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelPowerBookmarkDragManagerTest', () => {
   let delegate: PowerBookmarksListElement;
+  let bookmarksApi: TestBookmarksApiProxy;
+
   const allBookmarks: BookmarksTreeNode[] = [
     {
       id: '2',
@@ -77,7 +79,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    const bookmarksApi = new TestBookmarksApiProxy();
+    bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setAllBookmarks(allBookmarks);
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
@@ -146,14 +148,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
   });
 
   test('DropsIntoFolder', () => {
-    let calledId;
-    let calledIndex;
     chrome.bookmarkManagerPrivate.startDrag = () => {};
-    chrome.bookmarkManagerPrivate.drop = (id, index) => {
-      calledId = id;
-      calledIndex = index;
-      return Promise.resolve();
-    };
 
     const draggableElements = getDraggableElements();
     const draggedBookmark = draggableElements[1]!;
@@ -171,7 +166,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
     dropFolder.dispatchEvent(
         new DragEvent('drop', {bubbles: true, composed: true}));
 
-    assertEquals('5', calledId);
-    assertEquals(undefined, calledIndex);
+    assertEquals(1, bookmarksApi.getCallCount('dropBookmarks'));
+    assertEquals('5', bookmarksApi.getArgs('dropBookmarks')[0][0]);
   });
 });

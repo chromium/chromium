@@ -36,6 +36,8 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void CreateFolder(const std::string& folder_id,
                     const std::string& title,
                     CreateFolderCallback callback) override;
+  void DropBookmarks(const std::string& folder_id,
+                     DropBookmarksCallback callback) override;
   void ExecuteOpenInNewTabCommand(
       const std::vector<int64_t>& node_ids,
       side_panel::mojom::ActionSource source) override;

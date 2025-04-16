@@ -71,7 +71,8 @@ enum class BookmarkReorderDropTarget {
   kBookmarkBarView = 0,
   kBookmarkManagerAPI = 1,
   kBookmarkMenu = 2,
-  kMaxValue = kBookmarkMenu,
+  kBookmarkSidePanel = 3,
+  kMaxValue = kBookmarkSidePanel,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkReorderDropTarget)
 

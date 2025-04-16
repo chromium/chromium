@@ -18,16 +18,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
+#include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -46,6 +50,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -395,6 +400,78 @@ void BookmarksPageHandler::CreateFolder(const std::string& folder_id,
   model->SetDateFolderModified(parent_node, base::Time::Now());
 
   std::move(callback).Run(base::ToString(new_folder->id()));
+}
+
+void BookmarksPageHandler::DropBookmarks(const std::string& folder_id,
+                                         DropBookmarksCallback callback) {
+  base::ScopedClosureRunner closure_runner(std::move(callback));
+
+  if (!bookmarks_ui_) {
+    return;
+  }
+
+  // Do not continue if editing bookmarks is not allowed.
+  if (!browser_window_->GetProfile()->GetPrefs()->GetBoolean(
+          bookmarks::prefs::kEditBookmarksEnabled)) {
+    return;
+  }
+
+  std::optional<BookmarkParentFolder> parent =
+      GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
+                                           folder_id);
+  if (!parent) {
+    return;
+  }
+
+  // Do not allow a drop in a managed folder.
+  if (bookmark_merged_surface_->IsParentFolderManaged(parent.value())) {
+    return;
+  }
+
+  const bookmarks::BookmarkNode* parent_node =
+      bookmark_merged_surface_->GetDefaultParentForNewNodes(parent.value());
+
+  const base::FilePath destination_profile_path =
+      browser_window_->GetProfile()->GetPath();
+  content::WebContents* side_panel_web_contents =
+      bookmarks_ui_->web_ui()->GetWebContents();
+  CHECK(side_panel_web_contents);
+
+  const bookmarks::BookmarkNodeData* drag_data =
+      extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
+          side_panel_web_contents)
+          ->GetBookmarkNodeData();
+  CHECK(drag_data);
+  CHECK(drag_data->is_valid());
+
+  // The following checks are only necessary when moving data within the same
+  // profile.
+  if (drag_data->IsFromProfilePath(destination_profile_path)) {
+    for (const auto& node :
+         drag_data->GetNodes(bookmark_merged_surface_->bookmark_model(),
+                             destination_profile_path)) {
+      // Abort if we are trying to move a node into one of its descendants.
+      // This can also happen from other surfaces, e.g. when dragging a folder
+      // from the bookmark manager into one of its children in the side panel.
+      // Also do not continue if any of the dropped nodes are managed.
+      // TODO(crbug.com/409283807): Dropping into descendants should be blocked
+      // by the UI instead.
+      // TODO(crbug.com/409284055): Instead of doing a no-op, perform a copy
+      // when dropping managed nodes.
+      if (parent_node->HasAncestor(node) ||
+          bookmark_merged_surface_->IsNodeManaged(node)) {
+        return;
+      }
+    }
+  }
+
+  BookmarkUIOperationsHelperMergedSurfaces(bookmark_merged_surface_,
+                                           &parent.value())
+      .DropBookmarks(browser_window_->GetProfile(), *drag_data,
+                     /*index=*/parent_node->children().size(),
+                     /*copy=*/false,
+                     chrome::BookmarkReorderDropTarget::kBookmarkSidePanel,
+                     browser_window_->GetBrowserForMigrationOnly());
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabCommand(

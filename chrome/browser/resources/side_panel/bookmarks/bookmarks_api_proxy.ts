@@ -27,10 +27,11 @@ export interface BookmarksApiProxy {
   // Side Panel operations.
   bookmarkCurrentTabInFolder(folderId: string): void;
   createFolder(parentId: string, title: string): Promise<{newFolderId: string}>;
+  deleteBookmarks(ids: string[]): Promise<void>;
+  dropBookmarks(parentId: string): Promise<void>;
   editBookmarks(
       ids: string[], newTitle: string|undefined, newUrl: string|undefined,
       newParentId: string|undefined): void;
-  deleteBookmarks(ids: string[]): Promise<void>;
   undo(): void;
   renameBookmark(id: string, title: string): void;
   openBookmark(
@@ -121,6 +122,14 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     return this.handler.createFolder(parentId, title);
   }
 
+  deleteBookmarks(ids: string[]) {
+    return this.handler.removeBookmarks(ids.map(id => BigInt(id)));
+  }
+
+  dropBookmarks(parentId: string) {
+    return this.handler.dropBookmarks(parentId);
+  }
+
   editBookmarks(
       ids: string[], newTitle: string|undefined, newUrl: string|undefined,
       newParentId: string|undefined) {
@@ -139,10 +148,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
         this.handler.moveBookmark(BigInt(id), newParentId);
       });
     }
-  }
-
-  deleteBookmarks(ids: string[]) {
-    return this.handler.removeBookmarks(ids.map(id => BigInt(id)));
   }
 
   getActiveUrl() {
