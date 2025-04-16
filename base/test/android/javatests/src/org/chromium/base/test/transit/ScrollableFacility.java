@@ -358,7 +358,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             return mPresence;
         }
 
-        public ViewSpec getViewSpec() {
+        public ViewSpec<View> getViewSpec() {
             assert mViewSpec != null : "Trying to get a ViewSpec for an item not present.";
             return mViewSpec;
         }
@@ -446,7 +446,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
     public class ItemOnScreenFacility<SelectReturnT> extends Facility<HostStationT> {
 
         protected final Item<SelectReturnT> mItem;
-        private @MonotonicNonNull ViewElement mViewElement;
+        private @MonotonicNonNull ViewElement<View> mViewElement;
 
         protected ItemOnScreenFacility(Item<SelectReturnT> item) {
             mItem = item;

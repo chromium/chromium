@@ -45,9 +45,14 @@ public class ViewConditions {
     private static final ViewPrinter.Options PRINT_SHALLOW =
             new ViewPrinter.Options().setPrintChildren(false).setPrintNonVisibleViews(true);
 
-    /** Fulfilled when a single matching View exists and is displayed. */
-    public static class DisplayedCondition extends ConditionWithResult<View> {
+    /**
+     * Fulfilled when a single matching View exists and is displayed.
+     *
+     * @param <ViewT> the type of the View.
+     */
+    public static class DisplayedCondition<ViewT extends View> extends ConditionWithResult<ViewT> {
         private final Matcher<View> mMatcher;
+        private final Class<ViewT> mViewClass;
         private final Options mOptions;
         private @Nullable View mViewMatched;
         private int mPreviousViewX = Integer.MIN_VALUE;
@@ -56,9 +61,10 @@ public class ViewConditions {
         private int mPreviousViewHeight = Integer.MIN_VALUE;
         private long mLastChangeMs = -1;
 
-        public DisplayedCondition(Matcher<View> matcher, Options options) {
+        public DisplayedCondition(Matcher<View> matcher, Class<ViewT> viewClass, Options options) {
             super(/* isRunOnUiThread= */ false);
-            mMatcher = matcher /*, withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)*/;
+            mMatcher = matcher;
+            mViewClass = viewClass;
             mOptions = options;
         }
 
@@ -85,7 +91,7 @@ public class ViewConditions {
         }
 
         @Override
-        protected ConditionStatusWithResult<View> resolveWithSuppliers() {
+        protected ConditionStatusWithResult<ViewT> resolveWithSuppliers() {
             if (!ApplicationStatus.hasVisibleActivities()) {
                 return awaiting("No visible activities").withoutResult();
             }
@@ -198,9 +204,21 @@ public class ViewConditions {
                 }
             }
 
+            ViewT typedView = null;
+            try {
+                typedView = mViewClass.cast(mViewMatched);
+            } catch (ClassCastException e) {
+                fulfilled = false;
+                messages.add(
+                        String.format(
+                                "Matched View was a %s which is not a %s",
+                                mViewMatched.getClass().getName(), mViewClass.getName()));
+            }
+
             String message = String.join("; ", messages);
             if (fulfilled) {
-                return fulfilled(message).withResult(mViewMatched);
+                assumeNonNull(typedView);
+                return fulfilled(message).withResult(typedView);
             } else {
                 return notFulfilled(message).withoutResult();
             }

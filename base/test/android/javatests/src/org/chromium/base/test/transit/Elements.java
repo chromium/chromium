@@ -65,13 +65,14 @@ public class Elements extends BaseElements {
         }
 
         /** Declare as an element a View that matches |viewMatcher|. */
-        public ViewElement declareView(ViewSpec viewSpec) {
+        public <ViewT extends View> ViewElement<ViewT> declareView(ViewSpec<ViewT> viewSpec) {
             return declareView(viewSpec, ViewElement.Options.DEFAULT);
         }
 
         /** Declare as an element a View that matches |viewMatcher| with extra Options. */
-        public ViewElement declareView(ViewSpec viewSpec, ViewElement.Options options) {
-            ViewElement element = new ViewElement(viewSpec, options);
+        public <ViewT extends View> ViewElement<ViewT> declareView(
+                ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+            ViewElement<ViewT> element = new ViewElement<>(viewSpec, options);
             return declareElement(element);
         }
 

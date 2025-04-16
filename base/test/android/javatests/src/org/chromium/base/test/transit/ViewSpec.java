@@ -26,52 +26,71 @@ import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 
-/** A spec to generate ViewElements representing a view characteristic of a ConditionalState. */
+/**
+ * A spec to generate ViewElements representing a view characteristic of a ConditionalState.
+ *
+ * @param <ViewT> the type of the View.
+ */
 @NullMarked
-public class ViewSpec {
-
+public class ViewSpec<ViewT extends View> {
     private final Matcher<View> mViewMatcher;
+    private final Class<ViewT> mViewClass;
     private final String mMatcherDescription;
 
-    /** Create a ViewSpec from a Matcher<View>. */
-    public static ViewSpec viewSpec(Matcher<View> viewMatcher) {
-        return new ViewSpec(viewMatcher);
+    /** Create a ViewSpec of a View that matches multiple Matchers<View>. */
+    public static <ViewT extends View> ViewSpec<ViewT> viewSpec(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+        return new ViewSpec<>(viewMatcher, viewClass);
     }
 
     /** Create a ViewSpec of a View that matches multiple Matchers<View>. */
     @SafeVarargs
-    public static ViewSpec viewSpec(Matcher<View>... viewMatchers) {
-        return new ViewSpec(allOf(viewMatchers));
+    public static <ViewT extends View> ViewSpec<ViewT> viewSpec(
+            Class<ViewT> viewClass, Matcher<View>... viewMatchers) {
+        return new ViewSpec<>(allOf(viewMatchers), viewClass);
+    }
+
+    /** Create a ViewSpec from a Matcher<View>. */
+    public static ViewSpec<View> viewSpec(Matcher<View> viewMatcher) {
+        return new ViewSpec<>(viewMatcher, View.class);
+    }
+
+    /** Create a ViewSpec of a View that matches multiple Matchers<View>. */
+    @SafeVarargs
+    public static ViewSpec<View> viewSpec(Matcher<View>... viewMatchers) {
+        return new ViewSpec<>(allOf(viewMatchers), View.class);
     }
 
     /** Create a ViewSpec for a descendant of this ViewSpec. */
-    public final ViewSpec descendant(Matcher<View> viewMatcher) {
-        return viewSpec(viewMatcher, isDescendantOfA(mViewMatcher));
+    public final <ChildViewT extends View> ViewSpec<ChildViewT> descendant(
+            Class<ChildViewT> viewClass, Matcher<View> viewMatcher) {
+        return viewSpec(viewClass, viewMatcher, isDescendantOfA(mViewMatcher));
     }
 
     /** Create a ViewSpec for a descendant of this ViewSpec that matches multiple Matchers<View>. */
     @SafeVarargs
-    public final ViewSpec descendant(Matcher<View>... viewMatchers) {
+    public final ViewSpec<View> descendant(Matcher<View>... viewMatchers) {
         Matcher<View>[] allViewMatchers = Arrays.copyOf(viewMatchers, viewMatchers.length + 1);
         allViewMatchers[viewMatchers.length] = isDescendantOfA(mViewMatcher);
         return viewSpec(allViewMatchers);
     }
 
     /** Creates a ViewSpec that matches this ViewSpec _and_ another Matcher<View>. */
-    public final ViewSpec and(Matcher<View> viewMatcher) {
+    public final ViewSpec<View> and(Matcher<View> viewMatcher) {
         return viewSpec(viewMatcher, mViewMatcher);
     }
 
     /** Creates a ViewSpec that matches this ViewSpec _and_ multiple other Matchers<View>. */
     @SafeVarargs
-    public final ViewSpec and(Matcher<View>... viewMatchers) {
+    public final ViewSpec<View> and(Matcher<View>... viewMatchers) {
         Matcher<View>[] allViewMatchers = Arrays.copyOf(viewMatchers, viewMatchers.length + 1);
         allViewMatchers[viewMatchers.length] = mViewMatcher;
         return viewSpec(allViewMatchers);
     }
 
-    private ViewSpec(Matcher<View> viewMatcher) {
+    private ViewSpec(Matcher<View> viewMatcher, Class<ViewT> viewClass) {
         mViewMatcher = viewMatcher;
+        mViewClass = viewClass;
 
         // Capture the description as soon as possible to compare ViewSpecs added to different
         // states by their description. Espresso Matcher descriptions are not stable: the integer
@@ -85,6 +104,13 @@ public class ViewSpec {
      */
     public Matcher<View> getViewMatcher() {
         return mViewMatcher;
+    }
+
+    /**
+     * @return the Class<View> used to create this element
+     */
+    public Class<ViewT> getViewClass() {
+        return mViewClass;
     }
 
     /**

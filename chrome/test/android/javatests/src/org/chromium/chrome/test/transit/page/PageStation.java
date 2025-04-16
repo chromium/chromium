@@ -12,6 +12,7 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.app.Activity;
 import android.os.SystemClock;
 import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -33,12 +34,16 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
+import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
@@ -162,14 +167,13 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     protected final Tab mTabAlreadySelected;
     protected final String mExpectedUrlSubstring;
     protected final String mExpectedTitle;
-
-    protected static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
+    public static final ViewSpec<UrlBar> URL_BAR = viewSpec(UrlBar.class, withId(R.id.url_bar));
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Element<Tab> mPageLoadedSupplier;
-    protected ViewElement mToolbar;
-    protected ViewElement mTabSwitcherButton;
-    protected ViewElement mMenuButton;
+    protected ViewElement<ToolbarControlContainer> mToolbar;
+    protected ViewElement<ToggleTabStackButton> mTabSwitcherButton;
+    protected ViewElement<ImageButton> mMenuButton;
 
     /** Prefer the PageStation's subclass |newBuilder()|. */
     public static Builder<PageStation> newGenericBuilder() {
@@ -229,14 +233,18 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         // visible.
         mToolbar =
                 elements.declareView(
-                        viewSpec(withId(R.id.control_container)), ViewElement.unscopedOption());
-        elements.declareView(viewSpec(withId(R.id.home_button)), ViewElement.unscopedOption());
+                        viewSpec(ToolbarControlContainer.class, withId(R.id.control_container)),
+                        ViewElement.unscopedOption());
+        elements.declareView(
+                viewSpec(HomeButton.class, withId(R.id.home_button)), ViewElement.unscopedOption());
         mTabSwitcherButton =
                 elements.declareView(
-                        viewSpec(withId(R.id.tab_switcher_button)), ViewElement.unscopedOption());
+                        viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)),
+                        ViewElement.unscopedOption());
         mMenuButton =
                 elements.declareView(
-                        viewSpec(withId(R.id.menu_button)), ViewElement.unscopedOption());
+                        viewSpec(ImageButton.class, withId(R.id.menu_button)),
+                        ViewElement.unscopedOption());
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(

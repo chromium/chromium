@@ -29,9 +29,11 @@ import org.chromium.build.annotations.Nullable;
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
+ *
+ * @param <ViewT> the type of the View.
  */
 @NullMarked
-public class ViewElement extends Element<View> {
+public class ViewElement<ViewT extends View> extends Element<ViewT> {
 
     /**
      * Minimum percentage of the View that needs to be displayed for a ViewElement's enter
@@ -41,10 +43,10 @@ public class ViewElement extends Element<View> {
      */
     public static final int MIN_DISPLAYED_PERCENT = 90;
 
-    private final ViewSpec mViewSpec;
+    private final ViewSpec<ViewT> mViewSpec;
     private final Options mOptions;
 
-    ViewElement(ViewSpec viewSpec, Options options) {
+    ViewElement(ViewSpec<ViewT> viewSpec, Options options) {
         super(
                 "VE/"
                         + (options.mElementId != null
@@ -62,7 +64,7 @@ public class ViewElement extends Element<View> {
     }
 
     @Override
-    public ConditionWithResult<View> createEnterCondition() {
+    public ConditionWithResult<ViewT> createEnterCondition() {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
@@ -71,14 +73,14 @@ public class ViewElement extends Element<View> {
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
                         .withSettleTimeMs(mOptions.mInitialSettleTimeMs)
                         .build();
-        return new DisplayedCondition(viewMatcher, conditionOptions);
+        return new DisplayedCondition<>(viewMatcher, mViewSpec.getViewClass(), conditionOptions);
     }
 
     /**
      * Create a {@link DisplayedCondition} like the enter Condition, but also waiting for the View
      * to settle (no changes to its rect coordinates) for 1 second.
      */
-    public ConditionWithResult<View> createSettleCondition() {
+    public ConditionWithResult<ViewT> createSettleCondition() {
         Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
@@ -87,7 +89,7 @@ public class ViewElement extends Element<View> {
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
                         .withSettleTimeMs(1000)
                         .build();
-        return new DisplayedCondition(viewMatcher, conditionOptions);
+        return new DisplayedCondition<>(viewMatcher, mViewSpec.getViewClass(), conditionOptions);
     }
 
     @Override

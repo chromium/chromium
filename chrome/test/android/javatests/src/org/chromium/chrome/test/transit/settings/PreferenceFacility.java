@@ -23,9 +23,9 @@ import org.chromium.base.test.transit.ViewSpec;
 
 /** The facility describing one setting preference item in the MainSettings fragment. */
 public class PreferenceFacility extends Facility<SettingsStation<?>> {
-    private final ViewSpec mPrefViewSpec;
+    private final ViewSpec<View> mPrefViewSpec;
 
-    private ViewElement mPrefView;
+    private ViewElement<View> mPrefView;
 
     /**
      * Creates the facility describing one preference item in the MainSettings fragment.
