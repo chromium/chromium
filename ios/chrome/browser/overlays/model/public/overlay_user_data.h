@@ -14,8 +14,8 @@
 //   user data container.
 // - Adds a friend specification for OverlayUserData so it can access
 //   specializations' private constructors and user data keys.
-#define OVERLAY_USER_DATA_SETUP(Type)    \
-  static constexpr int kUserDataKey = 0; \
+#define OVERLAY_USER_DATA_SETUP(Type)                     \
+  [[maybe_unused]] static constexpr int kUserDataKey = 0; \
   friend class OverlayUserData<Type>
 
 // Macro for OverlayUserData setup implementation [add to .cc/.mm file]:
@@ -73,7 +73,10 @@ class OverlayUserData : public base::SupportsUserData::Data {
   }
 
   // The key under which to store the user data.
-  static const void* UserDataKey() { return &DataType::kUserDataKey; }
+  static inline const void* UserDataKey() {
+    static const int kId = 0;
+    return &kId;
+  }
 
  protected:
   // Adds auxilliary OverlayUserData to `data`.  Used to allow multiple
