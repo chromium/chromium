@@ -219,10 +219,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   const AtomicString& LocaleWithKeyword() const;
   void InvalidateLocaleWithKeyword();
 
-  void ReleaseIterator() const {
-    iterator_ = nullptr;
-    character_iterator_.reset();
-  }
+  void ReleaseIterator() const { iterator_ = nullptr; }
 
   // Obtain text break iterator, possibly previously cached, where this iterator
   // is (or has been) initialized to use the previously stored string as the
@@ -247,13 +244,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     return iterator_.get();
   }
 
-  NonSharedCharacterBreakIterator& GetCharacterBreakIterator() const {
-    if (!character_iterator_) {
-      character_iterator_.emplace(StringView(string_, start_offset_));
-    }
-    return *character_iterator_;
-  }
-
   template <typename CharacterType, LineBreakType, BreakSpaceType>
   unsigned NextBreakablePosition(unsigned pos,
                                  const CharacterType* str,
@@ -271,7 +261,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   const LayoutLocale* locale_ = nullptr;
   mutable AtomicString locale_with_keyword_;
   mutable PooledBreakIterator iterator_;
-  mutable std::optional<NonSharedCharacterBreakIterator> character_iterator_;
   unsigned start_offset_ = 0;
   LineBreakType break_type_;
   BreakSpaceType break_space_ = BreakSpaceType::kAfterSpaceRun;
