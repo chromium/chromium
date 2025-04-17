@@ -1740,6 +1740,8 @@ export class AppElement extends AppElementBase {
     // Clear the selection so we don't keep trying to play from the same
     // selection every time they press play.
     selection.removeAllRanges();
+    chrome.readingMode.onCollapseSelection();
+
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
