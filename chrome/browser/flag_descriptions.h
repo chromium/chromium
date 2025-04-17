@@ -125,6 +125,11 @@ extern const char kAndroidMetaClickHistoryNavigationName[];
 extern const char kAndroidMetaClickHistoryNavigationDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidNativePagesInNewTabName[];
+extern const char kAndroidNativePagesInNewTabDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kIgnoreDeviceFlexArcEnabledPolicyName[];
 extern const char kIgnoreDeviceFlexArcEnabledPolicyDescription[];

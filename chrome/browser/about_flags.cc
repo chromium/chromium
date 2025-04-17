@@ -10058,6 +10058,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidMetaClickHistoryNavigation)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-native-pages-in-new-tab",
+     flag_descriptions::kAndroidNativePagesInNewTabName,
+     flag_descriptions::kAndroidNativePagesInNewTabDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidNativePagesInNewTab)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-missive-storage-config", flag_descriptions::kMissiveStorageName,
      flag_descriptions::kMissiveStorageDescription, kOsCrOS,

@@ -182,6 +182,14 @@ const char kAndroidMetaClickHistoryNavigationDescription[] =
     "window) on forward/back history navigation arrows";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidNativePagesInNewTabName[] =
+    "Open downloads, history and bookmarks in new tab";
+const char kAndroidNativePagesInNewTabDescription[] =
+    "Open downloads, history, bookmarks in new tab instead of clobbering "
+    "existing tab";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kIgnoreDeviceFlexArcEnabledPolicyName[] =
     "Ignore VPN Apps Enabling on ChromeOS Flex";

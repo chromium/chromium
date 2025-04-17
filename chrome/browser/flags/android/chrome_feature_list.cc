@@ -190,6 +190,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidElegantTextHeight,
     &kAndroidKeyboardA11y,
     &kAndroidMetaClickHistoryNavigation,
+    &kAndroidNativePagesInNewTab,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidOpenPdfInlineBackport,
@@ -528,6 +529,10 @@ BASE_FEATURE(kAndroidKeyboardA11y,
 
 BASE_FEATURE(kAndroidMetaClickHistoryNavigation,
              "AndroidMetaClickHistoryNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidNativePagesInNewTab,
+             "AndroidNativePagesInNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
