@@ -1169,7 +1169,7 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
-  if (!request_->allows_device_bound_sessions() &&
+  if (!request_->allows_device_bound_session_registration() &&
       !features::kDeviceBoundSessionsForceEnableForTesting.Get()) {
     return;
   }

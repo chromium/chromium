@@ -347,7 +347,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          shared_dictionary_writer_enabled ==
              request.shared_dictionary_writer_enabled &&
          socket_tag == request.socket_tag &&
-         allows_device_bound_sessions == request.allows_device_bound_sessions &&
+         allows_device_bound_session_registration ==
+             request.allows_device_bound_session_registration &&
          permissions_policy == request.permissions_policy;
 }
 

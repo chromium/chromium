@@ -426,7 +426,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->is_ad_tagged = src.IsAdResource();
 
-  dest->allows_device_bound_sessions = src.AllowsDeviceBoundSessions();
+  dest->allows_device_bound_session_registration =
+      src.AllowsDeviceBoundSessionRegistration();
 }
 
 }  // namespace blink

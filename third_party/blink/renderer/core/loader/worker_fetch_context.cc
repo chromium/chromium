@@ -211,7 +211,7 @@ void WorkerFetchContext::PrepareRequest(
 
   probe::PrepareRequest(Probe(), nullptr, request, options, resource_type);
 
-  request.SetAllowsDeviceBoundSessions(
+  request.SetAllowsDeviceBoundSessionRegistration(
       RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
           GetExecutionContext()));
 }

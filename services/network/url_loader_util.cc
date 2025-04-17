@@ -643,8 +643,8 @@ void ConfigureUrlRequest(const ResourceRequest& request,
     url_request.set_socket_tag(request.socket_tag);
   }
 
-  url_request.set_allows_device_bound_sessions(
-      request.allows_device_bound_sessions);
+  url_request.set_allows_device_bound_session_registration(
+      request.allows_device_bound_session_registration);
 }
 
 void SetRequestCredentials(
@@ -733,6 +733,9 @@ mojom::URLResponseHeadPtr BuildResponseHead(
       !(url_request.load_flags() & net::LOAD_PREFETCH) &&
       response_info.unused_since_prefetch;
   response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
+  response->device_bound_session_usage =
+      static_cast<network::mojom::DeviceBoundSessionUsage>(
+          url_request.device_bound_session_usage());
 
   // IsInclude() true means the cookie was sent.
   response->was_cookie_in_request = std::ranges::any_of(

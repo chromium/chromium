@@ -1480,7 +1480,7 @@ class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
     request_ = context_->CreateRequest(GURL("https://www.example.com"),
                                        DEFAULT_PRIORITY, &delegate_,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
-    request_->set_allows_device_bound_sessions(true);
+    request_->set_allows_device_bound_session_registration(true);
   }
 
   device_bound_sessions::SessionServiceMock& GetMockService() {

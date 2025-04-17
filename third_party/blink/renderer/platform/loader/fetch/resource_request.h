@@ -674,12 +674,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
 #endif
   }
 
-  bool AllowsDeviceBoundSessions() const {
-    return allows_device_bound_sessions_;
+  bool AllowsDeviceBoundSessionRegistration() const {
+    return allows_device_bound_session_registration_;
   }
 
-  void SetAllowsDeviceBoundSessions(bool allows_device_bound_sessions) {
-    allows_device_bound_sessions_ = allows_device_bound_sessions;
+  void SetAllowsDeviceBoundSessionRegistration(
+      bool allows_device_bound_session_registration) {
+    allows_device_bound_session_registration_ =
+        allows_device_bound_session_registration;
   }
 
  private:
@@ -839,7 +841,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // Whether this request is allowed to register new device bound
   // sessions or accept challenges on device bound sessions (e.g. due to
   // an Origin Trial)
-  bool allows_device_bound_sessions_ = false;
+  bool allows_device_bound_session_registration_ = false;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

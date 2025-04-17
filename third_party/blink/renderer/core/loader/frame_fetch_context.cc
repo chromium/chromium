@@ -455,7 +455,7 @@ void FrameFetchContext::PrepareRequest(
         webreq);
   }
 
-  request.SetAllowsDeviceBoundSessions(
+  request.SetAllowsDeviceBoundSessionRegistration(
       RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
           GetExecutionContext()));
 }

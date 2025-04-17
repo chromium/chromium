@@ -416,9 +416,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.socket_tag;
   }
-  static bool allows_device_bound_sessions(
+  static bool allows_device_bound_session_registration(
       const network::ResourceRequest& request) {
-    return request.allows_device_bound_sessions;
+    return request.allows_device_bound_session_registration;
   }
   static const std::optional<network::PermissionsPolicy>& permissions_policy(
       const network::ResourceRequest& request) {

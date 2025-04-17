@@ -188,7 +188,8 @@ bool StructTraits<
   out->client_side_content_decoding_enabled =
       data.client_side_content_decoding_enabled();
   out->required_ip_address_space = data.required_ip_address_space();
-  out->allows_device_bound_sessions = data.allows_device_bound_sessions();
+  out->allows_device_bound_session_registration =
+      data.allows_device_bound_session_registration();
   return true;
 }
 

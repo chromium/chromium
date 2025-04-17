@@ -42,6 +42,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/device_bound_sessions/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/filter/source_stream_type.h"
 #include "net/http/http_raw_request_headers.h"
@@ -927,11 +928,23 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Whether Device Bound Session registration and challenge are allowed
   // for this request (e.g. by Origin Trial)
-  bool allows_device_bound_sessions() const {
-    return allows_device_bound_sessions_;
+  bool allows_device_bound_session_registration() const {
+    return allows_device_bound_session_registration_;
   }
-  void set_allows_device_bound_sessions(bool allows_device_bound_sessions) {
-    allows_device_bound_sessions_ = allows_device_bound_sessions;
+  void set_allows_device_bound_session_registration(
+      bool allows_device_bound_session_registration) {
+    allows_device_bound_session_registration_ =
+        allows_device_bound_session_registration;
+  }
+
+  // Whether this request was in the scope of any device bound session,
+  // even if it did not need to be deferred.
+  device_bound_sessions::SessionUsage device_bound_session_usage() const {
+    return device_bound_session_usage_;
+  }
+  void set_device_bound_session_usage(
+      device_bound_sessions::SessionUsage usage) {
+    device_bound_session_usage_ = usage;
   }
 
  protected:
@@ -1222,7 +1235,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
       device_bound_session_access_callback_;
 
-  bool allows_device_bound_sessions_ = false;
+  // Whether the request is allowed to register new device bound sessions
+  bool allows_device_bound_session_registration_ = false;
+  // How existing device bound sessions interacted with this request
+  device_bound_sessions::SessionUsage device_bound_session_usage_ =
+      device_bound_sessions::SessionUsage::kUnknown;
 
   THREAD_CHECKER(thread_checker_);
 

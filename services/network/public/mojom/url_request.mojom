@@ -605,7 +605,7 @@ struct URLRequest {
   // Whether this request is allowed to register new device bound
   // sessions or process challenges for existing device bound sessions
   // (e.g. due to an Origin Trial).
-  bool allows_device_bound_sessions;
+  bool allows_device_bound_session_registration;
 
   // Permissions Policy of the request.
   // If it's nullopt then the request's initiator didn't set the permissions
