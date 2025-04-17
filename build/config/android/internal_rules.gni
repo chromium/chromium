@@ -4184,8 +4184,9 @@ if (enable_java_templates) {
         output_jar = _final_ijar_path
 
         # ijar needs only _unprocessed_jar_deps, but this also needs to export
-        # __header target from deps.
-        deps = _unprocessed_jar_deps + _java_header_deps
+        # __header and __build_config targets from deps.
+        deps = _unprocessed_jar_deps + _java_header_deps +
+               [ ":$_build_config_target_name" ]
       }
     }
 
@@ -4401,7 +4402,7 @@ if (enable_java_templates) {
         if (defined(invoker.deps)) {
           deps += invoker.deps
         }
-        public_deps = []
+        public_deps = [ ":$_build_config_target_name" ]
         if (defined(invoker.public_deps)) {
           public_deps += invoker.public_deps
         }
