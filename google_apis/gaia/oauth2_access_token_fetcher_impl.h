@@ -6,6 +6,7 @@
 #define GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -82,11 +83,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
   // Derived classes must specify a network annotation for the fetcher.
   virtual net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const = 0;
 
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Helper methods for the flow.
   void StartGetAccessToken();
-  void EndGetAccessToken(std::unique_ptr<std::string> response_body);
+  void EndGetAccessToken(std::optional<std::string> response_body);
 
   // Helper mehtods for reporting back results.
   void OnGetTokenSuccess(
