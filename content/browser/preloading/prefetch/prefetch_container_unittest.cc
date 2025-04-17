@@ -349,14 +349,6 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_EQ(prefetch_container.key(),
             PrefetchContainer::Key(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
-
-  // Speculation rules prefetch with tags should contain the tags in the header
-  // field.
-  prefetch_container.MakeResourceRequest(net::HttpRequestHeaders());
-  EXPECT_EQ(prefetch_container.GetResourceRequest()
-                ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
-                .value(),
-            "\"example\"");
 }
 
 TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
@@ -1585,6 +1577,9 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
 }
 
 TEST_P(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://test.com/referrer"));
+
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
       GURL("https://test.com"),
       {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})});
@@ -1598,7 +1593,26 @@ TEST_P(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
             "\"tag1\", \"tag2\"");
 }
 
+TEST_P(PrefetchContainerTest, CrossSitePrefetchContainerNoSpeculationTag) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://other.com/referrer"));
+
+  auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
+      GURL("https://test.com"),
+      {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})});
+
+  EXPECT_TRUE(prefetch_container->IsCrossOriginRequest(
+      url::Origin::Create(prefetch_container->GetURL())));
+  // Cross-site Speculation rules prefetch should not contain tag in the header.
+  prefetch_container->MakeResourceRequest(net::HttpRequestHeaders());
+  EXPECT_FALSE(prefetch_container->GetResourceRequest()
+                   ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+                   .has_value());
+}
+
 TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://test.com/referrer"));
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"), {});
   prefetch_container->MakeResourceRequest(net::HttpRequestHeaders());
