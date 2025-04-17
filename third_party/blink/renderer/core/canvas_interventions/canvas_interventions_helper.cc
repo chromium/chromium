@@ -108,6 +108,10 @@ String GetDomainFromSecurityOrigin(const SecurityOrigin* security_origin) {
 }  // namespace
 
 // static
+const char CanvasInterventionsHelper::kSupplementName[] =
+    "CanvasInterventionsHelper";
+
+// static
 bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
     CanvasRenderingContext* rendering_context,
     ExecutionContext* execution_context,
@@ -184,7 +188,34 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
       "FingerprintingProtection.CanvasNoise.NoisedCanvasSize",
       pixmap_to_noise.width() * pixmap_to_noise.height());
   UseCounter::Count(execution_context, WebFeature::kCanvasReadbackNoise);
+  auto* helper = CanvasInterventionsHelper::From(execution_context);
+  helper->IncrementNoisedCanvasReadbacks();
 
   return true;
 }
+
+// static
+CanvasInterventionsHelper* CanvasInterventionsHelper::From(
+    ExecutionContext* context) {
+  CanvasInterventionsHelper* helper =
+      Supplement<ExecutionContext>::From<CanvasInterventionsHelper>(context);
+  if (!helper) {
+    helper = MakeGarbageCollected<CanvasInterventionsHelper>(*context);
+    Supplement<ExecutionContext>::ProvideTo(*context, helper);
+  }
+  return helper;
+}
+
+CanvasInterventionsHelper::CanvasInterventionsHelper(
+    ExecutionContext& execution_context)
+    : Supplement<ExecutionContext>(execution_context),
+      ExecutionContextLifecycleObserver(&execution_context) {}
+
+void CanvasInterventionsHelper::ContextDestroyed() {
+  CHECK_GT(num_noised_canvas_readbacks_, 0);
+  UMA_HISTOGRAM_COUNTS_100(
+      "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext",
+      num_noised_canvas_readbacks_);
+}
+
 }  // namespace blink

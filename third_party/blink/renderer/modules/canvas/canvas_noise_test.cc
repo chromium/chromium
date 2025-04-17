@@ -465,4 +465,18 @@ TEST_F(CanvasNoiseTest, NoiseDiffersPerSite) {
   EXPECT_GT(num_changed_pixel_values, 0);
 }
 
+TEST_F(CanvasNoiseTest, NumberOfNoisedReadbackPerPage) {
+  base::HistogramTester histogram_tester;
+  NonThrowableExceptionState exception_state;
+  DrawSomethingWithTrigger();
+  CanvasElement().toDataURL("image/png", exception_state);
+  CanvasElement().toDataURL("image/jpeg", exception_state);
+  Context2D()->getImageData(0, 0, 10, 10, exception_state);
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+  // Navigate away from page to destroy the execution context.
+  NavigateTo(KURL("https://different.example"));
+  histogram_tester.ExpectUniqueSample(
+      "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext", 3, 1);
+}
+
 }  // namespace blink
