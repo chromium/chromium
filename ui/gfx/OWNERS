@@ -23,6 +23,7 @@ per-file screen*=oshima@chromium.org
 
 # Overlay states, configurations, etc.
 per-file overlay*=spang@chromium.org
+per-file overlay*=file://components/viz/OWNERS
 
 # Transform, interpolated transform and transform util.
 per-file transform*=vollick@chromium.org
