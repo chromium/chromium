@@ -778,7 +778,9 @@
               "wpt_internal/css/css-pseudo/spelling-error-007-crash.html"],
     "exclusive_tests": ["external/wpt/forced-colors-mode"],
     "args": ["--force-high-contrast",
-             "--enable-blink-features=ForcedColors"],
+             "--enable-blink-features=ForcedColors",
+             "--enable-blink-features=CSSGapDecoration"
+            ],
     "expires": "Jul 1, 2025"
   },
   "This never expires because it tests rendering of form controls when the",
@@ -3027,7 +3029,6 @@
       "external/wpt/css/css-animations/responsive/column-rule-color-001.html",
       "external/wpt/css/css-cascade/all-prop-revert-layer.html",
       "external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html",
-      "external/wpt/css/css-variables/variable-reference-visited.html",
       "external/wpt/css/cssom/declaration-block-all-crash.html",
       "external/wpt/css/css-gaps"],
     "args": ["--enable-blink-features=CSSGapDecoration"],

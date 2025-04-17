@@ -2475,14 +2475,12 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    if (allow_visited_style) {
-      return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
-    }
+  // For 'column-rule-color' we only apply :visited styles when one color is
+  // supplied by the author rather than a list of colors.
+  if (allow_visited_style && style.ColumnRuleColor().HasSingleValue()) {
+    return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
   }
 
-  // TODO(crbug.com/357648037): Add UseCounter to  measure the use of
-  // column-rule-color in :visited style rules.
   return ComputedStyleUtils::ValueForGapDecorationColorDataList(
       style.ColumnRuleColor(), style, value_phase);
 }
