@@ -60,7 +60,9 @@ class FilePath;
 namespace content {
 
 class AdAuctionPageData;
+class BrowserContext;
 class InterestGroupStorage;
+class NavigationOrDocumentHandle;
 class TrustedSignalsCacheImpl;
 struct DebugReportLockoutAndCooldowns;
 
@@ -286,7 +288,18 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Records a view or a click event. Aggregate time bucketed view and click
   // information is provided to bidder's browsing signals in generateBid().
-  void RecordViewClick(network::AdAuctionEventRecord event_record);
+  //
+  // `navigation_or_document_handle` may be null -- in that case, the top-frame
+  // origin for the IsInterestGroupAPIAllowed() check is an opaque origin.
+  void RecordViewClick(
+      BrowserContext& browser_context,
+      const NavigationOrDocumentHandle* navigation_or_document_handle,
+      const std::optional<url::Origin>& maybe_top_frame_origin,
+      network::AdAuctionEventRecord event_record);
+
+  // Test-only variant; this lacks permission & attestation checks (so tests
+  // don't need to set up things they need to operate).
+  void RecordViewClickForTesting(network::AdAuctionEventRecord event_record);
 
   // Invokes `callback` with whether the database has a record of view/click
   // events for given combination of provider & eligible origins.

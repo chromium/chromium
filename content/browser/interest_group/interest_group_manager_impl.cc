@@ -44,6 +44,7 @@
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/protected_audience_network_util.h"
 #include "content/browser/interest_group/trusted_signals_cache_impl.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -57,6 +58,8 @@
 #include "url/origin.h"
 
 namespace content {
+
+class BrowserContext;
 
 namespace {
 // The maximum number of active report requests at a time.
@@ -266,6 +269,22 @@ void RecordNumberOfSelectableBuyerAndSellerReportingIds(
           ad.selectable_buyer_and_seller_reporting_ids->size());
     }
   }
+}
+
+// Returns true if `origin` is allowed to use interest group operation
+// `operation`, and false otherwise.
+bool IsInterestGroupAPIAllowed(
+    BrowserContext& browser_context,
+    const NavigationOrDocumentHandle* navigation_or_document_handle,
+    ContentBrowserClient::InterestGroupApiOperation operation,
+    const url::Origin& origin,
+    const url::Origin& top_frame_origin) {
+  auto* rfh = navigation_or_document_handle
+                  ? navigation_or_document_handle->GetDocument()
+                  : nullptr;
+
+  return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+      &browser_context, rfh, operation, top_frame_origin, origin);
 }
 
 }  // namespace
@@ -537,15 +556,42 @@ void InterestGroupManagerImpl::RecordDebugReportCooldown(
 }
 
 void InterestGroupManagerImpl::RecordViewClick(
+    BrowserContext& browser_context,
+    const NavigationOrDocumentHandle* navigation_or_document_handle,
+    const std::optional<url::Origin>& maybe_top_frame_origin,
     network::AdAuctionEventRecord event_record) {
-  // TODO(crbug.com/394108643): Check against
-  // ContentBrowserClient::IsInterestGroupAPIAllowed(). This will require
-  // getting an RFH; we could use something like
-  // url_loader_network_observers_.current_context().navigation_or_document()
-  // in the StoragePartitionImpl, but the issue is that for clicks, we'll
-  // probably get a navigation handle instead of an RFH? Perhaps we can
-  // override WebContentsObserver::DidFinishNavigation() to wait until the new
-  // RFH is ready?
+  bool had_top_frame_origin = maybe_top_frame_origin.has_value();
+  url::Origin top_frame_origin =
+      maybe_top_frame_origin ? *maybe_top_frame_origin : url::Origin();
+  base::UmaHistogramBoolean(
+      "Storage.InterestGroup.HeaderObserver.CreatedOpaqueOriginForPrefsCheck",
+      !had_top_frame_origin);
+
+  if (!IsInterestGroupAPIAllowed(browser_context, navigation_or_document_handle,
+                                 InterestGroupApiOperation::kJoin,
+                                 event_record.providing_origin,
+                                 top_frame_origin)) {
+    return;
+  }
+
+  std::vector<url::Origin> allowed_eligible_origins;
+  for (url::Origin& eligible_origin : event_record.eligible_origins) {
+    if (IsInterestGroupAPIAllowed(browser_context,
+                                  navigation_or_document_handle,
+                                  InterestGroupApiOperation::kJoin,
+                                  eligible_origin, top_frame_origin)) {
+      allowed_eligible_origins.push_back(std::move(eligible_origin));
+    }
+  }
+  if (allowed_eligible_origins.empty()) {
+    return;
+  }
+  event_record.eligible_origins = std::move(allowed_eligible_origins);
+  caching_storage_.RecordViewClick(std::move(event_record));
+}
+
+void InterestGroupManagerImpl::RecordViewClickForTesting(
+    network::AdAuctionEventRecord event_record) {
   caching_storage_.RecordViewClick(std::move(event_record));
 }
 

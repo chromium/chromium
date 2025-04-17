@@ -2434,8 +2434,13 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
 }
 
 void StoragePartitionImpl::OnAdAuctionEventRecordHeaderReceived(
-    network::AdAuctionEventRecord event_record) {
-  interest_group_manager_->RecordViewClick(std::move(event_record));
+    network::AdAuctionEventRecord event_record,
+    const std::optional<url::Origin>& top_frame_origin) {
+  DCHECK(browser_context());
+  interest_group_manager_->RecordViewClick(
+      *browser_context(),
+      url_loader_network_observers_.current_context().navigation_or_document(),
+      top_frame_origin, std::move(event_record));
 }
 
 void StoragePartitionImpl::Clone(

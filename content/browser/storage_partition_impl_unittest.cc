@@ -284,7 +284,7 @@ class RemoveInterestGroupTester {
     InterestGroupManagerImpl* interest_group_manager =
         static_cast<InterestGroupManagerImpl*>(
             storage_partition_->GetInterestGroupManager());
-    interest_group_manager->RecordViewClick(std::move(event));
+    interest_group_manager->RecordViewClickForTesting(std::move(event));
   }
 
   std::optional<bool> ClickInDb(const url::Origin& provider_origin,

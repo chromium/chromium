@@ -46,6 +46,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
@@ -418,6 +419,7 @@ class AllowlistedOriginContentBrowserClient
       ContentBrowserClient::InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
       const url::Origin& api_origin) override {
+    checked_top_frame_origins_.insert(top_frame_origin);
     return allow_list_.contains(top_frame_origin) &&
            allow_list_.contains(api_origin);
   }
@@ -429,12 +431,17 @@ class AllowlistedOriginContentBrowserClient
     return allow_list_.contains(destination_origin);
   }
 
+  const std::set<url::Origin>& checked_top_frame_origins() const {
+    return checked_top_frame_origins_;
+  }
+
   MOCK_METHOD(void,
               LogWebFeatureForCurrentPage,
               (content::RenderFrameHost*, blink::mojom::WebFeature),
               (override));
 
  private:
+  std::set<url::Origin> checked_top_frame_origins_;
   base::flat_set<url::Origin> allow_list_;
 };
 
@@ -1288,6 +1295,20 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       return 0;
     }
     return group.value()->bidding_browser_signals->join_count;
+  }
+
+  // Typically, even tests get view and click data by loading an interest group
+  // and observing the events in that group's browser signals. However,
+  // sometimes joining an interest group in a test might not be possible, so
+  // this method allows checking whether raw click and view data exists given
+  // `provider_origin` and `eligible_origin`
+  std::optional<bool> CheckViewClickInfoInDb(url::Origin provider_origin,
+                                             url::Origin eligible_origin) {
+    base::test::TestFuture<std::optional<bool>> future;
+    manager_->CheckViewClickInfoInDbForTesting(std::move(provider_origin),
+                                               std::move(eligible_origin),
+                                               future.GetCallback());
+    return future.Take();
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -8497,6 +8518,260 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_InvalidType) {
 
   // This join should succeed.
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(test_origin_a, "cars")
+                    .SetViewAndClickCountsProviders(
+                        {{url::Origin::Create(record_event_url)}})
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        "a.test", kValidateViewClickBiddingLogicPath))
+                    .SetAds({{{GURL(kAdURL), /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // No change to view or click counts. Note that this is somewhat racy, as if
+  // the product code erroneously records a view or a click, it could happen
+  // after the join -- in that case, failures may be flaky. However, correct
+  // product code shouldn't result in flakes.
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(test_origin_a);
+  ASSERT_EQ(groups->size(), 1u);
+  const StorageInterestGroup& group = *groups->GetInterestGroups()[0];
+  const blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      group.bidding_browser_signals->view_and_click_counts;
+  EXPECT_EQ(group.interest_group.name, "cars");
+  EXPECT_EQ(view_and_click_counts->view_counts->past_hour, 0);
+  EXPECT_EQ(view_and_click_counts->click_counts->past_hour, 0);
+
+  ValidateViewClickCountsInGenerateBid(
+      /*expected_view_counts=*/{.past_hour = 0,
+                                .past_day = 0,
+                                .past_week = 0,
+                                .past_30_days = 0,
+                                .past_90_days = 0},
+      /*expected_click_counts=*/{.past_hour = 0,
+                                 .past_day = 0,
+                                 .past_week = 0,
+                                 .past_30_days = 0,
+                                 .past_90_days = 0});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       Clickiness_EligibleOriginNotAttested) {
+  // Only allow b.test and c.test for the Protected Audience API. One of the
+  // eligible origins, a.test is not attested. Click should only be recorded
+  // for b.test origin.
+  content_browser_client_->SetAllowList(
+      {url::Origin::Create(embedded_https_test_server().GetURL("b.test", "/")),
+       url::Origin::Create(
+           embedded_https_test_server().GetURL("c.test", "/"))});
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  url::Origin test_origin_a = embedded_https_test_server().GetOrigin("a.test");
+  url::Origin test_origin_b = embedded_https_test_server().GetOrigin("b.test");
+  GURL test_url_c = embedded_https_test_server().GetURL(
+      "c.test", "/attribution_reporting/page_with_impression_creator.html");
+  ASSERT_TRUE(test_url_c.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_c));
+
+  const std::string record_event_response =
+      base::StringPrintf("type=\"click\", eligible-origins=(\"%s\" \"%s\")",
+                         test_origin_a.Serialize(), test_origin_b.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: $2,
+                        target: $3});)",
+                       embedded_https_test_server().GetURL("a.test", "/echo"),
+                       record_event_url, "_top")));
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+  observer.Wait();
+  base::RunLoop().RunUntilIdle();
+
+  // Directly check that view / click didn't get recorder, instead of getting
+  // them via a join. This avoids the awkwardness of needing to create an
+  // interest group for an origin that's not attested, or the raciness of trying
+  // to change attestation.
+  //
+  // This test shouldn't flake -- but if the product code isn't correctly
+  // blocking non-attested origins, there may be a chance that the below code
+  // reads from the database before the attempt to record the event completes.
+  EXPECT_EQ(false,
+            CheckViewClickInfoInDb(
+                /*provider_origin=*/url::Origin::Create(record_event_url),
+                /*eligible_origin=*/test_origin_a));
+
+  EXPECT_EQ(true, CheckViewClickInfoInDb(
+                      /*provider_origin=*/url::Origin::Create(record_event_url),
+                      /*eligible_origin=*/test_origin_b));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       Clickiness_CrossSiteTopLevelNav) {
+  // Make sure we use the right top-level origin when checking permissions.
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  url::Origin test_origin_a = embedded_https_test_server().GetOrigin("a.test");
+  GURL test_url_c = embedded_https_test_server().GetURL(
+      "c.test", "/attribution_reporting/page_with_impression_creator.html");
+  ASSERT_TRUE(test_url_c.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_c));
+
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"click\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("a.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: '',
+                        target: $2});)",
+                                               record_event_url, "_top")));
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+  observer.Wait();
+
+  while (CheckViewClickInfoInDb(/*provider_origin=*/test_origin_a,
+                                /*eligible_origin=*/test_origin_a) != true) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // The top-level origin we expect for checks is the destination, as that's
+  // what other such checks use.
+  EXPECT_THAT(content_browser_client_->checked_top_frame_origins(),
+              testing::ElementsAre(test_origin_a));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       Clickiness_ProviderNotAttested) {
+  // Only allow a.test for the Protected Audience API. The provider origin,
+  // c.test is not attested. No click should be recorded, even though the
+  // eligible origin and top level frame origin are both a.test.
+  content_browser_client_->SetAllowList({
+      url::Origin::Create(embedded_https_test_server().GetURL("a.test", "/")),
+  });
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  GURL test_url_a = embedded_https_test_server().GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"click\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: $2,
+                        target: $3});)",
+                       embedded_https_test_server().GetURL("a.test", "/echo"),
+                       record_event_url, "_top")));
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+  observer.Wait();
+
+  // This join should succeed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(test_origin_a, "cars")
+                    .SetViewAndClickCountsProviders(
+                        {{url::Origin::Create(record_event_url)}})
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        "a.test", kValidateViewClickBiddingLogicPath))
+                    .SetAds({{{GURL(kAdURL), /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // No change to view or click counts. Note that this is somewhat racy, as if
+  // the product code erroneously records a view or a click, it could happen
+  // after the join -- in that case, failures may be flaky. However, correct
+  // product code shouldn't result in flakes.
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(test_origin_a);
+  ASSERT_EQ(groups->size(), 1u);
+  const StorageInterestGroup& group = *groups->GetInterestGroups()[0];
+  const blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      group.bidding_browser_signals->view_and_click_counts;
+  EXPECT_EQ(group.interest_group.name, "cars");
+  EXPECT_EQ(view_and_click_counts->view_counts->past_hour, 0);
+  EXPECT_EQ(view_and_click_counts->click_counts->past_hour, 0);
+
+  ValidateViewClickCountsInGenerateBid(
+      /*expected_view_counts=*/{.past_hour = 0,
+                                .past_day = 0,
+                                .past_week = 0,
+                                .past_30_days = 0,
+                                .past_90_days = 0},
+      /*expected_click_counts=*/{.past_hour = 0,
+                                 .past_day = 0,
+                                 .past_week = 0,
+                                 .past_30_days = 0,
+                                 .past_90_days = 0});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       Clickiness_TopLevelFrameNotAttested) {
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  // Use a domain name that's not attested.
+  GURL test_url_not_attested = embedded_https_test_server().GetURL(
+      "d.test", "/attribution_reporting/page_with_impression_creator.html");
+  ASSERT_TRUE(test_url_not_attested.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_not_attested));
+
+  url::Origin test_origin_a = embedded_https_test_server().GetOrigin("a.test");
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"view\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               record_event_url)));
+
+  // This join should succeed.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_https_test_server().GetURL("a.test", "/echo")));
   EXPECT_EQ(kSuccess,
             JoinInterestGroupAndVerify(
                 blink::TestInterestGroupBuilder(test_origin_a, "cars")

@@ -69,7 +69,7 @@ void AdAuctionEventRecordRequestHelper::HandleResponse(
   }
 
   url_loader_network_observer_->OnAdAuctionEventRecordHeaderReceived(
-      std::move(*maybe_parsed));
+      std::move(*maybe_parsed), request.isolation_info().top_frame_origin());
 }
 
 }  // namespace network

@@ -211,8 +211,12 @@ interface URLLoaderNetworkServiceObserver {
   // `ad_auction_event_record` in the interest group database, for use in
   // generateBid() browser signals during interest group auctions, providing
   // bidders view and click signals.
+  //
+  // `top_frame_origin` is the top-frame origin associated with the request this
+  // header is in response to, if any.
   OnAdAuctionEventRecordHeaderReceived(
-      AdAuctionEventRecord ad_auction_event_record);
+      AdAuctionEventRecord ad_auction_event_record,
+      url.mojom.Origin? top_frame_origin);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

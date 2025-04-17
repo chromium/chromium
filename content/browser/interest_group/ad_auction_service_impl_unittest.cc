@@ -11988,7 +11988,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithClickiness) {
   event.eligible_origins.emplace_back(test_origin);
   event.type = network::AdAuctionEventRecord::Type::kClick;
   event.providing_origin = test_origin;
-  manager_->RecordViewClick(std::move(event));
+  manager_->RecordViewClickForTesting(std::move(event));
 
   blink::InterestGroup ig =
       blink::TestInterestGroupBuilder(test_origin, "cars")

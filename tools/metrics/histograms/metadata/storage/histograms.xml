@@ -1258,6 +1258,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Storage.InterestGroup.HeaderObserver.CreatedOpaqueOriginForPrefsCheck"
+    enum="Boolean" expires_after="2025-08-10">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Tracks whether or not it was necessary to create a new opaque origin to use
+    as the top-frame origin for the call to
+    `ContentBrowserClient::IsInterestGroupAPIAllowed()` when storing headers
+    received from the network service. Recorded every time this check was made.
+    NOTE: This histogram doesn't apply to normal joins, updates, auctions, etc.
+    -- it just applies to checks applied after receiving headers from the
+    network service.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.InitializationResult"
     enum="InterestGroupStorageInitializationResult" expires_after="2025-07-13">
   <owner>caraitto@chromium.org</owner>
