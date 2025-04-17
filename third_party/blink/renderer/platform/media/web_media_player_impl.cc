@@ -3481,6 +3481,10 @@ void WebMediaPlayerImpl::OnMediaThreadMemoryDump(
 }
 
 void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
+  if (!base::FeatureList::IsEnabled(media::kPauseBackgroundTimer)) {
+    return;
+  }
+
   // Only schedule the pause timer if we're not paused or paused but going to
   // resume when foregrounded, and are suspended and have audio.
   if ((paused_ && !IsPausedBecausePageHidden()) ||

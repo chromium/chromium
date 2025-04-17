@@ -2435,6 +2435,8 @@ TEST_F(WebMediaPlayerImplTest, NotifiesObserverWhenFrozen) {
 }
 
 TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kPauseBackgroundTimer);
   InitializeWebMediaPlayerImpl();
   SetSuspendState(true);
   SetPaused(false);
