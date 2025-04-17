@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.NO_SELECTED_ITEM_ID;
 
 import android.content.Context;
@@ -18,12 +19,13 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics;
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 
 /** Dialog that is displayed to ask user where they want to download the file. */
+@NullMarked
 public class DownloadLocationCustomView extends ScrollView
         implements OnCheckedChangeListener, DownloadDirectoryAdapter.Delegate {
     private DownloadDirectoryAdapter mDirectoryAdapter;
@@ -50,8 +53,8 @@ public class DownloadLocationCustomView extends ScrollView
     private CheckBox mDontShowAgain;
     private @DownloadLocationDialogType int mDialogType;
     private long mTotalBytes;
-    private Callback<Boolean> mOnClickedCallback;
-    private DownloadLocationHelper mDownloadLocationHelper;
+    private @Nullable Callback<Boolean> mOnClickedCallback;
+    private @Nullable DownloadLocationHelper mDownloadLocationHelper;
 
     public DownloadLocationCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -122,6 +125,7 @@ public class DownloadLocationCustomView extends ScrollView
     // CompoundButton.OnCheckedChangeListener implementation.
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        assumeNonNull(mOnClickedCallback);
         mOnClickedCallback.onResult(isChecked);
     }
 
@@ -129,8 +133,7 @@ public class DownloadLocationCustomView extends ScrollView
     /**
      * @return The text that the user inputted as the name of the file.
      */
-    @Nullable
-    String getFileName() {
+    @Nullable String getFileName() {
         if (mFileName == null || mFileName.getText() == null) return null;
         return mFileName.getText().toString();
     }
@@ -138,8 +141,7 @@ public class DownloadLocationCustomView extends ScrollView
     /**
      * @return The file path based on what the user selected as the location of the file.
      */
-    @Nullable
-    DirectoryOption getDirectoryOption() {
+    @Nullable DirectoryOption getDirectoryOption() {
         if (mFileLocation == null) return null;
         DirectoryOption selected = (DirectoryOption) mFileLocation.getSelectedItem();
         return selected;
@@ -228,6 +230,7 @@ public class DownloadLocationCustomView extends ScrollView
                                 AdapterView<?> parent, View view, int position, long id) {
                             DirectoryOption option =
                                     (DirectoryOption) mDirectoryAdapter.getItem(position);
+                            assumeNonNull(option);
                             setLocationAvailableSpace(option.availableSpace);
                         }
 
@@ -244,6 +247,7 @@ public class DownloadLocationCustomView extends ScrollView
 
     @Override
     public DownloadLocationHelper getDownloadLocationHelper() {
+        assumeNonNull(mDownloadLocationHelper);
         return mDownloadLocationHelper;
     }
 }

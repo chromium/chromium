@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Properties used by the MVC model between {@link OpenDownloadDialogCoordinator} and {@link
  * OpenDownloadCustomView}.
  */
+@NullMarked
 class OpenDownloadDialogProperties {
     /** The title text of the open download dialog. */
     static final PropertyModel.ReadableObjectPropertyKey<CharSequence> TITLE =

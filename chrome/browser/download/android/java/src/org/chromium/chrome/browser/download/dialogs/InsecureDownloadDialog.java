@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.dialogs;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.UiUtils;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Dialog for confirming that the user wants to download an insecurely-delivered file, using the
  * default model dialog from ModalDialogManager.
  */
+@NullMarked
 public class InsecureDownloadDialog {
     /**
      * Called to show a warning dialog for insecure download.

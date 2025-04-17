@@ -10,16 +10,16 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
 /** Includes helper methods to interact with Android media store. */
+@NullMarked
 public class MediaStoreHelper {
     private static final String TAG = "MediaStoreHelper";
 
@@ -63,7 +63,7 @@ public class MediaStoreHelper {
      * @param filePath The file path of the image file.
      * @param mimeType The MIME type of the image file.
      */
-    private static void addImageOnBlockingThread(@NonNull String filePath, String mimeType) {
+    private static void addImageOnBlockingThread(String filePath, String mimeType) {
         new AsyncTask<Void>() {
             @Override
             protected Void doInBackground() {

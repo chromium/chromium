@@ -13,9 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.R;
@@ -28,6 +27,7 @@ import java.util.List;
  * Custom adapter that populates the list of which directories the user can choose as their default
  * download location.
  */
+@NullMarked
 public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     /** Delegate to handle directory options results and observe data changes. */
     public interface Delegate {
@@ -50,7 +50,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         String getDownloadDefaultDirectory();
 
         /** Update the default download directory. */
-        void setDownloadAndSaveFileDefaultDirectory(String directory);
+        void setDownloadAndSaveFileDefaultDirectory(@Nullable String directory);
     }
 
     public static int NO_SELECTED_ITEM_ID = -1;
@@ -66,7 +66,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     private List<DirectoryOption> mAdditionalOptions = new ArrayList<>();
     private List<DirectoryOption> mErrorOptions = new ArrayList<>();
 
-    public DownloadDirectoryAdapter(@NonNull Context context, @NonNull Delegate delegate) {
+    public DownloadDirectoryAdapter(Context context, Delegate delegate) {
         super(context, android.R.layout.simple_spinner_item);
 
         mContext = context;
@@ -79,9 +79,8 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         return mCanonicalOptions.size() + mAdditionalOptions.size() + mErrorOptions.size();
     }
 
-    @Nullable
     @Override
-    public Object getItem(int position) {
+    public @Nullable Object getItem(int position) {
         if (!mErrorOptions.isEmpty()) {
             assert position == 0;
             assert getCount() == 1;
@@ -98,9 +97,8 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         return position;
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         View view =
                 convertView != null
                         ? convertView
@@ -124,8 +122,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     }
 
     @Override
-    public View getDropDownView(
-            int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getDropDownView(int position, @Nullable View convertView, ViewGroup parent) {
         View view =
                 convertView != null
                         ? convertView

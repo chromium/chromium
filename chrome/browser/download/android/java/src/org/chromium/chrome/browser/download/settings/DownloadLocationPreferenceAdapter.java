@@ -12,10 +12,9 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.download.StringUtils;
 /**
  * Class used to provide data shown in the download location preference in download settings page.
  */
+@NullMarked
 public class DownloadLocationPreferenceAdapter extends DownloadDirectoryAdapter
         implements OnClickListener {
     /** Constructor of DownloadLocationPreferenceAdapter. */
@@ -31,7 +31,7 @@ public class DownloadLocationPreferenceAdapter extends DownloadDirectoryAdapter
     }
 
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             view =

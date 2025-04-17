@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import java.util.ArrayList;
 
 /** Utility functions used in download dialogs. */
+@NullMarked
 public class DownloadDialogUtils {
     // The threshold to determine if a location suggestion is triggered.
     private static final double LOCATION_SUGGESTION_THRESHOLD = 0.05;

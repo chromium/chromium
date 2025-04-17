@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The view binder that connects {@link OpenDownloadCustomView} and {@link
  * OpenDownloadDialogCoordinator} which defines the UI properties.
  */
+@NullMarked
 class OpenDownloadDialogViewBinder {
     static void bind(PropertyModel model, OpenDownloadCustomView view, PropertyKey propertyKey) {
         if (propertyKey == OpenDownloadDialogProperties.TITLE) {

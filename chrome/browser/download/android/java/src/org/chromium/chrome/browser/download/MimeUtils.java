@@ -15,6 +15,8 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Utility class for MIME type related operations. */
+@NullMarked
 public class MimeUtils {
     // MIME types for OMA downloads.
     public static final String OMA_DOWNLOAD_DESCRIPTOR_MIME = "application/vnd.oma.dd+xml";
@@ -123,7 +126,7 @@ public class MimeUtils {
      *
      * @return App name.
      */
-    public static String getDefaultPdfViewerName() {
+    public static @Nullable String getDefaultPdfViewerName() {
         List<ResolveInfo> resolveInfos = getPdfIntentHandlers();
         if (resolveInfos.size() > 0) {
             return resolveInfos

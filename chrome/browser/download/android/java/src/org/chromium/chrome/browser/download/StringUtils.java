@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -14,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -25,6 +28,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 /** Helper class to handle converting downloads to UI strings. */
+@NullMarked
 public final class StringUtils {
     @VisibleForTesting static final String ELLIPSIS = "\u2026";
 
@@ -60,6 +64,7 @@ public final class StringUtils {
                 if (progress.isIndeterminate()) {
                     return context.getString(R.string.download_ui_indeterminate_bytes, bytes);
                 } else {
+                    assumeNonNull(progress.max);
                     String total = DownloadUtils.getStringForBytes(context, progress.max);
                     return context.getString(R.string.download_ui_determinate_bytes, bytes, total);
                 }
@@ -222,6 +227,7 @@ public final class StringUtils {
      * @return String representing the number of files left.
      */
     private static String filesLeftForUi(Context context, Progress progress) {
+        assumeNonNull(progress.max);
         int filesLeft = (int) (progress.max - progress.value);
         return filesLeft == 1
                 ? context.getString(R.string.one_file_left)

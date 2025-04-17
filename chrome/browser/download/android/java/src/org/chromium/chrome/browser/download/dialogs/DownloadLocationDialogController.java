@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Receives events from download location dialog. */
+@NullMarked
 public interface DownloadLocationDialogController {
     /**
      * Called when the user finished download location selection flow.
