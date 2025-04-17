@@ -164,9 +164,10 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                                            : std::nullopt,
       // TODO(crbug.com/40279742): due to WebKit constraints, iOS does not
       // support triple-key partitioning. Once supported, we need to populate
-      // `top_level_url` with the correct value. Until then, :visited history on
-      // iOS is unpartitioned.
+      // `top_level_url` and `frame_url` with the correct value. Until then,
+      // :visited history on iOS is unpartitioned.
       /*top_level_url=*/std::nullopt,
+      /*frame_url=*/std::nullopt,
       /*opener=*/std::nullopt,
       /*bookmark_id=*/std::nullopt,
       /*app_id=*/std::nullopt,

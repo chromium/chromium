@@ -332,6 +332,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          std::nullopt,
                          std::nullopt,
                          std::nullopt,
+                         std::nullopt,
                          std::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
@@ -350,6 +351,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     bool is_ephemeral,
     std::optional<std::u16string> title,
     std::optional<GURL> top_level_url,
+    std::optional<GURL> frame_url,
     std::optional<Opener> opener,
     std::optional<int64_t> bookmark_id,
     std::optional<std::string> app_id,
@@ -369,6 +371,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       is_ephemeral(is_ephemeral),
       title(title),
       top_level_url(top_level_url),
+      frame_url(frame_url),
       opener(opener),
       bookmark_id(bookmark_id),
       app_id(app_id),

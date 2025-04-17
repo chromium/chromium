@@ -362,6 +362,27 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     }
   }
 
+  // Frame URL is used to calculate the triple-key for partitioned :visited
+  // links. When a navigation occurs, this value is typically the initiator
+  // URL, obtained from the `initiator_origin` member of CommonNavigationParams.
+  // However, there are some cases where initiator origin is not provided.
+  // In those cases, we will fallback on the referrer URL, if present.
+  std::optional<GURL> frame_url;
+  if (navigation_handle->GetInitiatorOrigin().has_value()) {
+    // The VisitedLinkDatabase stores the triple keys via URL to be efficient.
+    // However, in practice, the triple-partiton key is only concerned about
+    // frame origin. So while we persist keys across sessions via URL, we do not
+    // care about persisting the entire URL path. Therefore, it is okay to use
+    // url::Origin::GetURL() here.
+    frame_url = navigation_handle->GetInitiatorOrigin()->GetURL();
+  }
+  if (!frame_url.has_value() || !frame_url->is_valid()) {
+    // If valid, use referrer URL to replace an invalid initiator frame URL.
+    if (referrer_url.is_valid()) {
+      frame_url = referrer_url;
+    }
+  }
+
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
@@ -369,7 +390,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
-      is_ephemeral, title, top_level_url, opener,
+      is_ephemeral, title, top_level_url, frame_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
       app_id_, std::move(context_annotations));
 

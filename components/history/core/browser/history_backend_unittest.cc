@@ -1233,7 +1233,7 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
       std::nullopt, GURL(),
       /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true, false,
-      std::nullopt, /*top_level_url*/ std::nullopt,
+      std::nullopt, /*top_level_url*/ std::nullopt, /*frame_url*/ std::nullopt,
       Opener(context_id1, nav_entry_id, initial_url));
   backend_->AddPage(request);
 
@@ -3898,6 +3898,7 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
       /*is_ephemeral=*/false, /*title=*/std::nullopt,
       /*top_level_url*/ std::nullopt,
+      /*frame_url*/ std::nullopt,
       /*opener=*/std::nullopt,
       /*bookmark_id=*/std::nullopt, /*app_id=*/std::nullopt,
       context_annotations);

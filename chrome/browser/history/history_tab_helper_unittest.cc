@@ -332,6 +332,60 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLNotMainFrame) {
   EXPECT_NE(args.referrer, GURL("http://previousurl.com"));
 }
 
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsFrameUrlWithValidInitiator) {
+  // Create our initiator RenderFrameHost.
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
+  const GURL initiator_url = GURL("http://previousurl.com");
+
+  // Prepare a mock navigation from that initiator frame.
+  const GURL test_url = GURL("http://testurl.com");
+  NiceMock<content::MockNavigationHandle> navigation_handle(test_url, subframe);
+  navigation_handle.set_initiator_origin(url::Origin::Create(initiator_url));
+  // Simulate a navigation that is marked no-referrer (the value of which we
+  // should ignore in favor of initiator origin).
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = GURL();
+  referrer->policy = network::mojom::ReferrerPolicy::kNever;
+  navigation_handle.SetReferrer(std::move(referrer));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(test_url, base::Time(), 1,
+                                                     &navigation_handle);
+
+  // `frame_url` should default to the last committed URL of the initiator
+  // RenderFrameHost.
+  ASSERT_TRUE(args.frame_url.has_value());
+  EXPECT_EQ(args.frame_url.value(), initiator_url);
+}
+
+TEST_F(HistoryTabHelperTest, CreateAddPageArgsFrameUrlWithInvalidInitiator) {
+  // Create our initiator RenderFrameHost but do not set the initiator origin.
+  // This simulates an invalid or missing initiator frame.
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = main_rfh_tester->AppendChild("subframe");
+
+  // Prepare a mock navigation from that initiator frame.
+  const GURL test_url = GURL("http://testurl.com");
+  NiceMock<content::MockNavigationHandle> navigation_handle(test_url, subframe);
+  // Set a valid referrer with a default referrer policy.
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = test_url;
+  referrer->policy = network::mojom::ReferrerPolicy::kDefault;
+  navigation_handle.SetReferrer(std::move(referrer));
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(test_url, base::Time(), 1,
+                                                     &navigation_handle);
+
+  // `frame_url` should fall back on referrer when we have an invalid initiator
+  // origin.
+  ASSERT_TRUE(args.frame_url.has_value());
+  EXPECT_EQ(args.frame_url.value(), test_url);
+}
+
 TEST_F(HistoryTabHelperTest, CreateAddPageArgsHasOpenerWebContentsFirstPage) {
   std::unique_ptr<content::WebContents> opener_web_contents =
       CreateTestWebContents();
