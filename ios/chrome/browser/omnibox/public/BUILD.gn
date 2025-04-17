@@ -4,8 +4,6 @@
 
 source_set("public") {
   sources = [
-    "omnibox_icon_type.h",
-    "omnibox_icon_type.mm",
     "omnibox_metrics_helper.h",
     "omnibox_metrics_helper.mm",
     "omnibox_suggestion_icon_util.h",
@@ -60,12 +58,18 @@ source_set("features") {
   ]
 }
 
+# This target can also be used on EG2 tests, so it should only contain constants
 source_set("constants") {
   sources = [
     "omnibox_constants.h",
     "omnibox_constants.mm",
+    "omnibox_icon_type.h",
+    "omnibox_icon_type.mm",
     "omnibox_popup_accessibility_identifier_constants.h",
     "omnibox_popup_accessibility_identifier_constants.mm",
   ]
-  deps = []
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
 }
