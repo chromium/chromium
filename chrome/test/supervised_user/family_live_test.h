@@ -10,10 +10,10 @@
 #include <string_view>
 
 #include "chrome/browser/signin/e2e_tests/live_test.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/browser_user.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -40,7 +40,7 @@ const char* const kChildCredentialsSwitch =
 // * head of household,
 // * child.
 // The family is read from command line switch at kFamilyIdentifierSwitch.
-class FamilyLiveTest : public MixinBasedInProcessBrowserTest {
+class FamilyLiveTest : public signin::test::LiveTest {
  public:
   // Determines which user will call the rpc.
   enum class RpcMode : int {
@@ -71,7 +71,6 @@ class FamilyLiveTest : public MixinBasedInProcessBrowserTest {
   void TurnOnSyncFor(BrowserUser& browser_user);
 
  protected:
-  // MixinBasedInProcessBrowserTest:
   void SetUp() override;
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
@@ -93,13 +92,14 @@ class FamilyLiveTest : public MixinBasedInProcessBrowserTest {
   void SetHeadOfHousehold(const test_accounts::FamilyMember& credentials);
   void SetChild(const test_accounts::FamilyMember& credentials);
 
+  // Extracts requested account from test_accounts.json file, which must exist.
+  signin::TestAccountSigninCredentials GetAccountFromFile(
+      std::string_view account_name_suffix) const;
+
   // Creates a new browser signed in to the specified account credentials that
   // represent a family member.
   std::unique_ptr<BrowserUser> MakeSignedInBrowser(
       const test_accounts::FamilyMember& credentials);
-
-  signin::test::LiveTestMixin live_test_mixin_{&mixin_host_};
-  signin::test::DirectLookupMixin direct_lookup_mixin_{&mixin_host_, this};
 
   // Empty, if rpc_mode_ is kImpersonation.
   std::unique_ptr<BrowserUser> head_of_household_;

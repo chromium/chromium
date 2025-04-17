@@ -13,13 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/account_repository.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-
-class Browser;
-class Profile;
 
 namespace supervised_user {
 
