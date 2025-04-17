@@ -226,4 +226,40 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
   return ToMojoRewriterCreateOptionsImpl(core_options, g_empty_string);
 }
 
+std::optional<String> LookupMatchingLocaleByBestFit(
+    const HashSet<String>& available_languages,
+    const String& requested_language) {
+  String prefix = requested_language;
+  while (prefix != "") {
+    if (available_languages.Contains(prefix)) {
+      return prefix;
+    }
+    int pos = prefix.ReverseFind('-');
+    if (pos == -1) {
+      pos = 0;
+    }
+    prefix = prefix.Substring(0, pos);
+  }
+  return std::nullopt;
+}
+std::optional<Vector<String>> GetBestFitLanguages(
+    const HashSet<String>& available_languages,
+    const Vector<String>& requested_languages) {
+  Vector<String> languages;
+  for (const String& language : requested_languages) {
+    std::optional<String> best_match =
+        LookupMatchingLocaleByBestFit(available_languages, language);
+
+    if (!best_match) {
+      return std::nullopt;
+    }
+
+    // Insert if there's no duplicate.
+    if (!languages.Contains(*best_match)) {
+      languages.push_back(*std::move(best_match));
+    }
+  }
+  return languages;
+}
+
 }  // namespace blink

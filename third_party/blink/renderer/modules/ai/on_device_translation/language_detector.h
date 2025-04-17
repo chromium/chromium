@@ -34,7 +34,8 @@ class LanguageDetector final : public ScriptWrappable {
 
   LanguageDetector(ScriptState* script_state,
                    LanguageDetectionModel* language_detection_model,
-                   LanguageDetectorCreateOptions* options,
+                   AbortSignal* create_abort_signal,
+                   std::optional<Vector<String>> expected_input_languages,
                    scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~LanguageDetector() override = default;
 

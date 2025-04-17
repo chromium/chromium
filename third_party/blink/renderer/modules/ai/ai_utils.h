@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_writer_create_options.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 
 namespace blink {
 
@@ -49,6 +50,21 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateOptions* options);
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateCoreOptions* core_options);
+
+// Implementation of LookupMatchingLocaleByBestFit
+// (https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit) as
+// LookupMatchingLocaleByPrefix
+// (https://tc39.es/ecma402/#sec-lookupmatchinglocalebyprefix) assuming
+// `available_languages` contains no extension.
+std::optional<String> LookupMatchingLocaleByBestFit(
+    const HashSet<String>& available_languages,
+    const String& requested_language);
+
+// Returns a set of language codes that best fit the `requested_languages` given
+// `available_languages`
+std::optional<Vector<String>> GetBestFitLanguages(
+    const HashSet<String>& available_languages,
+    const Vector<String>& requested_languages);
 
 }  // namespace blink
 

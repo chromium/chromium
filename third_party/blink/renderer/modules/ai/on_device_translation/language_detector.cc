@@ -19,6 +19,25 @@ namespace blink {
 
 namespace {
 
+// TODO(crbug.com/410949688): Figure out how to retrieve these from the model.
+const HashSet<String> GetSupportedLanguages() {
+  return {
+      "af",      "am",  "ar",  "ar-Latn", "az", "be", "bg", "bg-Latn", "bn",
+      "bs",      "ca",  "ceb", "co",      "cs", "cy", "da", "de",      "el",
+      "el-Latn", "en",  "eo",  "es",      "et", "eu", "fa", "fi",      "fil",
+      "fr",      "fy",  "ga",  "gd",      "gl", "gu", "ha", "haw",     "hi",
+      "hi-Latn", "hmn", "hr",  "ht",      "hu", "hy", "id", "ig",      "is",
+      "it",      "iw",  "ja",  "ja-Latn", "jv", "ka", "kk", "km",      "kn",
+      "ko",      "ku",  "ky",  "la",      "lb", "lo", "lt", "lv",      "mg",
+      "mi",      "mk",  "ml",  "mn",      "mr", "ms", "mt", "my",      "ne",
+      "nl",      "no",  "ny",  "pa",      "pl", "ps", "pt", "ro",      "ru",
+      "ru-Latn", "sd",  "si",  "sk",      "sl", "sm", "sn", "so",      "sq",
+      "sr",      "st",  "su",  "sv",      "sw", "ta", "te", "tg",      "th",
+      "tr",      "uk",  "ur",  "uz",      "vi", "xh", "yi", "yo",      "zh",
+      "zh-Latn", "zu",
+  };
+}
+
 template <typename T>
 class RejectOnDestructionHelper {
  public:
@@ -104,6 +123,18 @@ class LanguageDetectorCreateTask
     if (!resolver_) {
       return;
     }
+
+    std::optional<Vector<String>> expected_input_languages;
+    if (options_->hasExpectedInputLanguages()) {
+      expected_input_languages = GetBestFitLanguages(
+          GetSupportedLanguages(), options_->expectedInputLanguages());
+      if (!expected_input_languages.has_value()) {
+        resolver_->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kUnknownError, "Language not available"));
+        return;
+      }
+    }
+
     if (!maybe_model.has_value()) {
       switch (maybe_model.error()) {
         case DetectLanguageError::kUnavailable:
@@ -120,7 +151,8 @@ class LanguageDetectorCreateTask
                                          kNormalizedDownloadProgressMax);
     }
     resolver_->Resolve(MakeGarbageCollected<LanguageDetector>(
-        GetScriptState(), maybe_model.value(), options_, task_runner_));
+        GetScriptState(), maybe_model.value(), options_->getSignalOr(nullptr),
+        std::move(expected_input_languages), task_runner_));
     Cleanup();
   }
 
@@ -136,6 +168,7 @@ class LanguageDetectorCreateTask
 
 void OnGotStatus(
     ExecutionContext* execution_context,
+    LanguageDetectorCreateCoreOptions* options,
     ScriptPromiseResolver<V8Availability>* resolver,
     language_detection::mojom::blink::LanguageDetectionModelStatus result) {
   if (!execution_context) {
@@ -143,6 +176,17 @@ void OnGotStatus(
   }
   Availability availability =
       HandleLanguageDetectionModelCheckResult(execution_context, result);
+
+  if (options->hasExpectedInputLanguages()) {
+    std::optional<Vector<String>> expected_input_languages =
+        GetBestFitLanguages(GetSupportedLanguages(),
+                            options->expectedInputLanguages());
+    if (!expected_input_languages.has_value()) {
+      resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+      return;
+    }
+  }
+
   resolver->Resolve(AvailabilityToV8(availability));
 }
 
@@ -171,7 +215,7 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
 
   AIInterfaceProxy::GetLanguageDetectionModelStatus(
       context, WTF::BindOnce(&OnGotStatus, WrapWeakPersistent(context),
-                             WrapPersistent(resolver))
+                             WrapPersistent(options), WrapPersistent(resolver))
                    .Then(RejectOnDestruction(resolver)));
 
   return promise;
@@ -210,16 +254,14 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
 LanguageDetector::LanguageDetector(
     ScriptState* script_state,
     LanguageDetectionModel* language_detection_model,
-    LanguageDetectorCreateOptions* options,
+    AbortSignal* create_abort_signal,
+    std::optional<Vector<String>> expected_input_languages,
     scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),
       language_detection_model_(language_detection_model),
       destruction_abort_controller_(AbortController::Create(script_state)),
-      create_abort_signal_(options->getSignalOr(nullptr)) {
-  if (options->hasExpectedInputLanguages()) {
-    expected_input_languages_ = options->expectedInputLanguages();
-  }
-
+      create_abort_signal_(create_abort_signal),
+      expected_input_languages_(std::move(expected_input_languages)) {
   if (create_abort_signal_) {
     CHECK(!create_abort_signal_->aborted());
     create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
