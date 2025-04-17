@@ -1599,11 +1599,11 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
     // declaration specifiers that precede the type in source code.
     qualifier_string << "mutable ";
   }
-  if (IsConstexpr(array_decl)) {
-    qualifier_string << "constexpr ";
-  }
   if (IsStaticLocalOrStaticStorageClass(array_decl)) {
     qualifier_string << "static ";
+  }
+  if (IsConstexpr(array_decl)) {
+    qualifier_string << "constexpr ";
   }
 
   // Move const qualifier from the element type to the array type.
