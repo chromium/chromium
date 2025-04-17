@@ -322,6 +322,17 @@ TEST_F(SimplifiedBackwardsTextIteratorTest, TextSecurity) {
   // E2 80 A2 is U+2022 BULLET
   EXPECT_EQ("baz, \xE2\x80\xA2\xE2\x80\xA2\xE2\x80\xA2, abc",
             ExtractStringInRange("^abc<s>foo</s>baz|", TextIteratorBehavior()));
+
+  // Grapheme cluster with combining marks U+0305 & U+322.
+  EXPECT_EQ("x",
+            ExtractStringInRange(
+                "123<s>^A&#x305;&#x332;|B&#x305;&#x332;C&#x305;&#x332;</s>",
+                EmitsSmallXForTextSecurityBehavior()));
+
+  EXPECT_EQ("xx",
+            ExtractStringInRange(
+                "123<s>A&#x305;&#x332;^B&#x305;&#x332;C&#x305;|&#x332;</s>",
+                EmitsSmallXForTextSecurityBehavior()));
 }
 
 }  // namespace simplified_backwards_text_iterator_test

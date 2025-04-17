@@ -174,7 +174,9 @@ unsigned OffsetMappingUnit::ConvertDOMOffsetToTextContent(
   if (text_content_start_ == text_content_end_)
     return text_content_start_;
   // Handle has identity mapping.
-  return offset - dom_start_ + text_content_start_;
+  unsigned text_content_offset = offset - dom_start_ + text_content_start_;
+  return text_content_offset < text_content_end_ ? text_content_offset
+                                                 : text_content_end_;
 }
 
 unsigned OffsetMappingUnit::ConvertTextContentToFirstDOMOffset(
