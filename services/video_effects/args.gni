@@ -3,5 +3,5 @@
 # found in the LICENSE file.
 
 declare_args() {
-  enable_video_effects = is_win || is_linux || is_mac
+  enable_video_effects = false
 }
