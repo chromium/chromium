@@ -223,15 +223,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
     this.fitWindow = state.fitWindow;
 
-    if (!state.scrollToEnabled) {
+    if (!state.enableScrollTo) {
       (this as GlicBrowserHost).scrollTo = undefined;
     }
 
-    if (!state.actInFocusedTabEnabled) {
+    if (!state.enableActInFocusedTab) {
       (this as GlicBrowserHost).actInFocusedTab = undefined;
     }
 
-    if (!state.dragResizeEnabled) {
+    if (!state.enableDragToResizePanel) {
       (this as GlicBrowserHost).enableDragResize = undefined;
     }
 

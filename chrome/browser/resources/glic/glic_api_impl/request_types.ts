@@ -379,13 +379,10 @@ export type WebClientInitialStatePrivate =
       panelState: PanelState,
       chromeVersion: ChromeVersion,
       focusedTabData: FocusedTabDataPrivate,
-      scrollToEnabled: boolean,
-      actInFocusedTabEnabled: boolean,
       loggingEnabled: boolean,
       // Whether or not the web client should resize the content to fit the
       // window size.
       fitWindow: boolean,
-      dragResizeEnabled: boolean,
       enableZeroStateSuggestions: boolean,
     }>;
 

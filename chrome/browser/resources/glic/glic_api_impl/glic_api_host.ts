@@ -213,12 +213,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           build: chromeVersion[2] || 0,
           patch: chromeVersion[3] || 0,
         },
-        scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
-        actInFocusedTabEnabled:
-            loadTimeData.getBoolean('enableActInFocusedTab'),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         fitWindow: initialState.sizingMode === WebClientSizingMode.kFitWindow,
-        dragResizeEnabled: loadTimeData.getBoolean('enableDragToResizePanel'),
       }),
     };
   }
