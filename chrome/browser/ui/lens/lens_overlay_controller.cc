@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
@@ -2324,9 +2325,23 @@ void LensOverlayController::ShowOverlay() {
   overlay_view_->SetVisible(should_show_overlay_);
 
   // Sanity check that the overlay view is above the contents web view.
-  auto* parent_view = contents_web_view->parent();
+  auto* parent_view = overlay_view_->parent();
+  views::View* child_contents_view = contents_web_view;
+  // TODO(crbug.com/406794005): Remove this block if overlay_view_ ends up
+  // getting reparented such that it always shares a parent with
+  // contents_web_view.
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    // When split view is enabled, there are two additional layers of
+    // hierarchy:
+    // BrowserView->MultiContentsView->ContentsContainerView->ContentsWebView
+    // vs.
+    // BrowserView->ContentsWebView
+    // Since the overlay view is parented by BrowserView, to properly pass the
+    // check below, we should only compare direct children of BrowserView.
+    child_contents_view = child_contents_view->parent()->parent();
+  }
   CHECK(parent_view->GetIndexOf(overlay_view_) >
-        parent_view->GetIndexOf(contents_web_view));
+        parent_view->GetIndexOf(child_contents_view));
 
   // Observe the overlay view to handle resizing the background blur layer.
   tab_contents_view_observer_.Observe(overlay_view_);
