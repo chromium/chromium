@@ -192,11 +192,13 @@ class HistogramRule : public BackgroundTracingRule,
       const perfetto::protos::gen::TriggerRule& config) {
     DCHECK(config.has_histogram());
 
-    if (!config.histogram().has_histogram_name() ||
-        !config.histogram().has_min_value()) {
+    if (!config.histogram().has_histogram_name()) {
       return nullptr;
     }
-    int histogram_lower_value = config.histogram().min_value();
+    int histogram_lower_value = 0;
+    if (config.histogram().has_min_value()) {
+      histogram_lower_value = config.histogram().min_value();
+    }
     int histogram_upper_value = std::numeric_limits<int>::max();
     if (config.histogram().has_max_value()) {
       histogram_upper_value = config.histogram().max_value();

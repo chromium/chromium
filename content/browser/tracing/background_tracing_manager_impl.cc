@@ -538,12 +538,17 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     enabled_scenarios_.back()->Enable();
   }
 
+  bool result = true;
   for (const auto& scenario_config : config.scenarios()) {
     auto scenario = TracingScenario::Create(
         scenario_config, requires_anonymized_data,
         /*is_local_scenario=*/false, enable_package_name_filter, true, this);
     if (!scenario) {
-      return false;
+      base::UmaHistogramSparse(
+          "Tracing.Background.Scenario.Invalid",
+          variations::HashName(scenario_config.scenario_name()));
+      result = false;
+      continue;
     }
     field_scenarios_.push_back(std::move(scenario));
     enabled_scenarios_.push_back(field_scenarios_.back().get());
@@ -551,7 +556,7 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
   }
   MaybeConstructPendingAgents();
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
-  return true;
+  return result;
 }
 
 std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
@@ -570,6 +575,9 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
         scenario_config, enable_privacy_filter, /*is_local_scenario=*/true,
         enable_package_name_filter, true, this);
     if (!scenario) {
+      base::UmaHistogramSparse(
+          "Tracing.Background.Scenario.Invalid",
+          variations::HashName(scenario_config.scenario_name()));
       continue;
     }
 
