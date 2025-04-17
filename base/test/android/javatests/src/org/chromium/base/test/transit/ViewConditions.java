@@ -117,10 +117,11 @@ public class ViewConditions {
                                 mViewMatched = view;
                             }
                         });
-            } catch (NoMatchingViewException
-                    | NoMatchingRootException
-                    | AmbiguousViewMatcherException e) {
+            } catch (NoMatchingViewException | NoMatchingRootException e) {
                 return notFulfilled(e.getClass().getSimpleName()).withoutResult();
+            } catch (AmbiguousViewMatcherException e) {
+                return notFulfilled(e.getClass().getSimpleName() + " | " + e.getMessage())
+                        .withoutResult();
             }
 
             // Assume found a View, or NoMatchingViewException would be thrown.
