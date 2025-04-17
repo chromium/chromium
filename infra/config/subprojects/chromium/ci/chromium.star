@@ -4,10 +4,10 @@
 """Definitions of builders in the chromium builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "cpu", "gardener_rotations", "os", "siso")
-load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -428,6 +428,7 @@ ci.builder(
         },
     },
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_linking = True,
 )
 
 ci.builder(
