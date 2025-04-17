@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/page_aggregator_data.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
+#include "components/performance_manager/decorators/site_data_node_data.h"
 #include "components/performance_manager/freezing/frozen_data.h"
 #include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -27,10 +28,6 @@
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/performance_manager/decorators/site_data_node_data.h"
-#endif
 
 namespace performance_manager {
 
@@ -55,9 +52,7 @@ class PageNodeImpl
       public SupportsNodeInlineData<
           PageLoadTrackerDecoratorData,
           PageAggregatorData,
-#if !BUILDFLAG(IS_ANDROID)
           SiteDataNodeData,
-#endif
           FrozenData,
           LoadingScenarioPageFrameCounts,
           resource_attribution::SharedCPUTimeResultData,

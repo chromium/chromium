@@ -65,7 +65,9 @@ uint64_t GetDiscardedMemoryEstimateForPage(const PageNode* node) {
 std::vector<std::string> GetCannotDiscardReasonsForPageNode(
     const PageNode* page_node) {
 #if BUILDFLAG(IS_ANDROID)
-  return {};
+  // TODO(crbug.com/399740817): Enable PageDiscardingHelper after
+  // WebContentsDiscard launch.
+  return {"not implemented"};
 #else
   auto* discarding_helper = policies::DiscardEligibilityPolicy::GetFromGraph(
       PerformanceManager::GetGraph());

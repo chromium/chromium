@@ -15,16 +15,13 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "chrome/browser/ui/webui/discards/graph_dump_impl.h"
@@ -59,6 +56,13 @@
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#endif  // !BUILDFLAG(IS_DESKTOP_ANDROID)
 
 using performance_manager::PageNode;
 using performance_manager::policies::DiscardEligibilityPolicy;
@@ -175,12 +179,19 @@ class DiscardsDetailsProviderImpl
           performance_manager::user_tuning::GetCannotDiscardReasonsForPageNode(
               page_node);
       info->can_discard = info->cannot_discard_reasons.empty();
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+      info->cannot_freeze_reasons = {"not implemented"};
+      info->can_freeze = discards::mojom::CanFreeze::NO;
+#else
+      // TODO(crbug.com/40160563): Add FreezingPolicy to Android.
       info->cannot_freeze_reasons = base::ToVector(
           performance_manager::freezing::GetCannotFreezeReasonsForPageNode(
               page_node));
       info->can_freeze = info->cannot_freeze_reasons.empty()
                              ? discards::mojom::CanFreeze::YES
                              : discards::mojom::CanFreeze::NO;
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
       info->utility_rank = rank++;
       info->id = id++;
@@ -194,6 +205,7 @@ class DiscardsDetailsProviderImpl
       info->site_engagement_score = GetSiteEngagementScore(contents);
       info->has_focus = page_node->IsFocused();
 
+#if !BUILDFLAG(IS_DESKTOP_ANDROID)
       auto* lifecycle_unit_external = resource_coordinator::
           TabLifecycleUnitSource::GetTabLifecycleUnitExternal(contents);
       // A TabLifecycleUnitExternal object is always a TabLifecycleUnit object.
@@ -216,6 +228,7 @@ class DiscardsDetailsProviderImpl
         info->state_change_time =
             lifecycle_unit->GetStateChangeTime() - base::TimeTicks::UnixEpoch();
       }
+#endif  // !BUILDFLAG(IS_DESKTOP_ANDROID)
 
       infos.push_back(std::move(info));
     }
@@ -299,8 +312,10 @@ class DiscardsDetailsProviderImpl
   }
 
   void RefreshPerformanceTabCpuMeasurements() override {
+#if !BUILDFLAG(IS_DESKTOP_ANDROID)
     performance_manager::user_tuning::PerformanceDetectionManager::GetInstance()
         ->ForceTabCpuDataRefresh();
+#endif  // !BUILDFLAG(IS_DESKTOP_ANDROID)
   }
 
  private:
@@ -319,10 +334,13 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIDiscardsHost);
 
-  source->AddBoolean(
-      "isPerformanceInterventionDemoModeEnabled",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceInterventionDemoMode));
+  bool demoModeEnabled = false;
+#if !BUILDFLAG(IS_DESKTOP_ANDROID)
+  demoModeEnabled = base::FeatureList::IsEnabled(
+      performance_manager::features::kPerformanceInterventionDemoMode);
+#endif  // !BUILDFLAG(IS_DESKTOP_ANDROID)
+  source->AddBoolean("isPerformanceInterventionDemoModeEnabled",
+                     demoModeEnabled);
 
   webui::SetupWebUIDataSource(source, kDiscardsResources,
                               IDR_DISCARDS_DISCARDS_HTML);

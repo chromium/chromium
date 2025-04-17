@@ -8529,7 +8529,6 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
       "//chrome/browser/ui/webui/data_sharing:mojo_bindings",
-      "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
@@ -8553,6 +8552,9 @@ static_library("browser_generated_files") {
       public_deps +=
           [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
     }
+  }
+  if (!is_android || is_desktop_android) {
+    public_deps += [ "//chrome/browser/ui/webui/discards:mojo_bindings" ]
   }
 
   if (is_chromeos) {

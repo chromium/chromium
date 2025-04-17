@@ -460,14 +460,13 @@ template("chrome_extra_paks") {
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [
-        "$root_gen_dir/chrome/connectors_internals_resources.pak",
-        "$root_gen_dir/chrome/discards_resources.pak",
-      ]
-      deps += [
-        "//chrome/browser/resources/connectors_internals:resources",
-        "//chrome/browser/resources/discards:resources",
-      ]
+      sources += [ "$root_gen_dir/chrome/connectors_internals_resources.pak" ]
+      deps += [ "//chrome/browser/resources/connectors_internals:resources" ]
+    }
+
+    if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
+      sources += [ "$root_gen_dir/chrome/discards_resources.pak" ]
+      deps += [ "//chrome/browser/resources/discards:resources" ]
     }
 
     if (is_win || is_mac || is_linux) {

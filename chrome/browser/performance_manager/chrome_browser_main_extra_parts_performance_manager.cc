@@ -180,17 +180,18 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::policies::ReportPageProcessesPolicy>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
   using performance_manager::policies::DiscardEligibilityPolicy;
-  using performance_manager::policies::FreezingOptOutChecker;
-
-  graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
-
   auto discard_eligibility_policy =
       std::make_unique<DiscardEligibilityPolicy>();
   auto weak_discard_eligibility_policy =
       discard_eligibility_policy->GetWeakPtr();
   graph->PassToGraph(std::move(discard_eligibility_policy));
+
+#if !BUILDFLAG(IS_ANDROID)
+  using performance_manager::policies::FreezingOptOutChecker;
+
+  graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
+
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::PageDiscardingHelper>());
 
