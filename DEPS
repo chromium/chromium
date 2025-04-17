@@ -2855,11 +2855,11 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@543b841e165ecd2c4cb471b9a420b15e2360c305',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@da64cc98aa1f4c3e70fa466eb0665056a9b5a54d',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@ba1640446f3826a518721d1f083f3a8cca1120c3',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@aa6cef192b8e693916eb713e7a9ccadf06062ceb',
-  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@096bb07f71d33111f9748816cd986e616ec10776',
+  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@ca63ea568b41d461dd25fa588350008b5ab00c89',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@110b6c989ccb4e874089db777e2b54eb9abb5670',
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@a8513ac9d0e367c5914095d0b7f09a081a14b4b5',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@50ace769d381f746d7d6cb75db982fa4d94a112f',
