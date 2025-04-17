@@ -18,7 +18,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
-import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -40,7 +39,7 @@ public class PriceTrackingBottomSheetContentCoordinator
                         .inflate(R.layout.price_tracking_layout_v2, /* root= */ null);
         updateTouchDelegate();
         PropertyModel propertyModel =
-                new PropertyModel(PriceInsightsBottomSheetProperties.PRICE_TRACKING_KEYS);
+                new PropertyModel(PriceTrackingBottomSheetContentProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 propertyModel,
                 mPriceTrackingContentContainer,

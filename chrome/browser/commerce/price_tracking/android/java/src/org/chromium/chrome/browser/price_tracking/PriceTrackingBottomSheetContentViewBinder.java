@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED;
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR;
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON;
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT;
-import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE;
+import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR;
+import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_ICON;
+import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_BUTTON_TEXT;
+import static org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentProperties.PRICE_TRACKING_TITLE;
 
 import android.content.res.ColorStateList;
 import android.view.View;
@@ -48,8 +47,6 @@ public class PriceTrackingBottomSheetContentViewBinder {
             ViewCompat.setBackgroundTintList(
                     priceTrackingButton,
                     ColorStateList.valueOf(model.get(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR)));
-        } else if (PRICE_TRACKING_BUTTON_ENABLED == propertyKey) {
-            priceTrackingButton.setEnabled(model.get(PRICE_TRACKING_BUTTON_ENABLED));
         } else if (PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER == propertyKey) {
             ViewCompat.replaceAccessibilityAction(
                     priceTrackingButton,
