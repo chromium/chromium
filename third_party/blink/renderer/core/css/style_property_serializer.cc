@@ -662,6 +662,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(maskShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
+    case CSSPropertyID::kRuleWidth:
+      return GetShorthandValueForBidirectionalGapRules(ruleWidthShorthand());
     case CSSPropertyID::kTextBox:
       return TextBoxValue();
     case CSSPropertyID::kTextEmphasis:
@@ -1910,7 +1912,7 @@ String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(
   // The `rule-color` shorthand is bi-directional, so the values should be
   // equivalent.
   //
-  // https://drafts.csswg.org/css-gaps-1/#propdef-rule-color
+  // https://drafts.csswg.org/css-gaps-1/#rule-bi-directional
   if (!base::ValuesEquivalent(column_rule_data, row_rule_data)) {
     return String();
   }

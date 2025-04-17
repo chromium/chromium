@@ -4038,29 +4038,29 @@ CSSValueList* ComputedStyleUtils::ValuesForGridTemplateShorthand(
       template_area_values);
 }
 
-const CSSValue* ComputedStyleUtils::ValuesForRuleColorShorthand(
+const CSSValue* ComputedStyleUtils::ValuesForBidirectionalGapRuleShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) {
   DCHECK_EQ(shorthand.length(), 2u);
-  const CSSValue* column_rule_color =
+  const CSSValue* column_rule_property =
       shorthand.properties()[0]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
-  const CSSValue* row_rule_color =
+  const CSSValue* row_rule_property =
       shorthand.properties()[1]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
 
-  // The `rule-color` shorthand is bi-directional, so the values should be
+  // The `rule-*` shorthand is bi-directional, so the values should be
   // equivalent.
   //
-  // https://drafts.csswg.org/css-gaps-1/#propdef-rule-color
-  if (!base::ValuesEquivalent(column_rule_color, row_rule_color)) {
+  // https://drafts.csswg.org/css-gaps-1/#rule-bi-directional
+  if (!base::ValuesEquivalent(column_rule_property, row_rule_property)) {
     return nullptr;
   }
 
-  return column_rule_color;
+  return column_rule_property;
 }
 
 CSSValueList* ComputedStyleUtils::ValuesForSidesShorthand(

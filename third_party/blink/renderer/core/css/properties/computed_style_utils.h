@@ -360,7 +360,7 @@ class CORE_EXPORT ComputedStyleUtils {
       bool allow_visited_style,
       CSSValuePhase value_phase);
 
-  static const CSSValue* ValuesForRuleColorShorthand(
+  static const CSSValue* ValuesForBidirectionalGapRuleShorthand(
       const StylePropertyShorthand&,
       const ComputedStyle&,
       const LayoutObject*,

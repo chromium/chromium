@@ -8656,6 +8656,12 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "rule-width",
+      longhands: ["column-rule-width", "row-rule-width"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "scroll-margin",
       longhands: ["scroll-margin-top", "scroll-margin-right", "scroll-margin-bottom", "scroll-margin-left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
