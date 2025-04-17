@@ -138,23 +138,14 @@ bool ArePositionsEqual(const ui::AXNodePosition::AXPositionInstance& position,
          (position->text_offset() == other->text_offset());
 }
 
+// Returns either the anchor node or the lowest platform ancestor of the node,
+// if it's a leaf.
 ui::AXNode* GetAnchorNode(
     const ui::AXNodePosition::AXPositionInstance& position) {
   bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
   // If the node is a leaf, use the parent node instead.
   return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
                  : position->GetAnchor();
-}
-
-// Returns either the node or the lowest platform ancestor of the node, if it's
-// a leaf.
-ui::AXNode* GetNextNodeFromPosition(
-    const ui::AXNodePosition::AXPositionInstance& ax_position) {
-  if (ax_position->GetAnchor()->IsChildOfLeaf()) {
-    return ax_position->GetAnchor()->GetLowestPlatformAncestor();
-  }
-
-  return ax_position->GetAnchor();
 }
 
 // TODO(crbug.com/40927698): See if we can use string util here.

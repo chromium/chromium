@@ -127,11 +127,6 @@ bool ArePositionsEqual(const ui::AXNodePosition::AXPositionInstance& position,
 ui::AXNode* GetAnchorNode(
     const ui::AXNodePosition::AXPositionInstance& position);
 
-// Uses the given AXNodePosition to return the next node that should be spoken
-// by Read Aloud.
-ui::AXNode* GetNextNodeFromPosition(
-    const ui::AXNodePosition::AXPositionInstance& ax_position);
-
 // Returns if the given character can be considered opening puncutation.
 // This is used to ensure we're not reading out opening punctuation
 // as a separate segment.
