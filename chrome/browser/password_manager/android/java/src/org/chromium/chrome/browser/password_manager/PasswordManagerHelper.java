@@ -31,6 +31,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -239,7 +240,9 @@ public class PasswordManagerHelper {
             Context context,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
-        if (LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
+        // Automotive doesn't support the export flow.
+        if (!DeviceInfo.isAutomotive()
+                && LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
             showDownloadCsvDialog(context, settingsCustomTabLauncher);
             return true;
         }

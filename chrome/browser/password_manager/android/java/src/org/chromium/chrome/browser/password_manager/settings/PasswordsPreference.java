@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -113,10 +114,12 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
 
         // If either the password manager is not available or it is available but there are
         // unmigrated passwords left in Chrome, show a subtitle notifying the user of that.
+        // Automotive doesn't support the export flow, so only the "stopped working"
+        // subtitle is relevant there.
         TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);
-        if (isPasswordManagerAvailable && hasPasswordsInCsv) {
+        if (!DeviceInfo.isAutomotive() && isPasswordManagerAvailable && hasPasswordsInCsv) {
             summaryView.setText(R.string.some_passwords_are_not_accessible_subtitle);
-        } else {
+        } else if (!isPasswordManagerAvailable) {
             summaryView.setText(R.string.gpm_stopped_working_subtitle);
         }
 
