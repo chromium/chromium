@@ -596,6 +596,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 getLaunchCauseMetrics().onReceivedIntent();
             }
 
+            long intentTimestamp = BrowserIntentUtils.getStartupRealtimeMillis(getIntent());
+            if (intentTimestamp != -1) {
+                recordIntentToCreationTime(getOnCreateTimestampMs() - intentTimestamp);
+            }
+
             mBottomContainer = findViewById(R.id.bottom_container);
 
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
@@ -1347,13 +1352,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             if (MultiWindowUtils.getInstance()
                                     .isInMultiWindowMode(ChromeActivity.this)) {
                                 onDeferredStartupForMultiWindowMode();
-                            }
-
-                            long intentTimestamp =
-                                    BrowserIntentUtils.getStartupRealtimeMillis(getIntent());
-                            if (intentTimestamp != -1) {
-                                recordIntentToCreationTime(
-                                        getOnCreateTimestampMs() - intentTimestamp);
                             }
 
                             recordDisplayDimensions();
