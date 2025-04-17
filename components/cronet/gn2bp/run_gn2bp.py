@@ -86,8 +86,9 @@ def _get_version_string() -> str:
     version += version_component.split('=')[1]
   return version
 
-def _run_license_generation() -> int:
-  return cronet_utils.run(["python3", _GENERATE_LICENSE_SCRIPT_PATH])
+
+def _run_license_generation():
+  cronet_utils.run(["python3", _GENERATE_LICENSE_SCRIPT_PATH])
 
 
 def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
@@ -100,8 +101,8 @@ def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
 
     if skip_build_scripts:
       pathlib.Path(build_script_output.name).write_text('{}')
-    elif _run_generate_build_scripts(build_script_output.name) != 0:
-      raise RuntimeError('Failed to generate build scripts output!')
+    else:
+      _run_generate_build_scripts(build_script_output.name)
 
     base_cmd = [
         sys.executable, _GN2BP_SCRIPT_PATH, '--repo_root', REPOSITORY_ROOT,
@@ -113,16 +114,16 @@ def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
 
     base_cmd += ["--license"]
     base_cmd += ["--channel", channel]
-    return cronet_utils.run(base_cmd)
+    cronet_utils.run(base_cmd)
 
 
-def _run_generate_build_scripts(output_path: str) -> int:
+def _run_generate_build_scripts(output_path: str):
   """Run generate_build_scripts_output.py.
 
   Args:
     output_path: Path of the file that will contain the output.
   """
-  return cronet_utils.run([
+  cronet_utils.run([
       sys.executable,
       _GENERATE_BUILD_SCRIPT_PATH,
       '--output',
@@ -130,17 +131,16 @@ def _run_generate_build_scripts(output_path: str) -> int:
   ])
 
 
-def _write_desc_json(gn_out_dir: str,
-                     temp_file: tempfile.NamedTemporaryFile) -> int:
+def _write_desc_json(gn_out_dir: str, temp_file: tempfile.NamedTemporaryFile):
   """Generate desc json files needed by gen_android_bp.py."""
-  return cronet_utils.run([
+  cronet_utils.run([
       cronet_utils.GN_PATH, 'desc', gn_out_dir, '--format=json',
       '--all-toolchains', '//*'
   ],
-                          stdout=temp_file)
+                   stdout=temp_file)
 
 
-def _gen_extras_bp(import_channel: str) -> None:
+def _gen_extras_bp(import_channel: str):
   """Generate Android.extras.bp."""
   extras_androidbp_template_path = os.path.join(REPOSITORY_ROOT, 'components',
                                                 'cronet', 'gn2bp', 'templates',
@@ -155,7 +155,7 @@ def _gen_extras_bp(import_channel: str) -> None:
           GN2BP_MODULE_PREFIX=f'{import_channel}_cronet_'))
 
 
-def _gen_boringssl(import_channel: str) -> int:
+def _gen_boringssl(import_channel: str):
   """Generate boringssl Android build files."""
   module_prefix = f'{import_channel}_cronet_'
   boringssl_androidbp_template_path = os.path.join(
@@ -170,13 +170,13 @@ def _gen_boringssl(import_channel: str) -> int:
           GN2BP_IMPORT_CHANNEL=import_channel,
           GN2BP_MODULE_PREFIX=module_prefix))
   cmd = f'cd {_BORINGSSL_PATH} && python3 {_BORINGSSL_SCRIPT} --target-prefix={module_prefix} android'
-  return cronet_utils.run(cmd, shell=True)
+  cronet_utils.run(cmd, shell=True)
 
 
 def _run_copybara_to_aosp(config: str, copybara_binary: str,
                           git_url_and_branch: Optional[Tuple[str, str]],
                           regenerate_consistency_file: bool,
-                          import_channel: str) -> int:
+                          import_channel: str):
   """Run Copybara CLI to generate an AOSP Gerrit CL with the generated files.
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
@@ -272,7 +272,7 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
         REPOSITORY_ROOT,
     ])
 
-  return cronet_utils.run([
+  cronet_utils.run([
       _JAVA_PATH, '-jar', copybara_binary, config, target_workflow,
       REPOSITORY_ROOT
   ] + additional_parameters)
@@ -292,10 +292,8 @@ def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
                      do_exit=delete_temporary_files) as gn_out_dir:
     cronet_utils.gn(gn_out_dir,
                     ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
-    if _write_desc_json(gn_out_dir, desc_file) != 0:
-      # Exit if we failed to generate any of the desc.json files.
-      print(f"Failed to generate desc file for arch: {arch}")
-      sys.exit(-1)
+    _write_desc_json(gn_out_dir, desc_file)
+
 
 
 def main():
@@ -349,7 +347,6 @@ def main():
                       choices=['tot', 'stable'],
                       default='tot')
   args = parser.parse_args()
-  run_copybara = not args.skip_copybara
   delete_temporary_files = not args.keep_temporary_files
 
   if os.listdir(os.path.join(REPOSITORY_ROOT, 'clank')):
@@ -366,27 +363,27 @@ def main():
         for arch in cronet_utils.ARCHS
     }
     with multiprocessing.dummy.Pool(len(arch_to_desc_file.items())) as pool:
-      # The "result" is desc files being filled. So, we only need to wait for all tasks to complete.
-      _ = [
+      results = [
           pool.apply_async(_fill_desc_file_for_arch,
                            (arch, desc_file, delete_temporary_files))
           for (arch, desc_file) in arch_to_desc_file.items()
       ]
-      pool.close()
-      pool.join()
+      for result in results:
+        # We don't care about result, since there isn't one. This is only
+        # needed to re-raises failures raised by _fill_desc_file_for_arch,
+        # if any.
+        result.get()
 
-    res_license_generation = _run_license_generation()
-    res_gn2bp = _run_gn2bp(desc_files=arch_to_desc_file.values(),
-                           skip_build_scripts=args.skip_build_scripts,
-                           delete_temporary_files=delete_temporary_files,
-                           channel=args.channel)
-    res_boringssl = _gen_boringssl(args.channel)
+    _run_license_generation()
+    _run_gn2bp(desc_files=arch_to_desc_file.values(),
+               skip_build_scripts=args.skip_build_scripts,
+               delete_temporary_files=delete_temporary_files,
+               channel=args.channel)
+    _gen_boringssl(args.channel)
     _gen_extras_bp(args.channel)
 
-    res_copybara = 1
-    if run_copybara and res_gn2bp == 0 and res_boringssl == 0 and res_license_generation == 0:
-      # Only run Copybara if all build files generated successfully.
-      res_copybara = _run_copybara_to_aosp(
+    if not args.skip_copybara:
+      _run_copybara_to_aosp(
           config=args.config,
           copybara_binary=args.copybara,
           git_url_and_branch=args.git_url_and_branch,
@@ -398,22 +395,9 @@ def main():
       # Close the temporary files so they can be deleted.
       file.close()
 
-  if res_gn2bp != 0:
-    print('Failed to execute gn2bp!')
-    sys.exit(-1)
-  elif res_boringssl != 0:
-    print('Failed to execute boringssl!')
-    sys.exit(-1)
-  elif res_license_generation != 0:
-    print('Failed to generate license data!')
-    sys.exit(-1)
-  elif run_copybara and res_copybara != 0:
-    print('Failed to execute copybara!')
-    sys.exit(-1)
-  else:
-    if args.stamp is not None:
-      build_utils.Touch(args.stamp)
-    print('Success!')
+  if args.stamp is not None:
+    build_utils.Touch(args.stamp)
+  print('Success!')
   return 0
 
 
