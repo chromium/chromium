@@ -87,9 +87,9 @@ constexpr auto kAllowedCallerPrograms =
 
 #elif BUILDFLAG(IS_MAC)
 
-constexpr std::array<const std::string_view, 4> kAllowedIdentifiers{
-    "com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.dev",
-    "com.google.Chrome.canary"};
+constexpr auto kAllowedIdentifiers = std::to_array<const std::string_view>(
+    {"com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.dev",
+     "com.google.Chrome.canary"});
 
 #endif
 

@@ -4,7 +4,6 @@
 
 #include "remoting/host/mojo_caller_security_checker.h"
 
-#include <array>
 #include <memory>
 
 #include "base/containers/fixed_flat_set.h"
@@ -19,6 +18,9 @@
 #include "remoting/host/base/process_util.h"
 
 #if BUILDFLAG(IS_MAC)
+#include <array>
+#include <string_view>
+
 #include "remoting/host/mac/constants_mac.h"
 #include "remoting/host/mac/trust_util.h"
 #endif
@@ -43,6 +45,13 @@ constexpr auto kAllowedCallerProgramNames =
         L"remote_webauthn.exe",
         L"remote_security_key.exe",
     });
+#elif BUILDFLAG(IS_MAC)
+// Can't use constexpr here since `kBundleId` is not a constexpr.
+// remoting_me2me_host is the bundle executable, so its identifier is the bundle
+// identifier. For other binaries, the identifier is just the name of the
+// binary.
+static const auto kAllowedIdentifiers =
+    std::to_array<const std::string_view>({kBundleId, "remote_webauthn"});
 #endif
 
 }  // namespace
@@ -50,7 +59,7 @@ constexpr auto kAllowedCallerProgramNames =
 bool IsTrustedMojoEndpoint(
     const named_mojo_ipc_server::ConnectionInfo& caller) {
 #if BUILDFLAG(IS_MAC)
-  return IsProcessTrusted(caller.audit_token, {kBundleId});
+  return IsProcessTrusted(caller.audit_token, kAllowedIdentifiers);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   // TODO: yuweih - see if it's possible to move away from PID-based security
