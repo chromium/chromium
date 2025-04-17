@@ -921,7 +921,8 @@ const gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
   if (!image_fetcher_) {
     return nullptr;
   }
-  return image_fetcher_->GetCachedImageForUrl(card_art_url);
+  return image_fetcher_->GetCachedImageForUrl(
+      card_art_url, AutofillImageFetcherBase::ImageType::kCreditCardArtImage);
 }
 
 base::span<const BnplIssuer> PaymentsDataManager::GetUnlinkedBnplIssuers()

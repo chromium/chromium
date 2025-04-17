@@ -20,7 +20,8 @@ void TestAutofillImageFetcher::FetchPixAccountImagesForURLs(
     base::span<const GURL> image_urls) {}
 
 const gfx::Image* TestAutofillImageFetcher::GetCachedImageForUrl(
-    const GURL& image_url) const {
+    const GURL& image_url,
+    ImageType image_type) const {
   auto it = cached_images_.find(image_url);
   if (it == cached_images_.end()) {
     return nullptr;

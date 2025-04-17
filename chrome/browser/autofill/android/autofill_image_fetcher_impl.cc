@@ -51,7 +51,8 @@ void AutofillImageFetcherImpl::FetchPixAccountImagesForURLs(
 }
 
 const gfx::Image* AutofillImageFetcherImpl::GetCachedImageForUrl(
-    const GURL& image_url) const {
+    const GURL& image_url,
+    ImageType image_type) const {
   // The images are cached on the Java side on Android.
   return nullptr;
 }

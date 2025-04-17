@@ -39,14 +39,17 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
   // With kAutofillEnableNewCardArtAndNetworkImages enabled, we fetch the image
   // at height of 48.
   EXPECT_EQ(GURL("https://www.example.com/fake_image1=h48-pa"),
-            autofill_image_fetcher()->ResolveCardArtURL(
-                GURL("https://www.example.com/fake_image1")));
+            autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
 
   // The capitalone image is 'special' however, and we swap it out for the
   // larger variant.
   GURL capital_one_url = GURL(kCapitalOneCardArtUrl);
   EXPECT_EQ(GURL(kCapitalOneLargeCardArtUrl),
-            autofill_image_fetcher()->ResolveCardArtURL(capital_one_url));
+            autofill_image_fetcher()->ResolveImageURL(
+                capital_one_url,
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
 }
 
 }  // namespace autofill

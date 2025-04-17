@@ -25,7 +25,8 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
   // AutofillImageFetcher:
   image_fetcher::ImageFetcher* GetImageFetcher() override;
   base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override;
-  GURL ResolveCardArtURL(const GURL& card_art_url) const override;
+  GURL ResolveImageURL(const GURL& image_url,
+                       ImageType image_type) const override;
   gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                  const gfx::Image& card_art_image) override;
 

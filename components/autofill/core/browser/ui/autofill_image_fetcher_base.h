@@ -39,6 +39,12 @@ namespace autofill {
 // Android does not need an intermediate class.
 class AutofillImageFetcherBase {
  public:
+  // The types of images supported by the `AutofillImageFetcher` API.
+  enum class ImageType {
+    kCreditCardArtImage,
+    kPixAccountImage,
+  };
+
   // Different sizes in which we show the credit card / bank account art images.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum class ImageSize {
@@ -69,7 +75,8 @@ class AutofillImageFetcherBase {
   // the client. If the image is not present in the cache, this function will
   // return a `nullptr`.
   virtual const gfx::Image* GetCachedImageForUrl(
-      const GURL& image_url) const = 0;
+      const GURL& image_url,
+      ImageType image_type) const = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the owned AutofillImageFetcher Java object. It is created if it

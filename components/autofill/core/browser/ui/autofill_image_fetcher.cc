@@ -69,7 +69,7 @@ void AutofillImageFetcher::FetchCreditCardArtImagesForURLs(
   }
 
   for (const auto& image_url : image_urls) {
-    FetchImageForURL(image_url);
+    FetchImageForURL(image_url, ImageType::kCreditCardArtImage);
   }
 }
 
@@ -81,8 +81,10 @@ void AutofillImageFetcher::FetchPixAccountImagesForURLs(
 }
 
 const gfx::Image* AutofillImageFetcher::GetCachedImageForUrl(
-    const GURL& image_url) const {
-  auto it = cached_images_.find(image_url);
+    const GURL& image_url,
+    ImageType image_type) const {
+  GURL resolved_url = ResolveImageURL(image_url, image_type);
+  auto it = cached_images_.find(resolved_url);
   if (it == cached_images_.end() || it->second->IsEmpty()) {
     return nullptr;
   }
@@ -126,23 +128,24 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   }
 }
 
-void AutofillImageFetcher::FetchImageForURL(const GURL& image_url) {
+void AutofillImageFetcher::FetchImageForURL(const GURL& image_url,
+                                            ImageType image_type) {
   CHECK(image_url.is_valid());
 
   // Don't fetch the image if the in-memory cache already contains it.
-  if (GetCachedImageForUrl(image_url)) {
+  if (GetCachedImageForUrl(image_url, image_type)) {
     return;
   }
 
   // Allow subclasses to specialize the URL if desired.
-  GURL resolved_url = ResolveCardArtURL(image_url);
+  GURL resolved_url = ResolveImageURL(image_url, image_type);
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
   GetImageFetcher()->FetchImage(
       resolved_url,
       base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, GetWeakPtr(),
-                     image_url, base::TimeTicks::Now()),
+                     resolved_url, base::TimeTicks::Now()),
       std::move(params));
 }
 

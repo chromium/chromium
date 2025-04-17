@@ -45,11 +45,14 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused)
       override;
   void FetchPixAccountImagesForURLs(base::span<const GURL> image_urls) override;
-  const gfx::Image* GetCachedImageForUrl(const GURL& image_url) const override;
+  const gfx::Image* GetCachedImageForUrl(const GURL& image_url,
+                                         ImageType image_type) const override;
 
   // Subclasses may override this to provide custom handling of a given card art
-  // URL.
-  virtual GURL ResolveCardArtURL(const GURL& card_art_url) const = 0;
+  // URL for `image_type`. Resolved URLs are used as mapping keys for image
+  // caching.
+  virtual GURL ResolveImageURL(const GURL& card_art_url,
+                               ImageType image_type) const = 0;
 
   // Subclasses may override this to provide custom handling of a fetched card
   // art image. The default behavior is a no-op. The passed-in `card_art_url` is
@@ -82,7 +85,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
       const image_fetcher::RequestMetadata& metadata);
 
  private:
-  void FetchImageForURL(const GURL& image_url);
+  void FetchImageForURL(const GURL& image_url, ImageType image_type);
 
   // Stores the result of fetching images for card art URLs. It's used to
   // mitigate the issue of inflated failure metrics caused by repeated fetch

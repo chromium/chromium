@@ -28,7 +28,8 @@ class AutofillImageFetcherImpl : public AutofillImageFetcherBase,
       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes)
       override;
   void FetchPixAccountImagesForURLs(base::span<const GURL> image_urls) override;
-  const gfx::Image* GetCachedImageForUrl(const GURL& image_url) const override;
+  const gfx::Image* GetCachedImageForUrl(const GURL& image_url,
+                                         ImageType image_type) const override;
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaImageFetcher()
       override;
 
