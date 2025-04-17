@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/ai_availability.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "components/language_detection/content/common/language_detection.mojom-shared.h"
@@ -17,28 +17,28 @@ namespace blink {
 
 using mojom::blink::ModelAvailabilityCheckResult;
 
-AIAvailability HandleModelAvailabilityCheckResult(
+Availability HandleModelAvailabilityCheckResult(
     ExecutionContext* execution_context,
     AIMetrics::AISessionType session_type,
     ModelAvailabilityCheckResult result) {
-  AIAvailability availability = AIAvailability::kUnavailable;
+  Availability availability = Availability::kUnavailable;
   switch (result) {
     case ModelAvailabilityCheckResult::kAvailable: {
-      availability = AIAvailability::kAvailable;
+      availability = Availability::kAvailable;
       break;
     }
     case ModelAvailabilityCheckResult::kDownloadable: {
-      availability = AIAvailability::kDownloadable;
+      availability = Availability::kDownloadable;
       break;
     }
     case ModelAvailabilityCheckResult::kDownloading: {
-      availability = AIAvailability::kDownloading;
+      availability = Availability::kDownloading;
       break;
     }
     default: {
       // If the text session cannot be created, logs the error message to
       // the console.
-      availability = AIAvailability::kUnavailable;
+      availability = Availability::kUnavailable;
       execution_context->AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
@@ -46,11 +46,11 @@ AIAvailability HandleModelAvailabilityCheckResult(
     }
   }
   base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAvailabilityMetricName(session_type), availability);
+      AIMetrics::GetAvailabilityMetricName(session_type), availability);
   return availability;
 }
 
-AIAvailability HandleTranslatorAvailabilityCheckResult(
+Availability HandleTranslatorAvailabilityCheckResult(
     ExecutionContext* execution_context,
     mojom::blink::CanCreateTranslatorResult result) {
   switch (result) {
@@ -87,7 +87,7 @@ AIAvailability HandleTranslatorAvailabilityCheckResult(
   }
 }
 
-AIAvailability HandleLanguageDetectionModelCheckResult(
+Availability HandleLanguageDetectionModelCheckResult(
     ExecutionContext* execution_context,
     language_detection::mojom::blink::LanguageDetectionModelStatus result) {
   switch (result) {
@@ -110,16 +110,16 @@ AIAvailability HandleLanguageDetectionModelCheckResult(
   }
 }
 
-V8AIAvailability AIAvailabilityToV8(AIAvailability availability) {
+V8Availability AvailabilityToV8(Availability availability) {
   switch (availability) {
-    case AIAvailability::kUnavailable:
-      return V8AIAvailability(V8AIAvailability::Enum::kUnavailable);
-    case AIAvailability::kDownloadable:
-      return V8AIAvailability(V8AIAvailability::Enum::kDownloadable);
-    case AIAvailability::kDownloading:
-      return V8AIAvailability(V8AIAvailability::Enum::kDownloading);
-    case AIAvailability::kAvailable:
-      return V8AIAvailability(V8AIAvailability::Enum::kAvailable);
+    case Availability::kUnavailable:
+      return V8Availability(V8Availability::Enum::kUnavailable);
+    case Availability::kDownloadable:
+      return V8Availability(V8Availability::Enum::kDownloadable);
+    case Availability::kDownloading:
+      return V8Availability(V8Availability::Enum::kDownloading);
+    case Availability::kAvailable:
+      return V8Availability(V8Availability::Enum::kAvailable);
   }
 }
 

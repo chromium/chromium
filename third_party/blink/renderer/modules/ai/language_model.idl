@@ -32,7 +32,7 @@ interface LanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIAvailability> availability(
+  static Promise<Availability> availability(
     optional LanguageModelCreateCoreOptions options = {}
   );
   [

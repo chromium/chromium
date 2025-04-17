@@ -6,4 +6,4 @@
 // https://github.com/webmachinelearning/writing-assistance-apis
 // https://github.com/webmachinelearning/translation-api
 
-enum AIAvailability { "unavailable", "downloadable", "downloading", "available" };
+enum Availability { "unavailable", "downloadable", "downloading", "available" };

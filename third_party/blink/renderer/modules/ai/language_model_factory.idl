@@ -26,7 +26,7 @@ interface LanguageModelFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAvailability> availability(
+  Promise<Availability> availability(
     optional LanguageModelCreateCoreOptions options = {}
   );
   [

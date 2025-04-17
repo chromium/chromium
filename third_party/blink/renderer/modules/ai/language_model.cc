@@ -423,7 +423,7 @@ ScriptPromise<LanguageModel> LanguageModel::create(
 }
 
 // static
-ScriptPromise<V8AIAvailability> LanguageModel::availability(
+ScriptPromise<V8Availability> LanguageModel::availability(
     ScriptState* script_state,
     const LanguageModelCreateCoreOptions* options,
     ExceptionState& exception_state) {

@@ -38,7 +38,7 @@ std::string AIMetrics::GetAIAPIUsageMetricName(AISessionType session_type) {
 }
 
 // static
-std::string AIMetrics::GetAIAvailabilityMetricName(AISessionType session_type) {
+std::string AIMetrics::GetAvailabilityMetricName(AISessionType session_type) {
   return base::StrCat(
       {"AI.", GetAISessionTypeName(session_type), ".AvailabilityV2"});
 }

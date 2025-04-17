@@ -7,11 +7,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -136,20 +136,20 @@ class LanguageDetectorCreateTask
 
 void OnGotStatus(
     ExecutionContext* execution_context,
-    ScriptPromiseResolver<V8AIAvailability>* resolver,
+    ScriptPromiseResolver<V8Availability>* resolver,
     language_detection::mojom::blink::LanguageDetectionModelStatus result) {
   if (!execution_context) {
     return;
   }
-  AIAvailability availability =
+  Availability availability =
       HandleLanguageDetectionModelCheckResult(execution_context, result);
-  resolver->Resolve(AIAvailabilityToV8(availability));
+  resolver->Resolve(AvailabilityToV8(availability));
 }
 
 }  // namespace
 
 // static
-ScriptPromise<V8AIAvailability> LanguageDetector::availability(
+ScriptPromise<V8Availability> LanguageDetector::availability(
     ScriptState* script_state,
     LanguageDetectorCreateCoreOptions* options,
     ExceptionState& exception_state) {
@@ -160,10 +160,9 @@ ScriptPromise<V8AIAvailability> LanguageDetector::availability(
   // TODO(crbug.com/409848465): Validate and canonicalize
   // expectedInputLanguages.
 
-  ScriptPromiseResolver<V8AIAvailability>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
-          script_state);
-  ScriptPromise<V8AIAvailability> promise = resolver->Promise();
+  ScriptPromiseResolver<V8Availability>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
+  ScriptPromise<V8Availability> promise = resolver->Promise();
 
   // TODO(402166942): Return unavailable if document is not allowed to use
   // language detector permission policy.

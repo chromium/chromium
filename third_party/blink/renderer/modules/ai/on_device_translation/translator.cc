@@ -55,19 +55,18 @@ String Translator::targetLanguage() const {
   return target_language_;
 }
 
-ScriptPromise<V8AIAvailability> Translator::availability(
+ScriptPromise<V8Availability> Translator::availability(
     ScriptState* script_state,
     TranslatorCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8AIAvailability>();
+    return ScriptPromise<V8Availability>();
   }
 
-  ScriptPromiseResolver<V8AIAvailability>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
-          script_state);
-  ScriptPromise<V8AIAvailability> promise = resolver->Promise();
+  ScriptPromiseResolver<V8Availability>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
+  ScriptPromise<V8Availability> promise = resolver->Promise();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
   AIInterfaceProxy::GetTranslationManagerRemote(execution_context)
@@ -76,14 +75,14 @@ ScriptPromise<V8AIAvailability> Translator::availability(
           mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
           WTF::BindOnce(
               [](ExecutionContext* execution_context,
-                 ScriptPromiseResolver<V8AIAvailability>* resolver,
+                 ScriptPromiseResolver<V8Availability>* resolver,
                  CanCreateTranslatorResult result) {
                 CHECK(resolver);
 
-                AIAvailability availability =
+                Availability availability =
                     HandleTranslatorAvailabilityCheckResult(execution_context,
                                                             result);
-                resolver->Resolve(AIAvailabilityToV8(availability));
+                resolver->Resolve(AvailabilityToV8(availability));
               },
               WrapPersistent(execution_context), WrapPersistent(resolver)));
 

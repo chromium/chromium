@@ -52,7 +52,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       ScriptState* script_state,
       const LanguageModelCreateOptions* options,
       ExceptionState& exception_state);
-  static ScriptPromise<V8AIAvailability> availability(
+  static ScriptPromise<V8Availability> availability(
       ScriptState* script_state,
       const LanguageModelCreateCoreOptions* options,
       ExceptionState& exception_state);

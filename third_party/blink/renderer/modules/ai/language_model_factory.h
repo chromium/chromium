@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -41,7 +41,7 @@ class LanguageModelFactory final : public ScriptWrappable,
   ScriptPromise<LanguageModel> create(ScriptState* script_state,
                                       const LanguageModelCreateOptions* options,
                                       ExceptionState& exception_state);
-  ScriptPromise<V8AIAvailability> availability(
+  ScriptPromise<V8Availability> availability(
       ScriptState* script_state,
       const LanguageModelCreateCoreOptions* options,
       ExceptionState& exception_state);
@@ -51,7 +51,7 @@ class LanguageModelFactory final : public ScriptWrappable,
 
  private:
   void OnCanCreateLanguageModelComplete(
-      ScriptPromiseResolver<V8AIAvailability>* resolver,
+      ScriptPromiseResolver<V8Availability>* resolver,
       mojom::blink::ModelAvailabilityCheckResult check_result);
   void OnGetLanguageModelParamsComplete(
       ScriptPromiseResolver<IDLNullable<LanguageModelParams>>* resolver,

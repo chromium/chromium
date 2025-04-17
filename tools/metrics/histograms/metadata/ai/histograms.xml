@@ -122,14 +122,14 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.{SessionType}.AvailabilityV2" enum="AIAvailability"
+<histogram name="AI.{SessionType}.AvailabilityV2" enum="Availability"
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
     Records the availability of model execution as returned in methods like
-    `ai.*.availability()`.
+    `LanguageModel.availability()`.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>

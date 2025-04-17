@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translator_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translator_translate_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_availability.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -36,7 +36,7 @@ class Translator final : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
-  static ScriptPromise<V8AIAvailability> availability(
+  static ScriptPromise<V8Availability> availability(
       ScriptState* script_state,
       TranslatorCreateCoreOptions* options,
       ExceptionState& exception_state);

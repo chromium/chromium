@@ -40,7 +40,7 @@ interface Summarizer {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIAvailability> availability(
+  static Promise<Availability> availability(
     optional SummarizerCreateCoreOptions options = {}
   );
 

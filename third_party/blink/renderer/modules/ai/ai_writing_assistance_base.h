@@ -17,10 +17,10 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -67,17 +67,17 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     visitor->Trace(options_);
   }
 
-  static ScriptPromise<V8AIAvailability> availability(
+  static ScriptPromise<V8Availability> availability(
       ScriptState* script_state,
       CreateCoreOptions* options,
       ExceptionState& exception_state) {
     if (!script_state->ContextIsValid()) {
       ThrowInvalidContextException(exception_state);
-      return ScriptPromise<V8AIAvailability>();
+      return ScriptPromise<V8Availability>();
     }
 
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
+        MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(
             script_state);
     auto promise = resolver->Promise();
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -87,7 +87,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
       if (window->IsCrossSiteSubframeIncludingScheme() &&
           !window->IsFeatureEnabled(GetPermissionsPolicy())) {
-        resolver->Resolve(AIAvailabilityToV8(AIAvailability::kUnavailable));
+        resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
         return promise;
       }
     }
@@ -103,12 +103,12 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     RemoteCanCreate(
         ai_manager_remote, options,
         WTF::BindOnce(
-            [](ScriptPromiseResolver<V8AIAvailability>* resolver,
+            [](ScriptPromiseResolver<V8Availability>* resolver,
                ExecutionContext* execution_context,
                mojom::blink::ModelAvailabilityCheckResult result) {
-              AIAvailability availability = HandleModelAvailabilityCheckResult(
+              Availability availability = HandleModelAvailabilityCheckResult(
                   execution_context, GetSessionType(), result);
-              resolver->Resolve(AIAvailabilityToV8(availability));
+              resolver->Resolve(AvailabilityToV8(availability));
             },
             WrapPersistent(resolver), WrapPersistent(execution_context)));
     return promise;
