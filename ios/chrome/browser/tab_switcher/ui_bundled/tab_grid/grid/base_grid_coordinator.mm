@@ -338,6 +338,7 @@ using collaboration::CollaborationControllerDelegate;
   if (!tabGroup) {
     return;
   }
+
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -347,7 +348,11 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupConfirmationCoordinator.primaryAction = ^{
     [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
+  _tabGroupConfirmationCoordinator.dismissAction = ^{
+    [weakSelf clearLeaveOrDeleteCompletion];
+  };
   _tabGroupConfirmationCoordinator.tabGroupName = tabGroup->GetTitle();
+
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =
       _tabGroupConfirmationCoordinator;
@@ -374,27 +379,32 @@ using collaboration::CollaborationControllerDelegate;
                                                 group:group
                                            sourceView:sourceView];
       });
+  [self startLeaveOrDeleteSharedGroup:group
+                   completionCallback:std::move(completionCallback)];
+}
 
-  Browser* browser = self.browser;
-  collaboration::CollaborationService* collaborationService =
-      collaboration::CollaborationServiceFactory::GetForProfile(
-          browser->GetProfile());
-
-  const TabGroup* tabGroup = group.get();
-  if (!tabGroup || !collaborationService) {
-    return;
-  }
-
-  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(browser->GetProfile()));
-  delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
-
-  collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
-      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown;
-  collaborationService->StartLeaveOrDeleteFlow(
-      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
+- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
+                            forAction:(TabGroupActionType)actionType
+                     sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  __weak __typeof(self) weakSelf = self;
+  base::OnceCallback<void(ResultCallback)> completionCallback =
+      base::BindOnce(^(ResultCallback resultCallback) {
+        BaseGridCoordinator* strongSelf = weakSelf;
+        if (!strongSelf) {
+          std::move(resultCallback)
+              .Run(ConvertShareKitFlowOutcome(ShareKitFlowOutcome::kCancel));
+          return;
+        }
+        auto completionBlock = base::CallbackToBlock(std::move(resultCallback));
+        strongSelf.leaveOrDeleteCompletion = ^(ShareKitFlowOutcome outcome) {
+          completionBlock(ConvertShareKitFlowOutcome(outcome));
+        };
+        [strongSelf showTabGroupConfirmationForAction:actionType
+                                                group:group
+                                     sourceButtonItem:sourceButtonItem];
+      });
+  [self startLeaveOrDeleteSharedGroup:group
+                   completionCallback:std::move(completionCallback)];
 }
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:
@@ -549,6 +559,33 @@ using collaboration::CollaborationControllerDelegate;
     self.leaveOrDeleteCompletion(ShareKitFlowOutcome::kCancel);
   }
   self.leaveOrDeleteCompletion = nil;
+}
+
+// Starts the leave or delete shared tab group flow for the given `group` and
+// `completionCallback`.
+- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
+                   completionCallback:(base::OnceCallback<void(ResultCallback)>)
+                                          completionCallback {
+  Browser* browser = self.browser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
+
+  const TabGroup* tabGroup = group.get();
+  if (!tabGroup || !collaborationService) {
+    return;
+  }
+
+  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()));
+  delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
+
+  collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
+      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown;
+  collaborationService->StartLeaveOrDeleteFlow(
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 @end

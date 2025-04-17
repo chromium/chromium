@@ -953,11 +953,11 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   CHECK(_gridViewController.shared);
   CHECK_EQ(_sharingState, SharingState::kSharedAndOwned);
 
-  [_handler showTabGroupConfirmationForAction:TabGroupActionType::
-                                                  kDeleteSharedTabGroup
-                                        group:_tabGroup->GetWeakPtr()
-                             sourceButtonItem:_navigationBar.topItem
-                                                  .rightBarButtonItems[0]];
+  [_handler
+      startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                          forAction:TabGroupActionType::kDeleteSharedTabGroup
+                   sourceButtonItem:_navigationBar.topItem
+                                        .rightBarButtonItems[0]];
 }
 
 // Leaves the shared group and closes the view.
@@ -967,10 +967,10 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   CHECK_EQ(_sharingState, SharingState::kShared);
 
   [_handler
-      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
-                                  group:_tabGroup->GetWeakPtr()
-                       sourceButtonItem:_navigationBar.topItem
-                                            .rightBarButtonItems[0]];
+      startLeaveOrDeleteSharedGroup:_tabGroup->GetWeakPtr()
+                          forAction:TabGroupActionType::kLeaveSharedTabGroup
+                   sourceButtonItem:_navigationBar.topItem
+                                        .rightBarButtonItems[0]];
 }
 
 // Updates the safe area inset of the grid based on this VC safe areas and the
