@@ -141,6 +141,8 @@ struct ProductInfo {
   std::optional<BuyableProduct_PriceDisplayRecommendation>
       price_display_recommendation;
   std::vector<PriceSummary> price_summary;
+  // TODO(crbug.com/404335872): Populate product_reviews in shopping service.
+  std::optional<ProductReviews> product_reviews;
   // This is used to track whether the server provided an image with the rest
   // of the product info. This value being |true| does not necessarily mean an
   // image is available in the ProductInfo struct (as it is flag gated) and is
