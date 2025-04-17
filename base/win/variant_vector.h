@@ -19,8 +19,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/variant_conversions.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 // This class has RAII semantics and is used to build a vector for a specific
 // OLE VARTYPE, and handles converting the data to a VARIANT or VARIANT
@@ -40,9 +39,6 @@ class BASE_EXPORT VariantVector final {
   VariantVector& operator=(const VariantVector&) = delete;
   ~VariantVector();
 
-  bool operator==(const VariantVector& other) const;
-  bool operator!=(const VariantVector& other) const;
-
   // Returns the variant type for data stored in the VariantVector.
   VARTYPE Type() const { return vartype_; }
 
@@ -57,8 +53,8 @@ class BASE_EXPORT VariantVector final {
 
   // Helper template method for selecting the correct |Insert| call based
   // on the underlying type that is expected for a VARTYPE.
-  template <VARTYPE ExpectedVartype,
-            std::enable_if_t<ExpectedVartype != VT_BOOL, int> = 0>
+  template <VARTYPE ExpectedVartype>
+    requires(ExpectedVartype != VT_BOOL)
   void Insert(
       typename internal::VariantConverter<ExpectedVartype>::Type value) {
     if (vartype_ == VT_EMPTY) {
@@ -72,8 +68,8 @@ class BASE_EXPORT VariantVector final {
 
   // Specialize VT_BOOL to accept a bool type instead of VARIANT_BOOL,
   // this is to make calling insert with VT_BOOL safer.
-  template <VARTYPE ExpectedVartype,
-            std::enable_if_t<ExpectedVartype == VT_BOOL, int> = 0>
+  template <VARTYPE ExpectedVartype>
+    requires(ExpectedVartype == VT_BOOL)
   void Insert(bool value) {
     if (vartype_ == VT_EMPTY) {
       vartype_ = ExpectedVartype;
@@ -140,7 +136,10 @@ class BASE_EXPORT VariantVector final {
   std::vector<ScopedVariant> vector_;
 };
 
-}  // namespace win
-}  // namespace base
+inline bool operator==(const VariantVector& lhs, const VariantVector& rhs) {
+  return !lhs.Compare(rhs);
+}
+
+}  // namespace base::win
 
 #endif  // BASE_WIN_VARIANT_VECTOR_H_
