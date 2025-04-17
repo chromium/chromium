@@ -262,21 +262,6 @@ public class AutofillImageFetcher {
      * Add an image to the in-memory cache of images.
      *
      * @param url The URL that should be used as the key for the cache.
-     * @param bitmap The actual image bitmap that should be cached.
-     * @param cardIconSpecs The {@link CardIconSpecs} for the bitmap. This is used for generating
-     *     the URL params.
-     */
-    public void addImageToCacheForTesting(GURL url, Bitmap bitmap, CardIconSpecs cardIconSpecs) {
-        GURL urlToCache =
-                AutofillUiUtils.getFifeIconUrlWithParams(
-                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-        mImagesCache.put(urlToCache.getSpec(), bitmap);
-    }
-
-    /**
-     * Add an image to the in-memory cache of images.
-     *
-     * @param url The URL that should be used as the key for the cache.
      * @param bitmap The image to be cached.
      */
     public void addImageToCacheForTesting(GURL url, Bitmap bitmap) {
