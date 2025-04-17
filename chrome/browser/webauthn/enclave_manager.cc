@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/webauthn/enclave_manager.h"
 
 #include <algorithm>
@@ -25,6 +20,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -655,7 +651,8 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
       contents.size() - crypto::kSHA256Length - sizeof(kHashPrefix));
   const std::array<uint8_t, crypto::kSHA256Length> calculated =
       crypto::SHA256Hash(payload);
-  if (memcmp(calculated.data(), digest.data(), crypto::kSHA256Length) != 0) {
+  if (UNSAFE_TODO(memcmp(calculated.data(), digest.data(),
+                         crypto::kSHA256Length)) != 0) {
     FIDO_LOG(ERROR) << "Checksum mismatch. Discarding state.";
     return ret;
   }
@@ -938,7 +935,7 @@ GetUserVerifyingKeyProviderForCreateAndDeleteOnly() {
 }
 
 struct HashedPIN {
-  ~HashedPIN() { memset(hashed, 0, sizeof(hashed)); }
+  ~HashedPIN() { std::ranges::fill(hashed, 0); }
 
   // Copies the values of this structure into a `WrappedPIN` protobuf with a
   // random claim key. The inner `wrapped_pin` member is not set and needs to be
