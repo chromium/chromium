@@ -64,6 +64,8 @@ class EnterpriseIdentityServiceImpl : public EnterpriseIdentityService,
   void OnRefreshTokensLoaded() override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   // Will invoke `callback` with the subset of `accounts` which end up being
@@ -180,6 +182,13 @@ void EnterpriseIdentityServiceImpl::OnRefreshTokenUpdatedForAccount(
                                         OnRefreshTokenUpdatedForManagedAccounts,
                                     weak_factory_.GetWeakPtr()));
 }
+
+void EnterpriseIdentityServiceImpl::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  // Needs to be shutdown before IdentityManager.
+  NOTREACHED(base::NotFatalUntil::M142);
+}
+
 void EnterpriseIdentityServiceImpl::GetManagedAccounts(
     const std::vector<CoreAccountInfo>& accounts,
     GetManagedAccountsCallback callback) {
