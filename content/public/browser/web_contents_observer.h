@@ -898,6 +898,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       const MediaPlayerInfo& video_type,
       const MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) {}
+
+  // Invoked when the set of tracks in the media has changed. Possible reasons
+  // include adding/removing a track via MediaStream.addTrack()/removeTrack().
+  virtual void MediaMetadataChanged(const MediaPlayerInfo& video_type,
+                                    const MediaPlayerId& id) {}
+
   virtual void MediaResized(const gfx::Size& size, const MediaPlayerId& id) {}
   // Invoked when media enters or exits fullscreen. We must use a heuristic
   // to determine this as it is not trivial for media with custom controls.

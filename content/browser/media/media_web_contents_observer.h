@@ -113,6 +113,9 @@ class CONTENT_EXPORT MediaWebContentsObserver
   // fullscreening video element to the same place.
   void RequestPersistentVideo(bool value);
 
+  // Returns the number of active players with video content.
+  int GetCurrentlyPlayingVideoCount() const;
+
   // Returns whether or not the given player id is active.
   bool IsPlayerActive(const MediaPlayerId& player_id) const;
 

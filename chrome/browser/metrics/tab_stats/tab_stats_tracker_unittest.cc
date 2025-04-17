@@ -24,7 +24,9 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,18 +47,36 @@ std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
 
 class TestTabStatsObserver : public TabStatsObserver {
  public:
+  explicit TestTabStatsObserver(TabStatsTracker& stats_tracker)
+      : stats_tracker_(stats_tracker) {
+    stats_tracker_->AddObserverAndSetInitialState(this);
+  }
+  ~TestTabStatsObserver() override { stats_tracker_->RemoveObserver(this); }
+
   // Functions used to update the counts.
   void OnPrimaryMainFrameNavigationCommitted(
       content::WebContents* web_contents) override {
     ++main_frame_committed_navigations_count_;
+  }
+  void OnVideoStartedPlaying(content::WebContents* web_contents) override {
+    ASSERT_FALSE(video_playing_in_tab_);
+    video_playing_in_tab_ = true;
+  }
+  void OnVideoStoppedPlaying(content::WebContents* web_contents) override {
+    ASSERT_TRUE(video_playing_in_tab_);
+    video_playing_in_tab_ = false;
   }
 
   size_t main_frame_committed_navigations_count() {
     return main_frame_committed_navigations_count_;
   }
 
+  bool is_video_playing_in_tab() const { return video_playing_in_tab_; }
+
  private:
+  const base::raw_ref<TabStatsTracker> stats_tracker_;
   size_t main_frame_committed_navigations_count_ = 0;
+  bool video_playing_in_tab_ = false;
 };
 
 class TestTabStatsTracker : public TabStatsTracker {
@@ -247,8 +267,7 @@ bool CompareHistogramBucket(const base::Bucket& l, const base::Bucket& r) {
 TEST_F(TabStatsTrackerTest, MainFrameCommittedNavigationTriggersUpdate) {
   constexpr const char kFirstUrl[] = "https://parent.com/";
 
-  TestTabStatsObserver tab_stats_observer;
-  tab_stats_tracker_->AddObserverAndSetInitialState(&tab_stats_observer);
+  TestTabStatsObserver tab_stats_observer(*tab_stats_tracker_);
   // Number of navigations starts of at zero.
   ASSERT_EQ(tab_stats_observer.main_frame_committed_navigations_count(), 0u);
 
@@ -651,6 +670,90 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kWindowCountHistogramName,
       expected_window_count, 1);
+}
+
+TEST_F(TabStatsTrackerTest, VideoPlayingInTab) {
+  content::WebContentsTester* const contents_tester =
+      content::WebContentsTester::For(web_contents());
+
+  constexpr auto kStoppedReason =
+      content::WebContentsObserver::MediaStoppedReason::kReachedEndOfStream;
+
+  const content::MediaPlayerId video_player_id0(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 0);
+  const content::WebContentsObserver::MediaPlayerInfo video_player_info0(
+      /*has_video=*/true, /*has_audio=*/true);
+
+  const content::MediaPlayerId video_player_id1(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 1);
+  const content::WebContentsObserver::MediaPlayerInfo video_player_info1(
+      /*has_video=*/true, /*has_audio=*/false);
+
+  const content::MediaPlayerId audio_video_player_id(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 2);
+  content::WebContentsObserver::MediaPlayerInfo audio_video_player_info(
+      /*has_video=*/false, /*has_audio=*/true);
+
+  TestTabStatsObserver tab_stats_observer(*tab_stats_tracker_);
+
+  tab_stats_tracker_->OnInitialOrInsertedTab(web_contents());
+
+  content::WebContentsObserver* const observer =
+      tab_stats_tracker_->GetWebContentsUsageObserverForTesting(web_contents());
+  ASSERT_NE(observer, nullptr);
+
+  EXPECT_FALSE(tab_stats_observer.is_video_playing_in_tab());
+
+  observer->MediaMetadataChanged(video_player_info0, video_player_id0);
+  observer->MediaMetadataChanged(video_player_info1, video_player_id1);
+  observer->MediaMetadataChanged(audio_video_player_info,
+                                 audio_video_player_id);
+  EXPECT_FALSE(tab_stats_observer.is_video_playing_in_tab());
+
+  observer->MediaStartedPlaying(audio_video_player_info, audio_video_player_id);
+  EXPECT_FALSE(tab_stats_observer.is_video_playing_in_tab())
+      << "Only audio is playing";
+
+  contents_tester->SetCurrentlyPlayingVideoCount(1);
+  observer->MediaStartedPlaying(video_player_info0, video_player_id0);
+  EXPECT_TRUE(tab_stats_observer.is_video_playing_in_tab())
+      << "One video is playing";
+
+  contents_tester->SetCurrentlyPlayingVideoCount(2);
+  observer->MediaStartedPlaying(video_player_info1, video_player_id1);
+  EXPECT_TRUE(tab_stats_observer.is_video_playing_in_tab())
+      << "Two videos are playing";
+
+  contents_tester->SetCurrentlyPlayingVideoCount(1);
+  observer->MediaStoppedPlaying(video_player_info1, video_player_id1,
+                                kStoppedReason);
+  EXPECT_TRUE(tab_stats_observer.is_video_playing_in_tab())
+      << "One video is playing";
+
+  contents_tester->SetCurrentlyPlayingVideoCount(0);
+  observer->MediaStoppedPlaying(video_player_info0, video_player_id0,
+                                kStoppedReason);
+  EXPECT_FALSE(tab_stats_observer.is_video_playing_in_tab())
+      << "No video is playing";
+
+  audio_video_player_info.has_video = true;
+  contents_tester->SetCurrentlyPlayingVideoCount(1);
+  observer->MediaMetadataChanged(audio_video_player_info,
+                                 audio_video_player_id);
+  EXPECT_TRUE(tab_stats_observer.is_video_playing_in_tab())
+      << "A video track was added to a player that was playing";
+
+  audio_video_player_info.has_video = false;
+  contents_tester->SetCurrentlyPlayingVideoCount(0);
+  observer->MediaMetadataChanged(audio_video_player_info,
+                                 audio_video_player_id);
+  EXPECT_FALSE(tab_stats_observer.is_video_playing_in_tab())
+      << "The video track was removed";
+
+  observer->MediaStoppedPlaying(audio_video_player_info, audio_video_player_id,
+                                kStoppedReason);
+  EXPECT_FALSE(tab_stats_observer.is_video_playing_in_tab())
+      << "No video is playing";
 }
 
 }  // namespace metrics

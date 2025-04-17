@@ -74,6 +74,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       ImageDownloadCallback callback) override;
   const GURL& GetLastCommittedURL() const override;
   const std::u16string& GetTitle() override;
+  int GetCurrentlyPlayingVideoCount() const override;
 
   // Override to cache the tab switch start time without going through
   // VisibleTimeRequestTrigger.
@@ -201,6 +202,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   void SetMediaCaptureRawDeviceIdsOpened(blink::mojom::MediaStreamType type,
                                          std::vector<std::string> ids) override;
+  void SetCurrentlyPlayingVideoCount(int count) override;
 
   void OnIgnoredUIEvent() override;
   bool GetIgnoredUIEventCalled() const;
@@ -269,6 +271,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   bool overscroll_enabled_ = true;
   base::flat_map<blink::mojom::MediaStreamType, std::vector<std::string>>
       media_capture_raw_device_ids_opened_;
+  std::optional<int> playing_video_count_;
   bool ignored_ui_event_called_ = false;
 };
 

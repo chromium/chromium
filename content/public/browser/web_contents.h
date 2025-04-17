@@ -1401,7 +1401,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Sets whether the WebContents is for overlaying content on a page.
   virtual void SetIsOverlayContent(bool is_overlay_content) = 0;
 
-  virtual int GetCurrentlyPlayingVideoCount() = 0;
+  virtual int GetCurrentlyPlayingVideoCount() const = 0;
 
   virtual std::optional<gfx::Size> GetFullscreenVideoSize() = 0;
 
