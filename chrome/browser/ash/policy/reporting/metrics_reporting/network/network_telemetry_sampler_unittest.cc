@@ -128,8 +128,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   void SetNetworkData(const std::vector<FakeNetworkData>& networks_data) {
     auto* const service_client = network_handler_test_helper_.service_test();
     auto* const device_client = network_handler_test_helper_.device_test();
-    auto* const ip_config_client =
-        network_handler_test_helper_.ip_config_test();
     network_handler_test_helper_.manager_test()->AddTechnology(
         ::ash::kTypeTether, true);
 
@@ -153,16 +151,17 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
           base::Value(network_data.signal_strength));
       service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
                                          base::Value(device_path));
-      base::Value::Dict ip_config_properties;
-      ip_config_properties.Set(shill::kAddressProperty,
-                               network_data.ip_address);
-      ip_config_properties.Set(shill::kGatewayProperty, network_data.gateway);
-      const std::string kIPConfigPath =
-          base::StrCat({"test_ip_config", network_data.guid});
-      ip_config_client->AddIPConfig(kIPConfigPath,
-                                    std::move(ip_config_properties));
-      service_client->SetServiceProperty(service_path, shill::kIPConfigProperty,
-                                         base::Value(kIPConfigPath));
+      base::Value::Dict network_config_dict;
+      // When kNetworkConfigProperty, IP address is parsed as CIDR address.
+      // Thus, add subnet mask to the IP address.
+      const std::string cidr_ipv4_address = network_data.ip_address + "/24";
+      network_config_dict.Set(shill::kNetworkConfigIPv4AddressProperty,
+                              cidr_ipv4_address);
+      network_config_dict.Set(shill::kNetworkConfigIPv4GatewayProperty,
+                              network_data.gateway);
+      service_client->SetServiceProperty(
+          service_path, shill::kNetworkConfigProperty,
+          base::Value(std::move(network_config_dict)));
       if (network_data.type == shill::kTypeCellular) {
         service_client->SetServiceProperty(service_path, shill::kIccidProperty,
                                            base::Value("test_iccid"));

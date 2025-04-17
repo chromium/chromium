@@ -218,12 +218,16 @@ void NetworkTelemetrySampler::CollectNetworksStates(
       network_telemetry->set_device_path(network->device_path());
     }
 
-    if (!network->GetIpAddress().empty()) {
-      network_telemetry->set_ip_address(network->GetIpAddress());
-    }
-
-    if (!network->GetGateway().empty()) {
-      network_telemetry->set_gateway(network->GetGateway());
+    const auto* network_config = network->network_config();
+    if (network_config) {
+      if (network_config->ipv4_address.has_value()) {
+        network_telemetry->set_ip_address(
+            network_config->ipv4_address->addr.ToString());
+      }
+      if (network_config->ipv4_gateway.has_value()) {
+        network_telemetry->set_gateway(
+            network_config->ipv4_gateway->ToString());
+      }
     }
 
     if (type.Equals(::ash::NetworkTypePattern::WiFi())) {
