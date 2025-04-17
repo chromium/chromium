@@ -632,7 +632,15 @@ def main(argv,
     do_it(None)
     return 0
 
-  depfile_deps = options.classpath + options.processorpath
+  classpath_jars = options.classpath + options.processorpath
+
+  # javac does not complain about missing classpath files. Missing files can
+  # result in misleading compile errors though, so do an upfront check.
+  missing_jars = [p for p in classpath_jars if not os.path.exists(p)]
+  if missing_jars:
+    sys.stderr.write('One or more classpath .jar files does not exist:\n')
+    sys.stderr.write('\n'.join(missing_jars) + '\n')
+    sys.exit(1)
 
   output_paths = [options.jar_path]
   if not use_errorprone:
@@ -641,13 +649,15 @@ def main(argv,
 
   # Incremental build optimization doesn't work for ErrorProne. Skip md5 check.
   if write_depfile_only:
-    action_helpers.write_depfile(options.depfile, output_paths[0], depfile_deps)
+    action_helpers.write_depfile(options.depfile, output_paths[0],
+                                 classpath_jars)
   elif use_errorprone:
     do_it(None)
-    action_helpers.write_depfile(options.depfile, output_paths[0], depfile_deps)
+    action_helpers.write_depfile(options.depfile, output_paths[0],
+                                 classpath_jars)
   else:
     # Files that are already inputs in GN should go in input_paths.
-    input_paths = ([build_utils.JAVAC_PATH] + depfile_deps +
+    input_paths = ([build_utils.JAVAC_PATH] + classpath_jars +
                    options.java_srcjars + java_files + kt_files)
     if options.header_jar:
       input_paths.append(options.header_jar)
@@ -662,7 +672,7 @@ def main(argv,
     # Use md5_check for |pass_changes| feature.
     md5_check.CallAndWriteDepfileIfStale(do_it,
                                          options,
-                                         depfile_deps=depfile_deps,
+                                         depfile_deps=classpath_jars,
                                          input_paths=input_paths,
                                          input_strings=input_strings,
                                          output_paths=output_paths,
