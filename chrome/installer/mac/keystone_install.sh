@@ -1289,6 +1289,14 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     new_brand="GCCM"
   elif [[ "${old_brand}" == "GCCM" && ! -e "${cbcm_path}" ]]; then
     new_brand="GCEM"
+  elif [[ "${old_brand}" == "FPAB" && -e "${cbcm_path}" ]]; then
+    new_brand="FPJB"
+  elif [[ "${old_brand}" == "FPJB" && ! -e "${cbcm_path}" ]]; then
+    new_brand="FPAB"
+  elif [[ "${old_brand}" == "FPAC" && -e "${cbcm_path}" ]]; then
+    new_brand="FPJC"
+  elif [[ "${old_brand}" == "FPJC" && ! -e "${cbcm_path}" ]]; then
+    new_brand="FPAC"
   else
     new_brand="${old_brand}"
   fi
