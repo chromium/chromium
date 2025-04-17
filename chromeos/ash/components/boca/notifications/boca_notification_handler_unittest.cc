@@ -139,13 +139,19 @@ TEST_F(BocaNotificationHandlerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE),
             notification->message());
-  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       handler_.kSessionNotificationId));
 }
+
 TEST_F(BocaNotificationHandlerTest, HandleCaptionOffShouldRemoveNotification) {
   handler_.HandleSessionStartedNotification(&test_message_center_);
 
-  handler_.HandleCaptionNotification(&test_message_center_, false, false);
+  handler_.HandleCaptionNotification(&test_message_center_,
+                                     /*is_local_caption_enabled=*/true,
+                                     /*is_session_caption_enabled=*/true);
+  handler_.HandleCaptionNotification(&test_message_center_,
+                                     /*is_local_caption_enabled=*/false,
+                                     /*is_session_caption_enabled=*/false);
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       handler_.kCaptionNotificationId));
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
