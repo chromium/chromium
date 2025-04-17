@@ -155,7 +155,7 @@ int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
 }
 
 int UDPSocketPosix::ConfigureOpenedSocket() {
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // https://crbug.com/41271555: Guard against a file descriptor being closed
   // out from underneath the socket.
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
@@ -202,7 +202,7 @@ void UDPSocketPosix::Close() {
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
   TRACE_EVENT("base", perfetto::StaticString{"CloseSocketUDP"});
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). This seems to be effective at clearing some, but not all,
   // EPROTOTYPE errors. See https://crbug.com/40732798.

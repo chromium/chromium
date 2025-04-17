@@ -2254,7 +2254,7 @@ component("base") {
       ]
     }
 
-    if (is_cronet_build) {
+    if (is_cronet_build || target_platform == "tvos") {
       sources += [
         "message_loop/message_pump_io_ios.cc",
         "message_loop/message_pump_io_ios.h",
@@ -4092,7 +4092,7 @@ test("base_unittests") {
       bundle_deps +=
           [ "//testing/buildbot/filters:base_unittests_filters_bundle_data" ]
     }
-    if (is_cronet_build) {
+    if (is_cronet_build || target_platform == "tvos") {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
     } else if (use_blink) {
       sources += [ "message_loop/message_pump_io_ios_libdispatch_unittest.cc" ]

@@ -8,6 +8,7 @@
 #include "base/apple/scoped_cffiledescriptorref.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
@@ -57,7 +58,7 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
     CFOptionFlags callback_types_ = 0;
     apple::ScopedCFTypeRef<CFRunLoopSourceRef> fd_source_;
     WeakPtr<MessagePumpIOSForIO> pump_;
-    FdWatcher* watcher_ = nullptr;
+    raw_ptr<FdWatcher> watcher_ = nullptr;
   };
 
   MessagePumpIOSForIO();
