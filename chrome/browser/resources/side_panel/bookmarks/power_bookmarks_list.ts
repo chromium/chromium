@@ -663,7 +663,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
    */
   private visibleParent_(parent: BookmarksTreeNode): boolean {
     const activeFolder = this.getActiveFolder_();
-    return (!activeFolder && parent.parentId === '0' &&
+    return (!activeFolder &&
+            parent.parentId === loadTimeData.getString('rootBookmarkId') &&
             !this.bookmarkIsShowing_(parent)) ||
         parent === activeFolder;
   }

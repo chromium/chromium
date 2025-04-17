@@ -23,8 +23,8 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
   const allBookmarks: BookmarksTreeNode[] = [
     {
-      id: '2',
-      parentId: '0',
+      id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
       index: 0,
       title: 'Other Bookmarks',
       url: null,
@@ -34,7 +34,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       children: [
         {
           id: '3',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 0,
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
@@ -45,7 +45,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         },
         {
           id: '4',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 1,
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
@@ -56,7 +56,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         },
         {
           id: '5',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           title: 'Child folder',
           index: 3,
           dateAdded: 2,

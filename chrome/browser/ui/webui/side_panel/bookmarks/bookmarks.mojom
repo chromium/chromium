@@ -43,8 +43,10 @@ enum ViewType {
 
 // Representation of a Bookmark node to be used by the renderer for display.
 // Nodes are mapped using the the `id` and `parent_id` (that can be pointing to
-// a Side Panel specific fixed ID), any actions or modifications to the nodes
-// needs to be communicated using those ids.
+// a Side Panel specific fixed ID for merged nodes), any actions or
+// modifications to the nodes needs to be communicated using those ids.
+// A merged node is a bookmark node that can contain both local and account
+// bookmarks at the same time with no differentiation in the Ui.
 struct BookmarksTreeNode {
   string id;
   string parent_id;
@@ -77,6 +79,8 @@ interface BookmarksPageHandlerFactory {
 // Folder parent ID should use string IDs as it can represent merged nodes.
 // Regular ID (non merged folder or url) can be directly passed as int64, it
 // can also support string based IDs.
+// A merged node is a bookmark node that can contain both local and account
+// bookmarks at the same time with no differentiation in the Ui.
 interface BookmarksPageHandler {
   // Bookmarks the current active tab in the given folder.
   BookmarkCurrentTabInFolder(string folder_id);
@@ -174,7 +178,8 @@ interface BookmarksPageHandler {
 
   // Requests all non empty permanent nodes in a merged view (local and account
   // nodes are merged into one).
-  // The `id` of those nodes will be the local storage id node.
+  // The `id` of those nodes and the `parent_id` of their direct descendants are
+  // a fixed string ID reprensenting the merged view nodes.
   GetAllBookmarks() => (array<BookmarksTreeNode> nodes);
 };
 

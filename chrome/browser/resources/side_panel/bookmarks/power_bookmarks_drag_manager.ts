@@ -12,8 +12,6 @@ import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {PowerBookmarkRowElement} from './power_bookmark_row.js';
 
-const ROOT_FOLDER_ID = '0';
-
 export const DROP_POSITION_ATTR = 'drop-position';
 
 export enum DropPosition {
@@ -242,7 +240,7 @@ export class PowerBookmarksDragManager {
             .bookmark;
     if (!bookmark ||
         /* Cannot drag root's children. */ bookmark.parentId ===
-            ROOT_FOLDER_ID ||
+            loadTimeData.getString('rootBookmarkId') ||
         bookmark.unmodifiable) {
       return;
     }

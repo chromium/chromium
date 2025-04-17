@@ -12,7 +12,7 @@ suite('KeyArrowNavigationServiceTest', () => {
 
   const parentFolder: chrome.bookmarks.BookmarkTreeNode = {
     id: '2',
-    parentId: '0',
+    parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
     title: 'Other Bookmarks',
     children: [
       {

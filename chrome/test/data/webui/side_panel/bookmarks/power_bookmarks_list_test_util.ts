@@ -16,8 +16,8 @@ import type {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 export function createTestBookmarks(): BookmarksTreeNode[] {
   return [
     {
-      id: '1',
-      parentId: '0',
+      id: 'SIDE_PANEL_BOOKMARK_BAR_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
       index: 0,
       title: 'Bookmarks Bar',
       url: null,
@@ -27,8 +27,8 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
       children: [],
     },
     {
-      id: '2',
-      parentId: '0',
+      id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
       title: 'Other Bookmarks',
       index: 1,
       url: null,
@@ -38,7 +38,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
       children: [
         {
           id: '3',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 0,
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
@@ -49,7 +49,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
         },
         {
           id: '4',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 1,
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
@@ -60,7 +60,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
         },
         {
           id: '5',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 2,
           title: 'Child folder',
           url: null,

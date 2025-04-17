@@ -61,8 +61,8 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
 
   const folders: BookmarksTreeNode[] = [
     {
-      id: '2',
-      parentId: '0',
+      id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
       index: 0,
       title: 'Other Bookmarks',
       url: null,
@@ -72,7 +72,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
       children: [
         {
           id: '3',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 0,
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
@@ -83,7 +83,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         },
         {
           id: '4',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 1,
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
@@ -94,7 +94,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         },
         {
           id: '5',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 2,
           title: 'Child folder',
           url: null,
@@ -123,8 +123,8 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   // inverted dateAdded between parents/children. Not used by default in tests.
   const complexAllBookmarks: BookmarksTreeNode[] = [
     {
-      id: '2',
-      parentId: '0',
+      id: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      parentId: 'SIDE_PANEL_ROOT_BOOKMARK_ID',
       index: 0,
       title: 'Other Bookmarks',
       url: null,
@@ -134,7 +134,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
       children: [
         {
           id: '3',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 0,
           title: 'Child folder',
           url: null,
@@ -157,7 +157,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         },
         {
           id: '4',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 1,
           title: 'Child folder',
           url: null,
@@ -180,7 +180,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         },
         {
           id: '5',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 2,
           title: 'Child folder',
           url: null,
@@ -215,7 +215,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         },
         {
           id: '6',
-          parentId: '2',
+          parentId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
           index: 3,
           title: 'Child folder',
           url: null,
@@ -457,7 +457,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('CanAddUrl', () => {
-    const folder = service.findBookmarkWithId('2');
+    const folder = service.findBookmarkWithId('SIDE_PANEL_OTHER_BOOKMARKS_ID');
     assertEquals(service.canAddUrl('http://new/url/', folder), true);
     assertEquals(service.canAddUrl('http://child/bookmark/1/', folder), false);
     assertEquals(service.canAddUrl('http://nested/bookmark/', folder), true);
@@ -479,7 +479,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('OnBookmarkParentFolderChildrenReordered', async () => {
-    const folder = service.findBookmarkWithId('2')!;
+    const folder = service.findBookmarkWithId('SIDE_PANEL_OTHER_BOOKMARKS_ID')!;
     const b3 = service.findBookmarkWithId('3')!;
     const b4 = service.findBookmarkWithId('4')!;
     const b5 = service.findBookmarkWithId('5')!;
@@ -487,7 +487,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertDeepEquals(folder.children!, [b3, b4, b5]);
 
     bookmarksApi.callbackRouterRemote.onBookmarkParentFolderChildrenReordered(
-        '2', ['4', '5', '3']);
+        'SIDE_PANEL_OTHER_BOOKMARKS_ID', ['4', '5', '3']);
     await flushTasks();
 
     assertDeepEquals(folder.children!, [b4, b5, b3]);

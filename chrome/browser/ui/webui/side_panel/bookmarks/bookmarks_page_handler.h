@@ -121,8 +121,6 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
       scoped_bookmark_merged_service_observation_{this};
 };
 
-std::string GetFolderSidePanelIDForTesting(
-    const BookmarkMergedSurfaceService& merged_surface_bookmarks,
-    const BookmarkParentFolder& folder);
+std::string GetFolderSidePanelIDForTesting(const BookmarkParentFolder& folder);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_BOOKMARKS_BOOKMARKS_PAGE_HANDLER_H_
