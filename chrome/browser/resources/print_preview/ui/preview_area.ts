@@ -321,6 +321,7 @@ export class PrintPreviewPreviewAreaElement extends
     if (this.inDarkMode) {
       this.pluginProxy_.darkModeChanged(true);
     }
+
     this.pluginProxy_.resetPrintPreviewMode(
         previewUid, index, !this.getSettingValue('color'),
         (this.getSettingValue('pages') as number[]), this.documentModifiable);

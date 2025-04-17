@@ -53,16 +53,14 @@ suite('SettingsSelectTest', function() {
 
   test('set setting', async () => {
     // Fake setting.
-    model.set('settings', {
-      headerFooter: {
-        value: {},
-        unavailableValue: {},
-        valid: true,
-        available: true,
-        setByGlobalPolicy: false,
-        setFromUi: false,
-        key: 'headerFooter',
-      },
+    model.set('settings.headerFooter', {
+      value: {},
+      unavailableValue: {},
+      valid: true,
+      available: true,
+      setByGlobalPolicy: false,
+      setFromUi: false,
+      key: 'headerFooter',
     });
     settingsSelect.settingName = 'headerFooter';
     settingsSelect.capability = {

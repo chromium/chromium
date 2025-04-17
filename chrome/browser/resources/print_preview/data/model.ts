@@ -17,6 +17,7 @@ import {DestinationOrigin, PrinterType} from './destination.js';
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
+import {Observable} from './observable.js';
 import {ScalingType} from './scaling.js';
 import type {Size} from './size.js';
 
@@ -521,7 +522,6 @@ export class PrintPreviewModelElement extends PolymerElement {
       settings: {
         type: Object,
         notify: true,
-        value: () => createSettings(),
       },
 
       settingsManaged: {
@@ -568,10 +568,17 @@ export class PrintPreviewModelElement extends PolymerElement {
   declare pageSize: Size;
   declare maxSheets: number;
 
+  observable: Observable<Settings>;
   private initialized_: boolean = false;
   private stickySettings_: SerializedSettings|null = null;
   private policySettings_: PolicySettings|null = null;
   private lastDestinationCapabilities_: Cdd|null = null;
+
+  constructor() {
+    super();
+    this.observable = new Observable<Settings>(createSettings());
+    this.settings = this.observable.getProxy();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -586,6 +593,8 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     instance = null;
     whenReadyResolver = new PromiseResolver();
+
+    this.observable.removeAllObservers();
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -594,7 +603,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   getSetting(settingName: keyof Settings): Setting {
-    const setting = (this.get(settingName, this.settings) as Setting);
+    const setting = this.observable.getTarget()[settingName];
     assert(setting, 'Setting is missing: ' + settingName);
     return setting;
   }

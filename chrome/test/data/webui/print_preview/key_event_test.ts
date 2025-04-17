@@ -84,7 +84,7 @@ suite('KeyEventTest', function() {
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
             page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-                .querySelector('print-preview-layout-settings')!.shadowRoot!
+                .querySelector('print-preview-layout-settings')!.shadowRoot
                 .querySelector<HTMLSelectElement>('.md-select')!,
             'keydown', 0, [], 'Enter');
         return whenKeyEventFired.then(
