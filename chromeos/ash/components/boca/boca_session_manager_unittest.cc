@@ -314,7 +314,7 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
     // Set initial network config.
     ToggleOffline();
     // Trigger network update activity.
-    ToggleOnline();
+    ToggleIntoManagedNetwork();
 
     boca_session_manager_->ToggleAppStatus(/*is_app_opened=*/true);
   }

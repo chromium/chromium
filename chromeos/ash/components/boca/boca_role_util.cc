@@ -39,7 +39,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, true);
   registry->RegisterBooleanPref(
-      ash::prefs::kClassManagementToolsNetworkRestrictionSetting, false);
+      ash::prefs::kClassManagementToolsNetworkRestrictionSetting, true);
   registry->RegisterIntegerPref(
       ash::prefs::kClassManagementToolsOOBEAccessCountSetting, 0);
 }
