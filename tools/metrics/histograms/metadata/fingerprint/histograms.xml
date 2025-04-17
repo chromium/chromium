@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Fingerprint.Auth.Error" enum="FingerprintError"
-    expires_after="2025-05-29">
+    expires_after="2026-03-30">
   <owner>patrykd@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.FingerprintPowerButtonRace" units="units"
-    expires_after="2025-05-29">
+    expires_after="2026-03-30">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Session.RetrievePrimarySessionDuration" units="ms"
-    expires_after="2025-05-29">
+    expires_after="2026-03-30">
   <owner>patrykd@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
-    enum="BooleanSuccess" expires_after="2025-05-29">
+    enum="BooleanSuccess" expires_after="2026-03-30">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
