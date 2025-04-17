@@ -65,7 +65,7 @@ const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }
 
-const ValuablesDataManager& AutofillClient::GetValuablesDataManager() const {
+const ValuablesDataManager* AutofillClient::GetValuablesDataManager() const {
   return const_cast<AutofillClient*>(this)->GetValuablesDataManager();
 }
 

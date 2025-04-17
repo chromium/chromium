@@ -441,10 +441,10 @@ PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
       web_contents()->GetBrowserContext()));
 }
 
-ValuablesDataManager& ChromeAutofillClient::GetValuablesDataManager() {
+ValuablesDataManager* ChromeAutofillClient::GetValuablesDataManager() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return CHECK_DEREF(ValuablesDataManagerFactory::GetForProfile(profile));
+  return ValuablesDataManagerFactory::GetForProfile(profile);
 }
 
 EntityDataManager* ChromeAutofillClient::GetEntityDataManager() {

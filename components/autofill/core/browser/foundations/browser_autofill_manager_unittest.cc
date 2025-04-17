@@ -2027,12 +2027,12 @@ class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
 
   void SetLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
     valuables_table_.get()->SetLoyaltyCards(loyalty_cards);
-    test_api(client().GetValuablesDataManager()).LoadLoyaltyCards();
+    test_api(valuables_data()).LoadLoyaltyCards();
     web_data_service_helper_->WaitUntilIdle();
   }
 
   ValuablesDataManager& valuables_data() {
-    return client().GetValuablesDataManager();
+    return *client().GetValuablesDataManager();
   }
 
  private:

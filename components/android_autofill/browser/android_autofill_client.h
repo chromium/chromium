@@ -90,7 +90,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::VotesUploader& GetVotesUploader() override;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
-  autofill::ValuablesDataManager& GetValuablesDataManager() override;
+  autofill::ValuablesDataManager* GetValuablesDataManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;
   autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;

@@ -129,8 +129,8 @@ PersonalDataManager& WebViewAutofillClientIOS::GetPersonalDataManager() {
   return CHECK_DEREF(personal_data_manager_);
 }
 
-ValuablesDataManager& WebViewAutofillClientIOS::GetValuablesDataManager() {
-  NOTREACHED();
+ValuablesDataManager* WebViewAutofillClientIOS::GetValuablesDataManager() {
+  return nullptr;
 }
 
 EntityDataManager* WebViewAutofillClientIOS::GetEntityDataManager() {

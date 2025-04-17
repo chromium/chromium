@@ -144,8 +144,8 @@ class TestAutofillClientTemplate : public T {
     return *test_personal_data_manager_.get();
   }
 
-  ValuablesDataManager& GetValuablesDataManager() override {
-    return *valuables_data_manager_.get();
+  ValuablesDataManager* GetValuablesDataManager() override {
+    return valuables_data_manager_.get();
   }
 
   EntityDataManager* GetEntityDataManager() override {

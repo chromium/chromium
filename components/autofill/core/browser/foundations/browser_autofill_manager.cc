@@ -2993,8 +2993,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
           base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
         // Only loyalty card numbers filling is supported.
         if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
-          suggestions = GetLoyaltyCardSuggestions(
-              client().GetValuablesDataManager().GetLoyaltyCards());
+          if (ValuablesDataManager* manager =
+                  client().GetValuablesDataManager()) {
+            suggestions = GetLoyaltyCardSuggestions(manager->GetLoyaltyCards());
+          }
         }
       }
       break;

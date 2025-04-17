@@ -152,8 +152,8 @@ PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
   return CHECK_DEREF(personal_data_manager_.get());
 }
 
-ValuablesDataManager& ChromeAutofillClientIOS::GetValuablesDataManager() {
-  NOTREACHED();
+ValuablesDataManager* ChromeAutofillClientIOS::GetValuablesDataManager() {
+  return nullptr;
 }
 
 EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {

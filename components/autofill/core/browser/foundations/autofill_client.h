@@ -260,8 +260,8 @@ class AutofillClient {
   const PersonalDataManager& GetPersonalDataManager() const;
 
   // Gets the ValuablesDataManager instance associated with the profile.
-  virtual ValuablesDataManager& GetValuablesDataManager() = 0;
-  const ValuablesDataManager& GetValuablesDataManager() const;
+  virtual ValuablesDataManager* GetValuablesDataManager() = 0;
+  const ValuablesDataManager* GetValuablesDataManager() const;
 
   // Gets the EntityDataManager instance associated with the client, if there is
   // one.

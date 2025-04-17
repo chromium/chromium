@@ -90,7 +90,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
   VotesUploader& GetVotesUploader() override;
   PersonalDataManager& GetPersonalDataManager() override;
-  ValuablesDataManager& GetValuablesDataManager() override;
+  ValuablesDataManager* GetValuablesDataManager() override;
   EntityDataManager* GetEntityDataManager() override;
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
