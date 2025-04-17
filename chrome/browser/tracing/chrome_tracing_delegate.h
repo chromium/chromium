@@ -23,6 +23,21 @@ namespace tracing {
 class BackgroundTracingStateManager;
 }
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "TracingFinalizationDisallowedReason" in
+// src/tools/metrics/histograms/enums.xml.
+enum class TracingFinalizationDisallowedReason {
+  kIncognitoLaunched = 0,
+  //  kProfileNotLoaded = 1, Obsolete
+  //  kCrashMetricsNotLoaded = 2, Obsolete
+  //  kLastSessionCrashed = 3, Obsolete
+  //  kMetricsReportingDisabled = 4, Obsolete
+  //  kTraceUploadedRecently = 5, Obsolete
+  //  kLastTracingSessionDidNotEnd = 6, Obsolete as of Nov'2024.
+  kMaxValue = kIncognitoLaunched
+};
+
 class ChromeTracingDelegate : public content::TracingDelegate,
 #if BUILDFLAG(IS_ANDROID)
                               public TabModelListObserver

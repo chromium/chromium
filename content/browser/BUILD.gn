@@ -137,7 +137,7 @@ source_set("browser") {
     "//components/services/storage/public/mojom",
     "//components/sqlite_proto",
     "//components/system_media_controls",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//components/ui_devtools",
     "//components/ukm",
     "//components/ukm/debug:util",

@@ -215,7 +215,7 @@ static_library("login") {
     "//components/session_manager:base",
     "//components/signin/public/base",
     "//components/startup_metric_utils",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//components/vector_icons",
     "//components/version_info",
     "//components/version_info:channel",

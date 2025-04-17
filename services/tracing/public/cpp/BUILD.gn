@@ -126,7 +126,7 @@ target(tracing_lib_type, "cpp") {
     }
 
     public_deps += [
-      "//components/tracing:startup_tracing",
+      "//components/tracing:tracing_config",
       "//mojo/public/cpp/bindings",
       "//services/tracing/public/mojom",
     ]

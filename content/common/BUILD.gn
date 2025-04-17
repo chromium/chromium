@@ -222,7 +222,7 @@ source_set("common") {
     "//components/discardable_memory/common",
     "//components/input",
     "//components/services/filesystem/public/mojom",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//content:content_resources",
     "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",

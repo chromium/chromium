@@ -19,7 +19,7 @@ if (is_android) {
   }
 }
 
-component("startup_tracing") {
+component("tracing_config") {
   sources = [
     "common/background_tracing_state_manager.cc",
     "common/background_tracing_state_manager.h",
@@ -27,6 +27,8 @@ component("startup_tracing") {
     "common/pref_names.h",
     "common/trace_to_console.cc",
     "common/trace_to_console.h",
+    "common/tracing_scenarios_config.cc",
+    "common/tracing_scenarios_config.h",
     "common/tracing_switches.cc",
     "common/tracing_switches.h",
     "tracing_export.h",
@@ -55,6 +57,7 @@ component("startup_tracing") {
     "//base",
     "//components/prefs",
     "//third_party/perfetto:libperfetto",
+    "//third_party/snappy:snappy",
   ]
 }
 
@@ -84,9 +87,9 @@ component("background_tracing_utils") {
   defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
 
   deps = [
+    ":tracing_config",
     "//base",
     "//content/public/browser",
-    "//third_party/snappy:snappy",
   ]
 }
 
@@ -128,7 +131,7 @@ source_set("unit_tests") {
   }
   deps += [
     ":background_tracing_utils",
-    ":startup_tracing",
+    ":tracing_config",
     "//base/test:proto_test_support",
     "//components/metrics:metrics",
     "//components/prefs:test_support",

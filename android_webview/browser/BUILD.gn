@@ -331,7 +331,7 @@ source_set("browser") {
     "//components/tpcd/metadata/browser",
     "//components/tracing:background_tracing_metrics_provider",
     "//components/tracing:background_tracing_utils",
-    "//components/tracing:startup_tracing",
+    "//components/tracing:tracing_config",
     "//components/translate/core/common",
     "//components/url_formatter",
     "//components/url_matcher",
