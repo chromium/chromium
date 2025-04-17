@@ -1578,45 +1578,6 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityLocationChangesReceived) {
   EXPECT_EQ(model().GetAXNode(2)->data().relative_bounds, location_update);
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       AccessibilityLocationChangesReceivedOnMissingTree) {
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  ui::AXRelativeBounds initial_bounds;
-  initial_bounds.bounds = gfx::RectF(1, 1, 100, 100);
-  initial_bounds.offset_container_id = 12345;
-  ui::AXNodeData node;
-  node.id = 2;
-  node.relative_bounds = std::move(initial_bounds);
-
-  ui::AXNodeData root;
-  root.id = 1;
-  root.child_ids = {node.id};
-  update.root_id = root.id;
-  update.nodes = {std::move(root), std::move(node)};
-
-  AccessibilityEventReceived({std::move(update)});
-  controller().OnAXTreeDistilled(tree_id_, {1});
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-
-  // Create a new bounding box that the node will update to have
-  ui::AXRelativeBounds location_update;
-  location_update.offset_container_id = 1;
-  location_update.bounds = gfx::RectF(5, 5, 100, 100);
-  ui::AXLocationAndScrollUpdates location_and_scroll_updates;
-  location_and_scroll_updates.location_changes.emplace_back(2, location_update);
-
-  // Destroy the tree.
-  controller().OnAXTreeDestroyed(id_1);
-
-  // Receive location updates after the tree is destroyed.
-  controller().AccessibilityLocationChangesReceived(
-      id_1, location_and_scroll_updates);
-  EXPECT_EQ(model().active_tree_id(), ui::AXTreeIDUnknown());
-}
-
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   // Create three AXTreeUpdates with three different tree IDs.
   std::vector<ui::AXTreeID> tree_ids = {ui::AXTreeID::CreateNewAXTreeID(),

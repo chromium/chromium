@@ -563,7 +563,10 @@ void ReadAnythingAppController::AccessibilityLocationChangesReceived(
     ui::AXLocationAndScrollUpdates& details) {
   // If the AccessibilityLocationChangesReceived callback happens after
   // the current active tree has been destroyed, do nothing.
-  if (model_.active_tree_id() == ui::AXTreeIDUnknown()) {
+  DUMP_WILL_BE_CHECK(model_.active_tree_id() != ui::AXTreeIDUnknown());
+  DUMP_WILL_BE_CHECK(model_.ContainsTree(tree_id));
+  if (model_.active_tree_id() == ui::AXTreeIDUnknown() ||
+      !model_.ContainsTree(tree_id)) {
     return;
   }
   // Listen to location change notifications to update locations of the nodes
@@ -670,9 +673,6 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   model_.set_requires_distillation(false);
 
   ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
-  if (!tree) {
-    return;
-  }
   std::unique_ptr<
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
       tree_source(tree->CreateTreeSource());
@@ -767,11 +767,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
   // AXNode's language code is BCP 47. Only the base language is needed to
   // record the metric.
-  ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
-  if (!tree) {
-    return;
-  }
-  std::string language = tree->root()->GetLanguage();
+  std::string language =
+      model_.GetTreeFromId(model_.active_tree_id())->root()->GetLanguage();
   if (!language.empty()) {
     base::UmaHistogramSparse(
         "Accessibility.ReadAnything.Language",
@@ -1044,9 +1041,6 @@ ui::AXNodeID ReadAnythingAppController::RootId() const {
   ui::AXSerializableTree* tree = model_.GetTreeFromId(model_.active_tree_id());
   DCHECK(tree);
   DCHECK(tree->root());
-  if (!tree || !tree->root()) {
-    return ui::kInvalidAXNodeID;
-  }
   return tree->root()->id();
 }
 
@@ -1229,9 +1223,6 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   std::vector<ui::AXNodeID> child_ids;
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return child_ids;
-  }
   const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
                                                ? &model_.display_node_ids()
                                                : &model_.selection_node_ids();
@@ -1248,9 +1239,6 @@ std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::string();
-  }
 
   return a11y::GetHtmlTag(ax_node, model_.is_pdf(), model_.IsDocs());
 }
@@ -1259,9 +1247,6 @@ std::string ReadAnythingAppController::GetLanguage(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::string();
-  }
   if (model_.NodeIsContentNode(ax_node_id)) {
     return ax_node->GetLanguage();
   }
@@ -1272,9 +1257,6 @@ std::u16string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::u16string();
-  }
 
   return a11y::GetTextContent(ax_node, IsGoogleDocs(), model_.is_pdf());
 }
@@ -1307,9 +1289,6 @@ std::string ReadAnythingAppController::GetTextDirection(
 std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (!ax_node) {
-    return std::string();
-  }
   const char* url =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl).c_str();
 
@@ -1355,9 +1334,6 @@ std::string ReadAnythingAppController::GetAltText(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* node = model_.GetAXNode(ax_node_id);
   CHECK(node);
-  if (!node) {
-    return std::string();
-  }
   return a11y::GetAltText(node);
 }
 
@@ -1484,9 +1460,6 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     // factor.
     ui::AXNode* node = model_.GetAXNode(node_id);
     CHECK(node);
-    if (!node) {
-      return v8::Undefined(isolate);
-    }
     int width = bitmap.width();
     int height = bitmap.height();
     float scale = (node->data().relative_bounds.bounds.width()) / width;
@@ -1517,9 +1490,6 @@ std::string ReadAnythingAppController::GetImageDataUrl(
     ui::AXNodeID node_id) const {
   ui::AXNode* node = model_.GetAXNode(node_id);
   CHECK(node);
-  if (!node) {
-    return std::string();
-  }
   return a11y::GetImageDataUrl(node);
 }
 
@@ -1784,9 +1754,6 @@ void ReadAnythingAppController::ResetGranularityIndex() {
 void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
-  if (!ax_node) {
-    return;
-  }
   read_aloud_model_.InitAXPositionWithNode(ax_node);
 }
 

@@ -2016,8 +2016,3 @@ TEST_F(ReadAnythingAppModelTest,
 
   EXPECT_FALSE(model().reset_draw_timer());
 }
-
-TEST_F(ReadAnythingAppModelTest, GetAXNode_InvalidNodeId_ReturnsNullptr) {
-  ui::AXNode* node = model().GetAXNode(12);
-  EXPECT_EQ(node, nullptr);
-}

@@ -203,11 +203,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
 
   // Update selection.
   ResetSelection();
-  ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
-  if (!tree) {
-    return false;
-  }
-  if (const ui::AXSelection selection = tree->GetUnignoredSelection();
+  if (const ui::AXSelection selection =
+          GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
       selection.anchor_object_id != ui::kInvalidAXNodeID &&
       selection.focus_object_id != ui::kInvalidAXNodeID &&
       !selection.IsCollapsed()) {
@@ -241,8 +238,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // The main panel selection contains content outside of the distilled content.
   // Find the selected nodes to display instead of the distilled content.
   if (const ui::AXNode *node = GetAXNode(start_.id), *end = GetAXNode(end_.id);
-      node && end && !node->IsInvisibleOrIgnored() &&
-      !end->IsInvisibleOrIgnored()) {
+      !node->IsInvisibleOrIgnored() && !end->IsInvisibleOrIgnored()) {
     // Add all ancestor ids of start node, including the start node itself.
     for (base::queue<ui::AXNode*> ancestors =
              node->GetAncestorsCrossingTreeBoundaryAsQueue();
@@ -391,13 +387,12 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
 
 ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
     const ui::AXTreeID& tree_id) const {
-  // If the tree id is unknown or not associated with a tree, fail on DCHECK
-  // builds. On live builds, fail gracefully, since reading mode can sometimes
-  // get into a state with invalid data, and failing gracefully is preferable
-  // to crashing.
-  DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-  DCHECK(ContainsTree(tree_id));
-
+  // If the tree id is unknown or not associated with a tree, fail gracefully,
+  // since reading mode can sometimes get into a state with invalid data, and
+  // failing gracefully is preferable to crashing. Use DUMP_WILL_BE_CHECK to
+  // collect information on this bad state without actually crashing.
+  DUMP_WILL_BE_CHECK(ContainsTree(tree_id));
+  DUMP_WILL_BE_CHECK(tree_id != ui::AXTreeIDUnknown());
   if (!ContainsTree(tree_id) || tree_id == ui::AXTreeIDUnknown()) {
     return nullptr;
   }
