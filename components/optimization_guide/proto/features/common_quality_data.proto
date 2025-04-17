@@ -331,7 +331,7 @@ message BoundingRect {
 
 // The interaction information for the content node. This indicates whether the
 // node is interactive and what type of interaction it supports.
-// Next ID: 11
+// Next ID: 12
 message InteractionInfo {
   // Whether the content node can scroll in the x direction.
   bool scrolls_overflow_x = 1;
@@ -363,6 +363,14 @@ message InteractionInfo {
   // a clickable control (e.g. form control elements) or has activation
   // behavior. It also checks for whether the node has a click handler.
   bool is_clickable = 10;
+
+  // If this is a label node associated with an input node using `for`, provides
+  // the DOM node ID of the input node. This will match the
+  // `common_ancestor_dom_node_id` of the ContentNode of the input node, if it
+  // exists.
+  //
+  // Note: The label may be an ancestor of the input node.
+  int32 for_dom_node_id = 11;
 
   reserved 8;
 }
