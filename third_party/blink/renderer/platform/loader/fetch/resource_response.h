@@ -39,6 +39,7 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -474,6 +475,14 @@ class PLATFORM_EXPORT ResourceResponse final {
         should_use_source_hash_for_js_code_cache;
   }
 
+  void SetDeviceBoundSessionUsage(
+      network::mojom::DeviceBoundSessionUsage usage) {
+    device_bound_session_usage_ = usage;
+  }
+  network::mojom::DeviceBoundSessionUsage DeviceBoundSessionUsage() const {
+    return device_bound_session_usage_;
+  }
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -505,6 +514,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   network::mojom::PrivateNetworkAccessPreflightResult
       private_network_access_preflight_result_ =
           network::mojom::PrivateNetworkAccessPreflightResult::kNone;
+
+  network::mojom::DeviceBoundSessionUsage device_bound_session_usage_ =
+      network::mojom::DeviceBoundSessionUsage::kUnknown;
 
   bool was_cached_ : 1;
   bool connection_reused_ : 1;

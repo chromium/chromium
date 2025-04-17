@@ -198,6 +198,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasInPrefetchCache(head.was_in_prefetch_cache);
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
+  response.SetDeviceBoundSessionUsage(head.device_bound_session_usage);
 
   SetSecurityStyleAndDetails(GURL(KURL(url)), head, &response,
                              report_security_info);
@@ -724,6 +725,15 @@ void WebURLResponse::SetShouldUseSourceHashForJSCodeCache(
 
 bool WebURLResponse::ShouldUseSourceHashForJSCodeCache() const {
   return resource_response_->ShouldUseSourceHashForJSCodeCache();
+}
+
+void WebURLResponse::SetDeviceBoundSessionUsage(
+    network::mojom::DeviceBoundSessionUsage usage) {
+  resource_response_->SetDeviceBoundSessionUsage(usage);
+}
+network::mojom::DeviceBoundSessionUsage
+WebURLResponse::DeviceBoundSessionUsage() const {
+  return resource_response_->DeviceBoundSessionUsage();
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}

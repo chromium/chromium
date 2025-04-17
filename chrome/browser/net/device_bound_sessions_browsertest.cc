@@ -7,8 +7,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -109,22 +111,22 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnNavigation) {
-  base::HistogramTester histograms;
+  WebFeatureHistogramTester histograms;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/dbsc_required")));
 
   // Navigate away in order to flush use counters.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  histograms.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kDeviceBoundSessionRegistered, 1);
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRegistered),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
-  base::HistogramTester histograms;
+  WebFeatureHistogramTester histograms;
 
   base::test::TestFuture<SessionAccess> future;
   DeviceBoundSessionAccessObserver observer(
@@ -137,12 +139,74 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {
   ASSERT_TRUE(future.Wait());
 
   // Navigate away in order to flush use counters.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  histograms.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kDeviceBoundSessionRegistered, 1);
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRegistered),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       UseCounterForNotDeferred) {
+  WebFeatureHistogramTester histograms;
+
+  base::test::TestFuture<SessionAccess> future;
+  DeviceBoundSessionAccessObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      future.GetRepeatingCallback<const SessionAccess&>());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/resource_triggered_dbsc_registration")));
+
+  ASSERT_TRUE(future.Wait());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/ensure_authenticated")));
+
+  // Navigate away in order to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRequestInScope),
+            1);
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRequestDeferral),
+            0);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterForDeferred) {
+  WebFeatureHistogramTester histograms;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Force a refresh
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/ensure_authenticated")));
+
+  // Navigate away in order to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRequestInScope),
+            1);
+  EXPECT_EQ(histograms.GetCount(
+                blink::mojom::WebFeature::kDeviceBoundSessionRequestDeferral),
+            1);
 }
 
 }  // namespace

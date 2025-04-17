@@ -3561,6 +3561,18 @@ void DocumentLoader::RecordUseCountersForCommit() {
   if (response_.HttpHeaderField(http_names::kSecSessionRegistration)) {
     CountUse(WebFeature::kDeviceBoundSessionRegistered);
   }
+
+  switch (response_.DeviceBoundSessionUsage()) {
+    case network::mojom::DeviceBoundSessionUsage::kDeferred:
+      CountUse(WebFeature::kDeviceBoundSessionRequestDeferral);
+      [[fallthrough]];
+    case network::mojom::DeviceBoundSessionUsage::kInScopeNotDeferred:
+      CountUse(WebFeature::kDeviceBoundSessionRequestInScope);
+      break;
+    case network::mojom::DeviceBoundSessionUsage::kNoUsage:
+    case network::mojom::DeviceBoundSessionUsage::kUnknown:
+      break;
+  }
 }
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {

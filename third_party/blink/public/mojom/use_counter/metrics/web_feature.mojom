@@ -20,7 +20,6 @@ module blink.mojom;
 // or code path which can be used/triggered by a web page.
 //
 // LINT.IfChange(WebFeature)
-
 enum WebFeature {
   kOBSOLETE_PageDestruction = 0,
   kWorkerStart = 4,
@@ -82,9 +81,9 @@ enum WebFeature {
   kSubFrameBeforeUnloadFired = 98,
   kDocumentCreateAttribute = 111,
   kDocumentCreateAttributeNS = 112,
-  kDocumentXMLEncoding = 115,    // Removed from DOM4.
+  kDocumentXMLEncoding = 115,  // Removed from DOM4.
   kDocumentXMLStandalone = 116,  // Removed from DOM4.
-  kDocumentXMLVersion = 117,     // Removed from DOM4.
+  kDocumentXMLVersion = 117,  // Removed from DOM4.
   kNavigatorProductSub = 123,
   kNavigatorVendor = 124,
   kNavigatorVendorSub = 125,
@@ -148,7 +147,6 @@ enum WebFeature {
   kCSSStyleSheetAddRule = 220,
   kCSSStyleSheetRemoveRule = 221,
   // The above items are available in M33 branch.
-
   kInitMessageEvent = 222,
   kPrefixedDevicePixelRatioMediaFeature = 233,
   kPrefixedMaxDevicePixelRatioMediaFeature = 234,
@@ -168,7 +166,6 @@ enum WebFeature {
   kDeprecatedWebKitRadialGradient = 263,
   kDeprecatedWebKitRepeatingRadialGradient = 264,
   // The above items are available in M34 branch.
-
   kTextAutosizing = 274,
   kHTMLAnchorElementPingAttribute = 276,
   kSVGClassName = 279,
@@ -198,7 +195,6 @@ enum WebFeature {
   kPrefixedDocumentFullscreenElement = 323,
   kPrefixedDocumentExitFullscreen = 324,
   // The above items are available in M35 branch.
-
   kSVGForeignObjectElement = 325,
   kSelectionSetPosition = 327,
   kAnimationFinishEvent = 328,
@@ -241,7 +237,6 @@ enum WebFeature {
   kVTTCueRenderSizeNot100 = 415,
   kVTTCueRenderAlignNotCenter = 416,
   // The above items are available in M36 branch.
-
   kElementRequestPointerLock = 417,
   kVTTCueRenderRtl = 418,
   kPostMessageFromSecureToInsecure = 419,
@@ -276,7 +271,6 @@ enum WebFeature {
   kCSSSelectorPseudoHostContext = 470,
   kOBSOLETE_CSSDeepCombinator = 471,
   // The above items are available in M37 branch.
-
   kUseAsm = 473,
   kDOMWindowOpen = 475,
   kDOMWindowOpenFeatures = 476,
@@ -304,7 +298,6 @@ enum WebFeature {
   kSVGStyleElementTitle = 519,
   kPictureSourceSrc = 520,
   // The above items are available in M38 branch.
-
   kPicture = 521,
   kSizes = 522,
   kSrcsetXDescriptor = 523,
@@ -332,7 +325,6 @@ enum WebFeature {
   kV8Animation_Pause_Method = 554,
   kV8Animation_Reverse_Method = 555,
   // The above items are available in M39 branch.
-
   kBreakIterator = 556,
   kScreenOrientationAngle = 557,
   kScreenOrientationType = 558,
@@ -364,7 +356,6 @@ enum WebFeature {
   kInputTypeSubmit = 591,
   kInputTypeSubmitWithValue = 592,
   // The above items are available in M40 branch.
-
   kSetReferrerPolicy = 593,
   kTextWholeText = 599,
   kNotificationCloseEvent = 603,
@@ -412,7 +403,6 @@ enum WebFeature {
   kGetUserMediaInsecureOrigin = 666,
   kGetUserMediaSecureOrigin = 667,
   // The above items are available in M41 branch.
-
   kOBSOLETE_DeviceMotionInsecureOrigin = 668,
   kDeviceMotionSecureOrigin = 669,
   kOBSOLETE_DeviceOrientationInsecureOrigin = 670,
@@ -432,7 +422,6 @@ enum WebFeature {
   kAudioContextClose = 689,
   kCSSZoomNotEqualToOne = 691,
   // The above items are available in M42 branch.
-
   kClientRectListItem = 694,
   kWindowClientInformation = 695,
   kWindowFind = 696,
@@ -481,7 +470,6 @@ enum WebFeature {
   kOBSOLETE_LegacyConst = 748,
   kV8Permissions_Query_Method = 750,
   // The above items are available in M43 branch.
-
   kSVGHrefBaseVal = 758,
   kSVGHrefAnimVal = 759,
   kV8CSSRuleList_Item_Method = 760,
@@ -497,7 +485,6 @@ enum WebFeature {
   kPerformanceFrameTiming = 772,
   kV8Element_Animate_Method = 773,
   // The above items are available in M44 branch.
-
   kV8SVGSVGElement_GetElementById_Method = 778,
   kV8MessageChannel_Constructor = 780,
   kV8MessagePort_PostMessage_Method = 781,
@@ -564,7 +551,6 @@ enum WebFeature {
   kV8Performance_Memory_AttributeGetter = 884,
   kV8SharedWorker_WorkerStart_AttributeGetter = 885,
   // The above items are available in M45 branch.
-
   kHTMLMediaElementPreloadNone = 892,
   kHTMLMediaElementPreloadMetadata = 893,
   kHTMLMediaElementPreloadAuto = 894,
@@ -610,7 +596,6 @@ enum WebFeature {
   kReadingCheckedInClickHandler = 938,
   kFlexboxIntrinsicSizeAlgorithmIsDifferent = 939,
   // The above items are available in M46 branch.
-
   kOBSOLETE_HTMLImportsHasStyleSheets = 940,
   kNetInfoType = 946,
   kNetInfoDownlinkMax = 947,
@@ -628,7 +613,6 @@ enum WebFeature {
   kCredentialManagerGetMediationSilent = 962,
   kCredentialManagerStore = 963,
   // The above items are available in M47 branch.
-
   kBlockableMixedContentInSubframeBlocked = 966,
   kCSSAtRuleCharset = 969,
   kCSSAtRuleFontFace = 970,
@@ -668,7 +652,6 @@ enum WebFeature {
   kSelectionDOMString = 1012,
   kInputTypeRangeVerticalAppearance = 1013,
   // The above items are available in M48 branch.
-
   kCSSFilterReference = 1014,
   kCSSFilterGrayscale = 1015,
   kCSSFilterSepia = 1016,
@@ -763,7 +746,6 @@ enum WebFeature {
   kSVG1DOMForeignObjectElement = 1116,
   kAudioContextCreateIIRFilter = 1117,
   // The above items are available in M49 branch
-
   kCSSSelectorPseudoSlotted = 1118,
   kMediaDevicesEnumerateDevices = 1119,
   kEventComposedPath = 1123,
@@ -840,7 +822,6 @@ enum WebFeature {
   kOBSOLETE_ApplicationCacheAPIInsecureOrigin = 1247,
   kOBSOLETE_ApplicationCacheAPISecureOrigin = 1248,
   // The above items are available in M50 branch
-
   kCSSAtRuleApply = 1249,  // Removed
   kCSSSelectorPseudoAny = 1250,
   kHTMLLabelElementControlForNonFormAssociatedElement = 1263,
@@ -864,7 +845,6 @@ enum WebFeature {
   kFormValidationAbortedSubmission = 1293,
   kFormValidationShowedMessage = 1294,
   // The above items are available in M51 branch
-
   kV8Document_Images_AttributeGetter = 1297,
   kV8Document_Embeds_AttributeGetter = 1298,
   kV8Document_Plugins_AttributeGetter = 1299,
@@ -925,7 +905,6 @@ enum WebFeature {
   kCSSSelectorPseudoReadOnly = 1377,
   kCSSSelectorPseudoReadWrite = 1378,
   // The above items are available in M52 branch
-
   kCSSSelectorPseudoDefined = 1383,
   kRTCPeerConnectionAddIceCandidatePromise = 1384,
   kRTCPeerConnectionAddIceCandidateLegacy = 1385,
@@ -971,7 +950,6 @@ enum WebFeature {
   kMediaSourceDurationTruncatingBuffered = 1429,
   kAudioContextCrossOriginIframe = 1430,
   // The above items are available in M53 branch
-
   kOBSOLETE_PointerEventSetCapture = 1431,
   kOBSOLETE_PointerEventDispatch = 1432,
   kMIDIMessageEventReceivedTime = 1433,
@@ -1063,7 +1041,6 @@ enum WebFeature {
   kUsbDeviceIsochronousTransferOut = 1533,
   kUsbDeviceReset = 1534,
   // The above items are available in M54 branch
-
   kPointerEnterLeaveFired = 1535,
   kPointerOverOutFired = 1536,
   kDraggableAttribute = 1539,
@@ -1109,7 +1086,6 @@ enum WebFeature {
   kLongTaskObserver = 1615,
   kCSSOffsetInEffect = 1617,
   // The above items are available in M55 branch
-
   kVRGetDisplaysInsecureOrigin = 1618,
   kVRRequestPresent = 1619,
   kVRRequestPresentInsecureOrigin = 1620,
@@ -1177,7 +1153,6 @@ enum WebFeature {
   kCustomElementRegistryDefine = 1689,
   kLinkHeaderServiceWorker = 1690,
   // The above items are available in M56 branch.
-
   kCSSFlexibleBox = 1692,
   kCSSGridLayout = 1693,
   kFullscreenAllowedByOrientationChange = 1696,
@@ -1262,7 +1237,6 @@ enum WebFeature {
   kOBSOLETE_SelectionAddRangeIntersect = 1786,
   kPostMessageFromInsecureToSecureToplevel = 1787,
   // The above items are available in M57 branch.
-
   kV8MediaSession_Metadata_AttributeGetter = 1788,
   kV8MediaSession_Metadata_AttributeSetter = 1789,
   kV8MediaSession_PlaybackState_AttributeGetter = 1790,
@@ -1305,7 +1279,6 @@ enum WebFeature {
   kHTMLEmbedElementSetter = 1841,
   kTransformUsesBoxSizeOnSVG = 1842,
   // The above items are available in M58 branch.
-
   kScrollByKeyboardArrowKeys = 1843,
   kScrollByKeyboardPageUpDownKeys = 1844,
   kScrollByKeyboardHomeEndKeys = 1845,
@@ -1411,7 +1384,6 @@ enum WebFeature {
   kOBSOLETE_MediaStreamConstraintsGoogDAEchoCancellation = 1958,
   kMediaStreamConstraintsGoogNoiseReduction = 1959,
   // The above items are available in M59 branch.
-
   kViewportFixedPositionUnderFilter = 1961,
   kRequestMIDIAccessWithSysExOption_ObscuredByFootprinting = 1962,
   kRequestMIDIAccessIframeWithSysExOption_ObscuredByFootprinting = 1963,
@@ -1451,7 +1423,6 @@ enum WebFeature {
   kTableRowDirectionDifferentFromTable = 2015,
   kTableSectionDirectionDifferentFromTable = 2016,
   // The above items are available in M60 branch.
-
   kClientHintsDeviceMemory_DEPRECATED = 2017,
   kCSSRegisterProperty = 2018,
   kRelativeOrientationSensorConstructor = 2019,
@@ -1493,7 +1464,6 @@ enum WebFeature {
   kMediaSourceMuxedSequenceMode = 2061,
   kPrepareModuleScript = 2062,
   // The above items are available as of the M61 branch.
-
   kPresentationRequestStartSecureOrigin = 2063,
   kPresentationRequestStartInsecureOrigin = 2064,
   kPersistentClientHintHeader = 2065,
@@ -1573,7 +1543,6 @@ enum WebFeature {
   kWebkitBoxLineClampManyChildren = 2143,
   kWebkitBoxLineClampDoesSomething = 2144,
   // The above items are available as of the M62 branch.
-
   kFeaturePolicyAllowAttributeDeprecatedSyntax = 2145,
   kSuppressHistoryEntryWithoutUserGesture = 2146,
   kPerformanceServerTiming = 2157,
@@ -1593,7 +1562,6 @@ enum WebFeature {
   kCrossOriginTextPlain = 2175,
   kCrossOriginTextXml = 2176,
   // The above items are available as of the M63 branch.
-
   kPerformanceObserverForWindow = 2188,
   kPerformanceObserverForWorker = 2189,
   kPaintTimingObserved = 2190,
@@ -1654,7 +1622,6 @@ enum WebFeature {
   kLocalCSSFileExtensionRejected = 2257,
   kUserMediaDisableHardwareNoiseSuppression = 2258,
   // The above items are available as of the M64 branch.
-
   kCertificateTransparencyRequiredErrorOnResourceLoad = 2259,
   kCSSSelectorPseudoWebkitAnyLink = 2260,
   kAudioWorkletAddModule = 2261,
@@ -1731,7 +1698,6 @@ enum WebFeature {
   kCSSTypedOMStylePropertyMap = 2334,
   kRTCPeerConnectionWithActiveCsp = 2346,
   // The above items are available as of the M65 branch.
-
   kImageDecodingAttribute = 2347,
   kImageDecodeAPI = 2348,
   kV8HTMLElement_Autocapitalize_AttributeGetter = 2349,
@@ -1944,7 +1910,6 @@ enum WebFeature {
   kCursorImageGT32x32 = 2590,
   kOBSOLETE_RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics = 2591,
   // The above items are available in M71 branch.
-
   kResizeObserver_Constructor = 2592,
   kCollator = 2593,
   kNumberFormat = 2594,
@@ -1997,7 +1962,6 @@ enum WebFeature {
   kSignedExchangeInnerResponseInMainFrame = 2643,
   kSignedExchangeInnerResponseInSubFrame = 2644,
   // The above items are available in M72 branch.
-
   kV8IDBFactory_Databases_Method = 2648,
   kOpenerNavigationDownloadCrossOrigin = 2649,
   kV8RegExpMatchIsTrueishOnNonJSRegExp = 2650,
@@ -2118,7 +2082,6 @@ enum WebFeature {
   kOBSOLETE_V8RTCQuicStream_WaitForWriteBufferedAmountBelow_Method = 2767,
   kOBSOLETE_V8RTCQuicStream_WaitForReadable_Method = 2768,
   // The above items are available in M73 branch.
-
   kHTMLTemplateElement = 2769,
   kNoSysexWebMIDIWithoutPermission = 2770,
   kNoSysexWebMIDIOnInsecureOrigin = 2771,
@@ -2154,7 +2117,6 @@ enum WebFeature {
   kOBSOLETE_AdClickNavigation = 2826,
   kRTCStatsRelativePacketArrivalDelay = 2827,
   // The above items are available in M74 branch.
-
   kCSSSelectorHostContextInSnapshotProfile = 2829,
   kCSSSelectorHostContextInLiveProfile = 2830,
   kImportMap = 2831,
@@ -2197,7 +2159,6 @@ enum WebFeature {
   kOBSOLETE_V8RTCQuicTransport_SendDatagram_Method = 2869,
   kOBSOLETE_V8RTCQuicTransport_ReceiveDatagrams_Method = 2870,
   // The above items are available in M75 branch.
-
   kCSSValueContainStyle = 2871,
   kWebShareSuccessfulContainingFiles = 2872,
   kWebShareSuccessfulWithoutFiles = 2873,
@@ -2245,7 +2206,6 @@ enum WebFeature {
   kCookieNoSameSite = 2916,
   kCookieInsecureAndSameSiteNone = 2917,
   // The above items are available in M76 branch.
-
   kUnsizedMediaPolicy = 2918,
   kScrollByPrecisionTouchPad = 2919,
   kPinchZoom = 2920,
@@ -2293,7 +2253,6 @@ enum WebFeature {
   kDownloadInSandbox = 2975,
   kDownloadWithoutUserGesture = 2976,
   // The above items are available in M77 branch.
-
   kAutoplayDynamicDelegation = 2977,
   kToggleEventHandlerDuringParsing = 2978,
   kFragmentDoubleHash = 2979,
@@ -2344,7 +2303,6 @@ enum WebFeature {
   kDeprecatedFileSystemWrite = 3026,
   kPointerLockUnadjustedMovement = 3027,
   // The above items are available in M78 branch.
-
   kCreateObjectBlob = 3028,
   kQuotaRead = 3029,  // available in M78 branch.
   kDelegateFocus = 3030,
@@ -2380,7 +2338,6 @@ enum WebFeature {
   kV8RTCRtpReceiver_PlayoutDelayHint_AttributeGetter = 3062,
   kV8RTCRtpReceiver_PlayoutDelayHint_AttributeSetter = 3063,
   // The above items are available in M79 branch.
-
   kV8RegExpExecCalledOnSlowRegExp = 3064,
   kV8RegExpReplaceCalledOnSlowRegExp = 3065,
   kHasMarkerPseudoElement = 3066,
@@ -2434,7 +2391,6 @@ enum WebFeature {
   kV8SharedArrayBufferConstructed = 3114,
   kScrollSnapCausesScrollOnInitialLayout = 3115,
   // The above items are available in M80 branch.
-
   kClientHintsUAMobile = 3116,
   kV8VideoPlaybackQuality_CorruptedVideoFrames_AttributeGetter = 3117,
   kLongTaskBufferFull = 3118,
@@ -2475,7 +2431,6 @@ enum WebFeature {
   kSameOriginIframeWindowPrompt = 3153,
   kSameOriginIframeWindowPrint = 3154,
   // The above items are available in M81 branch.
-
   kLargeStickyAd = 3155,
   kCSSComparisonFunctions = 3157,
   kOBSOLETE_FeaturePolicyProposalWouldChangeBehaviour = 3158,
@@ -2522,7 +2477,6 @@ enum WebFeature {
   kCrossOriginEmbedderPolicyRequireCorp = 3199,
   kCoopAndCoepIsolated = 3200,
   // The above items are available in M83 branch.
-
   kV8Document_HasTrustToken_Method = 3202,
   kForceLoadAtTop = 3203,
   kOBSOLETE_LegacyLayoutByDetailsMarker = 3206,
@@ -2647,7 +2601,6 @@ enum WebFeature {
   kInlineOverflowScrollWithInlineEndPadding = 3336,
   kSerialPortGetInfo = 3338,
   // The above items are available in M85 branch.
-
   kFileSystemPickerMethod = 3339,
   kV8Window_ShowOpenFilePicker_Method = 3340,
   kV8Window_ShowSaveFilePicker_Method = 3341,
@@ -2778,7 +2731,6 @@ enum WebFeature {
   kOBSOLETE_ElementAttachInternalsBeforeConstructor = 3470,
   kSMILElementHasRepeatNEventListener = 3471,
   // The above items are available in M86 branch.
-
   kWebTransport = 3472,
   kIdleDetectionPermissionRequested = 3477,
   kIdentifiabilityStudyReserved3478 = 3478,
@@ -3002,7 +2954,6 @@ enum WebFeature {
   kOBSOLETE_AddressSpacePrivateEmbeddedInUnknownSecureContext = 3696,
   kOBSOLETE_AddressSpacePrivateEmbeddedInUnknownNonSecureContext = 3697,
   // The items above roughly this point are available in the M87 branch.
-
   kThirdPartyAccess = 3698,
   kThirdPartyActivation = 3699,
   kThirdPartyAccessAndActivation = 3700,
@@ -3038,7 +2989,6 @@ enum WebFeature {
   kAddEventListenerWithAbortSignal = 3730,
   kXRSessionRequestLightProbe = 3731,
   // The items above roughly this point are available in the M88 branch.
-
   kBeforematchRevealedHiddenMatchable = 3732,
   kAddSourceBufferUsingConfig = 3733,
   kChangeTypeUsingConfig = 3734,
@@ -3081,7 +3031,6 @@ enum WebFeature {
   kAddressSpaceUnknownNonSecureContextNavigatedToPrivate = 3772,
   kOBSOLETE_RTCPeerConnectionSdpSemanticsPlanB = 3773,
   // The items above roughly this point are available in the M89 branch.
-
   kFetchRespondWithNoResponseWithUsedRequestBody = 3774,
   kV8TCPSocket_Close_Method = 3775,
   kV8TCPSocket_Readable_AttributeGetter = 3776,
@@ -3137,7 +3086,6 @@ enum WebFeature {
   kOBSOLETE_StorageFoundationFlushSync = 3828,
   kUnrestrictedSharedArrayBuffer = 3829,
   // The items above roughly this point are available in the M90 branch.
-
   kFeaturePolicyJSAPIAllowsFeatureIFrame = 3830,
   kFeaturePolicyJSAPIAllowsFeatureDocument = 3831,
   kFeaturePolicyJSAPIAllowsFeatureOriginIFrame = 3832,
@@ -3195,7 +3143,6 @@ enum WebFeature {
   kWebAppManifestProtocolHandlers = 3884,
   kRTCPeerConnectionOfferAllowExtmapMixedFalse = 3885,
   // The items above roughly this point are available in the M91 branch.
-
   kOBSOLETE_NewCanvas2DAPI = 3886,
   kOBSOLETE_ServiceWorkerSubresourceFilterBypassedRequest = 3887,
   kWebGPURequestAdapter = 3888,
@@ -3253,7 +3200,6 @@ enum WebFeature {
   kOBSOLETE_kWindowOpenNewPopupBehaviorMismatch = 3941,
   kExplicitPointerCaptureClickTargetDiff = 3942,
   // The items above roughly this point are available in the M92 branch.
-
   kControlledNonBlobURLWorkerWillBeUncontrolled = 3943,
   kMediaMetaThemeColor = 3944,
   kClientHintsUABitness = 3945,
@@ -3275,13 +3221,12 @@ enum WebFeature {
   kV8URLPattern_Exec_Method = 3961,
   kSameSiteCookieInclusionChangedByCrossSiteRedirect = 3962,
   // The items above roughly this point are available in the M93 branch.
-
   kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory = 3963,
   kBlobStoreAccessAcrossAgentClustersInResolveForNavigation = 3964,
   kTapDelayEnabled = 3965,
   kV8URLPattern_CompareComponent_Method = 3966,
   kEarlyHintsPreload = 3967,
-  kClientHintsUAReduced = 3968, //Removed in M116.
+  kClientHintsUAReduced = 3968,  //Removed in M116.
   kSpeculationRulesPrerender = 3969,
   kOBSOLETE_ExecCommandWithTrustedTypes = 3970,
   kOBSOLETE_CSSSelectorPseudoHasInSnapshotProfile = 3971,
@@ -3290,7 +3235,6 @@ enum WebFeature {
   kCanvasRenderingContext2DContextLostEvent = 3974,
   kCanvasRenderingContext2DContextRestoredEvent = 3975,
   // The items above roughly this point are available in the M94 branch.
-
   kClientHintsViewportHeight = 3976,
   kV8NavigatorManagedData_GetDirectoryId_Method = 3977,
   kV8NavigatorManagedData_GetHostname_Method = 3978,
@@ -3337,7 +3281,6 @@ enum WebFeature {
   kV8SharedArrayBufferConstructedInExtensionWithoutIsolation = 4020,
   kMediaSourceExtensionsForWebCodecs = 4021,
   // The items above roughly this point are available in the M95 branch.
-
   kPaymentRequestResponse = 4023,
   kPaymentRequestComplete = 4024,
   kHTMLCanvasElement_2D = 4025,
@@ -3376,7 +3319,6 @@ enum WebFeature {
   kExternalProtocolBlockedBySandbox = 4058,
   kOBSOLETE_WebAssemblyDynamicTiering = 4059,
   // The items above roughly this point are available in the M96 branch.
-
   kReadOrWriteWebDatabase = 4061,
   kAutoDarkMode = 4062,
   kHttpRefreshWhenScriptingDisabled = 4063,
@@ -3392,7 +3334,6 @@ enum WebFeature {
   kOBSOLETE_OpenWebDatabaseInsecureContext = 4073,
   kScriptWebBundle = 4074,
   // The items above roughly this point are available in the M97 branch.
-
   kOBSOLETE_kRunAdAuction = 4075,
   kOBSOLETE_kJoinAdInterestGroup = 4076,
   kFileSystemUrlNavigation = 4077,
@@ -3413,7 +3354,6 @@ enum WebFeature {
   kOBSOLETE_PrivateNetworkAccessIgnoredPreflightError = 4092,
   kAbortPaymentRespondWithTrue = 4093,
   // The items above roughly this point are available in the M98 branch.
-
   kAllowPaymentRequestAttributeHasEffect = 4094,
   kV8PaymentResponse_Retry_Method = 4095,
   kOBSOLETE_kWebAppManifestUserPreferences = 4096,
@@ -3467,11 +3407,10 @@ enum WebFeature {
   kWindowProxyCrossOriginAccessFromOtherPageWindow = 4144,
   kPrivateNetworkAccessFetchedWorkerScript = 4145,
   // The items above roughly this point are available in the M99 branch.
-
   kFrameNameContainsBrace = 4146,
   kFrameNameContainsNewline = 4147,
   kAbortSignalThrowIfAborted = 4148,
-  kClientHintsUAFull = 4149, // Removed in M116.
+  kClientHintsUAFull = 4149,  // Removed in M116.
   kPrivateNetworkAccessWithinWorker = 4150,
   kClientHintsUAWoW64 = 4151,
   kFetchSetCookieInRequestGuardedHeaders = 4152,
@@ -3501,7 +3440,6 @@ enum WebFeature {
   kUsbDeviceForget = 4176,
   kPartitionedCookies = 4177,
   // The items above roughly this point are available in the M100 branch.
-
   kSecureContextIncorrectForSharedWorker = 4178,
   kV8FunctionPrototypeArguments = 4179,
   kV8FunctionPrototypeCaller = 4180,
@@ -3514,11 +3452,10 @@ enum WebFeature {
   kPrivacySandboxAdsAPIs = 4187,
   kFledge = 4188,
   // The items above roughly this point are available in the M101 branch.
-
   kElementShowPopover = 4189,
   kElementHidePopover = 4190,
   kValidPopoverAttribute = 4191,
-  kDeprecationExample = 4192, // Used as an example Deprecation code pointer.
+  kDeprecationExample = 4192,  // Used as an example Deprecation code pointer.
   kRTCLocalSdpModificationOpusStereo = 4193,
   kNavigatorUAData_Mobile = 4194,
   kNavigatorUAData_Platform = 4195,
@@ -3539,7 +3476,6 @@ enum WebFeature {
   kAudioContextOutputLatency = 4210,
   kV8Window_QueryLocalFonts_Method = 4211,
   // The items above roughly this point are available in the M102 branch.
-
   kCSSAtRuleScope = 4212,
   kOBSOLETE_DeferredShapingDisabledByPositioned = 4213,
   kCapabilityDelegationOfFullscreenRequest = 4214,
@@ -3557,7 +3493,6 @@ enum WebFeature {
   kOBSOLETE_FedCmLogoutRps = 4226,
   kV8Navigator_DeprecatedReplaceInURN_Method = 4227,
   // The items above roughly this point are available in the M103 branch.
-
   kWebAppBorderless = 4228,
   kPaymentInstruments = 4229,
   kV8PaymentInstruments_Clear_Method = 4230,
@@ -3615,7 +3550,6 @@ enum WebFeature {
   kOBSOLETE_kV8PendingBeacon_SetData_Method = 4282,
   kOBSOLETE_kV8PendingBeacon_SendNow_Method = 4283,
   // The items above roughly this point are available in the M104 branch.
-
   kTabSharingBarSwitchToCapturer = 4284,
   kTabSharingBarSwitchToCapturee = 4285,
   kOBSOLATE_AutomaticLazyAds = 4286,
@@ -3663,7 +3597,6 @@ enum WebFeature {
   kContentVisibilityAutoStateChangeHandlerRegistered = 4328,
   kReplacedElementPaintedWithLargeOverflow = 4329,
   // The items above roughly this point are available in the M105 branch.
-
   kFlexboxAbsPosJustifyContent = 4330,
   kMultipleFetchHandlersInServiceWorker = 4331,
   kStorageAccessAPI_requestStorageAccessFor_Method = 4332,
@@ -3671,7 +3604,6 @@ enum WebFeature {
   kPrivateAggregationApiFledge = 4334,
   kPrivateAggregationApiSharedStorage = 4335,
   // The items above roughly this point are available in the M106 branch.
-
   kOBSOLETE_DeferredShaping2ReshapedByComputedStyle = 4336,
   kOBSOLETE_DeferredShaping2ReshapedByDomContentLoaded = 4337,
   kOBSOLETE_DeferredShaping2ReshapedByFcp = 4338,
@@ -3700,7 +3632,6 @@ enum WebFeature {
   kOBSOLETE_CSSAtSupportsDropInvalidWhileForgivingParsing = 4361,
   kPermissionsPolicyUnload = 4362,
   // The items above roughly this point are available in the M107 branch.
-
   kServiceWorkerSkippedForSubresourceLoad = 4363,
   kClientHintsPrefersReducedMotion = 4364,
   kOBSOLETE_WakeLockAcquireScreenLockWithoutActivation = 4365,
@@ -3711,7 +3642,6 @@ enum WebFeature {
   kOBSOLETE_GetDisplayMediaWithoutUserActivation = 4370,
   kBackForwardCacheNotRestoredReasons = 4371,
   // The items above roughly this point are available in the M108 branch.
-
   kCSSNesting = 4372,
   kSandboxIneffectiveAllowOriginAllowScript = 4373,
   kDocumentOpenDifferentWindow = 4374,
@@ -3728,7 +3658,6 @@ enum WebFeature {
   kOBSOLETE_LayoutMediaInlineChildren = 4385,
   kOBSOLETE_ReduceAcceptLanguage = 4386,
   // The items above roughly this point are available in the M109 branch.
-
   kOBSOLETE_UuidInPackageUrlNavigation = 4387,
   kCSSValueAppearanceMediaSliderRendered = 4388,
   kCSSValueAppearanceMediaSliderThumbRendered = 4389,
@@ -3749,7 +3678,7 @@ enum WebFeature {
   kCSSAtRuleStylistic = 4404,
   kCSSAtRuleStyleset = 4405,
   kCSSAtRuleCharacterVariant = 4406,
-  kCSSAtRuleSwash = 4407 ,
+  kCSSAtRuleSwash = 4407,
   kCSSAtRuleOrnaments = 4408,
   kCSSAtRuleAnnotation = 4409,
   kOBSOLETE_ServiceWorkerBypassFetchHandlerForMainResource = 4410,
@@ -3770,7 +3699,6 @@ enum WebFeature {
   kNoVarySearch = 4425,
   kFedCmUserInfo = 4426,
   // The items above roughly this point are available in the M110 branch.
-
   kOBSOLETE_IDNA2008DeviationCharacterInHostnameOfSubresource = 4427,
   kOBSOLETE_IDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
   kWindowOpenPopupOnMobile = 4429,
@@ -3783,7 +3711,8 @@ enum WebFeature {
   kCSSBackgroundClipBorder = 4436,
   kCSSBackgroundClipContent = 4437,
   kCSSBackgroundClipPadding = 4438,
-  kOBSOLETE_DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning = 4439,
+  kOBSOLETE_DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning
+      = 4439,
   kOBSOLETE_kCSSPseudoHasContainsMixOfValidAndInvalid = 4440,
   kOBSOLETE_kCSSPseudoIsWhereContainsMixOfValidAndInvalid = 4441,
   kPrivateNetworkAccessFetchedSubFrame = 4442,
@@ -3799,7 +3728,6 @@ enum WebFeature {
   kSameDocumentCrossOriginInitiator = 4452,
   kServiceWorkerFetchHandlerModifiedAfterInitialization = 4453,
   // The items above roughly this point are available in the M111 branch.
-
   kOBSOLETE_OptionLabelInQuirksMode = 4454,
   kParseFromStringIncludeShadows = 4455,
   kWebAppManifestScopeExtensions = 4456,
@@ -3826,7 +3754,6 @@ enum WebFeature {
   kFencedFrameConfigAttribute = 4477,
   kURLSearchParams_Has_Delete_MultipleArguments = 4478,
   // The items above roughly this point are available in the M112 branch.
-
   kPopoverTypeHint = 4480,
   kOBSOLETE_WebGPUWebCodecs = 4481,
   kRTCPeerConnectionLegacyGetStatsTrial = 4482,
@@ -3875,7 +3802,6 @@ enum WebFeature {
   kOBSOLETE_WindowOpenFullscreenRequested = 4525,
   kOBSOLETE_FullscreenAllowedByWindowOpen = 4526,
   // The items above roughly this point are available in the M113 branch.
-
   kAttributeValueContainsLtOrGt = 4527,
   kOBSOLETE_V8ImportAssertionDeprecatedSyntax = 4528,
   kImageCaptureBackgroundBlur = 4529,
@@ -3899,7 +3825,6 @@ enum WebFeature {
   kSecurePaymentConfirmationActivationlessShow = 4547,
   kOBSOLETE_ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest = 4548,
   // The items above roughly this point are available in the M114 branch.
-
   kFlexIntrinsicSizesCacheMiss = 4549,
   kCSSStyleContainerQuery = 4550,
   kCSSValueAppearanceMediaSlider = 4551,
@@ -3910,8 +3835,10 @@ enum WebFeature {
   kCSSValueAppearanceSliderVertical = 4556,
   kCSSValueAppearanceSliderthumbHorizontal = 4557,
   kCSSValueAppearanceSliderthumbVertical = 4558,
-  kOBSOLETE_ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial = 4559,
-  kOBSOLETE_EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved = 4560,
+  kOBSOLETE_ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial
+      = 4559,
+  kOBSOLETE_EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved
+      = 4560,
   kLinkRelPreloadAsFont = 4561,
   kCrossWindowAccessToBrowserGeneratedDocument = 4562,
   kSpeculationRulesNoVarySearchHint = 4563,
@@ -3931,7 +3858,6 @@ enum WebFeature {
   kLongAnimationFrameObserver = 4577,
   kLongAnimationFrameRequested = 4578,
   // The items above roughly this point are available in the M115 branch.
-
   kFedCmLoginHint = 4579,
   kFedCmRpContext = 4580,
   kEventTimingArtificialPointerupOrClick = 4581,
@@ -3954,7 +3880,6 @@ enum WebFeature {
   kGetCoalescedEventsInInsecureContext = 4598,
   kCSPEESameOriginBlanketEnforcement = 4599,
   // The items above roughly this point are available in the M116 branch.
-
   kSharedDictionaryUsed = 4601,
   kSharedDictionaryUsedForNavigation = 4602,
   kSharedDictionaryUsedForMainFrameNavigation = 4603,
@@ -3973,7 +3898,6 @@ enum WebFeature {
   kV8WasmMultiMemory = 4616,
   kV8WasmGC = 4617,
   // The items above roughly this point are available in the M117 branch.
-
   kOBSOLETE_ORBBlockWithoutAnyEventHandler = 4618,
   kOBSOLETE_ORBBlockWithOnErrorButWithoutOnLoadEventHandler = 4619,
   kOBSOLETE_ORBBlockWithOnLoadButWithoutOnErrorEventHandler = 4620,
@@ -4022,7 +3946,6 @@ enum WebFeature {
   kViewportFitCover = 4663,
   kViewportFitCoverOrSafeAreaInsetBottom = 4664,
   // The items above roughly this point are available in the M118 branch.
-
   kOutOfFlowJustifySelfNoInsets = 4665,
   kOutOfFlowJustifySelfSingleInset = 4666,
   kOutOfFlowJustifySelfBothInsets = 4667,
@@ -4034,7 +3957,6 @@ enum WebFeature {
   kTextWrapBalance = 4673,
   kTextWrapPretty = 4674,
   // The items above roughly this point are available in the M119 branch.
-
   kSourceMappingUrlMagicCommentAtSign = 4676,
   kHTMLDetailsElementNameAttribute = 4677,
   kHTMLDetailsElementNameAttributeClosesSelf = 4678,
@@ -4058,7 +3980,8 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies = 4696,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_all = 4697,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage = 4698,
-  kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use = 4699,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use =
+      4699,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage = 4700,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use = 4701,
   kElementCheckVisibilityOptionCheckVisibilityCSS = 4702,
@@ -4071,7 +3994,6 @@ enum WebFeature {
   kOBSOLETE_CSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
   // The items above roughly this point are available in the M120 branch.
-
   kServiceWorkerStaticRouter_AddRoutes = 4711,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches = 4712,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use = 4713,
@@ -4087,11 +4009,14 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate = 4723,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use = 4724,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL = 4725,
-  kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use = 4726,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use =
+      4726,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL = 4727,
-  kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use = 4728,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use =
+      4728,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel = 4729,
-  kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use = 4730,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use =
+      4730,
   kThirdPartyCookieDeprecation_AllowByExplicitSetting = 4731,
   kThirdPartyCookieDeprecation_AllowByGlobalSetting = 4732,
   kThirdPartyCookieDeprecation_AllowBy3PCDMetadata = 4733,
@@ -4117,7 +4042,6 @@ enum WebFeature {
   kTrustedTypesIsCheck = 4753,
   kOBSOLETE_MouseDragOnCancelledMouseMove = 4754,
   // The items above roughly this point are available in the M121 branch.
-
   kFedCmDomainHint = 4755,
   kLCPImageWasLazy = 4756,
   kEventTargetOnObservable = 4757,
@@ -4140,7 +4064,8 @@ enum WebFeature {
   kEffectiveAlignContentForTableCell = 4774,
   kUserFeatureNgOptimizedImage = 4775,
   kCSSAtRulePageMargin = 4776,
-  kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls = 4777,
+  kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls =
+      4777,
   kUserFeatureNgAfterRender = 4778,
   kUserFeatureNgHydration = 4779,
   kCapturedSurfaceControl = 4780,
@@ -4227,7 +4152,6 @@ enum WebFeature {
   kCSSFunctions = 4861,
   kCSSPageRule = 4862,
   // The items above roughly this point are available in the M123 branch.
-
   kV8RTCRtpReceiver_JitterBufferTarget_AttributeGetter = 4863,
   kV8RTCRtpReceiver_JitterBufferTarget_AttributeSetter = 4864,
   kTrustedTypesIntrospectionAttributeType = 4865,
@@ -4287,7 +4211,6 @@ enum WebFeature {
   kFledgeAuctionReportBuyerDebugModeConfig = 4919,
   kFedCmButtonMode = 4920,
   // The items above roughly this point are available in the M124 branch.
-
   kHTMLPermissionElement = 4921,
   kOBSOLETE_V8ModelGenericSession_Execute_Method = 4922,
   kOBSOLETE_V8ModelGenericSession_ExecuteStreaming_Method = 4923,
@@ -4298,7 +4221,7 @@ enum WebFeature {
   kQuirksModeCursorHandApplied = 4928,
   kSkippedPreloadScanning = 4929,
   kCSSColor_SpaceRGB = 4930,
-  kCSSColor_SpaceRGB_outOfRec2020= 4931,
+  kCSSColor_SpaceRGB_outOfRec2020 = 4931,
   kCSSColor_SpaceOkLxx = 4932,
   kCSSColor_SpaceOkLxx_outOfRec2020 = 4933,
   kSandboxedSrcdocFrameResolvesRelativeURL = 4934,
@@ -4312,7 +4235,6 @@ enum WebFeature {
   kIdentityDigitalCredentialsSuccess = 4942,
   kOBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter = 4943,
   // The items above roughly this point are available in the M125 branch.
-
   kSharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient = 4944,
   kOBSOLETE_V8LanguageTranslator_Translate_Method = 4945,
   kOBSOLETE_V8Translation_CanTranslate_Method = 4946,
@@ -4343,7 +4265,6 @@ enum WebFeature {
   kDocumentPolicyIncludeJSCallStacksInCrashReports = 4971,
   kMaximumHTMLParserDOMTreeDepthHit = 4972,
   // The items above roughly this point are available in the M126 branch.
-
   kV8ModelGenericSession_Destroy_Method = 4973,
   kUsedDeviceScaleAdjustment = 4974,
   kOBSOLETE_DisableThirdPartyStoragePartitioning2 = 4975,
@@ -4372,7 +4293,6 @@ enum WebFeature {
   kV8DocumentAllLegacyCall = 4998,
   kV8DocumentAllLegacyConstruct = 4999,
   // The items above roughly this point are available in the M127 branch.
-
   kInsideListMarkerPositionQuirk = 5000,
   kZstdContentEncodingForNavigation = 5001,
   kZstdContentEncodingForMainFrameNavigation = 5002,
@@ -4412,7 +4332,6 @@ enum WebFeature {
   kAudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
   // The items above roughly this point are available in the M128 branch.
-
   kOBSOLETE_V8AITextSession_Clone_Method = 5038,
   kGamepadHapticActuatorType = 5039,
   kSelectionDirection = 5040,
@@ -4448,7 +4367,6 @@ enum WebFeature {
   kOBSOLETE_V8AIRewriter_RewriteStreaming_Method = 5070,
   kOBSOLETE_V8AIRewriter_Destroy_Method = 5071,
   // The items above roughly this point are available in the M129 branch.
-
   kFencedFrameCanLoadOpaqueURL = 5072,
   kV8Performance_Memory_AttributeGetter_NotLockedToSite = 5073,
   kPartitionedPopin_OpenAttempt = 5074,
@@ -4480,7 +4398,6 @@ enum WebFeature {
   kDocumentPolicyExpectNoLinkedResources = 5100,
   kOBSOLETE_SelectionIsCollapsedBehaviorChange = 5101,
   // The items above roughly this point are available in the M130 branch.
-
   kTopicsAPIAll = 5102,
   kPaymentRequestDeprecatedPaymentMethod = 5103,
   kV8PublicKeyCredential_SignalUnknownCredential_Method = 5104,
@@ -4489,18 +4406,19 @@ enum WebFeature {
   kOBSOLETE_V8AIAssistant_CountPromptTokens_Method = 5107,
   kHTMLSearchElement = 5108,
   kHTMLUnsafeMethods = 5109,
-  kOBSOLETE_V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter = 5110,
+  kOBSOLETE_V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter
+      = 5110,
   kOBSOLETE_MaxInterStageShaderComponentsRequiredLimit = 5111,
   kShowPickerSelect = 5112,
   kAudioContextPlayoutStats = 5113,
   kThirdPartyCookieBlocked = 5114,
-  kV8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter = 5115,
+  kV8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter =
+      5115,
   kV8PerformanceResourceTiming_WorkerCacheLookupStart_AttributeGetter = 5116,
   kV8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter = 5117,
   kV8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter = 5118,
   kV8AI_LanguageModel_AttributeGetter = 5119,
   // The items above roughly this point are available in the M131 branch.
-
   kV8RTCEncodedVideoFrame_Timestamp_AttributeGetter = 5120,
   kV8RTCEncodedAudioFrame_Timestamp_AttributeGetter = 5121,
   kOBSOLETE_V8AIAssistantCapabilities_LanguageAvailable_Method = 5122,
@@ -4531,7 +4449,8 @@ enum WebFeature {
   kOBSOLETE_V8AILanguageModelCapabilities_Available_AttributeGetter = 5147,
   kOBSOLETE_V8AILanguageModelCapabilities_DefaultTopK_AttributeGetter = 5148,
   kOBSOLETE_V8AILanguageModelCapabilities_MaxTopK_AttributeGetter = 5149,
-  kOBSOLETE_V8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter = 5150,
+  kOBSOLETE_V8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter =
+      5150,
   kOBSOLETE_V8AILanguageModelFactory_Capabilities_Method = 5151,
   kOBSOLETE_V8AILanguageModelFactory_Create_Method = 5152,
   kOBSOLETE_V8AILanguageModel_MaxTokens_AttributeGetter = 5153,
@@ -4573,7 +4492,6 @@ enum WebFeature {
   kClipPathGeometryBox = 5189,
   kActiveViewTransitionPseudo = 5190,
   // The items above roughly this point are available in the M132 branch.
-
   kScrollFunctionTimeline = 5191,
   kViewFunctionTimeline = 5192,
   kV8Animation_Constructor = 5193,
@@ -4701,7 +4619,7 @@ enum WebFeature {
   kV8GeolocationCoordinates_Speed_AttributeGetter = 5315,
   kCSSEnvironmentVariable_SafeAreaMaxInsetBottom = 5316,
   kOBSOLETE_V8AILanguageModel_ExpectedInputLanguages_AttributeGetter = 5317,
-  kV8AnimationTrigger_Constructor= 5318,
+  kV8AnimationTrigger_Constructor = 5318,
   kPrivateNetworkAccessInsecureResourceNotKnownPrivate = 5319,
   kGeolocationGetCurrentPositionHighAccuracy = 5320,
   kGeolocationWatchPositionHighAccuracy = 5321,
@@ -4876,6 +4794,8 @@ enum WebFeature {
   kCanvasReadbackNoise = 5490,
   kCanvasReadbackNoiseMatchesHeuristics = 5491,
   kSVGImage = 5492,
+  kDeviceBoundSessionRequestInScope = 5493,
+  kDeviceBoundSessionRequestDeferral = 5494,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
