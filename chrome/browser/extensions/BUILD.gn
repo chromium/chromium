@@ -293,6 +293,8 @@ source_set("extensions") {
     "load_error_reporter.h",
     "managed_installation_mode.h",
     "managed_toolbar_pin_mode.h",
+    "management/management_util.cc",
+    "management/management_util.h",
     "manifest_check_level.h",
     "mv2_experiment_stage.h",
     "omaha_attributes_handler.cc",

@@ -20,6 +20,10 @@
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/management/management_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -429,6 +433,12 @@ void ForceInstalledMetrics::ReportMetricsOnExtensionsReady() {
   }
   base::UmaHistogramLongTimes("Extensions.ForceInstalledReadyTime",
                               base::Time::Now() - start_time_);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::UmaHistogramEnumeration(
+      "Extensions.ForceInstalledManagementAuthorityTrustworthiness",
+      GetHigherManagementAuthorityTrustworthiness(profile_));
+#endif
 }
 
 void ForceInstalledMetrics::ReportMetrics() {

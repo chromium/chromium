@@ -20119,6 +20119,17 @@ from previous Chrome versions.
   <int value="16" label="Background needs repaint on scroll"/>
 </enum>
 
+<!-- LINT.IfChange(ManagementAuthorityTrustworthiness) -->
+
+<enum name="ManagementAuthorityTrustworthiness">
+  <int value="0" label="None"/>
+  <int value="1" label="Low"/>
+  <int value="2" label="Trusted"/>
+  <int value="3" label="Fully Trusted"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/policy/core/common/management/management_service.h:ManagementAuthorityTrustworthiness) -->
+
 <enum name="ManifestParseIdResultType">
   <int value="0" label="Success"/>
   <int value="1" label="Not specified, used default value"/>

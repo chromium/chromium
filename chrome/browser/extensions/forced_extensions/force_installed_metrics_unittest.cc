@@ -47,6 +47,12 @@
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 namespace {
 
 // Intentionally invalid extension id.
@@ -1554,5 +1560,50 @@ TEST_F(ForceInstalledMetricsTest, CachedExtensions) {
       kInstallationFailureCacheStatus,
       ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS, 1);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class ManagementAuthorityTrustworthinessMetricsTest
+    : public ForceInstalledMetricsTest,
+      public testing::WithParamInterface<
+          policy::EnterpriseManagementAuthority> {
+ protected:
+  std::map<policy::EnterpriseManagementAuthority,
+           policy::ManagementAuthorityTrustworthiness>
+      authority_map_ = {
+          {policy::EnterpriseManagementAuthority::NONE,
+           policy::ManagementAuthorityTrustworthiness::NONE},
+          {policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+           policy::ManagementAuthorityTrustworthiness::LOW},
+          {policy::EnterpriseManagementAuthority::CLOUD,
+           policy::ManagementAuthorityTrustworthiness::TRUSTED},
+          {policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
+           policy::ManagementAuthorityTrustworthiness::FULLY_TRUSTED}};
+
+  base::HistogramTester histograms_;
+};
+
+TEST_P(ManagementAuthorityTrustworthinessMetricsTest, HistogramLogged) {
+  SetupForceList(ExtensionOrigin::kWebStore);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForPlatform(), GetParam());
+
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kReady);
+  scoped_refptr<const Extension> ext2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::kReady);
+
+  histograms_.ExpectUniqueSample(
+      "Extensions.ForceInstalledManagementAuthorityTrustworthiness",
+      authority_map_[GetParam()], 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManagementAuthorityTrustworthinessMetricsTest,
+    testing::Values(policy::EnterpriseManagementAuthority::NONE,
+                    policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+                    policy::EnterpriseManagementAuthority::CLOUD,
+                    policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
+#endif
 
 }  // namespace extensions

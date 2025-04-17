@@ -32,6 +32,10 @@ namespace policy {
 
 class ManagementService;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ManagementAuthorityTrustworthiness)
 enum class ManagementAuthorityTrustworthiness {
   NONE = 0,           // No management authority found
   LOW = 1,            // Local device management authority
@@ -40,6 +44,7 @@ enum class ManagementAuthorityTrustworthiness {
                       // ChromeOS
   kMaxValue = FULLY_TRUSTED
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ManagementAuthorityTrustworthiness)
 
 enum EnterpriseManagementAuthority : int {
   NONE = 0,
