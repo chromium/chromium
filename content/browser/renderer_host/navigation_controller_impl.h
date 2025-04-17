@@ -318,6 +318,27 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // being requested.
   void SetNeedsReload(NeedsReloadType type);
 
+  // Navigates directly to an error page in response to an event on the last
+  // committed page, with |error_page_html| as the contents and |url| as the
+  // URL. Permanently replaces the current session history item for that frame
+  // with a new one reflecting the error page navigation. The error navigation
+  // is not "sticky", meaning that if the frame is reloaded, it will attempt to
+  // load |url| normally.
+  //
+  // You should almost always prefer this function to
+  // |LoadPostCommitErrorPage()|, which only temporarily replaces the
+  // NavigationEntry. See |NavigationController::LoadPostCommitErrorPage()| for
+  // more details on this temporary replacement.
+  //
+  // IMPORTANT: This function will CHECK if |render_frame_host_impl| is not a
+  // fenced frame root, but in the future it will be updated to work for any
+  // frame. TODO(crbug.com/406729265): Implement this method for all types of
+  // frames, including main frames and other subframe types.
+  virtual void NavigateFrameToErrorPage(
+      RenderFrameHostImpl* render_frame_host_impl,
+      const GURL& url,
+      const std::string& error_page_html);
+
   // For use by WebContentsImpl ------------------------------------------------
 
   // Visit all FrameNavigationEntries as well as all frame trees and register
@@ -916,6 +937,21 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // `in_navigate_to_pending_entry_` == true, and it might end up crashing on
   // CHECK(!in_navigate_to_pending_entry_).
   void CheckPotentialNavigationReentrancy();
+
+  // Creates a NavigationRequest to use for browser-initiated error page
+  // navigations. When the request is started, it will navigate the
+  // FrameTreeNode corresponding to |render_frame_host_impl| to an error page,
+  // with |url| as the URL and |error_page_html| as the content. If
+  // |is_post_commit_error_page| is true, the entire NavigationEntry will be
+  // temporarily replaced when the navigation completes, otherwise it will be
+  // fully replaced. See |NavigationController::LoadPostCommitErrorPage()| and
+  // |NavigationControllerImpl::NavigateFrameToErrorPage()| for more details on
+  // this distinction.
+  std::unique_ptr<NavigationRequest> CreateNavigationRequestForErrorPage(
+      RenderFrameHostImpl* render_frame_host_impl,
+      const GURL& url,
+      const std::string& error_page_html,
+      bool is_post_commit_error_page);
 
   // ---------------------------------------------------------------------------
 

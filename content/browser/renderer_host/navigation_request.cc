@@ -2823,12 +2823,12 @@ void NavigationRequest::BeginNavigationImpl() {
     return;
   }
 
-  if (!post_commit_error_page_html_.empty()) {
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(net_error_),
-        true /* skip_throttles  */,
-        post_commit_error_page_html_ /* error_page_content */,
-        false /* collapse_frame */);
+  if (browser_initiated_error_navigation_type_ !=
+      BrowserInitiatedErrorNavigationType::kNone) {
+    OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error_),
+                            true /* skip_throttles  */,
+                            error_page_html_ /* error_page_content */,
+                            false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
@@ -5254,10 +5254,19 @@ NavigationRequest::ComputeErrorPageProcess() {
   }
 
   if (state_ < NavigationRequest::CANCELING) {
-    CHECK(!post_commit_error_page_html_.empty());
-    // Post-commit error page normally goes through the "non-error page"
-    // navigation path, so treat them specially here too.
-    return ErrorPageProcess::kPostCommitErrorPage;
+    CHECK(browser_initiated_error_navigation_type_ !=
+          BrowserInitiatedErrorNavigationType::kNone);
+
+    if (browser_initiated_error_navigation_type_ ==
+        BrowserInitiatedErrorNavigationType::kPostCommit) {
+      // Post-commit error page normally goes through the "non-error page"
+      // navigation path, so treat them specially here too.
+      return ErrorPageProcess::kPostCommitErrorPage;
+    }
+
+    // Otherwise, this is a normal browser-initiated error navigation, which
+    // should fall out of this block and use existing process selection
+    // behavior.
   }
 
   // By policy we can isolate all error pages from both the current and

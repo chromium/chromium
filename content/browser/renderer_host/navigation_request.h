@@ -213,6 +213,26 @@ class CONTENT_EXPORT NavigationRequest
     kMaxValue = kNotExplicitlyRequestedAndOriginKeyed
   };
 
+  // If this navigation is a browser-initiated error page navigation, this enum
+  // describes the scenario that triggered the navigation, and how session
+  // history will be affected as a result.
+  enum class BrowserInitiatedErrorNavigationType {
+    // This navigation is not a browser-initiated error page navigation. The
+    // default value for all newly-created NavigationRequests.
+    kNone,
+
+    // This is a normal error navigation as triggered by
+    // NavigationControllerImpl::NavigateFrameToErrorPage(). The current session
+    // history item will be fully replaced when the navigation commits.
+    kRegular,
+
+    // This is a post-commit error page navigation as triggered by
+    // NavigationController::LoadPostCommitErrorPage(). The current session
+    // history item will be set aside when the navigation commits, and replaced
+    // when any following navigation commits.
+    kPostCommit,
+  };
+
   // Creates a request for a browser-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateBrowserInitiated(
       FrameTreeNode* frame_tree_node,
@@ -696,13 +716,20 @@ class CONTENT_EXPORT NavigationRequest
     navigation_type_ = navigation_type;
   }
 
-  const std::string& post_commit_error_page_html() {
-    return post_commit_error_page_html_;
+  void set_browser_initiated_error_navigation_type(
+      BrowserInitiatedErrorNavigationType type) {
+    browser_initiated_error_navigation_type_ = type;
   }
 
-  void set_post_commit_error_page_html(
-      const std::string& post_commit_error_page_html) {
-    post_commit_error_page_html_ = post_commit_error_page_html;
+  BrowserInitiatedErrorNavigationType
+  browser_initiated_error_navigation_type() {
+    return browser_initiated_error_navigation_type_;
+  }
+
+  void set_error_page_html(const std::string& error_page_html) {
+    CHECK(browser_initiated_error_navigation_type_ !=
+          BrowserInitiatedErrorNavigationType::kNone);
+    error_page_html_ = error_page_html;
   }
 
   void set_from_download_cross_origin_redirect(
@@ -2676,9 +2703,16 @@ class CONTENT_EXPORT NavigationRequest
   // Set in ReadyToCommitNavigation.
   bool is_same_process_ = true;
 
-  // If set, starting the navigation will immediately result in an error page
-  // with this html as content and |net_error| as the network error.
-  std::string post_commit_error_page_html_;
+  // If set to a value other than NONE, starting the navigation will immediately
+  // result in an error page with |net_error_| as the network error and
+  // |error_page_html_| as the content. This value of this field indicates what
+  // scenario prompted the error navigation.
+  BrowserInitiatedErrorNavigationType browser_initiated_error_navigation_type_ =
+      BrowserInitiatedErrorNavigationType::kNone;
+
+  // If browser_initiated_error_navigation_type_ is set, this HTML will be
+  // shown as the content of the resulting error page.
+  std::string error_page_html_;
 
   // This test-only callback will be run when BeginNavigation() is called.
   base::OnceClosure begin_navigation_callback_for_testing_;

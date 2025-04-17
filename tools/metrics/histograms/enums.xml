@@ -6882,6 +6882,10 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
     A client tries to enter BFCache while it has an ongoing transaction blocking
     other transactions.
   </int>
+  <int value="42" label="kBrowserInitiatedErrorPage">
+    The browser process navigated a frame to an error page based on behavior in
+    the currently committed page.
+  </int>
 </enum>
 
 <enum name="IncidentType">
