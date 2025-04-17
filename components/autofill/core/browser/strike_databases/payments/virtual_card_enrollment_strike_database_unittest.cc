@@ -21,7 +21,7 @@ namespace {
 
 class VirtualCardEnrollmentStrikeDatabaseTest : public ::testing::Test {
  public:
-  VirtualCardEnrollmentStrikeDatabaseTest() {}
+  VirtualCardEnrollmentStrikeDatabaseTest() = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -75,21 +75,27 @@ TEST_F(VirtualCardEnrollmentStrikeDatabaseTest, IsLastOffer) {
   EXPECT_TRUE(strike_database_->IsLastOffer(instrument_id));
 }
 
+// Parameterized test that tests all arms for vcn strike optimization
+// experiment with corresponding values of `kAutofillVcnEnrollStrikeExpiryTime`
+// and `kAutofillVcnEnrollStrikeExpiryTimeDays` flags.
+// Params of the VirtualCardEnrollmentStrikeOptimizationTest:
+// -- bool is experiment enabled;
+// -- bool value of `kAutofillVcnEnrollStrikeExpiryTimeDays`;
 class VirtualCardEnrollmentStrikeOptimizationTest
     : public VirtualCardEnrollmentStrikeDatabaseTest,
       public testing::WithParamInterface<std::tuple<bool, int>> {
  public:
-  VirtualCardEnrollmentStrikeOptimizationTest() = default;
-
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     if (IsVcnStrikeOptimizationExperimentEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kAutofillVcnEnrollStrikeExpiryTime,
-            {{features::kAutofillVcnEnrollStrikeExpiryTimeDays.name,
-              base::NumberToString(std::get<1>(GetParam()))}}}},
-          {});
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kAutofillVcnEnrollStrikeExpiryTime,
+          {{features::kAutofillVcnEnrollStrikeExpiryTimeDays.name,
+            base::NumberToString(std::get<1>(GetParam()))}});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAutofillVcnEnrollStrikeExpiryTime);
     }
 
     db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
@@ -109,8 +115,10 @@ class VirtualCardEnrollmentStrikeOptimizationTest
   int GetExpectedStrikeExpiryTimeInDays() {
     // If experiment is not enabled, expected strike time should be set as
     // default i.e. 180 days.
-    return IsVcnStrikeOptimizationExperimentEnabled() ? std::get<1>(GetParam())
-                                                      : 180;
+    return IsVcnStrikeOptimizationExperimentEnabled()
+               ? std::get<1>(GetParam())
+               : VirtualCardEnrollmentStrikeDatabaseTraits::kExpiryTimeDelta
+                     .InDays();
   }
 
  private:
@@ -122,7 +130,7 @@ TEST_P(VirtualCardEnrollmentStrikeOptimizationTest, GetExpiryTimeDelta) {
   base::TimeDelta expiry_time_delta =
       strike_database_->GetExpiryTimeDelta().value();
 
-  ASSERT_EQ(expiry_time_delta.InDays(), GetExpectedStrikeExpiryTimeInDays());
+  EXPECT_EQ(expiry_time_delta.InDays(), GetExpectedStrikeExpiryTimeInDays());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

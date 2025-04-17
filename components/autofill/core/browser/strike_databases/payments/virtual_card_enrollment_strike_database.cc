@@ -24,10 +24,11 @@ VirtualCardEnrollmentStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
 
 std::optional<base::TimeDelta>
 VirtualCardEnrollmentStrikeDatabase::GetExpiryTimeDelta() const {
-  return std::optional<base::TimeDelta>(
-      base::FeatureList::IsEnabled(features::kAutofillVcnEnrollStrikeExpiryTime)
-          ? base::Days(features::kAutofillVcnEnrollStrikeExpiryTimeDays.Get())
-          : VirtualCardEnrollmentStrikeDatabaseTraits::kExpiryTimeDelta);
+  return base::FeatureList::IsEnabled(
+             features::kAutofillVcnEnrollStrikeExpiryTime)
+             ? std::optional<base::TimeDelta>(base::Days(
+                   features::kAutofillVcnEnrollStrikeExpiryTimeDays.Get()))
+             : SimpleAutofillStrikeDatabase::GetExpiryTimeDelta();
 }
 
 }  // namespace autofill
