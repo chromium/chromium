@@ -1324,12 +1324,6 @@ class CONTENT_EXPORT WebContentsImpl
       const WebContentsObserver::MediaPlayerInfo& media_info,
       const MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason);
-
-  // Called when the set of tracks changes.
-  void MediaMetadataChanged(
-      const WebContentsObserver::MediaPlayerInfo& media_info,
-      const MediaPlayerId& id);
-
   // This will be called before playback is started, check
   // GetCurrentlyPlayingVideoCount if you need this when playback starts.
   void MediaResized(const gfx::Size& size, const MediaPlayerId& id);
@@ -1348,7 +1342,7 @@ class CONTENT_EXPORT WebContentsImpl
   // Called by MediaSessionImpl when one is created and initialized for this.
   void MediaSessionCreated(MediaSession* media_session);
 
-  int GetCurrentlyPlayingVideoCount() const override;
+  int GetCurrentlyPlayingVideoCount() override;
   std::optional<gfx::Size> GetFullscreenVideoSize() override;
 
   MediaWebContentsObserver* media_web_contents_observer() {
@@ -2570,6 +2564,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool showing_context_menu_;
 
+  int currently_playing_video_count_ = 0;
   base::flat_map<MediaPlayerId, gfx::Size> cached_video_sizes_;
 
   bool has_persistent_video_ = false;

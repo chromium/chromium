@@ -291,8 +291,7 @@ class TabStatsTracker::WebContentsUsageObserver
       : content::WebContentsObserver(web_contents),
         tab_stats_tracker_(tab_stats_tracker),
         ukm_source_id_(
-            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
-        was_playing_video_(web_contents->GetCurrentlyPlayingVideoCount() > 0) {}
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {}
 
   WebContentsUsageObserver(const WebContentsUsageObserver&) = delete;
   WebContentsUsageObserver& operator=(const WebContentsUsageObserver&) = delete;
@@ -366,20 +365,30 @@ class TabStatsTracker::WebContentsUsageObserver
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& media_type,
       const content::MediaPlayerId& id) override {
-    MaybeNotifyVideoStartedStoppedPlaying();
+    if (!media_type.has_video)
+      return;
+    video_playing_count_++;
+    if (video_playing_count_ == 1) {
+      for (TabStatsObserver& tab_stats_observer :
+           tab_stats_tracker_->tab_stats_observers_) {
+        tab_stats_observer.OnVideoStartedPlaying(web_contents());
+      }
+    }
   }
 
   void MediaStoppedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& media_type,
       const content::MediaPlayerId& id,
       content::WebContentsObserver::MediaStoppedReason reason) override {
-    MaybeNotifyVideoStartedStoppedPlaying();
-  }
-
-  void MediaMetadataChanged(
-      const content::WebContentsObserver::MediaPlayerInfo& video_type,
-      const content::MediaPlayerId& id) override {
-    MaybeNotifyVideoStartedStoppedPlaying();
+    if (!media_type.has_video)
+      return;
+    video_playing_count_--;
+    if (video_playing_count_ == 0) {
+      for (TabStatsObserver& tab_stats_observer :
+           tab_stats_tracker_->tab_stats_observers_) {
+        tab_stats_observer.OnVideoStoppedPlaying(web_contents());
+      }
+    }
   }
 
   void MediaDestroyed(const content::MediaPlayerId& id) override {
@@ -403,43 +412,14 @@ class TabStatsTracker::WebContentsUsageObserver
   }
 
  private:
-  void MaybeNotifyVideoStartedStoppedPlaying() {
-    const bool is_playing_video =
-        web_contents()->GetCurrentlyPlayingVideoCount() > 0;
-
-    if (!was_playing_video_ && is_playing_video) {
-      for (TabStatsObserver& tab_stats_observer :
-           tab_stats_tracker_->tab_stats_observers_) {
-        tab_stats_observer.OnVideoStartedPlaying(web_contents());
-      }
-    } else if (was_playing_video_ && !is_playing_video) {
-      for (TabStatsObserver& tab_stats_observer :
-           tab_stats_tracker_->tab_stats_observers_) {
-        tab_stats_observer.OnVideoStoppedPlaying(web_contents());
-      }
-    }
-
-    was_playing_video_ = is_playing_video;
-  }
-
   raw_ptr<TabStatsTracker> tab_stats_tracker_;
   // The last navigation time associated with this tab.
   base::TimeTicks navigation_time_ = base::TimeTicks::Now();
   // Updated when a navigation is finished.
   ukm::SourceId ukm_source_id_ = 0;
-  // Whether video was playing in this tab the last time we checked.
-  bool was_playing_video_;
+  // The number of video currently playing in this tab.
+  int video_playing_count_ = 0;
 };
-
-content::WebContentsObserver*
-TabStatsTracker::GetWebContentsUsageObserverForTesting(
-    content::WebContents* web_contents) {
-  if (auto it = web_contents_usage_observers_.find(web_contents);
-      it != web_contents_usage_observers_.end()) {
-    return it->second.get();
-  }
-  return nullptr;
-}
 
 void TabStatsTracker::OnBrowserAdded(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
