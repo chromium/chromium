@@ -210,10 +210,12 @@ gpu::SyncToken CopySharedImageToTexture(
 // |video_frame|'s resources not be returned until they are no longer in use.
 // https://crbug.com/819914 (software video decode frame corruption)
 // https://crbug.com/1237100 (camera capture reuse corruption)
-void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
-                               gpu::raster::RasterInterface* ri,
-                               gpu::ContextSupport* context_support) {
-  WaitAndReplaceSyncTokenClient client(ri);
+void SynchronizeVideoFrameRead(
+    scoped_refptr<VideoFrame> video_frame,
+    gpu::raster::RasterInterface* ri,
+    gpu::ContextSupport* context_support,
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access = nullptr) {
+  WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
   video_frame->UpdateReleaseSyncToken(&client);
   if (!video_frame->metadata().read_lock_fences_enabled)
     return;
@@ -1902,7 +1904,9 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   if (video_frame->HasSharedImage()) {
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                         : gfx::Rect(video_frame->coded_size());
-    ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+        video_frame->shared_image()->BeginRasterAccess(
+            ri, video_frame->acquire_sync_token(), /*readonly=*/true);
     ri->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
     ri->CopySharedImage(video_frame->shared_image()->mailbox(), dest_mailbox, 0,
                         0, source_rect.x(), source_rect.y(),
@@ -1913,7 +1917,8 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
     // This is to make sure decoder doesn't re-use frame before copy is done.
     SynchronizeVideoFrameRead(std::move(video_frame), ri,
-                              raster_context_provider->ContextSupport());
+                              raster_context_provider->ContextSupport(),
+                              std::move(ri_access));
   } else {
     // TODO(vasilyt): Add caching support
     sync_token = internals::ConvertYuvVideoFrameToRgbSharedImage(

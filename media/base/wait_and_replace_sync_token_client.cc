@@ -10,10 +10,22 @@ namespace media {
 WaitAndReplaceSyncTokenClient::WaitAndReplaceSyncTokenClient(
     gpu::InterfaceBase* ib)
     : ib_(ib) {}
+WaitAndReplaceSyncTokenClient::WaitAndReplaceSyncTokenClient(
+    gpu::InterfaceBase* ib,
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access)
+    : ib_(ib), ri_access_(std::move(ri_access)) {}
+
+WaitAndReplaceSyncTokenClient::~WaitAndReplaceSyncTokenClient() = default;
 
 void WaitAndReplaceSyncTokenClient::GenerateSyncToken(
     gpu::SyncToken* sync_token) {
-  ib_->GenSyncTokenCHROMIUM(sync_token->GetData());
+  if (ri_access_) {
+    *sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access_));
+    int8_t* sync_token_data = sync_token->GetData();
+    ib_->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
+  } else {
+    ib_->GenSyncTokenCHROMIUM(sync_token->GetData());
+  }
 }
 
 void WaitAndReplaceSyncTokenClient::WaitSyncToken(
