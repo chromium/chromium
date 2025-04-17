@@ -253,7 +253,7 @@ constexpr base::FeatureParam<int> kMaxHistorySyncCardImpressions{
 
 BASE_FEATURE(kAndroidAppIntegrationModule,
              "AndroidAppIntegrationModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kMaxAuxiliarySearchForceShow{
     &kAndroidAppIntegrationModule, "force_card_shown",

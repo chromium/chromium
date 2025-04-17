@@ -62,6 +62,7 @@ public class AuxiliarySearchUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures("AndroidAppIntegrationWithFavicon:use_large_favicon/false")
     public void testGetFaviconSize_small() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         int faviconSizeSmall =

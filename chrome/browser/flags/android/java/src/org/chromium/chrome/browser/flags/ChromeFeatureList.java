@@ -612,13 +612,13 @@ public abstract class ChromeFeatureList {
 
     /* Alphabetical: */
     public static final CachedFlag sAndroidAppIntegrationModule =
-            newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false, true);
+            newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
             newCachedFlag(ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, false);
     public static final CachedFlag sAndroidAppIntegrationV2 =
-            newCachedFlag(ANDROID_APP_INTEGRATION_V2, false, true);
+            newCachedFlag(ANDROID_APP_INTEGRATION_V2, true);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
-            newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, false, true);
+            newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, true);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false, true);
     public static final CachedFlag sAndroidElegantTextHeight =
@@ -1078,7 +1078,7 @@ public abstract class ChromeFeatureList {
                     ANDROID_APP_INTEGRATION_WITH_FAVICON, "schedule_delay_time_ms", 0);
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconUseLargeFavicon =
             newBooleanCachedFeatureParam(
-                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "use_large_favicon", false);
+                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "use_large_favicon", true);
     public static final IntCachedFeatureParam
             sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber =
                     newIntCachedFeatureParam(
