@@ -1,0 +1,12 @@
+Tests that the value of the svh unit can be overridden.
+Initial state:
+Difference between 100lvh and 100svh: 0
+Overriding small viewport height
+Difference between 100lvh and 100svh: 10
+Reloading
+Difference between 100lvh and 100svh: 10
+Unsetting override
+Difference between 100lvh and 100svh: 0
+Overriding and navigating cross-origin
+Difference between 100lvh and 100svh: 10
+

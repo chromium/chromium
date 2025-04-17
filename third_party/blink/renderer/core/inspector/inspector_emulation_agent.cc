@@ -13,8 +13,10 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
@@ -115,7 +117,9 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
       automation_override_(&agent_state_, /*default_value=*/false),
       safe_area_insets_override_(&agent_state_,
-                                 /*default_value=*/std::vector<uint8_t>()) {}
+                                 /*default_value=*/std::vector<uint8_t>()),
+      small_viewport_height_difference_override_(&agent_state_,
+                                                 /*default_value=*/0.0) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -180,6 +184,10 @@ void InspectorEmulationAgent::Restore() {
       safe_area_insets_override_.Get());
   if (status_or_insets.ok()) {
     setSafeAreaInsetsOverride(std::move(status_or_insets).value());
+  }
+  if (double difference = small_viewport_height_difference_override_.Get()) {
+    web_local_frame_->FrameWidgetImpl()->SetBrowserControlsTopHeightOverride(
+        difference);
   }
 
   if (virtual_time_policy_.Get().IsNull())
@@ -946,6 +954,46 @@ protocol::Response InspectorEmulationAgent::setAutomationOverride(
   if (enabled)
     InnerEnable();
   automation_override_.Set(enabled);
+  return protocol::Response::Success();
+}
+
+protocol::Response
+InspectorEmulationAgent::setSmallViewportHeightDifferenceOverride(
+    int difference) {
+  protocol::Response response = AssertPage();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  if (!web_local_frame_->IsOutermostMainFrame()) {
+    return protocol::Response::ServerError(
+        "Operation is only supported for the main frame");
+  }
+
+  cc::BrowserControlsParams browser_controls_params =
+      GetWebViewImpl()->GetBrowserControls().Params();
+  // Use same scale as in LocalFrameView::LargeViewportSizeForViewportUnits().
+  gfx::Size viewport_size =
+      GetWebViewImpl()->GetPage()->GetVisualViewport().Size();
+  gfx::SizeF small_viewport_size =
+      web_local_frame_->GetFrameView()->SmallViewportSizeForViewportUnits();
+  float scale = viewport_size.width() && small_viewport_size.width()
+                    ? viewport_size.width() / small_viewport_size.width()
+                    : 1.0;
+  float scaled_difference = difference * scale;
+  browser_controls_params.top_controls_height = scaled_difference;
+
+  // Storing the scaled value allows us to easily apply the override in
+  // `Restore()`.
+  small_viewport_height_difference_override_.Set(scaled_difference);
+
+  GetWebViewImpl()->MainFrameViewWidget()->SetBrowserControlsTopHeightOverride(
+      scaled_difference);
+  // Ensure the override is applied immediately without having to wait for
+  // `WebFrameWidgetImpl::UpdateVisualProperties()` to be called.
+  GetWebViewImpl()->ResizeWithBrowserControls(
+      GetWebViewImpl()->Size(), viewport_size, browser_controls_params);
+
   return protocol::Response::Success();
 }
 

@@ -99,6 +99,8 @@ class CORE_EXPORT InspectorEmulationAgent final
       std::unique_ptr<protocol::Array<protocol::Emulation::DisabledImageType>>)
       override;
   protocol::Response setAutomationOverride(bool enabled) override;
+  protocol::Response setSmallViewportHeightDifferenceOverride(
+      int difference) override;
 
   // Automation Emulation API
   void ApplyAutomationOverride(bool& enabled) const;
@@ -176,6 +178,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Double cpu_throttling_rate_;
   InspectorAgentState::Boolean automation_override_;
   InspectorAgentState::Bytes safe_area_insets_override_;
+  InspectorAgentState::Double small_viewport_height_difference_override_;
 };
 
 }  // namespace blink

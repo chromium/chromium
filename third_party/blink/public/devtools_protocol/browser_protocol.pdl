@@ -4854,6 +4854,14 @@ domain Emulation
       # Whether the override should be enabled.
       boolean enabled
 
+  # Allows overriding the difference between the small and large viewport sizes, which determine the
+  # value of the `svh` and `lvh` unit, respectively. Only supported for top-level frames.
+  experimental command setSmallViewportHeightDifferenceOverride
+    parameters
+      # This will cause an element of size 100svh to be `difference` pixels smaller than an element
+      # of size 100lvh.
+      integer difference
+
 # This domain provides experimental commands only supported in headless mode.
 experimental domain HeadlessExperimental
   depends on Page

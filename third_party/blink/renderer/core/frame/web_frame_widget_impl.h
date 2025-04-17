@@ -222,6 +222,11 @@ class CORE_EXPORT WebFrameWidgetImpl
       const WebCoalescedInputEvent&,
       WidgetBaseInputHandler::HandledEventCallback);
 
+  // Overrides `browser_controls_params.top_controls_height` of the properties
+  // passed to `UpdateVisualProperties()`. Passing `std::nullopt` disables the
+  // override.
+  void SetBrowserControlsTopHeightOverride(std::optional<float> height);
+
   // FrameWidget overrides.
   cc::AnimationHost* AnimationHost() const final;
   cc::AnimationTimeline* ScrollAnimationTimeline() const final;
@@ -1282,6 +1287,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   double zoom_level_ = 0;
   double css_zoom_factor_ = 1;
+
+  std::optional<float> browser_controls_top_height_override_;
 
   bool throttling_frame_rate_ = false;
 };
