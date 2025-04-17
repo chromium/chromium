@@ -67,6 +67,8 @@ component("webnn_service") {
       "dml/command_recorder.h",
       "dml/context_impl_dml.cc",
       "dml/context_impl_dml.h",
+      "dml/context_provider.cc",
+      "dml/context_provider.h",
       "dml/error.h",
       "dml/graph_builder_dml.cc",
       "dml/graph_builder_dml.h",
