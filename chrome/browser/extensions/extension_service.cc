@@ -194,13 +194,6 @@ ExtensionService::ExtensionService(
       extension_prefs_(extension_prefs),
       blocklist_(blocklist),
       allowlist_(ExtensionAllowlist::Get(profile)),
-      safe_browsing_verdict_handler_(extension_prefs,
-                                     ExtensionRegistry::Get(profile),
-                                     this),
-      extension_telemetry_service_verdict_handler_(
-          extension_prefs,
-          ExtensionRegistry::Get(profile),
-          this),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
       external_provider_manager_(ExternalProviderManager::Get(profile)),
@@ -212,9 +205,14 @@ ExtensionService::ExtensionService(
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(profile_)),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
+      safe_browsing_verdict_handler_(extension_prefs,
+                                     registry_,
+                                     extension_registrar_),
+      extension_telemetry_service_verdict_handler_(extension_prefs,
+                                                   registry_,
+                                                   extension_registrar_),
       omaha_attributes_handler_(extension_prefs,
-                                ExtensionRegistry::Get(profile),
-                                this,
+                                registry_,
                                 extension_registrar_),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
@@ -462,23 +460,6 @@ void ExtensionService::PerformActionBasedOnExtensionTelemetryServiceVerdicts(
   error_controller_->ShowErrorIfNeeded();
 }
 
-void ExtensionService::OnGreylistStateRemoved(const std::string& extension_id) {
-  extension_registrar_->OnGreylistStateRemoved(extension_id);
-}
-
-void ExtensionService::OnGreylistStateAdded(const std::string& extension_id,
-                                            BitMapBlocklistState new_state) {
-  extension_registrar_->OnGreylistStateAdded(extension_id, new_state);
-}
-
-void ExtensionService::OnBlocklistStateRemoved(
-    const std::string& extension_id) {
-  extension_registrar_->OnBlocklistStateRemoved(extension_id);
-}
-
-void ExtensionService::OnBlocklistStateAdded(const std::string& extension_id) {
-  extension_registrar_->OnBlocklistStateAdded(extension_id);
-}
 
 void ExtensionService::EnableExtension(const std::string& extension_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
