@@ -1611,7 +1611,8 @@ void HWNDMessageHandler::ClientAreaSizeChanged() {
 
 bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
                                              HMONITOR monitor) const {
-  if (delegate_->GetClientAreaInsets(insets, monitor)) {
+  int frame_thickness = ui::GetFrameThickness(monitor);
+  if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
     return true;
   }
   DCHECK(insets->IsEmpty());
@@ -1625,7 +1626,6 @@ bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
   if (IsMaximized()) {
     // Windows automatically adds a standard width border to all sides when a
     // window is maximized.
-    int frame_thickness = ui::GetFrameThickness(monitor);
     if (!delegate_->HasFrame()) {
       frame_thickness -= 1;
     }

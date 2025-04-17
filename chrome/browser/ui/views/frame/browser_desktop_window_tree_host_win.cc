@@ -326,7 +326,7 @@ int BrowserDesktopWindowTreeHostWin::GetInitialShowState() const {
 
 bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     gfx::Insets* insets,
-    HMONITOR monitor) const {
+    int frame_thickness) const {
   // Always use default insets for opaque frame.
   if (!ShouldUseNativeFrame()) {
     return false;
@@ -343,7 +343,6 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     // In fullscreen mode there is no frame.
     *insets = gfx::Insets();
   } else {
-    const int frame_thickness = ui::GetFrameThickness(monitor);
     // Reduce the non-client border size; UpdateDWMFrame() will instead extend
     // the border into the window client area. For maximized windows, Windows
     // outdents the window rect from the screen's client rect by

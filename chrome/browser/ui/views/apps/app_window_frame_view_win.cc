@@ -36,8 +36,8 @@ gfx::Insets AppWindowFrameViewWin::GetFrameInsets() const {
   return gfx::Insets::TLBR(caption_height, 0, 0, 0);
 }
 
-gfx::Insets AppWindowFrameViewWin::GetClientAreaInsets(HMONITOR monitor) const {
-  const int frame_thickness = ui::GetFrameThickness(monitor);
+gfx::Insets AppWindowFrameViewWin::GetClientAreaInsets(
+    int frame_thickness) const {
   return gfx::Insets::TLBR(0, frame_thickness, frame_thickness,
                            frame_thickness);
 }
@@ -60,8 +60,9 @@ gfx::Rect AppWindowFrameViewWin::GetWindowBoundsForClientBounds(
   }
 
   gfx::Insets insets = GetFrameInsets();
-  insets += GetClientAreaInsets(
-      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
+  const int frame_thickness = ui::GetFrameThicknessFromWindow(
+      HWNDForView(this), MONITOR_DEFAULTTONEAREST);
+  insets += GetClientAreaInsets(frame_thickness);
   gfx::Rect window_bounds(
       client_bounds.x() - insets.left(), client_bounds.y() - insets.top(),
       client_bounds.width() + insets.left() + insets.right(),
@@ -129,8 +130,9 @@ gfx::Size AppWindowFrameViewWin::GetMaximumSize() const {
   gfx::Size max_size = widget_->client_view()->GetMaximumSize();
 
   gfx::Insets insets = GetFrameInsets();
-  insets += GetClientAreaInsets(
-      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
+  const int frame_thickness = ui::GetFrameThicknessFromWindow(
+      HWNDForView(this), MONITOR_DEFAULTTONEAREST);
+  insets += GetClientAreaInsets(frame_thickness);
   if (max_size.width()) {
     max_size.Enlarge(insets.left() + insets.right(), 0);
   }

@@ -538,8 +538,8 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
   // Note that this method assumes an equal resize handle thickness on all
   // sides of the window.
   // TODO(dfried): Consider having it return a gfx::Insets object instead.
-  return ui::GetFrameThickness(
-      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
+  return ui::GetFrameThicknessFromWindow(HWNDForView(this),
+                                         MONITOR_DEFAULTTONEAREST);
 }
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {

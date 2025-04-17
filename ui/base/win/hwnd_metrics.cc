@@ -4,11 +4,26 @@
 
 #include "ui/base/win/hwnd_metrics.h"
 
-#include <windows.h>
-
+#include "ui/display/screen.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/display/win/screen_win_headless.h"
 
 namespace ui {
+
+namespace {
+
+int GetFrameThicknessFromDisplayId(int64_t id) {
+  const int resize_frame_thickness =
+      display::win::GetScreenWinHeadless()->GetSystemMetricsForDisplayId(
+          id, SM_CXSIZEFRAME);
+  const int padding_thickness =
+      display::win::GetScreenWinHeadless()->GetSystemMetricsForDisplayId(
+          id, SM_CXPADDEDBORDER);
+
+  return resize_frame_thickness + padding_thickness;
+}
+
+}  // namespace
 
 int GetFrameThickness(HMONITOR monitor) {
   // On Windows 10 the visible frame border is one pixel thick, but there is
@@ -22,6 +37,29 @@ int GetFrameThickness(HMONITOR monitor) {
       display::win::GetScreenWin()->GetSystemMetricsForMonitor(
           monitor, SM_CXPADDEDBORDER);
   return resize_frame_thickness + padding_thickness;
+}
+
+int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
+  if (display::Screen::GetScreen()->IsHeadless()) {
+    return GetFrameThicknessFromDisplayId(
+        display::win::GetScreenWinHeadless()->GetDisplayIdFromWindow(
+            hwnd, default_options));
+  } else {
+    HMONITOR monitor = ::MonitorFromWindow(hwnd, default_options);
+    return GetFrameThickness(monitor);
+  }
+}
+
+int GetFrameThicknessFromScreenRect(const gfx::Rect& screen_rect) {
+  if (display::Screen::GetScreen()->IsHeadless()) {
+    return GetFrameThicknessFromDisplayId(
+        display::win::GetScreenWinHeadless()->GetDisplayIdFromScreenRect(
+            screen_rect));
+  } else {
+    // This should never be used in headful mode due to the lack of support by
+    // display::win::ScreenWin.
+    NOTREACHED();
+  }
 }
 
 }  // namespace ui

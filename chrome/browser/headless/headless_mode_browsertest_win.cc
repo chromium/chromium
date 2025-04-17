@@ -4,6 +4,8 @@
 
 #include "chrome/browser/headless/headless_mode_browsertest.h"
 
+#include <windows.h>
+
 #include <set>
 
 #include "base/strings/stringprintf.h"
@@ -17,7 +19,9 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/base/win/hwnd_metrics.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/win/screen_win_headless.h"
 #include "ui/gfx/geometry/point.h"
@@ -78,6 +82,13 @@ aura::Window* CreateAuraWindow(aura::Window* parent, const gfx::Rect& bounds) {
   window->Show();
   parent->AddChild(window);
   return window;
+}
+
+int GetSystemFrameThickness() {
+  // Mimic ui::GetFrameThickness() for 1x.
+  const int resize_frame_thickness = ::GetSystemMetrics(SM_CXSIZEFRAME);
+  const int padding_thickness = ::GetSystemMetrics(SM_CXPADDEDBORDER);
+  return resize_frame_thickness + padding_thickness;
 }
 
 }  // namespace test
@@ -237,6 +248,18 @@ class HeadlessModeBrowserTestWithScreenInfo : public HeadlessModeBrowserTest {
   }
 };
 
+#define HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(TEST_NAME, SCREEEN_INFO) \
+  class HeadlessModeBrowserTestWithScreenInfo_##TEST_NAME                     \
+      : public HeadlessModeBrowserTestWithScreenInfo {                        \
+   public:                                                                    \
+    std::string GetScreenInfo() override {                                    \
+      return SCREEEN_INFO;                                                    \
+    }                                                                         \
+  };                                                                          \
+                                                                              \
+  IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithScreenInfo_##TEST_NAME,   \
+                         TEST_NAME)
+
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithScreenInfo,
                        GetCursorScreenPoint) {
   EXPECT_TRUE(screen()->GetCursorScreenPoint().IsOrigin());
@@ -353,6 +376,35 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest2ndScreen,
   aura::Window* window = screen()->GetWindowAtScreenPoint(kScreenCenter);
   ASSERT_TRUE(window);
   EXPECT_TRUE(window->GetBoundsInScreen().Contains(kScreenCenter));
+}
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromScreenRect,
+                                             "{}{devicePixelRatio=2.0}") {
+  ASSERT_EQ(screen()->GetNumDisplays(), 2);
+  ASSERT_EQ(screen()->GetAllDisplays()[0].device_scale_factor(), 1.f);
+  ASSERT_EQ(screen()->GetAllDisplays()[1].device_scale_factor(), 2.f);
+
+  const int kSystemFrameThickness = test::GetSystemFrameThickness();
+  EXPECT_EQ(ui::GetFrameThicknessFromScreenRect(gfx::Rect(0, 0, 10, 20)),
+            kSystemFrameThickness);
+  EXPECT_EQ(ui::GetFrameThicknessFromScreenRect(gfx::Rect(800, 600, 10, 20)),
+            kSystemFrameThickness * 2);
+}
+
+HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromWindow,
+                                             "{devicePixelRatio=2.0}") {
+  ASSERT_EQ(screen()->GetNumDisplays(), 1);
+  ASSERT_EQ(screen()->GetAllDisplays()[0].device_scale_factor(), 2.f);
+
+  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
+      static_cast<DesktopWindowTreeHostWinWrapper*>(
+          browser()->window()->GetNativeWindow()->GetHost());
+  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
+
+  const int kSystemFrameThickness = test::GetSystemFrameThickness();
+  EXPECT_EQ(ui::GetFrameThicknessFromWindow(desktop_window_hwnd,
+                                            MONITOR_DEFAULTTONEAREST),
+            kSystemFrameThickness * 2);
 }
 
 }  // namespace

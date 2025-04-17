@@ -64,7 +64,7 @@ class BrowserDesktopWindowTreeHostWin
   std::string GetWorkspace() const override;
   int GetInitialShowState() const override;
   bool GetClientAreaInsets(gfx::Insets* insets,
-                           HMONITOR monitor) const override;
+                           int frame_thickness) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void HandleCreate() override;
   void HandleDestroying() override;

@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include "base/component_export.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
@@ -22,6 +23,18 @@ namespace ui {
 // WS_CAPTION style adds 1px to frame thickness.
 // TODO(kerenzhu): this should be renamed to GetResizableFrameThickness().
 COMPONENT_EXPORT(UI_BASE) int GetFrameThickness(HMONITOR monitor);
+
+// Returns the above given the window handle. Note that during WM_NCCALCSIZE
+// Windows does not return the correct monitor for the HWND, so it must be
+// passed in explicitly (see HWNDMessageHandler::OnNCCalcSize for more details).
+// See Win32 MonitorFromWindow API for the available |default_options|.
+COMPONENT_EXPORT(UI_BASE)
+int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options);
+
+// Returns the above given the screen rectangle. This is intended to be used
+// only in Chrome Headless Mode.
+COMPONENT_EXPORT(UI_BASE)
+int GetFrameThicknessFromScreenRect(const gfx::Rect& screen_rect);
 
 }  // namespace ui
 

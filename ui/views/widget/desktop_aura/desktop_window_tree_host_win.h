@@ -217,7 +217,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   int GetNonClientComponent(const gfx::Point& point) const override;
   void GetWindowMask(const gfx::Size& size_px, SkPath* path) override;
   bool GetClientAreaInsets(gfx::Insets* insets,
-                           HMONITOR monitor) const override;
+                           int frame_thickness) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void GetMinMaxSize(gfx::Size* min_size, gfx::Size* max_size) const override;
   gfx::Size GetRootViewSize() const override;

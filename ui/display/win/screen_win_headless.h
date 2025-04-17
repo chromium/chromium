@@ -33,6 +33,19 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
 
   ~ScreenWinHeadless() override;
 
+  // Returns id of the headless display the window |hwnd| is on. See Win32
+  // MonitorFromWindow() API for the available |default_options|. Returns
+  // kInvalidDisplayId if |default_options| is MONITOR_DEFAULTTONULL and |hwnd|
+  // is outside of all screens.
+  int64_t GetDisplayIdFromWindow(HWND hwnd, DWORD default_options);
+
+  // Returns id of the headless display |screen_rect| is on or closest to.
+  int64_t GetDisplayIdFromScreenRect(const gfx::Rect& screen_rect);
+
+  // Returns the result of ::GetSystemMetrics for |metric| scaled to the DPI of
+  // the headless monitor with the specified display id.
+  int GetSystemMetricsForDisplayId(int64_t id, int metric);
+
   // Screen:
   gfx::Point GetCursorScreenPoint() override;
   void SetCursorScreenPointForTesting(const gfx::Point& point) override;

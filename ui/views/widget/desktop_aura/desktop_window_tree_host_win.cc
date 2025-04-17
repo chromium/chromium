@@ -1001,13 +1001,12 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
 }
 
 bool DesktopWindowTreeHostWin::GetClientAreaInsets(gfx::Insets* insets,
-                                                   HMONITOR monitor) const {
+                                                   int frame_thickness) const {
   // WS_THICKFRAME style has a system titlebar. Remove this titlebar for
   // borderless windows.
   if (desktop_native_widget_aura_->widget_type() ==
           Widget::InitParams::TYPE_WINDOW_FRAMELESS &&
       (GetWindowLong(GetHWND(), GWL_STYLE) & WS_THICKFRAME)) {
-    int frame_thickness = ui::GetFrameThickness(monitor);
     *insets = gfx::Insets(frame_thickness);
     // In non-maximized window, the top-border inset must be zero, otherwise
     // Windows will draw a full native titlebar.

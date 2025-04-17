@@ -9,13 +9,16 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util_win.h"
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/win/display_info.h"
 #include "ui/display/win/dpi.h"
+#include "ui/display/win/screen_win_display.h"
 
 namespace display::win {
 
@@ -60,6 +63,30 @@ ScreenWinHeadless::ScreenWinHeadless(
 }
 
 ScreenWinHeadless::~ScreenWinHeadless() = default;
+
+int64_t ScreenWinHeadless::GetDisplayIdFromWindow(HWND hwnd,
+                                                  DWORD default_options) {
+  if (auto monitor_info = MonitorInfoFromWindow(hwnd, default_options)) {
+    return GetDisplayIdFromMonitorInfo(monitor_info.value());
+  }
+
+  return kInvalidDisplayId;
+}
+
+int64_t ScreenWinHeadless::GetDisplayIdFromScreenRect(
+    const gfx::Rect& screen_rect) {
+  if (auto monitor_info = MonitorInfoFromScreenRect(screen_rect)) {
+    return GetDisplayIdFromMonitorInfo(monitor_info.value());
+  }
+
+  return GetPrimaryDisplay().id();
+}
+
+int ScreenWinHeadless::GetSystemMetricsForDisplayId(int64_t id, int metric) {
+  const Display display = GetScreenWinDisplayWithDisplayId(id).display();
+  return base::ClampRound(::GetSystemMetrics(metric) *
+                          display.device_scale_factor());
+}
 
 void ScreenWinHeadless::SetCursorScreenPointForTesting(
     const gfx::Point& point) {

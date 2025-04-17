@@ -274,6 +274,10 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   virtual ScreenWinDisplay GetScreenWinDisplay(
       std::optional<MONITORINFOEX> monitor_info) const;
 
+  // Returns the result of GetSystemMetrics for |metric| scaled to the specified
+  // |scale_factor|.
+  int GetSystemMetricsForScaleFactor(float scale_factor, int metric) const;
+
  private:
   void Initialize();
 
@@ -284,10 +288,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   template <typename Getter, typename GetterType>
   static ScreenWinDisplay GetScreenWinDisplayVia(Getter getter,
                                                  GetterType value);
-
-  // Returns the result of GetSystemMetrics for |metric| scaled to the specified
-  // |scale_factor|.
-  int GetSystemMetricsForScaleFactor(float scale_factor, int metric) const;
 
   //-----------------------------------------------------------------
   // UwpTextScaleFactor::Observer:

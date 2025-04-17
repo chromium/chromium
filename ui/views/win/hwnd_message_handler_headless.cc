@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/screen_win_headless.h"
 #include "ui/gfx/geometry/insets.h"
@@ -94,7 +95,8 @@ gfx::Rect HWNDMessageHandlerHeadless::GetWindowBoundsInScreen() const {
 
 gfx::Rect HWNDMessageHandlerHeadless::GetClientAreaBoundsInScreen() const {
   gfx::Insets client_insets;
-  if (!GetClientAreaInsets(&client_insets, last_monitor_)) {
+  const int frame_thickness = ui::GetFrameThicknessFromScreenRect(bounds_);
+  if (!GetClientAreaInsets(&client_insets, frame_thickness)) {
     // If client area insets were not provided, calculate headless client
     // rectangle using the difference between platform window and client
     // rectangles.
@@ -406,6 +408,34 @@ void HWNDMessageHandlerHeadless::SizeConstraintsChanged() {
   // Base class method updates platform window style bits WS_THICKFRAME and
   // WS_MIN/MAXIMIZEBOX according to the delegate's window sizing expectations.
   // Ignored in headless mode since we don't touch underlying platform window.
+}
+
+bool HWNDMessageHandlerHeadless::GetClientAreaInsets(
+    gfx::Insets* insets,
+    int frame_thickness) const {
+  if (delegate_->GetClientAreaInsets(insets, frame_thickness)) {
+    return true;
+  }
+  DCHECK(insets->IsEmpty());
+
+  // Returning false causes the default handling in OnNCCalcSize() to
+  // be invoked.
+  if (!delegate_->HasNonClientView() || HasSystemFrame()) {
+    return false;
+  }
+
+  if (IsMaximized()) {
+    // Windows automatically adds a standard width border to all sides when a
+    // window is maximized.
+    if (!delegate_->HasFrame()) {
+      frame_thickness -= 1;
+    }
+    *insets = gfx::Insets(frame_thickness);
+    return true;
+  }
+
+  *insets = gfx::Insets();
+  return true;
 }
 
 void HWNDMessageHandlerHeadless::SetHeadlessWindowBounds(

@@ -83,13 +83,10 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
 
   // Returns true if the delegate modifies |insets| to define a custom client
   // area for the window, false if the default client area should be used. If
-  // false is returned, |insets| is not modified.  |monitor| is the monitor
-  // this window is on.  Normally that would be determined from the HWND, but
-  // during WM_NCCALCSIZE Windows does not return the correct monitor for the
-  // HWND, so it must be passed in explicitly (see HWNDMessageHandler::
-  // OnNCCalcSize for more details).
+  // false is returned, |insets| is not modified.  |frame_thickness| is the the
+  // window frame thickness on the monitor this window is on.
   virtual bool GetClientAreaInsets(gfx::Insets* insets,
-                                   HMONITOR monitor) const = 0;
+                                   int frame_thickness) const = 0;
 
   // Returns true if DWM frame should be extended into client area by |insets|.
   // Insets are specified in screen pixels not DIP because that's what DWM uses.
