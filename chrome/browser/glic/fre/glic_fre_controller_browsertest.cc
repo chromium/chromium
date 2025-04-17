@@ -136,13 +136,13 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
-                       CookieSyncPreventsFreShow) {
+                       ShowFreDialogOnFailedCookieSync) {
   glic_test_environment().SetResultForFutureCookieSyncInFre(false);
   // Open the FRE dialog in a tab.
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   browser()->tab_strip_model()->ActivateTabAt(0);
   glic_fre_controller()->ShowFreDialog(browser());
-  EnsureFreDoesNotShow();
+  WaitForFreShow();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
