@@ -138,13 +138,14 @@ std::string GetBoardName(const base::FilePath& build_prop_path) {
       content, "\n", base::WhitespaceHandling::KEEP_WHITESPACE,
       base::SplitResult::SPLIT_WANT_ALL);
   for (const auto& line : lines) {
-    if (!base::StartsWith(line, kKeyToFind, base::CompareCase::SENSITIVE))
-      continue;
-    const std::string board = line.substr(strlen(kKeyToFind));
-    VLOG(2) << "Current board is " << board;
-    return board;
+    std::optional<std::string_view> remainder =
+        base::RemovePrefix(line, kKeyToFind);
+    if (remainder) {
+      std::string board(*remainder);
+      VLOG(2) << "Current board is " << board;
+      return board;
+    }
   }
-
   LOG(ERROR) << "Failed to find " << kKeyToFind << " in " << build_prop_path;
   return std::string();
 }
