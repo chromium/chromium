@@ -43,6 +43,8 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   ~GraphiteSharedContext();
 
+  bool IsTheadSafe() const { return !!lock_; }
+
   // Wrapper function implementations for skgpu::graphite:Context
   skgpu::BackendApi backend() const;
 
