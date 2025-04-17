@@ -248,6 +248,7 @@ BOOL AreCredentialsAtIndicesConnected(
   if (self.passwordsWereFetched) {
     [self postCredentialsToConsumer];
     [self postActionsToConsumer];
+    [self.navigator passwordsFetched];
   }
 }
 

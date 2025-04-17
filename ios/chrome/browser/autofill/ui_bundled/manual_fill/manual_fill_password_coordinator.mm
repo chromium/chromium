@@ -159,6 +159,10 @@
   }];
 }
 
+- (void)passwordsFetched {
+  [self.consumer passwordsFetched];
+}
+
 #pragma mark - PlusAddressListNavigator
 
 - (void)openCreatePlusAddressSheet {

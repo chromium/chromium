@@ -28,6 +28,9 @@ struct CredentialUIEntry;
 - (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential;
 
+// Notifies that passwords were fetched.
+- (void)passwordsFetched;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_PASSWORD_LIST_NAVIGATOR_H_
