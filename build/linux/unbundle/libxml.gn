@@ -37,6 +37,7 @@ static_library("xml_reader") {
   visibility = [
     "//base/test:test_support",
     "//components/policy/core/common:unit_tests",
+    "//components/trusted_vault",
     "//services/data_decoder:*",
   ]
   sources = [

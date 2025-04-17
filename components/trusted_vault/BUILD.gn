@@ -31,6 +31,8 @@ static_library("trusted_vault") {
       "proto_string_bytes_conversion.h",
       "proto_time_conversion.cc",
       "proto_time_conversion.h",
+      "recovery_key_store_certificate.cc",
+      "recovery_key_store_certificate.h",
       "recovery_key_store_connection.h",
       "recovery_key_store_connection_impl.cc",
       "recovery_key_store_connection_impl.h",
@@ -76,6 +78,7 @@ static_library("trusted_vault") {
       "//net",
       "//services/network/public/cpp:cpp",
       "//third_party/boringssl",
+      "//third_party/libxml:xml_reader",
     ]
   }
 }
@@ -88,6 +91,7 @@ if (!is_android) {
       "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
+      "recovery_key_store_certificate_unittest.cc",
       "recovery_key_store_connection_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
