@@ -71,7 +71,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // This will temporarily disable preloading.
     glic::GlicProfileManager::ForceMemoryPressureForTesting(
-        &forced_memory_pressure_);
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
     fre_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
@@ -86,7 +87,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-    glic::GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+    glic::GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
   }
 
   void SetUpOnMainThread() override {
@@ -180,8 +181,9 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(ENABLE_GLIC)
   void ResetMemoryPressure() {
-    forced_memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_NONE;
+    glic::GlicProfileManager::ForceMemoryPressureForTesting(
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_NONE);
   }
 
   const GURL& fre_url() { return fre_url_; }
@@ -205,9 +207,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
       identity_test_environment_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
 #if BUILDFLAG(ENABLE_GLIC)
-  base::MemoryPressureMonitor::MemoryPressureLevel forced_memory_pressure_ =
-      base::MemoryPressureMonitor::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL;
   std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
   net::EmbeddedTestServer fre_server_;
   GURL fre_url_;

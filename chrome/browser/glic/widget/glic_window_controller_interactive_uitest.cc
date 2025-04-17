@@ -535,34 +535,43 @@ class GlicWindowControllerWithMemoryPressureUiTest
     // This will temporarily disable preloading to ensure that we don't load the
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
-    GlicProfileManager::ForceMemoryPressureForTesting(&forced_memory_pressure_);
+    GlicProfileManager::ForceMemoryPressureForTesting(
+        base::MemoryPressureMonitor::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
     GlicWindowControllerUiTest::SetUp();
   }
 
   void TearDown() override {
     GlicWindowControllerUiTest::TearDown();
-    GlicProfileManager::ForceMemoryPressureForTesting(nullptr);
+    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
   }
 
  protected:
-  void ResetMemoryPressure() {
-    forced_memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_NONE;
+  auto ResetMemoryPressure() {
+    return Do([]() {
+      GlicProfileManager::ForceMemoryPressureForTesting(
+          base::MemoryPressureMonitor::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_NONE);
+    });
+  }
+
+  auto TryPreload() {
+    return Do([this]() { glic_service()->TryPreload(); });
+  }
+
+  auto CheckWarmed() {
+    return Do([this]() { EXPECT_TRUE(window_controller().IsWarmed()); });
   }
 
  private:
-  base::MemoryPressureMonitor::MemoryPressureLevel forced_memory_pressure_ =
-      base::MemoryPressureMonitor::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL;
-
   base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithMemoryPressureUiTest, Preload) {
-  ResetMemoryPressure();
-  glic_service()->TryPreload();
-  EXPECT_TRUE(window_controller().IsWarmed());
+  // TODO(crbug.com/411100559): Wait for preload completion rather than assuming
+  // that it will finish before the next step in the sequence.
   RunTestSequence(
+      ResetMemoryPressure(), TryPreload(), CheckWarmed(),
       PressButton(kGlicButtonElementId),
       InAnyContext(
           WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)));

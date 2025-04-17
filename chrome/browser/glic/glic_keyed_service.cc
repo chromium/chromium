@@ -427,30 +427,16 @@ base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
 void GlicKeyedService::TryPreload() {
   CHECK(glic_profile_manager_);
 
-  Profile* profile = profile_;
-  bool should_preload = glic_profile_manager_->ShouldPreloadForProfile(profile);
-
-  if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile &&
-      GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
-    base::UmaHistogramBoolean("Glic.ShouldPreload", should_preload);
-  }
-
-  if (!should_preload) {
-    return;
-  }
-
-  window_controller_->Preload();
+  glic_profile_manager_->ShouldPreloadForProfile(
+      profile_, base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
 }
 
 void GlicKeyedService::TryPreloadFre() {
   CHECK(glic_profile_manager_);
 
-  Profile* profile = profile_;
-  if (!glic_profile_manager_->ShouldPreloadFreForProfile(profile)) {
-    return;
-  }
-
-  window_controller_->PreloadFre();
+  glic_profile_manager_->ShouldPreloadFreForProfile(
+      profile_,
+      base::BindOnce(&GlicKeyedService::FinishPreloadFre, GetWeakPtr()));
 }
 
 void GlicKeyedService::Reload() {
@@ -486,6 +472,27 @@ void GlicKeyedService::SetPosition(const gfx::Point& position) {
 
 std::optional<gfx::Point> GlicKeyedService::GetPreviousPosition() {
   return previous_position_;
+}
+
+void GlicKeyedService::FinishPreload(Profile* profile, bool should_preload) {
+  if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile &&
+      GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+    base::UmaHistogramBoolean("Glic.ShouldPreload", should_preload);
+  }
+
+  if (!should_preload) {
+    return;
+  }
+
+  window_controller_->Preload();
+}
+
+void GlicKeyedService::FinishPreloadFre(Profile* profile, bool should_preload) {
+  if (!should_preload) {
+    return;
+  }
+
+  window_controller_->PreloadFre();
 }
 
 }  // namespace glic

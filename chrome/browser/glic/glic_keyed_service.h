@@ -245,6 +245,9 @@ class GlicKeyedService : public KeyedService {
           GetZeroStateSuggestionsForFocusedTabCallback callback,
       std::optional<std::vector<std::string>> returned_suggestions);
 
+  void FinishPreload(Profile* profile, bool should_preload);
+  void FinishPreloadFre(Profile* profile, bool should_preload);
+
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.
   base::RepeatingCallbackList<void(bool)>
