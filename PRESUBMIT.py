@@ -7619,7 +7619,7 @@ def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
                            r'.*Test.*\.java',
                            r'^android_webview/.*', # Temporary, crbug.com/389129271
                            r'^build/.*',
-                           r'^chrome/.*', # Temporary, crbug.com/389129271
+                           r'^chrome/android/.*', # Temporary, crbug.com/389129271
                            r'^chromecast/.*',
                            r'^components/cronet/.*',
                            r'^tools/.*',
