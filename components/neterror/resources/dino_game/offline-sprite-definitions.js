@@ -188,7 +188,7 @@ export const spriteDefinitionByType = {
       Y_POS: 125,
     },
     LINES: [
-      {SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127},
+      {sourceX: 2, sourceY: 52, width: 600, height: 12, yPos: 127},
     ],
     ALT_GAME_OVER_TEXT_CONFIG: {
       TEXT_X: 32,

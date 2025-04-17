@@ -5,9 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
-import {Runner} from './offline.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum} from './utils.js';
+import {getRandomNum, getRunnerImageSprite} from './utils.js';
 
 export class Cloud {
   private xPos: number;
@@ -44,7 +43,7 @@ export class Cloud {
    * Draw the cloud.
    */
   draw() {
-    const runnerImageSprite = this.getRunnerImageSprite();
+    const runnerImageSprite = getRunnerImageSprite();
     assert(runnerImageSprite);
 
     this.canvasCtx.save();
@@ -62,19 +61,6 @@ export class Cloud {
         sourceHeight, this.xPos, this.yPos, outputWidth, outputHeight);
 
     this.canvasCtx.restore();
-  }
-
-  /**
-   * Gets the static 'imageSprite' property from the Runner class. To be used
-   * only during typescript migration. Should be moved to utils.ts once other
-   * classes start using the property.
-   * TODO(373951324): Remove once Runner is migrated to ts.
-   */
-  getRunnerImageSprite(): CanvasImageSource|null {
-    if ('imageSprite' in Runner) {
-      return Runner.imageSprite as CanvasImageSource;
-    }
-    return null;
   }
 
   /**
