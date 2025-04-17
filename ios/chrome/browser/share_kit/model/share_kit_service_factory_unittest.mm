@@ -29,10 +29,13 @@ class ShareKitServiceFactoryTest : public PlatformTest {
  protected:
   ShareKitServiceFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kTabGroupSync,
-         data_sharing::features::kDataSharingFeature,
-         data_sharing::features::kDataSharingJoinOnly},
-        {});
+        /*enabled_features=*/
+        {
+            kTabGroupSync,
+            kTabGroupsIPad,
+            data_sharing::features::kDataSharingJoinOnly,
+        },
+        /*disable_features=*/{});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(

@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/data_sharing/public",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
   ]
