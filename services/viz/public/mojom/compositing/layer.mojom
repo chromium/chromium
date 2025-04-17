@@ -11,6 +11,7 @@ import "skia/public/mojom/skcolor4f.mojom";
 import "skia/public/mojom/skpath.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/mask_filter_info.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/filter_operations.mojom";
@@ -318,6 +319,11 @@ struct EffectNode {
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.
   cc.mojom.ElementId? backdrop_mask_element_id;
+
+  // The mask filter information applied to this effect node. The coordinates of
+  // in the mask info is in the space of the transform node associated with this
+  // effect node.
+  gfx.mojom.MaskFilterInfo mask_filter_info;
 
   bool cache_render_surface;
   // Whether the contents should continue to be visible when rotated such that

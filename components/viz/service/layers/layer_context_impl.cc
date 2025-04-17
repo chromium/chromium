@@ -216,6 +216,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.backdrop_filter_bounds = wire.backdrop_filter_bounds;
   node.backdrop_filter_quality = wire.backdrop_filter_quality;
   node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
+  node.mask_filter_info = wire.mask_filter_info;
 
   node.cache_render_surface = wire.cache_render_surface;
   node.double_sided = wire.double_sided;

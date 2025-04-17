@@ -164,6 +164,7 @@ void ComputePropertyTreeNodeUpdate(
       old_node->backdrop_filter_bounds == new_node.backdrop_filter_bounds &&
       old_node->backdrop_filter_quality == new_node.backdrop_filter_quality &&
       old_node->backdrop_mask_element_id == new_node.backdrop_mask_element_id &&
+      old_node->mask_filter_info == new_node.mask_filter_info &&
       old_node->cache_render_surface == new_node.cache_render_surface &&
       old_node->hidden_by_backface_visibility ==
           new_node.hidden_by_backface_visibility &&
@@ -216,6 +217,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->backdrop_filter_bounds = new_node.backdrop_filter_bounds;
   wire->backdrop_filter_quality = new_node.backdrop_filter_quality;
   wire->backdrop_mask_element_id = new_node.backdrop_mask_element_id;
+  wire->mask_filter_info = new_node.mask_filter_info;
 
   wire->cache_render_surface = new_node.cache_render_surface;
   wire->double_sided = new_node.double_sided;
