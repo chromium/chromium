@@ -52,7 +52,10 @@ if (toolchain_has_rust) {
     crate_root = "lib.rs"
     cxx_bindings = [ "lib.rs" ]
 
-    deps = [ ":allocator_impls" ]
+    deps = [ ":alloc_error_handler_impl" ]
+    if (rust_allocator_uses_allocator_impls_h) {
+      deps += [ ":allocator_impls" ]
+    }
 
     no_chromium_prelude = true
     no_allocator_crate = true
@@ -61,34 +64,43 @@ if (toolchain_has_rust) {
     rustflags = []
     if (rust_allocator_uses_allocator_impls_h) {
       rustflags += [ "--cfg=rust_allocator_uses_allocator_impls_h" ]
+      cxx_bindings += [ "allocator_impls_ffi.rs" ]
+      sources += [ "allocator_impls_ffi.rs" ]
     }
 
     # TODO(https://crbug.com/410596442): Stop using unstable features here.
     configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   }
 
-  # TODO(crbug.com/408221149): don't build this when
-  # `rust_allocator_uses_allocator_impls_h` is false.
-  static_library("allocator_impls") {
-    public_deps = []
-    if (rust_allocator_uses_partition_alloc) {
-      public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
-    }
+  if (rust_allocator_uses_allocator_impls_h) {
+    static_library("allocator_impls") {
+      public_deps = []
+      if (rust_allocator_uses_partition_alloc) {
+        public_deps +=
+            [ "//base/allocator/partition_allocator:partition_alloc" ]
+      }
 
+      sources = [
+        "allocator_impls.cc",
+        "allocator_impls.h",
+      ]
+      deps = [ ":buildflags" ]
+      visibility = [ ":*" ]
+    }
+  }
+
+  static_library("alloc_error_handler_impl") {
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
       # TODO(crbug.com/40279749): Avoid duplication / reuse code.
       "alias.cc",
       "alias.h",
-      "allocator_impls.cc",
-      "allocator_impls.h",
+      "alloc_error_handler_impl.cc",
+      "alloc_error_handler_impl.h",
       "compiler_specific.h",
       "immediate_crash.h",
     ]
-
-    deps = [ ":buildflags" ]
-
     visibility = [ ":*" ]
   }
 }

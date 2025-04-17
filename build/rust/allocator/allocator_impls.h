@@ -7,11 +7,8 @@
 
 #include <cstddef>
 
-#include "build/build_config.h"
-#include "build/rust/allocator/buildflags.h"
-
-// This header exposes PartitionAlloc to Rust
-// (most APIs below are called from `impl GlobalAlloc` in `lib.rs`).
+// This header exposes a C++ allocator (e.g. PartitionAlloc) to Rust.
+// The APIs below are called from `impl GlobalAlloc` in `lib.rs`.
 namespace rust_allocator_internal {
 
 unsigned char* alloc(size_t size, size_t align);
@@ -21,8 +18,6 @@ unsigned char* realloc(unsigned char* p,
                        size_t align,
                        size_t new_size);
 unsigned char* alloc_zeroed(size_t size, size_t align);
-
-void crash_immediately();
 
 }  // namespace rust_allocator_internal
 

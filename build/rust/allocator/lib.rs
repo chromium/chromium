@@ -26,11 +26,16 @@
 #![allow(internal_features)]
 #![feature(rustc_attrs)]
 
+// This module is in a separate source file to avoid having to teach `cxxbridge`
+// about conditional compilation.
+#[cfg(rust_allocator_uses_allocator_impls_h)]
+mod allocator_impls_ffi;
+
 /// Module that provides `#[global_allocator]` / `GlobalAlloc` interface for
 /// using an allocator from C++.
 #[cfg(rust_allocator_uses_allocator_impls_h)]
 mod cpp_allocator {
-    use super::ffi;
+    use super::allocator_impls_ffi::ffi;
     use std::alloc::{GlobalAlloc, Layout};
 
     struct Allocator;
@@ -81,8 +86,6 @@ mod rust_allocator {
 ///
 /// TODO(https://crbug.com/410596442): Stop using internal features here.
 mod both_allocators {
-    use super::ffi;
-
     /// As part of rustc's contract for using `#[global_allocator]` without
     /// rustc-generated shims we must define this symbol, since we are opting in
     /// to unstable functionality. See https://github.com/rust-lang/rust/issues/123015
@@ -103,22 +106,14 @@ mod both_allocators {
     fn __rust_alloc_error_handler(_size: usize, _align: usize) {
         // TODO(lukasza): Investigate if we can just call `std::process::abort()` here.
         // (Not really _needed_, but it could simplify code a little bit.)
-        unsafe { ffi::crash_immediately() }
+        unsafe { ffi::alloc_error_handler_impl() }
     }
-}
 
-// TODO(crbug.com/408221149): conditionally include the FFI glue based on
-// `use_cpp_allocator_impls`
-#[allow(dead_code)]
-#[cxx::bridge(namespace = "rust_allocator_internal")]
-mod ffi {
-    extern "C++" {
-        include!("build/rust/allocator/allocator_impls.h");
-
-        unsafe fn alloc(size: usize, align: usize) -> *mut u8;
-        unsafe fn dealloc(p: *mut u8, size: usize, align: usize);
-        unsafe fn realloc(p: *mut u8, old_size: usize, align: usize, new_size: usize) -> *mut u8;
-        unsafe fn alloc_zeroed(size: usize, align: usize) -> *mut u8;
-        unsafe fn crash_immediately();
+    #[cxx::bridge(namespace = "rust_allocator_internal")]
+    mod ffi {
+        extern "C++" {
+            include!("build/rust/allocator/alloc_error_handler_impl.h");
+            unsafe fn alloc_error_handler_impl();
+        }
     }
 }
