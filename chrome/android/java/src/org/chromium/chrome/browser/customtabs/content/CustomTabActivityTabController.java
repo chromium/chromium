@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -351,7 +352,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
 
         // This cannot be done before because we want to do the reparenting only
         // when we have compositor related controllers.
-        if (mode == TabCreationMode.HIDDEN) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)
+                && mode == TabCreationMode.HIDDEN) {
             TabReparentingParams params =
                     (TabReparentingParams)
                             AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
@@ -540,7 +542,16 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             observer.onContentChanged(tab);
         }
 
-        if (!isHiddenTab) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV) && isHiddenTab) {
+            TabReparentingParams params =
+                    (TabReparentingParams)
+                            AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
+            ReparentingTask.from(tab)
+                    .finish(
+                            ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                    null, mWindowAndroid, mCustomTabDelegateFactory),
+                            (params == null ? null : params.getFinalizeCallback()));
+        } else {
             addTabNavigationObservers(
                     mTabObserverRegistrar,
                     mCustomTabObserver,

@@ -18,6 +18,7 @@ import org.chromium.base.CancelableRunnable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.RequiredCallback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -497,50 +498,54 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private OverrideUrlLoadingResult doShouldOverrideUrlLoading(
             ExternalNavigationParams params, boolean isExternalProtocol) {
-        OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        if (sResultCallbackForTesting != null) {
-            sResultCallbackForTesting.onResult(Pair.create(params.getUrl(), result));
-        }
+        try (TraceEvent e = TraceEvent.scoped("shouldOverrideUrlLoading")) {
+            OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
+            if (sResultCallbackForTesting != null) {
+                sResultCallbackForTesting.onResult(Pair.create(params.getUrl(), result));
+            }
 
-        String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.TabNavigationInterceptResult.For" + protocolType,
-                result.getResultType(),
-                OverrideUrlLoadingResultType.NUM_ENTRIES);
-
-        int scheme = InterceptScheme.UNKNOWN_SCHEME;
-        if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
-            scheme = InterceptScheme.NOT_INTERCEPTED;
-        } else if (UrlUtilities.isAcceptedScheme(params.getUrl())) {
-            scheme = InterceptScheme.ACCEPTED_SCHEME;
-        } else if (UrlUtilities.hasIntentScheme(params.getUrl())) {
-            scheme = InterceptScheme.INTENT_SCHEME;
-        } else if (MDOC_SCHEME.equals(params.getUrl().getScheme())) {
-            scheme = InterceptScheme.MDOC_SCHEME;
-            ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
-                    mClient.getWebContents(), WebFeature.IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK);
-            // Record spread of `result` in order to get an idea of by how much the
-            // IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK use counter is over counting as a user may
-            // cancel the OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION dialog.
+            String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
             RecordHistogram.recordEnumeratedHistogram(
-                    "Android.TabNavigationInterceptResult.ForMdoc",
+                    "Android.TabNavigationInterceptResult.For" + protocolType,
                     result.getResultType(),
                     OverrideUrlLoadingResultType.NUM_ENTRIES);
-        } else if (params.getUrl().getScheme().endsWith(OPENID4VP_SCHEME_SUFFIX)) {
-            scheme = InterceptScheme.OPENID4VP_SCHEME;
-            ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
-                    mClient.getWebContents(), WebFeature.IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK);
-            // Record spread of `result` in order to get an idea of by how much the
-            // IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK use counter is over counting as a user may
-            // cancel the OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION dialog.
+
+            int scheme = InterceptScheme.UNKNOWN_SCHEME;
+            if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
+                scheme = InterceptScheme.NOT_INTERCEPTED;
+            } else if (UrlUtilities.isAcceptedScheme(params.getUrl())) {
+                scheme = InterceptScheme.ACCEPTED_SCHEME;
+            } else if (UrlUtilities.hasIntentScheme(params.getUrl())) {
+                scheme = InterceptScheme.INTENT_SCHEME;
+            } else if (MDOC_SCHEME.equals(params.getUrl().getScheme())) {
+                scheme = InterceptScheme.MDOC_SCHEME;
+                ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
+                        mClient.getWebContents(),
+                        WebFeature.IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK);
+                // Record spread of `result` in order to get an idea of by how much the
+                // IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK use counter is over counting as a user may
+                // cancel the OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION dialog.
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.TabNavigationInterceptResult.ForMdoc",
+                        result.getResultType(),
+                        OverrideUrlLoadingResultType.NUM_ENTRIES);
+            } else if (params.getUrl().getScheme().endsWith(OPENID4VP_SCHEME_SUFFIX)) {
+                scheme = InterceptScheme.OPENID4VP_SCHEME;
+                ContentWebFeatureUsageUtils.logWebFeatureForCurrentPage(
+                        mClient.getWebContents(),
+                        WebFeature.IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK);
+                // Record spread of `result` in order to get an idea of by how much the
+                // IDENTITY_DIGITAL_CREDENTIALS_DEEP_LINK use counter is over counting as a user may
+                // cancel the OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION dialog.
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.TabNavigationInterceptResult.ForOpenId4Vp",
+                        result.getResultType(),
+                        OverrideUrlLoadingResultType.NUM_ENTRIES);
+            }
             RecordHistogram.recordEnumeratedHistogram(
-                    "Android.TabNavigationInterceptResult.ForOpenId4Vp",
-                    result.getResultType(),
-                    OverrideUrlLoadingResultType.NUM_ENTRIES);
+                    "Android.TabNavigationIntercept.Scheme", scheme, InterceptScheme.NUM_ENTRIES);
+            return result;
         }
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.TabNavigationIntercept.Scheme", scheme, InterceptScheme.NUM_ENTRIES);
-        return result;
     }
 
     @Override

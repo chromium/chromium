@@ -1270,6 +1270,8 @@ public class CustomTabActivityTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("PageLoad.PaintTiming.NavigationToFirstPaint")
                         .expectAnyRecord("PageLoad.PaintTiming.NavigationToFirstContentfulPaint")
+                        .expectNoRecords(
+                                "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background")
                         .build();
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();

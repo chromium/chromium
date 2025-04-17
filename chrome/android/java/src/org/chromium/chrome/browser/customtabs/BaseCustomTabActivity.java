@@ -557,6 +557,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getCipherFactory(),
                         getLifecycleDispatcher());
 
+        // Finish reparenting as soon as possible as it may be blocking navigation.
+        getCustomTabActivityTabController()
+                .setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
+
         mMinimizationManagerHolder =
                 new CustomTabMinimizationManagerHolder(
                         this,
@@ -678,9 +682,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 getIntentDataProvider(),
                 getTopUiThemeColorProvider(),
                 getLifecycleDispatcher());
-
-        getCustomTabActivityTabController()
-                .setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
 
         if (mIntentDataProvider.isPartialCustomTab()) {
             @AnimRes

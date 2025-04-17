@@ -56,7 +56,7 @@ import org.chromium.net.NetId;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
-@Features.EnableFeatures(ChromeFeatureList.CCT_PREWARM_TAB)
+@Features.EnableFeatures({ChromeFeatureList.CCT_PREWARM_TAB, ChromeFeatureList.CCT_EARLY_NAV})
 public class CustomTabActivityTabControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
