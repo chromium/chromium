@@ -53,8 +53,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #endif
 
-namespace extensions {
-namespace util {
+namespace extensions::util {
 
 namespace {
 
@@ -355,5 +354,4 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
 }
 
-}  // namespace util
-}  // namespace extensions
+} // namespace extensions::util
