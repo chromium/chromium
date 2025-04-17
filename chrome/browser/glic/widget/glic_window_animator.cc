@@ -221,8 +221,8 @@ void GlicWindowAnimator::MaybeAnimateToTargetSize() {
                                ->GetWindowBoundsInScreen()
                                .size()) {
     AnimateSize(last_target_size_, base::Milliseconds(300), base::DoNothing());
-    last_target_size_ = gfx::Size();
   }
+  last_target_size_ = gfx::Size();
 }
 
 void GlicWindowAnimator::SetGlicWebViewVisibility(bool is_visible) {
