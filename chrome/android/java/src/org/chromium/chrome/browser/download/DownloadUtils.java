@@ -293,16 +293,18 @@ public class DownloadUtils {
 
     /**
      * Whether the user should be allowed to download the current page.
+     *
      * @param tab Tab displaying the page that will be downloaded.
-     * @return    Whether the "Download Page" button should be enabled.
+     * @return Whether the "Download Page" button should be enabled.
      */
     public static boolean isAllowedToDownloadPage(Tab tab) {
         if (tab == null) return false;
 
-        // Offline pages isn't supported in Incognito. This should be checked before calling
-        // OfflinePageBridge.getForProfile because OfflinePageBridge instance will not be found
-        // for incognito profile.
-        if (tab.isIncognito()) return false;
+        if (tab.isIncognito()
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_SAVE_PACKAGE_FOR_OFF_THE_RECORD)) {
+            return false;
+        }
 
         // Check if the page url is supported for saving. Only HTTP and HTTPS pages are allowed.
         if (!OfflinePageBridge.canSavePage(tab.getUrl())) return false;
@@ -310,6 +312,7 @@ public class DownloadUtils {
         // Download will only be allowed for the error page if download button is shown in the page.
         if (tab.isShowingErrorPage()) {
             final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
+            if (bridge == null) return false;
             return bridge.isShowingDownloadButtonInErrorPage(tab.getWebContents());
         }
 

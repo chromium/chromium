@@ -1083,10 +1083,17 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
     const base::FilePath::StringType& default_extension,
     bool can_save_as_complete,
     content::SavePackagePathPickedCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  content::SavePackagePathPickedParams param;
+  param.file_path = suggested_path.ReplaceExtension("mhtml");
+  param.save_type = content::SavePageType::SAVE_PAGE_TYPE_AS_MHTML;
+  std::move(callback).Run(param, base::DoNothing());
+#else
   // Deletes itself.
   new SavePackageFilePicker(web_contents, suggested_path, default_extension,
                             can_save_as_complete, download_prefs_.get(),
                             std::move(callback));
+#endif
 }
 
 void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
