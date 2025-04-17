@@ -23,7 +23,6 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           size_t byte_offset,
                           size_t length) {
-    CHECK(VerifySubRange(buffer, byte_offset, length));
     return MakeGarbageCollected<ThisType>(buffer, byte_offset, length);
   }
 
@@ -69,8 +68,9 @@ class DOMTypedArray final : public DOMArrayBufferView {
   DOMTypedArray(DOMArrayBufferBase* dom_array_buffer,
                 size_t byte_offset,
                 size_t length)
-      : DOMArrayBufferView(dom_array_buffer, byte_offset),
-        raw_length_(length) {}
+      : DOMArrayBufferView(dom_array_buffer, byte_offset), raw_length_(length) {
+    CHECK(VerifySubRange(dom_array_buffer, byte_offset, length));
+  }
 
   ValueType* Data() const { return static_cast<ValueType*>(BaseAddress()); }
 
