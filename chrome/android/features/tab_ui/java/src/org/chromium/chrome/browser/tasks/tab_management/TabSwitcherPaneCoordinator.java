@@ -660,7 +660,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         @Nullable Tab tab = filter.getTabModel().getTabById(tabId);
         if (tab != null && tab.getTabGroupId() == null && cardView != null) {
-            contextMenuCoordinator.showMenu(new ViewRectProvider(cardView), tabId);
+            ViewRectProvider viewRectProvider =
+                    new ViewRectProvider(cardView, TabGridViewRectUpdater::new);
+            contextMenuCoordinator.showMenu(viewRectProvider, tabId);
             RecordUserAction.record("TabSwitcher.ContextMenu");
             return contextMenuCoordinator::dismiss;
         }
