@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/profiles/profile.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 
 namespace user_education {
@@ -39,5 +40,13 @@ extern void MaybeRegisterChromeTutorials(
 // browser as well.
 extern std::unique_ptr<user_education::FeaturePromoControllerCommon>
 CreateUserEducationResources(BrowserView* browser_view);
+
+// Adds (or doesn't add) high priority notices (usually legal and privacy
+// related) to the product messaging queue for the specified `profile`. The
+// order of showing is defined by the show_after_ and blocked_by_ lists when
+// each notice is queued. These lists are often defined within services used in
+// this method. Notices are queued in this frame and the queue begins processing
+// in the next frame.
+extern void QueueLegalAndPrivacyNotices(Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_USER_EDUCATION_SERVICE_H_
