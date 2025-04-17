@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,11 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** BaseAdapter for {@link RecyclerView}. It manages languages to list there. */
+@NullMarked
 public class LanguageListBaseAdapter extends DragReorderableListAdapter<LanguageItem> {
     /** Listener used to respond to click event on a language item. */
     interface ItemClickListener {
@@ -98,7 +100,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
          *
          * @param delegate A {@link ListMenuDelegate}.
          */
-        void setMenuButtonDelegate(@NonNull ListMenuDelegate delegate) {
+        void setMenuButtonDelegate(ListMenuDelegate delegate) {
             mMoreButton.setVisibility(View.VISIBLE);
             mMoreButton.setDelegate(delegate);
             // Set item row end padding 0 when MenuButton is visible.
@@ -114,7 +116,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
          * @param item The {@link LanguageItem} with language details.
          * @param listener A {@link ItemClickListener} to respond to click event.
          */
-        void setItemClickListener(LanguageItem item, @NonNull ItemClickListener listener) {
+        void setItemClickListener(LanguageItem item, ItemClickListener listener) {
             itemView.setOnClickListener(view -> listener.onLanguageClicked(item));
         }
     }

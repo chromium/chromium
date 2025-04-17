@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -33,6 +36,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /** A preference that displays the current accept language list. */
+@NullMarked
 public class ContentLanguagesPreference extends Preference {
     private static class LanguageListAdapter extends LanguageListBaseAdapter
             implements LanguagesManager.AcceptLanguageObserver {
@@ -150,8 +154,8 @@ public class ContentLanguagesPreference extends Preference {
         }
     }
 
-    private TextView mAddLanguageButton;
-    private RecyclerView mRecyclerView;
+    private @Nullable TextView mAddLanguageButton;
+    private @Nullable RecyclerView mRecyclerView;
     private LanguageListAdapter mAdapter;
     private SelectLanguageFragment.Launcher mLauncher;
     private LanguagesManager mLanguagesManager;
@@ -169,6 +173,7 @@ public class ContentLanguagesPreference extends Preference {
      * @param profile The current {@link Profile} for this session.
      * @param prefService Allows accessing the contextually appropriate prefs.
      */
+    @Initializer
     void initialize(
             SelectLanguageFragment.Launcher launcher, Profile profile, PrefService prefService) {
         mLauncher = launcher;

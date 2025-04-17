@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -34,7 +35,7 @@ import java.util.List;
 @NullMarked
 public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
     // keep track of the list and list managers
-    protected @Nullable ItemTouchHelper mItemTouchHelper;
+    protected @MonotonicNonNull ItemTouchHelper mItemTouchHelper;
 
     private ItemTouchHelper.@Nullable Callback mTouchHelperCallback;
 

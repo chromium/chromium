@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +19,8 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -38,6 +42,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * Settings fragment that displays information about Chrome languages, which allow users to
  * seamlessly find and manage their languages preferences across platforms.
  */
+@NullMarked
 public class LanguageSettings extends ChromeBaseSettingsFragment
         implements SelectLanguageFragment.Launcher {
     // Return codes from launching Intents on preferences.
@@ -65,7 +70,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.language_settings));
         mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
 
@@ -277,10 +282,11 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
 
+        assumeNonNull(data);
         String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
         if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE) {
             LanguagesManager.getForProfile(getProfile()).addToAcceptLanguages(code);
