@@ -4914,6 +4914,9 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 extern const char kHistoryPageHistorySyncPromoName[];
 extern const char kHistoryPageHistorySyncPromoDescription[];
 
+extern const char kHistoryOptInEducationalTipName[];
+extern const char kHistoryOptInEducationalTipDescription[];
+
 extern const char kWebSerialOverBluetoothName[];
 extern const char kWebSerialOverBluetoothDescription[];
 

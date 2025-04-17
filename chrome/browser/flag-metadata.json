@@ -5281,6 +5281,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "history-opt-in-educational-tip",
+    "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "history-page-history-sync-promo",
     "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 140

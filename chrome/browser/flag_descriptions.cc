@@ -8315,6 +8315,10 @@ const char kHistoryPageHistorySyncPromoDescription[] =
     "Add a history sync opt-in promo in the History Page for signed-in users "
     "that are not syncing history & tabs.";
 
+const char kHistoryOptInEducationalTipName[] = "History sync educational tip";
+const char kHistoryOptInEducationalTipDescription[] =
+    "Enables a history sync promo in the magic stack on NTP";
+
 const char kWebSerialOverBluetoothName[] = "Enable Web Serial over Bluetooth";
 const char kWebSerialOverBluetoothDescription[] =
     "Provides a way for websites to interact with a serial device over "
