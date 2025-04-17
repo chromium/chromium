@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -116,6 +117,9 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                     } else if (id == R.id.new_tab_group_menu_id) {
                         mUiFlow.newTabGroupFlow();
                         RecordUserAction.record("MobileMenuNewTabGroup");
+                        if (mTracker != null) {
+                            mTracker.notifyEvent("tab_switcher_add_to_group_clicked");
+                        }
                         return true;
                     }
                     return false;
@@ -155,6 +159,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 }
             };
 
+    protected @Nullable Tracker mTracker;
     private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
     private @Nullable Long mWaitForTabStateInitializedStartTimeMs;

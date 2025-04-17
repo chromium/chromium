@@ -1210,6 +1210,20 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+  if (kIPHTabSwitcherAddToGroup.name == feature->name) {
+    // Allows an IPH for the 'Add to Group' 3-dot menu entry:
+    // * Only once per year.
+    // * And only if the menu option hasn't been opened in that time.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.trigger = EventConfig("tab_switcher_add_to_group_iph_triggered",
+                                 Comparator(EQUAL, 0), 360, 360);
+    config.used = EventConfig("tab_switcher_add_to_group_clicked",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHTabSwitcherButtonFeature.name == feature->name) {
     // Adjusted to be less spammy for users that may know what the tab switcher
     // is. Show after 14 days of Chrome being installed, once every 90 days,

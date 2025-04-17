@@ -1,9 +1,9 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.chrome.browser.hub;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,18 +25,23 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.util.XrUtils;
@@ -66,10 +71,15 @@ public class HubToolbarCoordinatorUnitTest {
 
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
+    @Spy
+    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
+            new ObservableSupplierImpl<>();
+
+    private final ObservableSupplierImpl<Pane> mFocusedPaneSupplier =
+            new ObservableSupplierImpl<>();
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
     private MenuButton mMenuButton;
-    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier = new ObservableSupplierImpl<>();
 
     @Mock private PaneManager mPaneManager;
     @Mock private PaneOrderController mPaneOrderController;
@@ -77,6 +87,7 @@ public class HubToolbarCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private HubColorMixer mHubColorMixer;
+    @Mock private UserEducationHelper mUserEducationHelper;
 
     @Captor private ArgumentCaptor<View.OnKeyListener> mKeyListenerCaptor;
 
@@ -87,7 +98,6 @@ public class HubToolbarCoordinatorUnitTest {
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneOrderController.getPaneOrder()).thenReturn(ImmutableSet.of());
-
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -107,7 +117,9 @@ public class HubToolbarCoordinatorUnitTest {
                         mMenuButtonCoordinator,
                         mTracker,
                         mSearchActivityClient,
-                        mHubColorMixer);
+                        mHubColorMixer,
+                        mUserEducationHelper,
+                        mIsAnimatingSupplier);
         verify(mMenuButton).setOnKeyListener(mKeyListenerCaptor.capture());
     }
 
@@ -129,5 +141,16 @@ public class HubToolbarCoordinatorUnitTest {
                         new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
 
         verify(mMenuButtonCoordinator).onEnterKeyPress();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void isIphTriggered() {
+        verify(mIsAnimatingSupplier).addSyncObserver(any());
+        mIsAnimatingSupplier.set(false);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mUserEducationHelper).requestShowIph(any());
+        verify(mIsAnimatingSupplier).removeObserver(any());
     }
 }
