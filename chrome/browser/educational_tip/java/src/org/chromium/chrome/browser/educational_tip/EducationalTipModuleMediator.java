@@ -65,6 +65,9 @@ public class EducationalTipModuleMediator {
                 EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING,
                 mEducationalTipCardProvider.getCardDescription());
         mModel.set(
+                EducationalTipModuleProperties.MODULE_BUTTON_STRING,
+                mEducationalTipCardProvider.getCardButtonText());
+        mModel.set(
                 EducationalTipModuleProperties.MODULE_CONTENT_IMAGE,
                 mEducationalTipCardProvider.getCardImage());
         mModel.set(

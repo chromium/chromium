@@ -16,6 +16,7 @@ interface EducationalTipModuleProperties {
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<String> MODULE_CONTENT_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<String> MODULE_BUTTON_STRING = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<OnClickListener> MODULE_BUTTON_ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey MODULE_CONTENT_IMAGE = new WritableIntPropertyKey();
@@ -24,6 +25,7 @@ interface EducationalTipModuleProperties {
             new PropertyKey[] {
                 MODULE_CONTENT_TITLE_STRING,
                 MODULE_CONTENT_DESCRIPTION_STRING,
+                MODULE_BUTTON_STRING,
                 MODULE_BUTTON_ON_CLICK_LISTENER,
                 MODULE_CONTENT_IMAGE
             };

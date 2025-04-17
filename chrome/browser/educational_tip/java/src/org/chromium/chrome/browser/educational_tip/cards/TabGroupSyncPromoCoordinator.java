@@ -54,6 +54,11 @@ public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider 
     }
 
     @Override
+    public String getCardButtonText() {
+        return mActionDelegate.getContext().getString(R.string.educational_tip_module_button);
+    }
+
+    @Override
     public @DrawableRes int getCardImage() {
         return R.drawable.tab_group_sync_promo_logo;
     }

@@ -39,6 +39,13 @@ BASE_FEATURE(kHistoryOptInEducationalTip,
              "HistoryOptInEducationalTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines which text should be shown on the history sync educational tip
+// button. No-op unless HistoryOptInEducationalTip is enabled.
+const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
+    &kHistoryOptInEducationalTip,
+    "history_opt_in_educational_tip_param",
+    0);
+
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.
