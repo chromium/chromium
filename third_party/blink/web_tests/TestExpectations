@@ -7111,6 +7111,8 @@ crbug.com/396359045 editing/selection/update-selection-on-node-insertion.html [ 
 # Disable test temporarily to allow DevTools change to pass
 crbug.com/1294251 http/tests/devtools/elements/styles-3/styles-add-invalid-property.js [ Failure Pass Timeout ]
 
+crbug.com/411169291 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/view-transition-types-mutable-no-document-element-crashtest.html [ Failure Skip Timeout ]
+
 # Failures on Mac13 2023-05-18
 crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.html [ Failure Pass ]
 [ Debug Mac13 ] jquery/traversing.html [ Skip Timeout ]
