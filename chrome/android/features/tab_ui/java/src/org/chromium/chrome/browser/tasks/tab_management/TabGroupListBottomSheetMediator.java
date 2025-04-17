@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,8 +18,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -40,8 +39,6 @@ public class TabGroupListBottomSheetMediator {
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final DataSharingService mDataSharingService;
-    private final CollaborationService mCollaborationService;
     private final boolean mShowNewGroup;
 
     private final BottomSheetObserver mBottomSheetObserver =
@@ -66,8 +63,6 @@ public class TabGroupListBottomSheetMediator {
      * @param tabGroupCreationCallback Used to follow up on tab group creation.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
-     * @param dataSharingService Used to fetch shared group data.
-     * @param collaborationService Used to fetch collaboration group data.
      * @param bottomSheetController Used to interact with the bottom sheet.
      * @param delegate Called on {@link BottomSheetObserver} calls.
      * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
@@ -78,8 +73,6 @@ public class TabGroupListBottomSheetMediator {
             TabGroupCreationCallback tabGroupCreationCallback,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            DataSharingService dataSharingService,
-            CollaborationService collaborationService,
             BottomSheetController bottomSheetController,
             TabGroupListBottomSheetCoordinatorDelegate delegate,
             boolean showNewGroupRow) {
@@ -88,8 +81,6 @@ public class TabGroupListBottomSheetMediator {
         mTabGroupCreationCallback = tabGroupCreationCallback;
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
-        mDataSharingService = dataSharingService;
-        mCollaborationService = collaborationService;
         mBottomSheetController = bottomSheetController;
         mDelegate = delegate;
         mShowNewGroup = showNewGroupRow;
@@ -125,20 +116,40 @@ public class TabGroupListBottomSheetMediator {
             insertAddGroupRow(tabs);
         }
 
+        if (mTabGroupSyncService != null) {
+            populateRegularTabGroups(tabs);
+        } else {
+            populateIncognitoTabGroups(tabs);
+        }
+    }
+
+    private void populateIncognitoTabGroups(List<Tab> tabs) {
+        for (Token groupId : mFilter.getAllTabGroupIds()) {
+            LocalTabGroupListBottomSheetRowMediator rowMediator =
+                    new LocalTabGroupListBottomSheetRowMediator(
+                            groupId,
+                            mFilter,
+                            mFaviconResolver,
+                            () -> hide(StateChangeReason.INTERACTION_COMPLETE),
+                            tabs);
+            mModelList.add(
+                    new MVCListAdapter.ListItem(RowType.EXISTING_GROUP, rowMediator.getModel()));
+        }
+    }
+
+    private void populateRegularTabGroups(List<Tab> tabs) {
         GroupWindowChecker windowChecker = new GroupWindowChecker(mTabGroupSyncService, mFilter);
         List<SavedTabGroup> sortedTabGroups =
                 windowChecker.getSortedGroupList(
                         this::shouldShowGroupByState,
                         (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs));
-        for (SavedTabGroup savedTabGroup : sortedTabGroups) {
+        for (SavedTabGroup tabGroup : sortedTabGroups) {
             TabGroupListBottomSheetRowMediator rowMediator =
                     new TabGroupListBottomSheetRowMediator(
-                            savedTabGroup,
+                            tabGroup,
                             mFilter,
-                            mTabGroupSyncService,
-                            mDataSharingService,
-                            mCollaborationService,
                             mFaviconResolver,
+                            mTabGroupSyncService,
                             () -> hide(StateChangeReason.INTERACTION_COMPLETE),
                             tabs);
             mModelList.add(

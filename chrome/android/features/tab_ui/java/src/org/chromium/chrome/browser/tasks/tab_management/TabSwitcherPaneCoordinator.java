@@ -139,6 +139,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ViewGroup mParentView;
     private final TabSwitcherMessageManager mMessageManager;
     private final ModalDialogManager mModalDialogManager;
+    private final BottomSheetController mBottomSheetController;
     private final Runnable mOnDestroyed;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
@@ -146,10 +147,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             new OneshotSupplierImpl<>();
     private final Callback<EdgeToEdgeController> mOnEdgeToEdgeControllerChangedCallback =
             new ValueChangedCallback<>(this::onEdgeToEdgeControllerChanged);
-    private final TabSwitcherContextMenuCoordinator mContextMenuCoordinator;
     private final @Nullable TabGroupLabeller mTabGroupLabeller;
     private final ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
-    private final TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
+    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final Runnable mOnTabGroupCreation;
+    private final Callback<TabGroupModelFilter> mOnFilterChange = this::onFilterChange;
+    private @Nullable TabSwitcherContextMenuCoordinator mContextMenuCoordinator;
+    private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -222,10 +227,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mIsAnimatingSupplier = isAnimatingSupplier;
             mActivity = activity;
             mModalDialogManager = modalDialogManager;
+            mBottomSheetController = bottomSheetController;
             mParentView = parentView;
             mOnDestroyed = onDestroyed;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
             mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+            mOnTabGroupCreation = onTabGroupCreation;
+            mShareDelegateSupplier = shareDelegateSupplier;
+            mTabBookmarkerSupplier = tabBookmarkerSupplier;
 
             assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
@@ -415,31 +424,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             }
 
             mOnVisibilityChanged.onResult(isVisibleSupplier.addObserver(mOnVisibilityChanged));
-
-            TabGroupCreationDialogManager tabGroupCreationDialogManager =
-                    new TabGroupCreationDialogManager(
-                            activity, modalDialogManager, onTabGroupCreation);
-            mTabGroupListBottomSheetCoordinator =
-                    new TabGroupListBottomSheetCoordinator(
-                            activity,
-                            profile,
-                            tabGroupId ->
-                                    tabGroupCreationDialogManager.showDialog(tabGroupId, filter),
-                            filter,
-                            bottomSheetController,
-                            /* showNewGroupRow= */ true,
-                            /* destroyOnHide= */ false);
-
-            TabBookmarker tabBookmarker = tabBookmarkerSupplier.get();
-            mContextMenuCoordinator =
-                    TabSwitcherContextMenuCoordinator.createContextMenuCoordinator(
-                            activity,
-                            tabBookmarker,
-                            filter,
-                            mTabGroupListBottomSheetCoordinator,
-                            tabGroupCreationDialogManager,
-                            shareDelegateSupplier,
-                            tabListEditorManager);
+            mTabGroupModelFilterSupplier.addObserver(mOnFilterChange);
         }
     }
 
@@ -465,7 +450,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.destroy();
         }
-        mTabGroupListBottomSheetCoordinator.destroy();
+        mTabGroupModelFilterSupplier.removeObserver(mOnFilterChange);
+        if (mTabGroupListBottomSheetCoordinator != null) {
+            mTabGroupListBottomSheetCoordinator.destroy();
+        }
     }
 
     /** Post native initialization. */
@@ -794,5 +782,39 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     TabListContainerProperties.IS_CLIP_TO_PADDING, bottomPadding == 0);
         }
         mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, bottomPadding);
+    }
+
+    private void onFilterChange(TabGroupModelFilter filter) {
+        if (mTabGroupListBottomSheetCoordinator != null) {
+            mTabGroupListBottomSheetCoordinator.destroy();
+        }
+
+        TabGroupCreationDialogManager tabGroupCreationDialogManager =
+                new TabGroupCreationDialogManager(
+                        mActivity, mModalDialogManager, mOnTabGroupCreation);
+
+        Profile profile = filter.getTabModel().getProfile();
+        if (profile == null) return;
+
+        mTabGroupListBottomSheetCoordinator =
+                new TabGroupListBottomSheetCoordinator(
+                        mActivity,
+                        profile,
+                        tabGroupId -> tabGroupCreationDialogManager.showDialog(tabGroupId, filter),
+                        filter,
+                        mBottomSheetController,
+                        /* showNewGroupRow= */ true,
+                        /* destroyOnHide= */ false);
+
+        TabBookmarker tabBookmarker = mTabBookmarkerSupplier.get();
+        mContextMenuCoordinator =
+                TabSwitcherContextMenuCoordinator.createContextMenuCoordinator(
+                        mActivity,
+                        tabBookmarker,
+                        filter,
+                        mTabGroupListBottomSheetCoordinator,
+                        tabGroupCreationDialogManager,
+                        mShareDelegateSupplier,
+                        mTabListEditorManager);
     }
 }

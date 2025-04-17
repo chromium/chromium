@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,13 +25,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
-import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.SavedTabGroupTab;
-import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -39,57 +33,46 @@ import java.util.List;
 /** Unit tests for {@link TabGroupListBottomSheetRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabGroupListBottomSheetRowMediatorUnitTest {
-    private static final String TEST_SYNC_ID = "testSyncId";
+public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
     private static final int TEST_COLOR = 0;
     private static final String TEST_TITLE = "testTitle";
-    private static final long TEST_UPDATE_TIME = 123456789L;
-    private static final int TEST_LOCAL_ID = 1;
+    private static final int TEST_TAB_ID1 = 1;
+    private static final int TEST_TAB_ID2 = 2;
+    private static final int TEST_ROOT_ID = 123;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private DataSharingService mDataSharingService;
-    @Mock private CollaborationService mCollaborationService;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private Runnable mOnClickRunnable;
     @Mock private TabModel mTabModel;
-    @Mock private Tab mTab;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
 
-    private final Token mToken = Token.createRandom();
+    private Token mGroupId;
     private List<Tab> mTabs;
-    private SavedTabGroup mSavedTabGroup;
-    private TabGroupListBottomSheetRowMediator mMediator;
+    private LocalTabGroupListBottomSheetRowMediator mMediator;
 
     @Before
     public void setUp() {
+        mGroupId = Token.createRandom();
         mTabs = new ArrayList<>();
-        mTabs.add(mTab);
-
-        SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
-        List<SavedTabGroupTab> savedTabs = List.of(savedTabGroupTab);
-        SyncedGroupTestHelper helper = new SyncedGroupTestHelper(mTabGroupSyncService);
-        mSavedTabGroup = helper.newTabGroup(TEST_SYNC_ID);
-        mSavedTabGroup.localId = new LocalTabGroupId(mToken);
-        mSavedTabGroup.syncId = TEST_SYNC_ID;
-        mSavedTabGroup.color = TEST_COLOR;
-        mSavedTabGroup.title = TEST_TITLE;
-        mSavedTabGroup.updateTimeMs = TEST_UPDATE_TIME;
-        mSavedTabGroup.savedTabs = savedTabs;
-        savedTabGroupTab.localId = TEST_LOCAL_ID;
+        mTabs.add(mTab1);
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(mTab);
+        when(mTabGroupModelFilter.getTabsInGroup(mGroupId)).thenReturn(mTabs);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(mGroupId)).thenReturn(TEST_ROOT_ID);
+        when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(true);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_TAB_ID1);
+        when(mTabGroupModelFilter.getTabCountForGroup(mGroupId)).thenReturn(1);
+        when(mTabGroupModelFilter.getTabGroupColor(TEST_ROOT_ID)).thenReturn(TEST_COLOR);
+        when(mTabGroupModelFilter.getTabGroupTitle(TEST_ROOT_ID)).thenReturn(TEST_TITLE);
+        when(mTabModel.getTabById(TEST_TAB_ID1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TEST_TAB_ID2)).thenReturn(mTab2);
 
         mMediator =
-                new TabGroupListBottomSheetRowMediator(
-                        mSavedTabGroup,
-                        mTabGroupModelFilter,
-                        mFaviconResolver,
-                        mTabGroupSyncService,
-                        mOnClickRunnable,
-                        mTabs);
+                new LocalTabGroupListBottomSheetRowMediator(
+                        mGroupId, mTabGroupModelFilter, mFaviconResolver, mOnClickRunnable, mTabs);
     }
 
     @Test
@@ -105,51 +88,50 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         assertEquals(
                 R.string.tab_group_bottom_sheet_row_accessibility_text,
                 titleData.rowAccessibilityTextResId);
-        assertNotNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
+        assertNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
     }
 
     @Test
     public void testClickRow() {
+        List<Tab> tabList = List.of(mTab2);
+        mMediator =
+                new LocalTabGroupListBottomSheetRowMediator(
+                        mGroupId,
+                        mTabGroupModelFilter,
+                        mFaviconResolver,
+                        mOnClickRunnable,
+                        tabList);
         PropertyModel model = mMediator.getModel();
 
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabList, mTab1, true);
         verify(mOnClickRunnable).run();
     }
 
     @Test
     public void testClickRow_tabsAlreadyInGroup() {
         PropertyModel model = mMediator.getModel();
-        when(mTab.getTabGroupId()).thenReturn(mToken);
+        when(mTab1.getTabGroupId()).thenReturn(mGroupId);
 
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab, true);
-        verify(mOnClickRunnable).run();
-    }
-
-    @Test
-    public void testClickRow_noLocalId() {
-        PropertyModel model = mMediator.getModel();
-        mSavedTabGroup.savedTabs.get(0).localId = null;
-        Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
-        clickRunnable.run();
-
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
         verify(mOnClickRunnable).run();
     }
 
     @Test
     public void testClickRow_groupNoLongerExists() {
         PropertyModel model = mMediator.getModel();
-        mSavedTabGroup.savedTabs = new ArrayList<>();
+        when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(false);
+        when(mTabModel.getTabById(TEST_TAB_ID1)).thenReturn(mTab1);
+
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab1, true);
         verify(mOnClickRunnable).run();
     }
 }
