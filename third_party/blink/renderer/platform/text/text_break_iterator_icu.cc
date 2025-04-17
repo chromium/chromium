@@ -785,13 +785,9 @@ void ReturnBreakIteratorToPool::operator()(void* ptr) const {
   LineBreakIteratorPool::SharedPool().Put(iterator);
 }
 
-CharacterBreakIterator::CharacterBreakIterator(const StringView& string)
-    : is_8bit_(true),
-      charaters8_(nullptr),
-      offset_(0),
-      length_(0),
-      iterator_(nullptr) {
+CharacterBreakIterator::CharacterBreakIterator(const StringView& string) {
   if (string.empty()) {
+    is_8bit_ = true;
     return;
   }
 
@@ -809,12 +805,7 @@ CharacterBreakIterator::CharacterBreakIterator(const StringView& string)
   CreateIteratorForBuffer(string.Span16());
 }
 
-CharacterBreakIterator::CharacterBreakIterator(base::span<const UChar> buffer)
-    : is_8bit_(false),
-      charaters8_(nullptr),
-      offset_(0),
-      length_(0),
-      iterator_(nullptr) {
+CharacterBreakIterator::CharacterBreakIterator(base::span<const UChar> buffer) {
   CreateIteratorForBuffer(buffer);
 }
 

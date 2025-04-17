@@ -84,15 +84,15 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
            UNSAFE_TODO(charaters8_[offset - 1]) == '\r';
   }
 
-  bool is_8bit_;
+  bool is_8bit_ = false;
 
   // For 8 bit strings, we implement the iterator ourselves.
-  const LChar* charaters8_;
-  unsigned offset_;
-  unsigned length_;
+  const LChar* charaters8_ = nullptr;
+  unsigned offset_ = 0;
+  unsigned length_ = 0;
 
   // For 16 bit strings, we use a TextBreakIterator.
-  TextBreakIterator* iterator_;
+  TextBreakIterator* iterator_ = nullptr;
 };
 
 // Counts the number of grapheme clusters. A surrogate pair or a sequence
