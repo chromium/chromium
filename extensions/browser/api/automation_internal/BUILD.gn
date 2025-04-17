@@ -25,6 +25,7 @@ source_set("automation_internal") {
     "//base",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/browser/api/app_runtime:app_runtime",
     "//extensions/common",
     "//extensions/common:mojom",

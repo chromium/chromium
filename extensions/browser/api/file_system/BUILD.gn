@@ -33,6 +33,7 @@ source_set("file_system") {
     "//base:i18n",
     "//components/filename_generation",
     "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/browser/api/file_handlers",
     "//net",
     "//storage/browser",

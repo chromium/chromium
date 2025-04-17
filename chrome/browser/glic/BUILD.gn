@@ -325,6 +325,7 @@ source_set("browser_tests") {
     "//components/variations/service",
     "//content/test:test_support",
     "//extensions/browser",
+    "//extensions/browser/api:extensions_api_client",
     "//ui/base:ozone_buildflags",
     "//ui/events:test_support",
   ]

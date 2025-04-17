@@ -21,6 +21,7 @@ source_set("test") {
   deps = [
     "//base",
     "//content/public/common",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
   ]

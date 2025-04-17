@@ -28,6 +28,7 @@ source_set("media_perception_private") {
     "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
     "//chromeos/services/media_perception/public/mojom",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//services/video_capture/public/mojom",

@@ -676,6 +676,7 @@ static_library("test_support") {
       "../browser/pdf",
       "../browser/pdf:pdf_extension_test_utils",
       "//components/pdf/browser",
+      "//extensions/browser/api:extensions_api_client",
       "//pdf:features",
     ]
   }
@@ -4650,6 +4651,7 @@ if (!is_android) {
         # chrome_extensions_browsertests_sources target for more.
         "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
+        "//extensions/browser/api:extensions_api_client",
         "//extensions/browser/api/storage:settings_namespace",
         "//extensions/browser/api/system_display:display_info_provider",
         "//extensions/browser/updater",
@@ -11172,6 +11174,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/exclusive_access:test_support",
+        "//extensions/browser/api:extensions_api_client",
       ]
 
       if (is_chromeos) {

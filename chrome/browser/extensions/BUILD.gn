@@ -988,6 +988,7 @@ source_set("extensions") {
       "//device/bluetooth",
       "//device/fido",
       "//extensions:extensions_resources",
+      "//extensions/browser/api:extensions_api_client",
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/system_display:display_info_provider",
       "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",

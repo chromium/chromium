@@ -35,6 +35,7 @@ source_set("file_handlers") {
     "//components/services/app_service",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//net",
     "//storage/browser",
     "//storage/common",

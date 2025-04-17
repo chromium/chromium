@@ -141,3 +141,30 @@ function_registration("api_registration") {
     "//skia",
   ]
 }
+
+# Glue layer for API-specific stuff.
+source_set("extensions_api_client") {
+  sources = [
+    "extensions_api_client.cc",
+    "extensions_api_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/guest_view/buildflags",
+    "//extensions/browser/api/storage:settings_namespace",
+    "//extensions/browser/api/storage:settings_observer",
+    "//extensions/common",
+  ]
+
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/clipboard:clipboard_types" ]
+  }
+
+  deps = [
+    "//extensions/browser/api/messaging:native_messaging",
+    "//extensions/browser/api/system_display:display_info_provider",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
+  ]
+}

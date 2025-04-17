@@ -25,6 +25,7 @@ source_set("virtual_keyboard_private") {
   deps = [
     ":virtual_keyboard_delegate",
     "//content/public/browser",
+    "//extensions/browser/api:extensions_api_client",
   ]
 
   if (is_chromeos) {

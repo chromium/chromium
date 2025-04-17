@@ -21,6 +21,7 @@ source_set("clipboard") {
     ":clipboard_types",
     "//base",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
     "//ui/base/clipboard",
   ]

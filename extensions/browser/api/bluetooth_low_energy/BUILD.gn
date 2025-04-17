@@ -31,6 +31,7 @@ source_set("bluetooth_low_energy") {
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
   ]
