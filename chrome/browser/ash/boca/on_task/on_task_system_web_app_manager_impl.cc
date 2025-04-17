@@ -155,6 +155,11 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
     // Nothing to do.
     return;
   }
+
+  // Move the browser window to the top of the layer tree before pinning or
+  // unpinning it. This fixes a bug on tablets that results in no content being
+  // rendered on pinning.
+  browser->window()->Show();
   aura::Window* const native_window = browser->window()->GetNativeWindow();
   if (pinned) {
     PinWindow(native_window, /*trusted=*/true);
