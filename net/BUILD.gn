@@ -24,6 +24,7 @@ if (is_android) {
 } else if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 } else if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
@@ -1612,12 +1613,15 @@ component("net") {
     libs = [ "resolv" ]
     frameworks = [
       "CFNetwork.framework",
-      "CoreTelephony.framework",
       "MobileCoreServices.framework",
       "Security.framework",
       "SystemConfiguration.framework",
       "UniformTypeIdentifiers.framework",
     ]
+
+    if (target_platform == "iphoneos") {
+      frameworks += [ "CoreTelephony.framework" ]
+    }
   }
 
   if (is_win) {
