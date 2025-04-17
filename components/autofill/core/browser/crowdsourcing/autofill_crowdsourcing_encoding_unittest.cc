@@ -76,7 +76,8 @@ struct ManualOverride {
   const std::vector<FieldType> field_types;
 };
 
-// TODO(crbug.com/406066782): Add deep comparison for descriptive error messages.
+// TODO(crbug.com/406066782): Add deep comparison for descriptive error
+// messages.
 Matcher<AutofillUploadContents> SerializesSameAs(
     const AutofillUploadContents& expected) {
   std::string expected_string;
@@ -90,7 +91,8 @@ Matcher<AutofillUploadContents> SerializesSameAs(
       Eq(expected_string));
 }
 
-// TODO(crbug.com/406066782): Add deep comparison for descriptive error messages.
+// TODO(crbug.com/406066782): Add deep comparison for descriptive error
+// messages.
 Matcher<AutofillPageQueryRequest> SerializesSameAs(
     const AutofillPageQueryRequest& expected) {
   std::string expected_string;
@@ -264,6 +266,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
   upload.set_has_form_tag(true);
@@ -309,6 +313,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
 
   // Adjust the expected proto string.
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
@@ -362,6 +368,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("10");
   upload.set_submission_event(
@@ -418,6 +426,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("10");
   upload.set_submission_event(
@@ -527,6 +537,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440000000000000000802");
   upload.set_login_form_signature(42);
@@ -628,6 +640,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440");
   upload.set_submission_event(
@@ -693,6 +707,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440");
   upload.set_submission_event(
@@ -748,6 +764,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440");
   upload.set_submission_event(
@@ -824,6 +842,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
     upload.set_client_version(
         std::string(GetProductNameAndVersionForUserAgent()));
     upload.set_form_signature(form_structure->form_signature().value());
+    upload.set_secondary_form_signature(
+        form_structure->alternative_form_signature().value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
     upload.set_has_form_tag(true);
@@ -913,6 +933,8 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure.form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure.alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("");
   upload.set_submission_event(
@@ -1142,6 +1164,8 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
   upload.set_client_version(
       std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_secondary_form_signature(
+      form_structure->alternative_form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440000360000008");
   upload.set_has_form_tag(false);
