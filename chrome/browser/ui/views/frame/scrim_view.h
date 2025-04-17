@@ -14,9 +14,14 @@ class ScrimView : public views::View {
 
  public:
   ScrimView();
+
   ScrimView(const ScrimView&) = delete;
   ScrimView& operator=(const ScrimView&) = delete;
+
   ~ScrimView() override = default;
+
+  // views::View:
+  void AddedToWidget() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SCRIM_VIEW_H_

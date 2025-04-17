@@ -7,24 +7,25 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/canvas.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 
 ScrimView::ScrimView() {
   SetCanProcessEventsWithinSubtree(false);
   // This view must be painted to a layer so that it can be drawn on top of the
   // contents view. Otherwise, the scrim is drawn on the BrowserView's layer,
   // which always stays behind the content's layer.
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   GetViewAccessibility().SetIsInvisible(true);
+  SetVisible(false);
+}
+
+void ScrimView::AddedToWidget() {
   // Maybe consider using a different color for the scrim?
   // kColorSysStateScrim is a semi-transparent black which has no effect on a
   // pure black background. In contrast, macOS sheet uses a semi-transparent
   // grey scrim which lightens a dark background.
-  SetBackground(views::CreateSolidBackground(ui::kColorSysStateScrim));
-  SetVisible(false);
+  layer()->SetColor(GetColorProvider()->GetColor(ui::kColorSysStateScrim));
 }
 
 BEGIN_METADATA(ScrimView)
