@@ -1075,6 +1075,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="ProcessedSuccessfully"/>
   <int value="1" label="CouldNotFindViewForFrameSinkId"/>
   <int value="2" label="FrameSinkIdCorrespondsToChildView"/>
+  <int value="3" label="FrameSinkIdNotAttachedToRootCFS"/>
 </enum>
 
 <enum name="LightTheme">

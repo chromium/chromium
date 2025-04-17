@@ -17,13 +17,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
+#include "components/viz/service/gl/mock_gpu_service_impl.h"
 #include "components/viz/service/input/peak_gpu_memory_tracker_impl.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
@@ -36,37 +36,6 @@ const uint64_t kPeakMemoryMB = 42u;
 const uint64_t kPeakMemory = kPeakMemoryMB * 1048576u;
 
 }  // namespace
-
-class MockGpuServiceImpl : public GpuServiceImpl {
- public:
-  explicit MockGpuServiceImpl(
-      const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GPUInfo& gpu_info,
-      const gpu::GpuFeatureInfo& gpu_feature_info,
-      const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
-      const std::optional<gpu::GpuFeatureInfo>&
-          gpu_feature_info_for_hardware_gpu,
-      const gfx::GpuExtraInfo& gpu_extra_info,
-      InitParams init_params)
-      : GpuServiceImpl(gpu_preferences,
-                       gpu_info,
-                       gpu_feature_info,
-                       gpu_info_for_hardware_gpu,
-                       gpu_feature_info_for_hardware_gpu,
-                       gpu_extra_info,
-                       std::move(init_params)) {}
-  ~MockGpuServiceImpl() override = default;
-
-  MOCK_METHOD(void,
-              StartPeakMemoryMonitor,
-              (uint32_t sequence_num),
-              (override));
-
-  MOCK_METHOD(void,
-              GetPeakMemoryUsageOnMainThread,
-              (uint32_t sequence_num, GetPeakMemoryUsageCallback callback),
-              (override));
-};
 
 class GpuServiceTest : public testing::Test {
  public:

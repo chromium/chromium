@@ -110,7 +110,8 @@ enum class InputOnVizStateProcessingResult {
   kProcessedSuccessfully = 0,
   kCouldNotFindViewForFrameSinkId = 1,
   kFrameSinkIdCorrespondsToChildView = 2,
-  kMaxValue = kFrameSinkIdCorrespondsToChildView,
+  kFrameSinkIdNotAttachedToRootCFS = 3,
+  kMaxValue = kFrameSinkIdNotAttachedToRootCFS,
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -274,6 +275,49 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 }
 
+void InputManager::OnRegisteredFrameSinkHierarchy(
+    const FrameSinkId& parent_frame_sink_id,
+    const FrameSinkId& child_frame_sink_id) {
+  // Either the `child_frame_sink_id` corresponds to a layer tree frame sink, or
+  // the OnCreateCompositorFrameSink call hasn't came in yet. We don't care
+  // about the former case in InputManager, for the later correct construction
+  // will take place when `OnCreateCompositorFrameSink` call will come.
+  auto it = frame_sink_metadata_map_.find(child_frame_sink_id);
+  if (it == frame_sink_metadata_map_.end()) {
+    return;
+  }
+
+  const int num_parents =
+      frame_sink_manager_->GetNumParents(child_frame_sink_id);
+  if (num_parents > 1) {
+    // Let UnregisterFrameSinkHierarchy do the reconstruction for this
+    // RenderInputRouterSupport.
+    return;
+  }
+  // `child_frame_sink_id` just got registered to `parent_frame_sink_id`,
+  // `num_parents` should not be zero.
+  CHECK_EQ(num_parents, 1);
+
+  RecreateRenderInputRouterSupport(child_frame_sink_id,
+                                   /* frame_sink_metadata= */ it->second);
+}
+
+void InputManager::OnUnregisteredFrameSinkHierarchy(
+    const FrameSinkId& parent_frame_sink_id,
+    const FrameSinkId& child_frame_sink_id) {
+  auto it = frame_sink_metadata_map_.find(child_frame_sink_id);
+  if (it == frame_sink_metadata_map_.end()) {
+    return;
+  }
+
+  if (frame_sink_manager_->GetNumParents(child_frame_sink_id) != 1) {
+    return;
+  }
+
+  RecreateRenderInputRouterSupport(child_frame_sink_id,
+                                   /* frame_sink_metadata= */ it->second);
+}
+
 void InputManager::OnFrameSinkDeviceScaleFactorChanged(
     const FrameSinkId& frame_sink_id,
     float device_scale_factor) {
@@ -427,32 +471,45 @@ void InputManager::StateOnTouchTransfer(
     input::mojom::TouchTransferStatePtr state) {
 #if BUILDFLAG(IS_ANDROID)
   auto iter = frame_sink_metadata_map_.find(state->root_widget_frame_sink_id);
-  base::WeakPtr<RenderInputRouterSupportAndroidInterface>
-      support_android_interface = nullptr;
-  if (iter != frame_sink_metadata_map_.end()) {
-    RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
-    CHECK(support_base);
-    // TODO(crbug.com/404741207): Convert this to CHECK once the underlying
-    // reason for crash is fixed.
-    if (!support_base->IsRenderInputRouterSupportChildFrame()) {
-      auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
-          iter->second.rir_support.get());
-      support_android_interface = support_android->GetWeakPtr();
-      UMA_HISTOGRAM_ENUMERATION(
-          kStateProcessingResultHistogram,
-          InputOnVizStateProcessingResult::kProcessedSuccessfully);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          kStateProcessingResultHistogram,
-          InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
-    }
-  } else {
+  if (iter == frame_sink_metadata_map_.end()) {
     UMA_HISTOGRAM_ENUMERATION(
         kStateProcessingResultHistogram,
         InputOnVizStateProcessingResult::kCouldNotFindViewForFrameSinkId);
+    android_state_transfer_handler_.StateOnTouchTransfer(
+        std::move(state), /* rir_support= */ nullptr);
+    return;
   }
+
+  if (!GetRootCompositorFrameSinkId(state->root_widget_frame_sink_id)
+           .is_valid()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kFrameSinkIdNotAttachedToRootCFS);
+    android_state_transfer_handler_.StateOnTouchTransfer(
+        std::move(state), /* rir_support= */ nullptr);
+    return;
+  }
+
+  RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
+  CHECK(support_base);
+  // TODO(crbug.com/404741207): Convert this to CHECK once the underlying
+  // reason for crash is fixed.
+  if (support_base->IsRenderInputRouterSupportChildFrame()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
+    android_state_transfer_handler_.StateOnTouchTransfer(
+        std::move(state), /* rir_support= */ nullptr);
+    return;
+  }
+
+  auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
+      iter->second.rir_support.get());
+  UMA_HISTOGRAM_ENUMERATION(
+      kStateProcessingResultHistogram,
+      InputOnVizStateProcessingResult::kProcessedSuccessfully);
   android_state_transfer_handler_.StateOnTouchTransfer(
-      std::move(state), support_android_interface);
+      std::move(state), support_android->GetWeakPtr());
 #endif
 }
 
@@ -582,6 +639,18 @@ void InputManager::MaybeRecreateRootRenderInputRouterSupports(
           MakeRenderInputRouterSupport(rir, frame_sink_id);
     }
   }
+}
+
+void InputManager::RecreateRenderInputRouterSupport(
+    const FrameSinkId& child_frame_sink_id,
+    FrameSinkMetadata& frame_sink_metadata) {
+  auto rir_map_it = rir_map_.find(child_frame_sink_id);
+  CHECK(rir_map_it != rir_map_.end());
+  input::RenderInputRouter* rir = rir_map_it->second.get();
+
+  frame_sink_metadata.rir_support.reset();
+  frame_sink_metadata.rir_support =
+      MakeRenderInputRouterSupport(rir, child_frame_sink_id);
 }
 
 std::unique_ptr<RenderInputRouterSupportBase>

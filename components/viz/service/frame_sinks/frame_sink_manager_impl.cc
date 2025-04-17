@@ -358,11 +358,6 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   // independently of each other and not have an ordering dependency of
   // unregistering the hierarchy first before either of them.
 
-  for (auto& observer : observer_list_) {
-    observer.OnUnregisteredFrameSinkHierarchy(parent_frame_sink_id,
-                                              child_frame_sink_id);
-  }
-
   auto iter_child = frame_sink_source_map_.find(child_frame_sink_id);
   CHECK(iter_child != frame_sink_source_map_.end());
 
@@ -389,6 +384,11 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   auto& mapping = iter_parent->second;
   DCHECK(base::Contains(mapping.children, child_frame_sink_id));
   mapping.children.erase(child_frame_sink_id);
+
+  for (auto& observer : observer_list_) {
+    observer.OnUnregisteredFrameSinkHierarchy(parent_frame_sink_id,
+                                              child_frame_sink_id);
+  }
 
   // Now the hierarchy has been updated, update throttling.
   UpdateThrottling();
@@ -863,6 +863,15 @@ FrameSinkId FrameSinkManagerImpl::GetOldestParentByChildFrameId(
     return FrameSinkId();
   }
   return it->second.parent.front();
+}
+
+int FrameSinkManagerImpl::GetNumParents(
+    const FrameSinkId& frame_sink_id) const {
+  auto it = frame_sink_source_map_.find(frame_sink_id);
+  if (it == frame_sink_source_map_.end()) {
+    return 0;
+  }
+  return it->second.parent.size();
 }
 
 FrameSinkId FrameSinkManagerImpl::GetOldestRootCompositorFrameSinkId(

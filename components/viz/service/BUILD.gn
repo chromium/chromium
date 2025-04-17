@@ -631,6 +631,8 @@ viz_source_set("unit_tests") {
     "frame_sinks/video_capture/video_capture_overlay_unittest.cc",
     "frame_sinks/video_detector_unittest.cc",
     "gl/gpu_service_impl_unittest.cc",
+    "gl/mock_gpu_service_impl.cc",
+    "gl/mock_gpu_service_impl.h",
     "hit_test/hit_test_aggregator_unittest.cc",
     "input/mock_input_manager.cc",
     "input/mock_input_manager.h",

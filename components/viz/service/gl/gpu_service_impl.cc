@@ -434,8 +434,14 @@ GpuServiceImpl::GpuServiceImpl(
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
+GpuServiceImpl::GpuServiceImpl()
+    : clear_shader_cache_(base::FeatureList::IsEnabled(
+          features::kClearGrShaderDiskCacheOnInvalidPrefix)) {}
+
 GpuServiceImpl::~GpuServiceImpl() {
-  DCHECK(main_runner_->BelongsToCurrentThread());
+  if (main_runner_) {
+    DCHECK(main_runner_->BelongsToCurrentThread());
+  }
 
   // Ensure we don't try to exit when already in the process of exiting.
   is_exiting_.Set();
@@ -459,8 +465,10 @@ GpuServiceImpl::~GpuServiceImpl() {
           wait->Signal();
         },
         &receiver_, base::Unretained(&wait));
-    if (io_runner_->PostTask(FROM_HERE, std::move(destroy_receiver_task)))
+    if (io_runner_ &&
+        io_runner_->PostTask(FROM_HERE, std::move(destroy_receiver_task))) {
       wait.Wait();
+    }
   }
 
   if (watchdog_thread_)
@@ -482,7 +490,8 @@ GpuServiceImpl::~GpuServiceImpl() {
         },
         std::move(gpu_memory_buffer_factory_), base::Unretained(&wait));
 
-    if (io_runner_->PostTask(FROM_HERE, std::move(destroy_gmb_factory))) {
+    if (io_runner_ &&
+        io_runner_->PostTask(FROM_HERE, std::move(destroy_gmb_factory))) {
       // |gpu_memory_buffer_factory_| holds a raw pointer to
       // |vulkan_context_provider_|. Waiting here enforces the correct order
       // of destruction.

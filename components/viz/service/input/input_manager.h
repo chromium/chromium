@@ -80,6 +80,12 @@ class VIZ_SERVICE_EXPORT InputManager
   // FrameSinkObserver overrides.
   void OnDestroyedCompositorFrameSink(
       const FrameSinkId& frame_sink_id) override;
+  void OnRegisteredFrameSinkHierarchy(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& child_frame_sink_id) override;
+  void OnUnregisteredFrameSinkHierarchy(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& child_frame_sink_id) override;
   void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
                                            float device_scale_factor) override;
 
@@ -161,6 +167,9 @@ class VIZ_SERVICE_EXPORT InputManager
   // RenderInputRouterSupportAndroid as RenderInputRouterSupportChildFrame.
   void MaybeRecreateRootRenderInputRouterSupports(
       const FrameSinkId& root_frame_sink_id);
+
+  void RecreateRenderInputRouterSupport(const FrameSinkId& child_frame_sink_id,
+                                        FrameSinkMetadata& frame_sink_metadata);
 
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,

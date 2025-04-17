@@ -9,6 +9,7 @@
 #include "components/input/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/gl/mock_gpu_service_impl.h"
 #include "components/viz/service/input/input_manager.h"
 #include "components/viz/service/input/mock_input_manager.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -50,9 +51,11 @@ struct RootCompositorFrameSinkData {
 class FlingSchedulerTest : public testing::Test,
                            public input::FlingControllerEventSenderClient {
  public:
-  FlingSchedulerTest()
-      : frame_sink_manager_(
-            FrameSinkManagerImpl::InitParams(&output_surface_provider_)) {
+  FlingSchedulerTest() {
+    FrameSinkManagerImpl::InitParams init_params(&output_surface_provider_);
+    init_params.gpu_service = &gpu_service_;
+    frame_sink_manager_ =
+        std::make_unique<FrameSinkManagerImpl>(std::move(init_params));
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features */ {input::features::kInputOnViz},
         /* disabled_features */ {});
@@ -62,43 +65,43 @@ class FlingSchedulerTest : public testing::Test,
   FlingSchedulerTest& operator=(const FlingSchedulerTest&) = delete;
 
   void SetUp() override {
-    frame_sink_manager_.SetInputManagerForTesting(
-        std::make_unique<MockInputManager>(&frame_sink_manager_));
+    frame_sink_manager_->SetInputManagerForTesting(
+        std::make_unique<MockInputManager>(frame_sink_manager_.get()));
 
     RootCompositorFrameSinkData root_data1;
-    frame_sink_manager_.CreateRootCompositorFrameSink(
+    frame_sink_manager_->CreateRootCompositorFrameSink(
         root_data1.BuildParams(kFrameSinkIdRoot));
     EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdRoot));
 
     // Create a grouping id.
     base::UnguessableToken grouping_id = base::UnguessableToken::Create();
     // Create a CompositorFrameSinkImpl.
-    frame_sink_manager_.RegisterFrameSinkId(kFrameSinkIdA,
-                                            true /* report_activation */);
+    frame_sink_manager_->RegisterFrameSinkId(kFrameSinkIdA,
+                                             true /* report_activation */);
     CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
 
     // Set up initial hierarchy: root -> A.
-    frame_sink_manager_.RegisterFrameSinkHierarchy(kFrameSinkIdRoot,
-                                                   kFrameSinkIdA);
-    ASSERT_EQ(frame_sink_manager_.GetOldestParentByChildFrameId(kFrameSinkIdA),
+    frame_sink_manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot,
+                                                    kFrameSinkIdA);
+    ASSERT_EQ(frame_sink_manager_->GetOldestParentByChildFrameId(kFrameSinkIdA),
               kFrameSinkIdRoot);
   }
 
   void TearDown() override {
     // Cleanup hierarchy.
-    frame_sink_manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdRoot,
-                                                     kFrameSinkIdA);
-    frame_sink_manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+    frame_sink_manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot,
+                                                      kFrameSinkIdA);
+    frame_sink_manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
     // Invalidating should destroy the CompositorFrameSinkImpl's.
-    frame_sink_manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+    frame_sink_manager_->InvalidateFrameSinkId(kFrameSinkIdA);
 
     fling_controller_.reset();
     // Make sure that all FrameSinkSourceMappings have been deleted.
-    EXPECT_TRUE(frame_sink_manager_.frame_sink_source_map_.empty());
+    EXPECT_TRUE(frame_sink_manager_->frame_sink_source_map_.empty());
     // Make sure test cleans up all [Root]CompositorFrameSinkImpls.
-    EXPECT_TRUE(frame_sink_manager_.support_map_.empty());
+    EXPECT_TRUE(frame_sink_manager_->support_map_.empty());
     // Make sure test has invalidated all registered FrameSinkIds.
-    EXPECT_TRUE(frame_sink_manager_.frame_sink_data_.empty());
+    EXPECT_TRUE(frame_sink_manager_->frame_sink_data_.empty());
   }
 
   void SetupFlingController() {
@@ -153,16 +156,16 @@ class FlingSchedulerTest : public testing::Test,
   }
 
   InputManager* GetInputManager() {
-    return frame_sink_manager_.GetInputManager();
+    return frame_sink_manager_->GetInputManager();
   }
 
   const BeginFrameSource* GetRootBeginFrameSource() {
-    auto* support = frame_sink_manager_.GetFrameSinkForId(kFrameSinkIdRoot);
+    auto* support = frame_sink_manager_->GetFrameSinkForId(kFrameSinkIdRoot);
     return support->begin_frame_source();
   }
 
   void InvalidateRootFrameSinkId() {
-    frame_sink_manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+    frame_sink_manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
   }
 
  private:
@@ -178,8 +181,8 @@ class FlingSchedulerTest : public testing::Test,
 
   // Checks if a [Root]CompositorFrameSinkImpl exists for |frame_sink_id|.
   bool CompositorFrameSinkExists(const FrameSinkId& frame_sink_id) {
-    return base::Contains(frame_sink_manager_.sink_map_, frame_sink_id) ||
-           base::Contains(frame_sink_manager_.root_sink_map_, frame_sink_id);
+    return base::Contains(frame_sink_manager_->sink_map_, frame_sink_id) ||
+           base::Contains(frame_sink_manager_->root_sink_map_, frame_sink_id);
   }
 
   // Creates a CompositorFrameSinkImpl.
@@ -189,7 +192,7 @@ class FlingSchedulerTest : public testing::Test,
     MockCompositorFrameSinkClient compositor_frame_sink_client;
     mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
 
-    frame_sink_manager_.CreateCompositorFrameSink(
+    frame_sink_manager_->CreateCompositorFrameSink(
         frame_sink_id, /*bundle_id=*/std::nullopt,
         compositor_frame_sink.BindNewPipeAndPassReceiver(),
         compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
@@ -198,7 +201,8 @@ class FlingSchedulerTest : public testing::Test,
 
   std::unique_ptr<input::FlingController> fling_controller_;
   TestOutputSurfaceProvider output_surface_provider_;
-  FrameSinkManagerImpl frame_sink_manager_;
+  MockGpuServiceImpl gpu_service_;
+  std::unique_ptr<FrameSinkManagerImpl> frame_sink_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
