@@ -116,11 +116,11 @@ static bool ConvertJwkToKeyPair(const base::Value::Dict& jwk,
   // Get the key id and actual key parameters.
   const base::Value* encoded_key_id = jwk.Find(kKeyIdTag);
   const base::Value* encoded_key = jwk.Find(kKeyTag);
-  if (!encoded_key_id) {
+  if (!encoded_key_id || !encoded_key->is_string()) {
     DVLOG(1) << "Missing '" << kKeyIdTag << "' parameter";
     return false;
   }
-  if (!encoded_key) {
+  if (!encoded_key || !encoded_key->is_string()) {
     DVLOG(1) << "Missing '" << kKeyTag << "' parameter";
     return false;
   }
@@ -158,7 +158,7 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   }
 
   std::optional<base::Value> root = base::JSONReader::Read(jwk_set);
-  if (!root || root->type() != base::Value::Type::DICT) {
+  if (!root.has_value() || !root->is_dict()) {
     DVLOG(1) << "Not valid JSON: " << jwk_set;
     return false;
   }
@@ -227,7 +227,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   }
 
   std::optional<base::Value> root = base::JSONReader::Read(input);
-  if (!root || root->type() != base::Value::Type::DICT) {
+  if (!root.has_value() || !root->is_dict()) {
     error_message->assign("Not valid JSON: ");
     error_message->append(ShortenTo64Characters(input));
     return false;
@@ -373,7 +373,7 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   std::optional<base::Value> root = base::JSONReader::Read(license_as_str);
-  if (!root || root->type() != base::Value::Type::DICT) {
+  if (!root.has_value() || !root->is_dict()) {
     DVLOG(1) << "Not valid JSON: " << license_as_str;
     return false;
   }

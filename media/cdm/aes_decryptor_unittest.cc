@@ -110,6 +110,17 @@ const char kKeyAsJWK[] =
     "  \"type\": \"temporary\""
     "}";
 
+const char kWrongTypeKeyAsJWK[] =
+    "{"
+    "  \"keys\": ["
+    "    {"
+    "      \"kty\": \"oct\","
+    "      \"kid\": \"II\","
+    "      \"k\": \":5\""
+    "    }"
+    "  ],"
+    "}";
+
 // Same kid as kKeyAsJWK, key to decrypt kEncryptedData2
 const char kKeyAlternateAsJWK[] =
     "{"
@@ -695,6 +706,11 @@ TEST_P(AesDecryptorTest, WrongKey) {
   scoped_refptr<DecoderBuffer> encrypted_buffer = CreateEncryptedBuffer(
       encrypted_data_, key_id_, iv_, no_subsample_entries_);
   DecryptAndExpect(encrypted_buffer, original_data_, DATA_MISMATCH);
+}
+
+TEST_P(AesDecryptorTest, WrongJwtType) {
+  std::string session_id = CreateSession(key_id_);
+  UpdateSessionAndExpect(session_id, kWrongTypeKeyAsJWK, REJECTED, true);
 }
 
 TEST_P(AesDecryptorTest, NoKey) {
