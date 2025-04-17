@@ -1177,6 +1177,10 @@ void DisplayManager::UpdateDisplaysWith(
     multi_display_mode_ = current_default_multi_display_mode_;
   }
 
+  if (num_connected_displays() == 1) {
+    multi_display_mode_ = EXTENDED;
+  }
+
   UMA_HISTOGRAM_ENUMERATION("DisplayManager.MultiDisplayMode",
                             multi_display_mode_, MULTI_DISPLAY_MODE_LAST + 1);
 
@@ -2181,6 +2185,7 @@ void DisplayManager::CreateSoftwareMirroringDisplayInfo(
 
 void DisplayManager::CreateUnifiedDesktopDisplayInfo(
     DisplayInfoList* display_info_list) {
+  DCHECK(!display_info_list->empty());
   if (display_info_list->size() == 1) {
     return;
   }
@@ -2594,7 +2599,10 @@ void DisplayManager::ApplyDisplayLayout(DisplayLayout* layout,
 }
 
 void DisplayManager::RunPendingTasksForTest() {
-  if (software_mirroring_display_list_.empty()) {
+  if (software_mirroring_display_list_.empty() ||
+      // When there is 0 displays, wait for display reconnection to update
+      // layout.
+      (active_display_list_.empty() || !active_display_list_[0].detected())) {
     return;
   }
 
