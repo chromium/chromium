@@ -65,7 +65,9 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
 }
 
 - (void)disconnect {
-  // TODO(crbug.com/405195613): Cancel any in-flight requests.
+  // Cancel any in-flight requests.
+  _enhancedCalendarService.reset();
+  _enhancedCalendarServiceImpl.reset();
 }
 
 - (void)startEnhancedCalendarRequest {
