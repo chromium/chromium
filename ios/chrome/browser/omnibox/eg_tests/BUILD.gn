@@ -12,6 +12,7 @@ source_set("eg_app_support+eg2") {
     "test_fake_suggestions_service.h",
   ]
   deps = [
+    ":fake_suggestions_database",
     ":resources_fake_suggestions_tests",
     "//base",
     "//components/google/core/common",
@@ -103,6 +104,31 @@ source_set("eg2_tests") {
     "//ui/strings",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("fake_suggestions_database") {
+  sources = [
+    "fake_suggestions_database.cc",
+    "fake_suggestions_database.h",
+  ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fake_suggestions_database_unittest.cc" ]
+  deps = [
+    ":fake_suggestions_database",
+    "//base",
+    "//components/search_engines",
+    "//components/search_engines:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 bundle_data("resources_fake_suggestions_tests") {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/omnibox/ui_bundled/fake_suggestions_database.h"
+#include "ios/chrome/browser/omnibox/eg_tests/fake_suggestions_database.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/search_engines/search_engines_test_environment.h"

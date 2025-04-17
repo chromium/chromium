@@ -64,8 +64,6 @@ source_set("model_interface") {
 
 source_set("omnibox_internal") {
   sources = [
-    "fake_suggestions_database.cc",
-    "fake_suggestions_database.h",
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
@@ -177,7 +175,6 @@ source_set("omnibox_internal") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "omnibox_coordinator+Testing.h",
     "test_web_location_bar.cc",
     "test_web_location_bar.h",
   ]
@@ -196,7 +193,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "fake_suggestions_database_unittest.cc",
     "omnibox_text_field_ios_unittest.mm",
     "zero_suggest_prefetch_helper_unittest.mm",
   ]

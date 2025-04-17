@@ -4,6 +4,7 @@
 
 source_set("coordinator") {
   sources = [
+    "omnibox_coordinator+Testing.h",
     "omnibox_coordinator.h",
     "omnibox_coordinator.mm",
     "omnibox_mediator.h",

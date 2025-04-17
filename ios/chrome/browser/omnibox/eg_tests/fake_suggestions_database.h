@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_FAKE_SUGGESTIONS_DATABASE_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_FAKE_SUGGESTIONS_DATABASE_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_FAKE_SUGGESTIONS_DATABASE_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_FAKE_SUGGESTIONS_DATABASE_H_
 
 #include <map>
 #include <string>
@@ -53,4 +53,4 @@ class FakeSuggestionsDatabase {
   std::map<std::u16string, std::string> data_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_FAKE_SUGGESTIONS_DATABASE_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_FAKE_SUGGESTIONS_DATABASE_H_
