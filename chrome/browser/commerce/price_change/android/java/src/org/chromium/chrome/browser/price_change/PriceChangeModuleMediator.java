@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.price_change;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -37,6 +40,7 @@ import java.util.Set;
 /**
  * Mediator for the price change module which can be embedded by surfaces like NTP or Start surface.
  */
+@NullMarked
 public class PriceChangeModuleMediator implements TabModelSelectorObserver {
 
     private final Context mContext;
@@ -117,6 +121,7 @@ public class PriceChangeModuleMediator implements TabModelSelectorObserver {
                         return;
                     }
                     ShoppingPersistedTabData data = res.get(0).getData();
+                    PriceDrop priceDrop = assumeNonNull(data.getPriceDrop());
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_TITLE,
                             mContext.getResources()
@@ -129,10 +134,10 @@ public class PriceChangeModuleMediator implements TabModelSelectorObserver {
                             data.getProductTitle());
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_CURRENT_PRICE_STRING,
-                            data.getPriceDrop().price);
+                            priceDrop.price);
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_PREVIOUS_PRICE_STRING,
-                            data.getPriceDrop().previousPrice);
+                            priceDrop.previousPrice);
                     String domain =
                             UrlUtilities.getDomainAndRegistry(
                                     res.get(0).getTab().getUrl().getSpec(), false);
@@ -181,7 +186,7 @@ public class PriceChangeModuleMediator implements TabModelSelectorObserver {
 
                     ImageFetcher.Params params =
                             ImageFetcher.Params.create(
-                                    data.getProductImageUrl(),
+                                    assumeNonNull(data.getProductImageUrl()),
                                     ImageFetcher.PRICE_CHANGE_MODULE_NAME);
                     mImageFetcher.fetchImage(
                             params,

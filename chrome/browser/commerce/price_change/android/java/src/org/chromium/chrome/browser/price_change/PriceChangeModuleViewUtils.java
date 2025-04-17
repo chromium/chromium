@@ -8,9 +8,11 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Utility class that provides theme related attributes for price change UI. */
+@NullMarked
 public class PriceChangeModuleViewUtils {
     static @ColorInt int getBackgroundColor(Context context) {
         return SemanticColorUtils.getColorSurfaceContainerLow(context);
