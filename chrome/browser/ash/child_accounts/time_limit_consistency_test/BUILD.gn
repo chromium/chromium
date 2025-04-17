@@ -22,7 +22,6 @@ test("usage_time_limit_unittests") {
     "consistency_test.cc",
     "consistency_test_utils.cc",
     "consistency_test_utils.h",
-    "proto_matcher.h",
     "run_all_unittests.cc",
   ]
 

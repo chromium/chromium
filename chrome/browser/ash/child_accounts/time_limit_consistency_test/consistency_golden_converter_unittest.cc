@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.h"
-#include "chrome/browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h"
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +18,7 @@ namespace consistency_utils = time_limit_consistency_utils;
 
 namespace time_limit_consistency {
 
+using base::test::EqualsProto;
 using ConsistencyGoldenConverterTest = testing::Test;
 
 // A timestamp used during the tests. Nothing special about the date it
