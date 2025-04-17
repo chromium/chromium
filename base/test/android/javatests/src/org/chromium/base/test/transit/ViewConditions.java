@@ -7,6 +7,7 @@ package org.chromium.base.test.transit;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.any;
@@ -20,12 +21,13 @@ import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.base.test.util.ViewPrinter;
 import org.chromium.build.annotations.NullMarked;
@@ -96,35 +98,63 @@ public class ViewConditions {
                 return awaiting("No visible activities").withoutResult();
             }
 
-            ViewInteraction viewInteraction =
-                    onView(mMatcher).withFailureHandler(RawFailureHandler.getInstance());
+            // Match even views that are not visible so that visibility checking can be done with
+            // more details later in this method.
             ArrayList<String> messages = new ArrayList<>();
+
+            Supplier<ViewAction> findViewActionFactory =
+                    () ->
+                            new ViewAction() {
+                                @Override
+                                public Matcher<View> getConstraints() {
+                                    return any(View.class);
+                                }
+
+                                @Override
+                                public String getDescription() {
+                                    return "check existence, visibility and displayed percentage";
+                                }
+
+                                @Override
+                                public void perform(UiController uiController, View view) {
+                                    mViewMatched = view;
+                                }
+                            };
             try {
-                viewInteraction.perform(
-                        new ViewAction() {
-                            @Override
-                            public Matcher<View> getConstraints() {
-                                return any(View.class);
-                            }
-
-                            @Override
-                            public String getDescription() {
-                                return "check existence, visibility and displayed percentage";
-                            }
-
-                            @Override
-                            public void perform(UiController uiController, View view) {
-                                mViewMatched = view;
-                            }
-                        });
+                onView(mMatcher)
+                        .withFailureHandler(RawFailureHandler.getInstance())
+                        .perform(findViewActionFactory.get());
             } catch (NoMatchingViewException | NoMatchingRootException e) {
                 return notFulfilled(e.getClass().getSimpleName()).withoutResult();
             } catch (AmbiguousViewMatcherException e) {
-                return notFulfilled(e.getClass().getSimpleName() + " | " + e.getMessage())
-                        .withoutResult();
+                // Found 2+ Views. Try again, but filtering only by effectively visible Views.
+                // This avoids AmbiguousViewMatcherException when there is one VISIBLE but also
+                // GONE views that match |mMatcher|.
+                try {
+                    onView(
+                                    allOf(
+                                            mMatcher,
+                                            withEffectiveVisibility(
+                                                    ViewMatchers.Visibility.VISIBLE)))
+                            .withFailureHandler(RawFailureHandler.getInstance())
+                            .perform(findViewActionFactory.get());
+                } catch (NoMatchingViewException f) {
+                    // Report the AmbiguousViewMatcherException with the GONE views.
+                    return notFulfilled(
+                                    e.getClass().getSimpleName()
+                                            + " with GONE Views | "
+                                            + e.getMessage())
+                            .withoutResult();
+                } catch (NoMatchingRootException f) {
+                    return notFulfilled(f.getClass().getSimpleName()).withoutResult();
+                } catch (AmbiguousViewMatcherException f) {
+                    return notFulfilled(f.getClass().getSimpleName() + " | " + f.getMessage())
+                            .withoutResult();
+                }
             }
 
-            // Assume found a View, or NoMatchingViewException would be thrown.
+            // Assume found a View, or an exception would have been thrown above and
+            // |notFulfilled()| would have been returned.
             assumeNonNull(mViewMatched);
             boolean fulfilled = true;
             messages.add(ViewPrinter.describeView(mViewMatched, PRINT_SHALLOW_WITH_BOUNDS));
