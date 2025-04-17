@@ -445,18 +445,7 @@ public class AccountSelectionJUnitTestBase {
                         /* scrollOffsetSupplier= */ null,
                         mRpMode);
         mMockModalDialogManager = new MockModalDialogManager();
-        mMediator =
-                new AccountSelectionMediator(
-                        mTab,
-                        mMockDelegate,
-                        mModel,
-                        mSheetAccountItems,
-                        mMockBottomSheetController,
-                        mBottomSheetContent,
-                        DESIRED_AVATAR_SIZE,
-                        mRpMode,
-                        mContext,
-                        mMockModalDialogManager);
+        resetMediator();
     }
 
     MVCListAdapter.ListItem buildAccountItem(Account account, boolean showIdp) {
@@ -487,5 +476,20 @@ public class AccountSelectionJUnitTestBase {
             return model.get((WritableBooleanPropertyKey) key);
         }
         return model.get((WritableObjectPropertyKey<PropertyModel>) key) != null;
+    }
+
+    void resetMediator() {
+        mMediator =
+                new AccountSelectionMediator(
+                        mTab,
+                        mMockDelegate,
+                        mModel,
+                        mSheetAccountItems,
+                        mMockBottomSheetController,
+                        mBottomSheetContent,
+                        DESIRED_AVATAR_SIZE,
+                        mRpMode,
+                        mContext,
+                        mMockModalDialogManager);
     }
 }

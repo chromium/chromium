@@ -151,6 +151,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             verify(mMockDelegate, times(++count))
                     .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
             assertTrue(mMediator.wasDismissed());
+            // Reset mediator after dismiss.
+            resetMediator();
         }
     }
 
@@ -196,6 +198,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             verify(mMockDelegate, times(count))
                     .onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
             assertTrue(mMediator.wasDismissed());
+            // Reset mediator after dismiss.
+            resetMediator();
         }
     }
 }

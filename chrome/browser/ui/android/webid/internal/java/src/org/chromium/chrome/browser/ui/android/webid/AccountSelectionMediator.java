@@ -484,6 +484,9 @@ class AccountSelectionMediator {
     }
 
     private void handleBackPress() {
+        if (mWasDismissed) {
+            return;
+        }
         mSelectedAccount = null;
         if (mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL) {
             mDisclosureDialogState = DisclosureDialogResult.BACK_PRESS;
@@ -721,6 +724,9 @@ class AccountSelectionMediator {
             List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
             List<Account> newAccounts) {
+        if (mWasDismissed) {
+            return false;
+        }
         mRpForDisplay = rpForDisplay;
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;
@@ -1344,6 +1350,9 @@ class AccountSelectionMediator {
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
+        if (mWasDismissed) {
+            return;
+        }
         boolean isUseOtherAccountCctDismissed =
                 mHeaderType == HeaderType.SIGN_IN && mIsModalDialogOpen;
         // If dismissed from use other account CCT, reshow the accounts dialog.
