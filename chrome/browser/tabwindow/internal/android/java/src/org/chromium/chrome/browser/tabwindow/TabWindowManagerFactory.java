@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabwindow;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 
 /** Factory for creating {@link TabWindowManager}. */
 @NullMarked

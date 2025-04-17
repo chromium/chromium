@@ -6,7 +6,11 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 android_library("java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabModelSelectorFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/WindowId.java",
+  ]
   deps = [
     "//base:base_java",
     "//build/android:build_java",
