@@ -9471,7 +9471,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         To see a simplified view of this page, go to More Tools > Reading Mode
       </message>
      <message name="IDS_READING_MODE_VOICE_PREVIEW_STRING" desc="Message to be played when a user previews a voice for Read Aloud.">
-        Hi, this is a preview
+        Hi. This is a preview
       </message>
      <message name="IDS_READING_MODE_FONT_LOADING_STRING" desc="Text added to a font name in the Reading Mode font dropdown when the font style hasn't loaded yet.">
          (loading)
