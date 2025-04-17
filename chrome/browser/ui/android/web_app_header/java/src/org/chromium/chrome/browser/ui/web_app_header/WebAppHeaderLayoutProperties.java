@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.util.List;
 
 /** Properties of the {@link PropertyModel} that reflect the state of webapp header */
 class WebAppHeaderLayoutProperties {
@@ -24,8 +27,17 @@ class WebAppHeaderLayoutProperties {
     /** The visibility of the webapp header. */
     static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
 
+    static final WritableObjectPropertyKey<List<Rect>> NON_DRAGGABLE_AREAS =
+            new WritableObjectPropertyKey<>();
+
+    static final WritableObjectPropertyKey<Callback<Integer>> WIDTH_CHANGED_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     /** The set of all model properties. */
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PADDINGS, IS_VISIBLE, MIN_HEIGHT};
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                PADDINGS, IS_VISIBLE, MIN_HEIGHT, NON_DRAGGABLE_AREAS, WIDTH_CHANGED_CALLBACK
+            };
 
     private WebAppHeaderLayoutProperties() {}
 }

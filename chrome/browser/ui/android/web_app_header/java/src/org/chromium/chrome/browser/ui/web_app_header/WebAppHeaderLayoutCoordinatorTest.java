@@ -47,7 +47,7 @@ import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
-@Config(sdk = Build.VERSION_CODES.R)
+@Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class WebAppHeaderLayoutCoordinatorTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;
@@ -103,10 +103,9 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         mHistoryDelegate);
     }
 
-    private void setupDesktopWindowing() {
+    private void setupDesktopWindowing(boolean isInDesktopWindow) {
         mAppHeaderState =
-                new AppHeaderState(
-                        WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, /* isInDesktopWindow= */ true);
+                new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, isInDesktopWindow);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
 
@@ -165,33 +164,10 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     @Test
-    public void testInitNotInDW_shouldNotInitCoordinator() {
-        final var appHeaderState =
-                new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ false);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
-        createCoordinator();
-
-        assertNull(
-                "Web app header should not be inflated when not in a desktop window",
-                mActivity.findViewById(R.id.web_app_header_layout));
-    }
-
-    @Test
     public void testInitHasAppHeaderState_shouldInitCoordinatorImmediately() {
-        setupDesktopWindowing();
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
         createCoordinator();
 
-        assertNotNull(
-                "Web app header should be inflated when in a desktop window",
-                mActivity.findViewById(R.id.web_app_header_layout));
-    }
-
-    @Test
-    public void testEnteredDesktopWindow_shouldInitCoordinator() {
-        createCoordinator();
-        setupDesktopWindowing();
-
-        mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
         assertNotNull(
                 "Web app header should be inflated when in a desktop window",
                 mActivity.findViewById(R.id.web_app_header_layout));
@@ -199,7 +175,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testMinUiDisplayMode_shouldMakeMinUiVisible() {
-        setupDesktopWindowing();
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
         mTabSupplier.set(mTab);
         createCoordinator();
@@ -210,7 +186,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testReload_shouldReloadTab() {
-        setupDesktopWindowing();
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
         mTabSupplier.set(mTab);
         when(mTab.isLoading()).thenReturn(false);
@@ -222,7 +198,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testReloadWhileReloading_shouldStopReloading() {
-        setupDesktopWindowing();
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
         mTabSupplier.set(mTab);
         when(mTab.isLoading()).thenReturn(true);
@@ -234,7 +210,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testReloadTabIgnoringCache_shouldReloadIgnoringCache() {
-        setupDesktopWindowing();
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
         setupMinUiMode();
         mTabSupplier.set(mTab);
         when(mTab.isLoading()).thenReturn(false);

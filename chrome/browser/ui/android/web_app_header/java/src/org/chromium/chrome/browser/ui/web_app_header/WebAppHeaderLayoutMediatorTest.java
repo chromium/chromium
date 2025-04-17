@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Rect;
+import android.os.Build;
+import android.os.Looper;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,17 +25,23 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
+@Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 public class WebAppHeaderLayoutMediatorTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;
@@ -45,29 +56,54 @@ public class WebAppHeaderLayoutMediatorTest {
     private WebAppHeaderLayoutMediator mMediator;
     private PropertyModel mModel;
     private ObservableSupplierImpl<Tab> mTabSupplier;
+    private ObservableSupplierImpl<List<Rect>> mNonDraggableAreasSupplier;
+    private ObservableSupplierImpl<Boolean> mIsInLayoutSupplier;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public Tab mTab;
+    private @Nullable AppHeaderState mAppHeaderState;
+    private ShadowLooper mShadowLooper;
 
     @Before
     public void setup() {
+        mShadowLooper = shadowOf(Looper.getMainLooper());
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
 
         mTabSupplier = new ObservableSupplierImpl<>();
+        mNonDraggableAreasSupplier = new ObservableSupplierImpl<>();
+        mIsInLayoutSupplier = new ObservableSupplierImpl<>(false);
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =
                 new WebAppHeaderLayoutMediator(
-                        mModel, mDesktopWindowStateManager, mTabSupplier, SYS_APP_HEADER_HEIGHT);
+                        mModel,
+                        mDesktopWindowStateManager,
+                        mTabSupplier,
+                        mNonDraggableAreasSupplier,
+                        mIsInLayoutSupplier,
+                        SYS_APP_HEADER_HEIGHT);
+
+        mShadowLooper.idle();
+    }
+
+    private void setupDesktopWindowing(boolean isInDesktopWindow, Rect widestUnoccludedRect) {
+        mAppHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT),
+                        widestUnoccludedRect,
+                        isInDesktopWindow);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
 
     @Test
     public void testHasAppHeaderStateOnInit_setPaddingsMatchingInsets() {
-        final AppHeaderState appHeaderState =
-                new AppHeaderState(
-                        new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), WIDEST_UNOCCLUDED_RECT, true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator =
                 new WebAppHeaderLayoutMediator(
-                        mModel, mDesktopWindowStateManager, mTabSupplier, SYS_APP_HEADER_HEIGHT);
+                        mModel,
+                        mDesktopWindowStateManager,
+                        mTabSupplier,
+                        mNonDraggableAreasSupplier,
+                        mIsInLayoutSupplier,
+                        SYS_APP_HEADER_HEIGHT);
 
         assertEquals(
                 "Header min height should match app header height",
@@ -84,12 +120,9 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testAppHeaderStateUpdated_setPaddingsMatchingInsets() {
-        final AppHeaderState appHeaderState =
-                new AppHeaderState(
-                        new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), WIDEST_UNOCCLUDED_RECT, true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
 
-        mMediator.onAppHeaderStateChanged(appHeaderState);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
         assertEquals(
                 "Header min height should match app header height",
                 SYS_APP_HEADER_HEIGHT,
@@ -105,15 +138,13 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testNotInDesktopWindow_hideHeader() {
-        final AppHeaderState appHeaderState =
-                new AppHeaderState(new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), new Rect(), false);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        setupDesktopWindowing(/* isInDesktopWindow= */ false, new Rect());
         WebAppHeaderLayoutMediator.setMinHeightForTesting(SYS_APP_HEADER_HEIGHT);
 
         final Rect initialPaddings = new Rect(0, 0, 0, 0);
         mModel.set(WebAppHeaderLayoutProperties.PADDINGS, initialPaddings);
 
-        mMediator.onAppHeaderStateChanged(appHeaderState);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
         assertEquals(
                 "Header min height should match default min height",
                 SYS_APP_HEADER_HEIGHT,
@@ -128,12 +159,9 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testAppHeaderHeightIsLessThanMin_noTopPaddingsSet() {
-        final AppHeaderState appHeaderState =
-                new AppHeaderState(
-                        new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), WIDEST_UNOCCLUDED_RECT, true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
 
-        mMediator.onAppHeaderStateChanged(appHeaderState);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
         assertEquals(
                 "Header min height should match default min height",
                 SYS_APP_HEADER_HEIGHT,
@@ -149,13 +177,10 @@ public class WebAppHeaderLayoutMediatorTest {
         final int headerHeight = SYS_APP_HEADER_HEIGHT + 10;
         final Rect widestUnoccludedRect =
                 new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, headerHeight);
-        final AppHeaderState appHeaderState =
-                new AppHeaderState(
-                        new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), widestUnoccludedRect, true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, widestUnoccludedRect);
         WebAppHeaderLayoutMediator.setMinHeightForTesting(SYS_APP_HEADER_HEIGHT);
 
-        mMediator.onAppHeaderStateChanged(appHeaderState);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
         assertEquals(
                 "Header min height should match app header height",
                 headerHeight,
@@ -188,5 +213,69 @@ public class WebAppHeaderLayoutMediatorTest {
     public void testGoBackNoTab_shouldNotGoBack() {
         mMediator.goBack();
         verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void testNotInDW_AllAreaIsDraggable() {
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+
+        final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only one area in the list", 1, areas.size());
+        assertEquals(
+                "The area should be an empty area that allows to drag everywhere",
+                new Rect(0, 0, 0, 0),
+                areas.get(0));
+    }
+
+    @Test
+    public void testInDWButNotInWindow_AllAreaIsDraggable() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ false, WIDEST_UNOCCLUDED_RECT);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+
+        final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only one area in the list", 1, areas.size());
+        assertEquals(
+                "The area should be an empty area that allows to drag everywhere",
+                new Rect(0, 0, 0, 0),
+                areas.get(0));
+    }
+
+    @Test
+    public void testInDWInWindowWithLaidOutView_SetNonDraggableAreas() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        mIsInLayoutSupplier.set(false);
+
+        final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
+        mNonDraggableAreasSupplier.set(nonDraggableAreas);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+        mShadowLooper.idle();
+
+        final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertEquals("There should be only 2 non draggable areas", 2, areas.size());
+        assertArrayEquals(
+                "Non draggable areas from supplier should match model areas",
+                areas.toArray(),
+                mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS).toArray());
+    }
+
+    @Test
+    public void testInDWInWindowWithPendingLayout_HeaderShouldBeDraggable() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        mIsInLayoutSupplier.set(true);
+
+        final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
+        mNonDraggableAreasSupplier.set(nonDraggableAreas);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+        mShadowLooper.idle();
+
+        final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertNull("Areas should be kept null prior receiving any header state", areas);
     }
 }

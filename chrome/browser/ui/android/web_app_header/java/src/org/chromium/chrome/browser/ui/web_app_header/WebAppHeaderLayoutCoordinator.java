@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
-import android.view.ViewGroup;
+import android.graphics.Rect;
+import android.os.Build;
 import android.view.ViewStub;
 import android.widget.ImageButton;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -27,16 +29,19 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Root component to interact with web app header. This coordinator lazily initializes web app
  * header when {@link DesktopWindowStateManager} indicates that the view hierarchy is in the desktop
  * window.
  */
 @NullMarked
+@RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.AppHeaderObserver {
-
     private @Nullable WebAppHeaderLayoutMediator mMediator;
-    private @Nullable ViewGroup mView;
+    private @Nullable WebAppHeaderLayout mView;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
     private final ViewStub mViewStub;
@@ -81,21 +86,24 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        if (!newState.isInDesktopWindow()) return;
         ensureInitialized();
     }
 
     private void ensureInitialized() {
         if (mView != null) return;
 
-        mView = (ViewGroup) mViewStub.inflate();
+        mView = (WebAppHeaderLayout) mViewStub.inflate();
         final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
         mMediator =
                 new WebAppHeaderLayoutMediator(
-                        model, mDesktopWindowStateManager, mTabSupplier, headerMinHeight);
-
+                        model,
+                        mDesktopWindowStateManager,
+                        mTabSupplier,
+                        this::collectNonDraggableAreas,
+                        this::isPendingLayout,
+                        headerMinHeight);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
@@ -128,6 +136,24 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         mBackButtonCoordinator.setVisibility(true);
     }
 
+    private List<Rect> collectNonDraggableAreas() {
+        final var areas = new ArrayList<Rect>();
+        if (mReloadButtonCoordinator != null) {
+            areas.add(mReloadButtonCoordinator.getHitRect());
+        }
+
+        if (mBackButtonCoordinator != null) {
+            areas.add(mBackButtonCoordinator.getHitRect());
+        }
+
+        return areas;
+    }
+
+    private boolean isPendingLayout() {
+        return mView != null && (mView.isInLayout() || mView.isLayoutRequested());
+    }
+
+    // TODO(vkorotkevich): Move to the Mediator
     @VisibleForTesting
     void refreshTab(boolean ignoreCache) {
         final var tab = mTabSupplier.get();

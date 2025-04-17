@@ -6,14 +6,19 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /**
  * Mediator that listens for window state changes and updates custom webapp header view that should
@@ -23,11 +28,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderObserver {
     @Nullable static Integer sMinHeaderHeightForTesting;
 
+    private static final Rect EMPTY_NON_DRAGGABLE_AREA = new Rect(0, 0, 0, 0);
+
     private final Rect mCachedPaddings;
     private final PropertyModel mModel;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<Tab> mTabSupplier;
+    private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
+    private final Supplier<Boolean> mIsPendingLayoutSupplier;
+    private final ObservableSupplierImpl<Integer> mWidthSupplier;
+    private final Callback<Integer> mOnWidthChangedCallback;
     private final int mWebAppMinHeaderHeight;
+    private @Nullable AppHeaderState mCurrentHeaderState;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -42,15 +54,25 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
             PropertyModel model,
             DesktopWindowStateManager desktopWindowStateManager,
             ObservableSupplier<Tab> tabSupplier,
+            Supplier<List<Rect>> nonDraggableAreasSupplier,
+            Supplier<Boolean> isPendingLayoutSupplier,
             int webAppHeaderMinHeightFromResources) {
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
+        mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
+        mIsPendingLayoutSupplier = isPendingLayoutSupplier;
+
+        mWidthSupplier = new ObservableSupplierImpl<>();
+        mOnWidthChangedCallback = (width) -> updateNonDraggableAreas();
+        mWidthSupplier.addObserver(mOnWidthChangedCallback);
 
         final var modelPaddings = model.get(WebAppHeaderLayoutProperties.PADDINGS);
         mCachedPaddings = modelPaddings != null ? modelPaddings : new Rect(0, 0, 0, 0);
 
         mModel = model;
+        // View should notify us about initial width.
+        mModel.set(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK, mWidthSupplier::set);
 
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
@@ -61,26 +83,49 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
 
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        updatePaddings(newState);
+        mCurrentHeaderState = newState;
+
+        updatePaddings();
         mModel.set(
                 WebAppHeaderLayoutProperties.MIN_HEIGHT,
-                Math.max(newState.getAppHeaderHeight(), getDefaultMinHeight()));
-        mModel.set(WebAppHeaderLayoutProperties.IS_VISIBLE, newState.isInDesktopWindow());
+                Math.max(mCurrentHeaderState.getAppHeaderHeight(), getDefaultMinHeight()));
+        mModel.set(
+                WebAppHeaderLayoutProperties.IS_VISIBLE, mCurrentHeaderState.isInDesktopWindow());
     }
 
-    private void updatePaddings(AppHeaderState newState) {
+    private void updatePaddings() {
+        if (mCurrentHeaderState == null) return;
+
         // Matching behavior to BrApp: add top padding when caption bar insets are greater than our
         // min height expectations. Rationale - some vendors provide caption bar insets as
         // caption bar + status bar insets, to layout properly we need to deduct status bar insets.
         // This assumption is optimistic - we assume that caption bar matches our min height.
-        final int topPadding = Math.max(0, newState.getAppHeaderHeight() - getDefaultMinHeight());
+        final int topPadding =
+                Math.max(0, mCurrentHeaderState.getAppHeaderHeight() - getDefaultMinHeight());
 
         mCachedPaddings.set(
-                newState.getLeftPadding(),
+                mCurrentHeaderState.getLeftPadding(),
                 topPadding,
-                newState.getRightPadding(),
+                mCurrentHeaderState.getRightPadding(),
                 mCachedPaddings.bottom);
         mModel.set(WebAppHeaderLayoutProperties.PADDINGS, mCachedPaddings);
+    }
+
+    private void updateNonDraggableAreas() {
+        if (mCurrentHeaderState == null || !mCurrentHeaderState.isInDesktopWindow()) {
+            // Should pass non-empty list, otherwise the previous one is kept.
+            mModel.set(
+                    WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS,
+                    List.of(EMPTY_NON_DRAGGABLE_AREA));
+            return;
+        }
+
+        // Skip an update, because header is stale anyway. We will get a new width after the layout
+        // and there we will update a non-draggable area.
+        if (mIsPendingLayoutSupplier.get()) return;
+
+        final var areas = mNonDraggableAreasSupplier.get();
+        mModel.set(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS, areas);
     }
 
     /** Navigates back in the navigation history of the current {@link Tab}. */
@@ -104,5 +149,6 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     /** Destroys the mediator, existing instance is not usable after this method is called */
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
+        mWidthSupplier.removeObserver(mOnWidthChangedCallback);
     }
 }
