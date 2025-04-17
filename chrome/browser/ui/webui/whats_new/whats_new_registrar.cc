@@ -42,14 +42,18 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
 
   registry->RegisterModule(
       WhatsNewModule(::features::kReadAnythingReadAloud, "trewin@google.com"));
+
+  // M138
+  registry->RegisterModule(
+      WhatsNewModule("TabGroupsSync", "dpenning@google.com"));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // Register editions here.
 #if BUILDFLAG(ENABLE_GLIC)
-  registry->RegisterEdition(WhatsNewEdition(
-      ::features::kGlic, "tommasin@chromium.org",
-      std::vector<BrowserCommand>{BrowserCommand::kOpenGlic}));
+  registry->RegisterEdition(
+      WhatsNewEdition(::features::kGlic, "tommasin@chromium.org",
+                      std::vector<BrowserCommand>{BrowserCommand::kOpenGlic}));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

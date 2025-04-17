@@ -48144,6 +48144,7 @@ should be able to be added at any place in this file.
   <suffix name="SaveTabGroups" label="Saved Tab Groups"/>
   <suffix name="SearchBoxSuggestions" label="Search Box Suggestions"/>
   <suffix name="SidePanelPinning" label="Side Panel Pinning"/>
+  <suffix name="TabGroupsSync" label="Tab Groups Sync"/>
   <suffix name="TabOrganizer" label="Tab Organizer"/>
   <suffix name="TestDefaultModule" label="Test default module"/>
   <suffix name="TestModule" label="Test module"/>
