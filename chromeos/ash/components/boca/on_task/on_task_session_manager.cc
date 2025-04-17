@@ -52,12 +52,13 @@ constexpr base::TimeDelta kSetPausedStateDelay = base::Seconds(3);
 OnTaskSessionManager::OnTaskSessionManager(
     std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
     std::unique_ptr<OnTaskExtensionsManager> extensions_manager)
-    : system_web_app_manager_(std::move(system_web_app_manager)),
+    : active_tab_tracker_(std::make_unique<ActiveTabTracker>()),
+      system_web_app_manager_(std::move(system_web_app_manager)),
       extensions_manager_(std::move(extensions_manager)),
       system_web_app_launch_helper_(
           std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
               system_web_app_manager_.get(),
-              std::vector<boca::BocaWindowObserver*>{&active_tab_tracker_,
+              std::vector<boca::BocaWindowObserver*>{active_tab_tracker_.get(),
                                                      this})),
       notifications_manager_(OnTaskNotificationsManager::Create()) {
   notification_countdown_duration_ =
@@ -80,10 +81,12 @@ void OnTaskSessionManager::OnSessionStarted(
     system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
         window_id, /*close_bundle_content=*/true);
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-        window_id, {&active_tab_tracker_, this});
+        window_id, {active_tab_tracker_.get(), this});
   } else {
     system_web_app_launch_helper_->LaunchBocaSWA();
   }
+  // Explicitly upload default title when session started.
+  active_tab_tracker_->OnActiveTabChanged(/*tab_title=*/u"");
 }
 
 void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
@@ -263,7 +266,7 @@ void OnTaskSessionManager::OnAppReloaded() {
   system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
       window_id, /*close_bundle_content=*/true);
   system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-      window_id, {&active_tab_tracker_, this});
+      window_id, {active_tab_tracker_.get(), this});
 
   // Reopen only content that was originally shared by the provider. We also
   // clear stale tab ids that were tracked with the previous instance.
@@ -355,6 +358,14 @@ void OnTaskSessionManager::EnterLockedMode() {
       /*pinned=*/true,
       base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnTaskSessionManager::SetActiveTabTrackerForTesting(
+    std::unique_ptr<ActiveTabTracker> active_tab_tracker) {
+  active_tab_tracker_ = std::move(active_tab_tracker);
+  // IN-TEST
+  system_web_app_launch_helper_->SetObserversForTesting(
+      {active_tab_tracker_.get(), this});
 }
 
 void OnTaskSessionManager::SetNotificationManagerForTesting(
@@ -587,7 +598,7 @@ void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow() {
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-        window_id, {&active_tab_tracker_, this});
+        window_id, {active_tab_tracker_.get(), this});
   }
 }
 
