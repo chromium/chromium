@@ -54,6 +54,19 @@ namespace collaboration {
 
 namespace {
 
+// Converts `outcome` between the two enums.
+CollaborationControllerDelegate::Outcome ConvertShareKitFlowOutcome(
+    ShareKitFlowOutcome outcome) {
+  switch (outcome) {
+    case ShareKitFlowOutcome::kSuccess:
+      return CollaborationControllerDelegate::Outcome::kSuccess;
+    case ShareKitFlowOutcome::kFailure:
+      return CollaborationControllerDelegate::Outcome::kFailure;
+    case ShareKitFlowOutcome::kCancel:
+      return CollaborationControllerDelegate::Outcome::kCancel;
+  }
+}
+
 // The size in point of the join group image.
 const CGFloat kJoinGroupImageSize = 64.0;
 

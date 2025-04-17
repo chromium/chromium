@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_flow_outcome.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -69,7 +68,8 @@ using collaboration::CollaborationControllerDelegate;
 // The view controller for the tab strip.
 @property(nonatomic, strong) TabStripViewController* tabStripViewController;
 // Callback invoked upon confirming leaving or deleting a shared group.
-@property(nonatomic, copy) void (^leaveOrDeleteCompletion)(ShareKitFlowOutcome);
+@property(nonatomic, copy) void (^leaveOrDeleteCompletion)
+    (CollaborationControllerDelegate::Outcome);
 
 @end
 
@@ -369,13 +369,14 @@ using collaboration::CollaborationControllerDelegate;
         TabStripCoordinator* strongSelf = weakSelf;
         if (!strongSelf) {
           std::move(resultCallback)
-              .Run(ConvertShareKitFlowOutcome(ShareKitFlowOutcome::kCancel));
+              .Run(CollaborationControllerDelegate::Outcome::kCancel);
           return;
         }
         auto completionBlock = base::CallbackToBlock(std::move(resultCallback));
-        strongSelf.leaveOrDeleteCompletion = ^(ShareKitFlowOutcome outcome) {
-          completionBlock(ConvertShareKitFlowOutcome(outcome));
-        };
+        strongSelf.leaveOrDeleteCompletion =
+            ^(CollaborationControllerDelegate::Outcome outcome) {
+              completionBlock(outcome);
+            };
 
         [strongSelf showTabGroupConfirmationForAction:actionType
                                             groupItem:tabGroupItem
@@ -484,7 +485,8 @@ using collaboration::CollaborationControllerDelegate;
   }
 
   if (self.leaveOrDeleteCompletion) {
-    self.leaveOrDeleteCompletion(ShareKitFlowOutcome::kSuccess);
+    self.leaveOrDeleteCompletion(
+        CollaborationControllerDelegate::Outcome::kSuccess);
     self.leaveOrDeleteCompletion = nil;
   }
 
@@ -529,7 +531,8 @@ using collaboration::CollaborationControllerDelegate;
 // Clears `leaveOrDeleteCompletion`. If not nil, calls it with `kCancel`.
 - (void)clearLeaveOrDeleteCompletion {
   if (self.leaveOrDeleteCompletion) {
-    self.leaveOrDeleteCompletion(ShareKitFlowOutcome::kCancel);
+    self.leaveOrDeleteCompletion(
+        CollaborationControllerDelegate::Outcome::kCancel);
   }
   self.leaveOrDeleteCompletion = nil;
 }
