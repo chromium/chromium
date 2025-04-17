@@ -1066,6 +1066,10 @@ void Tab::SetShouldShowDiscardIndicator(bool enabled) {
   icon_->SetShouldShowDiscardIndicator(enabled);
 }
 
+void Tab::UpdateInsets() {
+  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
+}
+
 void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
                                       int visual_width) const {
   if (ShouldRenderAsNormalTab()) {

@@ -499,11 +499,26 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
   const int stroke_thickness = GetStrokeThickness(false);
   gfx::Insets base_style_insets = tab_style()->GetContentsInsets();
+  gfx::Insets split_insets = gfx::Insets(0);
+
+  // For split tabs, remove insets equal to the total separator width between
+  // them.
+  const float total_separator_width =
+      tab_style()->GetSeparatorMargins().left() +
+      tab_style()->GetSeparatorSize().width() +
+      tab_style()->GetSeparatorMargins().right();
+  if (IsEndSplitTab(tab())) {
+    split_insets.set_left(total_separator_width / -2);
+  }
+  if (IsStartSplitTab(tab())) {
+    split_insets.set_right(total_separator_width / -2);
+  }
+
   return gfx::Insets::TLBR(
              stroke_thickness, 0,
              stroke_thickness + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
              0) +
-         base_style_insets;
+         base_style_insets + split_insets;
 }
 
 float TabStyleViewsImpl::GetZValue() const {

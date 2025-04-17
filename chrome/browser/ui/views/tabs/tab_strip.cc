@@ -1325,6 +1325,12 @@ void TabStrip::SetSplit(std::vector<int> split_indices,
     }
   }
 
+  // After all split IDs have been set, update the insets on split tabs so they
+  // have less padding between them.
+  for (const int split_index : split_indices) {
+    tab_at(split_index)->UpdateInsets();
+  }
+
   InvalidateLayout();
   SchedulePaint();
 }
