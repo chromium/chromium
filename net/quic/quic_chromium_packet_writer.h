@@ -113,6 +113,16 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   // when the socket is closed to avoid using an invalid socket.
   bool OnSocketClosed(DatagramClientSocket* socket);
 
+  // Register a QUIC UDP payload that can close a QUIC connection and the
+  // underlying socket to the Android system server. When the app loses network
+  // access, the system server destroys the registered socket and sends the
+  // registered UDP payload to the server.
+  void RegisterQuicConnectionClosePayload(base::span<uint8_t> payload);
+
+  // Unregister the underlying socket and its associated UDP payload that were
+  // previously registered by RegisterQuicConnectionClosePayload
+  void UnregisterQuicConnectionClosePayload();
+
  private:
   void SetPacket(const char* buffer, size_t buf_len);
   bool MaybeRetryAfterWriteError(int rv);

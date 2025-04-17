@@ -81,6 +81,10 @@ BASE_FEATURE(kQuicMigrationIgnoreDisconnectSignalDuringProbing,
              "kQuicMigrationIgnoreDisconnectSignalDuringProbing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicRegisterConnectionClosePayload,
+             "kQuicRegisterConnectionClosePayload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -1720,6 +1724,36 @@ void QuicChromiumClientSession::OnTlsHandshakeComplete() {
   quic::QuicSpdySession::OnTlsHandshakeComplete();
 }
 
+void QuicChromiumClientSession::RegisterQuicConnectionClosePayload() {
+  if (!base::FeatureList::IsEnabled(
+          features::kQuicRegisterConnectionClosePayload)) {
+    return;
+  }
+  std::unique_ptr<quic::SerializedPacket> connection_close_packet =
+      connection()->SerializeLargePacketNumberConnectionClosePacket(
+          quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
+          "App loses network access on Android");
+  base::span<uint8_t> payload(
+      (uint8_t*)connection_close_packet->encrypted_buffer,
+      connection_close_packet->encrypted_length);
+  static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+      ->RegisterQuicConnectionClosePayload(payload);
+}
+
+void QuicChromiumClientSession::UnregisterQuicConnectionClosePayload() {
+  if (!base::FeatureList::IsEnabled(
+          features::kQuicRegisterConnectionClosePayload)) {
+    return;
+  }
+  static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+      ->UnregisterQuicConnectionClosePayload();
+}
+
+void QuicChromiumClientSession::OnTlsHandshakeConfirmed() {
+  RegisterQuicConnectionClosePayload();
+  quic::QuicSpdySession::OnTlsHandshakeConfirmed();
+}
+
 void QuicChromiumClientSession::OnNewEncryptionKeyAvailable(
     quic::EncryptionLevel level,
     std::unique_ptr<quic::QuicEncrypter> encrypter) {
@@ -2099,6 +2133,8 @@ void QuicChromiumClientSession::OnConnectionClosed(
   if (!callback_.is_null()) {
     std::move(callback_).Run(ERR_QUIC_PROTOCOL_ERROR);
   }
+
+  UnregisterQuicConnectionClosePayload();
 
   bool socket_found_in_writer = false;
   for (auto& packet_reader : packet_readers_) {
@@ -2891,6 +2927,12 @@ void QuicChromiumClientSession::OnForwardProgressMadeAfterPathDegrading() {
   for (auto& observer : connectivity_observer_list_) {
     observer.OnSessionResumedPostPathDegrading(this, current_network);
   }
+}
+
+void QuicChromiumClientSession::SendRetireConnectionId(
+    uint64_t sequence_number) {
+  RegisterQuicConnectionClosePayload();
+  quic::QuicSpdySession::SendRetireConnectionId(sequence_number);
 }
 
 void QuicChromiumClientSession::OnKeyUpdate(quic::KeyUpdateReason reason) {
@@ -3950,8 +3992,16 @@ bool QuicChromiumClientSession::MigrateToSocket(
   // WriteToNewSocket completes.
   DVLOG(1) << "Force blocking the packet writer";
   writer_moved->set_force_write_blocked(true);
-  if (!MigratePath(self_address, peer_address, writer_moved.release(),
-                   /*owns_writer=*/true)) {
+
+  // UnregisterQuicConnectionClosePayload must be called before MigratePath, and
+  // RegisterQuicConnectionClosePayload must be called after. MigratePath
+  // replaces the packet writer, and these unregister/register methods operate
+  // on the current writer.
+  UnregisterQuicConnectionClosePayload();
+  int rv = MigratePath(self_address, peer_address, writer_moved.release(),
+                       /*owns_writer=*/true);
+  RegisterQuicConnectionClosePayload();
+  if (!rv) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_NO_UNUSED_CONNECTION_ID,
                                     connection_id(),
                                     "No unused server connection ID");

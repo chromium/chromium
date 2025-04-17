@@ -329,4 +329,17 @@ NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(handles::NetworkHandle network,
   return get_addrinfo_for_network(network, node, service, hints, res);
 }
 
+void RegisterQuicConnectionClosePayload(int fd, base::span<uint8_t> payload) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> payload_array = ToJavaByteArray(env, payload);
+  DCHECK(!payload_array.is_null());
+  Java_AndroidNetworkLibrary_registerQuicConnectionClosePayload(env, fd,
+                                                                payload_array);
+}
+
+void UnregisterQuicConnectionClosePayload(int fd) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AndroidNetworkLibrary_unregisterQuicConnectionClosePayload(env, fd);
+}
+
 }  // namespace net::android

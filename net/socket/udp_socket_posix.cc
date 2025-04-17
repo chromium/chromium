@@ -1099,4 +1099,17 @@ int UDPSocketPosix::SetIOSNetworkServiceType(int ios_network_service_type) {
   return OK;
 }
 
+void UDPSocketPosix::RegisterQuicConnectionClosePayload(
+    base::span<uint8_t> payload) {
+#if BUILDFLAG(IS_ANDROID)
+  net::android::RegisterQuicConnectionClosePayload(socket_, payload);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void UDPSocketPosix::UnregisterQuicConnectionClosePayload() {
+#if BUILDFLAG(IS_ANDROID)
+  net::android::UnregisterQuicConnectionClosePayload(socket_);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace net

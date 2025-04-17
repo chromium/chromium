@@ -753,6 +753,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   quic::QuicCryptoClientStream* GetMutableCryptoStream() override;
   void SetDefaultEncryptionLevel(quic::EncryptionLevel level) override;
   void OnTlsHandshakeComplete() override;
+  void OnTlsHandshakeConfirmed() override;
   void OnNewEncryptionKeyAvailable(
       quic::EncryptionLevel level,
       std::unique_ptr<quic::QuicEncrypter> encrypter) override;
@@ -777,6 +778,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const quic::ParsedQuicVersion& version) override;
   void OnPathDegrading() override;
   void OnForwardProgressMadeAfterPathDegrading() override;
+  void SendRetireConnectionId(uint64_t sequence_number) override;
   void OnKeyUpdate(quic::KeyUpdateReason reason) override;
   void CreateContextForMultiPortPath(
       std::unique_ptr<quic::MultiPortPathContextObserver> context_observer)
@@ -1107,6 +1109,30 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       StreamRequest* stream_request);
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
+  // Register a QUIC connection close payload to the Android system service.
+  // The payload will be registered with the socket currently used by the QUIC
+  // connection. If the app loses network access, the system server will destroy
+  // the registered socket and send the registered UDP payload to the server.
+  // This method must be called when:
+  // 1. the QUIC connection is established.
+  // 2. the QUIC connection has migrated to a new path and started using a new
+  //    socket.
+  // 3. the QUIC connection retires sever connection ID
+  virtual void RegisterQuicConnectionClosePayload();
+
+  // Unregister the payload associated with the socket currently used by the
+  // QUIC connection.
+  // This method is a no-op if the socket and the payload were not previously
+  // registered by RegisterQuicConnectionClosePayload
+  // This method must be called when:
+  // 1. the QUIC connection is closed
+  // 2. the QUIC connection will migrate to a new path and stop using the
+  //    socket currently in use.
+  // Note: Unregistration is not required when only the connection ID is
+  // updated. As long as the connection continues to use the same socket,
+  // registering a new payload replace the previously registered one.
+  virtual void UnregisterQuicConnectionClosePayload();
+
   const QuicSessionAliasKey session_alias_key_;
   QuicSessionKey session_key_;
   bool require_confirmation_;
@@ -1244,6 +1270,10 @@ namespace features {
 // when there is an ongoing migration with probing.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kQuicMigrationIgnoreDisconnectSignalDuringProbing);
+
+// When enabled, QuicChromiumClientSession registers and unregisters QUIC
+// connection close payloads with the Android system service.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicRegisterConnectionClosePayload);
 
 }  // namespace features
 

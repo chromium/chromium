@@ -153,6 +153,24 @@ NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(handles::NetworkHandle network,
                                              const struct addrinfo* hints,
                                              struct addrinfo** res);
 
+// Register a QUIC UDP socket and a UDP payload that can close a QUIC connection
+// to the Android system server.
+// When the app loses network access (e.g. due to a freezer or firewall chains),
+// the Android system server 1)destroys the registered UDP socket by sending a
+// SOCK_DESTROY netlink message and 2)sends the registered UDP payload to the
+// server.
+// This prevents unnecessary modem wakeups caused by packets from the server
+// after the app loses network access.
+// See ConnectivityManager#registerQuicConnectionClosePayload for further
+// detail.
+NET_EXPORT_PRIVATE void RegisterQuicConnectionClosePayload(
+    int fd,
+    base::span<uint8_t> payload);
+
+// Unregister the QUIC socket and its associated UDP payload that were
+// previously registered by RegisterQuicConnectionClosePayload
+NET_EXPORT_PRIVATE void UnregisterQuicConnectionClosePayload(int fd);
+
 }  // namespace net::android
 
 #endif  // NET_ANDROID_NETWORK_LIBRARY_H_
