@@ -723,24 +723,6 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     bool include_allow_service_worker_header = false;
 
     if (extension) {
-      // Log if loading an extension resource not listed as a web accessible
-      // resource from a sandboxed page.
-      if (request_.request_initiator.has_value() &&
-          request_.request_initiator->opaque() &&
-          request_.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
-                  .scheme() == kExtensionScheme) {
-        // Surface opaque origin for web accessible resource verification.
-        const auto origin = url::Origin::Create(
-            request_.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
-                .GetURL());
-        bool is_web_accessible_resource =
-            WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-                extension.get(), request_.url, origin, upstream_url_);
-        base::UmaHistogramBoolean(
-            "Extensions.SandboxedPageLoad.IsWebAccessibleResource",
-            is_web_accessible_resource);
-      }
-
       GetSecurityPolicyForURL(
           request_, *extension, is_web_view_request_, &content_security_policy,
           &cross_origin_embedder_policy, &cross_origin_opener_policy,
