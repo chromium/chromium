@@ -81,6 +81,10 @@ inline constexpr char kManagedDefaultLegacyCookieScope[] =
     "profile.managed_default_content_settings.legacy_cookie_scope";
 inline constexpr char kManagedDefaultControlledFrameSetting[] =
     "profile.managed_default_content_settings.controlled_frame";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kManagedDefaultSmartCardConnectSetting[] =
+    "profile.managed_default_content_settings.smart_card_connect";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.

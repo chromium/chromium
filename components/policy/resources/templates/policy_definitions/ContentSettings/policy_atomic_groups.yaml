@@ -107,3 +107,4 @@ SmartCardConnectSettings:
   policies:
   - SmartCardConnectAllowedForUrls
   - SmartCardConnectBlockedForUrls
+  - DefaultSmartCardConnectSetting

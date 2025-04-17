@@ -796,6 +796,12 @@ class SmartCardConnectPolicyTest : public PolicyTest {
     UpdateProviderPolicy(policies_);
   }
 
+  void SetSmartCardConnectBlockedByDefault() {
+    SetPolicy(&policies_, key::kDefaultSmartCardConnectSetting,
+              base::Value(CONTENT_SETTING_BLOCK));
+    UpdateProviderPolicy(policies_);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   PolicyMap policies_;
@@ -828,12 +834,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
-                       SmartCardConnectBlockedForWildcard) {
+                       SmartCardConnectBlockedByDefault) {
   ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
                            content_settings::SettingSource::kUser),
             GetSmartCardConnectContentSetting(GetTestingUrl()));
 
-  SetSmartCardConnectBlockedFor("*");
+  SetSmartCardConnectBlockedByDefault();
 
   ASSERT_EQ(std::make_pair(CONTENT_SETTING_BLOCK,
                            content_settings::SettingSource::kPolicy),
@@ -854,6 +860,19 @@ IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
             GetSmartCardConnectContentSetting(GetTestingUrl()));
 
   SetSmartCardConnectAllowedFor("*");
+
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
+                       SmartCardConnectCannotBeBlockedForWildcard) {
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+
+  SetSmartCardConnectBlockedFor("*");
 
   ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
                            content_settings::SettingSource::kUser),

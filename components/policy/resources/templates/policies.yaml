@@ -1353,6 +1353,7 @@ policies:
   1352: DeviceLoginScreenFaceGazeEnabled
   1353: EnterpriseLogoUrlForBrowser
   1354: EnterpriseCustomLabelForBrowser
+  1355: DefaultSmartCardConnectSetting
 
 atomic_groups:
   1: Homepage
