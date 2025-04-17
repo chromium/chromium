@@ -78,6 +78,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelect) {
   RunTest("print_preview/settings_select_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, Observable) {
+  RunTest("print_preview/observable_test.js", "mocha.run()");
+}
+
 class PrintPreviewAppTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

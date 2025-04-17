@@ -65,6 +65,7 @@ build_webui("build") {
     "data/margins.ts",
     "data/measurement_system.ts",
     "data/model.ts",
+    "data/observable.ts",
     "data/printable_area.ts",
     "data/scaling.ts",
     "data/size.ts",

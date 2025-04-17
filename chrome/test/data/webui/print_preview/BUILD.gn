@@ -39,6 +39,7 @@ build_webui_tests("build") {
     "native_layer_stub.ts",
     "number_settings_section_interactive_test.ts",
     "number_settings_section_test.ts",
+    "observable_test.ts",
     "other_options_settings_test.ts",
     "pages_per_sheet_settings_test.ts",
     "pages_settings_test.ts",
