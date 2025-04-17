@@ -30,17 +30,17 @@ RemotingCrashpadDatabaseTool::RemotingCrashpadDatabaseTool()
 
 // CrashpadDatabaseManager::Logger overrides
 void RemotingCrashpadDatabaseTool::Log(const std::string message) const {
-  std::cout << message;
+  std::cout << message << '\n';
 }
 
 void RemotingCrashpadDatabaseTool::LogError(const std::string message) const {
-  std::cerr << message;
+  std::cerr << message << '\n';
 }
 
 int RemotingCrashpadDatabaseTool::DatabaseToolMain() {
   if (!database_.InitializeCrashpadDatabase()) {
     std::cout << "Unable to load crashpad database at "
-              << GetCrashpadDatabasePath();
+              << GetCrashpadDatabasePath() << '\n';
     return EXIT_FAILURE;
   }
 
