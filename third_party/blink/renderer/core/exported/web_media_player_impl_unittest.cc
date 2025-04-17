@@ -1999,7 +1999,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   base::RunLoop run_loop;
   // MediaFoundationRenderer doesn't use AudioService.
   EXPECT_CALL(client_, DidUseAudioServiceChange(/*uses_audio_service=*/false))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
+      .WillOnce(RunClosure(run_loop.QuitWhenIdleClosure()));
   Load(kEncryptedVideoOnlyTestFile);
   run_loop.Run();
 }
