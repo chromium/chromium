@@ -78,7 +78,8 @@ enum class UserSelectableType;
 
 // Signs in with the fake managed identity and access point Settings.
 // Adds the fake-identity to the identity manager if necessary.
-// Converts the personal profile into a managed one.
+// If separate profiles for managed accounts are enabled, converts the personal
+// profile into a managed one.
 // Call `[SigninEarlGrey
 // signinWithFakeManagedIdentityInPersonalProfile:identity]` instead.
 // `fakeIdentity` is added if it was not added yet.

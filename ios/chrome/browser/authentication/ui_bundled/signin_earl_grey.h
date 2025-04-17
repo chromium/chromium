@@ -94,7 +94,8 @@ class GURL;
 
 // Signs in with the fake identity and access point Settings.
 // Adds the fake-identity to the identity manager if necessary.
-// Converts the personal profile into a managed one.
+// If separate profiles for managed accounts are enabled, converts the personal
+// profile into a managed one.
 // Only intended for tests requiring sign-in but not covering the sign-in UI
 // behavior to speed up and simplify those tests.
 // Will bypass the usual verifications before signin and other
