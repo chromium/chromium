@@ -31,6 +31,16 @@
 
 namespace affiliations {
 
+BASE_FEATURE(kFetchChangePasswordUrl,
+             "FetchChangePasswordUrl",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             // Change-password urls aren't utilized in any way on mobile. No
+             // need to fetch them.
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 AffiliationBackend::AffiliationBackend(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* time_source,
@@ -395,7 +405,11 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   // time, find a better way of caching it.
   ReportStatistics(requested_facet_uris.size());
   return fetcher_manager_->Fetch(
-      requested_facet_uris, {.branding_info = true, .psl_extension_list = true},
+      requested_facet_uris,
+      {.branding_info = true,
+       .change_password_info =
+           base::FeatureList::IsEnabled(kFetchChangePasswordUrl),
+       .psl_extension_list = true},
       base::BindOnce(&AffiliationBackend::OnFetchFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }

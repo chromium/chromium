@@ -38,11 +38,17 @@ void FakeAffiliationFetcher::StartRequest(
     RequestInfo request_info,
     base::OnceCallback<void(FetchResult)> result_callback) {
   facets_ = facet_uris;
+  request_info_ = request_info;
   result_callback_ = std::move(result_callback);
 }
 const std::vector<FacetURI>&
 FakeAffiliationFetcher::GetRequestedFacetURIs() const {
   return facets_;
+}
+
+const AffiliationFetcherInterface::RequestInfo&
+FakeAffiliationFetcher::GetRequestInfo() const {
+  return request_info_;
 }
 
 FakeAffiliationFetcherFactory::

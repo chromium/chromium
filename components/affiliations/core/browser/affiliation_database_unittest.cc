@@ -309,7 +309,7 @@ TEST_F(AffiliationDatabaseTest, MigrateFromVersion1) {
   OpenDatabase();
 
   // Check that migration was successful and existing data was untouched.
-  EXPECT_EQ(6, db().GetDatabaseVersionForTesting());
+  EXPECT_EQ(7, db().GetDatabaseVersionForTesting());
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
   db().GetAllAffiliationsAndBranding(&affiliations);
   ASSERT_EQ(3u, affiliations.size());
@@ -360,6 +360,7 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion2) {
                                                         affiliations[2]);
   EXPECT_EQ(TestEquivalenceClass3().facets[0].branding_info,
             affiliations[2].facets[0].branding_info);
+  EXPECT_EQ(7, db().GetDatabaseVersionForTesting());
 }
 
 TEST_F(AffiliationDatabaseTest, InitializeFromVersion3) {
@@ -402,6 +403,7 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion3) {
   EXPECT_THAT(groupings[2].branding_info,
               testing::Eq(FacetBrandingInfo{kTestAndroidPlayName,
                                             GURL(kTestAndroidIconURL)}));
+  EXPECT_EQ(7, db().GetDatabaseVersionForTesting());
 }
 
 TEST_F(AffiliationDatabaseTest, InitializeFromVersion4) {
@@ -447,6 +449,7 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion4) {
   EXPECT_THAT(groupings[2].branding_info,
               testing::Eq(FacetBrandingInfo{kTestAndroidPlayName,
                                             GURL(kTestAndroidIconURL)}));
+  EXPECT_EQ(7, db().GetDatabaseVersionForTesting());
 }
 
 TEST_F(AffiliationDatabaseTest, InitializeFromVersion5) {
@@ -491,6 +494,56 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion5) {
   EXPECT_THAT(
       db().GetPSLExtensions(),
       testing::UnorderedElementsAre("app.com", "example.com", "news.com"));
+  EXPECT_EQ(7, db().GetDatabaseVersionForTesting());
+}
+
+TEST_F(AffiliationDatabaseTest, InitializeFromVersion7) {
+  // Close and delete the current database and create it from scratch with the
+  // SQLite statement stored in affiliation_db_v3.sql.
+  CloseDatabase();
+  AffiliationDatabase::Delete(db_path());
+  base::FilePath src_root_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
+  base::FilePath sql_path_v5 = src_root_dir.AppendASCII("components")
+                                   .AppendASCII("test")
+                                   .AppendASCII("data")
+                                   .AppendASCII("password_manager")
+                                   .AppendASCII("affiliation_db_v7.sql");
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), sql_path_v5));
+
+  // Expect the migration to be a no-op that does not modify the existing data.
+  OpenDatabase();
+
+  GroupedFacets group1;
+  group1.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL(), kTestMainDomain),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2), FacetBrandingInfo(),
+            GURL("https://example.com/change/password"), kTestMainDomain),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3), FacetBrandingInfo(),
+            GURL(), kTestMainDomain)};
+  group1.branding_info =
+      FacetBrandingInfo{kTestWebsiteName, GURL(kTestAndroidIconURL)};
+  GroupedFacets group2;
+  group2.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4), FacetBrandingInfo(),
+            GURL("https://example.com/change/password")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI5), FacetBrandingInfo(),
+            GURL("https://example.com/change/password")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI7))};
+  GroupedFacets group3;
+  group3.facets = {Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURI))};
+  group3.branding_info =
+      FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)};
+
+  EXPECT_THAT(db().GetAllGroups(),
+              testing::UnorderedElementsAre(group1, group2, group3));
+
+  EXPECT_THAT(
+      db().GetPSLExtensions(),
+      testing::UnorderedElementsAre("app.com", "example.com", "news.com"));
+  EXPECT_EQ(7, db().GetDatabaseVersionForTesting());
 }
 
 TEST_F(AffiliationDatabaseTest, ClearUnusedCache) {
@@ -632,6 +685,85 @@ TEST_F(AffiliationDatabaseTest, GetMatchingGroupNoMatches) {
   expected_group.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURI5))};
   EXPECT_EQ(expected_group,
             db().GetGroup(FacetURI::FromCanonicalSpec(kTestFacetURI5)));
+}
+
+TEST_F(AffiliationDatabaseTest, GetAffiliationForFacetWithChangePwdUrl) {
+  AffiliatedFacetsWithUpdateTime affiliation;
+  affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs1);
+  affiliation.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL("https://example.com/change/password/")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+  };
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(affiliation, GroupedFacets(), &removed);
+
+  // Verify that querying any element in the first equivalence class yields that
+  // class.
+  for (const auto& facet : affiliation.facets) {
+    AffiliatedFacetsWithUpdateTime result;
+    EXPECT_TRUE(db().GetAffiliationsAndBrandingForFacetURI(facet.uri, &result));
+    EXPECT_THAT(result.facets,
+                testing::UnorderedElementsAreArray(affiliation.facets));
+  }
+}
+
+TEST_F(AffiliationDatabaseTest, GetAllAffiliationsAndBrandingWithChangePwdUrl) {
+  AffiliatedFacetsWithUpdateTime affiliation;
+  affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs1);
+  affiliation.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL("https://example.com/change/password/")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+  };
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(affiliation, GroupedFacets(), &removed);
+
+  std::vector<AffiliatedFacetsWithUpdateTime> result;
+  db().GetAllAffiliationsAndBranding(&result);
+  ASSERT_EQ(1u, result.size());
+  EXPECT_THAT(result[0].facets,
+              testing::UnorderedElementsAreArray(affiliation.facets));
+}
+
+TEST_F(AffiliationDatabaseTest, GetAllGroupsWithChangePwdUrl) {
+  GroupedFacets group;
+  group.branding_info =
+      FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)};
+  group.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL("https://example.com/change/password/")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2), FacetBrandingInfo(),
+            GURL("https://example.com/change/password/")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+  };
+
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(TestEquivalenceClass1(), group, &removed);
+
+  EXPECT_THAT(db().GetAllGroups(), testing::ElementsAre(group));
+}
+
+TEST_F(AffiliationDatabaseTest, GetGroupWithChangePwdUrl) {
+  GroupedFacets group;
+  group.branding_info =
+      FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)};
+  group.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL("https://example.com/change/password/")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2), FacetBrandingInfo(),
+            GURL("https://example.com/change/password/")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+  };
+
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(TestEquivalenceClass1(), group, &removed);
+
+  for (const auto& facet : group.facets) {
+    EXPECT_EQ(db().GetGroup(facet.uri), group);
+  }
 }
 
 }  // namespace affiliations

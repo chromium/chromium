@@ -458,8 +458,10 @@ bool operator!=(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs) {
 }
 
 bool operator==(const Facet& lhs, const Facet& rhs) {
-  return std::tie(lhs.uri, lhs.branding_info, lhs.main_domain) ==
-         std::tie(rhs.uri, rhs.branding_info, rhs.main_domain);
+  return std::tie(lhs.uri, lhs.branding_info, lhs.main_domain,
+                  lhs.change_password_url) ==
+         std::tie(rhs.uri, rhs.branding_info, rhs.main_domain,
+                  rhs.change_password_url);
 }
 
 bool operator!=(const Facet& lhs, const Facet& rhs) {

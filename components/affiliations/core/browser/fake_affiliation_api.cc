@@ -30,10 +30,10 @@ bool FakeAffiliationAPI::HasPendingRequest() {
   return fake_fetcher_factory_->has_pending_fetchers();
 }
 
-std::vector<FacetURI> FakeAffiliationAPI::GetNextRequestedFacets() {
+FakeAffiliationFetcher* FakeAffiliationAPI::GetNextAffiliationFetcher() {
   if (fake_fetcher_factory_->has_pending_fetchers())
-    return fake_fetcher_factory_->PeekNextFetcher()->GetRequestedFacetURIs();
-  return std::vector<FacetURI>();
+    return fake_fetcher_factory_->PeekNextFetcher();
+  return nullptr;
 }
 
 void FakeAffiliationAPI::ServeNextRequest() {
@@ -68,12 +68,6 @@ void FakeAffiliationAPI::FailNextRequest() {
 
   FakeAffiliationFetcher* fetcher = fake_fetcher_factory_->PopNextFetcher();
   fetcher->SimulateFailure();
-}
-
-void FakeAffiliationAPI::IgnoreNextRequest() {
-  if (!fake_fetcher_factory_->has_pending_fetchers())
-    return;
-  std::ignore = fake_fetcher_factory_->PopNextFetcher();
 }
 
 }  // namespace affiliations

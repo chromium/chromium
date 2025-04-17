@@ -11,6 +11,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -45,6 +46,9 @@ class AffiliationFetcherInterface;
 class AffiliationFetcherFactory;
 class AffiliationFetchThrottler;
 class FacetManager;
+
+// Enables fetching of change-password urls on startup or later on demand.
+BASE_DECLARE_FEATURE(kFetchChangePasswordUrl);
 
 // The AffiliationBackend is the part of the AffiliationService that
 // lives on a background thread suitable for performing blocking I/O. As most

@@ -21,6 +21,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/clock.h"
+#include "base/test/run_until.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_database.h"
@@ -834,6 +835,21 @@ TEST_F(AffiliationBackendTest, GroupsUpdatedByMainDomain) {
   expected_group.facets.emplace_back(fetched_uris.back());
   EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),
               testing::ElementsAre(expected_group));
+}
+
+TEST_F(AffiliationBackendTest, ChangePasswordUrlsArerequested) {
+  FacetURI facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  FacetURI facet_uri_alpha_2(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2));
+
+  backend()->Prefetch(facet, base::Time::Max());
+  backend_task_runner()->RunUntilIdle();
+
+  EXPECT_EQ(base::FeatureList::IsEnabled(kFetchChangePasswordUrl),
+            fake_affiliation_api()
+                ->GetNextAffiliationFetcher()
+                ->GetRequestInfo()
+                .change_password_info);
+  fake_affiliation_api()->ServeNextRequest();
 }
 
 }  // namespace affiliations
