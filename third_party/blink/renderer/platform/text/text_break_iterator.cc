@@ -387,7 +387,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
 unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
     unsigned pos) const {
   DCHECK_LE(start_offset_, string_.length());
-  NonSharedCharacterBreakIterator iterator(StringView(string_, start_offset_));
+  CharacterBreakIterator iterator(StringView(string_, start_offset_));
   DCHECK_GE(pos, start_offset_);
   pos -= start_offset_;
   // `- 1` because the `Following()` returns the next opportunity after the

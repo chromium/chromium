@@ -42,17 +42,15 @@ const int kTextBreakDone = -1;
 // to version 4.0 only supports "legacy grapheme clusters".  Use this for
 // general text processing, e.g. string truncation.
 
-class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
+class PLATFORM_EXPORT CharacterBreakIterator final {
   STACK_ALLOCATED();
 
  public:
-  explicit NonSharedCharacterBreakIterator(const StringView&);
-  explicit NonSharedCharacterBreakIterator(base::span<const UChar>);
-  NonSharedCharacterBreakIterator(const NonSharedCharacterBreakIterator&) =
-      delete;
-  NonSharedCharacterBreakIterator& operator=(
-      const NonSharedCharacterBreakIterator&) = delete;
-  ~NonSharedCharacterBreakIterator();
+  explicit CharacterBreakIterator(const StringView&);
+  explicit CharacterBreakIterator(base::span<const UChar>);
+  CharacterBreakIterator(const CharacterBreakIterator&) = delete;
+  CharacterBreakIterator& operator=(const CharacterBreakIterator&) = delete;
+  ~CharacterBreakIterator();
 
   int Next();
   int Current();

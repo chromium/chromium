@@ -353,7 +353,7 @@ static unsigned FindBreakIndexBetween(const StringBuilder& string,
   unsigned break_search_length =
       std::min(proposed_break_index - current_position + 2,
                string.length() - current_position);
-  NonSharedCharacterBreakIterator it(
+  CharacterBreakIterator it(
       string.Span16().subspan(current_position, break_search_length));
 
   if (it.IsBreak(proposed_break_index - current_position))

@@ -37,7 +37,7 @@ unsigned NumGraphemeClusters(const String& string) {
     return string_length;
   }
 
-  NonSharedCharacterBreakIterator it(string);
+  CharacterBreakIterator it(string);
   if (!it) {
     return string_length;
   }
@@ -57,7 +57,7 @@ void GraphemesClusterList(const StringView& text,
     return;
   }
 
-  NonSharedCharacterBreakIterator it(text);
+  CharacterBreakIterator it(text);
   int cursor_pos = it.Next();
   unsigned count = 0;
   unsigned pos = 0;
@@ -82,7 +82,7 @@ unsigned LengthOfGraphemeCluster(const String& string, unsigned offset) {
     return 1 + (string[offset] == '\r' && string[offset + 1] == '\n');
   }
 
-  NonSharedCharacterBreakIterator it(string);
+  CharacterBreakIterator it(string);
   if (!it) {
     return string_length - offset;
   }
