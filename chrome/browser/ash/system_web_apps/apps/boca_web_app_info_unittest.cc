@@ -117,6 +117,10 @@ TEST_F(BocaSystemAppConsumerDelegateTest, HideNewTabButton) {
   EXPECT_TRUE(delegate()->ShouldHideNewTabButton());
 }
 
+TEST_F(BocaSystemAppConsumerDelegateTest, HasMinimalSize) {
+  EXPECT_EQ(gfx::Size(500, 500), delegate()->GetMinimumWindowSize());
+}
+
 TEST_F(BocaSystemAppConsumerDelegateTest, UsesCustomTabMenuModel) {
   ASSERT_TRUE(delegate()->HasCustomTabMenuModel());
 
