@@ -7129,14 +7129,6 @@ const FeatureEntry kFeatureEntries[] = {
          kNtpMostRelevantTabResumptionModuleVariations,
          "NtpMostRelevantTabResumptionModules")},
 
-    {"ntp-most-relevant-tab-resumption-module-device-icon",
-     flag_descriptions::kNtpMostRelevantTabResumptionModuleDeviceIconName,
-     flag_descriptions::
-         kNtpMostRelevantTabResumptionModuleDeviceIconDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         ntp_features::kNtpMostRelevantTabResumptionModuleDeviceIcon)},
-
     {"ntp-ogb-async-bar-parts",
      flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName,
      flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName, kOsDesktop,

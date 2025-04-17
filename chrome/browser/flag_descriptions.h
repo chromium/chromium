@@ -3167,9 +3167,6 @@ extern const char kNtpMicrosoftAuthenticationModuleDescription[];
 extern const char kNtpMostRelevantTabResumptionModuleName[];
 extern const char kNtpMostRelevantTabResumptionModuleDescription[];
 
-extern const char kNtpMostRelevantTabResumptionModuleDeviceIconName[];
-extern const char kNtpMostRelevantTabResumptionModuleDeviceIconDescription[];
-
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
 

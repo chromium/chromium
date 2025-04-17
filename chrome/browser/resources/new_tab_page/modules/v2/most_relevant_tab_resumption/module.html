@@ -22,10 +22,6 @@
       <div class="url-visit-info">
         <div class="url-visit-title">${item.title}</div>
         <div class="url-visit-description">
-          <cr-icon class="url-visit-device"
-              ?hidden="${!this.shouldShowDeviceIcon_}"
-              icon="${this.computeIcon_(item)}">
-          </cr-icon>
           <div class="url-visit-domain">${this.computeDomain_(item)}</div>
           <span class="dot"
               ?hidden="${!this.computeShouldShowDeviceName_(item)}">

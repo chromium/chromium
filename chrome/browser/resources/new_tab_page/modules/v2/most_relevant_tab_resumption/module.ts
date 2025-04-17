@@ -80,8 +80,6 @@ export class ModuleElement extends I18nMixinLit
   accessor urlVisits: URLVisit[] = [];
   protected accessor fallbackToHost_: boolean =
       loadTimeData.getBoolean('mostRelevantTabResumptionModuleFallbackToHost');
-  protected accessor shouldShowDeviceIcon_: boolean =
-      loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
   protected accessor showInfoDialog_: boolean = false;
   protected accessor allowFaviconServerFallback_: boolean =
       loadTimeData.getBoolean(
@@ -245,7 +243,7 @@ export class ModuleElement extends I18nMixinLit
   }
 
   protected computeShouldShowDeviceName_(urlVisit: URLVisit): boolean {
-    return !this.shouldShowDeviceIcon_ && !!this.computeDeviceName_(urlVisit);
+    return !!this.computeDeviceName_(urlVisit);
   }
 
   protected getVisibleUrlVisits_(): URLVisit[] {

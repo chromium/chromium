@@ -203,10 +203,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      IsEnUSLocaleOnlyFeatureEnabled(
                          ntp_features::kNtpMostRelevantTabResumptionModule));
   source->AddBoolean(
-      "mostRelevantTabResumptionDeviceIconEnabled",
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpMostRelevantTabResumptionModuleDeviceIcon));
-  source->AddBoolean(
       "mostRelevantTabResumptionAllowFaviconServerFallback",
       base::FeatureList::IsEnabled(
           ntp_features::
