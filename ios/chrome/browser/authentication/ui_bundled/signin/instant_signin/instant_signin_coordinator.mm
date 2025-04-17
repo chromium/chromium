@@ -79,6 +79,8 @@
   // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
+  DUMP_WILL_BE_CHECK(!_signinLogger)
+      << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - ChromeCoordinator
