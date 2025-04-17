@@ -1034,6 +1034,14 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
                                           SuggestionPosition{.row = 0});
 }
 
+TEST_F(AutofillExternalDelegateTest, AcceptManageLoyaltyCards) {
+  Suggestion manage_suggestion =
+      Suggestion(u"Manage cards", SuggestionType::kManageLoyaltyCard);
+  EXPECT_CALL(client(),
+              ShowAutofillSettings(SuggestionType::kManageLoyaltyCard));
+  external_delegate().DidAcceptSuggestion(manage_suggestion, {});
+}
+
 // Test that the Autofill delegate routes the merchant promo code suggestions
 // footer redirect logic correctly.
 TEST_F(AutofillExternalDelegateTest,

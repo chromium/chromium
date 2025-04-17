@@ -747,6 +747,13 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case SuggestionType::kManageIban:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
+      case SuggestionType::kManageLoyaltyCard:
+        CHECK(base::FeatureList::IsEnabled(
+            features::kAutofillEnableLoyaltyCardsFilling));
+        static constexpr std::string_view kValuableManagementUrl =
+            "https://wallet.google.com/wallet/passes";
+        ShowSingletonTab(browser, GURL(kValuableManagementUrl));
+        return;
       default:
         NOTREACHED();
     }
