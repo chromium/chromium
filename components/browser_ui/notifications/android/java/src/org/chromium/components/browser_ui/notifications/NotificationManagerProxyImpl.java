@@ -37,18 +37,14 @@ import java.util.function.Function;
 @NullMarked
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
-
-    @SuppressWarnings("NullAway.Init")
-    private NotificationManagerCompat mNotificationManager;
+    private final NotificationManagerCompat mNotificationManager;
 
     private static @Nullable NotificationManagerProxy sInstance;
 
     public static NotificationManagerProxy getInstance() {
         // No need to cache the real instance, it makes testing more difficult as tests that shadow
         // the NotificationManager would have to clear this.
-        if (sInstance == null) {
-            sInstance = new NotificationManagerProxyImpl();
-        }
+        if (sInstance == null) return new NotificationManagerProxyImpl();
         return sInstance;
     }
 
@@ -60,12 +56,7 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     public NotificationManagerProxyImpl() {
-        runRunnable(
-                TraceEvent.scoped("NotificationManagerProxyImpl()"),
-                () -> {
-                    mNotificationManager =
-                            NotificationManagerCompat.from(ContextUtils.getApplicationContext());
-                });
+        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 
     @Override
