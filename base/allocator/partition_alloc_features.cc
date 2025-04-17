@@ -503,4 +503,10 @@ constinit const FeatureParam<ShadowMetadataEnabledProcesses>
         &kShadowMetadataEnabledProcessesOptions};
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,
+             "PartitionAllocUsePriorityInheritanceLocks",
+             FEATURE_DISABLED_BY_DEFAULT);
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+
 }  // namespace base::features

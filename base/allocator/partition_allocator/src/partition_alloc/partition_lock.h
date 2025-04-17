@@ -124,6 +124,10 @@ class PA_LOCKABLE Lock {
     lock_.Reinit();
   }
 
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+  bool HasWaitersForTesting() const { return lock_.HasWaitersForTesting(); }
+#endif
+
  private:
   [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void ReentrancyIssueDetected() {
     PA_NO_CODE_FOLDING();

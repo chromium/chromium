@@ -4,6 +4,8 @@
 
 #include "partition_alloc/spinning_mutex.h"
 
+#include <atomic>
+
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -84,9 +86,28 @@ void SpinningMutex::AcquireSpinThenBlock() {
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
 
-void SpinningMutex::FutexWait() {
-  // Save and restore errno.
+namespace {
+PA_ALWAYS_INLINE long FutexSyscall(volatile void* ftx, int op, int value) {
+  // Save, clear and restore errno.
   int saved_errno = errno;
+  errno = 0;
+
+  long retval = syscall(SYS_futex, ftx, op | FUTEX_PRIVATE_FLAG, value, nullptr,
+                        nullptr, 0);
+  if (retval == -1) {
+    // These are programming errors, check them.
+    PA_DCHECK((errno != EPERM) || (errno != EACCES) || (errno != EINVAL) ||
+              (errno != ENOSYS))
+        << "FutexSyscall(" << reinterpret_cast<uintptr_t>(ftx) << ", " << op
+        << ", " << value << ")  failed with errno " << errno;
+  }
+
+  errno = saved_errno;
+  return retval;
+}
+}  // namespace
+
+void SpinningMutex::FutexWait() {
   // Don't check the return value, as we will not be awaken by a timeout, since
   // none is specified.
   //
@@ -106,24 +127,97 @@ void SpinningMutex::FutexWait() {
   // |kLockedContended| anymore. Note that even without spurious wakeups, the
   // value of |state_| is not guaranteed when this returns, as another thread
   // may get the lock before we get to run.
-  int err = syscall(SYS_futex, &state_, FUTEX_WAIT | FUTEX_PRIVATE_FLAG,
-                    kLockedContended, nullptr, nullptr, 0);
-
-  if (err) {
-    // These are programming error, check them.
-    PA_DCHECK(errno != EACCES);
-    PA_DCHECK(errno != EINVAL);
-  }
-  errno = saved_errno;
+  FutexSyscall(&state_, FUTEX_WAIT, kLockedContended);
 }
 
 void SpinningMutex::FutexWake() {
-  int saved_errno = errno;
-  long retval = syscall(SYS_futex, &state_, FUTEX_WAKE | FUTEX_PRIVATE_FLAG,
-                        1 /* wake up a single waiter */, nullptr, nullptr, 0);
+  long retval =
+      FutexSyscall(&state_, FUTEX_WAKE, 1 /* wake up a single waiter */);
   PA_CHECK(retval != -1);
-  errno = saved_errno;
 }
+
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+// static
+std::atomic<bool> SpinningMutex::s_use_pi_futex;
+
+// static
+void SpinningMutex::EnableUsePriorityInheritance() {
+  s_use_pi_futex.store(true, std::memory_order_relaxed);
+}
+
+void SpinningMutex::FutexLockPI() {
+  FutexSyscall(&state_pi_, FUTEX_LOCK_PI2, 0);
+}
+
+void SpinningMutex::FutexUnlockPI() {
+  FutexSyscall(&state_pi_, FUTEX_UNLOCK_PI, 0);
+}
+
+void SpinningMutex::FutexMigrate() {
+  // See explanation in |LockSlow()| for why marking the lock as migrated using
+  // |migrated_| is not enough and the value of the non-PI futex has to be set
+  // to |kMigrated|.
+  migrated_.store(true, std::memory_order_release);
+  if (state_.exchange(kMigrated, std::memory_order_release) !=
+      kLockedUncontended) {
+    FutexSyscall(&state_, FUTEX_WAKE, INT_MAX /* wake up all waiters */);
+  }
+}
+
+void SpinningMutex::LockSlow() {
+  while (!IsLockMigrated()) {
+    // If the current thread has reached here, it thinks the lock has not been
+    // migrated. But this might not be true since the thread that owns the
+    // lock can migrate the lock at any time and the migration process is not
+    // atomic.
+    //
+    // The current thread has to always mark the lock as being contended by
+    // swapping the value of the non-PI futex with |kLockedContended| in the
+    // slow path of the non-PI futex since that is a crucial for the
+    // correctness of the non-PI futex locking algorithm. If we handle this
+    // the same as the case where there is no PI futex at all, then it is
+    // possible that the current thread could sleep in |FutexWait()| forever.
+    // This happens when the current thread sets |state_| to
+    // |kLockedContended| just before the thread that owns the futex calls
+    // into |FutexMigrate()| and issues |FUTEX_WAKE| on  waiters. That
+    // would cause the current thread to miss the wake signal and sleep in the
+    // kernel waiting for another thread to unlock the non-PI futex. But any
+    // threads that want to acquire the lock in the future will see that lock
+    // has been migrated by looking at |migrated_| and directly skip to
+    // acquiring the PI futex, leaving the current thread waiting for the lock
+    // forever.
+    //
+    // In order to overcome this, as part of the |FutexMigrate()| the non-PI
+    // futex value is set to |kMigrated|. If after swapping the value of
+    // non-PI futex with |kLockedContended|, the current thread sees that it
+    // had previously been set to |kMigrated|, it knows that it has become the
+    // unfortunate owner of a non-PI lock that has been migrated. But since
+    // the lock has been marked as being contended, there might be another
+    // thread that exchanged the value of |state_| with |kLockedContended|
+    // just like the current thread but lost the race and is now waiting on
+    // the non-PI futex. Since only the current thread is aware that this has
+    // happened, it needs to repeat the migration process again the lock again
+    // before trying to lock the PI-futex.
+    switch (state_.exchange(kLockedContended, std::memory_order_acquire)) {
+      case kUnlocked:
+        return;
+      case kLockedUncontended:
+        [[fallthrough]];
+      case kLockedContended:
+        FutexWait();
+        break;
+      case kMigrated:
+        FutexMigrate();
+        break;
+      default:
+        PA_IMMEDIATE_CRASH();
+    }
+  }
+
+  FutexLockPI();
+}
+
+#else  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
 void SpinningMutex::LockSlow() {
   // If this thread gets awaken but another one got the lock first, then go back
@@ -133,6 +227,8 @@ void SpinningMutex::LockSlow() {
     FutexWait();
   }
 }
+
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
 #elif PA_BUILDFLAG(IS_WIN)
 

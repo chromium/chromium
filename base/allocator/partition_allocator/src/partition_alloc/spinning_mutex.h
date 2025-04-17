@@ -7,11 +7,13 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstdint>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/yield_processor.h"
@@ -32,6 +34,11 @@
 
 #if PA_BUILDFLAG(IS_FUCHSIA)
 #include <lib/sync/mutex.h>
+#endif
+
+#if PA_CONFIG(HAS_LINUX_KERNEL) && \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+#include <linux/futex.h>
 #endif
 
 namespace partition_alloc::internal {
@@ -75,6 +82,10 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
   PA_ALWAYS_INLINE bool Try() PA_EXCLUSIVE_TRYLOCK_FUNCTION(true);
   void AssertAcquired() const {}  // Not supported.
   void Reinit() PA_UNLOCK_FUNCTION();
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+  static void EnableUsePriorityInheritance();
+  inline bool HasWaitersForTesting() const;
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
  private:
   PA_NOINLINE void AcquireSpinThenBlock() PA_EXCLUSIVE_LOCK_FUNCTION();
@@ -97,6 +108,20 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
   static constexpr int kLockedContended = 2;
 
   std::atomic<int32_t> state_{kUnlocked};
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+  static constexpr int kMigrated = 0xdead;
+  static std::atomic<bool> s_use_pi_futex;
+
+  std::atomic<bool> migrated_{false};
+  std::atomic<int32_t> state_pi_{kUnlocked};
+
+  void FutexLockPI() PA_EXCLUSIVE_LOCK_FUNCTION();
+  void FutexUnlockPI() PA_UNLOCK_FUNCTION();
+  void FutexMigrate() PA_UNLOCK_FUNCTION();
+
+  PA_ALWAYS_INLINE static bool ShouldUsePriorityInheritance();
+  PA_ALWAYS_INLINE bool IsLockMigrated() const;
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 #elif PA_BUILDFLAG(IS_WIN)
   PA_CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
 #elif PA_BUILDFLAG(IS_APPLE)
@@ -126,22 +151,82 @@ inline constexpr SpinningMutex::SpinningMutex() = default;
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
 
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+// static
+PA_ALWAYS_INLINE bool SpinningMutex::ShouldUsePriorityInheritance() {
+  return s_use_pi_futex.load(std::memory_order_relaxed);
+}
+
+PA_ALWAYS_INLINE bool SpinningMutex::IsLockMigrated() const {
+  return migrated_.load(std::memory_order_acquire);
+}
+
+inline bool SpinningMutex::HasWaitersForTesting() const {
+  if (IsLockMigrated()) {
+    return (static_cast<uint32_t>(state_pi_.load(std::memory_order_relaxed)) &
+            FUTEX_WAITERS) == FUTEX_WAITERS;
+  } else {
+    return state_.load(std::memory_order_relaxed) == kLockedContended;
+  }
+}
+
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+
 PA_ALWAYS_INLINE bool SpinningMutex::Try() {
+  int expected = kUnlocked, desired = kLockedUncontended;
+  std::atomic<int32_t>* state = &state_;
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+  if (IsLockMigrated()) {
+    desired = base::PlatformThread::CurrentId();
+    state = &state_pi_;
+  }
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
   // Using the weak variant of compare_exchange(), which may fail spuriously. On
   // some architectures such as ARM, CAS is typically performed as a LDREX/STREX
   // pair, where the store may fail. In the strong version, there is a loop
   // inserted by the compiler to retry in these cases.
   //
-  // Since we are retrying in Lock() anyway, there is no point having two nested
-  // loops.
-  int expected = kUnlocked;
-  return (state_.load(std::memory_order_relaxed) == expected) &&
-         state_.compare_exchange_weak(expected, kLockedUncontended,
-                                      std::memory_order_acquire,
-                                      std::memory_order_relaxed);
+  // Since we are retrying in AcquireSpinThenBlock() anyway, there is no point
+  // having two nested loops.
+  return ((state->load(std::memory_order_relaxed) == expected) &&
+          state->compare_exchange_weak(expected, desired,
+                                       std::memory_order_acquire,
+                                       std::memory_order_relaxed));
 }
 
 PA_ALWAYS_INLINE void SpinningMutex::Release() {
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+  if (ShouldUsePriorityInheritance()) {
+    // We check if the lock should be migrated while releasing the lock since
+    // migrating the non-PI futex to the PI futex effectively unlocks the non-PI
+    // futex and therefore the lock itself. The migration happens in the release
+    // path only once, with one corner case handled in |LockSlow()|.
+    if (!IsLockMigrated()) [[unlikely]] {
+      FutexMigrate();
+      return;
+    }
+
+    // In the fast path of the PI futex, the value of the futex is still set to
+    // the thread ID of the current thread. If there are waiters, the kernel
+    // will set the |FUTEX_WAITERS| bit which will cause the compare-exchange to
+    // fail and force the current thread to call into the kernel and assign the
+    // futex to one of the waiters.
+    //
+    // Note that we cannot pessimize in the PI futex case as we do in the non-PI
+    // futex case by marking the futex as unlocked and then calling into the
+    // kernel. The kernel expects that a PI-futex must have an owner if it has
+    // waiters in order for the priority inheritance to work as expected.
+    int expected = base::PlatformThread::CurrentId();
+    if (!((state_pi_.load(std::memory_order_relaxed) == expected) &&
+          state_pi_.compare_exchange_strong(
+              expected, kUnlocked, std::memory_order_release,
+              std::memory_order_relaxed))) [[unlikely]] {
+      FutexUnlockPI();
+    }
+
+    return;
+  }
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
   if (state_.exchange(kUnlocked, std::memory_order_release) == kLockedContended)
       [[unlikely]] {
     // |kLockedContended|: there is a waiter to wake up.

@@ -27,6 +27,7 @@
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_superpage_extent_entry.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/spinning_mutex.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 

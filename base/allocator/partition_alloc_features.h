@@ -237,6 +237,10 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(ShadowMetadataEnabledProcesses,
                                        kShadowMetadataEnabledProcessesParam);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks);
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+
 }  // namespace base::features
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_

@@ -34,6 +34,7 @@
 #include "base/pending_task.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock_impl.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -1166,6 +1167,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     }
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+  if (base::KernelSupportsPriorityInheritanceFutex() &&
+      base::FeatureList::IsEnabled(
+          features::kPartitionAllocUsePriorityInheritanceLocks)) {
+    partition_alloc::internal::SpinningMutex::EnableUsePriorityInheritance();
+  }
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
   allocator_shim::UseSmallSingleSlotSpans use_small_single_slot_spans(
       base::FeatureList::IsEnabled(
