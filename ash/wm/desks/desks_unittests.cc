@@ -2406,7 +2406,7 @@ TEST_P(DesksTest, NewDeskButtonStateAndColor) {
       color_provider->GetColor(cros_tokens::kCrosSysPrimary);
 
   auto get_background_color([](const views::View* view) {
-    return view->GetBackground()->color().ConvertToSkColor(
+    return view->GetBackground()->color().ResolveToSkColor(
         view->GetColorProvider());
   });
 

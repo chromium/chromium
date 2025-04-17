@@ -247,7 +247,7 @@ class DragImageItemChipView : public DragImageItemView {
     // Thus we need to manually resolve it and set the color as the enabled
     // color for the label.
     if (auto enabled_color = label->GetRequestedEnabledColor()) {
-      label->SetEnabledColor(enabled_color->ConvertToSkColor(color_provider()));
+      label->SetEnabledColor(enabled_color->ResolveToSkColor(color_provider()));
     }
 
     label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);

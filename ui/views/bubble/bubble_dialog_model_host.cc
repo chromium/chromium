@@ -1142,7 +1142,7 @@ void BubbleDialogModelHost::UpdateWindowIcon(
       model_->dark_mode_icon(DialogModelHost::GetPassKey());
   if (!dark_mode_icon.IsEmpty() &&
       color_utils::IsDark(
-          background_color().ConvertToSkColor(color_provider))) {
+          background_color().ResolveToSkColor(color_provider))) {
     SetIcon(dark_mode_icon);
     return;
   }

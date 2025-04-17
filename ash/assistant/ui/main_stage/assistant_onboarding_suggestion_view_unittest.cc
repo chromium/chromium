@@ -60,7 +60,7 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
       CreateSuggestionViewAt(5, widget.get());
 
   auto get_background_color([](const views::View* view) {
-    return view->GetBackground()->color().ConvertToSkColor(
+    return view->GetBackground()->color().ResolveToSkColor(
         view->GetColorProvider());
   });
 

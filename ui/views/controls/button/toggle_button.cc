@@ -140,9 +140,9 @@ class ToggleButton::ThumbView : public View {
     }
     thumb_flags.setAntiAlias(true);
     const SkColor thumb_on_color =
-        GetThumbColor(/*is_on=*/true).ConvertToSkColor(color_provider);
+        GetThumbColor(/*is_on=*/true).ResolveToSkColor(color_provider);
     const SkColor thumb_off_color =
-        GetThumbColor(/*is_on=*/false).ConvertToSkColor(color_provider);
+        GetThumbColor(/*is_on=*/false).ResolveToSkColor(color_provider);
     SkColor thumb_color =
         color_utils::AlphaBlend(thumb_on_color, thumb_off_color, color_ratio_);
     if (is_hovered_ && is_on_) {
@@ -391,13 +391,13 @@ SkColor ToggleButton::GetTrackColor(bool is_on) const {
     return track_on_color_
         .value_or(enabled ? ui::kColorToggleButtonTrackOn
                           : ui::kColorToggleButtonTrackOnDisabled)
-        .ConvertToSkColor(GetColorProvider());
+        .ResolveToSkColor(GetColorProvider());
   }
 
   return track_off_color_
       .value_or(enabled ? ui::kColorToggleButtonTrackOff
                         : ui::kColorToggleButtonTrackOffDisabled)
-      .ConvertToSkColor(GetColorProvider());
+      .ResolveToSkColor(GetColorProvider());
 }
 
 SkColor ToggleButton::GetHoverColor() const {

@@ -38,7 +38,7 @@ std::optional<SkColor> ColorVariant::GetSkColor() const {
              : std::nullopt;
 }
 
-SkColor ColorVariant::ConvertToSkColor(
+SkColor ColorVariant::ResolveToSkColor(
     const ColorProvider* color_provider) const {
   if (auto color = GetSkColor()) {
     return color.value();

@@ -936,7 +936,7 @@ void Label::PaintText(gfx::Canvas* canvas) {
     const auto* background = view->background();
     auto* color_provider = view->GetColorProvider();
     if (background && color_provider &&
-        IsOpaque(background->color().ConvertToSkColor(color_provider))) {
+        IsOpaque(background->color().ResolveToSkColor(color_provider))) {
       break;
     }
 
@@ -1490,7 +1490,7 @@ void Label::UpdateColorsFromTheme() {
 
   if (requested_enabled_color_) {
     resolved_enabled_color_ =
-        requested_enabled_color_->ConvertToSkColor(color_provider);
+        requested_enabled_color_->ResolveToSkColor(color_provider);
   } else {
     const std::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
@@ -1501,7 +1501,7 @@ void Label::UpdateColorsFromTheme() {
 
   if (requested_background_color_) {
     resolved_background_color_ =
-        requested_background_color_->ConvertToSkColor(color_provider);
+        requested_background_color_->ResolveToSkColor(color_provider);
   } else {
     resolved_background_color_ =
         color_provider->GetColor(ui::kColorDialogBackground);

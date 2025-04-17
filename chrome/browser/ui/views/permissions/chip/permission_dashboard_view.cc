@@ -77,7 +77,7 @@ class IndicatorDividerBackground : public views::Background {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
     canvas->DrawPath(path, flags);
   }
 

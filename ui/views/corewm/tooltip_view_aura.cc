@@ -105,7 +105,7 @@ void TooltipViewAura::OnThemeChanged() {
   // Force the text color to be readable when |background_color| is not
   // opaque.
   const SkColor background_color =
-      background()->color().ConvertToSkColor(GetColorProvider());
+      background()->color().ResolveToSkColor(GetColorProvider());
   render_text_->set_subpixel_rendering_suppressed(
       SkColorGetA(background_color) != SK_AlphaOPAQUE);
   render_text_->SetColor(

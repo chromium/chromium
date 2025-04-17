@@ -1717,7 +1717,7 @@ ui::ImageModel LocationBarView::GetLocationIcon(
     auto* color_provider = location_icon_view_->GetColorProvider();
     if (background && color_provider) {
       dark_mode = color_utils::IsDark(
-          background->color().ConvertToSkColor(color_provider));
+          background->color().ResolveToSkColor(color_provider));
     }
   }
 

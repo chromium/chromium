@@ -22,7 +22,7 @@ SolidSourceBackground::SolidSourceBackground(SkColor color,
 void SolidSourceBackground::Paint(gfx::Canvas* canvas,
                                   views::View* view) const {
   const SkColor resolved_color =
-      color().ConvertToSkColor(view->GetColorProvider());
+      color().ResolveToSkColor(view->GetColorProvider());
   if (top_rounding_radius_ == 0) {
     // Fill the background. Note that we don't constrain to the bounds as
     // canvas is already clipped for us.

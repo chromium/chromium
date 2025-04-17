@@ -755,7 +755,7 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
     const auto& color =
         notification_view()->GetActionButtonColorForTesting(action_button);
     CHECK(color);
-    EXPECT_EQ(color->ConvertToSkColor(notification_view()->GetColorProvider()),
+    EXPECT_EQ(color->ResolveToSkColor(notification_view()->GetColorProvider()),
               data.accent_color);
   }
 }

@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   // Returns true if this ColorVariant currently holds a semantic color
   // reference (i.e., a ui::ColorId) rather than a physical color value
   // (SkColor). Semantic colors represent theme-based colors that require
-  // resolution using a ui::ColorProvider via ConvertToSkColor().
+  // resolution using a ui::ColorProvider via ResolveToSkColor().
   bool IsSemantic() const;
 
   // Returns true if this ColorVariant currently holds a physical color
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   // Resolves the ColorVariant to an SkColor.  If the ColorVariant holds a
   // ColorId, it will be resolved to an SkColor using the provided
   // ColorProvider.
-  SkColor ConvertToSkColor(const ui::ColorProvider* color_provider) const;
+  SkColor ResolveToSkColor(const ui::ColorProvider* color_provider) const;
 
   std::string ToString() const;
 

@@ -842,7 +842,7 @@ void BubbleFrameView::UpdateClientViewBackground() {
     // If the ClientView's background is transparent this could result in visual
     // artifacts. Make sure this isn't the case.
     const SkColor color =
-        background_color().ConvertToSkColor(GetWidget()->GetColorProvider());
+        background_color().ResolveToSkColor(GetWidget()->GetColorProvider());
     CHECK(SkColor4f::FromColor(color).isOpaque());
     client_view->SetBackground(CreateSolidBackground(color));
     client_view->SchedulePaint();
@@ -1266,7 +1266,7 @@ std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
 }
 
 SkColor BubbleFrameView::GetBackgroundColor() const {
-  return bubble_border_->color().ConvertToSkColor(GetColorProvider());
+  return bubble_border_->color().ResolveToSkColor(GetColorProvider());
 }
 
 BEGIN_METADATA(BubbleFrameView)

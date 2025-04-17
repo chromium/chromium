@@ -61,7 +61,7 @@ gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color) const {
 }
 
 SkColor ThemedVectorIcon::GetColor(const ColorProvider* color_provider) const {
-  return color_.ConvertToSkColor(color_provider);
+  return color_.ResolveToSkColor(color_provider);
 }
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color,

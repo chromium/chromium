@@ -186,7 +186,7 @@ class ColorPickerElementView : public views::Button {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kThickness);
     flags.setAntiAlias(true);
-    flags.setColor(bubble_view_->background_color().ConvertToSkColor(
+    flags.setColor(bubble_view_->background_color().ResolveToSkColor(
         bubble_view_->GetColorProvider()));
 
     gfx::RectF indicator_bounds(GetContentsBounds());

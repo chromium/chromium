@@ -350,7 +350,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   if (container->GetWidget()) {
     const auto* background = container->background();
     background_color =
-        background->color().ConvertToSkColor(container->GetColorProvider());
+        background->color().ResolveToSkColor(container->GetColorProvider());
   }
 
   // Get the closest label color to kColorPrimaryForeground, with a minimum

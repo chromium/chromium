@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   CreatePopupForTestQuery();
   views::View* background_host = popup_view()->parent();
   EXPECT_EQ(color_after_focus,
-            background_host->background()->color().ConvertToSkColor(
+            background_host->background()->color().ResolveToSkColor(
                 background_host->GetColorProvider()));
 
   omnibox_view()->GetFocusManager()->ClearFocus();

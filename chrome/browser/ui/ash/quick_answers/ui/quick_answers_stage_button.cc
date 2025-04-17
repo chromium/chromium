@@ -30,7 +30,7 @@ class HighlightBackground : public views::Background {
   void OnViewThemeChanged(views::View* view) override {
     // Use `SolidRoundRectPainter` to get a rectangle painter with insets.
     painter_ = views::Painter::CreateSolidRoundRectPainter(
-        color().ConvertToSkColor(view->GetColorProvider()),
+        color().ResolveToSkColor(view->GetColorProvider()),
         /*radius=*/0, kHighlightInsets);
 
     view->SchedulePaint();

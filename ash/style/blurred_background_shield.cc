@@ -102,7 +102,7 @@ void BlurredBackgroundShield::StackLayerBelowHost() {
 void BlurredBackgroundShield::UpdateBackgroundColor() {
   auto* color_provider = host_->GetColorProvider();
   const SkColor background_color = color_provider
-                                       ? color_.ConvertToSkColor(color_provider)
+                                       ? color_.ResolveToSkColor(color_provider)
                                        : gfx::kPlaceholderColor;
   // Only enable the background blur if the color is translucent.
   background_layer_.SetColor(background_color);

@@ -131,7 +131,7 @@ class SearchBoxBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(color().ConvertToSkColor(view->GetColorProvider()));
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
     canvas->DrawRoundRect(bounds, corner_radius_, flags);
   }
 
