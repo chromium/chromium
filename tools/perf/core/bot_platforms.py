@@ -509,7 +509,7 @@ _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
-    _crossbench_speedometer2(arguments=['--fileserver']),
+    _crossbench_speedometer2(),
     _crossbench_speedometer3_0(),
     _crossbench_speedometer3_1(),
     _crossbench_motionmark1_3(),
