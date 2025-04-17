@@ -121,7 +121,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
 
-    private static final String TAB_OPENED_FOR_REDIRECT = "Android.TabOpenedForRedirect";
+    private static final String INTENT_LAUNCH_FROM_TAB_CREATION =
+            "Android.Intent.IntentLaunchFromTabCreation";
 
     private static final long DEFER_NAVIGATION_TIMEOUT_MILLIS = 5000;
 
@@ -660,7 +661,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 mainFrameLaunchType,
                 MainFrameIntentLaunch.NUM_ENTRIES);
         RecordHistogram.recordBooleanHistogram(
-                TAB_OPENED_FOR_REDIRECT, fromApp && isTabOnInitialNavigationChain());
+                INTENT_LAUNCH_FROM_TAB_CREATION, fromApp && isTabOnInitialNavigationChain());
 
         // Before leaving Chrome, close any tab created for the navigation chain.
         if (shouldCloseTab) {

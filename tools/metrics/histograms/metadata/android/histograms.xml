@@ -2536,6 +2536,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Intent.IntentLaunchFromTabCreation" enum="Boolean"
+    expires_after="2026-02-24">
+  <owner>nafisabedin@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records whether a tab was created due to an external app to launch an intent
+    for an external app.
+
+    The false counts, and thus the PDF, for this metric is not meaningful.
+    Instead, utilize the true counts with another such as
+    MobileStartup.LaunchCause.EXTERNAL_VIEW_INTENT as the denominator to
+    determine the proportion of redirects.
+  </summary>
+</histogram>
+
 <histogram name="Android.Intent.InterceptNavigationDeferDuration" units="ms"
     expires_after="2026-01-29">
   <owner>mthiesse@chromium.org</owner>
@@ -5196,19 +5212,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ExternalProtocol" summary="external protocol"/>
     <variant name="InternalProtocol" summary="internal protocol"/>
   </token>
-</histogram>
-
-<histogram name="Android.TabOpenedForRedirect" enum="Boolean"
-    expires_after="2026-02-24">
-  <owner>nafisabedin@google.com</owner>
-  <owner>mthiesse@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records whether the tab was opened by an external app only to redirect to
-    another external app. This indicates that Chrome came from the background,
-    or was started, to act as an intermediate link redirector between the two
-    apps.
-  </summary>
 </histogram>
 
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
