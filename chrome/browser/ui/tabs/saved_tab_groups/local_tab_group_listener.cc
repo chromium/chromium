@@ -213,7 +213,11 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   const LocalTabID local_tab_id = local_tab->GetHandle().raw_value();
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
-  CHECK(saved_group);
+  if (!saved_group) {
+    // This can happen if the saved group was removed before the tab.
+    return Liveness::kGroupDeleted;
+  }
+
   const SavedTabGroupTab* saved_tab = saved_group->GetTab(local_tab_id);
   if (!saved_tab) {
     // The tab that was removed didn't belong to this group. This is natural
