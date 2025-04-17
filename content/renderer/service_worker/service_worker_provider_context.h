@@ -109,6 +109,12 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
     return container_type_;
   }
 
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  bool container_is_blob_url_shared_worker() const override;
+  void set_container_is_blob_url_shared_worker(bool is_blob_url) {
+    container_is_blob_url_shared_worker_ = is_blob_url;
+  }
+
   // Returns version id of the controller service worker object
   // (ServiceWorkerContainer#controller).
   int64_t GetControllerVersionId() const;
@@ -245,6 +251,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   network::mojom::URLLoaderFactory* GetSubresourceLoaderFactoryInternal();
 
   const blink::mojom::ServiceWorkerContainerType container_type_;
+  // TODO(crbug.com/324939068): remove the flag when the feature launched.
+  bool container_is_blob_url_shared_worker_ = false;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   // This keeps the connection to the content::ServiceWorkerContainerHost in the

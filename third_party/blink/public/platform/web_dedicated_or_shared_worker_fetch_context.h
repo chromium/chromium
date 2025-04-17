@@ -92,6 +92,9 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
   virtual void set_top_frame_origin(
       const blink::WebSecurityOrigin& top_frame_origin) = 0;
 
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  virtual void set_container_is_shared_worker(bool is_sharedworker) = 0;
+
   using RewriteURLFunction = WebURL (*)(std::string_view, bool);
   static void InstallRewriteURLFunction(RewriteURLFunction rewrite_url);
 };

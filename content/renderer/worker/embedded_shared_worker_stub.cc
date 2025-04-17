@@ -114,6 +114,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
             std::move(service_worker_container_info->client_receiver),
             std::move(service_worker_container_info->host_remote),
             std::move(controller_info), subresource_loader_factory_bundle_);
+    service_worker_provider_context_->set_container_is_blob_url_shared_worker(
+        info->url.SchemeIsBlob());
   }
 
   scoped_refptr<blink::WebWorkerFetchContext> web_worker_fetch_context =
@@ -185,6 +187,11 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
       require_cross_site_request_for_cookies
           ? net::SiteForCookies()
           : constructor_key.ToNetSiteForCookies());
+  // Since this is within `EmbeddedSharedWorkerStub`, the flag should be
+  // definitely true.
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  web_dedicated_or_shared_worker_fetch_context->set_container_is_shared_worker(
+      true);
 
   return web_dedicated_or_shared_worker_fetch_context;
 }
