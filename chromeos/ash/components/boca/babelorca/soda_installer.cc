@@ -23,7 +23,7 @@ SodaInstaller::~SodaInstaller() {
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
-SodaInstaller::InstallationStatus SodaInstaller::GetStaus() {
+SodaInstaller::InstallationStatus SodaInstaller::GetStatus() {
   if (!ValidLanguage()) {
     status_ = InstallationStatus::kLanguageUnavailable;
     return status_;

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chromeos/ash/components/boca/babelorca/soda_testing_utils.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -32,6 +34,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -134,6 +138,8 @@ constexpr char kInitialSessionId[] = "0";
 constexpr int kInitialSessionDurationInSecs = 600;
 constexpr char kDeviceId[] = "myDevice";
 constexpr char kTestDefaultUrl[] = "https://test";
+constexpr char kDefaultLanguage[] = "en-US";
+constexpr char kBadLanguage[] = "unknown language";
 
 ::boca::Session GetInitialSession(base::Time inital_time) {
   ::boca::Session session_1;
@@ -151,7 +157,6 @@ class BocaSessionManagerTestBase : public testing::Test {
   void SetUp() override {
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     boca_util::RegisterPrefs(local_state_.registry());
-
     cros_settings_ = std::make_unique<ash::CrosSettings>();
     auto provider =
         std::make_unique<ash::FakeCrosSettingsProvider>(base::DoNothing());
@@ -256,6 +261,7 @@ class BocaSessionManagerTestBase : public testing::Test {
     return scoped_feature_list_;
   }
   PrefService& local_state() { return local_state_; }
+  PrefRegistrySimple* local_state_registry() { return local_state_.registry(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -1483,6 +1489,118 @@ TEST_F(BocaSessionManagerTest, InitializerNotSet) {
   base::test::TestFuture<bool> test_future;
   boca_session_manager()->InitSessionCaption(test_future.GetCallback());
   EXPECT_TRUE(test_future.Get());
+}
+
+class BocaSessionManagerSodaTest : public BocaSessionManagerTestBase {
+ protected:
+  void SetUp() override {
+    BocaSessionManagerTestBase::SetUp();
+    scoped_feature_list().InitWithFeatures(
+        {ash::features::kOnDeviceSpeechRecognition}, /*disabled_features=*/{});
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+    speech::SodaInstaller::RegisterLocalStatePrefs(local_state_registry());
+    babelorca::RegisterSodaPrefsForTesting(local_state_registry());
+    // Only teacher installs SODA.
+    local_state().SetString(prefs::kClassManagementToolsAvailabilitySetting,
+                            kTeacher);
+    speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
+    EXPECT_CALL(*session_client_impl(), GetSession(_));
+    EXPECT_CALL(*boca_app_client(), GetDeviceId());
+    boca_session_manager_ = std::make_unique<BocaSessionManager>(
+        session_client_impl(), &local_state(), account_id,
+        /*is_producer=*/true);
+
+    EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages)
+        .WillRepeatedly(Return(valid_languages_));
+  }
+
+ protected:
+  std::vector<std::string> valid_languages_ = {{kDefaultLanguage}};
+  testing::NiceMock<babelorca::MockSodaInstaller> mock_soda_installer_;
+  std::unique_ptr<BocaSessionManager> boca_session_manager_;
+};
+
+TEST_F(BocaSessionManagerSodaTest, ReturnUninstalledIfNoInstaller) {
+  boca_session_manager_->ToggleAppStatus(true);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
+            boca_session_manager_->GetSodaStatus());
+}
+
+TEST_F(BocaSessionManagerSodaTest, HandleSodaInstallationSuccess) {
+  babelorca::SodaInstaller installer = babelorca::SodaInstaller(
+      &local_state(), &local_state(), kDefaultLanguage);
+  boca_session_manager_->SetSodaInstaller(&installer);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
+            boca_session_manager_->GetSodaStatus());
+  boca_session_manager_->ToggleAppStatus(true);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
+            boca_session_manager_->GetSodaStatus());
+  // This first call fakes the binary installation, which is necessary for the
+  // installer to report the installed language correctly.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+  ASSERT_EQ(BocaSessionManager::SodaStatus::kReady,
+            boca_session_manager_->GetSodaStatus());
+}
+
+TEST_F(BocaSessionManagerSodaTest, HandleSodaBinaryInstallationFailure) {
+  babelorca::SodaInstaller installer = babelorca::SodaInstaller(
+      &local_state(), &local_state(), kDefaultLanguage);
+  boca_session_manager_->SetSodaInstaller(&installer);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
+            boca_session_manager_->GetSodaStatus());
+  boca_session_manager_->ToggleAppStatus(true);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
+            boca_session_manager_->GetSodaStatus());
+  // This first call fakes the binary installation, which is necessary for the
+  // installer to report the installed language correctly.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::LanguageCode::kNone);
+  ASSERT_EQ(BocaSessionManager::SodaStatus::kInstallationFailure,
+            boca_session_manager_->GetSodaStatus());
+}
+
+TEST_F(BocaSessionManagerSodaTest, HandleSodaLanguageInstallationFailure) {
+  babelorca::SodaInstaller installer = babelorca::SodaInstaller(
+      &local_state(), &local_state(), kDefaultLanguage);
+  boca_session_manager_->SetSodaInstaller(&installer);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kUninstalled,
+            boca_session_manager_->GetSodaStatus());
+  boca_session_manager_->ToggleAppStatus(true);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kInstalling,
+            boca_session_manager_->GetSodaStatus());
+  // This first call fakes the binary installation, which is necessary for the
+  // installer to report the installed language correctly.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+  ASSERT_EQ(BocaSessionManager::SodaStatus::kInstallationFailure,
+            boca_session_manager_->GetSodaStatus());
+}
+
+TEST_F(BocaSessionManagerSodaTest, HandleUnavailableLanguage) {
+  local_state().SetString(prefs::kClassManagementToolsAvailabilitySetting,
+                          kTeacher);
+  babelorca::SodaInstaller installer =
+      babelorca::SodaInstaller(&local_state(), &local_state(), kBadLanguage);
+  boca_session_manager_->SetSodaInstaller(&installer);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kLanguageUnavailable,
+            boca_session_manager_->GetSodaStatus());
+  EXPECT_CALL(mock_soda_installer_, InstallSoda).Times(0);
+  EXPECT_CALL(mock_soda_installer_, InstallLanguage).Times(0);
+  boca_session_manager_->ToggleAppStatus(true);
+  EXPECT_EQ(BocaSessionManager::SodaStatus::kLanguageUnavailable,
+            boca_session_manager_->GetSodaStatus());
+  // This first call fakes the binary installation, which is necessary for the
+  // installer to report the installed language correctly.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+  ASSERT_EQ(BocaSessionManager::SodaStatus::kLanguageUnavailable,
+            boca_session_manager_->GetSodaStatus());
 }
 
 class BocaSessionManagerManagedNetworkTest : public BocaSessionManagerTestBase {

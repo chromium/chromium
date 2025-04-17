@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -47,6 +48,7 @@ class BocaSessionManager
  public:
   using SessionCaptionInitializer =
       base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>;
+  using SodaStatus = babelorca::SodaInstaller::InstallationStatus;
 
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
@@ -197,7 +199,10 @@ class BocaSessionManager
       SessionCaptionInitializer session_caption_initializer);
   void RemoveSessionCaptionInitializer();
   void InitSessionCaption(base::OnceCallback<void(bool)> success_cb);
-
+  void SetSodaInstaller(babelorca::SodaInstaller* soda_installer) {
+    soda_installer_ = soda_installer;
+  }
+  SodaStatus GetSodaStatus();
   base::ObserverList<Observer>& observers() { return observers_; }
 
   AccountId& account_id() { return account_id_; }
@@ -288,6 +293,7 @@ class BocaSessionManager
   raw_ptr<const PrefService> pref_service_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<babelorca::SodaInstaller> soda_installer_;
   bool is_local_caption_enabled_ = false;
   SessionCaptionInitializer session_caption_initializer_;
   net::BackoffEntry student_heartbeat_retry_backoff_;

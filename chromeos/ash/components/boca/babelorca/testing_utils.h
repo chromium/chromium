@@ -18,7 +18,7 @@ inline constexpr char kCaptionsTextShadow[] = "10px";
 inline constexpr int kCaptionsTextOpacity = 50;
 inline constexpr int kCaptionsBackgroundOpacity = 30;
 
-void RegisterPrefsForTesting(TestingPrefServiceSimple* pref_service);
+void RegisterPrefsForTesting(TestingPrefServiceSimple* registry);
 
 }  // namespace ash::babelorca
 

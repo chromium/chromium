@@ -12,10 +12,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
@@ -293,6 +295,11 @@ void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
   if (on_app_status_toggled_cb_for_test_) {
     std::move(on_app_status_toggled_cb_for_test_).Run(is_app_opened_);
   }
+
+  if (is_app_opened_ && soda_installer_ != nullptr) {
+    // TODO(378702821) Notify observers of SODA status change.
+    soda_installer_->InstallSoda(base::DoNothing());
+  }
 }
 
 void BocaSessionManager::NotifyLocalCaptionEvents(
@@ -339,6 +346,14 @@ void BocaSessionManager::InitSessionCaption(
     return;
   }
   session_caption_initializer_.Run(std::move(success_cb));
+}
+
+BocaSessionManager::SodaStatus BocaSessionManager::GetSodaStatus() {
+  if (soda_installer_ != nullptr) {
+    return soda_installer_->GetStatus();
+  }
+
+  return SodaStatus::kUninstalled;
 }
 
 void BocaSessionManager::LoadInitialNetworkState() {

@@ -34,7 +34,7 @@ class SodaInstaller : public speech::SodaInstaller::Observer {
   SodaInstaller(const SodaInstaller&) = delete;
   SodaInstaller operator=(const SodaInstaller&) = delete;
 
-  InstallationStatus GetStaus();
+  InstallationStatus GetStatus();
   void InstallSoda(AvailabilityCallback callback);
 
   // speech::SodaInstaller::Observer

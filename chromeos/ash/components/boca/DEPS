@@ -7,6 +7,7 @@ include_rules = [
   "+components/gcm_driver",
   "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
+  "+components/soda",
   "+components/user_manager",
   "+content/public/test",
   "+google_apis/common",

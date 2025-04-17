@@ -49,7 +49,7 @@ class BabelOrcaSodaInstallerTest : public testing::Test {
     speech::SodaInstaller::GetInstance()->RegisterLocalStatePrefs(
         global_prefs_.registry());
 
-    RegisterSodaPrefsForTesting(&profile_prefs_);
+    RegisterSodaPrefsForTesting(profile_prefs_.registry());
     // this is set here because the SessionManager test registers this
     // preference and both tests depend on the RegisterSodaPrefsForTesting
     // method.
@@ -69,7 +69,7 @@ class BabelOrcaSodaInstallerTest : public testing::Test {
 };
 
 TEST_F(BabelOrcaSodaInstallerTest, UninstalledDefaultStatus) {
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kUninstalled);
 }
 
@@ -91,7 +91,7 @@ TEST_F(BabelOrcaSodaInstallerTest, CallsBackImmediatelyIfPackInstalled) {
           SodaInstaller::InstallationStatus available) {
         speech_recognition_available = available;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kReady);
 
   ASSERT_TRUE(speech_recognition_available.has_value());
@@ -109,12 +109,12 @@ TEST_F(BabelOrcaSodaInstallerTest, InstallsSodaIfNeeded) {
           SodaInstaller::InstallationStatus available) {
         speech_recognition_available = available;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
       speech::GetLanguageCode(kDefaultLanguage));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kReady);
 
   ASSERT_TRUE(speech_recognition_available.has_value());
@@ -133,12 +133,12 @@ TEST_F(BabelOrcaSodaInstallerTest, ReportsSodaInstallFailure) {
           SodaInstaller::InstallationStatus available) {
         speech_recognition_available = available;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
       speech::LanguageCode::kNone);
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstallationFailure);
 
   ASSERT_TRUE(speech_recognition_available.has_value());
@@ -157,12 +157,12 @@ TEST_F(BabelOrcaSodaInstallerTest, ReportsSodaLanguageInstallFailure) {
           SodaInstaller::InstallationStatus available) {
         speech_recognition_available = available;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
       speech::GetLanguageCode(kDefaultLanguage));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstallationFailure);
 
   ASSERT_TRUE(speech_recognition_available.has_value());
@@ -184,12 +184,12 @@ TEST_F(BabelOrcaSodaInstallerTest, IgnoresOtherLanguageFailures) {
           SodaInstaller::InstallationStatus available) {
         availability_callback_invoked = true;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
       speech::GetLanguageCode(kAlternativeLanguage));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
 
   // The callback should not have been called.
@@ -206,12 +206,12 @@ TEST_F(BabelOrcaSodaInstallerTest, IgnoresOtherLanguageInstalls) {
           SodaInstaller::InstallationStatus available) {
         availability_callback_invoked = true;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
       speech::GetLanguageCode(kAlternativeLanguage));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
 
   // The callback should not have been called.
@@ -246,7 +246,7 @@ TEST_F(BabelOrcaSodaInstallerTest, HandlesMultipleInstallationObservers) {
           SodaInstaller::InstallationStatus available) {
         speech_recognition_available_one = available;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   installer_under_test_->InstallSoda(base::BindLambdaForTesting(
       [&speech_recognition_available_two](
@@ -256,7 +256,7 @@ TEST_F(BabelOrcaSodaInstallerTest, HandlesMultipleInstallationObservers) {
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
       speech::GetLanguageCode(kDefaultLanguage));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kReady);
 
   ASSERT_TRUE(speech_recognition_available_one.has_value());
@@ -282,7 +282,7 @@ TEST_F(BabelOrcaSodaInstallerTest,
           SodaInstaller::InstallationStatus available) {
         speech_recognition_available_one = available;
       }));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstalling);
   installer_under_test_->InstallSoda(base::BindLambdaForTesting(
       [&speech_recognition_available_two](
@@ -292,7 +292,7 @@ TEST_F(BabelOrcaSodaInstallerTest,
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
       speech::GetLanguageCode(kDefaultLanguage));
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kInstallationFailure);
 
   ASSERT_TRUE(speech_recognition_available_one.has_value());
@@ -306,7 +306,7 @@ TEST_F(BabelOrcaSodaInstallerTest,
 TEST_F(BabelOrcaSodaInstallerTest, GetStatusCatchesBadLanguage) {
   installer_under_test_ = std::make_unique<SodaInstaller>(
       &global_prefs_, &profile_prefs_, kBadLanguage);
-  EXPECT_EQ(installer_under_test_->GetStaus(),
+  EXPECT_EQ(installer_under_test_->GetStatus(),
             SodaInstaller::InstallationStatus::kLanguageUnavailable);
 }
 

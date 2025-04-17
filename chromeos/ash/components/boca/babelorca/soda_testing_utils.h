@@ -8,11 +8,11 @@
 #include "components/soda/soda_installer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class TestingPrefServiceSimple;
+class PrefRegistrySimple;
 
 namespace ash::babelorca {
 
-void RegisterSodaPrefsForTesting(TestingPrefServiceSimple* pref_service);
+void RegisterSodaPrefsForTesting(PrefRegistrySimple* pref_service);
 
 class MockSodaInstaller : public speech::SodaInstaller {
  public:
