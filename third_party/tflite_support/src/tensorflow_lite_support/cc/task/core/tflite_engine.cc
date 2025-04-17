@@ -161,6 +161,26 @@ absl::Status TfLiteEngine::BuildModelFromFile(
   return InitializeFromModelFileHandler(compute_settings);
 }
 
+#ifdef _WIN32
+absl::Status TfLiteEngine::BuildModelFromFileHandle(
+    HANDLE file_handle,
+    const tflite::proto::ComputeSettings& compute_settings) {
+  if (model_) {
+    return CreateStatusWithPayload(StatusCode::kInternal,
+                                   "Model already built");
+  }
+  if (external_file_ == nullptr) {
+    external_file_ = std::make_unique<ExternalFile>();
+  }
+  external_file_->mutable_file_descriptor_meta()->set_handle(
+      reinterpret_cast<uint64_t>(file_handle));
+  TFLITE_ASSIGN_OR_RETURN(
+      model_file_handler_,
+      ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
+  return InitializeFromModelFileHandler(compute_settings);
+}
+#endif
+
 absl::Status TfLiteEngine::BuildModelFromFileDescriptor(
     int file_descriptor,
     const tflite::proto::ComputeSettings& compute_settings) {

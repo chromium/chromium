@@ -24,6 +24,10 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
 
+#ifdef _WIN32
+typedef void* HANDLE;
+#endif
+
 namespace tflite {
 namespace task {
 namespace core {
@@ -65,9 +69,14 @@ class ExternalFileHandler {
   // Reference to the input ExternalFile.
   const ExternalFile& external_file_;
 
+#ifdef _WIN32
+  HANDLE owned_file_handle_{nullptr};
+  HANDLE file_mapping_{nullptr};
+#else
   // The file descriptor of the ExternalFile if provided by path, as it is
   // opened and owned by this class. Set to -1 otherwise.
   int owned_fd_{-1};
+#endif
 
   // Points to the memory buffer mapped from the file descriptor of the
   // ExternalFile, if provided by path or file descriptor.
@@ -82,13 +91,10 @@ class ExternalFileHandler {
 
   // The aligned mapped memory buffer offset, if any.
   int64_t buffer_aligned_offset_{};
-#ifndef _WIN32
   // The aligned mapped memory buffer size in bytes taking into account the
   // offset shift introduced by buffer_aligned_memory_offset_, if any.
   int64_t buffer_aligned_size_{};
-#endif
 };
-
 }  // namespace core
 }  // namespace task
 }  // namespace tflite

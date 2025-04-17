@@ -1,11 +1,16 @@
-From 0f99e06a87cef65c506a464e028126178003bcb3 Mon Sep 17 00:00:00 2001
+From aef095ae84b8e6bdaee279a56d2695ce0293bc3a Mon Sep 17 00:00:00 2001
 From: Mike Wittman <wittman@chromium.org>
-Date: Tue, 15 Apr 2025 17:39:14 -0700
+Date: Wed, 16 Apr 2025 15:43:55 -0700
 Subject: [PATCH 11/11] Prefix ASSIGN_OR_RETURN and RETURN_IF_ERROR macros with
  TFLITE_.
 
 Chrome's //base contains macros with the same name but with different
 definitions. Prefix the third-party ones to avoid the conflict.
+
+This patch was produced with the command:
+
+find third_party/tflite_support/src \( -name \*.h -o -name \*.cc \) -print0 | \
+    xargs -0 sed -i 's/\b\(ASSIGN_OR_RETURN|RETURN_IF_ERROR\)\b/TFLITE_&/g'
 ---
  .../cc/port/default/status_macros.h           |  34 ++--
  .../cc/port/default/tflite_wrapper.cc         |  30 ++--
@@ -20,7 +25,7 @@ definitions. Prefix the third-party ones to avoid the conflict.
  .../cc/task/core/score_calibration.cc         |   2 +-
  .../cc/task/core/task_api_factory.h           |  14 +-
  .../cc/task/core/task_utils.h                 |  10 +-
- .../cc/task/core/tflite_engine.cc             |  12 +-
+ .../cc/task/core/tflite_engine.cc             |  14 +-
  .../cc/task/processor/audio_preprocessor.cc   |  10 +-
  .../cc/task/processor/bert_preprocessor.cc    |  12 +-
  .../processor/classification_postprocessor.cc |   8 +-
@@ -76,7 +81,7 @@ definitions. Prefix the third-party ones to avoid the conflict.
  .../metadata/cc/metadata_extractor.cc         |  12 +-
  .../scann_ondevice/cc/index.cc                |   4 +-
  .../scann_ondevice/cc/index_builder.cc        |   2 +-
- 69 files changed, 491 insertions(+), 491 deletions(-)
+ 69 files changed, 492 insertions(+), 492 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/status_macros.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/status_macros.h
 index 8970a0e3ca3a2..5c6ec60211e26 100644
@@ -585,10 +590,10 @@ index fe2217620be1a..1945f0172099f 100644
                           *score_calibration_process_unit
                                ->options_as_ScoreCalibrationOptions(),
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-index 119af1de6783c..934ed71e45032 100644
+index 4b1770ada777d..d63335875daea 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-@@ -78,7 +78,7 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
+@@ -110,7 +110,7 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
    std::unique_ptr<ExternalFileHandler> handler =
        absl::WrapUnique(new ExternalFileHandler(external_file));
  
@@ -611,10 +616,10 @@ index 818839a77e43d..a7080f25780e8 100644
      sigmoid_vector.emplace_back(std::move(sigmoid));
    }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h
-index 11e0d1be54ea7..17d8d57468670 100644
+index b64f1369b8ea2..c28e07062c9f4 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h
-@@ -56,7 +56,7 @@ class TaskAPIFactory {
+@@ -57,7 +57,7 @@ class TaskAPIFactory {
        const tflite::proto::ComputeSettings& compute_settings =
            tflite::proto::ComputeSettings()) {
      auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
@@ -623,25 +628,25 @@ index 11e0d1be54ea7..17d8d57468670 100644
                                                       compute_settings));
      return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                       compute_settings);
-@@ -74,7 +74,7 @@ class TaskAPIFactory {
-       const tflite::proto::ComputeSettings& compute_settings =
-           tflite::proto::ComputeSettings()) {
+@@ -82,7 +82,7 @@ class TaskAPIFactory {
+         tflite::support::TfLiteSupportStatus::kFileReadError);
+ #else
      auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
 -    RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
 +    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
      return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                       compute_settings);
-   }
-@@ -91,7 +91,7 @@ class TaskAPIFactory {
-       const tflite::proto::ComputeSettings& compute_settings =
-           tflite::proto::ComputeSettings()) {
+ #endif
+@@ -106,7 +106,7 @@ class TaskAPIFactory {
+         tflite::support::TfLiteSupportStatus::kFileReadError);
+ #else
      auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
 -    RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
 +    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
                                                           compute_settings));
      return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                       compute_settings);
-@@ -110,7 +110,7 @@ class TaskAPIFactory {
+@@ -126,7 +126,7 @@ class TaskAPIFactory {
            const tflite::proto::ComputeSettings& compute_settings =
                tflite::proto::ComputeSettings()) {
      auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
@@ -650,7 +655,7 @@ index 11e0d1be54ea7..17d8d57468670 100644
                                                              compute_settings));
      return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                       compute_settings);
-@@ -146,10 +146,10 @@ class TaskAPIFactory {
+@@ -162,10 +162,10 @@ class TaskAPIFactory {
      tflite::proto::ComputeSettings compute_settings(
          base_options->compute_settings());
      if (compute_settings.has_settings_to_test_locally()) {
@@ -663,7 +668,7 @@ index 11e0d1be54ea7..17d8d57468670 100644
          &base_options->model_file(), compute_settings));
      return CreateFromTfLiteEngine<T>(std::move(engine), compute_settings);
    }
-@@ -173,7 +173,7 @@ class TaskAPIFactory {
+@@ -189,7 +189,7 @@ class TaskAPIFactory {
        std::unique_ptr<TfLiteEngine> engine,
        const tflite::proto::ComputeSettings& compute_settings =
            tflite::proto::ComputeSettings()) {
@@ -722,7 +727,7 @@ index 08b79b8dba5f2..a722c091651fc 100644
    data->Resize(num, T());
    T* pdata = data->mutable_data();
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index e7a82cf5c6218..f2dbb7e5ec376 100644
+index 81d91515bbe7c..429fde13484b3 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 @@ -121,7 +121,7 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
@@ -752,7 +757,16 @@ index e7a82cf5c6218..f2dbb7e5ec376 100644
        model_file_handler_,
        ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
    return InitializeFromModelFileHandler(compute_settings);
-@@ -172,7 +172,7 @@ absl::Status TfLiteEngine::BuildModelFromFileDescriptor(
+@@ -174,7 +174,7 @@ absl::Status TfLiteEngine::BuildModelFromFileHandle(
+   }
+   external_file_->mutable_file_descriptor_meta()->set_handle(
+       reinterpret_cast<uint64_t>(file_handle));
+-  ASSIGN_OR_RETURN(
++  TFLITE_ASSIGN_OR_RETURN(
+       model_file_handler_,
+       ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
+   return InitializeFromModelFileHandler(compute_settings);
+@@ -192,7 +192,7 @@ absl::Status TfLiteEngine::BuildModelFromFileDescriptor(
      external_file_ = std::make_unique<ExternalFile>();
    }
    external_file_->mutable_file_descriptor_meta()->set_fd(file_descriptor);
@@ -761,7 +775,7 @@ index e7a82cf5c6218..f2dbb7e5ec376 100644
        model_file_handler_,
        ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
    return InitializeFromModelFileHandler(compute_settings);
-@@ -185,7 +185,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
+@@ -205,7 +205,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
      return CreateStatusWithPayload(StatusCode::kInternal,
                                     "Model already built");
    }
@@ -770,7 +784,7 @@ index e7a82cf5c6218..f2dbb7e5ec376 100644
                     ExternalFileHandler::CreateFromExternalFile(external_file));
    return InitializeFromModelFileHandler(compute_settings);
  }
-@@ -197,7 +197,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
+@@ -217,7 +217,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
                                     "Model already built");
    }
    external_file_ = std::move(external_file);

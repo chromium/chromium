@@ -1,4 +1,4 @@
-From 49d82083337dc932367ada4d02bcb491869bbe82 Mon Sep 17 00:00:00 2001
+From fc217328bda0ef0afde5cbae459acf2fedcd8375 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:12 -0800
 Subject: [PATCH 04/11] rm stdio static init
@@ -8,7 +8,7 @@ Subject: [PATCH 04/11] rm stdio static init
  1 file changed, 15 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index 61ffceda0eba0..e7a82cf5c6218 100644
+index 2a12f72b5d18d..81d91515bbe7c 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 @@ -46,21 +46,6 @@ namespace tflite {

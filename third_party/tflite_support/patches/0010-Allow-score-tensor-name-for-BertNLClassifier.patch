@@ -1,4 +1,4 @@
-From 935aa489c2f781674c9b9199e5e8d2f438a63037 Mon Sep 17 00:00:00 2001
+From af57cc8d81562a793b91a767ff94525889b0590e Mon Sep 17 00:00:00 2001
 From: Mike Wittman <wittman@chromium.org>
 Date: Tue, 15 Apr 2025 17:36:15 -0700
 Subject: [PATCH 10/11] Allow 'score' tensor name for BertNLClassifier
