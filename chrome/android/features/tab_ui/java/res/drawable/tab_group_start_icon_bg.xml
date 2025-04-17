@@ -4,11 +4,11 @@ Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.components.browser_ui.widget.SurfaceColorDrawable xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:shape="rectangle"
-  app:surfaceElevation="@dimen/default_elevation_2"
-  tools:ignore="UnusedResources">
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:shape="rectangle"
+    tools:ignore="UnusedResources">
   <corners android:radius="16dp" />
-</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+  <solid android:color="?attr/colorSurfaceContainer"/>
+</shape>

@@ -13,8 +13,4 @@ found in the LICENSE file.
 
     <!-- New Tab Page -->
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.2</item>
-
-    <!-- Single Tab module -->
-    <dimen name="favicon_background_color_elevation">@dimen/default_elevation_2</dimen>
-
 </resources>

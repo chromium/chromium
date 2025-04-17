@@ -537,7 +537,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         boolean isMaxWidthLandscapeBottomSheet = isMaxWidthLandscapeBottomSheet();
 
         float maxWidthBottomSheetEv =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.custom_tabs_max_width_bottom_sheet_elev);
         float regBottomSheetEv =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
         float elevation = isMaxWidthLandscapeBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;

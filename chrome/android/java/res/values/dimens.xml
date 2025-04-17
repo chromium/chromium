@@ -242,6 +242,7 @@ found in the LICENSE file.
     <dimen name="custom_tabs_toast_branding_icon_size">28dp</dimen>
     <dimen name="custom_tabs_toast_branding_height">50dp</dimen>
     <dimen name="custom_tabs_toast_branding_padding">16dp</dimen>
+    <dimen name="custom_tabs_max_width_bottom_sheet_elev">3dp</dimen>
 
     <!-- Search in CCT specific dimensions for presenting interactable Omnibox -->
     <dimen name="custom_tabs_location_bar_active_height">40dp</dimen>

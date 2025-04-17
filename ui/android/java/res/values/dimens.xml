@@ -87,11 +87,6 @@ found in the LICENSE file.
 
     <!-- Elevation levels -->
     <dimen name="default_elevation_0">0dp</dimen>
-    <dimen name="default_elevation_1">1dp</dimen>
-    <dimen name="default_elevation_2">3dp</dimen>
-
-    <!-- TODO(crbug.com/40782657): Remove once dynamic color is ready for all cards -->
-    <dimen name="card_elevation">@dimen/default_elevation_1</dimen>
 
     <!-- Arbitrary shadow length for elevation levels -->
     <dimen name="default_shadow_length_elev_2">6dp</dimen>
@@ -108,7 +103,7 @@ found in the LICENSE file.
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
     <dimen name="list_menu_item_horizontal_padding">12dp</dimen>
     <dimen name="list_menu_item_text_size">14sp</dimen>
-    <dimen name="list_menu_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
 
     <!-- Automotive -->

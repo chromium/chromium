@@ -6,8 +6,7 @@ found in the LICENSE file.
 -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-  <corners android:radius="@dimen/favicon_background_radius"/>
-  <solid android:color="@color/single_tab_favicon_bg_color" />
+    android:shape="oval">
+  <!-- base color that will get overridden by tint. -->
+  <solid android:color="@android:color/white"/>
 </shape>
-

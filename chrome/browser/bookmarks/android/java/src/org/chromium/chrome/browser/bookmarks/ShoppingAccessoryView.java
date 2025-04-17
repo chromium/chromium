@@ -19,7 +19,6 @@ import android.widget.TextView;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** View for the shopping price chip. */
@@ -103,8 +102,7 @@ public class ShoppingAccessoryView extends FrameLayout {
                 mContainer
                         .getBackground()
                         .setColorFilter(
-                                ChromeColors.getSurfaceColor(
-                                        getContext(), R.dimen.default_elevation_2),
+                                SemanticColorUtils.getColorSurfaceContainer(getContext()),
                                 PorterDuff.Mode.SRC_ATOP);
             }
 

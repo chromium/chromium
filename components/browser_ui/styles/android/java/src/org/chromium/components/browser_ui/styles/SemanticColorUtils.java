@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -25,11 +24,6 @@ public class SemanticColorUtils {
 
     private static @ColorInt int resolve(@AttrRes int attrRes, Context context) {
         return MaterialColors.getColor(context, attrRes, TAG);
-    }
-
-    private static @ColorInt int resolveSurfaceColorElev(
-            @DimenRes int elevationDimen, Context context) {
-        return ChromeColors.getSurfaceColor(context, elevationDimen);
     }
 
     // LINT.IfChange(SemanticColorUtils)
@@ -136,14 +130,9 @@ public class SemanticColorUtils {
         return getDefaultBgColor(context);
     }
 
-    /** Returns the semantic color value that corresponds to default_bg_color_elev_2. */
-    public static @ColorInt int getDefaultBgColorElev2(Context context) {
-        return resolveSurfaceColorElev(R.dimen.default_elevation_2, context);
-    }
-
     /** Returns the semantic color value that corresponds to navigation_bubble_background_color. */
     public static @ColorInt int getNavigationBubbleBackgroundColor(Context context) {
-        return getDefaultBgColorElev2(context);
+        return getColorSurfaceContainer(context);
     }
 
     /** Returns the semantic color value that corresponds to drag_handlebar_color. */

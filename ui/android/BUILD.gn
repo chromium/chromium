@@ -277,7 +277,6 @@ android_resources("ui_java_resources") {
     "java/res/values-ldrtl/dimens.xml",
     "java/res/values-ldrtl/values.xml",
     "java/res/values-night/colors.xml",
-    "java/res/values-night/dimens.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values-sw600dp/values.xml",
     "java/res/values-sw720dp/values.xml",

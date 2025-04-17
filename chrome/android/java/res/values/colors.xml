@@ -71,4 +71,6 @@ found in the LICENSE file.
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
     <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
 
+    <!-- Swipe Refresh Handler -->
+    <color name="incognito_swipe_refresh_layout_bg">@color/gm3_baseline_surface_container_dark</color>
 </resources>

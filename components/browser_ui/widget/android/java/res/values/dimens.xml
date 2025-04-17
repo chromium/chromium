@@ -197,7 +197,7 @@ found in the LICENSE file.
     <!-- Misc. app menu dimens -->
     <dimen name="app_menu_corner_size">24dp</dimen>
     <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
-    <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="app_menu_elevation">3dp</dimen>
     <!-- app_menu_shadow_length + padding(8dp) -->
     <dimen name="app_menu_padding">14dp</dimen>
 
@@ -212,7 +212,6 @@ found in the LICENSE file.
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
 
     <!-- Single Tab module -->
-    <dimen name="favicon_background_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="single_tab_module_tab_thumbnail_size_big">114dp</dimen>
 
     <!-- Preference switch -->

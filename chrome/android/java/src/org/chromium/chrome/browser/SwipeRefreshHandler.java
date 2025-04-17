@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
@@ -199,8 +198,8 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         final boolean incognitoBranded = mTab.isIncognitoBranded();
         final @ColorInt int backgroundColor =
                 incognitoBranded
-                        ? context.getColor(R.color.default_bg_color_dark_elev_2_baseline)
-                        : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+                        ? context.getColor(R.color.incognito_swipe_refresh_layout_bg)
+                        : SemanticColorUtils.getColorSurfaceContainer(context);
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
         final @ColorInt int iconColor =
                 incognitoBranded
