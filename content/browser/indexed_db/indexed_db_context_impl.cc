@@ -537,7 +537,7 @@ void IndexedDBContextImpl::ApplyPolicyUpdates(
   }
 }
 
-void IndexedDBContextImpl::BindTestInterface(
+void IndexedDBContextImpl::BindTestInterfaceForTesting(
     mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   test_receivers_.Add(this, std::move(receiver));

@@ -101,5 +101,5 @@ interface IndexedDBControl {
 
   // Binds the testing interface for extra functionality only available in
   // tests.
-  BindTestInterface(pending_receiver<IndexedDBControlTest> receiver);
+  BindTestInterfaceForTesting(pending_receiver<IndexedDBControlTest> receiver);
 };

@@ -100,7 +100,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;
-  void BindTestInterface(
+  void BindTestInterfaceForTesting(
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver)
       override;
   void AddObserver(

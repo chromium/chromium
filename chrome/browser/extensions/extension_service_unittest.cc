@@ -5650,7 +5650,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   auto& idb_control =
       profile()->GetDefaultStoragePartition()->GetIndexedDBControl();
   mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
-  idb_control.BindTestInterface(idb_control_test.BindNewPipeAndPassReceiver());
+  idb_control.BindTestInterfaceForTesting(
+      idb_control_test.BindNewPipeAndPassReceiver());
 
   base::FilePath idb_path;
   {
@@ -5791,7 +5792,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   auto& idb_control =
       profile()->GetDefaultStoragePartition()->GetIndexedDBControl();
   mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
-  idb_control.BindTestInterface(idb_control_test.BindNewPipeAndPassReceiver());
+  idb_control.BindTestInterfaceForTesting(
+      idb_control_test.BindNewPipeAndPassReceiver());
 
   base::FilePath idb_path;
   {

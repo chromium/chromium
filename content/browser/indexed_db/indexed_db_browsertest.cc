@@ -186,7 +186,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetIndexedDBControl()
-        .BindTestInterface(std::move(receiver));
+        .BindTestInterfaceForTesting(std::move(receiver));
   }
 
   void SetQuota(int per_host_quota_kilobytes) {
