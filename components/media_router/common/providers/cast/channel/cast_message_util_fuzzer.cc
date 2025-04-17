@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/providers/cast/channel/fuzz_proto/fuzzer_inputs.pb.h"
@@ -24,7 +25,10 @@ base::Value MakeValue(const JunkValue::Field& field) {
   if (field.has_int_value()) {
     return base::Value(field.int_value());
   }
-  if (field.has_string_value()) {
+  if (field.has_string_value() &&
+      // base::Value DCHECKs this property, but proto2 does not enforce it.
+      // https://github.com/google/libprotobuf-mutator/blob/master/README.md#utf-8-strings
+      base::IsStringUTF8AllowingNoncharacters(field.string_value())) {
     return base::Value(field.string_value());
   }
   if (field.has_float_value()) {
@@ -40,7 +44,11 @@ base::Value MakeValue(const JunkValue::Field& field) {
 base::Value::Dict MakeDict(const JunkValue& junk) {
   base::Value::Dict result;
   for (const auto& field : junk.field()) {
-    result.Set(field.name(), MakeValue(field));
+    // base::Value DCHECKs this property, but proto2 does not enforce it.
+    // https://github.com/google/libprotobuf-mutator/blob/master/README.md#utf-8-strings
+    if (base::IsStringUTF8AllowingNoncharacters(field.name())) {
+      result.Set(field.name(), MakeValue(field));
+    }
   }
   return result;
 }
