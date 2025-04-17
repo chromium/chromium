@@ -685,6 +685,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Automotive.UiScalingFactor" units="%"
+    expires_after="2025-08-01">
+  <owner>twellington@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Records the scaling factor applied to the UI on an automotive device. This
+    value is recorded once per activity start as a percentage, with 134% being
+    the default scale-up.
+  </summary>
+</histogram>
+
 <histogram name="Android.BackgroundRestrictions.IsBackgroundRestricted"
     enum="Boolean" expires_after="2023-04-30">
   <owner>shaktisahu@chromium.org</owner>

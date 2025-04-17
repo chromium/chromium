@@ -60,17 +60,31 @@ public abstract class DisplayUtil {
         return assumeNonNull(sUiScalingFactorForAutomotiveOverride);
     }
 
-    public static int getUiDensityForAutomotive(Context context, int baseDensity) {
+    /**
+     * Returns the target scaling factor for automotive devices. The final effective scaling factor
+     * is tweaked and may differ from this target. Note that this value can be overlaid by device
+     * manufacturers.
+     */
+    public static float getTargetScalingFactorForAutomotive(Context context) {
         TypedValue automotiveUiScaleFactor = new TypedValue();
         context.getResources()
                 .getValue(
                         org.chromium.ui.R.dimen.automotive_ui_scale_factor,
                         automotiveUiScaleFactor,
                         true);
+        return automotiveUiScaleFactor.getFloat();
+    }
+
+    /**
+     * Returns the UI density that has been adjusted for automotive displays. This density has been
+     * adjusted by a scaling factor, which can be customized by device manufacturers, and rounded to
+     * align with defined {@link DisplayMetrics} densities.
+     */
+    public static int getUiDensityForAutomotive(Context context, int baseDensity) {
         float uiScalingFactor =
                 sUiScalingFactorForAutomotiveOverride != null
                         ? sUiScalingFactorForAutomotiveOverride
-                        : automotiveUiScaleFactor.getFloat();
+                        : getTargetScalingFactorForAutomotive(context);
         int rawScaledDensity = (int) (baseDensity * uiScalingFactor);
         // Round up to the nearest 20 to align with DisplayMetrics defined densities.
         return ((int) Math.ceil(rawScaledDensity / 20.0f)) * 20;
