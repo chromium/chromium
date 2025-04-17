@@ -106,7 +106,8 @@ Connection::~Connection() {
     return;
   }
 
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError,
+                            "The connection is destroyed.");
 }
 
 bool Connection::IsConnected() const {
@@ -194,13 +195,14 @@ void Connection::AbortTransactionAndTearDownOnError(
   }
 }
 
-void Connection::CloseAndReportForceClose() {
+void Connection::CloseAndReportForceClose(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
 
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError)
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError,
+                            message)
       ->OnForcedClose();
 }
 
@@ -826,7 +828,8 @@ Transaction* Connection::GetTransaction(int64_t id) const {
 }
 
 std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
-    CloseErrorHandling error_handling) {
+    CloseErrorHandling error_handling,
+    const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return {};
@@ -836,7 +839,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
 
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                      "Connection is closing.");
+                      "Connection is closing because of: " + message);
   Status status;
   switch (error_handling) {
     case CloseErrorHandling::kReturnOnFirstError:

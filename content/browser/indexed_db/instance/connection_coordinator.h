@@ -42,7 +42,7 @@ class CONTENT_EXPORT ConnectionCoordinator {
 
   // Call this method to prune any tasks that don't want to be run during
   // force close. Returns any error caused by rolling back changes.
-  Status PruneTasksForForceClose();
+  Status PruneTasksForForceClose(const std::string& message);
 
   void OnConnectionClosed(Connection* connection);
 

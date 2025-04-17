@@ -267,7 +267,7 @@ BucketContext::~BucketContext() {
   ResetBackingStore();
 }
 
-void BucketContext::ForceClose(bool doom) {
+void BucketContext::ForceClose(bool doom, const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_doomed_ = doom;
@@ -278,7 +278,7 @@ void BucketContext::ForceClose(bool doom) {
     for (const auto& [name, database] : databases_) {
       // Note: We purposefully ignore the result here as force close needs to
       // continue tearing things down anyways.
-      database->ForceCloseAndRunTasks();
+      database->ForceCloseAndRunTasks(SanitizeErrorMessage(message));
     }
     databases_.clear();
     has_blobs_outstanding_ = false;
@@ -674,6 +674,7 @@ void BucketContext::DeleteDatabase(
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "BucketContext::DeleteDatabase");
+  std::string force_close_message = "The database is deleted.";
 
   {
     Status s;
@@ -708,7 +709,7 @@ void BucketContext::DeleteDatabase(
         std::make_unique<FactoryClient>(std::move(factory_client)),
         std::move(on_deletion_complete));
     if (force_close) {
-      Status status = database->ForceCloseAndRunTasks();
+      Status status = database->ForceCloseAndRunTasks(force_close_message);
       if (!status.ok()) {
         OnDatabaseError(status, "Error aborting transactions.");
       }
@@ -746,7 +747,7 @@ void BucketContext::DeleteDatabase(
       std::make_unique<FactoryClient>(std::move(factory_client)),
       std::move(on_deletion_complete));
   if (force_close) {
-    Status status = database_ptr->ForceCloseAndRunTasks();
+    Status status = database_ptr->ForceCloseAndRunTasks(force_close_message);
     if (!status.ok()) {
       OnDatabaseError(status, "Error aborting transactions.");
     }
@@ -940,12 +941,13 @@ void BucketContext::HandleBackingStoreCorruption(
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  level_db::BackingStore::RecordCorruptionInfo(
-      data_path_, bucket_locator(), SanitizeErrorMessage(error_message));
+  auto sanitized_error_message = SanitizeErrorMessage(error_message);
+  level_db::BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
+                                               sanitized_error_message);
 
   const base::FilePath file_path =
       data_path_.Append(GetLevelDBFileName(bucket_locator()));
-  ForceClose(/*doom=*/false);
+  ForceClose(/*doom=*/false, error_message);
   // In order to successfully delete the corrupted DB, the open handle must
   // first be closed.
   ResetBackingStore();
@@ -970,7 +972,7 @@ void BucketContext::OnDatabaseError(Status status, const std::string& message) {
   if (status.IsIOError()) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_info_.storage_key);
   }
-  ForceClose(/*doom=*/false);
+  ForceClose(/*doom=*/false, error_message);
 }
 
 bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

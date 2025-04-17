@@ -320,15 +320,16 @@ std::tuple<Database::RunTasksResult, Status> Database::RunTasks() {
   return {RunTasksResult::kDone, Status::OK()};
 }
 
-Status Database::ForceCloseAndRunTasks() {
+Status Database::ForceCloseAndRunTasks(const std::string& message) {
   Status status;
   DCHECK(!force_closing_);
   force_closing_ = true;
   for (Connection* connection : connections_) {
-    connection->CloseAndReportForceClose();
+    connection->CloseAndReportForceClose(message);
   }
   connections_.clear();
-  Status abort_status = connection_coordinator_.PruneTasksForForceClose();
+  Status abort_status =
+      connection_coordinator_.PruneTasksForForceClose(message);
   if (!abort_status.ok()) [[unlikely]] {
     return abort_status;
   }

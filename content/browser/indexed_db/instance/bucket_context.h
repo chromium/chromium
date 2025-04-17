@@ -160,7 +160,7 @@ class CONTENT_EXPORT BucketContext
 
   // Normally, in-memory bucket contexts never self-close. If this is called
   // with `doom` set to true, they will self-close.
-  void ForceClose(bool doom);
+  void ForceClose(bool doom, const std::string& message);
 
   // Starts capturing state data for indexeddb-internals. The data will be
   // returned the next time `StopMetadataRecording()` is invoked.

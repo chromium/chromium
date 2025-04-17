@@ -1949,7 +1949,8 @@ TEST_P(IndexedDBTest, FactoryForceClose) {
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
-  bucket_context_handle->ForceClose(/*doom=*/false);
+  bucket_context_handle->ForceClose(
+      /*doom=*/false, "The database is force-closed for testing.");
   BucketContext* bucket_context = bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
 

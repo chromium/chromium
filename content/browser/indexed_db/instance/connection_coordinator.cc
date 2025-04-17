@@ -114,7 +114,7 @@ class ConnectionCoordinator::ConnectionRequest {
 
   // Called on all pending tasks during a force close. Returns if the task
   // should be pruned (removed) from the task queue during the force close.
-  virtual bool ShouldPruneForForceClose() = 0;
+  virtual bool ShouldPruneForForceClose(const std::string& message) = 0;
 
   RequestState state() const { return state_; }
 
@@ -400,7 +400,7 @@ class ConnectionCoordinator::OpenRequest
     tasks_available_callback_.Run();
   }
 
-  bool ShouldPruneForForceClose() override {
+  bool ShouldPruneForForceClose(const std::string& message) override {
     DCHECK(pending_);
     if (!pending_->factory_client->is_complete()) {
       pending_->factory_client->OnError(
@@ -414,7 +414,7 @@ class ConnectionCoordinator::OpenRequest
     if (connection_) {
       // CloseAndReportForceClose calls OnForcedClose on the database callbacks,
       // so we don't need to.
-      connection_->CloseAndReportForceClose();
+      connection_->CloseAndReportForceClose(message);
       connection_.reset();
     } else if (pending_->database_callbacks) {
       pending_->database_callbacks->OnForcedClose();
@@ -569,7 +569,9 @@ class ConnectionCoordinator::DeleteRequest
   void UpgradeTransactionFinished(bool committed) override { NOTREACHED(); }
 
   // The delete requests should always be run during force close.
-  bool ShouldPruneForForceClose() override { return false; }
+  bool ShouldPruneForForceClose(const std::string& message) override {
+    return false;
+  }
 
  private:
   std::unique_ptr<FactoryClient> factory_client_;
@@ -599,7 +601,8 @@ void ConnectionCoordinator::ScheduleDeleteDatabase(
   bucket_context_->QueueRunTasks();
 }
 
-Status ConnectionCoordinator::PruneTasksForForceClose() {
+Status ConnectionCoordinator::PruneTasksForForceClose(
+    const std::string& message) {
   // Remove all pending requests that don't want to execute during force close
   // (open requests).
   base::queue<std::unique_ptr<ConnectionRequest>> requests_to_still_run;
@@ -610,7 +613,7 @@ Status ConnectionCoordinator::PruneTasksForForceClose() {
     request_queue_.pop();
     Status old_error = request->status();
 
-    if (request->ShouldPruneForForceClose()) {
+    if (request->ShouldPruneForForceClose(message)) {
       if (!old_error.ok()) {
         last_error = old_error;
       }

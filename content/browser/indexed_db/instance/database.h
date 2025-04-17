@@ -94,7 +94,7 @@ class CONTENT_EXPORT Database {
   // The database object (this object) must be kept alive for the duration of
   // this call. This means the caller should own an
   // BucketContextHandle while calling this methods.
-  Status ForceCloseAndRunTasks();
+  Status ForceCloseAndRunTasks(const std::string& message);
 
   void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
 

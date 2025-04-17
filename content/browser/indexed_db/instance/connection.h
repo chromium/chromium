@@ -109,7 +109,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   void AbortTransactionAndTearDownOnError(Transaction* transaction,
                                           const DatabaseError& error);
-  void CloseAndReportForceClose();
+  void CloseAndReportForceClose(const std::string& message);
 
   int scheduling_priority() const { return scheduling_priority_; }
 
@@ -223,7 +223,8 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   // The return value is `callbacks_`, passing ownership.
   std::unique_ptr<DatabaseCallbacks> AbortTransactionsAndClose(
-      CloseErrorHandling error_handling);
+      CloseErrorHandling error_handling,
+      const std::string& message);
 
   // Returns the last error that occurred, if there is any.
   Status AbortAllTransactionsAndIgnoreErrors(const DatabaseError& error);

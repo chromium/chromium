@@ -30,6 +30,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -220,6 +221,22 @@ void FinishGetAllBucketsDetails(
   std::move(callback).Run(std::move(origins));
 }
 
+std::string GetForceCloseReasonString(storage::mojom::ForceCloseReason reason) {
+  // TODO(crbug.com/410456906): make these messages more meaningful.
+  switch (reason) {
+    case storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN:
+      return "Force close delete origin";
+    case storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE:
+      return "Force close backing store failure";
+    case storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE:
+      return "Unknown";
+    case storage::mojom::ForceCloseReason::FORCE_CLOSE_COPY_ORIGIN:
+      return "Force close copy origin";
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 IndexedDBContextImpl::IndexedDBContextImpl(
@@ -384,7 +401,7 @@ void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
   auto iter = bucket_contexts_.find(bucket_id);
   if (iter != bucket_contexts_.end()) {
     iter->second.AsyncCall(&BucketContext::ForceClose)
-        .WithArgs(doom)
+        .WithArgs(doom, GetForceCloseReasonString(reason))
         .Then(std::move(closure));
   } else {
     std::move(closure).Run();
@@ -743,7 +760,8 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
   // `bucket_contexts_` while it's being iterated.
   weak_factory_.InvalidateWeakPtrs();
   for (auto& [bucket_id, context] : bucket_contexts_) {
-    context.AsyncCall(&BucketContext::ForceClose).WithArgs(/*doom=*/false);
+    context.AsyncCall(&BucketContext::ForceClose)
+        .WithArgs(/*doom=*/false, "IndexedDBContext is destructed.");
   }
   bucket_contexts_.clear();
   task_runner_limiters_.clear();

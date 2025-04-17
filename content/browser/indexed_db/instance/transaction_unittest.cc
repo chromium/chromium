@@ -356,7 +356,7 @@ TEST_F(TransactionTest, TimeoutWithPriorities) {
     EXPECT_EQ(test_case.can_timeout ? 1 : 0, transaction->timeout_strikes_);
 
     // Clean up for the next iteration.
-    db_->ForceCloseAndRunTasks();
+    db_->ForceCloseAndRunTasks("The database is force-closed for testing.");
   }
 }
 
