@@ -509,7 +509,14 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
 
 // Tests that "Open in..." works if the download ended while waiting in a
 // different tab which also contains a download task.
-- (void)testSwitchTabsAndOpenInDownloads {
+#if !TARGET_IPHONE_SIMULATOR
+// TODO(crbug.com/411299721): Test consistently fails on iphone device.
+#define MAYBE_testSwitchTabsAndOpenInDownloads \
+  DISABLED_testSwitchTabsAndOpenInDownloads
+#else
+#define MAYBE_testSwitchTabsAndOpenInDownloads testSwitchTabsAndOpenInDownloads
+#endif
+- (void)MAYBE_testSwitchTabsAndOpenInDownloads {
   [_helper testSwitchTabsAndOpenInDownloads];
 }
 
