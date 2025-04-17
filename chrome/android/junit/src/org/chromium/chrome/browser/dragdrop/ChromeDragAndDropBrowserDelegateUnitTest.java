@@ -258,7 +258,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         var data = mDelegate.buildClipData(dropData);
         assertEquals(
                 "The browser clip data is not as expected",
-                dropData.buildTabClipDataText(),
+                dropData.buildTabClipDataText(mApplicationContext),
                 data.getItemAt(0).getText());
         assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
         if (isGroupDrag) {

@@ -33,7 +33,7 @@ public final class ChromeDropDataAndroidTest {
         assertEquals(
                 "Clip data text is not as expected.",
                 JUnitTestGURLs.EXAMPLE_URL.getSpec(),
-                data.buildTabClipDataText());
+                data.buildTabClipDataText(/* context= */ null));
     }
 
     @Test

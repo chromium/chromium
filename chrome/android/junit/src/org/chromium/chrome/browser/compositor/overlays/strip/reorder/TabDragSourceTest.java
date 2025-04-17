@@ -1546,7 +1546,7 @@ public class TabDragSourceTest {
                             new ClipData(
                                     null,
                                     SUPPORTED_GROUP_MIME_TYPES,
-                                    new Item(dropData.buildTabClipDataText(), null)));
+                                    new Item(dropData.buildTabClipDataText(mContext), null)));
             when(event.getClipDescription())
                     .thenReturn(new ClipDescription("", SUPPORTED_GROUP_MIME_TYPES));
         } else {
@@ -1557,7 +1557,7 @@ public class TabDragSourceTest {
                             new ClipData(
                                     null,
                                     SUPPORTED_TAB_MIME_TYPES,
-                                    new Item(dropData.buildTabClipDataText(), null)));
+                                    new Item(dropData.buildTabClipDataText(mContext), null)));
             when(event.getClipDescription())
                     .thenReturn(new ClipDescription("", SUPPORTED_TAB_MIME_TYPES));
         }
