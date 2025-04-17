@@ -79,6 +79,8 @@ enum SearchEngineType {
   SEARCH_ENGINE_STARTER_PACK_HISTORY = 62,
   SEARCH_ENGINE_STARTER_PACK_TABS = 63,
 
+  SEARCH_ENGINE_HOPIUM,
+
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
 
