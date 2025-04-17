@@ -377,6 +377,21 @@ BackForwardCacheBlockingDetails CreateBlockingDetails(
   return feature_vector;
 }
 
+// This is for the test cases where the beforeunload handlers are handled in a
+// legacy way. See the comment about `for_legacy` on
+// `RenderFrameHostImpl::SendBeforeUnload()`.
+class RenderFrameHostImplWithLegacyBeforeUnloadBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplWithLegacyBeforeUnloadBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        ExecuteJavaScriptMethodWorksWithArguments) {
   EXPECT_TRUE(NavigateToURL(
@@ -2438,7 +2453,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
 // adjustment to the start time, because a posted task from the first navigation
 // updates the start time of the second navigation (after the first is
 // canceled). See https://crbug.com/385170155.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, BackToBackReloads) {
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithLegacyBeforeUnloadBrowserTest,
+                       BackToBackReloads) {
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
