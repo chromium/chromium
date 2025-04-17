@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -142,7 +142,7 @@ void CheckDeprecatedManifestVersionError(const ExtensionError* error,
 
 }  // namespace
 
-class ErrorConsoleBrowserTest : public ExtensionPlatformBrowserTest {
+class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
  public:
   ErrorConsoleBrowserTest() : error_console_(nullptr) {}
   ~ErrorConsoleBrowserTest() override = default;
@@ -224,7 +224,7 @@ class ErrorConsoleBrowserTest : public ExtensionPlatformBrowserTest {
   };
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
 
     // Errors are only kept if we have Developer Mode enabled.
     profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);

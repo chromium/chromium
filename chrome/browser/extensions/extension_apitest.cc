@@ -64,14 +64,14 @@ const char kEmbeddedTestServerPort[] = "testServer.port";
 }  // namespace
 
 ExtensionApiTest::ExtensionApiTest(ContextType context_type)
-    : ExtensionApiTestBase(context_type) {
+    : ExtensionBrowserTest(context_type) {
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 }
 
 ExtensionApiTest::~ExtensionApiTest() = default;
 
 void ExtensionApiTest::SetUpOnMainThread() {
-  ExtensionApiTestBase::SetUpOnMainThread();
+  ExtensionBrowserTest::SetUpOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
   // See comment in SetUpTestDataDir().
@@ -94,7 +94,7 @@ void ExtensionApiTest::SetUpOnMainThread() {
 }
 
 void ExtensionApiTest::TearDownOnMainThread() {
-  ExtensionApiTestBase::TearDownOnMainThread();
+  ExtensionBrowserTest::TearDownOnMainThread();
   TestGetConfigFunction::set_test_config_state(nullptr);
   test_config_.reset();
 }
@@ -267,7 +267,7 @@ void ExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
 }
 
 void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
-  ExtensionApiTestBase::SetUpCommandLine(command_line);
+  ExtensionBrowserTest::SetUpCommandLine(command_line);
 
 #if !BUILDFLAG(IS_ANDROID)
   // On Android this is handled later.

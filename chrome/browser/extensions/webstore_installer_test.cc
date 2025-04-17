@@ -36,7 +36,7 @@ WebstoreInstallerTest::WebstoreInstallerTest(
 WebstoreInstallerTest::~WebstoreInstallerTest() = default;
 
 void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
-  extensions::ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
+  extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
 
   embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
       &WebstoreInstallerTest::ProcessServerRequest, base::Unretained(this)));
@@ -62,7 +62,7 @@ void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void WebstoreInstallerTest::SetUpOnMainThread() {
-  extensions::ExtensionPlatformBrowserTest::SetUpOnMainThread();
+  extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
   host_resolver()->AddRule(webstore_domain_, "127.0.0.1");
   host_resolver()->AddRule(verified_domain_, "127.0.0.1");

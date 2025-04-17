@@ -44,6 +44,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -144,10 +145,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
-#else
-#include "chrome/browser/extensions/extension_browsertest.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -253,14 +251,8 @@ class RulesetLoaderThrottle {
   base::OnceClosure quit_closure_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionBrowserTestBase = ExtensionPlatformBrowserTest;
-#else
-using ExtensionBrowserTestBase = ExtensionBrowserTest;
-#endif
-
 class DeclarativeNetRequestBrowserTest
-    : public ExtensionBrowserTestBase,
+    : public ExtensionBrowserTest,
       public ::testing::WithParamInterface<
           ::testing::tuple<ExtensionLoadType, bool>> {
  public:
@@ -296,7 +288,7 @@ class DeclarativeNetRequestBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionBrowserTestBase::SetUpCommandLine(command_line);
+    ExtensionBrowserTest::SetUpCommandLine(command_line);
 
     if (GetAllowChromeURLs()) {
       command_line->AppendSwitch(switches::kExtensionsOnChromeURLs);
@@ -307,7 +299,7 @@ class DeclarativeNetRequestBrowserTest
 
   // ExtensionBrowserTest overrides:
   void SetUpOnMainThread() override {
-    ExtensionBrowserTestBase::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
 
     embedded_test_server()->ServeFilesFromDirectory(GetHttpServerPath());
 
@@ -330,7 +322,7 @@ class DeclarativeNetRequestBrowserTest
     // Ensure |ruleset_manager_observer_| gets destructed on the UI thread.
     ruleset_manager_observer_.reset();
 
-    ExtensionBrowserTestBase::TearDownOnMainThread();
+    ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   // Handler to monitor the requests which reach the EmbeddedTestServer. This
@@ -5982,7 +5974,7 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
  public:
   DeclarativeNetRequestSubresourceWebBundlesBrowserTest() = default;
   void SetUpOnMainThread() override {
-    ExtensionBrowserTestBase::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
     CreateTempDir();
     InitializeRulesetManagerObserver();
   }

@@ -10,13 +10,8 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
-#else
 #include "chrome/browser/extensions/extension_browsertest.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#include "net/test/spawned_test_server/spawned_test_server.h"
 
 namespace base {
 class FilePath;
@@ -27,12 +22,6 @@ class GURL;
 namespace extensions {
 class Extension;
 
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionApiTestBase = ExtensionPlatformBrowserTest;
-#else
-using ExtensionApiTestBase = ExtensionBrowserTest;
-#endif
-
 // The general flow of these API tests should work like this:
 // (1) Setup initial browser state (e.g. create some bookmarks for the
 //     bookmark test)
@@ -41,7 +30,7 @@ using ExtensionApiTestBase = ExtensionBrowserTest;
 //     chrome.test.fail
 // (4) Verify expected browser state.
 // TODO(erikkay): There should also be a way to drive events in these tests.
-class ExtensionApiTest : public ExtensionApiTestBase {
+class ExtensionApiTest : public ExtensionBrowserTest {
  public:
   struct RunOptions {
     // Start the test by opening the specified page URL. This must be an

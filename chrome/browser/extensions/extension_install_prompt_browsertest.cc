@@ -5,9 +5,9 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
 #include "base/run_loop.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -32,8 +32,7 @@ scoped_refptr<const extensions::Extension> BuildTestExtension() {
 
 }  // namespace
 
-using ExtensionInstallPromptBrowserTest =
-    extensions::ExtensionPlatformBrowserTest;
+using ExtensionInstallPromptBrowserTest = extensions::ExtensionBrowserTest;
 
 // Test that ExtensionInstallPrompt aborts the install if the web contents which
 // were passed to the ExtensionInstallPrompt constructor get destroyed.

@@ -19,18 +19,10 @@
 
 namespace extensions {
 
-// TODO(crbug.com/404581990): Remove the following once there is only
-// ExtensionBrowserTest implemented on desktop.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-using ExtensionBrowserTestBase = ExtensionBrowserTest;
-#else
-using ExtensionBrowserTestBase = ExtensionPlatformBrowserTest;
-#endif
-
-class UnpackedInstallerBrowserTest : public ExtensionBrowserTestBase {
+class UnpackedInstallerBrowserTest : public ExtensionBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    ExtensionBrowserTestBase::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(profile()));
   }
