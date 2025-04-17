@@ -287,13 +287,14 @@ void OnTaskSessionManager::OnAppReloaded() {
   }
 
   // Also lock window if necessary.
-  if (!lock_in_progress_) {
-    LockOrUnlockWindow(should_lock_window_);
-  }
+  LockOrUnlockWindow(should_lock_window_);
 }
 
 void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lock_in_progress_ && lock_window) {
+    return;
+  }
   lock_in_progress_ = lock_window;
   bool locked_mode_state_changed = (should_lock_window_ != lock_window);
   should_lock_window_ = lock_window;
