@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -89,6 +90,8 @@ class KeepAliveURLLoadersTestObserver {
 class KeepAliveRequestUkmMatcher {
  protected:
   using UkmEvent = ukm::builders::FetchKeepAliveRequest_WithCategory;
+  static constexpr std::string_view kUkmName =
+      "FetchKeepAliveRequest.WithCategory";
   virtual ukm::TestAutoSetUkmRecorder& ukm_recorder() = 0;
 
   // Returns the last recorded UKM event.
@@ -97,6 +100,19 @@ class KeepAliveRequestUkmMatcher {
 
   // Verifies no UKM event logged.
   void ExpectNoUkm();
+
+  struct CommonUkm {
+    KeepAliveRequestTracker::RequestType request_type;
+    size_t category_id;
+    size_t num_redirects;
+    bool is_context_detached;
+    KeepAliveRequestTracker::RequestStageType end_stage;
+    std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
+        std::nullopt;
+    std::optional<base::UnguessableToken> keepalive_token = std::nullopt;
+    std::optional<int64_t> error_code = std::nullopt;
+    std::optional<int64_t> extended_error_code = std::nullopt;
+  };
 
   // Verifies all the common UKM metrics.
   //
@@ -114,6 +130,7 @@ class KeepAliveRequestUkmMatcher {
           std::nullopt,
       std::optional<int64_t> error_code = std::nullopt,
       std::optional<int64_t> extended_error_code = std::nullopt);
+  void ExpectCommonUkms(const std::vector<CommonUkm>& ukms);
 
   // Verifies that UKM TimeDelta.* listed in `time_sorted_metric_names` are all
   // non-null and have their values in the given order. All the other
@@ -125,6 +142,64 @@ class KeepAliveRequestUkmMatcher {
   // "TimeDelta.RequestFailed".
   void ExpectTimeSortedTimeDeltaUkm(
       const std::vector<std::string>& time_sorted_metric_names);
+
+ private:
+  void ExpectCommonUkm(
+      const ukm::mojom::UkmEntry* entry,
+      KeepAliveRequestTracker::RequestType request_type,
+      size_t category_id,
+      size_t num_redirects,
+      bool is_context_detached,
+      KeepAliveRequestTracker::RequestStageType end_stage,
+      std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
+          std::nullopt,
+      const std::optional<base::UnguessableToken>& keepalive_token =
+          std::nullopt,
+      std::optional<int64_t> error_code = std::nullopt,
+      std::optional<int64_t> extended_error_code = std::nullopt);
+};
+
+// `NavigationKeepAliveRequestUkmMatcher` provides common matchers and
+// expectations to help make test assertions on navigation-fetch keepalive
+// request-related UKM metrics.
+class NavigationKeepAliveRequestUkmMatcher {
+ protected:
+  using UkmEvent = ukm::builders::FetchKeepAliveRequest_WithCategory_Navigation;
+  static constexpr std::string_view kUkmName =
+      "FetchKeepAliveRequest.WithCategory.Navigation";
+  virtual ukm::TestAutoSetUkmRecorder& ukm_recorder() = 0;
+
+  // Returns the last recorded UKM event.
+  // This assumes that only a single UKM event is recorded.
+  const ukm::mojom::UkmEntry* GetUkmEntry();
+
+  // Verifies no UKM event logged.
+  void ExpectNoUkm();
+
+  struct NavigationUkm {
+    size_t category_id;
+    std::optional<int64_t> navigation_id = std::nullopt;
+    std::optional<base::UnguessableToken> keepalive_token = std::nullopt;
+  };
+
+  // Verifies all the navigation-related UKM metrics.
+  //
+  // `navigation_id` is optional. If not provided, this method will just
+  // assert the existence of it.
+  // `keepalive_token` is optional. If not provided, this method will just
+  // assert the existence of Id.Low and Id.High metrics.
+  void ExpectNavigationUkm(size_t category_id,
+                           std::optional<int64_t> navigation_id,
+                           const std::optional<base::UnguessableToken>&
+                               keepalive_token = std::nullopt);
+  void ExpectNavigationUkms(const std::vector<NavigationUkm>& ukms);
+
+ private:
+  void ExpectNavigationUkm(const ukm::mojom::UkmEntry* entry,
+                           size_t category_id,
+                           std::optional<int64_t> navigation_id,
+                           const std::optional<base::UnguessableToken>&
+                               keepalive_token = std::nullopt);
 };
 
 }  // namespace content

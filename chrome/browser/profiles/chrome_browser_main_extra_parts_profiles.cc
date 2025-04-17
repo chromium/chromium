@@ -88,6 +88,7 @@
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
+#include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tracker_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
@@ -918,6 +919,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   FontPrefChangeNotifierFactory::GetInstance();
+  FromGWSNavigationAndKeepAliveRequestTrackerFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS)
   GAIAInfoUpdateServiceFactory::GetInstance();
 #endif

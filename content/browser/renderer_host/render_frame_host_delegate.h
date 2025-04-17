@@ -22,6 +22,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/media_player_watch_time.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/select_audio_output_request.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
@@ -95,6 +96,10 @@ namespace mojom {
 class ScreenOrientation;
 }
 }  // namespace device
+
+namespace network {
+struct ResourceRequest;
+}  // namespace network
 
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
@@ -784,6 +789,18 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Gets the delegate auto picture in picture information.
   virtual media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo() const;
+
+  // Invoked when a fetch keepalive request is created in a RenderFrameHost.
+  //
+  // Note that such request is usually initiated from corresponding renderer
+  // process. This method just captures the time when the request is proxied in
+  // the browser process.
+  //
+  // `resource_request` is the fetch keepalive request that is created.
+  // `initiator_rfh` is the RenderFrameHostImpl that initiates the request.
+  virtual void OnKeepAliveRequestCreated(
+      const network::ResourceRequest& resource_request,
+      RenderFrameHostImpl* initiator_rfh) {}
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

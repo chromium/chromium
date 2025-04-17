@@ -82,6 +82,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // activation, e.g. UKM source ID.
     void OnDidCommitPrerenderedPageActivation();
 
+    // Called when a `KeepAliveURLLoader` is about to create.
+    // This updates RenderFrameHostImpl via `weak_document_ptr` about the
+    // creation of a keepalive request.
+    void OnBeforeKeepAliveURLLoaderCreated(
+        const network::ResourceRequest& resource_request);
+
     // Updates `factory` using the given `new_factory`.
     //
     // Only called either

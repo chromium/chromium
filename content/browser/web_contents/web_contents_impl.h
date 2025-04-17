@@ -119,6 +119,10 @@ namespace input {
 class RenderWidgetHostInputEventRouter;
 }  // namespace input
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
 }  // namespace network::mojom
@@ -945,8 +949,12 @@ class CONTENT_EXPORT WebContentsImpl
 
   media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo()
       const override;
+  void OnKeepAliveRequestCreated(
+      const network::ResourceRequest& resource_request,
+      RenderFrameHostImpl* initiator_rfh) override;
 
-  // RenderViewHostDelegate ----------------------------------------------------
+  // RenderViewHostDelegate
+  // ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
   void RenderViewReady(RenderViewHost* render_view_host) override;
   void RenderViewTerminated(RenderViewHost* render_view_host,

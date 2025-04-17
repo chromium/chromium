@@ -9132,6 +9132,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FetchKeepAliveRequest.WithCategory.Navigation">
+  <owner>mych@chromium.org</owner>
+  <owner>rakina@chromium.org</owner>
+  <summary>
+    Records metrics to connect a pair of the following requests happening around
+    the same time with the same &quot;category&quot; param value: (1) A
+    navigation request with a URL param &quot;category&quot;. (2) A fetch
+    keepalive request with the same URL param &quot;category&quot;.
+
+    This is logged only once per such pair of requests, roughly at the time when
+    the last of the two requests in a pair completes.
+
+    This should be used together with
+    &quot;FetchKeepAliveRequest.WithCategory&quot; event.
+
+    https://docs.google.com/document/d/13P-jwVXFDrh6RBr-8H11GURKG89LziNlV1nAmlWAuB0/edit?tab=t.0
+  </summary>
+  <metric name="Category">
+    <summary>
+      An 8-bit integer that can be mapped to a specific value of a
+      &quot;category&quot; parameter in the request URL.
+    </summary>
+  </metric>
+  <metric name="Id.High">
+    <summary>
+      The high bits of the unique number that connects a fetch keepalive request
+      throughout different processes.
+    </summary>
+  </metric>
+  <metric name="Id.Low">
+    <summary>
+      The low bits of the unique number that connects a fetch keepalive request
+      throughout different processes.
+    </summary>
+  </metric>
+  <metric name="NavigationId">
+    <summary>
+      A 64-bit integer that represents the navigation ID of the page navigation
+      that has the same category param value as the fetch keepalive request with
+      the Id.Low and Id.High logged in this event.
+    </summary>
+  </metric>
+</event>
+
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
   <owner>rhalavatigit@chromium.org</owner>

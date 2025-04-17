@@ -19,6 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/color/color_id.h"
 
 namespace content {
 
@@ -287,19 +288,18 @@ void KeepAliveURLLoadersTestObserver::WaitForTotalOnCompleteProcessed(
 const ukm::mojom::UkmEntry* KeepAliveRequestUkmMatcher::GetUkmEntry() {
   auto entries = ukm_recorder().GetEntriesByName(UkmEvent::kEntryName);
   CHECK_EQ(entries.size(), 1u)
-      << "The number of recorded UKM event "
-         "\"FetchKeepAliveRequest.WithCategory\" must be 1.";
+      << "The number of recorded UKM event [" << kUkmName << "] must be 1.";
   return entries[0];
 }
 
 void KeepAliveRequestUkmMatcher::ExpectNoUkm() {
   auto entries = ukm_recorder().GetEntriesByName(UkmEvent::kEntryName);
   EXPECT_THAT(entries, testing::IsEmpty())
-      << "Unexpected UKM event \"FetchKeepAliveRequest.WithCategory\" was "
-         "recorded";
+      << "Unexpected UKM event [" << kUkmName << "] was recorded";
 }
 
 void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
+    const ukm::mojom::UkmEntry* entry,
     KeepAliveRequestTracker::RequestType request_type,
     size_t category_id,
     size_t num_redirects,
@@ -309,8 +309,6 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
     const std::optional<base::UnguessableToken>& keepalive_token,
     std::optional<int64_t> error_code,
     std::optional<int64_t> extended_error_code) {
-  const ukm::mojom::UkmEntry* entry = GetUkmEntry();
-
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "Id.Low"));
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "Id.High"));
   if (keepalive_token.has_value()) {
@@ -355,6 +353,39 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
   }
 }
 
+void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
+    KeepAliveRequestTracker::RequestType request_type,
+    size_t category_id,
+    size_t num_redirects,
+    bool is_context_detached,
+    KeepAliveRequestTracker::RequestStageType end_stage,
+    std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage,
+    const std::optional<base::UnguessableToken>& keepalive_token,
+    std::optional<int64_t> error_code,
+    std::optional<int64_t> extended_error_code) {
+  const ukm::mojom::UkmEntry* entry = GetUkmEntry();
+  ExpectCommonUkm(entry, request_type, category_id, num_redirects,
+                  is_context_detached, end_stage, previous_stage,
+                  keepalive_token, error_code, extended_error_code);
+}
+
+void KeepAliveRequestUkmMatcher::ExpectCommonUkms(
+    const std::vector<CommonUkm>& ukms) {
+  auto entries = ukm_recorder().GetEntriesByName(UkmEvent::kEntryName);
+  EXPECT_EQ(entries.size(), ukms.size())
+      << "The number of recorded UKM event [" << kUkmName << "] "
+      << entries.size() << " must equal to the number of expected UKMs "
+      << ukms.size();
+
+  for (size_t i = 0; i < entries.size(); ++i) {
+    ExpectCommonUkm(entries[i], ukms[i].request_type, ukms[i].category_id,
+                    ukms[i].num_redirects, ukms[i].is_context_detached,
+                    ukms[i].end_stage, ukms[i].previous_stage,
+                    ukms[i].keepalive_token, ukms[i].error_code,
+                    ukms[i].extended_error_code);
+  }
+}
+
 void KeepAliveRequestUkmMatcher::ExpectTimeSortedTimeDeltaUkm(
     const std::vector<std::string>& time_sorted_metric_names) {
   const ukm::mojom::UkmEntry* entry = GetUkmEntry();
@@ -394,6 +425,64 @@ void KeepAliveRequestUkmMatcher::ExpectTimeSortedTimeDeltaUkm(
         << "] is unexpectedly smaller than the TimeDelta UKM metric ["
         << time_sorted_metric_names[i - 1] << "] from its previous stage.";
     previous_metric = current_metric;
+  }
+}
+
+const ukm::mojom::UkmEntry*
+NavigationKeepAliveRequestUkmMatcher::GetUkmEntry() {
+  auto entries = ukm_recorder().GetEntriesByName(UkmEvent::kEntryName);
+  CHECK_EQ(entries.size(), 1u)
+      << "The number of recorded UKM event [" << kUkmName << "] must be 1.";
+  return entries[0];
+}
+
+void NavigationKeepAliveRequestUkmMatcher::ExpectNoUkm() {
+  auto entries = ukm_recorder().GetEntriesByName(UkmEvent::kEntryName);
+  EXPECT_THAT(entries, testing::IsEmpty())
+      << "Unexpected UKM event [" << kUkmName << "] was recorded";
+}
+
+void NavigationKeepAliveRequestUkmMatcher::ExpectNavigationUkm(
+    const ukm::mojom::UkmEntry* entry,
+    size_t category_id,
+    std::optional<int64_t> navigation_id,
+    const std::optional<base::UnguessableToken>& keepalive_token) {
+  ukm_recorder().ExpectEntryMetric(entry, "Category", category_id);
+
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "NavigationId"));
+  if (navigation_id.has_value()) {
+    ukm_recorder().ExpectEntryMetric(entry, "NavigationId", *navigation_id);
+  }
+
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "Id.Low"));
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "Id.High"));
+  if (keepalive_token.has_value()) {
+    ukm_recorder().ExpectEntryMetric(entry, "Id.Low",
+                                     keepalive_token->GetLowForSerialization());
+    ukm_recorder().ExpectEntryMetric(
+        entry, "Id.High", keepalive_token->GetHighForSerialization());
+  }
+}
+
+void NavigationKeepAliveRequestUkmMatcher::ExpectNavigationUkm(
+    size_t category_id,
+    std::optional<int64_t> navigation_id,
+    const std::optional<base::UnguessableToken>& keepalive_token) {
+  const ukm::mojom::UkmEntry* entry = GetUkmEntry();
+  ExpectNavigationUkm(entry, category_id, navigation_id, keepalive_token);
+}
+
+void NavigationKeepAliveRequestUkmMatcher::ExpectNavigationUkms(
+    const std::vector<NavigationUkm>& ukms) {
+  auto entries = ukm_recorder().GetEntriesByName(UkmEvent::kEntryName);
+  EXPECT_EQ(entries.size(), ukms.size())
+      << "The number of recorded UKM event [" << kUkmName << "] "
+      << entries.size() << " must equal to the number of expected UKMs "
+      << ukms.size();
+
+  for (size_t i = 0; i < entries.size(); ++i) {
+    ExpectNavigationUkm(entries[i], ukms[i].category_id, ukms[i].navigation_id,
+                        ukms[i].keepalive_token);
   }
 }
 

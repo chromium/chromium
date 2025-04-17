@@ -244,6 +244,7 @@ class UrgentMessageScope;
 }
 
 namespace network {
+struct ResourceRequest;
 class ResourceRequestBody;
 }  // namespace network
 
@@ -3278,6 +3279,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
           std::move(callback));
     }
   }
+
+  // Called when a fetch keepalive request is created in this RenderFrameHost.
+  void OnKeepAliveRequestCreated(
+      const network::ResourceRequest& resource_request);
 
  protected:
   friend class RenderFrameHostFactory;

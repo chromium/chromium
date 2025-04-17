@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  This page contains helper functions to trigger combinations of
+  making a navigation request and fetch keepalive requests.
+-->
+<title>Initialization</title>
+<script>
+  async function runFetchKeepalive(requestUrl, method) {
+    const response = await fetch(requestUrl, {
+      keepalive: true,
+      cache: "no-store",
+      method: method,
+      mode: "no-cors",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fetch keepalive request failed: ${response.status}`);
+    }
+
+    const text = await response.text();
+    return text;
+  }
+
+  async function runNavigationAndFetchKeepalive(navTargetUrl, requestUrl, method) {
+    document.location.href = navTargetUrl;
+    return await runFetchKeepalive(requestUrl, method);
+  }
+
+  async function runFetchKeepaliveAndNewTabNavigation(requestUrl, method, navTargetUrl) {
+    const response = await runFetchKeepalive(requestUrl, method);
+    window.open(navTargetUrl, "_blank");
+    return response;
+  }
+
+  async function runFetchKeepaliveAndNavigation(requestUrl, method, navTargetUrl) {
+    const response = await runFetchKeepalive(requestUrl, method);
+    document.location.href = navTargetUrl;
+    return response;
+  }
+
+  async function runFetchKeepaliveAndNavigations(requestUrl, method, navTargetUrls) {
+    const response = await runFetchKeepalive(requestUrl, method);
+    for (let i = 0; i < navTargetUrls.length; i++) {
+      document.location.href = navTargetUrls[i];
+    }
+    return response;
+  }
+</script>

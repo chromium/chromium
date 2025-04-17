@@ -65,6 +65,10 @@ namespace net::device_bound_sessions {
 struct SessionAccess;
 }  // namespace net::device_bound_sessions
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
 }  // namespace network::mojom
@@ -1005,6 +1009,18 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // Called when a first contentful paint happened in the primary main frame.
   virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}
+
+  // Invoked when a fetch keepalive request is created in this WebContents.
+  //
+  // Note that such request is usually initiated from corresponding renderer
+  // process. This method just captures the time when the request is proxied in
+  // the browser process.
+  //
+  // `resource_request` is the fetch keepalive request that is created.
+  // `initiator_rfh` is the RenderFrameHost that initiates the request.
+  virtual void OnKeepAliveRequestCreated(
+      const network::ResourceRequest& resource_request,
+      RenderFrameHost* initiator_rfh) {}
 
   WebContents* web_contents() const;
 

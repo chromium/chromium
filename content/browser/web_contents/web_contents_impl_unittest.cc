@@ -20,6 +20,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -71,7 +72,9 @@
 #include "net/base/network_handle.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -174,6 +177,12 @@ class TestWebContentsObserver : public WebContentsObserver {
     text_copied_to_clipboard_ = copied_text;
   }
 
+  void OnKeepAliveRequestCreated(
+      const network::ResourceRequest& resource_request,
+      RenderFrameHost* initiator_rfh) override {
+    fetch_keepalive_request_ = resource_request;
+  }
+
   void ExpectOnCaptureHandleConfigUpdate(
       blink::mojom::CaptureHandleConfigPtr config) {
     CHECK(config) << "Malformed test.";
@@ -195,6 +204,10 @@ class TestWebContentsObserver : public WebContentsObserver {
     return text_copied_to_clipboard_;
   }
 
+  const network::ResourceRequest& fetch_keepalive_request() const {
+    return fetch_keepalive_request_;
+  }
+
  private:
   GURL last_url_;
   int theme_color_change_calls_ = 0;
@@ -202,6 +215,7 @@ class TestWebContentsObserver : public WebContentsObserver {
   bool observed_did_first_visually_non_empty_paint_ = false;
   blink::mojom::CaptureHandleConfigPtr expected_capture_handle_config_;
   std::u16string text_copied_to_clipboard_;
+  network::ResourceRequest fetch_keepalive_request_;
 };
 
 class MockWebContentsDelegate : public WebContentsDelegate {
@@ -3517,6 +3531,26 @@ TEST_F(WebContentsImplTest, BadDownloadImageFromAXNodeId) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+// Test that the WebContentsObserver is notified when a fetch keepalive request
+// is created in a given RenderFrameHost.
+TEST_F(WebContentsImplTest, OnKeepAliveRequestCreated) {
+  TestWebContentsObserver observer(contents());
+  TestRenderFrameHost* rfh = main_test_rfh();
+  network::ResourceRequest request;
+  request.url = GURL("https://example.com");
+  request.attribution_reporting_eligibility =
+      network::mojom::AttributionReportingEligibility::kEmpty;
+  request.keepalive = true;
+  request.keepalive_token = base::UnguessableToken::Create();
+
+  rfh->OnKeepAliveRequestCreated(request);
+
+  EXPECT_EQ(request.url, observer.fetch_keepalive_request().url);
+  EXPECT_EQ(request.keepalive, observer.fetch_keepalive_request().keepalive);
+  EXPECT_EQ(request.keepalive_token,
+            observer.fetch_keepalive_request().keepalive_token);
 }
 
 class WebContentsImplTestKeyboardEvents
