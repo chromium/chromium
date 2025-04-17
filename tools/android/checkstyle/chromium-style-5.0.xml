@@ -67,8 +67,9 @@
       <property name="severity" value="error"/>
     </module>
     <module name="ConstantName">
+      <property name="id" value="ConstantNameCheck"/>
       <property name="severity" value="error"/>
-      <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*)|(s[A-Z][a-zA-Z0-9]*)$"/>
+      <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$|^(s[A-Z][a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Static final field names must either be all caps (e.g. int HEIGHT_PX) for 'true' constants, or start with s (e.g. AtomicInteger sNextId or Runnable sSuspendTask) for fields with mutable state or that don't 'feel' like constants."/>
     </module>
     <!-- Non-public, non-static field names start with m. -->

@@ -21,6 +21,8 @@
   <!-- Third-party libraries, test infrastructure, build, and tooling can use
        System#exit freely. Feel free to add other test directories here. -->
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>
+  <!-- Generated file has consecutive underscores in constant names. -->
+  <suppress id="ConstantNameCheck" files="CronetStatsLog.java"/>
   <!-- jni_generator tests fail some checks. -->
   <suppress checks=".*" files="base/android/jni_generator/.*"/>
   <!-- The accessibility code uses "AX" throughout Chromium, allow in Java for
