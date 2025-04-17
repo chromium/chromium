@@ -979,10 +979,37 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
 
   // TODO(khushalsagar): Look at `AXNodeObject::TextAlternative` which has other
   // sources for this.
-  const auto& value = element->FastGetAttribute(html_names::kAriaLabelAttr);
-  if (!value.GetString().ContainsOnlyWhitespaceOrEmpty()) {
-    attributes.label = value;
+  StringBuilder accumulated_text;
+  const auto& aria_label =
+      element->FastGetAttribute(html_names::kAriaLabelAttr);
+  if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
+    accumulated_text.Append(aria_label);
   }
+
+  const GCedHeapVector<Member<Element>>* aria_labelledby_elements =
+      element->ElementsFromAttributeOrInternals(
+          html_names::kAriaLabelledbyAttr);
+  if (!aria_labelledby_elements) {
+    attributes.label = accumulated_text.ToString();
+    return;
+  }
+
+  for (const auto& label_element : *aria_labelledby_elements) {
+    // We need to use textContent instead of innerText since aria labelled by
+    // nodes don't need to be in the layout.
+    auto text_content = label_element->textContent(true);
+    if (text_content.ContainsOnlyWhitespaceOrEmpty()) {
+      continue;
+    }
+
+    if (!accumulated_text.empty()) {
+      accumulated_text.Append(" ");
+    }
+
+    accumulated_text.Append(text_content);
+  }
+
+  attributes.label = accumulated_text.ToString();
 }
 
 void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(

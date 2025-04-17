@@ -151,6 +151,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
@@ -5595,6 +5596,35 @@ void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
     }
     box = box->ContainingBlock();
   }
+}
+
+GCedHeapVector<Member<Element>>* Element::ElementsFromAttributeOrInternals(
+    const QualifiedName& attribute) const {
+  GCedHeapVector<Member<Element>>* attr_associated_elements =
+      GetAttrAssociatedElements(attribute,
+                                /*resolve_reference_target=*/true);
+  if (attr_associated_elements) {
+    if (attr_associated_elements->empty()) {
+      return nullptr;
+    }
+    return attr_associated_elements;
+  }
+
+  const ElementInternals* element_internals = GetElementInternals();
+  if (!element_internals) {
+    return nullptr;
+  }
+
+  const FrozenArray<Element>* element_internals_attr_elements =
+      element_internals->GetElementArrayAttribute(attribute);
+
+  if (!element_internals_attr_elements ||
+      element_internals_attr_elements->empty()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<GCedHeapVector<Member<Element>>>(
+      element_internals_attr_elements->AsVector());
 }
 
 Element::HighlightRecalc Element::CalculateHighlightRecalc(

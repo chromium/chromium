@@ -3483,5 +3483,28 @@ TEST_F(AIPageContentAgentTest, SVGWithNoText) {
   EXPECT_FALSE(svg.content_attributes->svg_data->inner_text);
 }
 
+TEST_F(AIPageContentAgentTest, AriaLabelledBy) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      " <div id='hiddenLabel1' style='display: none;'>and first</div>"
+      " <div id='hiddenLabel2' style='display: none;'>and second</div>"
+      " <input type='text' aria-labelledby='hiddenLabel1 hiddenLabel2' "
+      "aria-label='on element'/>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContentWithActionableElements();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& input = *root.children_nodes[0];
+  CheckFormControlNode(input, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(input.content_attributes->label, "on element and first and second");
+}
+
 }  // namespace
 }  // namespace blink

@@ -5387,31 +5387,7 @@ AXObject::ElementsFromAttributeOrInternals(const Element* from,
   if (!from)
     return nullptr;
 
-  const GCedHeapVector<Member<Element>>* attr_associated_elements =
-      from->GetAttrAssociatedElements(attribute,
-                                      /*resolve_reference_target=*/true);
-  if (attr_associated_elements) {
-    if (attr_associated_elements->empty()) {
-      return nullptr;
-    }
-    return attr_associated_elements;
-  }
-
-  const ElementInternals* element_internals = from->GetElementInternals();
-  if (!element_internals) {
-    return nullptr;
-  }
-
-  const FrozenArray<Element>* element_internals_attr_elements =
-      element_internals->GetElementArrayAttribute(attribute);
-
-  if (!element_internals_attr_elements ||
-      element_internals_attr_elements->empty()) {
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<GCedHeapVector<Member<Element>>>(
-      element_internals_attr_elements->AsVector());
+  return from->ElementsFromAttributeOrInternals(attribute);
 }
 
 // static
