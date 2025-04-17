@@ -109,22 +109,20 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
-                       HidesWhenBorealisLaunchFails) {
+                       ShowsMOTDEvenIfBorealisLaunchFails) {
   ShowUi("default");
   EXPECT_TRUE(VerifyUi());
   EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
 
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::LaunchResult::kError));
   BorealisAppLauncherImpl launcher(browser()->profile());
   launcher.Launch("foo.desktop", BorealisLaunchSource::kUnknown,
                   callback_check.BindOnce());
   base::RunLoop().RunUntilIdle();
 
-  // The splash screen should have disappeared.
-  EXPECT_EQ(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
-
-  // We should now see an error dialog instead.
+  // MOTD should be present. This is a behavior change from before, where
+  // MOTD now needs to be dismissed even when doing a launch.
+  EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
   EXPECT_TRUE(VerifyUi());
 }
 

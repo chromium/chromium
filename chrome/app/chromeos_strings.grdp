@@ -6393,7 +6393,15 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Borealis feedback dialog.">
     Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
   </message>
-
+  <message name="IDS_BOREALIS_MOTD_DISMISS_TEXT" desc="Text on dismiss button in Borealis MOTD. Clicking on it will dismiss the dialog.">
+    Dismiss
+  </message>
+  <message name="IDS_BOREALIS_MOTD_PLACEHOLDER_TEXT" desc="Placeholder text for Borealis MOTD. Shown if the message of the day is unable to be retrieved from the Static Content Service.">
+    Unable to retrieve Steam for Chromebook news.
+  </message>
+  <message name="IDS_BOREALIS_MOTD_TITLE_TEXT" desc="Title text for Borealis MOTD. Shown at the top of the dialog.">
+    Steam for Chromebook News
+  </message>
 
   <!-- TPM firmware auto-update notifications -->
   <message name="IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that local data will be deleted.">

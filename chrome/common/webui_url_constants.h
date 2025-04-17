@@ -407,6 +407,8 @@ inline constexpr char kChromeUIBorealisCreditsHost[] = "borealis-credits";
 inline constexpr char kChromeUIBorealisInstallerHost[] = "borealis-installer";
 inline constexpr char kChromeUIBorealisInstallerUrl[] =
     "chrome://borealis-installer";
+inline constexpr char kChromeUIBorealisMOTDHost[] = "borealis-motd";
+inline constexpr char kChromeUIBorealisMOTDURL[] = "chrome://borealis-motd";
 inline constexpr char kChromeUICloudUploadHost[] = "cloud-upload";
 inline constexpr char kChromeUICloudUploadURL[] = "chrome://cloud-upload/";
 inline constexpr char kChromeUIConfirmPasswordChangeHost[] =

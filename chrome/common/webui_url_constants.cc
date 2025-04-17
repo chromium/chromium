@@ -37,6 +37,7 @@ bool IsSystemWebUIHost(std::string_view host) {
       kChromeUIBluetoothPairingHost,
       kChromeUIBorealisCreditsHost,
       kChromeUIBorealisInstallerHost,
+      kChromeUIBorealisMOTDHost,
       kChromeUICertificateManagerHost,
       kChromeUICloudUploadHost,
       kChromeUICrostiniCreditsHost,

@@ -857,6 +857,7 @@ chromium-metrics-reviews@google.com.
   <int value="1281801197" label="chrome://terms/"/>
   <int value="1286620182" label="chrome://reset-password/"/>
   <int value="1291141725" label="chrome://search-engine-choice/"/>
+  <int value="1294506555" label="chrome://borealis-motd/"/>
   <int value="1306215264" label="chrome://activationmessage/"/>
   <int value="1326111536" label="chrome://new-tab-page/"/>
   <int value="1332050252" label="chrome://borealis-installer/"/>

@@ -78,6 +78,7 @@ static_library("borealis") {
     "//chrome/browser/ash/borealis/infra",
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/borealis_motd",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/dlcservice",
