@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -21,15 +22,19 @@
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -235,7 +240,29 @@
   std::optional<int> messageId =
       enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(
           _idleService->GetLastActionSet());
-  CHECK(messageId) << "There is no snackbar message for the set of actions";
+
+  // TODO(crbug.com/409821312): Change this back to CHECK when the cause for the
+  // crash is found. The crash is possibly related to BrowserSignin=2 also being
+  // set, but it is not reproducible yet.
+  if (!messageId) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(_mainBrowser->GetProfile());
+    DUMP_WILL_BE_CHECK(messageId)
+        << "The last IdleTimeout action set was empty. IdleTimeoutActions: "
+        << _mainBrowser->GetProfile()
+               ->GetPrefs()
+               ->GetList(enterprise_idle::prefs::kIdleTimeoutActions)
+               .DebugString()
+        << ", BrowserSignin:"
+        << GetApplicationContext()->GetLocalState()->GetInteger(
+               prefs::kBrowserSigninPolicy)
+        << "Signin status: "
+        << authenticationService->HasPrimaryIdentity(
+               signin::ConsentLevel::kSignin);
+    _idleService->OnIdleTimeoutSnackbarPresented();
+    return;
+  }
+
   NSString* messageText = l10n_util::GetNSString(*messageId);
 
   // Delay showing the snackbar message when voice over is on because other
