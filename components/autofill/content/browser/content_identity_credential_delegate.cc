@@ -21,17 +21,10 @@ ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
 
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
-    const AutofillField& field) const {
-  std::optional<AutocompleteParsingResult> autocomplete =
-      ParseAutocompleteAttribute(field.autocomplete_attribute());
-
-  // Only <input autocomplete="email webidentity"> fields are considered.
-  if (!autocomplete || !autocomplete->webidentity ||
-      autocomplete->field_type != HtmlFieldType::kEmail ||
-      ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute())) {
+    const FieldType& field_type) const {
+  if (field_type != FieldType::EMAIL_ADDRESS) {
     return {};
   }
-
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
   content::FederatedAuthAutofillSource* source =

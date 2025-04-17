@@ -3012,9 +3012,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   // (e.g. email addresses) rank compared to other sources.
   if (const IdentityCredentialDelegate* identity_credential_delegate =
           client().GetIdentityCredentialDelegate()) {
-    base::Extend(suggestions,
-                 identity_credential_delegate->GetVerifiedAutofillSuggestions(
-                     *autofill_field));
+    // Only <input autocomplete="email"> fields are considered.
+    if (std::optional<AutocompleteParsingResult> autocomplete =
+            ParseAutocompleteAttribute(
+                autofill_field->autocomplete_attribute());
+        autocomplete && autocomplete->field_type == HtmlFieldType::kEmail) {
+      base::Extend(suggestions,
+                   identity_credential_delegate->GetVerifiedAutofillSuggestions(
+                       FieldType::EMAIL_ADDRESS));
+    }
   }
 
   // Don't provide credit card suggestions for non-secure pages, but do provide

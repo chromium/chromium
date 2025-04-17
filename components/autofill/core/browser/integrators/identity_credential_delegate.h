@@ -31,9 +31,15 @@ class IdentityCredentialDelegate {
  public:
   virtual ~IdentityCredentialDelegate() = default;
 
-  // Generates Verified Autofill suggestions.
+  // Generates verified Autofill suggestions from identity credential requests.
+  // This could be representing two types of identity credentials suggestions:
+  // 1. Verified email and potentially other attributes from an identity
+  // provider, e.g. name, address etc.
+  // 2. Accounts information that is required for federated logins. e.g. name,
+  // email, avatar, phone number etc. Depending on which types of suggestions,
+  // the strings and UI affordances can be different.
   virtual std::vector<Suggestion> GetVerifiedAutofillSuggestions(
-      const AutofillField& field) const = 0;
+      const FieldType& field_type) const = 0;
   virtual void NotifySuggestionAccepted(const Suggestion& suggestion) const = 0;
 };
 
