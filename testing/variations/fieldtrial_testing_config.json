@@ -13356,25 +13356,6 @@
     "InvalidationWithDirectMessagesUserRemoteCommands": [
         {
             "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UserRemoteCommands",
-                        "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InvalidationWithDirectMessagesUserRemoteCommandsChromeOS": [
-        {
-            "platforms": [
                 "chromeos"
             ],
             "experiments": [
@@ -19072,6 +19053,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ProcessReuseOnPrerenderCOOPSwap"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProfileRemoteCommands": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserRemoteCommands",
+                        "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
                     ]
                 }
             ]
