@@ -18,6 +18,7 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
+#include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -91,14 +92,6 @@ class CC_EXPORT CompositorFrameReportingController {
   void InitializeUkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
   void SetSourceId(ukm::SourceId source_id);
 
-  void AddActiveTracker(FrameSequenceTrackerType type);
-  void RemoveActiveTracker(FrameSequenceTrackerType type);
-  void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
-
-  void SetThreadAffectsSmoothness(
-      FrameInfo::SmoothEffectDrivingThread thread_type,
-      bool affects_smoothness);
-
   void set_tick_clock(const base::TickClock* tick_clock) {
     DCHECK(tick_clock);
     tick_clock_ = tick_clock;
@@ -110,11 +103,36 @@ class CC_EXPORT CompositorFrameReportingController {
     return reporters_;
   }
 
+  void SetFrameSorter(FrameSorter* frame_sorter) {
+    global_trackers_.frame_sorter = frame_sorter;
+  }
+
   void SetDroppedFrameCounter(DroppedFrameCounter* counter);
+
+  void ClearDroppedFrameCounter() {
+    if (global_trackers_.frame_sorter &&
+        global_trackers_.dropped_frame_counter) {
+      global_trackers_.frame_sorter->RemoveObserver(
+          global_trackers_.dropped_frame_counter);
+    }
+    global_trackers_.dropped_frame_counter = nullptr;
+  }
 
   void SetFrameSequenceTrackerCollection(
       FrameSequenceTrackerCollection* frame_sequence_trackers) {
+    if (global_trackers_.frame_sorter) {
+      global_trackers_.frame_sorter->AddObserver(frame_sequence_trackers);
+    }
     global_trackers_.frame_sequence_trackers = frame_sequence_trackers;
+  }
+
+  void ClearFrameSequenceTrackerCollection() {
+    if (global_trackers_.frame_sorter &&
+        global_trackers_.frame_sequence_trackers) {
+      global_trackers_.frame_sorter->RemoveObserver(
+          global_trackers_.frame_sequence_trackers);
+    }
+    global_trackers_.frame_sequence_trackers = nullptr;
   }
 
   void set_event_latency_tracker(EventLatencyTracker* event_latency_tracker) {
@@ -159,11 +177,6 @@ class CC_EXPORT CompositorFrameReportingController {
   bool CanSubmitMainFrame(const viz::BeginFrameId& id) const;
   std::unique_ptr<CompositorFrameReporter> RestoreReporterAtBeginImpl(
       const viz::BeginFrameId& id);
-  SmoothThread GetSmoothThread() const;
-  SmoothEffectDrivingThread GetScrollingThread() const;
-  SmoothThread GetSmoothThreadAtTime(base::TimeTicks timestamp) const;
-  SmoothEffectDrivingThread GetScrollThreadAtTime(
-      base::TimeTicks timestamp) const;
 
   // Checks whether there are reporters containing updates from the main
   // thread, and returns a pointer to that reporter (if any). Otherwise
@@ -192,28 +205,12 @@ class CC_EXPORT CompositorFrameReportingController {
   void SetPartialUpdateDeciderWhenWaitingOnMain(
       std::unique_ptr<CompositorFrameReporter>& reporter);
 
-  void AddSortedFrame(const viz::BeginFrameArgs& args,
-                      const FrameInfo& frame_info);
-
   const bool should_report_histograms_;
   const int layer_tree_host_id_;
 
   viz::BeginFrameId last_submitted_frame_id_;
 
   bool next_activate_has_invalidation_ = false;
-  ActiveTrackers active_trackers_;
-  FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
-      FrameInfo::SmoothEffectDrivingThread::kUnknown;
-
-  bool is_compositor_thread_driving_smoothness_ = false;
-  bool is_main_thread_driving_smoothness_ = false;
-  bool is_raster_thread_driving_smoothness_ = false;
-  // Sorted history of smooththread. Element i indicating the smooththread
-  // from timestamp of element i-1 until timestamp of element i.
-  std::map<base::TimeTicks, SmoothThread> smooth_thread_history_;
-  // Sorted history of scrollthread. Element i indicating the smooththread
-  // from timestamp of element i-1 until timestamp of element i.
-  std::map<base::TimeTicks, SmoothEffectDrivingThread> scroll_thread_history_;
 
   // Must outlive `reporters_` and `submitted_compositor_frames_` (which also
   // have reporters), since destroying the reporters can flush frames to

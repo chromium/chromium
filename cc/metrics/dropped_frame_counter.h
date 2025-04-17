@@ -29,7 +29,7 @@ class TotalFrameCounter;
 
 // This class maintains a counter for produced/dropped frames, and can be used
 // to estimate the recent throughput.
-class CC_EXPORT DroppedFrameCounter {
+class CC_EXPORT DroppedFrameCounter : public FrameSorterObserver {
  public:
   enum FrameState {
     kFrameStateDropped,
@@ -65,7 +65,7 @@ class CC_EXPORT DroppedFrameCounter {
   };
 
   DroppedFrameCounter();
-  virtual ~DroppedFrameCounter();
+  ~DroppedFrameCounter() override;
 
   DroppedFrameCounter(const DroppedFrameCounter&) = delete;
   DroppedFrameCounter& operator=(const DroppedFrameCounter&) = delete;
@@ -78,11 +78,6 @@ class CC_EXPORT DroppedFrameCounter {
 
   uint32_t GetAverageThroughput() const;
 
-  using SortedFrameCallback =
-      base::RepeatingCallback<void(const viz::BeginFrameArgs& args,
-                                   const FrameInfo&)>;
-  void SetSortedFrameCallback(SortedFrameCallback callback);
-
   typedef base::RingBuffer<FrameState, 180> RingBufferType;
   RingBufferType::Iterator Begin() const { return ring_buffer_.Begin(); }
   // `End()` points to the last `FrameState`, not past it.
@@ -94,9 +89,6 @@ class CC_EXPORT DroppedFrameCounter {
   void ReportFrames();
   void ReportFramesOnEveryFrameForUI();
 
-  void OnBeginFrame(const viz::BeginFrameArgs& args);
-  virtual void OnEndFrame(const viz::BeginFrameArgs& args,
-                          const FrameInfo& frame_info);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
   void OnFirstContentfulPaintReceived();
 
@@ -170,9 +162,15 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_current_percent_dropped_.value_or(0);
   }
 
+  bool first_contentful_paint_received() {
+    return first_contentful_paint_received_;
+  }
+
  private:
-  void NotifyFrameResult(const viz::BeginFrameArgs& args,
-                         const FrameInfo& frame_info);
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info) override;
+  virtual void OnEndFrame(const viz::BeginFrameArgs& args,
+                          const FrameInfo& frame_info);
   base::TimeDelta ComputeCurrentWindowSize() const;
 
   void PopSlidingWindow();
@@ -203,15 +201,12 @@ class CC_EXPORT DroppedFrameCounter {
   std::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_first_contentful_paint_received_;
   raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
-  FrameSorter frame_sorter_;
   raw_ptr<TotalFrameCounter> total_counter_ = nullptr;
 
   struct {
     double max_window = 0;
     double p95_window = 0;
   } last_reported_metrics_;
-
-  SortedFrameCallback sorted_frame_callback_;
 
   bool report_for_ui_ = false;
   std::optional<double> sliding_window_current_percent_dropped_;

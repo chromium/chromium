@@ -602,7 +602,11 @@ CompositorFrameReporter::CompositorFrameReporter(
       layer_tree_host_id_(layer_tree_host_id),
       global_trackers_(trackers) {
   DCHECK(global_trackers_.dropped_frame_counter);
-  global_trackers_.dropped_frame_counter->OnBeginFrame(args);
+  DCHECK(global_trackers_.frame_sorter);
+  if (global_trackers_.dropped_frame_counter
+          ->first_contentful_paint_received()) {
+    global_trackers_.frame_sorter->AddNewFrame(args);
+  }
   if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     DCHECK(smooth_thread_ == SmoothThread::kSmoothCompositor ||
            smooth_thread_ == SmoothThread::kSmoothBoth);
@@ -995,7 +999,11 @@ void CompositorFrameReporter::TerminateReporter() {
     else
       global_trackers_.dropped_frame_counter->AddGoodFrame();
   }
-  global_trackers_.dropped_frame_counter->OnEndFrame(args_, frame_info);
+  if (global_trackers_.dropped_frame_counter
+          ->first_contentful_paint_received()) {
+    // Delegates call to DFC->OnEndFrame.
+    global_trackers_.frame_sorter->AddFrameResult(args_, frame_info);
+  }
 }
 
 void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {

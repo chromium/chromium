@@ -17,7 +17,9 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
+#include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "cc/metrics/frame_sorter.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_picture_layer.h"
@@ -308,6 +310,7 @@ class DroppedFrameCounterTest : public testing::Test {
     dropped_frame_counter_ = std::make_unique<DroppedFrameCounter>();
     dropped_frame_counter_->set_total_counter(&total_frame_counter_);
     dropped_frame_counter_->OnFirstContentfulPaintReceived();
+    frame_sorter_.AddObserver(dropped_frame_counter_.get());
   }
   ~DroppedFrameCounterTest() override = default;
 
@@ -316,9 +319,10 @@ class DroppedFrameCounterTest : public testing::Test {
     for (int i = 0; i < repeat; i++) {
       for (auto is_dropped : frame_states) {
         viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-        dropped_frame_counter_->OnBeginFrame(args_);
-        dropped_frame_counter_->OnEndFrame(args_,
-                                           CreateStubFrameInfo(is_dropped));
+        if (dropped_frame_counter_->first_contentful_paint_received()) {
+          frame_sorter_.AddNewFrame(args_);
+          frame_sorter_.AddFrameResult(args_, CreateStubFrameInfo(is_dropped));
+        }
         sequence_number_++;
         frame_time_ += interval_;
       }
@@ -339,7 +343,9 @@ class DroppedFrameCounterTest : public testing::Test {
     std::vector<viz::BeginFrameArgs> args(repeat);
     for (int i = 0; i < repeat; i++) {
       args[i] = SimulateBeginFrameArgs();
-      dropped_frame_counter_->OnBeginFrame(args[i]);
+      if (dropped_frame_counter_->first_contentful_paint_received()) {
+        frame_sorter_.AddNewFrame(args[i]);
+      }
       sequence_number_++;
       frame_time_ += interval_;
     }
@@ -349,18 +355,19 @@ class DroppedFrameCounterTest : public testing::Test {
   // Simulate a main and impl thread update on the same frame.
   void SimulateForkedFrame(bool main_dropped, bool impl_dropped) {
     viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-    dropped_frame_counter_->OnBeginFrame(args_);
-    dropped_frame_counter_->OnBeginFrame(args_);
-
+    if (dropped_frame_counter_->first_contentful_paint_received()) {
+      frame_sorter_.AddNewFrame(args_);
+      frame_sorter_.AddNewFrame(args_);
+    }
     // End the 'main thread' arm of the fork.
     auto main_info = CreateStubFrameInfo(main_dropped);
     main_info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
-    dropped_frame_counter_->OnEndFrame(args_, main_info);
+    frame_sorter_.AddFrameResult(args_, main_info);
 
     // End the 'compositor thread' arm of the fork.
     auto impl_info = CreateStubFrameInfo(impl_dropped);
     impl_info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
-    dropped_frame_counter_->OnEndFrame(args_, impl_info);
+    frame_sorter_.AddFrameResult(args_, impl_info);
 
     sequence_number_++;
     frame_time_ += interval_;
@@ -449,6 +456,7 @@ class DroppedFrameCounterTest : public testing::Test {
 
  public:
   std::unique_ptr<DroppedFrameCounter> dropped_frame_counter_;
+  FrameSorter frame_sorter_;
 
  private:
   uint64_t sequence_number_ = 1;
@@ -776,6 +784,7 @@ TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
   // On the first 2 seconds are accounted for and pdf is 20%.
   EXPECT_EQ(MaxPercentDroppedFrame(), 20);
 
+  frame_sorter_.Reset();
   dropped_frame_counter_->ResetPendingFrames(GetNextFrameTime());
 
   // After resetting the pending frames, the pdf would be 40%.
@@ -908,7 +917,7 @@ TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
   // End each of the frames as dropped. The first three should not count for
   // smoothness, only the last two.
   for (const auto& frame : pending_frames) {
-    dropped_frame_counter_->OnEndFrame(frame, CreateStubFrameInfo(true));
+    frame_sorter_.AddFrameResult(frame, CreateStubFrameInfo(true));
   }
   EXPECT_EQ(dropped_frame_counter_->total_smoothness_dropped(), 2u);
 }
@@ -952,7 +961,7 @@ TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
   // End each of the pending frames as dropped. These shouldn't affect any of
   // the metrics.
   for (const auto& frame : pending_frames) {
-    dropped_frame_counter_->OnEndFrame(frame, CreateStubFrameInfo(true));
+    frame_sorter_.AddFrameResult(frame, CreateStubFrameInfo(true));
   }
 
   // After FCP time, add a second each of 80% and 60%, and three seconds of 40%
@@ -995,7 +1004,12 @@ TEST_F(DroppedFrameCounterTest, ReportOnEveryFrameForUI) {
 
   // Recorded (kFps * 3) samples of 20% dropped frame percentage. Only 3 seconds
   // of frames reported because there is no reports for the very 1st second.
-  EXPECT_EQ(recorder.report_count(), kFps * 3);
+  // Off-by-one introduced by FrameSorter refactor.
+  // We have inverted the order in which we call DFC::AddSortedFrame and
+  // DFC::OnEndFrame, meaning that DFC's sliding_window_current_percent_dropped_
+  // is set after OnEndFrame has been called at the 1s second threshold.
+  // Therefore, we expect one less call to the frame recorder.
+  EXPECT_EQ(recorder.report_count(), (kFps * 3) - 1);
   EXPECT_FLOAT_EQ(recorder.last_percent_dropped_frames(), 20.0f);
 
   recorder.Reset();
@@ -1019,8 +1033,11 @@ class DroppedFrameCounterLegacyMetricsTest : public DroppedFrameCounterTest {
 
 DroppedFrameCounterLegacyMetricsTest::DroppedFrameCounterLegacyMetricsTest() {
   scoped_feature_list_.InitAndEnableFeature(features::kStopExportDFCMetrics);
+  frame_sorter_.RemoveObserver(dropped_frame_counter_.get());
   dropped_frame_counter_ = std::make_unique<DroppedFrameCounter>();
+  frame_sorter_.Reset();
   dropped_frame_counter_->OnFirstContentfulPaintReceived();
+  frame_sorter_.AddObserver(dropped_frame_counter_.get());
 }
 
 TEST_F(DroppedFrameCounterLegacyMetricsTest, DoesNotReportLegacyMetrics) {
@@ -1036,7 +1053,11 @@ TEST_F(DroppedFrameCounterLegacyMetricsTest, DoesNotReportLegacyMetrics) {
 
   // 5 seconds with 20% dropped frames.
   SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 6);
-  EXPECT_EQ(recorder.report_count(), 5 * kFps);
+  // We have inverted the order in which we call DFC::AddSortedFrame and
+  // DFC::OnEndFrame, meaning that DFC's sliding_window_current_percent_dropped_
+  // is set after OnEndFrame has been called at the 1s second threshold.
+  // Therefore, we expect one less call to the frame recorder.
+  EXPECT_EQ(recorder.report_count(), (5 * kFps) - 1);
 
   // The following metrics should report data.
   // Average calculation
