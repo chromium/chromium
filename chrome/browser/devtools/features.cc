@@ -55,7 +55,7 @@ const base::FeatureParam<DevToolsFreestylerExecutionMode>
         /*default_value=*/DevToolsFreestylerExecutionMode::kAllScripts,
         &devtools_freestyler_execution_mode_options};
 const base::FeatureParam<bool> kDevToolsFreestylerPatching{
-    &kDevToolsFreestyler, "patching", /*default_value=*/false};
+    &kDevToolsFreestyler, "patching", /*default_value=*/true};
 const base::FeatureParam<bool> kDevToolsFreestylerMultimodal{
     &kDevToolsFreestyler, "multimodal", /*default_value=*/true};
 const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling{
