@@ -9,11 +9,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace fake_ml {
 namespace {
+
+constexpr std::string_view kEos = "<eos>";
+
+ChromeMLConstraintFns g_constraint_fns;
 
 std::string PieceToString(const ml::InputPiece& piece) {
   if (std::holds_alternative<std::string>(piece)) {
@@ -47,6 +52,65 @@ std::string ReadFile(PlatformFile api_file) {
     return std::string();
   }
   return std::string(contents.begin(), contents.end());
+}
+
+std::string GenerateConstraintString(ChromeMLConstraint constraint) {
+  // Prefer tokens in this order to try to keep output as short as possible.
+  const std::vector<char> preferred = {
+      '"', '}', ']', '{', '[', ':', ',',
+  };
+  ChromeMLConstraintMask mask;
+  auto is_valid = [&](int i) {
+    return !isspace(i) &&
+           // SAFETY: Follows a C-API, sample mask will have vocab_size bits,
+           // test-only code.
+           UNSAFE_BUFFERS(mask.sample_mask[i / 32] & (1 << (i % 32)));
+  };
+  std::string result;
+  // Breakk the loop if result is getting too long.
+  while (result.size() < 100) {
+    CHECK(g_constraint_fns.ComputeMask(constraint, mask))
+        << g_constraint_fns.GetError(constraint);
+    if (mask.is_stop) {
+      break;
+    }
+
+    std::optional<uint32_t> token;
+    // Try to grab a preferred token.
+    for (char t : preferred) {
+      if (is_valid(t)) {
+        token = t;
+        break;
+      }
+    }
+    // If no preferred tokens are available, grab first valid token.
+    if (!token) {
+      for (int i = 0; i < 256; ++i) {
+        if (is_valid(i)) {
+          token = i;
+          break;
+        }
+      }
+    }
+    g_constraint_fns.CommitToken(constraint, *token);
+    result += std::string(1, static_cast<char>(*token));
+  }
+  return result;
+}
+
+// Simple tokenize fn for a single byte tokenizer which just passes through the
+// bytes.
+size_t TokenizeBytes(const void* user_data,
+                     const uint8_t* bytes,
+                     size_t bytes_len,
+                     uint32_t* output_tokens,
+                     size_t output_tokens_len) {
+  for (size_t i = 0; i < std::min(bytes_len, output_tokens_len); ++i) {
+    // SAFETY: Follows a C-API, test-only code. Bounds are length checked by the
+    // loop.
+    UNSAFE_BUFFERS(output_tokens[i]) = UNSAFE_BUFFERS(bytes[i]);
+  }
+  return bytes_len;
 }
 
 }  // namespace
@@ -245,6 +309,10 @@ bool SessionExecuteModel(ChromeMLSession session,
       OutputChunk("Context: " + context + "\n");
     }
   }
+  if (options->constraint) {
+    OutputChunk(GenerateConstraintString(options->constraint));
+    g_constraint_fns.Delete(options->constraint);
+  }
   OutputChunk("");
   return true;
 }
@@ -285,6 +353,32 @@ void DestroyCancel(ChromeMLCancel cancel) {
 void CancelExecuteModel(ChromeMLCancel cancel) {
   auto* instance = reinterpret_cast<FakeCancelInstance*>(cancel);
   instance->cancelled = true;
+}
+
+void SetConstraintFns(const ChromeMLConstraintFns* fns) {
+  g_constraint_fns = *fns;
+}
+
+bool GetTokenizerParams(ChromeMLModel model,
+                        const ChromeMLGetTokenizerParamsFn& fn) {
+  // Create a simple tokenizer mapping each byte to itself.
+  std::string tokens;
+  std::vector<uint32_t> token_lens;
+  for (int i = 0; i < 256; ++i) {
+    tokens += std::string(1, static_cast<char>(i));
+    token_lens.push_back(1);
+  }
+  tokens += kEos;
+  token_lens.push_back(kEos.size());
+  ChromeMLTokenizerParams params{
+      .vocab_size = static_cast<uint32_t>(token_lens.size()),
+      .eos_token_id = static_cast<uint32_t>(token_lens.size() - 1),
+      .token_lens = token_lens.data(),
+      .token_bytes = reinterpret_cast<const uint8_t*>(tokens.data()),
+      .tokenize_fn = &TokenizeBytes,
+  };
+  fn(params);
+  return true;
 }
 
 ChromeMLTSModel CreateTSModel(const ChromeMLTSModelDescriptor* descriptor) {
@@ -336,6 +430,8 @@ const ChromeMLAPI g_api = {
     .CreateCancel = &CreateCancel,
     .DestroyCancel = &DestroyCancel,
     .CancelExecuteModel = &CancelExecuteModel,
+    .SetConstraintFns = &SetConstraintFns,
+    .GetTokenizerParams = &GetTokenizerParams,
     .ts_api =
         {
             .CreateModel = &CreateTSModel,
@@ -345,6 +441,7 @@ const ChromeMLAPI g_api = {
 };
 
 const ChromeMLAPI* GetFakeMlApi() {
+  g_api.SetConstraintFns(ml::GetConstraintFns());
   return &g_api;
 }
 

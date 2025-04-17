@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
   raw_ptr<const ChromeMLAPI> api_;
 };
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+const ChromeMLConstraintFns* GetConstraintFns();
+
 }  // namespace ml
 
 #endif  // SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_H_

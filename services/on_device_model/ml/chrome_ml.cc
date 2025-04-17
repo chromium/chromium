@@ -24,6 +24,7 @@
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
+#include "third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/llguidance.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "gpu/config/gpu_info_collector.h"
@@ -105,6 +106,43 @@ ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
   return chrome_ml->get();
 }
 
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+void ConstraintDelete(ChromeMLConstraint constraint) {
+  llg_free_constraint(reinterpret_cast<LlgConstraint*>(constraint));
+}
+
+bool ConstraintComputeMask(ChromeMLConstraint constraint,
+                           ChromeMLConstraintMask& mask) {
+  LlgMaskResult res;
+  if (llg_compute_mask(reinterpret_cast<LlgConstraint*>(constraint), &res) !=
+      0) {
+    return false;
+  }
+  mask.sample_mask = res.sample_mask;
+  mask.is_stop = res.is_stop;
+  return true;
+}
+
+bool ConstraintCommitToken(ChromeMLConstraint constraint, uint32_t token) {
+  LlgCommitResult result;
+  return llg_commit_token(reinterpret_cast<LlgConstraint*>(constraint), token,
+                          &result) >= 0;
+}
+
+bool ConstraintIsStopped(ChromeMLConstraint constraint) {
+  return llg_is_stopped(reinterpret_cast<LlgConstraint*>(constraint));
+}
+
+const char* ConstraintGetError(ChromeMLConstraint constraint) {
+  return llg_get_error(reinterpret_cast<LlgConstraint*>(constraint));
+}
+
+ChromeMLConstraint ConstraintClone(ChromeMLConstraint constraint) {
+  return reinterpret_cast<ChromeMLConstraint>(
+      llg_clone_constraint(reinterpret_cast<LlgConstraint*>(constraint)));
+}
+#endif
+
 // static
 DISABLE_CFI_DLSYM
 std::unique_ptr<ChromeML> ChromeML::Create(
@@ -138,10 +176,29 @@ std::unique_ptr<ChromeML> ChromeML::Create(
     };
     api.SetMetricsFns(&metrics_fns);
   }
+  if (api.SetConstraintFns) {
+    api.SetConstraintFns(GetConstraintFns());
+  }
   if (api.SetFatalErrorNonGpuFn) {
     api.SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
   return base::WrapUnique(new ChromeML(&api));
+}
+
+const ChromeMLConstraintFns* GetConstraintFns() {
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+  static constexpr ChromeMLConstraintFns kConstraintFns = {
+      .Delete = &ConstraintDelete,
+      .ComputeMask = &ConstraintComputeMask,
+      .CommitToken = &ConstraintCommitToken,
+      .IsStopped = &ConstraintIsStopped,
+      .GetError = &ConstraintGetError,
+      .Clone = &ConstraintClone,
+  };
+#else
+  static constexpr ChromeMLConstraintFns kConstraintFns = {};
+#endif
+  return &kConstraintFns;
 }
 
 }  // namespace ml

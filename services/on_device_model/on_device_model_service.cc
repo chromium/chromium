@@ -268,9 +268,9 @@ class ModelWrapper final : public mojom::OnDeviceModel {
     RunTaskIfPossible();
   }
 
+  std::unique_ptr<ml::OnDeviceModelExecutor> model_;
   std::set<std::unique_ptr<SessionWrapper>, base::UniquePtrComparator>
       sessions_;
-  std::unique_ptr<ml::OnDeviceModelExecutor> model_;
   mojo::ReceiverSet<
       mojom::OnDeviceModel,
       std::unique_ptr<ml::OnDeviceModelExecutor::ScopedAdaptation>>

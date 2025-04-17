@@ -46,6 +46,8 @@ using ChromeMLCancel = uintptr_t;
 using ChromeMLTSModel = uintptr_t;
 // Opaque handle to a video-frame-specific ML inference engine.
 using ChromeMLInferenceEngine = uintptr_t;
+// Opaque handle to a constraint object.
+using ChromeMLConstraint = uintptr_t;
 
 // A contiguous byte span.
 struct ChromeMLByteSpan {
@@ -214,6 +216,10 @@ struct ChromeMLExecuteOptions {
 
   const ml::InputPiece* input;
   size_t input_size;
+
+  // A constraint to apply on the output. Ownership of this object is passed to
+  // the callee.
+  ChromeMLConstraint constraint;
 };
 
 // Performance data filled out by GetEstimatedPerformance().
@@ -261,6 +267,71 @@ struct ChromeMLMetricsFns {
   // Logs a sample for timings up to 3 minutes.
   void (*RecordMediumTimesHistogram)(const char* name, int64_t milliseconds);
 };
+
+// Represents a bitmask when generating a constraint.
+struct ChromeMLConstraintMask {
+  // Mask containing one bit per vocab token.
+  const uint32_t* sample_mask;
+  // Whether the sequence should stop.
+  bool is_stop;
+};
+
+struct ChromeMLConstraintFns {
+  // Delete the constraint.
+  void (*Delete)(ChromeMLConstraint constraint);
+
+  // Computes the mask to use for generating the next token.
+  bool (*ComputeMask)(ChromeMLConstraint constraint,
+                      ChromeMLConstraintMask& mask);
+
+  // Commits the specified token to the constraint.
+  bool (*CommitToken)(ChromeMLConstraint constraint, uint32_t token);
+
+  // Returns true if the sequence cannot be extended any further.
+  bool (*IsStopped)(ChromeMLConstraint constraint);
+
+  // Gets the last error on this constraint or null for no error. The returned
+  // string will be valid until the next call on this constraint.
+  const char* (*GetError)(ChromeMLConstraint constraint);
+
+  // Clones the constraint and associated state.
+  ChromeMLConstraint (*Clone)(ChromeMLConstraint constraint);
+};
+
+// Tokenizes `bytes` and outputs into `output_tokens` at most
+// `output_tokens_len`. Returns the total number of tokens in `bytes`.
+using ChromeMLTokenizeFn = size_t (*)(const void* user_data,
+                                      const uint8_t* bytes,
+                                      size_t bytes_len,
+                                      uint32_t* output_tokens,
+                                      size_t output_tokens_len);
+
+struct ChromeMLTokenizerParams {
+  // The size of the token vocabulary from the LLM.
+  uint32_t vocab_size;
+
+  // The End of Sequence (EOS) token ID from the LLM.
+  uint32_t eos_token_id;
+
+  // An array of the lengths of the token strings (vocab_size elements).
+  const uint32_t* token_lens;
+
+  // A pointer to the token strings. The length of this is the sum of all
+  // lengths from elements of token_lens.
+  const uint8_t* token_bytes;
+
+  // Instead of passing token_lens and token_bytes, this can be set to
+  // model's path location where the content of tokenizer.json file will be
+  // used.
+  const char* model_path;
+
+  // Function for tokenizing a string. Will be passed `tokenize_user_data`.
+  ChromeMLTokenizeFn tokenize_fn;
+  const void* tokenize_user_data;
+};
+
+using ChromeMLGetTokenizerParamsFn =
+    std::function<void(const ChromeMLTokenizerParams&)>;
 
 // Precision used by the gpu delegate during inference.
 enum class GpuDelegatePrecision { kFp16, kFp32 };
@@ -407,6 +478,13 @@ struct ChromeMLAPI {
   ChromeMLCancel (*CreateCancel)();
   void (*DestroyCancel)(ChromeMLCancel cancel);
   void (*CancelExecuteModel)(ChromeMLCancel cancel);
+
+  // Sets constraint functions to be used in the shared library.
+  void (*SetConstraintFns)(const ChromeMLConstraintFns* fns);
+
+  // Gets parameters needed to construct a tokenizer.
+  bool (*GetTokenizerParams)(ChromeMLModel model,
+                             const ChromeMLGetTokenizerParamsFn& fn);
 
   // Create new instance of ML inference engine, using the passed in `device`.
   // `model_blob` should contain a binary blob of a TFLite model (read from

@@ -27,15 +27,18 @@
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+struct LlgTokenizer;
+
 namespace ml {
 
 class ContextHolder;
+class OnDeviceModelExecutor;
 class Responder;
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
  public:
   SessionImpl(const ChromeML& chrome_ml,
-              ChromeMLModel model,
+              OnDeviceModelExecutor& executor,
               SessionAccessor::Ptr session,
               uint32_t max_tokens,
               std::optional<uint32_t> adaptation_id);
@@ -63,7 +66,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
   void RemoveContext(ContextHolder* context);
 
   const raw_ref<const ChromeML> chrome_ml_;
-  ChromeMLModel model_;
+  const raw_ref<OnDeviceModelExecutor> executor_;
   SessionAccessor::Ptr session_;
   const uint32_t max_tokens_;
   std::unique_ptr<Responder> responder_;
@@ -110,6 +113,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
   std::unique_ptr<ScopedAdaptation> LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params);
 
+  ChromeMLConstraint CreateConstraint(const std::string& json_schema);
+
  private:
   on_device_model::mojom::LoadModelResult Init(
       on_device_model::mojom::LoadModelParamsPtr params,
@@ -127,6 +132,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
   scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
   uint32_t max_tokens_ = 0;
   uint32_t next_adaptation_id_ = 0;
+  // Disabling dangling pointer detection because this uses C functions to
+  // allocate/free from rust.
+  raw_ptr<LlgTokenizer, DisableDanglingPtrDetection> tokenizer_ = nullptr;
   base::WeakPtrFactory<OnDeviceModelExecutor> weak_ptr_factory_{this};
 };
 

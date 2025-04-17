@@ -34,6 +34,10 @@
 #include "base/apple/foundation_util.h"
 #endif
 
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+#include "third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/llguidance.h"
+#endif
+
 using on_device_model::mojom::LoadModelResult;
 
 namespace ml {
@@ -266,12 +270,12 @@ class ContextHolder final {
 };
 
 SessionImpl::SessionImpl(const ChromeML& chrome_ml,
-                         ChromeMLModel model,
+                         OnDeviceModelExecutor& executor,
                          SessionAccessor::Ptr session,
                          uint32_t max_tokens,
                          std::optional<uint32_t> adaptation_id)
     : chrome_ml_(chrome_ml),
-      model_(model),
+      executor_(executor),
       session_(std::move(session)),
       max_tokens_(max_tokens),
       adaptation_id_(adaptation_id) {}
@@ -306,8 +310,17 @@ void SessionImpl::Generate(
   responder_ = std::make_unique<Responder>(
       std::move(response), std::move(on_complete), std::move(cloned));
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
+  ChromeMLConstraint constraint = 0;
+  if (options->response_json_schema) {
+    constraint = executor_->CreateConstraint(*options->response_json_schema);
+    if (!constraint) {
+      // TODO(crbug.com/391919456): Propagate error.
+      responder_.reset();
+      return;
+    }
+  }
   *responder_->GetCancelFn() =
-      cloned_raw->Generate(std::move(options), output_fn);
+      cloned_raw->Generate(std::move(options), constraint, output_fn);
 }
 
 DISABLE_CFI_DLSYM
@@ -332,8 +345,9 @@ void SessionImpl::GetProbabilitiesBlocking(
 }
 
 std::unique_ptr<SessionImpl> SessionImpl::Clone() {
-  return std::make_unique<SessionImpl>(
-      chrome_ml_.get(), model_, session_->Clone(), max_tokens_, adaptation_id_);
+  return std::make_unique<SessionImpl>(chrome_ml_.get(), *executor_,
+                                       session_->Clone(), max_tokens_,
+                                       adaptation_id_);
 }
 
 void SessionImpl::RemoveContext(ContextHolder* context) {
@@ -364,6 +378,11 @@ OnDeviceModelExecutor::OnDeviceModelExecutor(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
 OnDeviceModelExecutor::~OnDeviceModelExecutor() {
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+  if (tokenizer_ != nullptr) {
+    llg_free_tokenizer(tokenizer_);
+  }
+#endif
   if (model_ != 0) {
     model_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DestroyModel, &chrome_ml_.get(), model_));
@@ -431,7 +450,7 @@ std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
   auto session = SessionAccessor::Create(
       *chrome_ml_, model_task_runner_, model_, std::move(params),
       std::move(adaptation_params), adaptation_id);
-  return std::make_unique<SessionImpl>(*chrome_ml_, model_, std::move(session),
+  return std::make_unique<SessionImpl>(*chrome_ml_, *this, std::move(session),
                                        max_tokens_ - kReserveTokensForSafety,
                                        adaptation_id);
 }
@@ -442,6 +461,53 @@ OnDeviceModelExecutor::LoadAdaptation(
   adaptation_params_.insert({next_adaptation_id_, std::move(params)});
   return std::make_unique<ScopedAdaptation>(weak_ptr_factory_.GetWeakPtr(),
                                             next_adaptation_id_++);
+}
+
+DISABLE_CFI_DLSYM
+ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
+    const std::string& json_schema) {
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+  if (!tokenizer_) {
+    CHECK(chrome_ml_->api().GetTokenizerParams(
+        model_, [&](const ChromeMLTokenizerParams& params) {
+          LlgTokenizerInit tokenizer_init{
+              .vocab_size = params.vocab_size,
+              .tok_eos = params.eos_token_id,
+              .token_lens = params.token_lens,
+              .token_bytes = params.token_bytes,
+              .tokenizer_json = params.model_path,
+              .tokenize_fn = params.tokenize_fn,
+              .tokenize_user_data = params.tokenize_user_data,
+          };
+
+          std::string error;
+          error.resize(256);
+          tokenizer_ =
+              llg_new_tokenizer(&tokenizer_init, error.data(), error.size());
+          if (!tokenizer_) {
+            LOG(ERROR) << "Error creating tokenizer: " << error;
+          }
+        }));
+  }
+
+  if (!tokenizer_) {
+    return 0;
+  }
+
+  LlgConstraintInit init;
+  llg_constraint_init_set_defaults(&init, tokenizer_);
+  LlgConstraint* constraint =
+      llg_new_constraint_json(&init, json_schema.c_str());
+  const char* error = llg_get_error(constraint);
+  if (error) {
+    LOG(ERROR) << "Error creating constraint: " << error;
+    llg_free_constraint(constraint);
+    return 0;
+  }
+  return reinterpret_cast<ChromeMLConstraint>(constraint);
+#else
+  return 0;
+#endif
 }
 
 DISABLE_CFI_DLSYM

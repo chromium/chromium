@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   ChromeMLCancelFn Append(on_device_model::mojom::AppendOptionsPtr options,
                           ChromeMLContextSavedFn context_saved_fn);
   ChromeMLCancelFn Generate(on_device_model::mojom::GenerateOptionsPtr options,
+                            ChromeMLConstraint constraint,
                             ChromeMLExecutionOutputFn output_fn);
   void Score(const std::string& text, ChromeMLScoreFn score_fn);
   void GetProbabilitiesBlocking(const std::string& input,
@@ -63,6 +64,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
                       scoped_refptr<Canceler> canceler);
   void GenerateInternal(
       on_device_model::mojom::GenerateOptionsPtr generate_options,
+      ChromeMLConstraint constraint,
       ChromeMLExecutionOutputFn output_fn,
       scoped_refptr<Canceler> canceler);
   void ScoreInternal(const std::string& text, ChromeMLScoreFn score_fn);

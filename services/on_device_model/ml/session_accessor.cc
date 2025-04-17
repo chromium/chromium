@@ -104,12 +104,13 @@ ChromeMLCancelFn SessionAccessor::Append(
 
 ChromeMLCancelFn SessionAccessor::Generate(
     on_device_model::mojom::GenerateOptionsPtr options,
+    ChromeMLConstraint constraint,
     ChromeMLExecutionOutputFn output_fn) {
   auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SessionAccessor::GenerateInternal, base::Unretained(this),
-                     std::move(options), std::move(output_fn), canceler));
+      FROM_HERE, base::BindOnce(&SessionAccessor::GenerateInternal,
+                                base::Unretained(this), std::move(options),
+                                constraint, std::move(output_fn), canceler));
   return [canceler] { canceler->Cancel(); };
 }
 
@@ -221,11 +222,13 @@ void SessionAccessor::AppendInternal(
 DISABLE_CFI_DLSYM
 void SessionAccessor::GenerateInternal(
     on_device_model::mojom::GenerateOptionsPtr generate_options,
+    ChromeMLConstraint constraint,
     ChromeMLExecutionOutputFn output_fn,
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ChromeMLExecuteOptions options{
       .max_output_tokens = generate_options->max_output_tokens,
+      .constraint = constraint,
   };
   if (output_fn) {
     options.execution_output_fn = &output_fn;

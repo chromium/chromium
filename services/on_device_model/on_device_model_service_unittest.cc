@@ -910,5 +910,50 @@ TEST_F(OnDeviceModelServiceTest, SetPriorityCloneInherits) {
   clone_waiter->WaitForCompletion();
 }
 
+#if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+TEST_F(OnDeviceModelServiceTest, JSONSchema) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  auto options = mojom::GenerateOptions::New();
+  options->response_json_schema = R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })";
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre(R"({"Rating":1})"));
+}
+
+TEST_F(OnDeviceModelServiceTest, JSONSchemaInvalid) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput("hi"), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->response_json_schema = "blah";
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  // For now invalid schema will just send an empty response.
+  EXPECT_THAT(response.responses(), ElementsAre());
+}
+#endif
+
 }  // namespace
 }  // namespace on_device_model
