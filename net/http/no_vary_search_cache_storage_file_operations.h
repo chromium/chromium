@@ -48,7 +48,7 @@ class NET_EXPORT NoVarySearchCacheStorageFileOperations {
   };
 
   // A simple writer interface for appending to a file.
-  class Writer {
+  class NET_EXPORT Writer {
    public:
     Writer(const Writer&) = delete;
     Writer& operator=(const Writer&) = delete;
