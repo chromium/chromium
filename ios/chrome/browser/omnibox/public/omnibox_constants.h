@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_CONSTANTS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -34,4 +34,4 @@ extern const CGFloat kOmniboxTextFieldLeadingOffsetImage;
 // kOmniboxLeadingImageSize, and kOmniboxTextFieldLeadingOffsetImage.
 extern const CGFloat kOmniboxEditOffset;
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_CONSTANTS_H_

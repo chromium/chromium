@@ -1,9 +1,4 @@
 include_rules = [
-  "+third_party/omnibox_proto",
-  "+ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h",
-  "+ios/chrome/browser/favicon/model/favicon_loader.h",
-  "+ios/chrome/browser/net/model/crurl.h",
-  "+ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h",
   "+ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h",
   "+ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h",
   "+ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h",

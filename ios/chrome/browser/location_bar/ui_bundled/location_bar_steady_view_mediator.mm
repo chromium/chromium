@@ -9,7 +9,7 @@
 #import "components/omnibox/browser/location_bar_model.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"

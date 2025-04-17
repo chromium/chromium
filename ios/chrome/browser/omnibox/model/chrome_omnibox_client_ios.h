@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_CHROME_OMNIBOX_CLIENT_IOS_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_CHROME_OMNIBOX_CLIENT_IOS_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_CHROME_OMNIBOX_CLIENT_IOS_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_CHROME_OMNIBOX_CLIENT_IOS_H_
 
 #import <memory>
 #import <unordered_map>
@@ -124,4 +124,4 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
   base::WeakPtrFactory<ChromeOmniboxClientIOS> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_CHROME_OMNIBOX_CLIENT_IOS_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_CHROME_OMNIBOX_CLIENT_IOS_H_

@@ -14,4 +14,6 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+ios/chrome/browser/web/model",
+  "+ios/chrome/browser/omnibox/public",
+  "+ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 ]

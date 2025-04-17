@@ -8,7 +8,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "url/gurl.h"
 

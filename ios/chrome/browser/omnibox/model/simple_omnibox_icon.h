@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_SIMPLE_OMNIBOX_ICON_H_
 
 #import "ios/chrome/browser/omnibox/model/omnibox_icon.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_suggestion_icon_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
 
 @class CrURL;
 

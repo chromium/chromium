@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"

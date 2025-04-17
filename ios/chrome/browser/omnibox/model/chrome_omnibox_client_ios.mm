@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"

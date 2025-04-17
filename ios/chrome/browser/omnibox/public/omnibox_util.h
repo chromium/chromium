@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_UTIL_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_UTIL_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_UTIL_H_
 
 #import <UIKit/UIKit.h>
 
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/security_state/core/security_state.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_icon_type.h"
-#include "ios/chrome/browser/omnibox/ui_bundled/omnibox_suggestion_icon_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_icon_type.h"
+#include "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
 
 #pragma mark - Suggestion icons.
 
@@ -40,4 +40,4 @@ UIImage* GetLocationBarSecurityIconForSecurityState(
 // Returns the icon for an offline page.
 UIImage* GetLocationBarOfflineIcon();
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_UTIL_H_
