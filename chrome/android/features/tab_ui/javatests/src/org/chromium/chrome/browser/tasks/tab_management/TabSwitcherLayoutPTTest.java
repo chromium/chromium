@@ -260,9 +260,9 @@ public class TabSwitcherLayoutPTTest {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         // Make sure all thumbnails are there before switching tabs.
         RegularTabSwitcherStation tabSwitcher = enterRegularHTSWithThumbnailChecking(secondPage);
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
@@ -418,9 +418,9 @@ public class TabSwitcherLayoutPTTest {
                         "Android.TabGroupParity.TabGroupCreationDialogResultAction", 1);
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -455,9 +455,9 @@ public class TabSwitcherLayoutPTTest {
                         .build();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs and edit group fields
@@ -485,9 +485,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -514,9 +514,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -545,9 +545,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -580,9 +580,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs
@@ -609,9 +609,9 @@ public class TabSwitcherLayoutPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
 
         // Group both tabs

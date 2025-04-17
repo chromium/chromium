@@ -64,7 +64,7 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
                 new TabGroupExistsCondition(
                         mHostStation.isIncognito(),
                         mTabIdsToGroup,
-                        mHostStation.getTabModelSelectorSupplier()));
+                        mHostStation.tabModelSelectorElement));
     }
 
     /** Clicks the group card to open the tab group dialog. */

@@ -18,7 +18,8 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
-import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.hamcrest.Matcher;
 
@@ -44,8 +45,8 @@ import java.util.List;
 
 /** The base station for Hub tab switcher stations. */
 public abstract class TabSwitcherStation extends HubBaseStation {
-    public static final ViewSpec TAB_LIST_RECYCLER_VIEW =
-            HUB_PANE_HOST.descendant(withId(R.id.tab_list_recycler_view));
+    public static final ViewSpec<RecyclerView> TAB_LIST_RECYCLER_VIEW =
+            HUB_PANE_HOST.descendant(RecyclerView.class, withId(R.id.tab_list_recycler_view));
 
     public static final ViewSpec TOOLBAR = viewSpec(instanceOf(HubToolbarView.class));
     public static final ViewSpec TOOLBAR_NEW_TAB_BUTTON =
@@ -76,7 +77,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     private final boolean mIsIncognito;
 
-    private ViewElement mRecyclerViewElement;
+    public ViewElement<RecyclerView> recyclerViewElement;
 
     public TabSwitcherStation(
             boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
@@ -102,7 +103,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         }
                     });
         }
-        mRecyclerViewElement = elements.declareView(TAB_LIST_RECYCLER_VIEW);
+        recyclerViewElement = elements.declareView(TAB_LIST_RECYCLER_VIEW);
     }
 
     public boolean isIncognito() {
@@ -218,7 +219,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     /** Expect a tab group card to exist. */
     public TabSwitcherGroupCardFacility expectGroupCard(List<Integer> tabIdsInGroup, String title) {
-        TabModel currentModel = getTabModelSelectorSupplier().get().getCurrentModel();
+        TabModel currentModel = tabModelSelectorElement.get().getCurrentModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabIdsInGroup);
         return enterFacilitySync(
                 new TabSwitcherGroupCardFacility(expectedCardIndex, tabIdsInGroup, title),
@@ -227,7 +228,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     /** Expect a tab card to exist. */
     public TabSwitcherTabCardFacility expectTabCard(int tabId, String title) {
-        TabModel currentModel = getTabModelSelectorSupplier().get().getCurrentModel();
+        TabModel currentModel = tabModelSelectorElement.get().getCurrentModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, tabId);
         return enterFacilitySync(
                 new TabSwitcherTabCardFacility(expectedCardIndex, tabId, title),
@@ -236,11 +237,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     /** Verify the tab switcher card count. */
     public void verifyTabSwitcherCardCount(int count) {
-        assertEquals(((ViewGroup) mRecyclerViewElement.get()).getChildCount(), count);
-    }
-
-    public ViewElement getRecyclerViewElement() {
-        return mRecyclerViewElement;
+        assertEquals(recyclerViewElement.get().getChildCount(), count);
     }
 
     public TabSwitcherSearchStation openTabSwitcherSearch() {

@@ -43,9 +43,9 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        assert mRegularTabsButton != null;
+        assert regularTabsButtonElement != null;
         elements.declareEnterCondition(
-                new ViewElementMatchesCondition(mRegularTabsButton, isSelected()));
+                new ViewElementMatchesCondition(regularTabsButtonElement, isSelected()));
         if (!mRegularTabsExist) {
             elements.declareView(EMPTY_STATE_TEXT);
         }

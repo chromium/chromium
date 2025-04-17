@@ -36,13 +36,13 @@ public class ExampleFreshCtaTest {
     @LargeTest
     public void testStartOnBlankPage() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
-        assertNotNull(page.getLoadedTab());
+        assertNotNull(page.loadedTabElement.get());
     }
 
     @Test
     @LargeTest
     public void testStartOnNtp() {
         RegularNewTabPageStation ntp = mActivityTestRule.startOnNtp();
-        assertNotNull(ntp.getLoadedTab());
+        assertNotNull(ntp.loadedTabElement.get());
     }
 }

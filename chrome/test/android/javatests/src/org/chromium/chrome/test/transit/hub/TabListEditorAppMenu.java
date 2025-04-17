@@ -136,10 +136,7 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
 
     public Void doCloseTabs(ItemOnScreenFacility<Void> itemOnScreen) {
         TabModel tabModel =
-                mHostStation
-                        .getTabModelSelectorSupplier()
-                        .get()
-                        .getModel(mHostStation.isIncognito());
+                mHostStation.tabModelSelectorElement.get().getModel(mHostStation.isIncognito());
         Condition tabCountDecreased =
                 new TabCountChangedCondition(tabModel, -mListEditor.getNumTabsSelected());
         mHostStation.exitFacilitiesSync(

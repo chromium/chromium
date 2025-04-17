@@ -148,7 +148,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
                 mNumTabsBeingSelected = 0;
             }
             if (mTabAlreadySelected == null && mNumTabsBeingSelected == 0) {
-                mTabAlreadySelected = previousStation.getLoadedTabFromPast();
+                mTabAlreadySelected = previousStation.loadedTabElement.getFromPast();
             }
             // Cannot copy over facilities because we have no way to clone them. It's also not
             // obvious that we should...
@@ -168,12 +168,12 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     protected final String mExpectedUrlSubstring;
     protected final String mExpectedTitle;
     public static final ViewSpec<UrlBar> URL_BAR = viewSpec(UrlBar.class, withId(R.id.url_bar));
-    protected Supplier<Tab> mActivityTabSupplier;
+    public Element<Tab> activityTabElement;
     protected Supplier<Tab> mSelectedTabSupplier;
-    protected Element<Tab> mPageLoadedSupplier;
-    protected ViewElement<ToolbarControlContainer> mToolbar;
-    protected ViewElement<ToggleTabStackButton> mTabSwitcherButton;
-    protected ViewElement<ImageButton> mMenuButton;
+    public Element<Tab> loadedTabElement;
+    public ViewElement<ToolbarControlContainer> toolbarElement;
+    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
+    public ViewElement<ImageButton> menuButtonElement;
 
     /** Prefer the PageStation's subclass |newBuilder()|. */
     public static Builder<PageStation> newGenericBuilder() {
@@ -231,17 +231,17 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
         // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
         // visible.
-        mToolbar =
+        toolbarElement =
                 elements.declareView(
                         viewSpec(ToolbarControlContainer.class, withId(R.id.control_container)),
                         ViewElement.unscopedOption());
         elements.declareView(
                 viewSpec(HomeButton.class, withId(R.id.home_button)), ViewElement.unscopedOption());
-        mTabSwitcherButton =
+        tabSwitcherButtonElement =
                 elements.declareView(
                         viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)),
                         ViewElement.unscopedOption());
-        mMenuButton =
+        menuButtonElement =
                 elements.declareView(
                         viewSpec(ImageButton.class, withId(R.id.menu_button)),
                         ViewElement.unscopedOption());
@@ -254,7 +254,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         if (mIsEntryPoint) {
             // In entry points we just match the first ActivityTab we see, instead of waiting for
             // callbacks.
-            mActivityTabSupplier =
+            activityTabElement =
                     elements.declareEnterConditionAsElement(
                             new AnyActivityTabCondition(mActivityElement));
         } else {
@@ -270,24 +270,24 @@ public class PageStation extends Station<ChromeTabbedActivity> {
                 mSelectedTabSupplier = () -> mTabAlreadySelected;
             }
             // Only returns the tab when it is the activityTab.
-            mActivityTabSupplier =
+            activityTabElement =
                     elements.declareEnterConditionAsElement(
                             new CorrectActivityTabCondition(
                                     mActivityElement, mSelectedTabSupplier));
         }
-        mPageLoadedSupplier =
+        loadedTabElement =
                 elements.declareEnterConditionAsElement(
-                        new PageLoadedCondition(mActivityTabSupplier, mIncognito));
+                        new PageLoadedCondition(activityTabElement, mIncognito));
 
-        elements.declareEnterCondition(new PageInteractableOrHiddenCondition(mPageLoadedSupplier));
+        elements.declareEnterCondition(new PageInteractableOrHiddenCondition(loadedTabElement));
 
         if (mExpectedTitle != null) {
             elements.declareEnterCondition(
-                    new PageTitleCondition(mExpectedTitle, mPageLoadedSupplier));
+                    new PageTitleCondition(mExpectedTitle, loadedTabElement));
         }
         if (mExpectedUrlSubstring != null) {
             elements.declareEnterCondition(
-                    new PageUrlContainsCondition(mExpectedUrlSubstring, mPageLoadedSupplier));
+                    new PageUrlContainsCondition(mExpectedUrlSubstring, loadedTabElement));
         }
     }
 
@@ -345,7 +345,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
         recheckActiveConditions();
         return enterFacilitySync(
-                new TabSwitcherActionMenuFacility(), mTabSwitcherButton.longClickTrigger());
+                new TabSwitcherActionMenuFacility(), tabSwitcherButtonElement.longClickTrigger());
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
@@ -353,7 +353,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         recheckActiveConditions();
 
         return enterFacilitySync(
-                new PageAppMenuFacility<PageStation>(), mMenuButton.clickTrigger());
+                new PageAppMenuFacility<PageStation>(), menuButtonElement.clickTrigger());
     }
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
@@ -410,7 +410,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         assert !mIncognito;
         return travelToSync(
                 RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                mTabSwitcherButton.clickTrigger());
+                tabSwitcherButtonElement.clickTrigger());
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
@@ -418,7 +418,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         assert mIncognito;
         return travelToSync(
                 IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                mTabSwitcherButton.clickTrigger());
+                tabSwitcherButtonElement.clickTrigger());
     }
 
     /** Loads a |url| in the same tab and waits to transition. */
@@ -433,11 +433,11 @@ public class PageStation extends Station<ChromeTabbedActivity> {
                 () -> {
                     @PageTransition
                     int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                    getLoadedTab().loadUrl(new LoadUrlParams(url, transitionType));
+                    loadedTabElement.get().loadUrl(new LoadUrlParams(url, transitionType));
                 };
         Transition.TransitionOptions options =
                 Transition.newOptions()
-                        .withCondition(new PageLoadCallbackCondition(getLoadedTab()))
+                        .withCondition(new PageLoadCallbackCondition(loadedTabElement.get()))
                         .withTimeout(10000)
                         .withPossiblyAlreadyFulfilled()
                         .withRunTriggerOnUiThread()
@@ -492,14 +492,14 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     public <T extends PageStation> T swipeToolbar(
             PageStation.Builder<T> destinationBuilder, boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(mToolbar.get(), directionRight);
+                new ToolbarSwipeCoordinates(toolbarElement.get(), directionRight);
 
         T destination = destinationBuilder.initFrom(this).withIsSelectingTabs(1).build();
         return travelToSync(
                 destination,
                 () ->
                         TouchCommon.performDrag(
-                                mToolbar.get(),
+                                toolbarElement.get(),
                                 coords.mFromX,
                                 coords.mToX,
                                 coords.mY,
@@ -520,7 +520,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
 
     private SwipingToTabFacility swipeToolbarPartial(boolean directionRight) {
         ToolbarSwipeCoordinates coords =
-                new ToolbarSwipeCoordinates(mToolbar.get(), directionRight);
+                new ToolbarSwipeCoordinates(toolbarElement.get(), directionRight);
         long downTime = SystemClock.uptimeMillis();
         Activity activity = getActivity();
 
@@ -559,15 +559,6 @@ public class PageStation extends Station<ChromeTabbedActivity> {
             this.mToX = toolbarPos[0] + (directionRight ? width : 0);
             this.mY = toolbarPos[1] + height / 2;
         }
-    }
-
-    /** Get the Tab corresponding to this active PageStation. */
-    public Tab getLoadedTab() {
-        return mPageLoadedSupplier.get();
-    }
-
-    private Tab getLoadedTabFromPast() {
-        return mPageLoadedSupplier.getFromPast();
     }
 
     private class TabAddedCondition extends CallbackCondition implements TabModelObserver {

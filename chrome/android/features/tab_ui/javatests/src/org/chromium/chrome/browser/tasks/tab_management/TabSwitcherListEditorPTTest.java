@@ -96,7 +96,7 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
@@ -116,9 +116,9 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testClose2Tabs() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
@@ -140,9 +140,9 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
@@ -186,11 +186,7 @@ public class TabSwitcherListEditorPTTest {
                         firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         TabList tabList =
-                tabSwitcher
-                        .getTabModelSelectorSupplier()
-                        .get()
-                        .getCurrentModel()
-                        .getComprehensiveModel();
+                tabSwitcher.tabModelSelectorElement.get().getCurrentModel().getComprehensiveModel();
         List<Tab> tabs =
                 List.of(
                         tabList.getTabAt(0),
@@ -244,11 +240,11 @@ public class TabSwitcherListEditorPTTest {
         TabModel tabModel = firstPage.getActivity().getCurrentTabModel();
 
         // Open 3 tabs
-        int firstTabId = firstPage.getLoadedTab().getId();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
-        int secondTabId = secondPage.getLoadedTab().getId();
+        int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
-        int thirdTabId = thirdPage.getLoadedTab().getId();
+        int thirdTabId = thirdPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
 
         // Group first and second tabs

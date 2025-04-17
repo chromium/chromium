@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.test.transit.edge_to_edge;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
@@ -28,8 +28,9 @@ import org.chromium.chrome.test.transit.edge_to_edge.EdgeToEdgeConditions.EdgeTo
 public class EdgeToEdgeBottomChinFacility<CtaStationT extends Station<ChromeTabbedActivity>>
         extends Facility<CtaStationT> {
     private final Boolean mExpectPageOptIn;
-    private Supplier<BottomControlsLayer> mEdgeToEdgeBottomChin;
-    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    public Element<BottomControlsLayer> bottomChinElement;
+    public Element<BottomControlsStacker> bottomControlsStackerElement;
+    public Element<EdgeToEdgeController> edgeToEdgeControllerElement;
 
     /**
      * Create the facility that wait until bottom chin exists.
@@ -43,16 +44,15 @@ public class EdgeToEdgeBottomChinFacility<CtaStationT extends Station<ChromeTabb
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mEdgeToEdgeControllerSupplier =
+        edgeToEdgeControllerElement =
                 elements.declareEnterConditionAsElement(
                         new EdgeToEdgeControllerCondition(mHostStation.getActivityElement()));
-        Supplier<BottomControlsStacker> bottomControlsStackerSupplier =
+        bottomControlsStackerElement =
                 elements.declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mHostStation.getActivityElement()));
-
-        mEdgeToEdgeBottomChin =
+        bottomChinElement =
                 elements.declareEnterConditionAsElement(
-                        new BottomChinCondition(bottomControlsStackerSupplier));
+                        new BottomChinCondition(bottomControlsStackerElement));
 
         if (mExpectPageOptIn != null) {
             elements.declareEnterCondition(
@@ -62,17 +62,12 @@ public class EdgeToEdgeBottomChinFacility<CtaStationT extends Station<ChromeTabb
         }
     }
 
-    /** Return the bottom chin in the page. */
-    public BottomControlsLayer getBottomChin() {
-        return mEdgeToEdgeBottomChin.get();
-    }
-
     /**
      * @see EdgeToEdgeController#isPageOptedIntoEdgeToEdge()
      */
     public ConditionStatus isPageOptInEdgeToEdge() {
-        if (mEdgeToEdgeControllerSupplier.hasValue()
-                && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge()
+        if (edgeToEdgeControllerElement.hasValue()
+                && edgeToEdgeControllerElement.get().isPageOptedIntoEdgeToEdge()
                         == mExpectPageOptIn) {
             return Condition.fulfilled();
         }

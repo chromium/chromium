@@ -137,14 +137,14 @@ public class QuickDeleteDialogDelegateTest {
 
         QuickDeleteDialogFacility dialog = mPage.openRegularTabAppMenu().clearBrowsingData();
 
-        assertEquals("google.com + 1 site", dialog.getHistoryInfo().getText().toString());
+        assertEquals("google.com + 1 site", dialog.historyInfoElement.get().getText().toString());
         dialog.expectMoreOnSyncedDevices(/* shown= */ true);
-        assertTrue(dialog.getTabsInfo().isEnabled());
-        assertEquals("2 tabs on this device", dialog.getTabsInfo().getText());
+        assertTrue(dialog.tabsInfoElement.get().isEnabled());
+        assertEquals("2 tabs on this device", dialog.tabsInfoElement.get().getText());
         dialog.expectSearchHistoryDisambiguation(/* shown= */ true);
 
         mRenderTestRule.render(
-                dialog.getModalDialogCustomView(), "quick_delete_dialog-signed-in-and-sync");
+                dialog.customViewElement.get(), "quick_delete_dialog-signed-in-and-sync");
 
         dialog.clickCancel();
     }
@@ -162,13 +162,13 @@ public class QuickDeleteDialogDelegateTest {
 
         QuickDeleteDialogFacility dialog = mPage.openRegularTabAppMenu().clearBrowsingData();
 
-        assertEquals("google.com", dialog.getHistoryInfo().getText().toString());
+        assertEquals("google.com", dialog.historyInfoElement.get().getText().toString());
         dialog.expectMoreOnSyncedDevices(/* shown= */ false);
-        assertTrue(dialog.getTabsInfo().isEnabled());
-        assertEquals("1 tab on this device", dialog.getTabsInfo().getText());
+        assertTrue(dialog.tabsInfoElement.get().isEnabled());
+        assertEquals("1 tab on this device", dialog.tabsInfoElement.get().getText());
         dialog.expectSearchHistoryDisambiguation(/* shown= */ true);
 
-        mRenderTestRule.render(dialog.getModalDialogCustomView(), "quick_delete_dialog-signed-in");
+        mRenderTestRule.render(dialog.customViewElement.get(), "quick_delete_dialog-signed-in");
 
         dialog.clickCancel();
     }
@@ -188,14 +188,15 @@ public class QuickDeleteDialogDelegateTest {
         QuickDeleteDialogFacility dialog = tabSwitcher.openAppMenu().clearBrowsingData();
 
         assertEquals(
-                "No sites from the last 15 minutes", dialog.getHistoryInfo().getText().toString());
+                "No sites from the last 15 minutes",
+                dialog.historyInfoElement.get().getText().toString());
         dialog.expectMoreOnSyncedDevices(/* shown= */ false);
-        assertTrue(dialog.getTabsInfo().isEnabled());
-        assertEquals("No tabs from the last 15 minutes", dialog.getTabsInfo().getText());
+        assertTrue(dialog.tabsInfoElement.get().isEnabled());
+        assertEquals("No tabs from the last 15 minutes", dialog.tabsInfoElement.get().getText());
         dialog.expectSearchHistoryDisambiguation(/* shown= */ false);
 
         mRenderTestRule.render(
-                dialog.getModalDialogCustomView(), "quick_delete_dialog-no-tabs-or-history");
+                dialog.customViewElement.get(), "quick_delete_dialog-no-tabs-or-history");
 
         // Return to a page for InitialStateRule to reset state.
         dialog.clickCancel();
@@ -220,8 +221,7 @@ public class QuickDeleteDialogDelegateTest {
         MultiWindowUtils.setInstanceCountForTesting(3);
         QuickDeleteDialogFacility dialog = mPage.openRegularTabAppMenu().clearBrowsingData();
 
-        mRenderTestRule.render(
-                dialog.getModalDialogCustomView(), "quick_delete_dialog-tabs-disabled");
+        mRenderTestRule.render(dialog.customViewElement.get(), "quick_delete_dialog-tabs-disabled");
 
         dialog.clickCancel();
     }
@@ -230,7 +230,7 @@ public class QuickDeleteDialogDelegateTest {
     @MediumTest
     public void testQuickDeleteDialogSpinnerViewContents() {
         QuickDeleteDialogFacility dialog = mPage.openRegularTabAppMenu().clearBrowsingData();
-        Spinner spinnerView = dialog.getSpinner();
+        Spinner spinnerView = dialog.spinnerElement.get();
         assertEquals(6, spinnerView.getAdapter().getCount());
         assertEquals(
                 TimePeriod.LAST_15_MINUTES,

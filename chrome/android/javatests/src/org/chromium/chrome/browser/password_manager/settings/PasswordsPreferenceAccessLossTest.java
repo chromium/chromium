@@ -118,7 +118,8 @@ public class PasswordsPreferenceAccessLossTest {
         SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();
         PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
 
-        mRenderTestRule.render(passwordsPref.getPrefView(), "passwords_preference_" + mName);
+        mRenderTestRule.render(
+                passwordsPref.prefViewElement.get(), "passwords_preference_" + mName);
         TransitAsserts.assertFinalDestination(page);
     }
 }

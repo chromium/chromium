@@ -59,7 +59,7 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
         if (mCardIndex != null) {
             elements.declareEnterCondition(
                     new CardAtPositionCondition(
-                            mCardIndex, mHostStation.getRecyclerViewElement(), mCardViewElement));
+                            mCardIndex, mHostStation.recyclerViewElement, mCardViewElement));
         }
     }
 

@@ -14,6 +14,7 @@ import android.util.Pair;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
@@ -23,7 +24,7 @@ import java.util.List;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
 public class IncognitoNewTabPageStation extends PageStation {
-    private ViewElement mUrlBar;
+    public ViewElement<UrlBar> urlBarElement;
 
     protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
             Builder<T> builder) {
@@ -37,16 +38,17 @@ public class IncognitoNewTabPageStation extends PageStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        mUrlBar = elements.declareView(URL_BAR);
+
+        urlBarElement = elements.declareView(URL_BAR);
         elements.declareView(viewSpec(withId(R.id.new_tab_incognito_icon)));
         elements.declareView(viewSpec(withText("You’ve gone Incognito")));
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
+        elements.declareEnterCondition(new NtpLoadedCondition(loadedTabElement));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
         return enterFacilitySync(
-                new IncognitoNewTabPageAppMenuFacility(), mMenuButton.clickTrigger());
+                new IncognitoNewTabPageAppMenuFacility(), menuButtonElement.clickTrigger());
     }
 
     /** Click the URL bar to enter the Omnibox. */
@@ -55,7 +57,7 @@ public class IncognitoNewTabPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), mUrlBar.clickTrigger());
+        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), urlBarElement.clickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

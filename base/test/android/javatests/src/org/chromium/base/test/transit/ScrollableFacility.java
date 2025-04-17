@@ -10,7 +10,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.view.View;
 
@@ -446,7 +445,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
     public class ItemOnScreenFacility<SelectReturnT> extends Facility<HostStationT> {
 
         protected final Item<SelectReturnT> mItem;
-        private @MonotonicNonNull ViewElement<View> mViewElement;
+        public @MonotonicNonNull ViewElement<View> viewElement;
 
         protected ItemOnScreenFacility(Item<SelectReturnT> item) {
             mItem = item;
@@ -454,7 +453,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            mViewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
+            viewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
         }
 
         /** Select the item and trigger its |selectHandler|. */
@@ -483,12 +482,6 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Returns a {@link Transition.Trigger} to click the item. */
         public Transition.Trigger clickTrigger() {
             return getItem().getViewSpec()::click;
-        }
-
-        /** Returns the item rendered to an Android View. */
-        public View getView() {
-            assumeNonNull(mViewElement);
-            return mViewElement.get();
         }
     }
 

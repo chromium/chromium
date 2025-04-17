@@ -41,14 +41,14 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     private final int mTimePeriod;
 
-    private ViewElement<ModalDialogView> mDialog;
-    private ViewElement<View> mCustomView;
-    private ViewElement<Spinner> mSpinner;
-    private ViewElement<TextView> mHistoryInfo;
-    private ViewElement<TextView> mTabsInfo;
-    private ViewElement mMoreOptions;
-    private ViewElement mCancelButton;
-    private ViewElement mDeleteButton;
+    public ViewElement<ModalDialogView> dialogElement;
+    public ViewElement<View> customViewElement;
+    public ViewElement<Spinner> spinnerElement;
+    public ViewElement<TextView> historyInfoElement;
+    public ViewElement<TextView> tabsInfoElement;
+    public ViewElement<View> moreOptionsElement;
+    public ViewElement<View> cancelButtonElement;
+    public ViewElement<View> deleteButtonElement;
 
     public QuickDeleteDialogFacility() {
         // Default selection is LAST_15_MINUTES.
@@ -61,18 +61,18 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mDialog = elements.declareView(DIALOG);
-        mCustomView =
+        dialogElement = elements.declareView(DIALOG);
+        customViewElement =
                 elements.declareView(DIALOG.descendant(withId(R.id.custom_view_not_in_scrollable)));
         elements.declareView(DIALOG.descendant(withText(R.string.quick_delete_dialog_title)));
-        mSpinner =
+        spinnerElement =
                 elements.declareView(
                         DIALOG.descendant(Spinner.class, withId(R.id.quick_delete_spinner)));
-        mHistoryInfo =
+        historyInfoElement =
                 elements.declareView(
                         DIALOG.descendant(
                                 TextView.class, withId(R.id.quick_delete_history_row_title)));
-        mTabsInfo =
+        tabsInfoElement =
                 elements.declareView(
                         DIALOG.descendant(TextView.class, withId(R.id.quick_delete_tabs_row_title)),
                         ViewElement.allowDisabledOption());
@@ -81,12 +81,12 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
                         withText(
                                 R.string
                                         .quick_delete_dialog_cookies_cache_and_other_site_data_text)));
-        mMoreOptions =
+        moreOptionsElement =
                 elements.declareView(DIALOG.descendant(withId(R.id.quick_delete_more_options)));
-        mCancelButton =
+        cancelButtonElement =
                 elements.declareView(
                         DIALOG.descendant(withId(R.id.negative_button), withText("Cancel")));
-        mDeleteButton =
+        deleteButtonElement =
                 elements.declareView(
                         DIALOG.descendant(withId(R.id.positive_button), withText("Delete data")));
         elements.declareEnterCondition(new TimePeriodSelectedCondition());
@@ -94,7 +94,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     /** Click Cancel to close the dialog with no action. */
     public void clickCancel() {
-        mHostStation.exitFacilitySync(this, mCancelButton.clickTrigger());
+        mHostStation.exitFacilitySync(this, cancelButtonElement.clickTrigger());
     }
 
     /**
@@ -107,32 +107,9 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         QuickDeleteSnackbarFacility snackbar = new QuickDeleteSnackbarFacility(mTimePeriod);
         tabSwitcher.addInitialFacility(snackbar);
 
-        mHostStation.travelToSync(tabSwitcher, mDeleteButton.clickTrigger());
+        mHostStation.travelToSync(tabSwitcher, deleteButtonElement.clickTrigger());
 
         return Pair.create(tabSwitcher, snackbar);
-    }
-
-    /** Returns the parent ModalDialogView. */
-    public ModalDialogView getModalDialog() {
-        return mDialog.get();
-    }
-
-    /** Returns the custom View in the ModalDialog (without the button bar). */
-    public View getModalDialogCustomView() {
-        return mCustomView.get();
-    }
-
-    /** Returns the Spinner to select the time period to delete. */
-    public Spinner getSpinner() {
-        return mSpinner.get();
-    }
-
-    public TextView getHistoryInfo() {
-        return mHistoryInfo.get();
-    }
-
-    public TextView getTabsInfo() {
-        return mTabsInfo.get();
     }
 
     /** Set the time period to delete in the Spinner. */
@@ -144,7 +121,9 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         return mHostStation.swapFacilitySync(
                 this,
                 new QuickDeleteDialogFacility(timePeriod),
-                () -> ThreadUtils.runOnUiThread(() -> getSpinner().setSelection(positionToSet)));
+                () ->
+                        ThreadUtils.runOnUiThread(
+                                () -> spinnerElement.get().setSelection(positionToSet)));
     }
 
     private static int getSpinnerPositionForTimePeriod(
@@ -167,7 +146,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
     public SettingsStation<ClearBrowsingDataFragment> clickMoreOptions() {
         return mHostStation.travelToSync(
                 new SettingsStation<>(ClearBrowsingDataFragment.class),
-                mMoreOptions.clickTrigger());
+                moreOptionsElement.clickTrigger());
     }
 
     public SearchHistoryDisambiguiationFacility expectSearchHistoryDisambiguation(boolean shown) {
@@ -182,12 +161,12 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     private class TimePeriodSelectedCondition extends UiThreadCondition {
         public TimePeriodSelectedCondition() {
-            dependOnSupplier(mSpinner, "Spinner View");
+            dependOnSupplier(spinnerElement, "Spinner View");
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            Spinner spinner = mSpinner.get();
+            Spinner spinner = spinnerElement.get();
             var item = (TimePeriodUtils.TimePeriodSpinnerOption) spinner.getSelectedItem();
             int timePeriod = item.getTimePeriod();
             return whether(

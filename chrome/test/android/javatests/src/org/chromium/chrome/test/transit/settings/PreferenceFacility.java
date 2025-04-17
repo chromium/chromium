@@ -25,7 +25,7 @@ import org.chromium.base.test.transit.ViewSpec;
 public class PreferenceFacility extends Facility<SettingsStation<?>> {
     private final ViewSpec<View> mPrefViewSpec;
 
-    private ViewElement<View> mPrefView;
+    public ViewElement<View> prefViewElement;
 
     /**
      * Creates the facility describing one preference item in the MainSettings fragment.
@@ -41,13 +41,6 @@ public class PreferenceFacility extends Facility<SettingsStation<?>> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mPrefView = elements.declareView(mPrefViewSpec);
-    }
-
-    /**
-     * @return The preference's view.
-     */
-    public View getPrefView() {
-        return mPrefView.get();
+        prefViewElement = elements.declareView(mPrefViewSpec);
     }
 }

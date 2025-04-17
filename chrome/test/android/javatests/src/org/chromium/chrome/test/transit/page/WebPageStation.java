@@ -11,10 +11,12 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
@@ -29,9 +31,9 @@ import java.util.function.Function;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
-    protected Supplier<WebContents> mWebContentsSupplier;
     private boolean mIgnoreUrlBar;
-    private ViewElement mUrlBar;
+    public Element<WebContents> webContentsElement;
+    public ViewElement<UrlBar> urlBarElement;
 
     protected <T extends WebPageStation> WebPageStation(Builder<T> builder) {
         super(builder);
@@ -68,21 +70,21 @@ public class WebPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        mWebContentsSupplier =
+        webContentsElement =
                 elements.declareEnterConditionAsElement(
-                        new WebContentsPresentCondition(mPageLoadedSupplier));
-        elements.declareEnterCondition(new FrameInfoUpdatedCondition(mWebContentsSupplier));
+                        new WebContentsPresentCondition(loadedTabElement));
+        elements.declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
 
         if (!mIgnoreUrlBar) {
             // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists
             // in the tab switcher and it is not completely occluded.
-            mUrlBar = elements.declareView(URL_BAR, ViewElement.unscopedOption());
+            urlBarElement = elements.declareView(URL_BAR, ViewElement.unscopedOption());
         }
 
         // Make sure that the new tab page is not considered a WebPageStation
         List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
         elements.declareEnterCondition(
-                new PageUrlDoesNotMatchCondition(prohibitedUrls, mPageLoadedSupplier));
+                new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
     }
 
     /** Condition to check the page url does not match any of the prohibited urls. */
@@ -117,13 +119,15 @@ public class WebPageStation extends PageStation {
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIncognito;
-        return enterFacilitySync(new RegularWebPageAppMenuFacility(), mMenuButton.clickTrigger());
+        return enterFacilitySync(
+                new RegularWebPageAppMenuFacility(), menuButtonElement.clickTrigger());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIncognito;
-        return enterFacilitySync(new IncognitoWebPageAppMenuFacility(), mMenuButton.clickTrigger());
+        return enterFacilitySync(
+                new IncognitoWebPageAppMenuFacility(), menuButtonElement.clickTrigger());
     }
 
     /** Trigger to scroll WebContents to the bottom. */
@@ -132,8 +136,7 @@ public class WebPageStation extends PageStation {
             assertInPhase(Phase.ACTIVE);
             try {
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        mWebContentsSupplier.get(),
-                        "window.scrollTo(0, document.body.scrollHeight)");
+                        webContentsElement.get(), "window.scrollTo(0, document.body.scrollHeight)");
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }
@@ -146,7 +149,7 @@ public class WebPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ mIncognito, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), mUrlBar.clickTrigger());
+        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), urlBarElement.clickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
     }
 

@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.util.Pair;
+import android.view.View;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
@@ -29,7 +30,7 @@ import java.util.List;
 public class RegularNewTabPageStation extends PageStation {
     public static final ViewSpec MOST_VISITED_TILES_CONTAINER =
             viewSpec(withId(R.id.mv_tiles_container));
-    private ViewElement mSearchBox;
+    public ViewElement<View> searchBoxElement;
 
     protected <T extends RegularNewTabPageStation> RegularNewTabPageStation(Builder<T> builder) {
         super(builder.withIncognito(false));
@@ -54,16 +55,16 @@ public class RegularNewTabPageStation extends PageStation {
                 });
 
         elements.declareView(viewSpec(withId(R.id.search_provider_logo)));
-        mSearchBox = elements.declareView(viewSpec(withId(R.id.search_box)));
+        searchBoxElement = elements.declareView(viewSpec(withId(R.id.search_box)));
         elements.declareView(MOST_VISITED_TILES_CONTAINER);
 
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
+        elements.declareEnterCondition(new NtpLoadedCondition(loadedTabElement));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
         return enterFacilitySync(
-                new RegularNewTabPageAppMenuFacility(), mMenuButton.clickTrigger());
+                new RegularNewTabPageAppMenuFacility(), menuButtonElement.clickTrigger());
     }
 
     /**
@@ -84,7 +85,8 @@ public class RegularNewTabPageStation extends PageStation {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), mSearchBox.clickTrigger());
+        enterFacilitiesSync(
+                List.of(omniboxFacility, softKeyboard), searchBoxElement.clickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
     }
 }

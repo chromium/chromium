@@ -17,12 +17,13 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
-import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
@@ -47,17 +48,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec HUB_PANE_SWITCHER =
             HUB_TOOLBAR.descendant(withId(R.id.pane_switcher));
 
-    // The non-regular toggle tab button contentDescription is a substring found in the string:
-    // R.string.accessibility_tab_switcher_standard_stack.
-    public static final ViewSpec REGULAR_TOGGLE_TAB_BUTTON =
-            viewSpec(withContentDescription(containsString("standard tab")));
-
-    public static final ViewSpec INCOGNITO_TOGGLE_TAB_BUTTON =
-            viewSpec(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
-
-    protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    protected @Nullable ViewElement mRegularTabsButton;
-    protected @Nullable ViewElement mIncognitoTabsButton;
+    public Element<TabModelSelector> tabModelSelectorElement;
+    public @Nullable ViewElement<View> regularTabsButtonElement;
+    public @Nullable ViewElement<View> incognitoTabsButtonElement;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
 
@@ -73,7 +66,7 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        mTabModelSelectorSupplier =
+        tabModelSelectorElement =
                 elements.declareEnterConditionAsElement(
                         new TabModelSelectorCondition(mActivityElement));
 
@@ -82,18 +75,21 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
         elements.declareView(HUB_MENU_BUTTON);
 
         // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
-        mRegularTabsButton = elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+        // The non-regular toggle tab button contentDescription is a substring found in the string:
+        // R.string.accessibility_tab_switcher_standard_stack.
+        regularTabsButtonElement =
+                elements.declareView(
+                        viewSpec(withContentDescription(containsString("standard tab"))));
         if (mIncognitoTabsExist) {
-            mIncognitoTabsButton = elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
+            incognitoTabsButtonElement =
+                    elements.declareView(
+                            viewSpec(
+                                    withContentDescription(
+                                            R.string.accessibility_tab_switcher_incognito_stack)));
         }
 
         elements.declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.TAB_SWITCHER));
-    }
-
-    /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */
-    public Supplier<TabModelSelector> getTabModelSelectorSupplier() {
-        return mTabModelSelectorSupplier;
     }
 
     /**

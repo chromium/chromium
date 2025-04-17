@@ -60,7 +60,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
     private final SoftKeyboardFacility mSoftKeyboard;
     private ViewSpec mTitleInputSpec;
-    private ViewElement mDialog;
+    public ViewElement<View> dialogElement;
 
     /** Constructor. Expects no particular title or selected color. */
     public NewTabGroupDialogFacility(
@@ -86,7 +86,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mDialog = elements.declareView(DIALOG, ViewElement.displayingAtLeastOption(80));
+        dialogElement = elements.declareView(DIALOG, ViewElement.displayingAtLeastOption(80));
         elements.declareView(DIALOG_TITLE);
 
         String inputElementId = "Tab group title input showing " + mTitle;
@@ -159,7 +159,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.getTabModelSelectorSupplier().get().getCurrentModel();
+        TabModel currentModel = mHostStation.tabModelSelectorElement.get().getCurrentModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
                 this,
@@ -185,7 +185,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.getTabModelSelectorSupplier().get().getCurrentModel();
+        TabModel currentModel = mHostStation.tabModelSelectorElement.get().getCurrentModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
                 this,
@@ -197,7 +197,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     private void ensureSoftKeyboardClosed() {
         if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
-            mSoftKeyboard.close(mDialog);
+            mSoftKeyboard.close(dialogElement);
         } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
             // Do nothing as the soft keyboard has already been closed
         } else {

@@ -103,7 +103,7 @@ public class PasswordsPreferenceTest {
         PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
 
         mRenderTestRule.render(
-                passwordsPref.getPrefView(), "passwords_preference_gpm_stopped_working");
+                passwordsPref.prefViewElement.get(), "passwords_preference_gpm_stopped_working");
         TransitAsserts.assertFinalDestination(page);
     }
 
@@ -124,7 +124,7 @@ public class PasswordsPreferenceTest {
         PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
 
         mRenderTestRule.render(
-                passwordsPref.getPrefView(), "passwords_preference_pwds_not_accessible");
+                passwordsPref.prefViewElement.get(), "passwords_preference_pwds_not_accessible");
         TransitAsserts.assertFinalDestination(page);
     }
 
@@ -145,7 +145,8 @@ public class PasswordsPreferenceTest {
         PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
 
         mRenderTestRule.render(
-                passwordsPref.getPrefView(), "passwords_preference_pwds_not_accessible_auto");
+                passwordsPref.prefViewElement.get(),
+                "passwords_preference_pwds_not_accessible_auto");
         TransitAsserts.assertFinalDestination(page);
     }
 }

@@ -86,7 +86,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenSettings() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
-        Tab tab = pageStation.getLoadedTab();
+        Tab tab = pageStation.loadedTabElement.get();
         SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
         assertFinalDestination(settings);
@@ -112,7 +112,7 @@ public class TabbedAppMenuPTTest {
         RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.getView(), "regular_ntp_app_menu");
+        mRenderTestRule.render(menu.menuListElement.get(), "regular_ntp_app_menu");
         menu.verifyPresentItems();
         assertFinalDestination(newTabPage, menu);
 
@@ -132,7 +132,7 @@ public class TabbedAppMenuPTTest {
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.getView(), "incognito_ntp_app_menu");
+        mRenderTestRule.render(menu.menuListElement.get(), "incognito_ntp_app_menu");
         menu.verifyPresentItems();
         assertFinalDestination(incognitoNewTabPage, menu);
 
@@ -151,7 +151,7 @@ public class TabbedAppMenuPTTest {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
-        mRenderTestRule.render(menu.getView(), "regular_webpage_app_menu");
+        mRenderTestRule.render(menu.menuListElement.get(), "regular_webpage_app_menu");
         menu.verifyPresentItems();
         assertFinalDestination(blankPage, menu);
 
@@ -176,7 +176,7 @@ public class TabbedAppMenuPTTest {
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
-        mRenderTestRule.render(menu.getView(), "incognito_webpage_app_menu");
+        mRenderTestRule.render(menu.menuListElement.get(), "incognito_webpage_app_menu");
         menu.verifyPresentItems();
         assertFinalDestination(pageOne, menu);
 
