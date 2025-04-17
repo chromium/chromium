@@ -1413,7 +1413,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
             weak_ptr_factory_.GetWeakPtr(),
             is_first_page_contents_request_
                 ? *initial_request_id_
-                : *request_id_generator_->GetNextRequestId(
+                : *GetNextRequestId(
                       lens::RequestIdUpdateMode::kPageContentRequest)));
   } else {
     // Post CreatePageContentPayload to a task off the main thread so
@@ -1427,7 +1427,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
             weak_ptr_factory_.GetWeakPtr(),
             is_first_page_contents_request_
                 ? *initial_request_id_
-                : *request_id_generator_->GetNextRequestId(
+                : *GetNextRequestId(
                       lens::RequestIdUpdateMode::kPageContentRequest)));
   }
 
@@ -1615,7 +1615,7 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
     request_context.mutable_request_id()->CopyFrom(*initial_request_id_);
   } else {
     request_context.mutable_request_id()->CopyFrom(
-        *request_id_generator_->GetNextRequestId(
+        *GetNextRequestId(
             lens::RequestIdUpdateMode::kPartialPageContentRequest));
   }
   request_context.mutable_client_context()->CopyFrom(CreateClientContext());
