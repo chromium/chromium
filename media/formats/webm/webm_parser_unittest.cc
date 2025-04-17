@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "media/formats/webm/cluster_builder.h"
@@ -349,8 +350,12 @@ TEST_F(WebMParserTest, ReservedIds) {
   const uint8_t k2ByteReservedId[] = {0x7F, 0xFF, 0x81};
   const uint8_t k3ByteReservedId[] = {0x3F, 0xFF, 0xFF, 0x81};
   const uint8_t k4ByteReservedId[] = {0x1F, 0xFF, 0xFF, 0xFF, 0x81};
-  const uint8_t* kBuffers[] = {k1ByteReservedId, k2ByteReservedId,
-                               k3ByteReservedId, k4ByteReservedId};
+  auto kBuffers = std::to_array<const uint8_t*>({
+      k1ByteReservedId,
+      k2ByteReservedId,
+      k3ByteReservedId,
+      k4ByteReservedId,
+  });
 
   for (size_t i = 0; i < std::size(kBuffers); i++) {
     int id;
@@ -375,10 +380,16 @@ TEST_F(WebMParserTest, ReservedSizes) {
                                         0xFF, 0xFF, 0xFF, 0xFF};
   const uint8_t k8ByteReservedSize[] = {0xA3, 0x01, 0xFF, 0xFF, 0xFF,
                                         0xFF, 0xFF, 0xFF, 0xFF};
-  const uint8_t* kBuffers[] = {k1ByteReservedSize, k2ByteReservedSize,
-                               k3ByteReservedSize, k4ByteReservedSize,
-                               k5ByteReservedSize, k6ByteReservedSize,
-                               k7ByteReservedSize, k8ByteReservedSize};
+  auto kBuffers = std::to_array<const uint8_t*>({
+      k1ByteReservedSize,
+      k2ByteReservedSize,
+      k3ByteReservedSize,
+      k4ByteReservedSize,
+      k5ByteReservedSize,
+      k6ByteReservedSize,
+      k7ByteReservedSize,
+      k8ByteReservedSize,
+  });
 
   for (size_t i = 0; i < std::size(kBuffers); i++) {
     int id;

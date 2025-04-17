@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -357,7 +358,7 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
        false},
   };
 
-  const int kExpectedBuffersOnPartialCluster[] = {
+  const auto kExpectedBuffersOnPartialCluster = std::to_array<int>({
       0,  // Video simple block without DefaultDuration should be held back
       0,  // Audio buffer ready, but not emitted because its TS >= held back
           // video
@@ -367,7 +368,7 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
       5,  // All previous buffers emitted, 3rd video held back with no duration
       5,  // 3rd video still has no duration, 4th audio ready but not emitted
       8,  // Cluster end emits all buffers and 3rd video's duration is estimated
-  };
+  });
 
   ASSERT_EQ(std::size(kBlockInfo), std::size(kExpectedBuffersOnPartialCluster));
   int block_count = std::size(kBlockInfo);
