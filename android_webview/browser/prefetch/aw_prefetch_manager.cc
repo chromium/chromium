@@ -73,7 +73,10 @@ class AwPrefetchRequestStatusListener
 };
 
 AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
-    : browser_context_(*browser_context) {}
+    : browser_context_(*browser_context) {
+  TRACE_EVENT_INSTANT("android_webview",
+                      "AwPrefetchManager::AwPrefetchManager");
+}
 
 AwPrefetchManager::~AwPrefetchManager() = default;
 

@@ -96,6 +96,8 @@ std::vector<std::string> AwBrowserContextStore::List() const {
 AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
                                              const bool create_if_needed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  TRACE_EVENT("android_webview", "AwBrowserContextStore::Get", "name", name,
+              "create_if_needed", create_if_needed);
   auto context_it = contexts_.find(name);
   Entry* entry;
   if (context_it != contexts_.end()) {

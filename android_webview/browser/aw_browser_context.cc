@@ -191,7 +191,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
       service_worker_xrw_allowlist_matcher_(
           base::MakeRefCounted<AwContentsOriginMatcher>()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  TRACE_EVENT0("startup", "AwBrowserContext::AwBrowserContext");
+  TRACE_EVENT("startup", "AwBrowserContext::AwBrowserContext", "name", name_);
 
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);

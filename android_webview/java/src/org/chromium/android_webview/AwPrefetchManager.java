@@ -47,7 +47,16 @@ public class AwPrefetchManager {
             @NonNull AwPrefetchCallback callback,
             @NonNull Executor callbackExecutor) {
         assert ThreadUtils.runningOnUiThread();
-        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START")) {
+        String traceArgs;
+        if (prefetchParameters != null && prefetchParameters.getExpectedNoVarySearch() != null) {
+            traceArgs =
+                    String.format(
+                            "{\n    url: %s, \n    nvs_hint: %s\n}",
+                            url, prefetchParameters.getExpectedNoVarySearch());
+        } else {
+            traceArgs = String.format("{\n    url: %s\n}", url);
+        }
+        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START", traceArgs)) {
             final Exception error;
             if (!UrlUtilities.isHttps(url)) {
                 error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");

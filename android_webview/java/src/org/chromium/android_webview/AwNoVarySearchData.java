@@ -65,4 +65,30 @@ public class AwNoVarySearchData {
     public String[] getConsideredQueryParameters() {
         return mConsideredQueryParameters;
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        StringBuilder paramsSb = new StringBuilder();
+        if (mIgnoreDifferencesInParameters) {
+            paramsSb.append("vary-params: [");
+            for (int i = 0; i < mConsideredQueryParameters.length; i++) {
+                paramsSb.append("\"").append(mConsideredQueryParameters[i]).append("\"");
+                if (i < mConsideredQueryParameters.length - 1) {
+                    paramsSb.append(", ");
+                }
+            }
+            paramsSb.append("]");
+        } else {
+            paramsSb.append("no-vary-params: [");
+            for (int i = 0; i < mIgnoredQueryParameters.length; i++) {
+                paramsSb.append("\"").append(mIgnoredQueryParameters[i]).append("\"");
+                if (i < mIgnoredQueryParameters.length - 1) {
+                    paramsSb.append(", ");
+                }
+            }
+            paramsSb.append("]");
+        }
+        return String.format("{key-order: %s, %s}", mVaryOnKeyOrder, paramsSb);
+    }
 }
