@@ -53,6 +53,8 @@ GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
     case ImageType::kPixAccountImage:
       // Pay with Pix is only queried in Chrome on Android.
       NOTREACHED();
+    case ImageType::kValuableImage:
+      return image_url;
   }
 }
 

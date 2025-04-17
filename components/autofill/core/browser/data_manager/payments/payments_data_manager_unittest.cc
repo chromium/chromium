@@ -275,6 +275,10 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
               FetchPixAccountImagesForURLs,
               (base::span<const GURL> card_art_urls),
               (override));
+  MOCK_METHOD(void,
+              FetchValuableImagesForURLs,
+              (base::span<const GURL> image_urls),
+              (override));
   MOCK_METHOD(const gfx::Image*,
               GetCachedImageForUrl,
               (const GURL& image_url, ImageType image_type),

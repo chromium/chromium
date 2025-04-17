@@ -6,6 +6,7 @@ include_rules = [
   "+components/google/core/common/google_util.h",
   "+components/grit/components_scaled_resources.h",
   "+components/history/core/browser",
+  "+components/image_fetcher",
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/language/core/browser",

@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,9 +46,13 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
       const GURL& url,
       const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& image) {
-    OnCardArtImageFetched(ResolveImageURL(url, ImageType::kCreditCardArtImage),
-                          fetch_image_request_timestamp, image,
+    OnCardArtImageFetched(url, fetch_image_request_timestamp, image,
                           image_fetcher::RequestMetadata());
+  }
+
+  void SimulateOnValuableImageFetched(const GURL& url,
+                                      const gfx::Image& image) {
+    OnValuableImageFetched(url, image, image_fetcher::RequestMetadata());
   }
 
   // AutofillImageFetcher:
@@ -184,7 +189,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
 
   base::HistogramTester histogram_tester;
   // Expect to be called once.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _));
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_);
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
@@ -212,7 +217,7 @@ TEST_F(AutofillImageFetcherTest,
 
   base::HistogramTester histogram_tester;
   // Expect to be called twice.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(2);
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
@@ -256,7 +261,7 @@ TEST_F(AutofillImageFetcherTest,
 
   base::HistogramTester histogram_tester;
   // Expect to be called twice.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(2);
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
@@ -302,7 +307,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
   base::HistogramTester histogram_tester;
   // Expect to be called once because already cached images are not fetched
   // again.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _));
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_);
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Success.
@@ -342,4 +347,32 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
   histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
 }
 
+TEST_F(AutofillImageFetcherTest, FetchValuableImage_Success) {
+  gfx::Image fake_image = GetTestImage(IDR_DEFAULT_FAVICON);
+  GURL fake_url = GURL("https://www.example.com/fake_image");
+
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(1);
+  autofill_image_fetcher()->FetchValuableImagesForURLs({fake_url});
+
+  autofill_image_fetcher()->SimulateOnValuableImageFetched(fake_url,
+                                                           fake_image);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      fake_image,
+      *autofill_image_fetcher()->GetCachedImageForUrl(
+          fake_url, AutofillImageFetcherBase::ImageType::kValuableImage)));
+}
+
+TEST_F(AutofillImageFetcherTest, FetchValuableImage_Failure) {
+  gfx::Image fake_image;
+  GURL fake_url = GURL("https://www.example.com/fake_image");
+
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_).Times(1);
+  autofill_image_fetcher()->FetchValuableImagesForURLs({fake_url});
+
+  autofill_image_fetcher()->SimulateOnValuableImageFetched(fake_url,
+                                                           fake_image);
+  // Empty images are not cached, so the result should be a `nullptr`.
+  EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(
+      fake_url, AutofillImageFetcherBase::ImageType::kValuableImage));
+}
 }  // namespace autofill

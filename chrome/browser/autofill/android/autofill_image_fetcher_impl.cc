@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "ui/gfx/image/image.h"
 #include "url/android/gurl_android.h"
@@ -48,6 +49,12 @@ void AutofillImageFetcherImpl::FetchPixAccountImagesForURLs(
   Java_AutofillImageFetcher_prefetchPixAccountImages(
       base::android::AttachCurrentThread(), GetOrCreateJavaImageFetcher(),
       image_urls);
+}
+
+void AutofillImageFetcherImpl::FetchValuableImagesForURLs(
+    base::span<const GURL> image_urls) {
+  // TODO: crbug.com/393123618 - Implement the API on Android.
+  NOTIMPLEMENTED();
 }
 
 const gfx::Image* AutofillImageFetcherImpl::GetCachedImageForUrl(
