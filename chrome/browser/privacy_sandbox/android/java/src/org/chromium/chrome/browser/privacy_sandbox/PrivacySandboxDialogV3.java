@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +22,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -65,6 +69,7 @@ import java.util.List;
  *   <li>{@code privacy_policy_text}: The text view component displaying the privacy policy content.
  * </ul>
  */
+@NullMarked
 public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterface.OnShowListener {
     @IntDef({
         PrivacySandboxDialogType.UNKNOWN,
@@ -101,16 +106,16 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     // Dropdown elements
     private LinearLayout mDropdownElement;
-    private CheckableImageView mDropdownExpandArrowView;
-    private LinearLayout mDropdownContentContainer;
+    private @Nullable CheckableImageView mDropdownExpandArrowView;
+    private @Nullable LinearLayout mDropdownContentContainer;
 
     // Privacy policy
     private boolean mIsPrivacyPageLoaded;
     private LinearLayout mPrivacyPolicyView;
-    private FrameLayout mPrivacyPolicyContent;
-    private ThinWebView mThinWebView;
-    private WebContents mWebContents;
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable FrameLayout mPrivacyPolicyContent;
+    private @Nullable ThinWebView mThinWebView;
+    private @Nullable WebContents mWebContents;
+    private @Nullable WebContentsObserver mWebContentsObserver;
     private @IdRes int mPrivacyPolicyTextIdRes = R.id.privacy_policy_text;
 
     private ActivityWindowAndroid mActivityWindowAndroid;
@@ -312,6 +317,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     }
 
     private void inflateDropdownContent() {
+        assumeNonNull(mDropdownContentContainer);
         mDropdownContentContainer.setVisibility(View.VISIBLE);
         // TODO(crbug.com/392943234): Take in the dropdown resource as input within the constructor
         @LayoutRes int resourceToInflate;
@@ -339,12 +345,14 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     private void handleDropdownClick(View view) {
         if (isDropdownExpanded()) {
+            assumeNonNull(mDropdownContentContainer);
             mDropdownContentContainer.setVisibility(View.GONE);
             mDropdownContentContainer.removeAllViews();
         } else {
             inflateDropdownContent();
         }
 
+        assumeNonNull(mDropdownExpandArrowView);
         mDropdownExpandArrowView.setChecked(isDropdownExpanded());
         PrivacySandboxDialogUtils.updateDropdownControlContentDescription(
                 getContext(),
@@ -361,6 +369,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     private void handlePrivacyPolicyBackButtonClicked() {
         mPrivacyPolicyView.setVisibility(View.GONE);
+        assumeNonNull(mPrivacyPolicyContent);
         mPrivacyPolicyContent.removeAllViews();
         mViewContainer.setVisibility(View.VISIBLE);
         updateButtonVisibility();
@@ -373,6 +382,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
      * @param unused_view The View that was clicked (typically the TextView containing the link).
      */
     private void onPrivacyPolicyClicked(View unused_view) {
+        assumeNonNull(mPrivacyPolicyContent);
         mPrivacyPolicyContent.removeAllViews();
         if (mThinWebView != null && mThinWebView.getView() != null) {
             mViewContainer.setVisibility(View.GONE);
@@ -556,6 +566,8 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
         // Clean up the WebContents, WebContentsObserver and when the dialog is stopped
         if (mThinWebView != null) {
+            assumeNonNull(mWebContents);
+            assumeNonNull(mWebContentsObserver);
             mWebContents.destroy();
             mWebContents = null;
             mWebContentsObserver.observe(null);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
@@ -15,6 +17,8 @@ import android.widget.ScrollView;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,6 +41,7 @@ import org.chromium.url.GURL;
  * Dialog in the form of a notice shown for the Privacy Sandbox - V2. This new version is part of
  * the Ads API UX Enhancement.
  */
+@NullMarked
 public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
@@ -58,10 +63,10 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
     private LinearLayout mPrivacyPolicyView;
     private FrameLayout mPrivacyPolicyContent;
     private ChromeImageButton mPrivacyPolicyBackButton;
-    private TextViewWithLeading mLearnMoreBullet1Description;
-    private ThinWebView mThinWebView;
-    private WebContents mWebContents;
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable TextViewWithLeading mLearnMoreBullet1Description;
+    private @Nullable ThinWebView mThinWebView;
+    private @Nullable WebContents mWebContents;
+    private @Nullable WebContentsObserver mWebContentsObserver;
     private final Profile mProfile;
     private long mPrivacyPolicyClickedTimestamp;
     private final ActivityWindowAndroid mActivityWindowAndroid;
@@ -305,6 +310,8 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
 
         // Clean up the WebContents, WebContentsObserver and when the dialog is stopped
         if (mThinWebView != null) {
+            assumeNonNull(mWebContents);
+            assumeNonNull(mWebContentsObserver);
             mWebContents.destroy();
             mWebContents = null;
             mWebContentsObserver.observe(null);

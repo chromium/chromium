@@ -12,12 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
+@NullMarked
 public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
         implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;

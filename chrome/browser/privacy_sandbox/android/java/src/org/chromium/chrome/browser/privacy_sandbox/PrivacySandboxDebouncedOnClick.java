@@ -9,12 +9,14 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * This class implements the OnClickListener and adds extra logic for debouncing clicks before
  * calling a locally-implemented onClick method.
  */
+@NullMarked
 public abstract class PrivacySandboxDebouncedOnClick implements View.OnClickListener {
     private long mLastClickRecordedTimestamp;
     // Value based on initial hunch for how long we want to ignore click actions.

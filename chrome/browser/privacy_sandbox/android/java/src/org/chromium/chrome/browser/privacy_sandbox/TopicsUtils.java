@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public class TopicsUtils {
     /**
      * Fetches the icon resource id for a given topic.

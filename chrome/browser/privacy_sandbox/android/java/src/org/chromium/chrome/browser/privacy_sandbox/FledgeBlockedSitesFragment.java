@@ -7,14 +7,14 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -22,12 +22,13 @@ import org.chromium.components.favicon.LargeIconBridge;
 import java.util.List;
 
 /** Fragment for the blocked Fledge sites. */
+@NullMarked
 public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private static final String BLOCKED_SITES_PREFERENCE = "block_list";
 
     private PreferenceCategory mBlockedSitesCategory;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
@@ -45,7 +46,7 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes
@@ -69,7 +70,7 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof FledgePreference) {
             getPrivacySandboxBridge()
                     .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), true);

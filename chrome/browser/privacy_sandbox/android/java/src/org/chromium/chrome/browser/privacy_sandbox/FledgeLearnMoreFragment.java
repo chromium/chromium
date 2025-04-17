@@ -9,10 +9,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -20,6 +20,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Settings fragment for privacy sandbox settings. */
+@NullMarked
 public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String FLEDGE_LEARN_MORE_BULLET_1_PREFERENCE =
             "fledge_learn_more_bullet_1";
@@ -35,7 +36,7 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
 
     /** Initializes all the objects related to the preferences page. */
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         mPageTitle.set(getString(R.string.settings_fledge_page_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_learn_more_preference);
         mFledgeLearnMoreBullet1Preference = findPreference(FLEDGE_LEARN_MORE_BULLET_1_PREFERENCE);
@@ -89,7 +90,7 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
     }

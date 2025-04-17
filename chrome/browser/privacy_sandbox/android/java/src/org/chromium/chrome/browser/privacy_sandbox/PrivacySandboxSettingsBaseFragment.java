@@ -9,14 +9,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -31,6 +32,7 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
  * <p>Subclasses have to call super.onCreatePreferences(bundle, s) when overriding
  * onCreatePreferences.
  */
+@NullMarked
 public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSettingsFragment {
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
@@ -39,7 +41,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
 
     private PrivacySandboxBridge mPrivacySandboxBridge;
     private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
-    private Callback<Context> mCookieSettingsNavigation;
+    private @Nullable Callback<Context> mCookieSettingsNavigation;
 
     /** Launches the right version of PrivacySandboxSettings depending on feature flags. */
     public static void launchPrivacySandboxSettings(
@@ -78,6 +80,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         return false;
     }
 
+    @Initializer
     public void setSnackbarManagerSupplier(
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -93,7 +96,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
 
     protected void showSnackbar(
             int stringResId,
-            SnackbarManager.SnackbarController controller,
+            SnackbarManager.@Nullable SnackbarController controller,
             int type,
             int identifier,
             int actionStringResId,
@@ -132,7 +135,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     }
 
     @Override
-    public void setProfile(@NonNull Profile profile) {
+    public void setProfile(Profile profile) {
         super.setProfile(profile);
         mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
     }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +22,8 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -39,6 +43,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 import org.chromium.url.GURL;
 
 /** Dialog in the form of a consent shown for the Privacy Sandbox. */
+@NullMarked
 public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         implements DialogInterface.OnShowListener {
     private static final int SPINNER_DURATION_MS = 1500;
@@ -57,16 +62,16 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private ButtonCompat mMoreButton;
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
-    private TextViewWithLeading mLearnMoreText;
+    private @Nullable TextViewWithLeading mLearnMoreText;
     private int mSurfaceType;
     private LinearLayout mPrivacyPolicyView;
     private FrameLayout mPrivacyPolicyContent;
     private ChromeImageButton mPrivacyPolicyBackButton;
     private View.OnClickListener mOnClickListener;
 
-    private ThinWebView mThinWebView;
-    private WebContents mWebContents;
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable ThinWebView mThinWebView;
+    private @Nullable WebContents mWebContents;
+    private @Nullable WebContentsObserver mWebContentsObserver;
     private long mPrivacyPolicyClickedTimestamp;
     private final Profile mProfile;
     private final ActivityWindowAndroid mActivityWindowAndroid;
@@ -167,6 +172,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             return;
         }
         Context context = mActivityWindowAndroid.getContext().get();
+        assumeNonNull(context);
         TextViewWithLeading description1 =
                 mContentView.findViewById(R.id.privacy_sandbox_m1_consent_description_1);
         TextViewWithLeading description2 =
@@ -404,6 +410,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
         // Clean up the WebContents, WebContentsObserver and when the dialog is stopped
         if (mThinWebView != null) {
+            assumeNonNull(mWebContents);
+            assumeNonNull(mWebContentsObserver);
             mWebContents.destroy();
             mWebContents = null;
             mWebContentsObserver.observe(null);
