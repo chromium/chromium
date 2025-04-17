@@ -242,6 +242,28 @@ enum class InterstitialReason {
 
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);
 
+// Used for UKM. There is only a single BlockingResult per navigation.
+enum class BlockingResult {
+  kUnknown = 0,
+  // An insecure HTTP request was intercepted.
+  kInsecureRequest = 1,
+  // An insecure HTTP request was permitted because no variant of
+  // Ask-Before-HTTP prevented the navigation.
+  kInsecureRequestPermitted = 2,
+  // An insecure HTTP request was permitted because a user had previously
+  // proceeded through a warning on this origin.
+  kInsecureRequestAllowlisted = 3,
+  // An insecure HTTP request caused a warning to show, and the user proceeded
+  // through the warning.
+  kInterstitialProceed = 4,
+  // An insecure HTTP request caused a warning to show, and the user cancelled
+  // the navigation.
+  kInterstitialDontProceed = 5,
+  // Append new items to the end of the list above; do not modify or replace
+  // existing values. Comment out obsolete items.
+  kMaxValue = kInterstitialDontProceed,
+};
+
 }  // namespace security_interstitials::https_only_mode
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_

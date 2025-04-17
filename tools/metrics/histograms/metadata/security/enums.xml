@@ -101,6 +101,23 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Found conflicting lightweight metadata IDs"/>
 </enum>
 
+<enum name="HttpsFirstModeBlockingResult">
+  <int value="0" label="Unknown value"/>
+  <int value="1" label="An insecure HTTP request was intercepted."/>
+  <int value="2"
+      label="An insecure HTTP request was permitted because a user had
+             previously proceeded through a warning on this origin."/>
+  <int value="3"
+      label="An insecure HTTP request caused a warning to show, and the user
+             proceeded through the warning."/>
+  <int value="4"
+      label="An insecure HTTP request caused a warning to show, and the user
+             cancelled the navigation."/>
+  <int value="5"
+      label="An insecure HTTP request was permitted because no variant of
+             Ask-Before-HTTP prevented the navigation."/>
+</enum>
+
 <enum name="HttpsFirstModeInterstitialReason">
   <int value="0" label="kUnknown">Unknown reason</int>
   <int value="1" label="kPref">

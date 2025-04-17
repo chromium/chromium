@@ -157,6 +157,20 @@ bool MustDisableTypicallySecureUserHeuristic(Profile* profile) {
          ChromeSecurityBlockingPageFactory::IsEnterpriseManaged(profile);
 }
 
+void RecordHttpsFirstModeUKM(
+    ukm::SourceId source_id,
+    security_interstitials::https_only_mode::BlockingResult result) {
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  CHECK(ukm_recorder);
+  ukm::builders::HttpsFirstMode_Event(source_id)
+      .SetResult(static_cast<int>(result))
+      .Record(ukm_recorder);
+}
+
 ScopedAllowHttpForHostnamesForTesting::ScopedAllowHttpForHostnamesForTesting(
     const std::vector<std::string>& hostnames,
     PrefService* prefs)

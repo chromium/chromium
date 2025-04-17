@@ -85,7 +85,9 @@ class SecurityBlockingPageFactory {
       content::WebContents* web_contents,
       const GURL& request_url,
       security_interstitials::https_only_mode::HttpInterstitialState
-          interstitial_state) = 0;
+          interstitial_state,
+      security_interstitials::HttpsOnlyModeBlockingPage::MetricsCallback
+          metrics_callback) = 0;
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_BLOCKING_PAGE_FACTORY_H_

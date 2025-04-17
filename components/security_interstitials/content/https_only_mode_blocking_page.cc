@@ -35,12 +35,14 @@ HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
     std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
     const security_interstitials::https_only_mode::HttpInterstitialState&
         interstitial_state,
-    bool use_new_interstitial)
+    bool use_new_interstitial,
+    MetricsCallback metrics_callback)
     : SecurityInterstitialPage(web_contents,
                                request_url,
                                std::move(controller_client)),
       interstitial_state_(interstitial_state),
-      new_interstitial_enabled_(use_new_interstitial) {
+      new_interstitial_enabled_(use_new_interstitial),
+      metrics_callback_(std::move(metrics_callback)) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -52,6 +54,11 @@ void HttpsOnlyModeBlockingPage::OnInterstitialClosing() {
   // If the page is closing without an explicit decision, record it as not
   // proceeding.
   if (!user_made_decision_) {
+    if (metrics_callback_ && !ukm_recorded_) {
+      std::move(metrics_callback_)
+          .Run(https_only_mode::BlockingResult::kInterstitialDontProceed);
+      ukm_recorded_ = true;
+    }
     controller()->metrics_helper()->RecordUserDecision(
         MetricsHelper::DONT_PROCEED);
   }
@@ -73,12 +80,22 @@ void HttpsOnlyModeBlockingPage::CommandReceived(const std::string& command) {
   DCHECK(retval);
   switch (cmd) {
     case security_interstitials::CMD_DONT_PROCEED:
+      if (metrics_callback_ && !ukm_recorded_) {
+        std::move(metrics_callback_)
+            .Run(https_only_mode::BlockingResult::kInterstitialDontProceed);
+        ukm_recorded_ = true;
+      }
       user_made_decision_ = true;
       controller()->metrics_helper()->RecordUserDecision(
           MetricsHelper::DONT_PROCEED);
       controller()->GoBack();
       break;
     case security_interstitials::CMD_PROCEED:
+      if (metrics_callback_ && !ukm_recorded_) {
+        std::move(metrics_callback_)
+            .Run(https_only_mode::BlockingResult::kInterstitialProceed);
+        ukm_recorded_ = true;
+      }
       user_made_decision_ = true;
       controller()->metrics_helper()->RecordUserDecision(
           MetricsHelper::PROCEED);

@@ -9,6 +9,8 @@
 #include "base/memory/stack_allocated.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -78,6 +80,10 @@ bool MustDisableSiteEngagementHeuristic(Profile* profile);
 // prefs already having been set may also disable the heuristic on startup, but
 // this is the bare minimum that must be checked.
 bool MustDisableTypicallySecureUserHeuristic(Profile* profile);
+
+void RecordHttpsFirstModeUKM(
+    ukm::SourceId source_id,
+    security_interstitials::https_only_mode::BlockingResult result);
 
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
 // policy for testing and clears the allowlist when it goes out of scope.

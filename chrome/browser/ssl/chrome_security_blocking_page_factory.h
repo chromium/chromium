@@ -72,7 +72,9 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
       content::WebContents* web_contents,
       const GURL& request_url,
       security_interstitials::https_only_mode::HttpInterstitialState
-          interstitial_state) override;
+          interstitial_state,
+      security_interstitials::HttpsOnlyModeBlockingPage::MetricsCallback
+          metrics_callback) override;
 
   // Returns true if the device or the profile is enterprise-managed.
   static bool IsEnterpriseManaged(Profile* profile);
