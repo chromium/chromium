@@ -6,16 +6,15 @@
 html {
   --google-blue-300: rgb(138, 180, 248);
   --google-blue-700: rgb(25, 103, 210);
-  --google-grey-200: rgb(232, 234, 237);
-  --google-gray-500: rgb(154, 160, 166);
+  --google-gray-300: rgb(218, 220, 224);
   --google-gray-700: rgb(95, 99, 104);
   --google-grey-900: rgb(32, 33, 36);
-  --cr-title-text-color: rgb(90, 90,90);
 
-  --heading-color: var(--google-gray-900);
+  /* Text/Primary in Chrome iOS Design System. */
+  --heading-color: rgb(0, 0, 0);
   --link-color: var(--google-blue-700);
+  /* Text/Primary Low in Chrome iOS Design System. */
   --text-color: var(--google-gray-700);
-  --subtitle-text-color: var(--cr-title-text-color);
 
   -webkit-text-size-adjust: 100%;
 
@@ -26,10 +25,9 @@ html {
 
 @media (prefers-color-scheme: dark) {
   html {
-    --heading-color: var(--google-grey-200);
-    --text-color: var(--google-gray-500);
+    --heading-color: rgb(255, 255, 255);
+    --text-color: var(--google-gray-300);
     --link-color: var(--google-blue-300);
-    --cr-title-text-color: var(--google-grey-200);
 
     background: var(--google-grey-900);
   }
@@ -63,7 +61,6 @@ a {
 
 #main-message,
 #unmanaged-info {
-  color: var(--heading-color);
   font-size: 1.6em;
   font-weight: normal;
   line-height: 1.25em;
@@ -77,8 +74,11 @@ a {
   font-weight: normal;
 }
 
+.heading {
+  color: var(--heading-color);
+}
+
 #connectors-section-title {
-  color: var(--subtitle-text-color);
   font-size: 1.4em;
   font-weight: normal;
   line-height: 1.25em;
@@ -96,7 +96,6 @@ a {
 }
 
 .event-title {
-  color: var(--subtitle-text-color);
   font-size: 1.3em;
   font-weight: 590;
   margin-bottom: 8px;
