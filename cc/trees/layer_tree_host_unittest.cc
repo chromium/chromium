@@ -8247,14 +8247,16 @@ class LayerTreeHostTestBeginFrameAcks : public LayerTreeHostTest {
       return;
     layers_drawn_ = true;
 
-    EXPECT_TRUE(frame_data_);
-    EXPECT_TRUE(compositor_frame_submitted_);
     EXPECT_EQ(viz::BeginFrameAck(current_begin_frame_args_, true),
               frame_data_->begin_frame_ack);
     EndTest();
   }
 
-  void AfterTest() override { EXPECT_TRUE(layers_drawn_); }
+  void AfterTest() override {
+    EXPECT_TRUE(frame_data_);
+    EXPECT_TRUE(compositor_frame_submitted_);
+    EXPECT_TRUE(layers_drawn_);
+  }
 
  private:
   bool compositor_frame_submitted_ = false;

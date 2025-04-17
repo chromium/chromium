@@ -62,9 +62,6 @@
 -LayerTreeHostImplTest.LayersFreeTextures/CommitToActiveTree
 -LayerTreeHostImplTest.LayersFreeTextures/CommitToPendingTree
 
-# TODO(crbug.com/404940699) Fix missing frame submit to Viz after commit request
--LayerTreeHostTestBeginFrameAcks.RunMultiThread_DelegatingRenderer
-
 # TODO (crbug.com/404940328) Fix LayerTreeHostTestInvisibleLayersSkipRenderPass
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunMultiThread_DelegatingRenderer
