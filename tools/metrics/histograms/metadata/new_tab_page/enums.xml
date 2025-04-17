@@ -46,6 +46,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Content error"/>
 </enum>
 
+<enum name="MicrosoftFilesRecommendationType">
+  <int value="0" label="Used"/>
+  <int value="1" label="Shared"/>
+  <int value="2" label="Trending"/>
+</enum>
+
 <enum name="MicrosoftFilesRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>
@@ -53,6 +59,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Content error"/>
   <int value="4" label="Throttling error"/>
   <int value="5" label="Unauthorized error"/>
+</enum>
+
+<enum name="MicrosoftFilesSubstitutionType">
+  <int value="0" label="None"/>
+  <int value="1" label="Non-insights replaced trending"/>
+  <int value="2" label="Trending replaced non-insights"/>
 </enum>
 
 <enum name="MvtReselectUrlMatchResult">

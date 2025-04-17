@@ -5,6 +5,7 @@
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {File} from '../../../file_suggestion.mojom-webui.js';
+import {RecommendationType} from '../../../file_suggestion.mojom-webui.js';
 
 import {getCss} from './file_suggestion.css.js';
 import {getHtml} from './file_suggestion.html.js';
@@ -49,6 +50,12 @@ export class FileSuggestionElement extends CrLitElement {
     const index = Number(currentTarget.dataset['index']);
     chrome.metricsPrivate.recordSmallCount(
         `NewTabPage.${this.moduleName}.FileClick`, index);
+    if (this.files[index].recommendationType != null) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          `NewTabPage.${this.moduleName}.RecommendationTypeClick`,
+          this.files[index].recommendationType,
+          RecommendationType.MAX_VALUE + 1);
+    }
   }
 }
 
