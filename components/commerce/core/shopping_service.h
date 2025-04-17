@@ -525,13 +525,6 @@ class ShoppingService : public KeyedService,
           optimization_guide::OptimizationGuideDecisionWithMetadata>&
           decisions);
 
-  // Produce a ProductInfo object given OptimizationGuideMeta. The returned
-  // unique_ptr is owned by the caller and will be empty if conversion failed
-  // or there was no info. The value returned here can change during runtime so
-  // it should not be used when deciding to build infrastructure.
-  std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
-      const optimization_guide::OptimizationMetadata& metadata);
-
   // Handle the result of running the local extraction fallback for product
   // info.
   void OnProductInfoLocalExtractionResult(const GURL url,

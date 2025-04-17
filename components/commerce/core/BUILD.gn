@@ -472,6 +472,9 @@ source_set("utils") {
     ":commerce_constants",
     ":commerce_types",
     ":feature_list",
+    "//components/commerce/core:feature_utils",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
     "//net:net",
   ]
 }

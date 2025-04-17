@@ -156,7 +156,8 @@ void SetPriceTrackingStateForBookmark(
     const bookmarks::BookmarkNode* node,
     bool enabled,
     base::OnceCallback<void(bool)> callback,
-    bool was_bookmark_created_by_price_tracking) {
+    bool was_bookmark_created_by_price_tracking,
+    std::optional<ProductInfo> product_info) {
   if (!service || !model || !node || model->IsLocalOnlyNode(*node)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -173,6 +174,16 @@ void SetPriceTrackingStateForBookmark(
   if (!meta || !meta->has_shopping_specifics()) {
     std::optional<ProductInfo> info =
         service->GetAvailableProductInfoForUrl(node->url());
+
+    // ProductInfo can be passed in optionally and used in the event
+    // that ShoppingService isn't aware of the ProductInfo.
+    // Ideally use GetProductInfoForUrls() (where a fallback is
+    // automatically provided) instead of
+    // GetAvailableProductInfoForUrl() above when synced Tabs are
+    // supported in Shopping Service TODO(crbug.com/410811501).
+    if (!info.has_value() && product_info.has_value()) {
+      info = product_info;
+    }
 
     // If still no information, do nothing.
     if (!info.has_value()) {

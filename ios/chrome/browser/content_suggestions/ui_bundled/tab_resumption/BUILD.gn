@@ -21,6 +21,7 @@ source_set("tab_resumption") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
+    "//components/commerce/core:utils",
     "//components/optimization_guide/core:core",
     "//components/page_image_service",
     "//components/payments/core:currency_formatter",
