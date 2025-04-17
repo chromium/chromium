@@ -14,6 +14,7 @@
 #include "build/buildflag.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -1187,6 +1188,12 @@ void ViewAccessibility::SetValue(const std::string& value) {
   if (ready_to_notify_events_) {
     OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
     NotifyEvent(ax::mojom::Event::kValueChanged, true);
+
+    // Only fire a text changed event on text fields and select elements to
+    // mimic what is done in the web content.
+    if (data_.IsTextField() || ui::IsSelectElement(data_.role)) {
+      NotifyEvent(ax::mojom::Event::kTextChanged, true);
+    }
   }
 
   NotifyDataChanged();
