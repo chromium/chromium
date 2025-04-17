@@ -411,4 +411,12 @@ gfx::Size GlicFreController::GetFreInitialSize() {
                    features::kGlicFreInitialHeight.Get());
 }
 
+void GlicFreController::UpdateFreWidgetSize(const gfx::Size& new_size) {
+  if (!fre_widget_) {
+    return;
+  }
+
+  fre_widget_->SetSize(new_size);
+}
+
 }  // namespace glic

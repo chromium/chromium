@@ -106,6 +106,8 @@ class GlicFreController {
 
   gfx::Size GetFreInitialSize();
 
+  void UpdateFreWidgetSize(const gfx::Size& new_size);
+
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
   base::WeakPtr<GlicFreController> GetWeakPtr() {
