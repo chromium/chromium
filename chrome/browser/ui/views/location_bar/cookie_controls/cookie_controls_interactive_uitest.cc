@@ -396,6 +396,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, RemoveExceptionPre3pcd) {
       CheckStateForNoException());
 }
 
+// TODO(crbug.com/409294185): Flaky on several builders.
 IN_PROC_BROWSER_TEST_P(CookieControlsUiTest,
                        DISABLED_IconAnimatesOnHighSiteEngagement) {
   BlockThirdPartyCookies(GetParam());
