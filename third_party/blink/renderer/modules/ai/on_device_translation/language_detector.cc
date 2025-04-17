@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -20,23 +21,22 @@ namespace blink {
 namespace {
 
 // TODO(crbug.com/410949688): Figure out how to retrieve these from the model.
-const HashSet<String> GetSupportedLanguages() {
-  return {
-      "af",      "am",  "ar",  "ar-Latn", "az", "be", "bg", "bg-Latn", "bn",
-      "bs",      "ca",  "ceb", "co",      "cs", "cy", "da", "de",      "el",
-      "el-Latn", "en",  "eo",  "es",      "et", "eu", "fa", "fi",      "fil",
-      "fr",      "fy",  "ga",  "gd",      "gl", "gu", "ha", "haw",     "hi",
-      "hi-Latn", "hmn", "hr",  "ht",      "hu", "hy", "id", "ig",      "is",
-      "it",      "iw",  "ja",  "ja-Latn", "jv", "ka", "kk", "km",      "kn",
-      "ko",      "ku",  "ky",  "la",      "lb", "lo", "lt", "lv",      "mg",
-      "mi",      "mk",  "ml",  "mn",      "mr", "ms", "mt", "my",      "ne",
-      "nl",      "no",  "ny",  "pa",      "pl", "ps", "pt", "ro",      "ru",
-      "ru-Latn", "sd",  "si",  "sk",      "sl", "sm", "sn", "so",      "sq",
-      "sr",      "st",  "su",  "sv",      "sw", "ta", "te", "tg",      "th",
-      "tr",      "uk",  "ur",  "uz",      "vi", "xh", "yi", "yo",      "zh",
-      "zh-Latn", "zu",
-  };
-}
+static constexpr auto kSupportedLanguages =
+    base::MakeFixedFlatSet<std::string_view>({
+        "af",      "am",  "ar",  "ar-Latn", "az", "be", "bg", "bg-Latn", "bn",
+        "bs",      "ca",  "ceb", "co",      "cs", "cy", "da", "de",      "el",
+        "el-Latn", "en",  "eo",  "es",      "et", "eu", "fa", "fi",      "fil",
+        "fr",      "fy",  "ga",  "gd",      "gl", "gu", "ha", "haw",     "hi",
+        "hi-Latn", "hmn", "hr",  "ht",      "hu", "hy", "id", "ig",      "is",
+        "it",      "iw",  "ja",  "ja-Latn", "jv", "ka", "kk", "km",      "kn",
+        "ko",      "ku",  "ky",  "la",      "lb", "lo", "lt", "lv",      "mg",
+        "mi",      "mk",  "ml",  "mn",      "mr", "ms", "mt", "my",      "ne",
+        "nl",      "no",  "ny",  "pa",      "pl", "ps", "pt", "ro",      "ru",
+        "ru-Latn", "sd",  "si",  "sk",      "sl", "sm", "sn", "so",      "sq",
+        "sr",      "st",  "su",  "sv",      "sw", "ta", "te", "tg",      "th",
+        "tr",      "uk",  "ur",  "uz",      "vi", "xh", "yi", "yo",      "zh",
+        "zh-Latn", "zu",
+    });
 
 template <typename T>
 class RejectOnDestructionHelper {
@@ -127,7 +127,7 @@ class LanguageDetectorCreateTask
     std::optional<Vector<String>> expected_input_languages;
     if (options_->hasExpectedInputLanguages()) {
       expected_input_languages = GetBestFitLanguages(
-          GetSupportedLanguages(), options_->expectedInputLanguages());
+          kSupportedLanguages, options_->expectedInputLanguages());
       if (!expected_input_languages.has_value()) {
         resolver_->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kUnknownError, "Language not available"));
@@ -179,7 +179,7 @@ void OnGotStatus(
 
   if (options->hasExpectedInputLanguages()) {
     std::optional<Vector<String>> expected_input_languages =
-        GetBestFitLanguages(GetSupportedLanguages(),
+        GetBestFitLanguages(kSupportedLanguages,
                             options->expectedInputLanguages());
     if (!expected_input_languages.has_value()) {
       resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));

@@ -56,15 +56,46 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
 // LookupMatchingLocaleByPrefix
 // (https://tc39.es/ecma402/#sec-lookupmatchinglocalebyprefix) assuming
 // `available_languages` contains no extension.
+template <typename SetType>
 std::optional<String> LookupMatchingLocaleByBestFit(
-    const HashSet<String>& available_languages,
-    const String& requested_language);
+    const SetType& available_languages,
+    const String& requested_language) {
+  String prefix = requested_language;
+  while (prefix != "") {
+    if (available_languages.contains(prefix.Ascii())) {
+      return prefix;
+    }
+    int pos = prefix.ReverseFind('-');
+    if (pos == -1) {
+      pos = 0;
+    }
+    prefix = prefix.Substring(0, pos);
+  }
+  return std::nullopt;
+}
 
 // Returns a set of language codes that best fit the `requested_languages` given
 // `available_languages`
+template <typename SetType>
 std::optional<Vector<String>> GetBestFitLanguages(
-    const HashSet<String>& available_languages,
-    const Vector<String>& requested_languages);
+    const SetType& available_languages,
+    const Vector<String>& requested_languages) {
+  Vector<String> languages;
+  for (const String& language : requested_languages) {
+    std::optional<String> best_match =
+        LookupMatchingLocaleByBestFit(available_languages, language);
+
+    if (!best_match) {
+      return std::nullopt;
+    }
+
+    // Insert if there's no duplicate.
+    if (!languages.Contains(*best_match)) {
+      languages.push_back(*std::move(best_match));
+    }
+  }
+  return languages;
+}
 
 }  // namespace blink
 

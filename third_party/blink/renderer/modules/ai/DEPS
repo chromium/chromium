@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/containers/fixed_flat_set.h",
     "+components/language_detection/content/common/language_detection.mojom-blink.h",
     "+components/language_detection/content/common/language_detection.mojom-blink-forward.h",
     "+components/language_detection/content/common/language_detection.mojom-shared.h",
