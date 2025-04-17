@@ -433,8 +433,7 @@ Position OffsetMapping::StartOfNextNonCollapsedContent(
     if (u.AssociatedNode() != node) {
       break;
     }
-    if (u.DOMEnd() > offset &&
-        u.GetType() != OffsetMappingUnitType::kCollapsed) {
+    if (u.DOMEnd() > offset && !u.IsCollapsed()) {
       const unsigned result = std::max(offset, u.DOMStart());
       return CreatePositionForOffsetMapping(node, result);
     }
@@ -458,8 +457,7 @@ Position OffsetMapping::EndOfLastNonCollapsedContent(
     if (u.AssociatedNode() != node) {
       break;
     }
-    if (u.DOMStart() < offset &&
-        u.GetType() != OffsetMappingUnitType::kCollapsed) {
+    if (u.DOMStart() < offset && !u.IsCollapsed()) {
       const unsigned result = std::min(offset, u.DOMEnd());
       return CreatePositionForOffsetMapping(node, result);
     }
@@ -472,8 +470,7 @@ bool OffsetMapping::IsBeforeNonCollapsedContent(
   DCHECK(OffsetMapping::AcceptsPosition(position));
   const OffsetMappingUnit* unit = GetMappingUnitForPosition(position);
   const unsigned offset = ToNodeOffsetPair(position).second;
-  return unit && offset < unit->DOMEnd() &&
-         unit->GetType() != OffsetMappingUnitType::kCollapsed;
+  return unit && offset < unit->DOMEnd() && !unit->IsCollapsed();
 }
 
 bool OffsetMapping::IsAfterNonCollapsedContent(const Position& position) const {
@@ -487,8 +484,7 @@ bool OffsetMapping::IsAfterNonCollapsedContent(const Position& position) const {
   // |offset|, we need to find the former. Hence, search with |offset - 1|.
   const OffsetMappingUnit* unit = GetMappingUnitForPosition(
       CreatePositionForOffsetMapping(node, offset - 1));
-  return unit && offset > unit->DOMStart() &&
-         unit->GetType() != OffsetMappingUnitType::kCollapsed;
+  return unit && offset > unit->DOMStart() && !unit->IsCollapsed();
 }
 
 std::optional<UChar> OffsetMapping::GetCharacterBefore(

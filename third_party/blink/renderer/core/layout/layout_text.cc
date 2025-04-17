@@ -400,7 +400,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
            mapping->GetMappingUnitsForTextContentOffsetRange(offset.start,
                                                              offset.end)) {
         DCHECK_EQ(unit.GetLayoutObject(), this);
-        if (unit.GetType() == OffsetMappingUnitType::kCollapsed) {
+        if (unit.IsCollapsed()) {
           continue;
         }
         // [clamped_start, clamped_end] of |fragment| matches a legacy text box.
