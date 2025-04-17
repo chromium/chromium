@@ -378,9 +378,6 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE" desc="Text to inform the user about the forced sign-in policy with a Learn More link that redirects to a page that gives more details. (Force Sign In) [iOS only]">
         Your organization requires you to sign in to use Chromium. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
-       Signing in adds your account to Chromium for work-related browsing.
-      </message>
       <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords...) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_UNO.">
         Your organization turned off the ability to use and save Chromium data in your Google Account. New bookmarks, passwords, and more will be saved only to this device.
       </message>
