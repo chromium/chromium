@@ -751,11 +751,10 @@ bool SampleDebugReport(
   return can_send_debug_report;
 }
 
-// Returns whether to keep the debug report or not. Returns true if flag
-// kFledgeSampleDebugReports is disabled, or sampling allows sending the report,
-// or kFledgeEnableFilteringDebugReportStartingFrom is zero.
-// `is_from_server_response` is true if it's a report from B&A response, which
-// was already sampled by B&A server.
+// Returns whether to keep the debug report or not. Returns true if sampling is
+// not enforced (i.e., allow sending all reports), or sampling allows sending
+// the report. `is_from_server_response` is true if it's a report from B&A
+// response, which was already sampled by B&A server.
 bool KeepDebugReport(
     const url::Origin& origin,
     bool is_from_server_response,
@@ -767,21 +766,31 @@ bool KeepDebugReport(
     return true;
   }
 
-  bool can_send_debug_report = false;
+  bool should_sample_debug_report = false;
+  bool selected_by_sampling = false;
   base::Time now = base::Time::Now();
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeEnableSampleDebugReportOnCookieSetting)) {
+    should_sample_debug_report =
+        blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
+        base::Milliseconds(0);
+  } else {
+    should_sample_debug_report = ShouldSampleDebugReport();
+  }
+
   if (!IsOriginInDebugReportCooldownOrLockout(
           origin, debug_report_lockout_and_cooldowns, now) &&
       !IsOriginInDebugReportCooldownOrLockout(
           origin, new_debug_report_lockout_and_cooldowns, now)) {
     // `SampleDebugReport()` may modify the lockout and cooldown state.
-    can_send_debug_report =
+    // Note that still need to call this even when `should_sample_debug_report`
+    // is false, in which case we want to run sampling simulation.
+    selected_by_sampling =
         SampleDebugReport(origin, is_from_server_response,
                           new_debug_report_lockout_and_cooldowns);
   }
-  bool filter_enabled =
-      blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
-      base::Milliseconds(0);
-  return !filter_enabled || can_send_debug_report;
+  return !should_sample_debug_report || selected_by_sampling;
 }
 
 // Helper function of TakeDebugReportUrlsForBidState(). Adds debug reporting
