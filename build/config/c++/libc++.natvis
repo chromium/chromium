@@ -155,7 +155,7 @@
   </Type>
 
   <Type Name="std::__Cr::list&lt;*&gt;">
-    <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_alloc_" />
+    <Intrinsic Name="size" Expression="__size_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
       <LinkedListItems>
