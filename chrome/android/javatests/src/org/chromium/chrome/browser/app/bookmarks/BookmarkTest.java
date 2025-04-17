@@ -465,6 +465,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest(message = "crbug.com/411305260")
     public void testOpenFromReadingListAndNavigateBack() throws Exception {
         openBookmarkManager();
         runOnUiThreadBlocking(
