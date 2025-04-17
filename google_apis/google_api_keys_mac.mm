@@ -12,7 +12,7 @@
 
 namespace google_apis {
 
-std::string GetAPIKeyFromInfoPlist(base::cstring_view key_name) {
+std::string GetAPIKeyFromInfoPlist(const std::string& key_name) {
   NSString* keyName = base::SysUTF8ToNSString(key_name);
   NSString* keyValue = base::apple::ObjCCast<NSString>(
       [base::apple::FrameworkBundle() objectForInfoDictionaryKey:keyName]);

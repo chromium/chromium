@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <atk/atk.h>
 
 #include <array>
@@ -27,12 +32,11 @@
 
 namespace {
 
-constexpr auto kAccessibilityEnabledVariables =
-    std::to_array<base::cstring_view>({
-        "ACCESSIBILITY_ENABLED",
-        "GNOME_ACCESSIBILITY",
-        "QT_ACCESSIBILITY",
-    });
+auto kAccessibilityEnabledVariables = std::to_array<const char*>({
+    "ACCESSIBILITY_ENABLED",
+    "GNOME_ACCESSIBILITY",
+    "QT_ACCESSIBILITY",
+});
 
 //
 // AtkUtilAuraLinux definition and implementation.
@@ -45,10 +49,7 @@ struct AtkUtilAuraLinuxClass {
   AtkUtilClass parent_class;
 };
 
-// SAFETY: Usage of third-party library macro is outside our control.
-UNSAFE_BUFFERS(G_DEFINE_TYPE(AtkUtilAuraLinux,
-                             atk_util_auralinux,
-                             ATK_TYPE_UTIL))
+G_DEFINE_TYPE(AtkUtilAuraLinux, atk_util_auralinux, ATK_TYPE_UTIL)
 
 static void atk_util_auralinux_init(AtkUtilAuraLinux *ax_util) {
 }
@@ -125,7 +126,7 @@ AtkUtilAuraLinux* AtkUtilAuraLinux::GetInstance() {
 bool AtkUtilAuraLinux::ShouldEnableAccessibility() {
   // Check enabled/disabled accessibility based on env variable
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  for (base::cstring_view variable : kAccessibilityEnabledVariables) {
+  for (const auto* variable : kAccessibilityEnabledVariables) {
     std::string enable_accessibility =
         env->GetVar(variable).value_or(std::string());
     if (enable_accessibility == "1")

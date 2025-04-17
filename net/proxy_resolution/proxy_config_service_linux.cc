@@ -128,7 +128,7 @@ ProxyConfigWithAnnotation GetConfigOrDirect(
 ProxyConfigServiceLinux::Delegate::~Delegate() = default;
 
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
-    base::cstring_view variable,
+    std::string_view variable,
     ProxyServer::Scheme scheme,
     ProxyChain* result_chain) {
   std::optional<std::string> env_value = env_var_getter_->GetVar(variable);
@@ -150,7 +150,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
 }
 
 bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVar(
-    base::cstring_view variable,
+    std::string_view variable,
     ProxyChain* result_chain) {
   return GetProxyFromEnvVarForScheme(variable, ProxyServer::SCHEME_HTTP,
                                      result_chain);
@@ -816,7 +816,8 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   void ResolveIndirect(StringSetting key) {
     auto it = string_table_.find(key);
     if (it != string_table_.end()) {
-      std::optional<std::string> value = env_var_getter_->GetVar(it->second);
+      std::optional<std::string> value =
+          env_var_getter_->GetVar(it->second.c_str());
       if (value.has_value() && !value->empty()) {
         it->second = value.value();
       } else {
@@ -830,7 +831,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
     if (it != strings_table_.end()) {
       if (!it->second.empty()) {
         std::optional<std::string> value =
-            env_var_getter_->GetVar(it->second[0]);
+            env_var_getter_->GetVar(it->second[0].c_str());
         if (value.has_value() && !value->empty()) {
           AddHostList(key, value.value());
         } else {

@@ -42,8 +42,15 @@ std::optional<std::string>& GetXdgActivationToken() {
 
 namespace base::nix {
 
+const char kDotConfigDir[] = ".config";
+const char kXdgConfigHomeEnvVar[] = "XDG_CONFIG_HOME";
+const char kXdgCurrentDesktopEnvVar[] = "XDG_CURRENT_DESKTOP";
+const char kXdgSessionTypeEnvVar[] = "XDG_SESSION_TYPE";
+const char kXdgActivationTokenEnvVar[] = "XDG_ACTIVATION_TOKEN";
+const char kXdgActivationTokenSwitch[] = "xdg-activation-token";
+
 FilePath GetXDGDirectory(Environment* env,
-                         cstring_view env_name,
+                         const char* env_name,
                          const char* fallback_dir) {
   FilePath path;
   if (auto env_value = env->GetVar(env_name).value_or(""); !env_value.empty()) {

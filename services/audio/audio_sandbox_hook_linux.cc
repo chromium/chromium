@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/environment.h"
@@ -16,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/cstring_view.h"
 #include "base/strings/stringprintf.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
@@ -59,7 +59,7 @@ void AddAlsaFilePermissions(std::vector<BrokerFilePermission>* permissions) {
 // are specified through environment variables. |recursive_only| is used to
 // determine if the path itself should be allowed access or only its content.
 void AllowAccessToEnvSpecifiedPath(
-    base::cstring_view variable_name,
+    std::string_view variable_name,
     std::vector<BrokerFilePermission>* permissions,
     bool recursive_only) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -119,17 +119,16 @@ void AddPulseAudioFilePermissions(
   // "/tmp/pulse-<random string>".
   permissions->push_back(
       BrokerFilePermission::ReadWriteCreateRecursive("/tmp/"));
-  static constexpr base::cstring_view env_tmp_paths[] = {"TMPDIR", "TMP",
-                                                         "TEMP", "TEMPDIR"};
-  for (base::cstring_view env_tmp_path : env_tmp_paths) {
+  const char* env_tmp_paths[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
+  for (const char* env_tmp_path : env_tmp_paths) {
     AllowAccessToEnvSpecifiedPath(env_tmp_path, permissions,
                                   /*recursive_only=*/true);
   }
   // Read up the Pulse paths specified via environment variable and allow for
   // read/write/create recursively on the directory.
-  static constexpr base::cstring_view env_pulse_paths[] = {
-      "PULSE_CONFIG_PATH", "PULSE_RUNTIME_PATH", "PULSE_STATE_PATH"};
-  for (base::cstring_view env_pulse_path : env_pulse_paths) {
+  const char* env_pulse_paths[] = {"PULSE_CONFIG_PATH", "PULSE_RUNTIME_PATH",
+                                   "PULSE_STATE_PATH"};
+  for (const char* env_pulse_path : env_pulse_paths) {
     AllowAccessToEnvSpecifiedPath(env_pulse_path, permissions,
                                   /*recursive_only=*/false);
   }
