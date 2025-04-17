@@ -139,6 +139,8 @@
 #    ]
 #  }
 
+import("//build_overrides/protobuf.gni")
+
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -148,6 +150,14 @@ declare_args() {
   # Allows subprojects to omit javascript dependencies (e.g.) closure_compiler
   # and google-closure-library.
   enable_js_protobuf = !is_cronet_build
+}
+
+declare_args() {
+  # Allows embedders to provide an alternate path to abseil-cpp. (Used
+  # by Dawn & Skia in stand alone builds)
+  if (!defined(protobuf_abseil_dir)) {
+    protobuf_abseil_dir = "//third_party/abseil-cpp"
+  }
 }
 
 if (enable_js_protobuf) {
@@ -734,13 +744,13 @@ template("protoc_convert") {
     outputs = [ invoker.output_pattern ]
 
     args = [
-             "--protoc",
-             "./" + rebase_path(_protoc_path, root_build_dir),
-             "--infile",
-             "{{source}}",
-             "--outfile",
-             rebase_path(invoker.output_pattern, root_build_dir),
-           ]
+      "--protoc",
+      "./" + rebase_path(_protoc_path, root_build_dir),
+      "--infile",
+      "{{source}}",
+      "--outfile",
+      rebase_path(invoker.output_pattern, root_build_dir),
+    ]
 
     if (treat_warnings_as_errors) {
       args += [ "--fatal_warnings" ]
