@@ -11740,12 +11740,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kBookmarksTreeView)},
 #endif
 
-    {"is-secure-payment-confirmation-available-api",
-     flag_descriptions::kIsSecurePaymentConfirmationAvailableAPIName,
-     flag_descriptions::kIsSecurePaymentConfirmationAvailableAPIDescription,
+    {"enable-secure-payment-confirmation-availability-api",
+     flag_descriptions::kSecurePaymentConfirmationAvailabilityAPIName,
+     flag_descriptions::kSecurePaymentConfirmationAvailabilityAPIDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
-         blink::features::kIsSecurePaymentConfirmationAvailableAPI)},
+         blink::features::kSecurePaymentConfirmationAvailabilityAPI)},
 
     {"copy-image-filename-to-clipboard",
      flag_descriptions::kCopyImageFilenameToClipboardName,

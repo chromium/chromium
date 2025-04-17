@@ -39,6 +39,7 @@ class PaymentDetailsUpdate;
 class PaymentRequestUpdateEvent;
 class PaymentResponse;
 class ScriptState;
+class V8SecurePaymentConfirmationAvailability;
 
 class MODULES_EXPORT PaymentRequest final
     : public EventTarget,
@@ -52,8 +53,8 @@ class MODULES_EXPORT PaymentRequest final
   USING_PRE_FINALIZER(PaymentRequest, ClearResolversAndCloseMojoConnection);
 
  public:
-  static ScriptPromise<IDLBoolean> isSecurePaymentConfirmationAvailable(
-      ScriptState* script_state);
+  static ScriptPromise<V8SecurePaymentConfirmationAvailability>
+  securePaymentConfirmationAvailability(ScriptState* script_state);
 
   static PaymentRequest* Create(ExecutionContext*,
                                 const HeapVector<Member<PaymentMethodData>>&,

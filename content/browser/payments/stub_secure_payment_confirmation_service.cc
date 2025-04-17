@@ -31,9 +31,12 @@ StubSecurePaymentConfirmationService::StubSecurePaymentConfirmationService(
         receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
-void StubSecurePaymentConfirmationService::IsSecurePaymentConfirmationAvailable(
-    IsSecurePaymentConfirmationAvailableCallback callback) {
-  std::move(callback).Run(false);
+void StubSecurePaymentConfirmationService::
+    SecurePaymentConfirmationAvailability(
+        SecurePaymentConfirmationAvailabilityCallback callback) {
+  std::move(callback).Run(
+      payments::mojom::SecurePaymentConfirmationAvailabilityEnum::
+          kUnavailableFeatureNotEnabled);
 }
 
 void StubSecurePaymentConfirmationService::StorePaymentCredential(

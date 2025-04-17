@@ -33,6 +33,8 @@ using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Pointee;
 
+using payments::mojom::SecurePaymentConfirmationAvailabilityEnum;
+
 namespace {
 
 struct SecurePaymentConfirmationServiceDeleter {
@@ -91,8 +93,8 @@ class SecurePaymentConfirmationServiceTestBase {
       spc_service_;
   raw_ptr<webauthn::MockInternalAuthenticator> mock_internal_authenticator_;
   base::MockCallback<mojom::SecurePaymentConfirmationService::
-                         IsSecurePaymentConfirmationAvailableCallback>
-      mock_is_secure_payment_confirmation_available_callback_;
+                         SecurePaymentConfirmationAvailabilityCallback>
+      mock_secure_payment_confirmation_availability_callback_;
 
  private:
   std::unique_ptr<webauthn::InternalAuthenticator>
@@ -109,7 +111,7 @@ class SecurePaymentConfirmationServiceTest
       public ::testing::Test {};
 
 TEST_F(SecurePaymentConfirmationServiceTest,
-       IsSecurePaymentConfirmationAvailableAPI) {
+       SecurePaymentConfirmationAvailabilityAPI) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {::features::kSecurePaymentConfirmation,
@@ -125,14 +127,14 @@ TEST_F(SecurePaymentConfirmationServiceTest,
               IsUserVerifyingPlatformAuthenticatorAvailable(_))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(true));
 
-  EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
-              Run(true));
-  spc_service_->IsSecurePaymentConfirmationAvailable(
-      mock_is_secure_payment_confirmation_available_callback_.Get());
+  EXPECT_CALL(mock_secure_payment_confirmation_availability_callback_,
+              Run(SecurePaymentConfirmationAvailabilityEnum::kAvailable));
+  spc_service_->SecurePaymentConfirmationAvailability(
+      mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
 TEST_F(SecurePaymentConfirmationServiceTest,
-       IsSecurePaymentConfirmationAvailableAPI_FeatureDisabled) {
+       SecurePaymentConfirmationAvailabilityAPI_FeatureDisabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {}, {::features::kSecurePaymentConfirmation,
@@ -140,15 +142,16 @@ TEST_F(SecurePaymentConfirmationServiceTest,
 
   InitializeSecurePaymentConfirmationService();
 
-  EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
-              Run(false));
-  spc_service_->IsSecurePaymentConfirmationAvailable(
-      mock_is_secure_payment_confirmation_available_callback_.Get());
+  EXPECT_CALL(mock_secure_payment_confirmation_availability_callback_,
+              Run(SecurePaymentConfirmationAvailabilityEnum::
+                      kUnavailableFeatureNotEnabled));
+  spc_service_->SecurePaymentConfirmationAvailability(
+      mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
 TEST_F(
     SecurePaymentConfirmationServiceTest,
-    IsSecurePaymentConfirmationAvailableAPI_SecurePaymentConfirmationDebugMode) {
+    SecurePaymentConfirmationAvailabilityAPI_SecurePaymentConfirmationDebugMode) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {::features::kSecurePaymentConfirmation,
@@ -160,14 +163,14 @@ TEST_F(
 
   // Here we haven't set up the authenticator, but since the debug flag is set
   // that does not matter; the API should still return true.
-  EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
-              Run(true));
-  spc_service_->IsSecurePaymentConfirmationAvailable(
-      mock_is_secure_payment_confirmation_available_callback_.Get());
+  EXPECT_CALL(mock_secure_payment_confirmation_availability_callback_,
+              Run(SecurePaymentConfirmationAvailabilityEnum::kAvailable));
+  spc_service_->SecurePaymentConfirmationAvailability(
+      mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
 TEST_F(SecurePaymentConfirmationServiceTest,
-       IsSecurePaymentConfirmationAvailableAPI_NoAuthenticator) {
+       SecurePaymentConfirmationAvailabilityAPI_NoAuthenticator) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {::features::kSecurePaymentConfirmation,
@@ -176,15 +179,16 @@ TEST_F(SecurePaymentConfirmationServiceTest,
 
   InitializeSecurePaymentConfirmationService(/*with_authenticator=*/false);
 
-  EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
-              Run(false));
-  spc_service_->IsSecurePaymentConfirmationAvailable(
-      mock_is_secure_payment_confirmation_available_callback_.Get());
+  EXPECT_CALL(mock_secure_payment_confirmation_availability_callback_,
+              Run(SecurePaymentConfirmationAvailabilityEnum::
+                      kUnavailableUnknownReason));
+  spc_service_->SecurePaymentConfirmationAvailability(
+      mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
 TEST_F(
     SecurePaymentConfirmationServiceTest,
-    IsSecurePaymentConfirmationAvailableAPI_GetMatchingCredentialIdsNotSupported) {
+    SecurePaymentConfirmationAvailabilityAPI_GetMatchingCredentialIdsNotSupported) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {::features::kSecurePaymentConfirmation,
@@ -197,15 +201,16 @@ TEST_F(
               IsGetMatchingCredentialIdsSupported())
       .WillRepeatedly(testing::Return(false));
 
-  EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
-              Run(false));
-  spc_service_->IsSecurePaymentConfirmationAvailable(
-      mock_is_secure_payment_confirmation_available_callback_.Get());
+  EXPECT_CALL(mock_secure_payment_confirmation_availability_callback_,
+              Run(SecurePaymentConfirmationAvailabilityEnum::
+                      kUnavailableUnknownReason));
+  spc_service_->SecurePaymentConfirmationAvailability(
+      mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
 TEST_F(
     SecurePaymentConfirmationServiceTest,
-    IsSecurePaymentConfirmationAvailableAPI_AuthenticatorIsNotUserVerifying) {
+    SecurePaymentConfirmationAvailabilityAPI_AuthenticatorIsNotUserVerifying) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {::features::kSecurePaymentConfirmation,
@@ -221,10 +226,11 @@ TEST_F(
               IsUserVerifyingPlatformAuthenticatorAvailable(_))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(false));
 
-  EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
-              Run(false));
-  spc_service_->IsSecurePaymentConfirmationAvailable(
-      mock_is_secure_payment_confirmation_available_callback_.Get());
+  EXPECT_CALL(mock_secure_payment_confirmation_availability_callback_,
+              Run(SecurePaymentConfirmationAvailabilityEnum::
+                      kUnavailableNoUserVerifyingPlatformAuthenticator));
+  spc_service_->SecurePaymentConfirmationAvailability(
+      mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
 #if BUILDFLAG(IS_ANDROID)

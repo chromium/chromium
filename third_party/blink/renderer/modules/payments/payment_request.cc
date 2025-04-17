@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_availability.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -818,38 +819,72 @@ void RecordActivationlessShow(ExecutionContext* execution_context,
   }
 }
 
-void OnIsSecurePaymentConfirmationAvailableResponse(
+V8SecurePaymentConfirmationAvailability::Enum
+ToV8SecurePaymentConfirmationAvailabilityEnum(
+    payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum value) {
+  switch (value) {
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kAvailable:
+      return V8SecurePaymentConfirmationAvailability::Enum::kAvailable;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableUnknownReason:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableUnknownReason;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableFeatureNotEnabled:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableFeatureNotEnabled;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableNoPermissionPolicy:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableNoPermissionPolicy;
+    case payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum::
+        kUnavailableNoUserVerifyingPlatformAuthenticator:
+      return V8SecurePaymentConfirmationAvailability::Enum::
+          kUnavailableNoUserVerifyingPlatformAuthenticator;
+  };
+}
+
+void OnSecurePaymentConfirmationAvailabilityResponse(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
-    bool is_available) {
-  auto* resolver = scoped_resolver->Release()->DowncastTo<IDLBoolean>();
-  resolver->Resolve(is_available);
+    payments::mojom::blink::SecurePaymentConfirmationAvailabilityEnum result) {
+  auto* resolver = scoped_resolver->Release()
+                       ->DowncastTo<V8SecurePaymentConfirmationAvailability>();
+  resolver->Resolve(V8SecurePaymentConfirmationAvailability(
+      ToV8SecurePaymentConfirmationAvailabilityEnum(result)));
 }
 }  // namespace
 
 // static
-ScriptPromise<IDLBoolean> PaymentRequest::isSecurePaymentConfirmationAvailable(
+ScriptPromise<V8SecurePaymentConfirmationAvailability>
+PaymentRequest::securePaymentConfirmationAvailability(
     ScriptState* script_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<V8SecurePaymentConfirmationAvailability>>(
+      script_state);
   auto promise = resolver->Promise();
 
   if (!RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
           ExecutionContext::From(script_state))) {
-    resolver->Resolve(false);
+    resolver->Resolve(V8SecurePaymentConfirmationAvailability(
+        V8SecurePaymentConfirmationAvailability::Enum::
+            kUnavailableFeatureNotEnabled));
     return promise;
   }
 
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kPayment)) {
-    resolver->Resolve(false);
+    resolver->Resolve(V8SecurePaymentConfirmationAvailability(
+        V8SecurePaymentConfirmationAvailability::Enum::
+            kUnavailableNoPermissionPolicy));
     return promise;
   }
 
   CredentialManagerProxy::From(script_state)
       ->SecurePaymentConfirmationService()
-      ->IsSecurePaymentConfirmationAvailable(
-          WTF::BindOnce(&OnIsSecurePaymentConfirmationAvailableResponse,
+      ->SecurePaymentConfirmationAvailability(
+          WTF::BindOnce(&OnSecurePaymentConfirmationAvailabilityResponse,
                         std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;

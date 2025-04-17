@@ -1235,13 +1235,6 @@ const char kImprovedSettingsUIOnDesktopDescription[] =
     "Enables redesign of signin settings and better signin errors in "
     "chrome://settings.";
 
-const char kIsSecurePaymentConfirmationAvailableAPIName[] =
-    "isSecurePaymentConfirmationAvailable API";
-const char kIsSecurePaymentConfirmationAvailableAPIDescription[] =
-    "Enables the PaymentRequest.isSecurePaymentConfirmationAvailable web API, "
-    "which allows for more ergonomic feature detection of Secure Payment "
-    "Confirmation";
-
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =
@@ -3627,6 +3620,13 @@ const char kDynamicSearchUpdateAnimationDescription[] =
     "Dynamically adjust the search result update animation when those update "
     "animations are preempted. Shortened animation durations configurable "
     "(unit: milliseconds).";
+
+const char kSecurePaymentConfirmationAvailabilityAPIName[] =
+    "securePaymentConfirmationAvailability API";
+const char kSecurePaymentConfirmationAvailabilityAPIDescription[] =
+    "Enables the PaymentRequest.securePaymentConfirmationAvailability web API, "
+    "which allows for more ergonomic feature detection of Secure Payment "
+    "Confirmation";
 
 const char kSecurePaymentConfirmationBrowserBoundKeysName[] =
     "Secure Payment Confirmation Browser Bound Key";

@@ -2602,10 +2602,6 @@
       status: "stable",
     },
     {
-      name: "IsSecurePaymentConfirmationAvailableAPI",
-      status: "experimental",
-    },
-    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
       base_feature: "none",
@@ -4001,6 +3997,10 @@
       public: true,
       status: "test",
       base_feature: "none",
+    },
+    {
+      name: "SecurePaymentConfirmationAvailabilityAPI",
+      status: "experimental",
     },
     {
       name: "SecurePaymentConfirmationBrowserBoundKeys",

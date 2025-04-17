@@ -13399,6 +13399,8 @@ from previous Chrome versions.
       label="UpdatedSupervisedUserExtensionApprovalStrings:disabled"/>
   <int value="-340135595"
       label="AutofillEnableAmountExtractionAllowlistDesktop:disabled"/>
+  <int value="-339739745"
+      label="SecurePaymentConfirmationAvailabilityAPI:disabled"/>
   <int value="-339201954" label="WebAppEnableScopeExtensions:disabled"/>
   <int value="-339103761" label="ArcGraphicBuffersVisualizationTool:enabled"/>
   <int value="-339092189" label="CommercePriceTrackingChipExperiment:disabled"/>
@@ -19666,6 +19668,8 @@ from previous Chrome versions.
   <int value="2042556902" label="HistoryOptInEntryPoints:disabled"/>
   <int value="2042966110" label="EnablePolicyPromotionBanner:enabled"/>
   <int value="2043141918" label="DnsOverHttps:enabled"/>
+  <int value="2043184476"
+      label="SecurePaymentConfirmationAvailabilityAPI:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
   <int value="2043970520" label="AppToAppLinkCapturingWorkspaceApps:disabled"/>

@@ -354,9 +354,6 @@ extern const char kImprovedSigninUIOnDesktopDescription[];
 extern const char kImprovedSettingsUIOnDesktopName[];
 extern const char kImprovedSettingsUIOnDesktopDescription[];
 
-extern const char kIsSecurePaymentConfirmationAvailableAPIName[];
-extern const char kIsSecurePaymentConfirmationAvailableAPIDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];
@@ -2076,6 +2073,9 @@ extern const char kSplitTabStripDescription[];
 
 extern const char kDynamicSearchUpdateAnimationName[];
 extern const char kDynamicSearchUpdateAnimationDescription[];
+
+extern const char kSecurePaymentConfirmationAvailabilityAPIName[];
+extern const char kSecurePaymentConfirmationAvailabilityAPIDescription[];
 
 extern const char kSecurePaymentConfirmationBrowserBoundKeysName[];
 extern const char kSecurePaymentConfirmationBrowserBoundKeysDescription[];
