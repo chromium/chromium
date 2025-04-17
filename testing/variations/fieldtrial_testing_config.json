@@ -26041,21 +26041,6 @@
             ]
         }
     ],
-    "VulkanV3": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "VulkanV3",
-                    "enable_features": [
-                        "VulkanV3"
-                    ]
-                }
-            ]
-        }
-    ],
     "VulkanVMALargeHeapBlockSize": [
         {
             "platforms": [

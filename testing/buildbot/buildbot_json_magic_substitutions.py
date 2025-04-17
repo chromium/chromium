@@ -44,7 +44,6 @@ DEVICE_SUBSTITUTIONS = {
 ANDROID_VULKAN_DEVICES = {
     # Pixel 6 phones map to multiple GPU models.
     'oriole': GpuDevice('13b5', '92020010,92020000'),
-    'a23xq': GpuDevice('5143', '6010901'),
 }
 
 def ChromeOSTelemetryRemote(test_config, _, tester_config):
