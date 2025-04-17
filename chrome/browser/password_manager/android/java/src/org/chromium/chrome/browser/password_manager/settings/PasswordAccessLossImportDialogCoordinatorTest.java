@@ -32,11 +32,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.components.sync.SyncService;
@@ -74,8 +72,6 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testImportDialogStrings() {
         mCoordinator.showImportInstructionDialog();
 
@@ -102,8 +98,6 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testImportDialogOpensCredentialManagerAndShutsDownChrome() {
         var histogram =
                 HistogramWatcher.newBuilder()
@@ -132,8 +126,6 @@ public class PasswordAccessLossImportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testCancelImportDialog() {
         var histogram =
                 HistogramWatcher.newBuilder()

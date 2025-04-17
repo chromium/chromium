@@ -106,8 +106,6 @@ import java.util.Set;
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 public class PasswordManagerHelperTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private static final String TEST_NO_EMAIL_ADDRESS = null;
@@ -1174,8 +1172,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
     public void testPasswordAccessLossDialogNoUpm() {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
@@ -1204,8 +1200,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
     public void testPasswordAccessLossDialogNotDisplayed() {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))

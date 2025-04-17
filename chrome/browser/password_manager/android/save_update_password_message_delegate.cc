@@ -10,13 +10,11 @@
 
 #include "base/android/build_info.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -27,13 +25,11 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
@@ -55,20 +51,16 @@ constexpr base::TimeDelta kUpdateGMSCoreMessageDisplayDelay =
 
 void TryToShowAccessLossWarning(content::WebContents* web_contents,
                                 PasswordAccessLossWarningBridge* bridge) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    PrefService* prefs = profile->GetPrefs();
-    if (profile && bridge->ShouldShowAccessLossNoticeSheet(
-                       prefs, /*called_at_startup=*/false)) {
-      bridge->MaybeShowAccessLossNoticeSheet(
-          prefs, web_contents->GetTopLevelNativeWindow(), profile,
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kPasswordSaveUpdateMessage);
-    }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+  if (profile && bridge->ShouldShowAccessLossNoticeSheet(
+                     prefs, /*called_at_startup=*/false)) {
+    bridge->MaybeShowAccessLossNoticeSheet(
+        prefs, web_contents->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kPasswordSaveUpdateMessage);
   }
 }
 

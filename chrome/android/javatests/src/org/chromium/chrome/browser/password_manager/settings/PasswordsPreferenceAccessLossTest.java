@@ -26,7 +26,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -111,8 +110,6 @@ public class PasswordsPreferenceAccessLossTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     @Feature({"RenderTest"})
     public void testAccessLossWarningPasswordsPreference() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))

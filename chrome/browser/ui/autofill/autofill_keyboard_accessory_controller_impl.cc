@@ -33,10 +33,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -282,23 +279,20 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     // after accepting passwords.
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    if (!access_loss_warning_bridge_) {
-      access_loss_warning_bridge_ =
-          std::make_unique<PasswordAccessLossWarningBridgeImpl>();
-    }
-    if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                       profile->GetPrefs(), /*called_at_startup=*/false)) {
-      access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-          profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(),
-          profile, /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kKeyboardAcessoryBar);
-    }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (!access_loss_warning_bridge_) {
+    access_loss_warning_bridge_ =
+        std::make_unique<PasswordAccessLossWarningBridgeImpl>();
+  }
+  if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+                     profile->GetPrefs(), /*called_at_startup=*/false)) {
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+        profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kKeyboardAcessoryBar);
   }
 }
 

@@ -1995,7 +1995,7 @@ TEST_F(PasswordAccessoryControllerTest,
 }
 
 TEST_F(PasswordAccessoryControllerTest,
-       ShowAccessLossWarningSheetOnFillingCredentialIfEnabled) {
+       ShowAccessLossWarningSheetOnFillingCredential) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*mock_authenticator, AuthenticateWithMessage)
@@ -2007,11 +2007,8 @@ TEST_F(PasswordAccessoryControllerTest,
   }
 
   features_.Reset();
-  features_.InitWithFeatures(
-      {plus_addresses::features::kPlusAddressesEnabled,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning},
-      {});
+  features_.InitWithFeatures({plus_addresses::features::kPlusAddressesEnabled},
+                             {});
   CreateSheetController();
 
   // Set up credentials for filling.
@@ -2041,51 +2038,6 @@ TEST_F(PasswordAccessoryControllerTest,
           /*called_at_startup=*/false,
           password_manager_android_util::PasswordAccessLossWarningTriggers::
               kKeyboardAcessorySheet));
-  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
-}
-
-TEST_F(PasswordAccessoryControllerTest,
-       DontShowAccessLossWarningSheetlIfDisabled) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
-    ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(
-            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
-    EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-        .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
-        .RetiresOnSaturation();
-  }
-
-  features_.Reset();
-  features_.InitWithFeatures(
-      {plus_addresses::features::kPlusAddressesEnabled},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning});
-  // Set up credentials for filling.
-  CreateSheetController();
-  std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, CredentialCache::IsOriginBlocklisted(false),
-      url::Origin::Create(GURL(kExampleSite)));
-
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  AccessorySheetField selected_field =
-      AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
-          .SetDisplayText(u"S3cur3")
-          .SetIsObfuscated(true)
-          .SetSelectable(true)
-          .Build();
-  EXPECT_CALL(*mock_access_loss_warning_bridge_,
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge_, MaybeShowAccessLossNoticeSheet)
-      .Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 

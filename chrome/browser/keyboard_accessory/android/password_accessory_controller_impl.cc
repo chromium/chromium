@@ -13,7 +13,6 @@
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -52,14 +51,11 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/credential_cache.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -879,19 +875,16 @@ void PasswordAccessoryControllerImpl::FillSelection(
           plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack);
     }
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    Profile* profile =
-        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-    if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                       profile->GetPrefs(), /*called_at_startup=*/false)) {
-      access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-          profile->GetPrefs(), GetWebContents().GetTopLevelNativeWindow(),
-          profile, /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kKeyboardAcessorySheet);
-    }
+
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+                     profile->GetPrefs(), /*called_at_startup=*/false)) {
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+        profile->GetPrefs(), GetWebContents().GetTopLevelNativeWindow(),
+        profile, /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kKeyboardAcessorySheet);
   }
 }
 

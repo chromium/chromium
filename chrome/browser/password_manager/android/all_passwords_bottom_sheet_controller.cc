@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -17,14 +16,11 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"
@@ -227,11 +223,6 @@ void AllPasswordsBottomSheetController::OnResultFromAllStoresReceived(
 }
 
 void AllPasswordsBottomSheetController::TryToShowAccessLossWarningSheet() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    return;
-  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(

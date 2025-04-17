@@ -5081,15 +5081,6 @@ const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
 const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =
     "Allows querying recommended AHardwareBuffer usage flags from Vulkan API";
 
-const char kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[] =
-    "Access loss warning for unmigrated password manager users";
-const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningDescription[] =
-        "Chrome password manager users who are not enrolled into the new "
-        "experience of storing local passwords in GMSCore will be warned via "
-        "various communication channels about data/feature access loss unless "
-        "they upgrade GMSCore.";
-
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "

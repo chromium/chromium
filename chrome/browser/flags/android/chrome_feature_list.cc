@@ -382,8 +382,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kLoginDbDeprecationAndroid,
     &password_manager::features::kPasswordFormGroupedAffiliations,
     &password_manager::features::
-        kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
-    &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,

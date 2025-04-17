@@ -2990,11 +2990,6 @@ extern const char kTabSwitcherColorBlendAnimateDescription[];
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];
 
-extern const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[];
-extern const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningDescription[];
-
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 

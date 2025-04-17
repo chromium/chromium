@@ -137,24 +137,6 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables showing various warnings for password manager users not yet enrolled
-// into the new experience of storing passwords in GMSCore.
-BASE_DECLARE_FEATURE(
-    kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
-
-// Whether to ignore the timeouts in between password access loss warning
-// prompts. Used for manual testing.
-// This param will be removed when the feature fully launches.
-inline constexpr base::FeatureParam<bool> kIgnoreAccessLossWarningTimeout = {
-    &kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
-    "ignore_access_loss_warning_timeout", false};
-
-// If set to true, this will simulate a failed migration to UPM (only if the
-// client hasn't migrated yet).
-inline constexpr base::FeatureParam<bool> kSimulateFailedMigration = {
-    &kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
-    "simulate_failed_migration", false};
-
 // The feature flag for the Identity Check feature. The feature makes biometric
 // authentication mandatory before password filling in untrusted locations.
 BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);

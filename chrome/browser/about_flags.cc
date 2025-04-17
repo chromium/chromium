@@ -10881,18 +10881,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRubyShortHeuristicsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kRubyShortHeuristics)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"pwm-access-loss-warning",
-     flag_descriptions::
-         kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName,
-     flag_descriptions::
-         kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"prompt-api-for-gemini-nano",
      flag_descriptions::kPromptAPIForGeminiNanoName,
      flag_descriptions::kPromptAPIForGeminiNanoDescription, kOsAll,

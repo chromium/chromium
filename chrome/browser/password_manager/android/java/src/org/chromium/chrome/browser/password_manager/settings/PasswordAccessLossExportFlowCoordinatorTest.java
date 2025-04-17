@@ -28,7 +28,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
@@ -100,8 +99,6 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testShowsExportDialog() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         initializeExportFlowCoordinator();
@@ -111,8 +108,6 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testShowsImportDialogWhenDeletionFinishedForNewGmsCore() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         initializeExportFlowCoordinator();
@@ -124,8 +119,6 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testRecordsFinalStepMetricWhenDeletionFinishedForNoGmsCore() {
         var histogram =
                 HistogramWatcher.newBuilder()
@@ -144,8 +137,6 @@ public class PasswordAccessLossExportFlowCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testDoesNotShowImportDialogForNoGmsCoreWarningTypeAndRestartsChrome() {
         setUpAccessLossWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
         initializeExportFlowCoordinator();

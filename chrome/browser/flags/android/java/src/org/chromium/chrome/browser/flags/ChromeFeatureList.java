@@ -588,9 +588,6 @@ public abstract class ChromeFeatureList {
             "TrackingProtectionUserBypassPwaTrigger";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
     public static final String TRANSLATE_TFLITE = "TFLiteLanguageDetectionEnabled";
-    public static final String
-            UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING =
-                    "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning";
     public static final String UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING =
             "UnifiedPasswordManagerLocalPasswordsMigrationWarning";
     public static final String UNO_PHASE_2_FOLLOW_UP = "UnoPhase2FollowUp";

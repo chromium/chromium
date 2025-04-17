@@ -517,32 +517,25 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     return true;
                 });
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList
-                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
-            // This is temporary code needed for migrating people to UPM. With UPM there is no
-            // longer passwords setting page in Chrome, so we need to ask users to export their
-            // passwords here, in main settings.
-            boolean startPasswordsExportFlow =
-                    getArguments() != null
-                            && getArguments()
-                                    .containsKey(PasswordExportLauncher.START_PASSWORDS_EXPORT)
-                            && getArguments()
-                                    .getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
-            if (startPasswordsExportFlow) {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
-                    assert mSettingsCustomTabLauncher != null
-                            : "The CSV download flow dialog requires a non-null"
-                                    + " SettingsCustomTabLauncher.";
-                    PasswordManagerHelper.getForProfile(getProfile())
-                            .launchDownloadPasswordsCsvFlow(
-                                    getContext(), mSettingsCustomTabLauncher);
-                } else {
-                    PasswordAccessLossDialogHelper.launchExportFlow(
-                            getContext(), getProfile(), mModalDialogManagerSupplier);
-                }
-                getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
+        // This is temporary code needed for migrating people to UPM. With UPM there is no
+        // longer passwords setting page in Chrome, so we need to ask users to export their
+        // passwords here, in main settings.
+        boolean startPasswordsExportFlow =
+                getArguments() != null
+                        && getArguments().containsKey(PasswordExportLauncher.START_PASSWORDS_EXPORT)
+                        && getArguments().getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
+        if (startPasswordsExportFlow) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+                assert mSettingsCustomTabLauncher != null
+                        : "The CSV download flow dialog requires a non-null"
+                                + " SettingsCustomTabLauncher.";
+                PasswordManagerHelper.getForProfile(getProfile())
+                        .launchDownloadPasswordsCsvFlow(getContext(), mSettingsCustomTabLauncher);
+            } else {
+                PasswordAccessLossDialogHelper.launchExportFlow(
+                        getContext(), getProfile(), mModalDialogManagerSupplier);
             }
+            getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
         }
     }
 
