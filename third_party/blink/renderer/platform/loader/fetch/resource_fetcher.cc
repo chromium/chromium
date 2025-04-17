@@ -361,9 +361,12 @@ int CompareResourcePriorities(const ResourcePriority& a,
   if (a.visibility != b.visibility) {
     return a.visibility == ResourcePriority::kVisible ? 1 : -1;
   }
-  if (a.is_lcp_resource != b.is_lcp_resource) {
-    return a.is_lcp_resource ? 1 : -1;
-  }
+  // TODO(https://crbug.com/378623805): We may be able to use `is_lcp_resource`
+  // as a signal here, but there is an active experiment modifying how this
+  // works, so we are not checking it here to avoid experiment crosstalk.
+  // if (a.is_lcp_resource != b.is_lcp_resource) {
+  //   return a.is_lcp_resource ? 1 : -1;
+  // }
   return a.intra_priority_value - b.intra_priority_value;
 }
 
