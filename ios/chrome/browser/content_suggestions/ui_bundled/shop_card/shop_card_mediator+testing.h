@@ -38,6 +38,8 @@ class ImageDataFetcher;
 
 - (BOOL)hasBeenOpenedForTesting:(const GURL&)url;
 
+- (void)onUrlUntrackedForTesting:(GURL)url;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_MEDIATOR_TESTING_H_

@@ -17,5 +17,7 @@ ImpressionLimitServiceObserverBridge::~ImpressionLimitServiceObserverBridge() =
     default;
 
 void ImpressionLimitServiceObserverBridge::OnUntracked(const GURL& url) {
-  [delegate_ onUrlUntracked:url];
+  if (delegate_) {
+    [delegate_ onUrlUntracked:url];
+  }
 }
