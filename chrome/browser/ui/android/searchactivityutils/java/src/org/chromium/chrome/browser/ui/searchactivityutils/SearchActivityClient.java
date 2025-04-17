@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.ui.searchactivityutils;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -22,6 +21,7 @@ import org.chromium.url.GURL;
  * to expose certain functionality while we try to migrate the entire class into an accessible
  * location. Explore the feasibility of relocating the logic directly here.
  */
+@NullMarked
 public interface SearchActivityClient {
     /** Interface for building intents to request Omnibox-powered Search Activity. */
     public interface IntentBuilder {
@@ -96,7 +96,7 @@ public interface SearchActivityClient {
      * @param intent the intent data received in {@link Activity#onActivityResult}
      * @return true if the response captures legitimate Omnibox result.
      */
-    public boolean isOmniboxResult(int requestCode, @NonNull Intent intent);
+    public boolean isOmniboxResult(int requestCode, Intent intent);
 
     /**
      * Process the {@link Activity#onActivityResult} payload for Omnibox navigation result.
@@ -106,6 +106,5 @@ public interface SearchActivityClient {
      * @param intent the intent data received in {@link Activity#onActivityResult}
      * @return null, if result is not a valid Omnibox result, otherwise valid LoadUrlParams object
      */
-    public @Nullable LoadUrlParams getOmniboxResult(
-            int requestCode, int resultCode, @NonNull Intent intent);
+    public @Nullable LoadUrlParams getOmniboxResult(int requestCode, int resultCode, Intent intent);
 }

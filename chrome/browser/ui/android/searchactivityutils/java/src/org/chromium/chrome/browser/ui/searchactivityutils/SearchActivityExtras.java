@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.ui.searchactivityutils;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Definitions of SearchActivity extras and values. */
+@NullMarked
 public @interface SearchActivityExtras {
     /** The {@link IntentOrigin} specifies the origin of an Intent. */
     String EXTRA_ORIGIN = "org.chromium.chrome.browser.ui.searchactivityutils.origin";
