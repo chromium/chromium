@@ -53,8 +53,10 @@ void LargestTextPaintManager::PopulateTraceValue(
 
 void LargestTextPaintManager::ReportCandidateToTrace(
     const TextRecord& largest_text_record) {
-  if (!PaintTimingDetector::IsTracing())
+  if (!PaintTimingDetector::IsTracing() ||
+      frame_view_->GetFrame().IsDetached()) {
     return;
+  }
   auto value = std::make_unique<TracedValue>();
   PopulateTraceValue(*value, largest_text_record);
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
