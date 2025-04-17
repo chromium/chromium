@@ -3,4 +3,5 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/optimization_guide/mojom",
   "+mojo/public/cpp/base/proto_wrapper.h",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
 ]

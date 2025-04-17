@@ -105,6 +105,7 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
     (ai::mojom::EnhancedCalendarResponseResultPtr)responseResult {
   // Present the "add to calendar" UI with default values if the response is an
   // error.
+  // TODO (crbug.com/410809676) : Handle dismissing the UI.
   if (responseResult->is_error()) {
     [_delegate presentAddToCalendar:self config:_enhancedCalendarConfig];
     return;
