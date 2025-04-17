@@ -49,7 +49,7 @@ public class FindAddress {
     private static final int MAX_ADDRESS_LINES = 5;
 
     // No words in an address are longer than this many characters.
-    private static final int kMaxAddressNameWordLength = 25;
+    private static final int MAX_ADDRESS_NAME_WORD_LENGTH = 25;
 
     // Location name should be in the first MAX_LOCATION_NAME_DISTANCE words
     private static final int MAX_LOCATION_NAME_DISTANCE = 5;
@@ -444,7 +444,7 @@ public class FindAddress {
                 // No more words in the input sequence.
                 return -content.length();
             }
-            if (matcher.end() - matcher.start() > kMaxAddressNameWordLength) {
+            if (matcher.end() - matcher.start() > MAX_ADDRESS_NAME_WORD_LENGTH) {
                 // Word is too long to be part of an address. Fail.
                 return -matcher.end();
             }
