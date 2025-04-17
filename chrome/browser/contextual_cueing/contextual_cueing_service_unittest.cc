@@ -17,7 +17,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -66,7 +67,8 @@ class ContextualCueingServiceTest : public testing::Test {
         &page_content_extraction_service_,
         mock_optimization_guide_keyed_service_.get(),
         /*loading_predictor=*/nullptr,
-        /*pref_service=*/nullptr);
+        /*pref_service=*/nullptr,
+        /*template_url_service=*/nullptr);
   }
 
   ContextualCueingService* service() { return service_.get(); }
@@ -353,7 +355,13 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
             kOptimizationGuideServiceModelExecutionURL,
         "https://mes.com/");
 
-    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
+    // Set up web contents with URLs of https page type.
+    web_contents_ = std::unique_ptr<content::WebContents>(
+        content::WebContentsTester::CreateTestWebContents(
+            content::WebContents::CreateParams(&profile_)));
+    content::WebContentsTester::For(web_contents())
+        ->SetLastCommittedURL(GURL("https://foo.com/"));
+
     mock_optimization_guide_keyed_service_ = static_cast<
         MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetInstance()
@@ -382,8 +390,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
   void InitializeContextualCueingService() {
     service_ = std::make_unique<ContextualCueingService>(
         /*page_content_extraction_service=*/nullptr,
-        mock_optimization_guide_keyed_service(), loading_predictor_.get(),
-        pref_service_.get());
+        mock_optimization_guide_keyed_service_, loading_predictor_.get(),
+        pref_service_.get(), /*template_url_service=*/nullptr);
   }
 
   ContextualCueingService* service() { return service_.get(); }
@@ -394,17 +402,16 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     return mock_optimization_guide_keyed_service_;
   }
 
-  content::WebContents* CreateWebContents() {
-    return web_contents_factory_->CreateWebContents(&profile_);
-  }
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler enabler;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
-  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<testing::NiceMock<MockLoadingPredictor>> loading_predictor_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<ContextualCueingService> service_;
@@ -414,21 +421,19 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        PreconnectsWithContextEnabled) {
   EXPECT_CALL(*loading_predictor(),
               PreconnectURLIfAllowed(GURL("https://mes.com/"), _, _, _, _));
+
   SetGlicTabContextEnabled(true);
   InitializeContextualCueingService();
-
-  service()->PrepareToFetchContextualGlicZeroStateSuggestions(
-      CreateWebContents());
+  service()->PrepareToFetchContextualGlicZeroStateSuggestions(web_contents());
 }
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        NoPreconnectWhenContextDisabled) {
   EXPECT_CALL(*loading_predictor(), PreconnectURLIfAllowed).Times(0);
+
   SetGlicTabContextEnabled(false);
   InitializeContextualCueingService();
-
-  service()->PrepareToFetchContextualGlicZeroStateSuggestions(
-      CreateWebContents());
+  service()->PrepareToFetchContextualGlicZeroStateSuggestions(web_contents());
 }
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
@@ -442,9 +447,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  content::WebContents* web_contents = CreateWebContents();
   service()->GetContextualGlicZeroStateSuggestions(
-      web_contents, /*is_fre=*/false, future.GetCallback());
+      web_contents(), /*is_fre=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
 
@@ -460,9 +464,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  content::WebContents* web_contents = CreateWebContents();
   service()->GetContextualGlicZeroStateSuggestions(
-      web_contents, /*is_fre=*/false, future.GetCallback());
+      web_contents(), /*is_fre=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
 

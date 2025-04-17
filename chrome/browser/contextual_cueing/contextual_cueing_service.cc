@@ -18,6 +18,8 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -75,13 +77,15 @@ ContextualCueingService::ContextualCueingService(
         page_content_extraction_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     predictors::LoadingPredictor* loading_predictor,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    TemplateURLService* template_url_service)
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
       page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
       loading_predictor_(loading_predictor),
       pref_service_(pref_service),
+      template_url_service_(template_url_service),
       mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
   CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
         base::FeatureList::IsEnabled(
@@ -173,6 +177,22 @@ bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
   return backoff_end_time_ && (base::Time::Now() < backoff_end_time_);
 }
 
+bool ContextualCueingService::IsPageTypeEligibleForContextualSuggestions(
+    GURL url) const {
+  // Non-HTTP/HTTPS pages are not eligible.
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Search results pages are not eligible.
+  if (template_url_service_ &&
+      template_url_service_->ExtractSearchMetadata(url)) {
+    return false;
+  }
+
+  return true;
+}
+
 void ContextualCueingService::OnNudgeActivity(
     content::WebContents* web_contents,
     base::TimeTicks document_available_time,
@@ -231,6 +251,11 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
+  if (!IsPageTypeEligibleForContextualSuggestions(
+          web_contents->GetLastCommittedURL())) {
+    return;
+  }
+
   if (!IsGlicTabContextEnabled(pref_service_)) {
     return;
   }
@@ -255,6 +280,11 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  if (!IsPageTypeEligibleForContextualSuggestions(
+          web_contents->GetLastCommittedURL())) {
     std::move(callback).Run(std::nullopt);
     return;
   }

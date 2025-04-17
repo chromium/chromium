@@ -286,6 +286,7 @@ class MockContextualCueingService
       : contextual_cueing::ContextualCueingService(nullptr,
                                                    nullptr,
                                                    nullptr,
+                                                   nullptr,
                                                    nullptr) {}
 
   MOCK_METHOD(
