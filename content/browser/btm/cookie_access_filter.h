@@ -38,11 +38,11 @@ class CONTENT_EXPORT CookieAccessFilter {
   // Returns true iff AddAccess() has never been called.
   bool is_empty() const { return accesses_.empty(); }
 
-  // Returns a string containing the URLs of added cookie accesses.
+  // Returns a vector containing the URLs of added cookie accesses.
   //
   // TODO - crbug.com/406841434: Remove once we identify the source of
   // mismatched cookie accesses.
-  std::string ToDebugString() const;
+  std::vector<GURL> GetUrlsForDebuging() const;
 
  private:
   struct CookieAccess {

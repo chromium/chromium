@@ -4,7 +4,10 @@
 
 #include "content/browser/btm/btm_page_visit_observer.h"
 
+#include <vector>
+
 #include "base/check.h"
+#include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "content/browser/btm/btm_bounce_detector.h"
 #include "content/browser/btm/btm_utils.h"
@@ -97,16 +100,51 @@ class NavigationState
     // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`.
     bool were_all_accesses_matched = filter_.Filter(urls, accesses);
     if (!were_all_accesses_matched) {
-      std::string redirects_debug_string;
-      for (const GURL& url : urls) {
-        redirects_debug_string += url.spec();
-        redirects_debug_string += ", ";
-      }
-      DEBUG_ALIAS_FOR_CSTR(redirects_debug_alias,
-                           redirects_debug_string.c_str(), 256);
-      DEBUG_ALIAS_FOR_CSTR(accesses_debug_alias,
-                           filter_.ToDebugString().c_str(), 256);
+      DEBUG_ALIAS_FOR_GURL(
+          committed_url_alias,
+          navigation_handle.GetRenderFrameHost()->GetLastCommittedURL());
+      DEBUG_ALIAS_FOR_GURL(navigation_handle_url_alias,
+                           navigation_handle.GetURL());
 
+      GURL::Replacements repl;
+      repl.ClearQuery();
+      repl.ClearRef();
+
+      auto get_debug_strings = [&repl](const std::vector<GURL>& urls) {
+        std::pair<std::string, std::string> debug_strings;
+        std::string& debug_string = debug_strings.first;
+        std::string& simple_debug_string = debug_strings.second;
+        for (const GURL& url : urls) {
+          debug_string += url.spec();
+          debug_string += ", ";
+          simple_debug_string += url.ReplaceComponents(repl).spec();
+          simple_debug_string += ", ";
+        }
+        return debug_strings;
+      };
+
+      // Redirect Chain aliases
+      auto [redirect_chain_debug_string, redirect_chain_simple_debug_string] =
+          get_debug_strings(redirect_chain);
+      DEBUG_ALIAS_FOR_CSTR(redirect_chain_alias,
+                           redirect_chain_debug_string.c_str(), 512);
+      DEBUG_ALIAS_FOR_CSTR(redirect_chain_simple_alias,
+                           redirect_chain_simple_debug_string.c_str(), 512);
+
+      // Server Redirects aliases
+      auto [server_redirects_debug_string,
+            server_redirects_simple_debug_string] = get_debug_strings(urls);
+      DEBUG_ALIAS_FOR_CSTR(server_redirects_alias,
+                           server_redirects_debug_string.c_str(), 512);
+      DEBUG_ALIAS_FOR_CSTR(server_redirects_simple_alias,
+                           server_redirects_simple_debug_string.c_str(), 512);
+
+      // Cookie Accesses aliases
+      auto [accesses_debug_string, accesses_simple_debug_string] =
+          get_debug_strings(filter_.GetUrlsForDebuging());
+      DEBUG_ALIAS_FOR_CSTR(accesses_alias, accesses_debug_string.c_str(), 512);
+      DEBUG_ALIAS_FOR_CSTR(accesses_simple_alias,
+                           accesses_simple_debug_string.c_str(), 512);
       base::debug::DumpWithoutCrashing();
     }
 

@@ -90,12 +90,13 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
   return false;
 }
 
-std::string CookieAccessFilter::ToDebugString() const {
-  std::string debug_str;
+std::vector<GURL> CookieAccessFilter::GetUrlsForDebuging() const {
+  std::vector<GURL> urls;
   for (const CookieAccess& access : accesses_) {
-    debug_str += access.url.spec();
-    debug_str += ", ";
+    urls.push_back(access.url);
   }
-  return debug_str;
+
+  return urls;
 }
+
 }  // namespace content
