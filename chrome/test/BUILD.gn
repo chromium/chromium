@@ -355,6 +355,8 @@ static_library("test_support") {
     sources += [
       "../browser/extensions/extension_with_management_policy_apitest.cc",
       "../browser/extensions/extension_with_management_policy_apitest.h",
+      "../browser/extensions/mixin_based_extension_apitest.cc",
+      "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/permissions/permissions_test_util.cc",
       "../browser/extensions/permissions/permissions_test_util.h",
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
@@ -383,8 +385,6 @@ static_library("test_support") {
       "../browser/extensions/extension_service_test_with_install.h",
       "../browser/extensions/extension_service_user_test_base.cc",
       "../browser/extensions/extension_service_user_test_base.h",
-      "../browser/extensions/mixin_based_extension_apitest.cc",
-      "../browser/extensions/mixin_based_extension_apitest.h",
       "../browser/extensions/test_extension_action_dispatcher_observer.cc",
       "../browser/extensions/test_extension_action_dispatcher_observer.h",
       "../browser/extensions/test_extension_environment.cc",
@@ -1479,7 +1479,10 @@ source_set("platform_browser_tests") {
   }
 
   if (enable_extensions) {
-    deps += [ "//chrome/browser/extensions" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/test/supervised_user:test_support",
+    ]
   }
 
   if (enable_extensions_core) {
@@ -1503,6 +1506,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/test/apitest_apitest.cc",
       "../browser/extensions/api/web_accessible_resources_apitest.cc",
       "../browser/extensions/api/web_request/web_request_apitest.cc",
+      "../browser/extensions/api/webstore_private/webstore_private_apitest.cc",
       "../browser/extensions/background_script_executor_browsertest.cc",
       "../browser/extensions/content_security_policy_apitest.cc",
       "../browser/extensions/cross_origin_isolation_browsertest.cc",
@@ -4337,7 +4341,6 @@ if (!is_android) {
         "../browser/extensions/api/webrtc_from_web_accessible_resource_browsertest.cc",
         "../browser/extensions/api/webrtc_logging_private/webrtc_logging_private_apitest.cc",
         "../browser/extensions/api/webrtc_logging_private/webrtc_logging_private_browsertest.cc",
-        "../browser/extensions/api/webstore_private/webstore_private_apitest.cc",
         "../browser/extensions/api_binding_perf_browsertest.cc",
         "../browser/extensions/app_background_page_apitest.cc",
         "../browser/extensions/app_process_apitest.cc",

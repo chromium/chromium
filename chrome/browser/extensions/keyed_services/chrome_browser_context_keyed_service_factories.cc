@@ -4,8 +4,10 @@
 
 #include "chrome/browser/extensions/keyed_services/chrome_browser_context_keyed_service_factories.h"
 
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
+#include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/component_loader_factory.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
@@ -27,7 +29,6 @@
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
-#include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
@@ -53,7 +54,11 @@
 namespace chrome_extensions {
 
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
+  TRACE_EVENT("browser",
+              "chrome_extensions::"
+              "EnsureChromeBrowserContextKeyedServiceFactoriesBuilt");
   extensions::BlocklistFactory::GetInstance();
+  extensions::ChromeExtensionCookiesFactory::GetInstance();
   extensions::ComponentLoaderFactory::GetInstance();
   extensions::CorruptedExtensionReinstallerFactory::GetInstance();
   extensions::CWSInfoServiceFactory::GetInstance();
@@ -76,7 +81,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::AccountExtensionTracker::GetFactory();
   extensions::ActivityLog::GetFactoryInstance();
   extensions::ChromeAppIconServiceFactory::GetInstance();
-  extensions::ChromeExtensionCookiesFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::ComponentExtensionContentSettingsAllowlistFactory::GetInstance();
 #endif  // BUILDFLAG(IS_CHROMEOS)

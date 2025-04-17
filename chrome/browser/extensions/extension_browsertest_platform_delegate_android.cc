@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 
 namespace extensions {
 
@@ -27,7 +28,17 @@ void ExtensionBrowserTestPlatformDelegate::OpenURL(const GURL& url,
   if (open_in_incognito) {
     parent_->PlatformOpenURLOffTheRecord(parent_->profile(), url);
   } else {
-    ASSERT_TRUE(content::NavigateToURL(parent_->GetActiveWebContents(), url));
+    content::WebContents* web_contents = parent_->GetActiveWebContents();
+    content::TestNavigationObserver observer(web_contents);
+    // The return value is ignored because some tests load URLs that cause
+    // redirects, which make NavigateToURL return false. It returns true only if
+    // the load succeeds and the final URL matches the passed `url`. Instead we
+    // rely on the TestNavigationObserver above to ensure the navigation
+    // successfully committed.
+    (void)content::NavigateToURL(web_contents, url);
+    // Ensure the navigation happened.
+    observer.Wait();
+    ASSERT_TRUE(observer.last_navigation_succeeded());
   }
 }
 
