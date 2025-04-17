@@ -227,13 +227,11 @@ float AudioParamHandler::FinalValue() {
 }
 
 void AudioParamHandler::CalculateSampleAccurateValues(
-    float* values,
-    unsigned number_of_values) {
+    base::span<float> values) {
   DCHECK(GetDeferredTaskHandler().IsAudioThread());
-  DCHECK(values);
-  DCHECK_GT(number_of_values, 0u);
+  DCHECK(!values.empty());
 
-  CalculateFinalValues(values, number_of_values, IsAudioRate());
+  CalculateFinalValues(values.data(), values.size(), IsAudioRate());
 }
 
 void AudioParamHandler::CalculateFinalValues(float* values,

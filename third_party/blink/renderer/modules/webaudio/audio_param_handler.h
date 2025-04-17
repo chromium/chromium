@@ -161,7 +161,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // Calculates numberOfValues parameter values starting at the context's
   // current time.
   // Must be called in the context's render thread.
-  void CalculateSampleAccurateValues(float* values, unsigned number_of_values);
+  void CalculateSampleAccurateValues(base::span<float> values);
 
   float IntrinsicValue() const {
     return intrinsic_value_.load(std::memory_order_relaxed);

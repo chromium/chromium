@@ -66,7 +66,7 @@ class PLATFORM_EXPORT Delay final {
   }
 
   // Fill the return value of this before calling `ProcessARate()`
-  float* DelayTimes() { return delay_times_.Data(); }
+  base::span<float> DelayTimes() { return delay_times_.as_span(); }
 
  protected:
   // Main processing loop for ProcessARate using scalar operations.  Returns the

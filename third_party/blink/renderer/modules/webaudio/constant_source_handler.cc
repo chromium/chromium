@@ -79,7 +79,8 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
   if (is_sample_accurate && offset_->IsAudioRate()) {
     DCHECK_LE(frames_to_process, sample_accurate_values_.size());
     float* offsets = sample_accurate_values_.Data();
-    offset_->CalculateSampleAccurateValues(offsets, frames_to_process);
+    offset_->CalculateSampleAccurateValues(
+        sample_accurate_values_.as_span().first(frames_to_process));
     if (non_silent_frames_to_process > 0) {
       UNSAFE_TODO(
           memcpy(output_bus->Channel(0)->MutableData() + quantum_frame_offset,

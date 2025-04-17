@@ -149,10 +149,14 @@ void BiquadProcessor::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 
   float values[render_quantum_frames_expected];
 
-  parameter1_->CalculateSampleAccurateValues(values, frames_to_process);
-  parameter2_->CalculateSampleAccurateValues(values, frames_to_process);
-  parameter3_->CalculateSampleAccurateValues(values, frames_to_process);
-  parameter4_->CalculateSampleAccurateValues(values, frames_to_process);
+  parameter1_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  parameter2_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  parameter3_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
+  parameter4_->CalculateSampleAccurateValues(
+      base::span(values).first(frames_to_process));
 }
 
 void BiquadProcessor::Reset() {
