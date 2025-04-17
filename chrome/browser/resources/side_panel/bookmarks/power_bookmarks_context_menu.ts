@@ -18,6 +18,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {getTemplate} from './power_bookmarks_context_menu.html.js';
@@ -73,14 +74,13 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       BookmarksApiProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
-  declare private bookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private bookmarks_: BookmarksTreeNode[];
   declare private priceTracked_: boolean;
   declare private priceTrackingEligible_: boolean;
 
   showAt(
-      event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[],
-      priceTracked: boolean, priceTrackingEligible: boolean,
-      onShown: Function = () => {}) {
+      event: MouseEvent, bookmarks: BookmarksTreeNode[], priceTracked: boolean,
+      priceTrackingEligible: boolean, onShown: Function = () => {}) {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
@@ -92,9 +92,8 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
   }
 
   showAtPosition(
-      event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[],
-      priceTracked: boolean, priceTrackingEligible: boolean,
-      onShown: Function = () => {}) {
+      event: MouseEvent, bookmarks: BookmarksTreeNode[], priceTracked: boolean,
+      priceTrackingEligible: boolean, onShown: Function = () => {}) {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;

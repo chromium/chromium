@@ -23,6 +23,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [],
     },
     {
@@ -33,6 +34,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
@@ -43,6 +45,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
           dateAdded: 1,
           dateLastUsed: null,
           children: null,
+          unmodifiable: false,
         },
         {
           id: '4',
@@ -53,6 +56,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
           dateAdded: 3,
           dateLastUsed: null,
           children: null,
+          unmodifiable: false,
         },
         {
           id: '5',
@@ -62,6 +66,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
           url: null,
           dateAdded: 2,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
@@ -71,6 +76,7 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
               url: 'http://nested/bookmark/',
               dateAdded: 4,
               dateLastUsed: null,
+              unmodifiable: false,
               children: null,
             },
           ],
@@ -86,7 +92,7 @@ export function getBookmarks(element: PowerBookmarksListElement) {
 
 export function getBookmarksInList(
     element: PowerBookmarksListElement,
-    listIndex: number): chrome.bookmarks.BookmarkTreeNode[] {
+    listIndex: number): BookmarksTreeNode[] {
   const ironList = element.shadowRoot!.querySelector<IronListElement>(
       `#shownBookmarksIronList${listIndex}`);
   if (!ironList || !ironList.items) {
@@ -96,8 +102,8 @@ export function getBookmarksInList(
 }
 
 export function getBookmarkWithId(
-    element: PowerBookmarksListElement,
-    id: string): chrome.bookmarks.BookmarkTreeNode|undefined {
+    element: PowerBookmarksListElement, id: string): BookmarksTreeNode|
+    undefined {
   return getBookmarks(element).find(bookmark => bookmark.id === id);
 }
 

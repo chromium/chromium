@@ -12,7 +12,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
 <cr-url-list-item id="crUrlListItem"
     role="listitem"
     .size="${this.listItemSize}"
-    .url="${this.bookmark.url}"
+    .url="${this.getUrl_()}"
     .imageUrls="${this.getBookmarkImageUrls_()}"
     .count="${this.bookmark.children?.length}"
     .title="${this.bookmark.title}"

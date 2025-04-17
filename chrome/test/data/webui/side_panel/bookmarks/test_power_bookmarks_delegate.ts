@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
+import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPowerBookmarksDelegate extends TestBrowserProxy {
@@ -26,7 +27,7 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
     this.methodCalled('setCurrentUrl', url);
   }
 
-  setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {
+  setImageUrl(bookmark: BookmarksTreeNode, url: string) {
     this.methodCalled('setImageUrl', bookmark, url);
   }
 
@@ -38,20 +39,17 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
     this.methodCalled('onBookmarkChanged', id);
   }
 
-  onBookmarkAdded(
-      bookmark: chrome.bookmarks.BookmarkTreeNode,
-      parent: chrome.bookmarks.BookmarkTreeNode) {
+  onBookmarkAdded(bookmark: BookmarksTreeNode, parent: BookmarksTreeNode) {
     this.methodCalled('onBookmarkAdded', bookmark, parent);
   }
 
   onBookmarkMoved(
-      bookmark: chrome.bookmarks.BookmarkTreeNode,
-      oldParent: chrome.bookmarks.BookmarkTreeNode,
-      newParent: chrome.bookmarks.BookmarkTreeNode) {
+      bookmark: BookmarksTreeNode, oldParent: BookmarksTreeNode,
+      newParent: BookmarksTreeNode) {
     this.methodCalled('onBookmarkMoved', bookmark, oldParent, newParent);
   }
 
-  onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+  onBookmarkRemoved(bookmark: BookmarksTreeNode) {
     this.methodCalled('onBookmarkRemoved', bookmark);
   }
 
@@ -70,7 +68,7 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
     return {};
   }
 
-  getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+  getProductImageUrl(bookmark: BookmarksTreeNode) {
     this.methodCalled('getProductImageUrl', bookmark);
     return '';
   }

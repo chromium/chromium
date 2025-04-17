@@ -31,6 +31,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
@@ -40,6 +41,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
@@ -50,6 +52,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
@@ -60,6 +63,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
           url: null,
           dateAdded: 2,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
@@ -69,6 +73,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
               url: 'http://nested/bookmark/',
               dateAdded: 4,
               dateLastUsed: null,
+              unmodifiable: false,
               children: null,
             },
           ],
@@ -81,6 +86,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
           url: null,
           dateAdded: 1,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [],
         },
       ],

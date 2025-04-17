@@ -68,6 +68,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
@@ -78,6 +79,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           dateAdded: 1,
           dateLastUsed: 4,
           children: null,
+          unmodifiable: false,
         },
         {
           id: '4',
@@ -88,6 +90,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           dateAdded: 3,
           dateLastUsed: 3,
           children: null,
+          unmodifiable: false,
         },
         {
           id: '5',
@@ -97,6 +100,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           url: null,
           dateAdded: 2,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
@@ -107,6 +111,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
               dateAdded: 4,
               dateLastUsed: null,
               children: null,
+              unmodifiable: false,
             },
           ],
         },
@@ -125,6 +130,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
@@ -134,6 +140,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           url: null,
           dateAdded: 4,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '7',
@@ -143,6 +150,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
               url: 'http://nested/bookmark/',
               dateAdded: 1,
               dateLastUsed: 10,
+              unmodifiable: false,
               children: null,
             },
           ],
@@ -155,6 +163,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           url: null,
           dateAdded: 2,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '8',
@@ -164,6 +173,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
               url: 'http://nested/bookmark/',
               dateAdded: 5,
               dateLastUsed: 6,
+              unmodifiable: false,
               children: null,
             },
           ],
@@ -176,6 +186,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           url: null,
           dateAdded: 6,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '10',
@@ -185,6 +196,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
               url: null,
               dateAdded: 8,
               dateLastUsed: null,
+              unmodifiable: false,
               children: [
                 {
                   id: '13',
@@ -194,6 +206,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
                   url: null,
                   dateAdded: 0,
                   dateLastUsed: null,
+                  unmodifiable: false,
                   children: [],
                 },
               ],
@@ -208,6 +221,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           url: null,
           dateAdded: 3,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '12',
@@ -217,6 +231,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
               url: null,
               dateAdded: 3,
               dateLastUsed: null,
+              unmodifiable: false,
               children: [
                 {
                   id: '14',
@@ -226,6 +241,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
                   url: 'http://nested/bookmark/',
                   dateAdded: 9,
                   dateLastUsed: 1,
+                  unmodifiable: false,
                   children: null,
                 },
               ],
@@ -240,7 +256,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setAllBookmarks(folders);
+    bookmarksApi.setAllBookmarks(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     shoppingServiceApi = new TestShoppingServiceApiProxy();
@@ -403,6 +419,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
       children: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
     });
     await flushTasks();
 

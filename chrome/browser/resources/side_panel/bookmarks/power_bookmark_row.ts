@@ -20,6 +20,7 @@ import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_l
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
 import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
@@ -72,14 +73,24 @@ export class PowerBookmarkRowElement extends CrLitElement {
     };
   }
 
-  accessor bookmark: chrome.bookmarks.BookmarkTreeNode = {id: '', title: ''};
+  accessor bookmark: BookmarksTreeNode = {
+    id: '',
+    parentId: '',
+    index: 0,
+    title: '',
+    url: null,
+    dateAdded: null,
+    dateLastUsed: null,
+    unmodifiable: false,
+    children: null,
+  };
   accessor compact: boolean = false;
-  accessor contextMenuBookmark: chrome.bookmarks.BookmarkTreeNode|undefined;
+  accessor contextMenuBookmark: BookmarksTreeNode|undefined;
   accessor bookmarksTreeViewEnabled: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
   accessor depth: number = 0;
   accessor hasCheckbox: boolean = false;
-  accessor selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
+  accessor selectedBookmarks: BookmarksTreeNode[] = [];
   accessor renamingId: string = '';
   accessor searchQuery: string|undefined;
   accessor shoppingCollectionFolderId: string = '';
@@ -124,6 +135,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
   override disconnectedCallback() {
     this.shoppingListenerIds_.forEach(
         id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  protected getUrl_(): string|undefined {
+    return this.bookmark.url || undefined;
   }
 
   private handleBookmarkSubscriptionChange_(
@@ -208,7 +223,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  getBookmarkDescriptionForTests(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+  getBookmarkDescriptionForTests(bookmark: BookmarksTreeNode) {
     return this.getBookmarkDescription_(bookmark);
   }
 
@@ -427,8 +442,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return false;
   }
 
-  protected getCurrentPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  protected getCurrentPrice_(bookmark: BookmarksTreeNode): string {
     const bookmarkProductInfo =
         this.bookmarksService_.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
@@ -438,8 +452,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  protected getPreviousPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
+  protected getPreviousPrice_(bookmark: BookmarksTreeNode): string {
     const bookmarkProductInfo =
         this.bookmarksService_.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
@@ -453,7 +466,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return this.bookmark === this.contextMenuBookmark;
   }
 
-  protected shouldExpand_(): boolean|undefined {
+  protected shouldExpand_(): boolean|null {
     return this.bookmark?.children && this.bookmarksTreeViewEnabled &&
         this.compact;
   }
@@ -468,8 +481,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return this.bookmark?.id === this.shoppingCollectionFolderId;
   }
 
-  protected getBookmarkDescription_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode): string|undefined {
+  protected getBookmarkDescription_(bookmark: BookmarksTreeNode): string
+      |undefined {
     if (this.compact) {
       if (bookmark?.url) {
         return undefined;

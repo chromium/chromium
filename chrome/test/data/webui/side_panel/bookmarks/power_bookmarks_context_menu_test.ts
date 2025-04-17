@@ -30,6 +30,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
@@ -39,6 +40,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
@@ -49,6 +51,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
@@ -59,6 +62,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
           dateAdded: 2,
           url: null,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
@@ -68,6 +72,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
               url: 'http://nested/bookmark/',
               dateAdded: 4,
               dateLastUsed: null,
+              unmodifiable: false,
               children: null,
             },
           ],

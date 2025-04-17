@@ -26,6 +26,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
       url: null,
       dateAdded: null,
       dateLastUsed: null,
+      unmodifiable: false,
       children: [
         {
           id: '3',
@@ -35,6 +36,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
@@ -45,6 +47,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
           dateLastUsed: null,
+          unmodifiable: false,
           children: null,
         },
         {
@@ -55,6 +58,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
           url: null,
           dateAdded: 2,
           dateLastUsed: null,
+          unmodifiable: false,
           children: [
             {
               id: '6',
@@ -64,6 +68,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
               url: 'http://nested/bookmark/',
               dateAdded: 4,
               dateLastUsed: null,
+              unmodifiable: false,
               children: null,
             },
           ],

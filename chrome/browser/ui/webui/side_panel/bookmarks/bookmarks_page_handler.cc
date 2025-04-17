@@ -317,6 +317,8 @@ side_panel::mojom::BookmarksTreeNodePtr ConstructMojoNode(
   mojo_node->index = bookmark_merged_surface.GetIndexOf(node);
   mojo_node->date_added = node->date_added().InSecondsFSinceUnixEpoch();
   mojo_node->date_last_used = node->date_last_used().InSecondsFSinceUnixEpoch();
+  mojo_node->unmodifiable = bookmarks::IsDescendantOf(
+      node, bookmark_merged_surface.managed_bookmark_service()->managed_node());
   if (node->is_folder()) {
     if (with_children) {
       const BookmarkParentFolder& sub_parent =
@@ -768,6 +770,7 @@ void BookmarksPageHandler::SendAllBookmarks(GetAllBookmarksCallback callback) {
                            }))
             ->date_last_used()
             .InSecondsFSinceUnixEpoch();
+    mojo_node->unmodifiable = folder == BookmarkParentFolder::ManagedFolder();
 
     mojo_nodes.push_back(std::move(mojo_node));
   }

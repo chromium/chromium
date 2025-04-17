@@ -171,6 +171,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await microtasksFinished();
       await flushTasks();
@@ -349,6 +350,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -381,6 +383,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -399,6 +402,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -412,6 +416,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -440,6 +445,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -458,6 +464,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -475,6 +482,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
@@ -518,6 +526,7 @@ suite('General', () => {
         children: null,
         dateAdded: null,
         dateLastUsed: null,
+        unmodifiable: false,
       });
       await flushTasks();
 
