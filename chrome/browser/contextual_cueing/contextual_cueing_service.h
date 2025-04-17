@@ -10,6 +10,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
@@ -135,6 +136,8 @@ class ContextualCueingService
 
   // Stores model execution url to save look up time.
   GURL mes_url_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ContextualCueingService> weak_ptr_factory_{this};
 };

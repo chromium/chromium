@@ -71,10 +71,16 @@ void ZeroStateSuggestionsPageData::FetchSuggestions(
     GlicSuggestionsCallback callback) {
   begin_time_ = base::TimeTicks::Now();
 
+  // Request for page already in flight - just notify when it comes back.
+  if (suggestions_request_) {
+    suggestions_callbacks_.AddUnsafe(std::move(callback));
+    return;
+  }
+
   suggestions_request_ = optimization_guide::proto::
       ZeroStateSuggestionsRequest::default_instance();
   suggestions_request_->set_is_fre(is_fre);
-  suggestions_callback_ = std::move(callback);
+  suggestions_callbacks_.AddUnsafe(std::move(callback));
   RequestSuggestionsIfComplete();
 }
 
@@ -117,7 +123,7 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
       suggestions_metadata &&
       !suggestions_metadata->contextual_suggestions_eligible()) {
-    std::move(suggestions_callback_).Run(std::nullopt);
+    suggestions_callbacks_.Notify(std::nullopt);
     return;
   }
 
@@ -126,12 +132,12 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
     std::vector<std::string> suggestions(
         suggestions_metadata->contextual_suggestions().begin(),
         suggestions_metadata->contextual_suggestions().end());
-    std::move(suggestions_callback_).Run(suggestions);
+    suggestions_callbacks_.Notify(suggestions);
     return;
   }
 
   if (!has_page_context) {
-    std::move(suggestions_callback_).Run(std::nullopt);
+    suggestions_callbacks_.Notify(std::nullopt);
     return;
   }
 
@@ -176,7 +182,7 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
                            "suggestions after %ld ms. Error: %d",
                            suggestions_duration.InMilliseconds(),
                            static_cast<int>(result.response.error().error())));
-    std::move(suggestions_callback_).Run(std::nullopt);
+    suggestions_callbacks_.Notify(std::nullopt);
     return;
   }
 
@@ -192,7 +198,7 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
           optimization_guide::proto::ZeroStateSuggestionsResponse>(
           result.response.value());
   if (!response) {
-    std::move(suggestions_callback_).Run(std::nullopt);
+    suggestions_callbacks_.Notify(std::nullopt);
     return;
   }
 
@@ -205,7 +211,7 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
         base::StringPrintf("ZeroStateSuggestionsPageData: Suggestion %d: %s",
                            i + 1, response->suggestions(i).label()));
   }
-  std::move(suggestions_callback_).Run(suggestions);
+  suggestions_callbacks_.Notify(suggestions);
 }
 
 PAGE_USER_DATA_KEY_IMPL(ZeroStateSuggestionsPageData);

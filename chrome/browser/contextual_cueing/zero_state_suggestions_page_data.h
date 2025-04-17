@@ -31,8 +31,9 @@ class ZeroStateSuggestionsRequest;
 
 namespace contextual_cueing {
 
-using GlicSuggestionsCallback =
-    base::OnceCallback<void(std::optional<std::vector<std::string>>)>;
+using GlicSuggestionsCallbackList =
+    base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>;
+using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
 
 // Processes zero state suggestions for GLIC, scoped to the given page.
 class ZeroStateSuggestionsPageData
@@ -76,6 +77,7 @@ class ZeroStateSuggestionsPageData
   bool annotated_page_content_done_ = false;
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_;
+  GlicSuggestionsCallbackList suggestions_callbacks_;
 
   // Tracks the state for a request.
   base::TimeTicks begin_time_;

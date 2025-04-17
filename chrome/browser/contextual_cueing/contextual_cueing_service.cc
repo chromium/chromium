@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
@@ -28,16 +29,16 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #endif
 
+namespace contextual_cueing {
 namespace {
 
-void LogNudgeInteractionHistogram(
-    contextual_cueing::NudgeInteraction interaction) {
+void LogNudgeInteractionHistogram(NudgeInteraction interaction) {
   base::UmaHistogramEnumeration("ContextualCueing.NudgeInteraction",
                                 interaction);
 }
 
 void LogNudgeInteractionUKM(ukm::SourceId source_id,
-                            contextual_cueing::NudgeInteraction interaction,
+                            NudgeInteraction interaction,
                             base::TimeTicks document_available_time,
                             base::TimeTicks nudge_shown_time) {
   auto* ukm_recorder = ukm::UkmRecorder::Get();
@@ -56,9 +57,18 @@ bool IsGlicTabContextEnabled(PrefService* pref_service) {
 }
 #endif
 
-}  // namespace
+void DeleteZeroStateSuggestionsPageData(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  if (ZeroStateSuggestionsPageData::GetForPage(
+          web_contents->GetPrimaryPage())) {
+    ZeroStateSuggestionsPageData::DeleteForPage(web_contents->GetPrimaryPage());
+  }
+}
 
-namespace contextual_cueing {
+}  // namespace
 
 ContextualCueingService::ContextualCueingService(
     page_content_annotations::PageContentExtractionService*
@@ -89,18 +99,22 @@ ContextualCueingService::ContextualCueingService(
 }
 
 ContextualCueingService::~ContextualCueingService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (kEnablePageContentExtraction.Get() && page_content_extraction_service_) {
     page_content_extraction_service_->RemoveObserver(this);
   }
 }
 
 void ContextualCueingService::ReportPageLoad() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (remaining_quiet_loads_) {
     remaining_quiet_loads_--;
   }
 }
 
 void ContextualCueingService::CueingNudgeShown(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   recent_nudge_tracker_.CueingNudgeShown();
 
   if (kMinPageCountBetweenNudges.Get()) {
@@ -119,6 +133,8 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   base::TimeDelta backoff_duration =
       kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
 
@@ -127,10 +143,14 @@ void ContextualCueingService::CueingNudgeDismissed() {
 }
 
 void ContextualCueingService::CueingNudgeClicked() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   dismiss_count_ = 0;
 }
 
 NudgeDecision ContextualCueingService::CanShowNudge(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (remaining_quiet_loads_ > 0) {
     return NudgeDecision::kNotEnoughPageLoadsSinceLastNudge;
   }
@@ -148,6 +168,8 @@ NudgeDecision ContextualCueingService::CanShowNudge(const GURL& url) {
 }
 
 bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return backoff_end_time_ && (base::Time::Now() < backoff_end_time_);
 }
 
@@ -155,6 +177,8 @@ void ContextualCueingService::OnNudgeActivity(
     content::WebContents* web_contents,
     base::TimeTicks document_available_time,
     tabs::GlicNudgeActivity activity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::optional<base::TimeTicks> nudge_time =
       recent_nudge_tracker_.GetMostRecentNudgeTime();
   const GURL& url = web_contents->GetLastCommittedURL();
@@ -200,6 +224,8 @@ void ContextualCueingService::OnNudgeActivity(
 
 void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
     return;
   }
@@ -226,6 +252,8 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents,
     bool is_fre,
     GlicSuggestionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -253,16 +281,22 @@ void ContextualCueingService::OnSuggestionsReceived(
     content::WebContents* web_contents,
     GlicSuggestionsCallback callback,
     std::optional<std::vector<std::string>> suggestions) {
-  if (ZeroStateSuggestionsPageData::GetForPage(
-          web_contents->GetPrimaryPage())) {
-    ZeroStateSuggestionsPageData::DeleteForPage(web_contents->GetPrimaryPage());
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::move(callback).Run(suggestions);
+
+  // Delete zero state suggestions at end. It is possible for multiple callbacks
+  // to be run, so do not delete page data until all of those have been run.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DeleteZeroStateSuggestionsPageData,
+                                web_contents->GetWeakPtr()));
 }
 
 void ContextualCueingService::OnPageContentExtracted(
     content::Page& page,
     const optimization_guide::proto::AnnotatedPageContent& page_content) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto* cueing_page_data = ContextualCueingPageData::GetForPage(page);
   if (!cueing_page_data) {
     return;
