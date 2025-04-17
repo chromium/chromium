@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gl/gl_surface.h"
@@ -32,10 +32,11 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
   // scoped_refptr should be returned. Callers should try to fallback to
   // presentation using GLSurface by calling `CreateNativeGLSurface` below.
   static scoped_refptr<gl::Presenter> CreatePresenter(
-      scoped_refptr<SharedContextState> context_state,
+      gl::GLDisplay* display,
       const GpuDriverBugWorkarounds& workarounds,
       const GpuFeatureInfo& gpu_feature_info,
-      SurfaceHandle surface_handle);
+      SurfaceHandle surface_handle,
+      DawnContextProvider* dawn_context_provider);
 
   // Creates the appropriate native surface depending on the GL implementation.
   // This will be implemented separately by each platform. On failure, a null

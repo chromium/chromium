@@ -25,13 +25,11 @@ namespace ui {
 
 CALayerTreeCoordinator::CALayerTreeCoordinator(
     bool allow_av_sample_buffer_display_layer,
-    BufferPresentedCallback buffer_presented_callback,
-    id<MTLDevice> metal_device)
+    BufferPresentedCallback buffer_presented_callback)
     : allow_remote_layers_(ui::RemoteLayerAPISupported()),
       allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
-      buffer_presented_callback_(buffer_presented_callback),
-      metal_device_(metal_device) {
+      buffer_presented_callback_(buffer_presented_callback) {
   if (allow_remote_layers_) {
     root_ca_layer_ = [[CALayer alloc] init];
 #if BUILDFLAG(IS_MAC)
@@ -80,7 +78,7 @@ CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
     CHECK_LE(presented_frames_.size(), presented_ca_layer_trees_max_length_);
 
     unpresented_ca_renderer_layer_tree_ = std::make_unique<CARendererLayerTree>(
-        allow_av_sample_buffer_display_layer_, false, metal_device_);
+        allow_av_sample_buffer_display_layer_, false);
   }
   return unpresented_ca_renderer_layer_tree_.get();
 }

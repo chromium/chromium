@@ -16,7 +16,6 @@
 
 @class CAContext;
 @class CALayer;
-@protocol MTLDevice;
 
 namespace ui {
 using BufferPresentedCallback =
@@ -64,8 +63,7 @@ struct PresentedFrame {
 class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
  public:
   CALayerTreeCoordinator(bool allow_av_sample_buffer_display_layer,
-                         BufferPresentedCallback buffer_presented_callback,
-                         id<MTLDevice> metal_device);
+                         BufferPresentedCallback buffer_preseneted_callback);
 
   CALayerTreeCoordinator(const CALayerTreeCoordinator&) = delete;
   CALayerTreeCoordinator& operator=(const CALayerTreeCoordinator&) = delete;
@@ -119,10 +117,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   CALayer* __strong root_ca_layer_;
 
   BufferPresentedCallback buffer_presented_callback_;
-
-  // This is needed to ensure synchronization between the display compositor and
-  // the HDRCopierLayer. See https://crbug.com/1372898
-  id<MTLDevice> __strong metal_device_;
 
   // The frame that is currently under construction. It has had planes
   // scheduled, but has not had Present() called yet. When Present() is called,

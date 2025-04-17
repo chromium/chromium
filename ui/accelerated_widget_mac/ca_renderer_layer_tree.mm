@@ -317,12 +317,10 @@ CARendererLayerTree::SolidColorContents::GetMap() {
 
 CARendererLayerTree::CARendererLayerTree(
     bool allow_av_sample_buffer_display_layer,
-    bool allow_solid_color_layers,
-    id<MTLDevice> metal_device)
+    bool allow_solid_color_layers)
     : allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
-      allow_solid_color_layers_(allow_solid_color_layers),
-      metal_device_(metal_device) {}
+      allow_solid_color_layers_(allow_solid_color_layers) {}
 CARendererLayerTree::~CARendererLayerTree() = default;
 
 bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {

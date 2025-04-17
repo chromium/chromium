@@ -102,9 +102,21 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyImpl::GetSurfaceHandle() {
 scoped_refptr<gl::Presenter>
 SkiaOutputSurfaceDependencyImpl::CreatePresenter() {
   DCHECK(!IsOffscreen());
+
+  auto context_state = GetSharedContextState();
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(SKIA_USE_DAWN)
+  // DirectComposition is only supported with dawn D3D11 backend.
+  if (context_state->IsGraphiteDawn() &&
+      context_state->dawn_context_provider()->backend_type() !=
+          wgpu::BackendType::D3D11) {
+    return {};
+  }
+#endif
+
+  auto* dawn_context_provider = context_state->dawn_context_provider();
   auto presenter = gpu::ImageTransportSurface::CreatePresenter(
-      GetSharedContextState(), GetGpuDriverBugWorkarounds(),
-      GetGpuFeatureInfo(), surface_handle_);
+      context_state->display(), GetGpuDriverBugWorkarounds(),
+      GetGpuFeatureInfo(), surface_handle_, dawn_context_provider);
   if (presenter &&
       base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure)) {
     presenter->SetNotifyNonSimpleOverlayFailure();
