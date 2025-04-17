@@ -504,18 +504,19 @@ class NET_EXPORT HttpResponseHeaders
   // Add header->value pair(s) to our list. The value will be split into
   // multiple values if it contains unquoted commas. If `contains_commas` is
   // ContainsCommas::kNo then the value will not be parsed as a performance
-  // optimization.
-  void AddHeader(std::string::const_iterator name_begin,
-                 std::string::const_iterator name_end,
-                 std::string::const_iterator value_begin,
-                 std::string::const_iterator value_end,
+  // optimization. Values are all offsets within `raw_headers_`.
+  void AddHeader(size_t name_begin,
+                 size_t name_end,
+                 size_t value_begin,
+                 size_t value_end,
                  ContainsCommas contains_commas);
 
-  // Add to parsed_ given the fields of a ParsedHeader object.
-  void AddToParsed(std::string::const_iterator name_begin,
-                   std::string::const_iterator name_end,
-                   std::string::const_iterator value_begin,
-                   std::string::const_iterator value_end);
+  // Add to parsed_ given the fields of a ParsedHeader object. Values are all
+  // offsets within `raw_headers_`.
+  void AddToParsed(size_t name_begin,
+                   size_t name_end,
+                   size_t value_begin,
+                   size_t value_end);
 
   // Replaces the current headers with the merged version of `raw_headers` and
   // the current headers without the headers in `headers_to_remove`. Note that
@@ -549,6 +550,13 @@ class NET_EXPORT HttpResponseHeaders
   // directive name including the equals sign. parameter value The complete
   // directive string (e.g., "max-age=600"). or not a valid sequence of digits.
   std::optional<base::TimeDelta> ParseSeconds(std::string_view value) const;
+
+  // Shorthand for `std::string_view(raw_headers_).substr(begin, end - begin)`.
+  std::string_view subrange(size_t begin, size_t end) const;
+
+  // Returns the name/value using `raw_headers_` and indices from `parsed`.
+  std::string_view header_name(const ParsedHeader& parsed) const;
+  std::string_view header_value(const ParsedHeader& parsed) const;
 
   // Adds the set of header names that contain cookie values.
   static void AddSensitiveHeaders(HeaderSet* header_names);
