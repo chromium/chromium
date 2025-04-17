@@ -52,6 +52,11 @@ class WebStateID;
                                         (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem;
 
+// Starts the leave or delete shared group flow.
+- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
+                            forAction:(TabGroupActionType)actionType
+                           sourceView:(UIView*)sourceView;
+
 // Displays a snackbar after closing tab groups locally.
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:(int)numberOfClosedGroups;
 
