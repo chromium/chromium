@@ -33,13 +33,21 @@ TEMPDIR=$(mktemp -d -t $(basename ${0}))
 OUTDIR="${TEMPDIR}/out"
 OUTFILE="${OUTDIR}/register_flags.txt"
 
-
 # The PATH created here must be kept in sync with PATH override behavior
 # in chrome/updater/mac/install_from_archive.mm::RunInstaller, so the
 # test will behave realistically.
 # LINT.IfChange(InstallerEnvPath)
 INSTALLER_ENV_PATH="/bin:/usr/bin:${TEMPDIR}"
 # LINT.ThenChange(/chrome/updater/mac/install_from_archive.mm:InstallerEnvPath)
+
+# Make sure there isn't some other ksadmin on the path, which would prevent
+# us from reaching the fake ksadmin the tests rely on. We haven't created
+# the fake yet, so we should not find anything when we ask.
+bad_ksadmin="$(PATH=${INSTALLER_ENV_PATH} command -v ksadmin)"
+if [ -n "${bad_ksadmin}" ] ; then
+  echo "CANNOT RUN TESTS: a ksadmin at ${bad_ksadmin} conflicts with our fakes"
+  exit 2
+fi
 
 LIBRARY_BRAND_DEFAULTS_TARGET="${HOME}/Library/Google/Google Chrome Brand"
 LIBRARY_BRAND_FILE="${LIBRARY_BRAND_DEFAULTS_TARGET}.plist"
