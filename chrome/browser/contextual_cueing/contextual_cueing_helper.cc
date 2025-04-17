@@ -95,18 +95,19 @@ tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
   return browser->browser_window_features()->glic_nudge_controller();
 }
 
-void ContextualCueingHelper::DidFinishNavigation(
+void ContextualCueingHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || navigation_handle->IsErrorPage() ||
-      !navigation_handle->HasCommitted() ||
-      !navigation_handle->ShouldUpdateHistory()) {
+  // Ignore subframe navigations and reloads.
+  if (!navigation_handle->IsInMainFrame()) {
     return;
   }
   if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
                                ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
-  contextual_cueing_service_->ReportPageLoad();
+
+  // Make sure we always clear the nudge label anyway despite operating on
+  // pages.
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (glic_nudge_controller) {
     glic_nudge_controller->UpdateNudgeLabel(
@@ -115,7 +116,39 @@ void ContextualCueingHelper::DidFinishNavigation(
   }
 }
 
+void ContextualCueingHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Ignore sub-frame navigations.
+  if (!navigation_handle->IsInMainFrame()) {
+    return;
+  }
+
+  // Do not report page loads for these types of navigations.
+  if (navigation_handle->IsErrorPage() || !navigation_handle->HasCommitted() ||
+      !navigation_handle->ShouldUpdateHistory()) {
+    return;
+  }
+  if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                               ui::PAGE_TRANSITION_RELOAD)) {
+    return;
+  }
+
+  // We have already initiated nudging sequence for the page. Do not report page
+  // load.
+  if (ContextualCueingPageData::GetForPage(web_contents()->GetPrimaryPage())) {
+    return;
+  }
+
+  contextual_cueing_service_->ReportPageLoad();
+}
+
 void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
+  // We have already initiated nudging sequence for the page. Do not see if we
+  // should nudge.
+  if (ContextualCueingPageData::GetForPage(web_contents()->GetPrimaryPage())) {
+    return;
+  }
+
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (!glic_nudge_controller ||
       !web_contents()->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
