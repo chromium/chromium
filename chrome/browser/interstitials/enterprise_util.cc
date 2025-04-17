@@ -6,14 +6,13 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
-#include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
@@ -46,7 +45,7 @@ extensions::SafeBrowsingPrivateEventRouter* GetSafeBrowsingEventRouter(
   return extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
       browser_context);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 enterprise_connectors::ReportingEventRouter* GetReportingEventRouter(
@@ -86,6 +85,16 @@ void MaybeTriggerSecurityInterstitialShownEvent(
 
   safe_browsing_event_router->OnSecurityInterstitialShown(page_url, reason,
                                                           net_error_code);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
@@ -100,7 +109,7 @@ void MaybeTriggerSecurityInterstitialShownEvent(
       page_url, reason, net_error_code,
       prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled));
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 }
 
 void MaybeTriggerSecurityInterstitialProceededEvent(
@@ -116,6 +125,16 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
   }
   safe_browsing_event_router->OnSecurityInterstitialProceeded(page_url, reason,
                                                               net_error_code);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       GetReportingEventRouter(web_contents);
@@ -124,7 +143,7 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
   }
   reporting_event_router->OnSecurityInterstitialProceeded(page_url, reason,
                                                           net_error_code);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
