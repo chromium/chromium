@@ -70,8 +70,7 @@ public class TileView extends FrameLayout {
      * @param icon The icon to display on the tile.
      * @param titleLines The number of text lines to use for the tile title.
      */
-    protected void initialize(
-            String title, boolean showOfflineBadge, Drawable icon, int titleLines) {
+    public void initialize(String title, boolean showOfflineBadge, Drawable icon, int titleLines) {
         setOfflineBadgeVisibility(showOfflineBadge);
         setIconDrawable(icon);
         setTitle(title, titleLines);

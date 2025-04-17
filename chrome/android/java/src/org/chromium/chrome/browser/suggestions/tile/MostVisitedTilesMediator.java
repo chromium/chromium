@@ -17,6 +17,7 @@ import android.view.ViewStub;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -145,7 +146,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (mTileCountChangedRunnable != null) mTileCountChangedRunnable.run();
         updateTilePlaceholderVisibility();
 
-        mModel.set(IS_CONTAINER_VISIBLE, !mTileGroup.isEmpty());
+        // If Custom Links are enabled, keep container visible for the "Add new" button.
+        boolean enable_custom_links = ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled();
+        mModel.set(IS_CONTAINER_VISIBLE, enable_custom_links || !mTileGroup.isEmpty());
     }
 
     @Override

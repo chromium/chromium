@@ -9,10 +9,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorStateListDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -24,6 +26,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -33,9 +36,11 @@ import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileTy
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -66,6 +71,7 @@ public class TileRenderer {
     private Profile mProfile;
 
     @LayoutRes private final int mTileLayoutResId;
+    private final float mTileWidthDp;
     private final float mDividerWidthDp;
 
     private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
@@ -142,6 +148,7 @@ public class TileRenderer {
         mMinIconSize = Math.min(mDesiredIconSize, minIconSize);
 
         mTileLayoutResId = getTileLayoutResId();
+        mTileWidthDp = res.getDimension(getTileWidthDimenResId());
         mDividerWidthDp = res.getDimension(R.dimen.tile_view_divider_width);
 
         int iconColor = mContext.getColor(R.color.default_favicon_background_color);
@@ -194,6 +201,11 @@ public class TileRenderer {
                 }
                 parent.addTile(tileView);
                 prevTile = tile;
+            }
+
+            if (shouldShowAddNewButton(sectionTiles)) {
+                TileView addCustomLinksButton = buildAddCustomLinksButton(parent, setupDelegate);
+                parent.addNonTileViewWithWidth(addCustomLinksButton, mTileWidthDp);
             }
         }
     }
@@ -310,6 +322,50 @@ public class TileRenderer {
                         .inflate(R.layout.suggestions_tile_vertical_divider, parent, false);
     }
 
+    boolean shouldShowAddNewButton(List<Tile> sectionTiles) {
+        if (!ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()) {
+            return false;
+        }
+
+        if (sectionTiles.size() == 0) {
+            // Still show the Add Custom Link Button, even if no suggestions exist. We might make
+            // this configurable.
+            return true;
+        }
+
+        int numCustomTiles = 0;
+        for (Tile tile : sectionTiles) {
+            if (tile.getData().source == TileSource.CUSTOM_LINKS) {
+                ++numCustomTiles;
+            }
+        }
+        return numCustomTiles < SuggestionsConfig.MAX_NUM_CUSTOM_LINKS;
+    }
+
+    TileView buildAddCustomLinksButton(
+            TilesLinearLayout parent, TileGroup.TileSetupDelegate setupDelegate) {
+        Resources res = mContext.getResources();
+        String title = res.getString(R.string.most_visited_add_new);
+        Drawable plusIcon =
+                ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.plus, null);
+        TileView tileView =
+                (TileView)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(mTileLayoutResId, parent, false);
+        tileView.initialize(title, /* showOfflineBadge= */ false, plusIcon, mTitleLinesCount);
+        tileView.setIconTint(
+                ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false));
+        tileView.setContentDescription(
+                mContext.getString(
+                        R.string.accessibility_omnibox_most_visited_tile_add_new_shortcut));
+        tileView.setOnClickListener(
+                (View v) -> {
+                    RecordUserAction.record("MostVisited_AddItem");
+                    setupDelegate.getCustomTileModificationDelegate().add();
+                });
+        return tileView;
+    }
+
     /** Returns whether the tile represents a Search query. */
     private boolean isSearchTile(Tile tile) {
         return TileUtils.isSearchTile(mProfile, tile);
@@ -411,6 +467,17 @@ public class TileRenderer {
                 return R.layout.suggestions_tile_view;
             case TileStyle.MODERN_CONDENSED:
                 return R.layout.suggestions_tile_view_condensed;
+        }
+        assert false;
+        return 0;
+    }
+
+    private @DimenRes int getTileWidthDimenResId() {
+        switch (mStyle) {
+            case TileStyle.MODERN:
+                return R.dimen.tile_view_width;
+            case TileStyle.MODERN_CONDENSED:
+                return R.dimen.tile_view_width_condensed;
         }
         assert false;
         return 0;
