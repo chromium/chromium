@@ -9,6 +9,7 @@
 
 #include "media/base/video_codec_string_parsers.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/logging.h"
@@ -679,8 +680,10 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  uint8_t constraint_flags[6];
-  memset(constraint_flags, 0, sizeof(constraint_flags));
+  std::array<uint8_t, 6> constraint_flags;
+  memset(constraint_flags.data(), 0,
+         (constraint_flags.size() *
+          sizeof(decltype(constraint_flags)::value_type)));
 
   if (elem.size() > 10) {
     DVLOG(4) << __func__ << ": unexpected number of trailing bytes in HEVC "

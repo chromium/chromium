@@ -176,7 +176,9 @@ bool VideoBitrateAllocation::operator==(
   if (sum_bitrate_ != other.sum_bitrate_) {
     return false;
   }
-  return memcmp(bitrates_, other.bitrates_, sizeof(bitrates_)) == 0;
+  return memcmp(bitrates_.data(), other.bitrates_.data(),
+                (bitrates_.size() * sizeof(decltype(bitrates_)::value_type))) ==
+         0;
 }
 
 }  // namespace media
