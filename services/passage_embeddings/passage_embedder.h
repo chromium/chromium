@@ -5,11 +5,8 @@
 #ifndef SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 
-#include <optional>
-
 #include "base/containers/lru_cache.h"
 #include "base/files/file.h"
-#include "base/files/memory_mapped_file.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/passage_embedder_execution_task.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
@@ -47,12 +44,6 @@ class PassageEmbedder : public mojom::PassageEmbedder {
                           GenerateEmbeddingsCallback callback) override;
 
  private:
-  // Loads the text embeddings tflite model from the bytes in the given file.
-  // Return true if successful.
-  bool LoadEmbeddingsModelFile(
-      base::File embeddings_file,
-      std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine);
-
   // Loads the sentencepiece model for tokenization, from the bytes in the given
   // file. Returns true if successful.
   bool LoadSentencePieceModelFile(base::File sp_file);
@@ -74,8 +65,8 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   std::unique_ptr<PassageEmbedderExecutionTask> loaded_model_;
 
-  // The memory mapped text embedding model file. Empty when not loaded.
-  std::optional<base::MemoryMappedFile> embeddings_model_;
+  // The text embedding model file. Empty when not loaded.
+  base::File embeddings_model_file_;
 
   // The input window size that the embeddings model expects.
   uint32_t embeddings_input_window_size_;
