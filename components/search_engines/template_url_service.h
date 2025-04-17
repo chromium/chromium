@@ -112,6 +112,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
       "Search.SearchPolicyConflict.HasConflictWith.WithFeatured";
   static constexpr char kSearchPolicyHasConflictWithNonFeaturedHistogramName[] =
       "Search.SearchPolicyConflict.HasConflictWith.WithNonFeatured";
+  static constexpr char kKeywordCountHistogramName[] = "Omnibox.KeywordCount";
 
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
@@ -146,6 +147,25 @@ class TemplateURLService final : public WebDataServiceConsumer,
     kMaxValue = kWithNonFeatured,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchPolicyConflictType)
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(KeywordType)
+  enum class KeywordType {
+    kNone = 0,
+    kStarterPack = 1,
+    kPrepopulated = 2,
+    kSearchEngineSetByExtension = 3,
+    kNonFeaturedSiteSearchSetByPolicy = 4,
+    kFeaturedSiteSearchSetByPolicy = 5,
+    kSearchAggregatorSetByPolicy = 6,
+    kDefaultSearchEngineSetByPolicy = 7,
+    kDefaultSearchEngineSetByUser = 8,
+    kSubstitutingSiteSearchSetByUser = 9,
+    kNonSubstitutingSiteSearchSetByUser = 10,
+    kMaxValue = kNonSubstitutingSiteSearchSetByUser,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:KeywordType)
 
   TemplateURLService(
       PrefService& prefs,
@@ -869,8 +889,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Emits the UMA Histogram for the number of search engines that are active
   // and inactive at load time.
-  void EmitTemplateURLActiveOnStartupHistogram(
-      OwnedTemplateURLVector* template_urls);
+  void LogActiveTemplateUrlsOnStartup(OwnedTemplateURLVector* template_urls);
+
+  // Log the number of each type of template url that exists at load time.
+  void LogTemplateUrlTypesOnStartup(OwnedTemplateURLVector* template_urls);
 
   // Returns an instance of |EnterpriseSearchManager|.
   std::unique_ptr<EnterpriseSearchManager> GetEnterpriseSearchManager(

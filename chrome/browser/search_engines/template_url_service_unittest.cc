@@ -53,6 +53,7 @@
 using base::ASCIIToUTF16;
 using base::Time;
 using SearchPolicyConflictType = TemplateURLService::SearchPolicyConflictType;
+using KeywordType = TemplateURLService::KeywordType;
 using testing::NotNull;
 
 namespace {
@@ -172,6 +173,50 @@ void VerifyEnterpriseSearchPolicyConflictHistograms(
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
   return info.param ? "SearchEngineChoiceEnabled"
                     : "SearchEngineChoiceDisabled";
+}
+
+std::string KeywordTypeToString(KeywordType keyword) {
+  switch (keyword) {
+    case KeywordType::kNone:
+      return ".None";
+    case KeywordType::kStarterPack:
+      return ".StarterPack";
+    case KeywordType::kPrepopulated:
+      return ".Prepopulated";
+    case KeywordType::kSearchEngineSetByExtension:
+      return ".SearchEngineSetByExtension";
+    case KeywordType::kNonFeaturedSiteSearchSetByPolicy:
+      return ".NonFeaturedSiteSearchSetByPolicy";
+    case KeywordType::kFeaturedSiteSearchSetByPolicy:
+      return ".FeaturedSiteSearchSetByPolicy";
+    case KeywordType::kSearchAggregatorSetByPolicy:
+      return ".SearchAggregatorSetByPolicy";
+    case KeywordType::kDefaultSearchEngineSetByPolicy:
+      return ".DefaultSearchEngineSetByPolicy";
+    case KeywordType::kDefaultSearchEngineSetByUser:
+      return ".DefaultSearchEngineSetByUser";
+    case KeywordType::kSubstitutingSiteSearchSetByUser:
+      return ".SubstitutingSiteSearchSetByUser";
+    case KeywordType::kNonSubstitutingSiteSearchSetByUser:
+      return ".NonSubstitutingSiteSearchSetByUser";
+  }
+  return "";
+}
+
+void VerifyTemplateUrlCountsHistograms(
+    const base::HistogramTester& histogram_tester,
+    const base::flat_map<KeywordType, int>& expected_counts) {
+  int total = 0;
+  for (auto [type, count] : expected_counts) {
+    total += count;
+    histogram_tester.ExpectBucketCount(
+        TemplateURLService::kKeywordCountHistogramName +
+            KeywordTypeToString(type),
+        count, 1);
+  }
+  // Verify total number of template_urls upon load time.
+  histogram_tester.ExpectBucketCount(
+      TemplateURLService::kKeywordCountHistogramName, total, 1);
 }
 
 }  // namespace
@@ -2580,7 +2625,7 @@ TEST_P(TemplateURLServiceTest, SetIsActiveTemplateURL) {
 
 // Tests that the `Omnibox.KeywordModeUsageByEngineType.ActiveOnStartup` and
 // `InactiveOnStartup` are emitted correctly when the model is loaded.
-TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
+TEST_P(TemplateURLServiceTest, ActiveTemplateURLsOnStartupHistogram) {
   test_util()->ResetModel(true);
 
   TemplateURL* search_engine1 = model()->Add(
@@ -2616,6 +2661,89 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
   histogram_tester.ExpectBucketCount(
       "Omnibox.KeywordModeUsageByEngineType.InactiveOnStartup",
       BuiltinEngineType::KEYWORD_MODE_NON_BUILT_IN, 1);
+}
+
+TEST_P(TemplateURLServiceTest, TemplateURLCountsOnStartupHistogram) {
+  std::unique_ptr<TemplateURLData> non_featured_site_search =
+      GenerateDummyTemplateURLData("non-featured site search");
+  non_featured_site_search->featured_by_policy = false;
+  non_featured_site_search->policy_origin =
+      TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* non_featured_site_search_turl =
+      model()->Add(std::make_unique<TemplateURL>(*non_featured_site_search));
+  DCHECK(non_featured_site_search_turl);
+  model()->SetIsActiveTemplateURL(non_featured_site_search_turl, true);
+
+  std::unique_ptr<TemplateURLData> featured_site_search =
+      GenerateDummyTemplateURLData("featured site search");
+  featured_site_search->featured_by_policy = true;
+  featured_site_search->policy_origin =
+      TemplateURLData::PolicyOrigin::kSiteSearch;
+  TemplateURL* featured_site_search_turl =
+      model()->Add(std::make_unique<TemplateURL>(*featured_site_search));
+  DCHECK(featured_site_search_turl);
+  model()->SetIsActiveTemplateURL(featured_site_search_turl, true);
+
+  std::unique_ptr<TemplateURLData> featured_aggregator =
+      GenerateDummyTemplateURLData("featured aggregator");
+  featured_aggregator->featured_by_policy = true;
+  featured_aggregator->policy_origin =
+      TemplateURLData::PolicyOrigin::kSearchAggregator;
+  TemplateURL* featured_aggregator_turl =
+      model()->Add(std::make_unique<TemplateURL>(*featured_aggregator));
+  DCHECK(featured_aggregator_turl);
+  model()->SetIsActiveTemplateURL(featured_aggregator_turl, true);
+
+  std::unique_ptr<TemplateURLData> default_search_provider =
+      GenerateDummyTemplateURLData("default search provider");
+  default_search_provider->policy_origin =
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+  TemplateURL* default_search_provider_turl =
+      model()->Add(std::make_unique<TemplateURL>(*default_search_provider));
+  DCHECK(default_search_provider_turl);
+  model()->SetIsActiveTemplateURL(default_search_provider_turl, true);
+
+  std::unique_ptr<TemplateURLData> user_default_search_provider =
+      GenerateDummyTemplateURLData("user set default search provider");
+  TemplateURL* user_default_search_provider_turl = model()->Add(
+      std::make_unique<TemplateURL>(*user_default_search_provider));
+  DCHECK(user_default_search_provider_turl);
+  model()->SetUserSelectedDefaultSearchProvider(
+      user_default_search_provider_turl);
+  model()->SetIsActiveTemplateURL(user_default_search_provider_turl, true);
+
+  std::unique_ptr<TemplateURLData> user_engine =
+      GenerateDummyTemplateURLData("user substituting engine");
+  user_engine->policy_origin = TemplateURLData::PolicyOrigin::kNoPolicy;
+  TemplateURL* user_engine_turl =
+      model()->Add(std::make_unique<TemplateURL>(*user_engine));
+  DCHECK(user_engine_turl);
+  model()->SetIsActiveTemplateURL(user_engine_turl, true);
+
+  std::unique_ptr<TemplateURLData> user_non_substituting_engine =
+      GenerateDummyTemplateURLData("user non-substituting engine");
+  user_non_substituting_engine->policy_origin =
+      TemplateURLData::PolicyOrigin::kNoPolicy;
+  user_non_substituting_engine->SetURL("x.com");
+  TemplateURL* user_non_substituting_engine_turl = model()->Add(
+      std::make_unique<TemplateURL>(*user_non_substituting_engine));
+  DCHECK(user_non_substituting_engine_turl);
+  model()->SetIsActiveTemplateURL(user_non_substituting_engine_turl, true);
+
+  base::HistogramTester histogram_tester;
+  test_util()->ResetModel(true);
+  VerifyTemplateUrlCountsHistograms(
+      histogram_tester,
+      {{KeywordType::kStarterPack, 5},
+       {KeywordType::kPrepopulated, 5},
+       {KeywordType::kSearchEngineSetByExtension, 0},
+       {KeywordType::kNonFeaturedSiteSearchSetByPolicy, 1},
+       {KeywordType::kFeaturedSiteSearchSetByPolicy, 1},
+       {KeywordType::kSearchAggregatorSetByPolicy, 1},
+       {KeywordType::kDefaultSearchEngineSetByPolicy, 1},
+       {KeywordType::kDefaultSearchEngineSetByUser, 1},
+       {KeywordType::kSubstitutingSiteSearchSetByUser, 1},
+       {KeywordType::kNonSubstitutingSiteSearchSetByUser, 1}});
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

@@ -1482,7 +1482,7 @@ base::CallbackListSubscription TemplateURLService::RegisterOnLoadedCallback(
                  : on_loaded_callbacks_.Add(std::move(callback));
 }
 
-void TemplateURLService::EmitTemplateURLActiveOnStartupHistogram(
+void TemplateURLService::LogActiveTemplateUrlsOnStartup(
     OwnedTemplateURLVector* template_urls) {
   DCHECK(template_urls);
 
@@ -1496,6 +1496,127 @@ void TemplateURLService::EmitTemplateURLActiveOnStartupHistogram(
         histogram_name, turl->GetBuiltinEngineType(),
         BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
   }
+}
+
+void TemplateURLService::LogTemplateUrlTypesOnStartup(
+    OwnedTemplateURLVector* template_urls) {
+  DCHECK(template_urls);
+
+  // Initialize counts for each type of `TemplateURL`.
+  int num_total_turl = 0;
+  int num_prepopulated = 0;
+  int num_featured_policy_set_site_search = 0;
+  int num_policy_set_aggregator = 0;
+  int num_starter_pack = 0;
+  int num_extension_set_search = 0;
+  int num_non_featured_policy_set_site_search = 0;
+  int num_policy_set_default_search = 0;
+  int num_user_set_default_search = 0;
+  int num_user_set_substituting_site_search = 0;
+  int num_user_set_non_substituting_site_search = 0;
+
+  // Count the number of each type of `TemplateURL`.
+  for (auto& turl : *template_urls) {
+    const TemplateURLData& data = turl->data();
+    // When search aggregator policy specifies keyword '@xyz', it also generates
+    // a non-featured 'xyz' aggregator. Skip the non-featured keyword to prevent
+    // double counting.
+    if (data.CreatedByEnterpriseSearchAggregatorPolicy() &&
+        !turl->featured_by_policy()) {
+      continue;
+    }
+    // Prepopulated keywords can have `is_active()` equal to
+    // `ActiveStatus::kTrue` or `ActiveStatus::kUnspecified`.
+    bool is_prepopulated =
+        data.prepopulate_id != 0 &&
+        turl->is_active() != TemplateURLData::ActiveStatus::kFalse;
+    if ((!is_prepopulated &&
+         turl->is_active() == TemplateURLData::ActiveStatus::kUnspecified) ||
+        turl->is_active() == TemplateURLData::ActiveStatus::kFalse) {
+      continue;
+    }
+    num_total_turl++;
+    if (is_prepopulated) {
+      num_prepopulated++;
+    } else if (turl->featured_by_policy()) {
+      if (data.CreatedBySiteSearchPolicy()) {
+        num_featured_policy_set_site_search++;
+      } else if (data.CreatedByEnterpriseSearchAggregatorPolicy()) {
+        num_policy_set_aggregator++;
+      } else {
+        NOTREACHED();
+      }
+    } else if (data.starter_pack_id != 0) {
+      num_starter_pack++;
+    } else if (turl->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
+               turl->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+      num_extension_set_search++;
+    } else if (data.CreatedBySiteSearchPolicy()) {
+      num_non_featured_policy_set_site_search++;
+    } else if (data.CreatedByDefaultSearchProviderPolicy()) {
+      num_policy_set_default_search++;
+    } else if (GetDefaultSearchProvider() &&
+               data.url() == GetDefaultSearchProvider()->url()) {
+      num_user_set_default_search++;
+    } else if (!data.CreatedByPolicy()) {
+      turl->SupportsReplacement(search_terms_data())
+          ? num_user_set_substituting_site_search++
+          : num_user_set_non_substituting_site_search++;
+    } else {
+      NOTREACHED();
+    }
+  }
+
+  base::UmaHistogramExactLinear(base::StringPrintf(kKeywordCountHistogramName),
+                                num_total_turl, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.FeaturedSiteSearchSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_featured_policy_set_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.SearchAggregatorSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_policy_set_aggregator, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.StarterPack", kKeywordCountHistogramName),
+      num_starter_pack, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.Prepopulated", kKeywordCountHistogramName),
+      num_prepopulated, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.SearchEngineSetByExtension",
+                         kKeywordCountHistogramName),
+      num_extension_set_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.NonFeaturedSiteSearchSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_non_featured_policy_set_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.DefaultSearchEngineSetByPolicy",
+                         kKeywordCountHistogramName),
+      num_policy_set_default_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.DefaultSearchEngineSetByUser",
+                         kKeywordCountHistogramName),
+      num_user_set_default_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.SubstitutingSiteSearchSetByUser",
+                         kKeywordCountHistogramName),
+      num_user_set_substituting_site_search, 50);
+
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s.NonSubstitutingSiteSearchSetByUser",
+                         kKeywordCountHistogramName),
+      num_user_set_non_substituting_site_search, 50);
 }
 
 void TemplateURLService::OnWebDataServiceRequestDone(
@@ -1541,7 +1662,8 @@ void TemplateURLService::OnWebDataServiceRequestDone(
   {
     PatchMissingSyncGUIDs(template_urls.get());
     MaybeSetIsActiveSearchEngines(template_urls.get());
-    EmitTemplateURLActiveOnStartupHistogram(template_urls.get());
+    LogActiveTemplateUrlsOnStartup(template_urls.get());
+    LogTemplateUrlTypesOnStartup(template_urls.get());
     SetTemplateURLs(std::move(template_urls));
 
     // This initializes provider_map_ which should be done before

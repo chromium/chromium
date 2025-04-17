@@ -38,6 +38,37 @@ chromium-metrics-reviews@google.com.
                or decrease is necessarily good."/>
 </variants>
 
+<!-- LINT.IfChange(KeywordType) -->
+
+<variants name="KeywordType">
+  <variant name="" summary="aggregated across all keyword types"/>
+  <variant name=".DefaultSearchEngineSetByPolicy"
+      summary="Default Search keywords set by policy."/>
+  <variant name=".DefaultSearchEngineSetByUser"
+      summary="Default Search keywords set by user"/>
+  <variant name=".FeaturedSiteSearchSetByPolicy"
+      summary="featured SiteSearch keywords set by an enterprise admin
+               through policy"/>
+  <variant name=".NonFeaturedSiteSearchSetByPolicy"
+      summary="non-featured SiteSearch keywords set by an enterprise admin
+               through policy"/>
+  <variant name=".NonSubstitutingSiteSearchSetByUser"
+      summary="featured and non-featured SiteSearch keywords set by the user
+               that support replacement. (e.g. 'x.com/q=%s')"/>
+  <variant name=".Prepopulated" summary="prepopulated keywords"/>
+  <variant name=".SearchAggregatorSetByPolicy"
+      summary="featured EnterpriseSearchAggregator keywords set by an
+               enterprise admin through policy"/>
+  <variant name=".SearchEngineSetByExtension"
+      summary="keywords created by an extension."/>
+  <variant name=".StarterPack" summary="starter pack keywords"/>
+  <variant name=".SubstitutingSiteSearchSetByUser"
+      summary="featured and non-featured SiteSearch keywords set by the user
+               that do not support replacement (e.g. 'x.com')"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/search_engines/template_url_service.h:KeywordType) -->
+
 <variants name="NavigationOrSuggestionPrefetch">
   <variant name="NavigationPrefetch"
       summary="Recorded for prefetches where Chrome is relatively confident
@@ -1408,6 +1439,23 @@ Keep consistent with active providers. Doesn't need to include every provider in
     regardless, in order to be consistent with how user actions and histograms
     are handled.
   </summary>
+</histogram>
+
+<histogram name="Omnibox.KeywordCount{KeywordType}" units="count"
+    expires_after="2025-08-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    `TemplateURLs` that are active at load time (usually on start up) are logged
+    in this histogram. Each active keyword should fall into exactly 1 slice (in
+    addition to the aggregate unsliced histogram). This only gets logged once
+    each time the search engines are loaded from the database. If a user changes
+    the active status of a search engine during the same browser session, the
+    keyword counts do not get logged again.
+
+    This slice counts the number of {KeywordType}.
+  </summary>
+  <token key="KeywordType" variants="KeywordType"/>
 </histogram>
 
 <histogram name="Omnibox.KeywordModeUsageByEngineType.{Usage}"
