@@ -66,6 +66,9 @@ class GURL;
 // and passed to price tracking API.
 @property(nonatomic, assign) std::optional<commerce::ProductInfo> productInfo;
 
+// Current price of the product the ShopCard displays.
+@property(nonatomic, copy) NSString* currentPrice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_DATA_H_
