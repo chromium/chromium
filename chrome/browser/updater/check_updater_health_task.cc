@@ -15,6 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/updater/browser_updater_client.h"
@@ -92,7 +94,10 @@ void CheckUpdaterHealthTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BrowserUpdaterClient::Create(scope_)->GetUpdaterVersion(
-      base::BindOnce(&CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth, this)
+      base::BindPostTask(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+          base::BindOnce(&CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth,
+                         this))
           .Then(std::move(callback)));
 }
 

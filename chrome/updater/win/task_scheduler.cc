@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
@@ -838,6 +839,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
   };
 
   [[nodiscard]] Microsoft::WRL::ComPtr<ITaskService> GetTaskService() const {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+
     Microsoft::WRL::ComPtr<ITaskService> task_service;
     HRESULT hr =
         ::CoCreateInstance(CLSID_TaskScheduler, nullptr, CLSCTX_INPROC_SERVER,
