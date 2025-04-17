@@ -5744,6 +5744,15 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       result->intVal = static_cast<int>(ComputeExpandCollapseState());
       break;
 
+    case UIA_ValueValuePropertyId: {
+      if (HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
+        result->vt = VT_BSTR;
+        GetStringAttributeAsBstr(ax::mojom::StringAttribute::kValue,
+                                 &result->bstrVal);
+      }
+      break;
+    }
+
     // Not currently implemented.
     case UIA_AnnotationTypesPropertyId:
     case UIA_CenterPointPropertyId:
@@ -8088,6 +8097,8 @@ std::optional<EVENTID> AXPlatformNodeWin::MojoEventToUIAEvent(
       return UIA_SelectionItem_ElementRemovedFromSelectionEventId;
     case ax::mojom::Event::kTextSelectionChanged:
       return UIA_Text_TextSelectionChangedEventId;
+    case ax::mojom::Event::kTextChanged:
+      return UIA_Text_TextChangedEventId;
     case ax::mojom::Event::kTooltipClosed:
       return UIA_ToolTipClosedEventId;
     case ax::mojom::Event::kTooltipOpened:
@@ -8115,6 +8126,8 @@ std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
       return UIA_SelectionItemIsSelectedPropertyId;
     case ax::mojom::Event::kTextChanged:
       return UIA_NamePropertyId;
+    case ax::mojom::Event::kValueChanged:
+      return UIA_ValueValuePropertyId;
     default:
       return std::nullopt;
   }
