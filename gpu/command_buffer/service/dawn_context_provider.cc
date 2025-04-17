@@ -203,12 +203,15 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
 #endif
   };
 
-#if BUILDFLAG(IS_ANDROID)
   if (backend_type == wgpu::BackendType::Vulkan) {
+#if BUILDFLAG(IS_ANDROID)
     features.push_back(wgpu::FeatureName::StaticSamplers);
     features.push_back(wgpu::FeatureName::YCbCrVulkanSamplers);
+#endif
+    features.push_back(wgpu::FeatureName::DawnDeviceAllocatorControl);
   }
-#elif BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
   if (backend_type == wgpu::BackendType::D3D11) {
     features.push_back(wgpu::FeatureName::D3D11MultithreadProtected);
   }
@@ -684,7 +687,18 @@ bool DawnSharedContext::Initialize(
   cache_desc.functionUserdata = this;
   cache_desc.nextInChain = &toggles_desc;
 
+  wgpu::DawnDeviceAllocatorControl allocator_desc;
   wgpu::DeviceDescriptor descriptor;
+  if (backend_type == wgpu::BackendType::Vulkan) {
+    // Use a 256kb heap block size in the Vulkan backend to minimize
+    // fragmentation.
+    allocator_desc.allocatorHeapBlockSize = 256 * 1024;
+    allocator_desc.nextInChain = &cache_desc;
+    descriptor.nextInChain = &allocator_desc;
+  } else {
+    descriptor.nextInChain = &cache_desc;
+  }
+
   descriptor.SetUncapturedErrorCallback(
       [](const wgpu::Device&, wgpu::ErrorType type, wgpu::StringView message,
          DawnSharedContext* state) {
@@ -702,7 +716,6 @@ bool DawnSharedContext::Initialize(
         }
       },
       this);
-  descriptor.nextInChain = &cache_desc;
 
   std::vector<wgpu::FeatureName> features =
       GetRequiredFeatures(backend_type, adapter_);
