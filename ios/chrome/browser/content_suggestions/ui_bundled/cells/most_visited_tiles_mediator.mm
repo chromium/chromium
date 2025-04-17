@@ -162,7 +162,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  // This is used by the content widget.
+  // This is used by the shortcuts widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       mostVisited, _mostVisitedAttributesProvider,
       app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
@@ -190,7 +190,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 }
 
 - (void)onIconMadeAvailable:(const GURL&)siteURL {
-  // This is used by the content widget.
+  // This is used by the shortcuts widget.
   content_suggestions_tile_saver::UpdateSingleFavicon(
       siteURL, _mostVisitedAttributesProvider,
       app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);

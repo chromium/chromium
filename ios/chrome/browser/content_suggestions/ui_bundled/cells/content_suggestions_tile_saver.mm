@@ -43,6 +43,9 @@ void WriteToDiskIfComplete(NSDictionary<NSURL*, NTPTile*>* tiles,
 // Gets a name for the favicon file.
 NSString* GetFaviconFileName(const GURL& url);
 
+// Decodes data.
+NSDictionary* DecodeData(NSData* data);
+
 // If the sites currently saved include one with `tile`'s url, replace it by
 // `tile`.
 void WriteSingleUpdatedTileToDisk(NTPTile* tile);
@@ -103,6 +106,20 @@ NSString* GetFaviconFileName(const GURL& url) {
       stringByAppendingString:@".png"];
 }
 
+NSDictionary* DecodeData(NSData* data) {
+  NSError* error = nil;
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+  if (!unarchiver || error) {
+    DLOG(WARNING) << "Error creating unarchiver for most visited: "
+                  << base::SysNSStringToUTF8([error description]);
+    return [[NSMutableDictionary alloc] init];
+  }
+
+  unarchiver.requiresSecureCoding = NO;
+  return [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+}
+
 void GetFaviconsAndSave(
     const ntp_tiles::NTPTilesVector& most_visited_data,
     __strong FaviconAttributesProvider* favicon_provider,
@@ -123,15 +140,29 @@ void GetFaviconsAndSave(
 
 void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory) {
-  // TODO(crbug.com/410336678): The following code is deleting shortcuts needed
-  // for other profiles, update this code to keep data needed from other
-  // profiles.
   NSMutableSet<NSString*>* allowed_files_name = [[NSMutableSet alloc] init];
+
+#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
+  // Add in `allowed_files_name` information about all profiles.
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  NSDictionary* suggested_items =
+      [shared_defaults objectForKey:app_group::kSuggestedItemsForMultiprofile];
+  NSArray<NSData*>* all_data = [suggested_items allValues];
+  for (NSData* data_for_account in all_data) {
+    NSArray<NTPTile*>* tiles = [DecodeData(data_for_account) allValues];
+    // Add urls to the set of allowed_files_name.
+    for (NTPTile* tile in tiles) {
+      [allowed_files_name addObject:tile.faviconFileName];
+    }
+  }
+#else
   for (size_t i = 0; i < most_visited_data.size(); i++) {
     const ntp_tiles::NTPTile& ntp_tile = most_visited_data[i];
     NSString* favicon_file_name = GetFaviconFileName(ntp_tile.url);
     [allowed_files_name addObject:favicon_file_name];
   }
+#endif
+
   [[NSFileManager defaultManager] createDirectoryAtURL:favicons_directory
                            withIntermediateDirectories:YES
                                             attributes:nil
@@ -256,19 +287,9 @@ void WriteSavedMostVisited(
 
 NSDictionary* ReadSavedMostVisited() {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-  NSError* error = nil;
-  NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc]
-      initForReadingFromData:[sharedDefaults
-                                 objectForKey:app_group::kSuggestedItems]
-                       error:&error];
-  if (!unarchiver || error) {
-    DLOG(WARNING) << "Error creating unarchiver for most visited: "
-                  << base::SysNSStringToUTF8([error description]);
-    return [[NSMutableDictionary alloc] init];
-  }
-
-  unarchiver.requiresSecureCoding = NO;
-  return [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  NSDictionary* data =
+      DecodeData([sharedDefaults objectForKey:app_group::kSuggestedItems]);
+  return data;
 }
 
 void UpdateSingleFavicon(const GURL& site_url,
