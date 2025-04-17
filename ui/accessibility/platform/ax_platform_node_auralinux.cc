@@ -1338,8 +1338,6 @@ gfx::Rect GetUnclippedParentHypertextRangeBoundsRect(
 
   const AXPlatformNodeDelegate* parent_ax_platform_node_delegate =
       parent_platform_node->GetDelegate();
-  if (!parent_ax_platform_node_delegate)
-    return gfx::Rect();
 
   return ax_platform_node_delegate->GetHypertextRangeBoundsRect(
              start_offset, end_offset, AXCoordinateSystem::kRootFrame,
@@ -1826,9 +1824,10 @@ AtkObject* GetColumnHeader(AtkTable* table, gint column) {
   // AtkTable supports only one column header object. So return the first one
   // we find. In the case of multiple headers, ATs can fall back on the column
   // description.
-  std::vector<int32_t> ids = obj->GetDelegate()->GetColHeaderNodeIds(column);
+  AXPlatformNodeDelegate* const delegate = obj->GetDelegate();
+  std::vector<int32_t> ids = delegate->GetColHeaderNodeIds(column);
   for (const auto& node_id : ids) {
-    if (AXPlatformNode* header = obj->GetDelegate()->GetFromNodeID(node_id)) {
+    if (AXPlatformNode* header = delegate->GetFromNodeID(node_id)) {
       if (AtkObject* atk_header = header->GetNativeViewAccessible()) {
         g_object_ref(atk_header);
         return atk_header;
@@ -1849,9 +1848,10 @@ AtkObject* GetRowHeader(AtkTable* table, gint row) {
   // AtkTable supports only one row header object. So return the first one
   // we find. In the case of multiple headers, ATs can fall back on the row
   // description.
-  std::vector<int32_t> ids = obj->GetDelegate()->GetRowHeaderNodeIds(row);
+  AXPlatformNodeDelegate* const delegate = obj->GetDelegate();
+  std::vector<int32_t> ids = delegate->GetRowHeaderNodeIds(row);
   for (const auto& node_id : ids) {
-    if (AXPlatformNode* header = obj->GetDelegate()->GetFromNodeID(node_id)) {
+    if (AXPlatformNode* header = delegate->GetFromNodeID(node_id)) {
       if (AtkObject* atk_header = header->GetNativeViewAccessible()) {
         g_object_ref(atk_header);
         return atk_header;
@@ -1880,8 +1880,9 @@ const gchar* GetColumnDescription(AtkTable* table, gint column) {
   if (!obj)
     return nullptr;
 
-  std::vector<int32_t> ids = obj->GetDelegate()->GetColHeaderNodeIds(column);
-  return BuildDescriptionFromHeaders(obj->GetDelegate(), ids);
+  AXPlatformNodeDelegate* const delegate = obj->GetDelegate();
+  std::vector<int32_t> ids = delegate->GetColHeaderNodeIds(column);
+  return BuildDescriptionFromHeaders(delegate, ids);
 }
 
 const gchar* GetRowDescription(AtkTable* table, gint row) {
@@ -1891,8 +1892,9 @@ const gchar* GetRowDescription(AtkTable* table, gint row) {
   if (!obj)
     return nullptr;
 
-  std::vector<int32_t> ids = obj->GetDelegate()->GetRowHeaderNodeIds(row);
-  return BuildDescriptionFromHeaders(obj->GetDelegate(), ids);
+  AXPlatformNodeDelegate* const delegate = obj->GetDelegate();
+  std::vector<int32_t> ids = delegate->GetRowHeaderNodeIds(row);
+  return BuildDescriptionFromHeaders(delegate, ids);
 }
 
 void Init(AtkTableIface* iface) {
@@ -1953,10 +1955,10 @@ GPtrArray* GetColumnHeaderCells(AtkTableCell* cell) {
   if (!col_index)
     return array;
 
-  const std::vector<int32_t> ids =
-      obj->GetDelegate()->GetColHeaderNodeIds(*col_index);
+  AXPlatformNodeDelegate* const delegate = obj->GetDelegate();
+  const std::vector<int32_t> ids = delegate->GetColHeaderNodeIds(*col_index);
   for (const auto& node_id : ids) {
-    if (AXPlatformNode* node = obj->GetDelegate()->GetFromNodeID(node_id)) {
+    if (AXPlatformNode* node = delegate->GetFromNodeID(node_id)) {
       if (AtkObject* atk_node = node->GetNativeViewAccessible()) {
         g_ptr_array_add(array, g_object_ref(atk_node));
       }
@@ -2018,10 +2020,10 @@ GPtrArray* GetRowHeaderCells(AtkTableCell* cell) {
   if (!row_index)
     return array;
 
-  const std::vector<int32_t> ids =
-      obj->GetDelegate()->GetRowHeaderNodeIds(*row_index);
+  AXPlatformNodeDelegate* const delegate = obj->GetDelegate();
+  const std::vector<int32_t> ids = delegate->GetRowHeaderNodeIds(*row_index);
   for (const auto& node_id : ids) {
-    if (AXPlatformNode* node = obj->GetDelegate()->GetFromNodeID(node_id)) {
+    if (AXPlatformNode* node = delegate->GetFromNodeID(node_id)) {
       if (AtkObject* atk_node = node->GetNativeViewAccessible()) {
         g_ptr_array_add(array, g_object_ref(atk_node));
       }
@@ -2444,11 +2446,13 @@ void AXPlatformNodeAuraLinux::SetDocumentParentOnFrameIfNecessary() {
     return;
   }
 
-  if (!GetDelegate()->IsWebContent())
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
+  if (!delegate->IsWebContent()) {
     return;
+  }
 
   // If there is a parent, then this is not the root document.
-  if (GetDelegate()->node()->GetUnignoredParent()) {
+  if (delegate->node()->GetUnignoredParent()) {
     return;
   }
 
@@ -2474,10 +2478,10 @@ AtkObject* AXPlatformNodeAuraLinux::FindPrimaryWebContentDocument() {
   // It could get multiple web contents since additional web content is added,
   // when the DevTools window is opened.
   std::vector<AtkObject*> web_content_candidates;
-  for (auto child_iterator_ptr = GetDelegate()->ChildrenBegin();
-       *child_iterator_ptr != *GetDelegate()->ChildrenEnd();
-       ++(*child_iterator_ptr)) {
-    AtkObject* child = child_iterator_ptr->GetNativeViewAccessible();
+  for (auto scan = GetDelegate()->ChildrenBegin(),
+            end = GetDelegate()->ChildrenEnd();
+       *scan != *end; ++(*scan)) {
+    AtkObject* child = scan->GetNativeViewAccessible();
     auto* child_node = AXPlatformNodeAuraLinux::FromAtkObject(child);
     if (!child_node)
       continue;
@@ -3061,7 +3065,8 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   if (atk_object_ && atk_object_ == g_active_views_dialog)
     atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
 
-  bool is_minimized = delegate_->IsMinimized();
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
+  bool is_minimized = delegate->IsMinimized();
   if (is_minimized && GetRole() == ax::mojom::Role::kWindow)
     atk_state_set_add_state(atk_state_set, ATK_STATE_ICONIFIED);
 
@@ -3086,8 +3091,9 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_HORIZONTAL);
   if (!IsInvisibleOrIgnored()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_VISIBLE);
-    if (!delegate_->IsOffscreen() && !is_minimized)
+    if (!delegate->IsOffscreen() && !is_minimized) {
       atk_state_set_add_state(atk_state_set, ATK_STATE_SHOWING);
+    }
   }
   if (HasState(ax::mojom::State::kMultiselectable))
     atk_state_set_add_state(atk_state_set, ATK_STATE_MULTISELECTABLE);
@@ -3149,8 +3155,7 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   }
 
   if (GetData().GetRestriction() != ax::mojom::Restriction::kDisabled) {
-    if (GetDelegate()->IsReadOnlySupported() &&
-        GetDelegate()->IsReadOnlyOrDisabled()) {
+    if (delegate->IsReadOnlySupported() && delegate->IsReadOnlyOrDisabled()) {
       // Runtime check in case we were compiled with a newer version of ATK.
       if (PlatformSupportsState(ATK_STATE_READ_ONLY))
         atk_state_set_add_state(atk_state_set, ATK_STATE_READ_ONLY);
@@ -3246,18 +3251,21 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
     }
   }
 
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
+
   // For each possible relation defined by an IntAttribute, we test that
   // attribute and then look for reverse relations.
   for (auto relation : kIntRelations) {
     if (AXPlatformNode* target =
-            GetDelegate()->GetTargetNodeForRelation(relation.attribute))
+            delegate->GetTargetNodeForRelation(relation.attribute)) {
       AddRelationToSet(relation_set, relation.relation, target);
+    }
 
     if (!relation.reverse_relation.has_value())
       continue;
 
     std::vector<AXPlatformNode*> target_ids =
-        GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
+        delegate->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);
     }
@@ -3267,7 +3275,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
   // IntListAttribute. In this case we need to handle each target in the list.
   for (const auto& relation : kIntListRelations) {
     std::vector<AXPlatformNode*> targets =
-        GetDelegate()->GetTargetNodesForRelation(relation.attribute);
+        delegate->GetTargetNodesForRelation(relation.attribute);
     for (AXPlatformNode* target : targets) {
       AddRelationToSet(relation_set, relation.relation, target);
     }
@@ -3276,7 +3284,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
       continue;
 
     std::vector<AXPlatformNode*> reverse_target_ids =
-        GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
+        delegate->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : reverse_target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);
     }
@@ -3569,7 +3577,7 @@ void AXPlatformNodeAuraLinux::OnWindowVisibilityChanged() {
   if (GetAtkRole() != ATK_ROLE_FRAME)
     return;
 
-  bool minimized = delegate_->IsMinimized();
+  bool minimized = GetDelegate()->IsMinimized();
   if (minimized == was_minimized_)
     return;
 
@@ -3807,10 +3815,11 @@ void AXPlatformNodeAuraLinux::OnTextSelectionChanged() {
   GetFullSelection(&anchor_node_id, &anchor_offset, &focus_node_id,
                    &focus_offset);
 
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
   auto* anchor_node = static_cast<AXPlatformNodeAuraLinux*>(
-      GetDelegate()->GetFromNodeID(anchor_node_id));
+      delegate->GetFromNodeID(anchor_node_id));
   auto* focus_node = static_cast<AXPlatformNodeAuraLinux*>(
-      GetDelegate()->GetFromNodeID(focus_node_id));
+      delegate->GetFromNodeID(focus_node_id));
   if (!anchor_node || !focus_node)
     return;
 
@@ -4335,8 +4344,8 @@ gfx::Vector2d AXPlatformNodeAuraLinux::GetParentFrameOriginInScreenCoordinates()
 
 gfx::Rect AXPlatformNodeAuraLinux::GetExtentsRelativeToAtkCoordinateType(
     AtkCoordType coord_type) const {
-  gfx::Rect extents = delegate_->GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
-                                               AXClippingBehavior::kUnclipped);
+  gfx::Rect extents = GetDelegate()->GetBoundsRect(
+      AXCoordinateSystem::kScreenDIPs, AXClippingBehavior::kUnclipped);
   switch (coord_type) {
     case ATK_XY_SCREEN:
       break;
@@ -4422,7 +4431,7 @@ AXPlatformNodeAuraLinux::HitTestSync(gint x, gint y, AtkCoordType coord_type) {
 bool AXPlatformNodeAuraLinux::GrabFocus() {
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
-  return delegate_->AccessibilityPerformAction(action_data);
+  return GetDelegate()->AccessibilityPerformAction(action_data);
 }
 
 bool AXPlatformNodeAuraLinux::FocusFirstFocusableAncestorInWebContent() {
@@ -4451,10 +4460,10 @@ bool AXPlatformNodeAuraLinux::FocusFirstFocusableAncestorInWebContent() {
   // If any of the siblings of this element are focusable, focusing the parent
   // would be like moving the focus position backward, so we should fall back
   // to setting the sequential focus navigation starting point.
-  for (auto child_iterator_ptr = parent->GetDelegate()->ChildrenBegin();
-       *child_iterator_ptr != *parent->GetDelegate()->ChildrenEnd();
-       ++(*child_iterator_ptr)) {
-    auto* child = FromAtkObject(child_iterator_ptr->GetNativeViewAccessible());
+  for (auto scan = parent->GetDelegate()->ChildrenBegin(),
+            end = parent->GetDelegate()->ChildrenEnd();
+       *scan != *end; ++(*scan)) {
+    auto* child = FromAtkObject(scan->GetNativeViewAccessible());
     if (!child || child == this)
       continue;
 
@@ -4469,7 +4478,7 @@ bool AXPlatformNodeAuraLinux::SetSequentialFocusNavigationStartingPoint() {
   AXActionData action_data;
   action_data.action =
       ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint;
-  return delegate_->AccessibilityPerformAction(action_data);
+  return GetDelegate()->AccessibilityPerformAction(action_data);
 }
 
 bool AXPlatformNodeAuraLinux::
@@ -4485,7 +4494,8 @@ bool AXPlatformNodeAuraLinux::
 
 bool AXPlatformNodeAuraLinux::
     GrabFocusOrSetSequentialFocusNavigationStartingPointAtOffset(int offset) {
-  int child_count = delegate_->GetChildCount();
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
+  int child_count = delegate->GetChildCount();
   if (IsAtomicTextField() || child_count == 0)
     return GrabFocusOrSetSequentialFocusNavigationStartingPoint();
 
@@ -4494,7 +4504,7 @@ bool AXPlatformNodeAuraLinux::
   // building the hypertext here.
   int current_offset = 0;
   for (int i = 0; i < child_count; ++i) {
-    auto* child = FromAtkObject(delegate_->ChildAtIndex(i));
+    auto* child = FromAtkObject(delegate->ChildAtIndex(i));
     if (!child)
       continue;
 
@@ -4555,14 +4565,18 @@ AtkStateType AXPlatformNodeAuraLinux::GetAtkStateTypeForCheckableNode() {
 
 const gchar* AXPlatformNodeAuraLinux::GetDocumentAttributeValue(
     const gchar* attribute) const {
-  if (!g_ascii_strcasecmp(attribute, "DocType"))
-    return delegate_->GetTreeData().doctype.c_str();
-  else if (!g_ascii_strcasecmp(attribute, "MimeType"))
-    return delegate_->GetTreeData().mimetype.c_str();
-  else if (!g_ascii_strcasecmp(attribute, "Title"))
-    return delegate_->GetTreeData().title.c_str();
-  else if (!g_ascii_strcasecmp(attribute, "URI"))
-    return delegate_->GetTreeData().url.c_str();
+  if (!g_ascii_strcasecmp(attribute, "DocType")) {
+    return GetDelegate()->GetTreeData().doctype.c_str();
+  }
+  if (!g_ascii_strcasecmp(attribute, "MimeType")) {
+    return GetDelegate()->GetTreeData().mimetype.c_str();
+  }
+  if (!g_ascii_strcasecmp(attribute, "Title")) {
+    return GetDelegate()->GetTreeData().title.c_str();
+  }
+  if (!g_ascii_strcasecmp(attribute, "URI")) {
+    return GetDelegate()->GetTreeData().url.c_str();
+  }
 
   return nullptr;
 }
@@ -4652,8 +4666,9 @@ int AXPlatformNodeAuraLinux::GetCaretOffset() {
   }
 
   std::pair<int, int> selection;
-  if (GetDelegate()->IsWebContent()) {
-    AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
+  if (delegate->IsWebContent()) {
+    AXSelection unignored_selection = delegate->GetUnignoredSelection();
     GetSelectionOffsetsFromTree(&unignored_selection, &selection.first,
                                 &selection.second, /*caret_only*/ true);
   } else {
@@ -5034,10 +5049,10 @@ std::optional<std::pair<int, int>>
 AXPlatformNodeAuraLinux::GetHypertextExtentsOfChild(
     AXPlatformNodeAuraLinux* child_to_find) {
   int current_offset = 0;
-  for (auto child_iterator_ptr = GetDelegate()->ChildrenBegin();
-       *child_iterator_ptr != *GetDelegate()->ChildrenEnd();
-       ++(*child_iterator_ptr)) {
-    auto* child = FromAtkObject(child_iterator_ptr->GetNativeViewAccessible());
+  for (auto scan = GetDelegate()->ChildrenBegin(),
+            end = GetDelegate()->ChildrenEnd();
+       *scan != *end; ++(*scan)) {
+    auto* child = FromAtkObject(scan->GetNativeViewAccessible());
     if (!child)
       continue;
 
@@ -5119,8 +5134,9 @@ std::pair<int, int> AXPlatformNodeAuraLinux::GetSelectionOffsetsForAtk() {
   // selected, whereas node attributes might contain selection extents that are
   // no longer part of the visual selection.
   std::pair<int, int> selection;
-  if (GetDelegate()->IsWebContent()) {
-    AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
+  AXPlatformNodeDelegate* const delegate = GetDelegate();
+  if (delegate->IsWebContent()) {
+    AXSelection unignored_selection = delegate->GetUnignoredSelection();
     GetSelectionOffsetsFromTree(&unignored_selection, &selection.first,
                                 &selection.second);
   } else {

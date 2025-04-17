@@ -86,16 +86,16 @@
 // NULL.
 //
 #define COM_OBJECT_VALIDATE() \
-  if (!GetDelegate())         \
+  if (IsDestroyed())          \
     return E_FAIL;
 #define COM_OBJECT_VALIDATE_1_ARG(arg) \
-  if (!GetDelegate())                  \
+  if (IsDestroyed())                   \
     return E_FAIL;                     \
   if (!arg)                            \
     return E_INVALIDARG;               \
   *arg = {};
 #define COM_OBJECT_VALIDATE_2_ARGS(arg1, arg2) \
-  if (!GetDelegate())                          \
+  if (IsDestroyed())                           \
     return E_FAIL;                             \
   if (!arg1)                                   \
     return E_INVALIDARG;                       \
@@ -104,7 +104,7 @@
     return E_INVALIDARG;                       \
   *arg2 = {};
 #define COM_OBJECT_VALIDATE_3_ARGS(arg1, arg2, arg3) \
-  if (!GetDelegate())                                \
+  if (IsDestroyed())                                 \
     return E_FAIL;                                   \
   if (!arg1)                                         \
     return E_INVALIDARG;                             \
@@ -116,7 +116,7 @@
     return E_INVALIDARG;                             \
   *arg3 = {};
 #define COM_OBJECT_VALIDATE_4_ARGS(arg1, arg2, arg3, arg4) \
-  if (!GetDelegate())                                      \
+  if (IsDestroyed())                                       \
     return E_FAIL;                                         \
   if (!arg1)                                               \
     return E_INVALIDARG;                                   \
@@ -131,7 +131,7 @@
     return E_INVALIDARG;                                   \
   *arg4 = {};
 #define COM_OBJECT_VALIDATE_5_ARGS(arg1, arg2, arg3, arg4, arg5) \
-  if (!GetDelegate())                                            \
+  if (IsDestroyed())                                             \
     return E_FAIL;                                               \
   if (!arg1)                                                     \
     return E_INVALIDARG;                                         \
@@ -149,15 +149,15 @@
     return E_INVALIDARG;                                         \
   *arg5 = {};
 #define COM_OBJECT_VALIDATE_VAR_ID_AND_GET_TARGET(var_id, target) \
-  if (!GetDelegate())                                             \
+  if (IsDestroyed())                                              \
     return E_FAIL;                                                \
   target = GetTargetFromChildID(var_id);                          \
   if (!target)                                                    \
     return E_INVALIDARG;                                          \
-  if (!target->GetDelegate())                                     \
+  if (target->IsDestroyed())                                      \
     return E_INVALIDARG;
 #define COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, arg, target) \
-  if (!GetDelegate())                                                        \
+  if (IsDestroyed())                                                         \
     return E_FAIL;                                                           \
   if (!arg)                                                                  \
     return E_INVALIDARG;                                                     \
@@ -165,11 +165,11 @@
   target = GetTargetFromChildID(var_id);                                     \
   if (!target)                                                               \
     return E_INVALIDARG;                                                     \
-  if (!target->GetDelegate())                                                \
+  if (target->IsDestroyed())                                                 \
     return E_INVALIDARG;
 #define COM_OBJECT_VALIDATE_VAR_ID_2_ARGS_AND_GET_TARGET(var_id, arg1, arg2, \
                                                          target)             \
-  if (!GetDelegate())                                                        \
+  if (IsDestroyed())                                                         \
     return E_FAIL;                                                           \
   if (!arg1)                                                                 \
     return E_INVALIDARG;                                                     \
@@ -180,11 +180,11 @@
   target = GetTargetFromChildID(var_id);                                     \
   if (!target)                                                               \
     return E_INVALIDARG;                                                     \
-  if (!target->GetDelegate())                                                \
+  if (target->IsDestroyed())                                                 \
     return E_INVALIDARG;
 #define COM_OBJECT_VALIDATE_VAR_ID_3_ARGS_AND_GET_TARGET(var_id, arg1, arg2, \
                                                          arg3, target)       \
-  if (!GetDelegate())                                                        \
+  if (IsDestroyed())                                                         \
     return E_FAIL;                                                           \
   if (!arg1)                                                                 \
     return E_INVALIDARG;                                                     \
@@ -198,11 +198,11 @@
   target = GetTargetFromChildID(var_id);                                     \
   if (!target)                                                               \
     return E_INVALIDARG;                                                     \
-  if (!target->GetDelegate())                                                \
+  if (target->IsDestroyed())                                                 \
     return E_INVALIDARG;
 #define COM_OBJECT_VALIDATE_VAR_ID_4_ARGS_AND_GET_TARGET(var_id, arg1, arg2, \
                                                          arg3, arg4, target) \
-  if (!GetDelegate())                                                        \
+  if (IsDestroyed())                                                         \
     return E_FAIL;                                                           \
   if (!arg1)                                                                 \
     return E_INVALIDARG;                                                     \
@@ -219,7 +219,7 @@
   target = GetTargetFromChildID(var_id);                                     \
   if (!target)                                                               \
     return E_INVALIDARG;                                                     \
-  if (!target->GetDelegate())                                                \
+  if (target->IsDestroyed())                                                 \
     return E_INVALIDARG;
 
 namespace ui {
@@ -402,7 +402,11 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
     return nullptr;
   Microsoft::WRL::ComPtr<AXPlatformNodeWin> ax_platform_node;
   accessible->QueryInterface(IID_PPV_ARGS(&ax_platform_node));
-  return ax_platform_node.Get();
+  if (AXPlatformNodeWin* platform_node = ax_platform_node.Get();
+      platform_node && !platform_node->IsDestroyed()) {
+    return platform_node;
+  }
+  return nullptr;
 }
 
 //
@@ -612,8 +616,9 @@ SAFEARRAY* AXPlatformNodeWin::CreateClickablePointArray() {
 gfx::Vector2d AXPlatformNodeWin::CalculateUIAScrollPoint(
     const ScrollAmount horizontal_amount,
     const ScrollAmount vertical_amount) const {
-  if (!GetDelegate() || !IsScrollable())
+  if (!IsScrollable()) {
     return {};
+  }
 
   const gfx::Rect bounds = GetDelegate()->GetBoundsRect(
       AXCoordinateSystem::kScreenDIPs, AXClippingBehavior::kClipped);
@@ -731,7 +736,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&
-            GetDelegate()->GetFocus() == GetNativeViewAccessible()) {
+            GetFocus() == GetNativeViewAccessible()) {
           event_type = ax::mojom::Event::kFocus;
         }
       }
@@ -863,8 +868,9 @@ bool AXPlatformNodeWin::IsValidUiaRelationTarget(
     AXPlatformNode* ax_platform_node) {
   if (!ax_platform_node)
     return false;
-  if (!ax_platform_node->GetDelegate())
+  if (ax_platform_node->IsDestroyed()) {
     return false;
+  }
 
   // This is needed for get_FragmentRoot.
   if (!ax_platform_node->GetDelegate()->GetTargetForNativeAccessibilityEvent())
@@ -1085,7 +1091,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"document"};
 
     case ax::mojom::Role::kEmbeddedObject:
-      if (GetDelegate()->GetChildCount()) {
+      if (GetChildCount()) {
         return {UIALocalizationStrategy::kSupply, UIA_PaneControlTypeId,
                 L"group"};
       }
@@ -1221,7 +1227,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       // still has non-ignored descendants, which happens only when:
       // - The list marker itself is ignored but the descendants are not
       // - Or the list marker contains images
-      if (!GetDelegate()->GetChildCount()) {
+      if (!GetChildCount()) {
         return {UIALocalizationStrategy::kSupply, UIA_TextControlTypeId,
                 L"description"};
       }
@@ -1324,7 +1330,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
 
     case ax::mojom::Role::kPluginObject:
       // UIA_DocumentControlTypeId
-      if (GetDelegate()->GetChildCount()) {
+      if (GetChildCount()) {
         return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
                 L"group"};
       }
@@ -1690,13 +1696,15 @@ IFACEMETHODIMP AXPlatformNodeWin::accNavigate(LONG nav_dir,
   IAccessible* result = nullptr;
   switch (nav_dir) {
     case NAVDIR_FIRSTCHILD:
-      if (GetDelegate()->GetChildCount() > 0)
+      if (GetChildCount() > 0) {
         result = GetDelegate()->GetFirstChild();
+      }
       break;
 
     case NAVDIR_LASTCHILD:
-      if (GetDelegate()->GetChildCount() > 0)
+      if (GetChildCount() > 0) {
         result = GetDelegate()->GetLastChild();
+      }
       break;
 
     case NAVDIR_NEXT: {
@@ -1801,7 +1809,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accChildCount(LONG* child_count) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_CHILD_COUNT);
   COM_OBJECT_VALIDATE_1_ARG(child_count);
 
-  *child_count = GetDelegate()->GetChildCount();
+  *child_count = GetChildCount();
   return S_OK;
 }
 
@@ -1848,7 +1856,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accFocus(VARIANT* focus_child) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_FOCUS);
   COM_OBJECT_VALIDATE_1_ARG(focus_child);
 
-  gfx::NativeViewAccessible focus_accessible = GetDelegate()->GetFocus();
+  gfx::NativeViewAccessible focus_accessible = GetFocus();
   if (focus_accessible == this) {
     focus_child->vt = VT_I4;
     focus_child->lVal = CHILDID_SELF;
@@ -1989,9 +1997,9 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accSelection(VARIANT* selected) {
   COM_OBJECT_VALIDATE_1_ARG(selected);
 
   std::vector<Microsoft::WRL::ComPtr<IDispatch>> selected_nodes;
-  for (size_t i = 0; i < GetDelegate()->GetChildCount(); ++i) {
+  for (size_t i = 0, child_count = GetChildCount(); i < child_count; ++i) {
     auto* node = static_cast<AXPlatformNodeWin*>(
-        FromNativeViewAccessible(GetDelegate()->ChildAtIndex(i)));
+        FromNativeViewAccessible(ChildAtIndex(i)));
     if (node && node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
       Microsoft::WRL::ComPtr<IDispatch> node_idispatch;
       if (SUCCEEDED(node->QueryInterface(IID_PPV_ARGS(&node_idispatch))))
@@ -5234,8 +5242,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_BoundingRectangle(
   WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_GET_BOUNDINGRECTANGLE);
 
   gfx::Rect bounds =
-      delegate_->GetBoundsRect(AXCoordinateSystem::kScreenPhysicalPixels,
-                               AXClippingBehavior::kUnclipped);
+      GetDelegate()->GetBoundsRect(AXCoordinateSystem::kScreenPhysicalPixels,
+                                   AXClippingBehavior::kUnclipped);
   screen_physical_pixel_bounds->left = bounds.x();
   screen_physical_pixel_bounds->top = bounds.y();
   screen_physical_pixel_bounds->width = bounds.width();
@@ -5260,7 +5268,7 @@ IFACEMETHODIMP AXPlatformNodeWin::SetFocus() {
 
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
-  delegate_->AccessibilityPerformAction(action_data);
+  GetDelegate()->AccessibilityPerformAction(action_data);
   return S_OK;
 }
 
@@ -5427,7 +5435,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
 
     case UIA_HasKeyboardFocusPropertyId:
       result->vt = VT_BOOL;
-      result->boolVal = (delegate_->GetFocus() == GetNativeViewAccessible())
+      result->boolVal = (GetFocus() == GetNativeViewAccessible())
                             ? VARIANT_TRUE
                             : VARIANT_FALSE;
       break;
@@ -5839,7 +5847,7 @@ IFACEMETHODIMP AXPlatformNodeWin::ShowContextMenu() {
 
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kShowContextMenu;
-  delegate_->AccessibilityPerformAction(action_data);
+  GetDelegate()->AccessibilityPerformAction(action_data);
   return S_OK;
 }
 
@@ -5922,11 +5930,6 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
               base::WideToASCII(base::win::WStringFromGUID(guidService)),
               "riid", base::WideToASCII(base::win::WStringFromGUID(riid)));
   COM_OBJECT_VALIDATE_1_ARG(object);
-
-  if (!GetDelegate()) {
-    *object = nullptr;
-    return E_FAIL;
-  }
 
   if (riid == IID_IAccessible2) {
     for (WinAccessibilityAPIUsageObserver& observer :
@@ -6216,7 +6219,7 @@ std::optional<LCID> AXPlatformNodeWin::GetCultureAttributeAsLCID() const {
 COLORREF AXPlatformNodeWin::GetIntAttributeAsCOLORREF(
     ax::mojom::IntAttribute attribute) const {
   SkColor color;
-  auto maybe_value = ComputeAttribute(delegate_, attribute);
+  auto maybe_value = ComputeAttribute(GetDelegate(), attribute);
   if (maybe_value.has_value())
     color = maybe_value.value();
   else
@@ -6646,11 +6649,7 @@ int AXPlatformNodeWin::MSAARole() {
       // if they are represented as its children in the accessibility tree. For
       // example, one of the places that would be negatively impacted is the
       // reading of PDFs.
-      if (GetDelegate()->GetChildCount()) {
-        return ROLE_SYSTEM_GROUPING;
-      } else {
-        return ROLE_SYSTEM_CLIENT;
-      }
+      return GetChildCount() ? ROLE_SYSTEM_GROUPING : ROLE_SYSTEM_CLIENT;
 
     case ax::mojom::Role::kFigcaption:
       return ROLE_SYSTEM_GROUPING;
@@ -6816,11 +6815,7 @@ int AXPlatformNodeWin::MSAARole() {
 
     case ax::mojom::Role::kPluginObject:
       // See also case ax::mojom::Role::kEmbeddedObject.
-      if (GetDelegate()->GetChildCount()) {
-        return ROLE_SYSTEM_GROUPING;
-      } else {
-        return ROLE_SYSTEM_CLIENT;
-      }
+      return GetChildCount() ? ROLE_SYSTEM_GROUPING : ROLE_SYSTEM_CLIENT;
 
     case ax::mojom::Role::kPopUpButton:
       return ROLE_SYSTEM_BUTTONMENU;
@@ -6993,11 +6988,8 @@ int AXPlatformNodeWin::MSAARole() {
 
 AXFragmentRootWin* AXPlatformNodeWin::GetAXFragmentRootWin() {
   gfx::AcceleratedWidget widget =
-      delegate_->GetTargetForNativeAccessibilityEvent();
-  if (widget) {
-    return AXFragmentRootWin::GetForAcceleratedWidget(widget);
-  }
-  return nullptr;
+      GetDelegate()->GetTargetForNativeAccessibilityEvent();
+  return widget ? AXFragmentRootWin::GetForAcceleratedWidget(widget) : nullptr;
 }
 
 AXPlatformNodeWin* AXPlatformNodeWin::GetParentPlatformNodeWin() const {
@@ -7193,11 +7185,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       // if they are represented as its children in the accessibility tree. For
       // example, one of the places that would be negatively impacted is the
       // reading of PDFs.
-      if (GetDelegate()->GetChildCount()) {
-        ia2_role = IA2_ROLE_SECTION;
-      } else {
-        ia2_role = IA2_ROLE_EMBEDDED_OBJECT;
-      }
+      ia2_role = GetChildCount() ? IA2_ROLE_SECTION : IA2_ROLE_EMBEDDED_OBJECT;
       break;
     case ax::mojom::Role::kFigcaption:
       ia2_role = IA2_ROLE_CAPTION;
@@ -7258,11 +7246,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       break;
     case ax::mojom::Role::kPluginObject:
       // See also case ax::mojom::Role::kEmbeddedObject.
-      if (GetDelegate()->GetChildCount()) {
-        ia2_role = IA2_ROLE_SECTION;
-      } else {
-        ia2_role = IA2_ROLE_EMBEDDED_OBJECT;
-      }
+      ia2_role = GetChildCount() ? IA2_ROLE_SECTION : IA2_ROLE_EMBEDDED_OBJECT;
       break;
     case ax::mojom::Role::kRegion:
       ia2_role = IA2_ROLE_LANDMARK;
@@ -7551,7 +7535,7 @@ bool AXPlatformNodeWin::CanHaveUIALabeledBy() {
 bool AXPlatformNodeWin::IsNameExposed() const {
   switch (GetRole()) {
     case ax::mojom::Role::kListMarker:
-      return !GetDelegate()->GetChildCount();
+      return !GetChildCount();
     default:
       return true;
   }
@@ -7573,7 +7557,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       // content is not. We want to avoid reading out a button, moving to the
       // next item, and then reading out the button's text child, causing the
       // text to be effectively repeated.
-      auto* ancestor = FromNativeViewAccessible(GetDelegate()->GetParent());
+      auto* ancestor = FromNativeViewAccessible(GetParent());
       while (ancestor) {
         if (IsUIACellOrTableHeader(ancestor->GetRole()))
           return false;
@@ -7598,8 +7582,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
             // See |ComputeListItemNameAsBstr|. This is only possible when the
             // element is a direct child of the list item, otherwise the child
             // should be exposed as a UIA Control.
-            return ancestor !=
-                   FromNativeViewAccessible(GetDelegate()->GetParent());
+            return ancestor != FromNativeViewAccessible(GetParent());
           case ax::mojom::Role::kButton:
           case ax::mojom::Role::kCheckBox:
           case ax::mojom::Role::kHeading:
@@ -7796,7 +7779,7 @@ ULONG AXPlatformNodeWin::InternalAddRef() {
   // for some COM-ish purpose; for example, being handed to an accessibility
   // tool via a WM_GETOBJECT message handler.
   const auto ref_count = SequenceAffineComObjectRoot::InternalAddRef();
-  if (delegate_) {
+  if (!IsDestroyed()) {
     if (ref_count == 2) {
       // This node is now referenced by something other than its delegate, so it
       // has awoken from dormancy into life.
@@ -7805,7 +7788,7 @@ ULONG AXPlatformNodeWin::InternalAddRef() {
       OnReferenced();
     }
   } else {
-    // It is not possible for the refcount to go from 0 to 1 without a delegate.
+    // It is not possible for the refcount to go from 0 to 1 after destruction.
     CHECK_GT(ref_count, 1U);
   }
   return ref_count;
@@ -7818,7 +7801,7 @@ ULONG AXPlatformNodeWin::InternalRelease() {
   // outstanding references, `OnDereferenced()` will not be called before
   // destruction.
   const auto ref_count = SequenceAffineComObjectRoot::InternalRelease();
-  if (delegate_ && ref_count == 1) {
+  if (!IsDestroyed() && ref_count == 1) {
     // This node is no longer being referenced by something other than its
     // delegate, so it has slipped back to dormancy.
     --g_live_node_count_;
@@ -7981,7 +7964,7 @@ int AXPlatformNodeWin::MSAAState() const {
   //
   // Handle STATE_SYSTEM_FOCUSED
   //
-  gfx::NativeViewAccessible focus = GetDelegate()->GetFocus();
+  gfx::NativeViewAccessible focus = GetFocus();
   if (focus == const_cast<AXPlatformNodeWin*>(this)->GetNativeViewAccessible())
     msaa_state |= STATE_SYSTEM_FOCUSED;
 
@@ -8252,12 +8235,11 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetTargetFromChildID(
   if (child_id == CHILDID_SELF)
     return this;
 
-  if (child_id >= 1 &&
-      static_cast<size_t>(child_id) <= GetDelegate()->GetChildCount()) {
+  if (child_id >= 1 && static_cast<size_t>(child_id) <= GetChildCount()) {
     // Positive child ids are a 1-based child index, used by clients
     // that want to enumerate all immediate children.
     AXPlatformNodeBase* base = FromNativeViewAccessible(
-        GetDelegate()->ChildAtIndex(static_cast<size_t>(child_id - 1)));
+        ChildAtIndex(static_cast<size_t>(child_id - 1)));
     return static_cast<AXPlatformNodeWin*>(base);
   }
 
@@ -8593,7 +8575,7 @@ void AXPlatformNodeWin::NotifyAddAXModeFlagsForIA2(
     const uint32_t ax_modes) const {
   // Non-web content is always enabled, if a client isn't looking for web
   // content, don't enable.
-  if (!GetDelegate() || !GetDelegate()->IsWebContent()) {
+  if (!GetDelegate()->IsWebContent()) {
     return;
   }
 
@@ -8602,7 +8584,7 @@ void AXPlatformNodeWin::NotifyAddAXModeFlagsForIA2(
 
 void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
     PATTERNID pattern_id) const {
-  if (!GetDelegate() || !GetDelegate()->IsWebContent()) {
+  if (!GetDelegate()->IsWebContent()) {
     return;
   }
 
@@ -8636,8 +8618,9 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     PROPERTYID property_id) const {
   // Non-web content is always enabled, if a client isn't looking for web
   // content, don't enable.
-  if (!GetDelegate() || !GetDelegate()->IsWebContent())
+  if (!GetDelegate()->IsWebContent()) {
     return;
+  }
 
   bool probable_advanced_client_detected = false;
   bool probable_screen_reader_detected = false;

@@ -21,7 +21,7 @@ gfx::NativeViewAccessible AXPlatformNodeFuchsia::GetNativeViewAccessible() {
 }
 
 void AXPlatformNodeFuchsia::PerformAction(const AXActionData& data) {
-  delegate_->AccessibilityPerformAction(data);
+  GetDelegate()->AccessibilityPerformAction(data);
 }
 
 }  // namespace ui

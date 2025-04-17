@@ -79,6 +79,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // each time a user navigates to a new item within the popup.
   static void SetPopupFocusOverride(gfx::NativeViewAccessible focus_override);
 
+  // Returns true if the instance has been destroyed. Generally, no consumers
+  // should hold a pointer to an instance after calling `Destroy`. On platforms
+  // where an instance may outlive its delegate (e.g., on Windows where an
+  // accessibility tool may hold references to COM objects), it is necessary to
+  // check that an instance hasn't been destroyed before handling an inbound
+  // call from the platform.
+  virtual bool IsDestroyed() const = 0;
+
   // Get the platform-specific accessible object type for this instance.
   // On some platforms this is just a type cast, on others it may be a
   // wrapper object or handle.
@@ -103,7 +111,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
                               AnnouncementType announcement_type) = 0;
 #endif
 
-  // Return this object's delegate.
+  // Return this object's delegate. As with all methods, this must not be called
+  // on an instance that has been destroyed (see `IsDestroyed()`).
   virtual AXPlatformNodeDelegate* GetDelegate() const = 0;
 
   // Return true if this object is equal to or a descendant of |ancestor|.

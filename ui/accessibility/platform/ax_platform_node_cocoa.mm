@@ -1032,8 +1032,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSRect)boundsInScreen {
-  if (!_node || !_node->GetDelegate())
+  if (!_node) {
     return NSZeroRect;
+  }
   return gfx::ScreenRectToNSRect(_node->GetDelegate()->GetBoundsRect(
       ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped));
 }
@@ -2959,7 +2960,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-  DCHECK(delegate);
 
   NSMutableArray* ret = [NSMutableArray array];
 
@@ -2992,7 +2992,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
-  DCHECK(tableDelegate);
   for (ui::AXNodeID id : tableDelegate->GetColHeaderNodeIds(*column)) {
     AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
     if (colheader) {
@@ -3010,7 +3009,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   if (ui::IsTableLike(_node->GetRole())) {
     ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-    DCHECK(delegate);
     // The table header container is a special node in the accessibility tree
     // only used on macOS. It has all of the table headers as its children, even
     // though those cells are also children of rows in the table. Internally
@@ -3055,7 +3053,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-  DCHECK(delegate);
   std::optional<int> count = delegate->GetTableColCount();
   if (count.has_value()) {
     return *count;
@@ -3074,7 +3071,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-  DCHECK(delegate);
   std::optional<int> count = delegate->GetTableRowCount();
   if (count.has_value()) {
     return *count;
@@ -3109,9 +3105,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   ui::AXPlatformNodeDelegate* tableDelegate = tableNode->GetDelegate();
-  if (!tableDelegate) {
-    return nil;
-  }
 
   // A table with no row headers.
   if (isTableLike && !tableDelegate->GetTableRowCount().has_value()) {

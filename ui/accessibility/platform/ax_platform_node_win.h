@@ -337,14 +337,14 @@ enum {
 // signals to the OS that the object is no longer valid and no further methods
 // should be called on it.
 //
-#define UIA_VALIDATE_CALL()               \
-  if (!AXPlatformNodeBase::GetDelegate()) \
+#define UIA_VALIDATE_CALL()              \
+  if (AXPlatformNodeBase::IsDestroyed()) \
     return UIA_E_ELEMENTNOTAVAILABLE;
-#define UIA_VALIDATE_CALL_1_ARG(arg)      \
-  if (!AXPlatformNodeBase::GetDelegate()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;     \
-  if (!arg)                               \
-    return E_INVALIDARG;                  \
+#define UIA_VALIDATE_CALL_1_ARG(arg)     \
+  if (AXPlatformNodeBase::IsDestroyed()) \
+    return UIA_E_ELEMENTNOTAVAILABLE;    \
+  if (!arg)                              \
+    return E_INVALIDARG;                 \
   *arg = {};
 
 // A helper for tracing calls for functions implementing accessibility COM

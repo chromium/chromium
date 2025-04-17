@@ -99,6 +99,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
 
   // AXPlatformNode.
   void Destroy() override;
+  bool IsDestroyed() const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
@@ -427,11 +428,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
       int max_items,
       std::vector<AXPlatformNodeBase*>* out_selected_items = nullptr) const;
 
-  //
-  // Delegate.  This is a weak reference which owns |this|.
-  //
-  raw_ptr<AXPlatformNodeDelegate> delegate_ = nullptr;
-
   // Uses the delegate to calculate this node's PosInSet.
   std::optional<int> GetPosInSet() const;
 
@@ -603,9 +599,22 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // selectable children that this object could potentially contain.
   int GetMaxSelectableItems() const;
 
+ private:
+  //
+  // Delegate. This is a weak reference which owns |this|. Valid from `Init()`
+  // through `Destroy()`.
+  //
+  raw_ptr<AXPlatformNodeDelegate> delegate_ = nullptr;
+
+ protected:
   mutable AXLegacyHypertext hypertext_;
 
  private:
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
+      AXPlatformNodeDelegate& delegate);
+
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeTest, HypertextOffsetFromEndpoint);
+
   // Returns true if the index represents a text character.
   bool IsText(const std::u16string& text,
               size_t index,
@@ -616,11 +625,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
 
   // Is there an aria-describedby that points to a role="tooltip".
   bool IsDescribedByTooltip() const;
-
-  friend AXPlatformNode::Pointer AXPlatformNode::Create(
-      AXPlatformNodeDelegate& delegate);
-
-  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeTest, HypertextOffsetFromEndpoint);
 };
 
 }  // namespace ui
