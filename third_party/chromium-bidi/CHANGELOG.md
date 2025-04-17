@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v4.0.0...chromium-bidi-v4.0.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* allow esm imports ([#3326](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3326)) ([8790d0d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8790d0dff7d8f89941135845512e8200c457ce6b))
+* emit `browsingContext.userPrompt` only once ([#3325](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3325)) ([f41fd79](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f41fd793677af2467832d3becbb72f49db59ed35))
+* string `unhandledPromptBehavior` capability implies `beforeUnload: accept` behavior ([#3318](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3318)) ([baa99ae](https://github.com/GoogleChromeLabs/chromium-bidi/commit/baa99ae0186ecee00f30db1d986ad37887dddb6f))
+
 ## [4.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.2.1...chromium-bidi-v4.0.0) (2025-04-14)
 
 
