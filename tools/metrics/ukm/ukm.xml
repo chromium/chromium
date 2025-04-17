@@ -5761,7 +5761,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BTM.ShortVisit">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Records metrics related to user engagement. Recorded when the user stays on
@@ -5865,7 +5865,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BTM.ShortVisitNeighbor">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Emitted at the same time as a BTM.ShortVisit event, but for the pages
@@ -7716,7 +7716,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="DIPS.ChainBegin" singular="True">
-  <owner>rtarpine@google.com</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Emitted after a redirect chain terminates, but for the page visited before
@@ -7738,7 +7738,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="DIPS.ChainEnd" singular="True">
-  <owner>rtarpine@google.com</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Emitted for the page visited at the end of a redirect chain -- the final
@@ -7760,7 +7760,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="DIPS.Deletion" singular="True">
-  <owner>rtarpine@google.com</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Recorded when DIPS judges a site to be an incidental party and deletes its
@@ -7838,7 +7838,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="DIPS.Redirect" singular="True">
-  <owner>rtarpine@google.com</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Recorded on every HTTP redirect or client-side bounce, where a client-side
@@ -16537,7 +16537,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OpenerHeuristic.PopupInteraction">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Recorded when the user first interacts in a pop-up with opener access.
@@ -16581,7 +16581,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OpenerHeuristic.PopupPastInteraction">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Recorded when a pop-up with opener access is initially opened, and the user
@@ -16619,7 +16619,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OpenerHeuristic.PostPopupCookieAccess">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>amaliev@chromium.org</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
@@ -16657,7 +16657,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OpenerHeuristic.TopLevel">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
     Recorded by a top-level page that opens a pop-up with opener access, when
