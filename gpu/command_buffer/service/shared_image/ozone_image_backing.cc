@@ -612,8 +612,8 @@ bool OzoneImageBacking::UploadFromMemoryGraphite(
   auto recording = context_state_->gpu_main_graphite_recorder()->snap();
   skgpu::graphite::InsertRecordingInfo info;
   info.fRecording = recording.get();
-  context_state_->graphite_context()->insertRecording(info);
-  context_state_->graphite_context()->submit();
+  context_state_->graphite_shared_context()->insertRecording(info);
+  context_state_->graphite_shared_context()->submit();
 
   if (written && !IsCleared()) {
     SetCleared();

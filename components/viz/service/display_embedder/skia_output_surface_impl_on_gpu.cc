@@ -55,6 +55,7 @@
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -418,7 +419,7 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(
     const SkiaOutputDevice::ReshapeParams& params) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Reshape");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(gr_context() || graphite_context());
+  DCHECK(gr_context() || graphite_shared_context());
 
   if (context_is_lost_) {
     return;
@@ -487,8 +488,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
                                              /*begin_semaphores=*/nullptr,
                                              /*end_semaphores=*/nullptr);
     bool draw_success = scoped_output_device_paint_->Draw(
-        context_state_->graphite_context(), std::move(graphite_recording),
-        std::move(on_finished));
+        context_state_->graphite_shared_context(),
+        std::move(graphite_recording), std::move(on_finished));
     RecordInsertRenderPassRecording(draw_success);
     if (!draw_success) {
       draw_render_pass_failed_ = true;
@@ -706,11 +707,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     if (on_finished) {
       gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
     }
-    bool insert_success = graphite_context()->insertRecording(info);
+    bool insert_success = graphite_shared_context()->insertRecording(info);
     RecordInsertRenderPassRecording(insert_success);
     if (local_scoped_access &&
         local_scoped_access->NeedGraphiteContextSubmit()) {
-      graphite_context()->submit();
+      graphite_shared_context()->submit();
     }
     if (insert_success) {
       skia_representation->SetCleared();
@@ -871,10 +872,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
   // Skia readback could be synchronous. Incremement counter in case
   // ReadbackCompleted is called immediately.
   num_readbacks_pending_++;
-  if (auto* graphite_context = context_state_->graphite_context()) {
+  if (auto* graphite_shared_context =
+          context_state_->graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    graphite_context->asyncRescaleAndReadPixels(
+    graphite_shared_context->asyncRescaleAndReadPixels(
         surface, dst_info, src_rect, SkSurface::RescaleGamma::kSrc,
         rescale_mode, &CopyOutputResultSkiaRGBA::OnReadbackDone,
         context.release());
@@ -1078,7 +1080,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
                                  : nullptr,
         /*graphite_finished_proc=*/nullptr, readback_context.release());
   } else {
-    CHECK(graphite_context());
+    CHECK(graphite_shared_context());
     skgpu::graphite::GpuFinishedProc graphite_proc =
         [](void* context, skgpu::CallbackResult result) {
           ReadbackContextTexture::OnMailboxReady(context);
@@ -1101,9 +1103,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     return;
   }
 
-  if (graphite_context() && scoped_write->NeedGraphiteContextSubmit()) {
-    if (!graphite_context()->submit()) {
-      DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
+  if (graphite_shared_context() && scoped_write->NeedGraphiteContextSubmit()) {
+    if (!graphite_shared_context()->submit()) {
+      DLOG(ERROR) << "CopyOutputRGBA graphite_shared_context->submit() failed";
       return;
     }
   }
@@ -1205,7 +1207,7 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     info.fTargetSurface = surface;
     info.fFinishedContext = finished_context;
     info.fFinishedProc = graphite_finished_proc;
-    return graphite_context()->insertRecording(info);
+    return graphite_shared_context()->insertRecording(info);
   }
   return false;
 }
@@ -1368,7 +1370,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                           SkAlphaType::kPremul_SkAlphaType,
                           color_space.ToSkColorSpace()));
   } else {
-    CHECK(graphite_context());
+    CHECK(graphite_shared_context());
     intermediate_surface = SkSurfaces::RenderTarget(
         graphite_recorder(),
         SkImageInfo::Make(gfx::SizeToSkISize(intermediate_dst_size),
@@ -1488,7 +1490,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                                  : nullptr,
         /*graphite_finished_proc=*/nullptr, readback_context.release());
   } else {
-    CHECK(graphite_context());
+    CHECK(graphite_shared_context());
     skgpu::graphite::GpuFinishedProc graphite_proc =
         [](void* context, skgpu::CallbackResult result) {
           ReadbackContextTexture::OnMailboxReady(context);
@@ -1511,10 +1513,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  if (graphite_context() &&
+  if (graphite_shared_context() &&
       mailbox_access_data.scoped_write->NeedGraphiteContextSubmit()) {
-    if (!graphite_context()->submit()) {
-      DLOG(ERROR) << "CopyOutputNV12 graphite_context->submit() failed";
+    if (!graphite_shared_context()->submit()) {
+      DLOG(ERROR) << "CopyOutputNV12 graphite_shared_context->submit() failed";
       return;
     }
   }
@@ -1759,11 +1761,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       // Skia readback could be synchronous. Incremement counter in case
       // ReadbackCompleted is called immediately.
       num_readbacks_pending_++;
-      if (auto* graphite_context = context_state_->graphite_context()) {
+      if (auto* graphite_shared_context =
+              context_state_->graphite_shared_context()) {
         // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be
         // implemented for Graphite. Instead the equivalent methods will be on
         // Graphite Context.
-        graphite_context->asyncRescaleAndReadPixelsYUV420(
+        graphite_shared_context->asyncRescaleAndReadPixelsYUV420(
             surface, kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
             src_rect, dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
             &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
@@ -1911,7 +1914,8 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
 
   context_state_ = dependency_->GetSharedContextState();
   DCHECK(context_state_);
-  if (!context_state_->gr_context() && !context_state_->graphite_context()) {
+  if (!context_state_->gr_context() &&
+      !context_state_->graphite_shared_context()) {
     DLOG(ERROR) << "Failed to create GrContext or GraphiteContext";
     return false;
   }
@@ -2769,8 +2773,9 @@ base::ScopedClosureRunner SkiaOutputSurfaceImplOnGpu::GetCacheBackBufferCb() {
 #endif
 
 void SkiaOutputSurfaceImplOnGpu::CheckAsyncWorkCompletion() {
-  if (auto* graphite_context = context_state_->graphite_context()) {
-    graphite_context->checkAsyncWorkCompletion();
+  if (auto* graphite_shared_context =
+          context_state_->graphite_shared_context()) {
+    graphite_shared_context->checkAsyncWorkCompletion();
   } else {
     CHECK(gr_context());
     gr_context()->checkAsyncWorkCompletion();

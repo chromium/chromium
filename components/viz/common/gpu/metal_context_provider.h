@@ -23,10 +23,6 @@ namespace gpu {
 class GraphiteSharedContext;
 }  // namespace gpu
 
-namespace skgpu::graphite {
-class Context;
-}  // namespace skgpu::graphite
-
 namespace viz {
 
 // The MetalContextProvider provides a Metal-backed GrContext.
@@ -42,8 +38,6 @@ class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
 
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& options);
-
-  skgpu::graphite::Context* GetGraphiteContext();
 
   int32_t GetMaxTextureSize() const;
 

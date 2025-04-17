@@ -105,7 +105,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
-                       context_state->graphite_context(),
+                       context_state->graphite_shared_context(),
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       shared_image_representation_factory_(shared_image_representation_factory),
@@ -143,7 +143,8 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.supports_non_backed_solid_color_overlays = true;
 
   DCHECK(context_state_);
-  DCHECK(context_state_->gr_context() || context_state_->graphite_context());
+  DCHECK(context_state_->gr_context() ||
+         context_state_->graphite_shared_context());
   DCHECK(context_state_->context());
   DCHECK(presenter_);
 

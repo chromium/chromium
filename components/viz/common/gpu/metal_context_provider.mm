@@ -7,14 +7,8 @@
 #include <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
-#include <memory>
-
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/time/time.h"
 #include "components/metal_util/device.h"
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -26,7 +20,6 @@ namespace viz {
 
 struct MetalContextProvider::ObjCStorage {
   id<MTLDevice> __strong device;
-  std::unique_ptr<skgpu::graphite::Context> graphite_context;
   std::unique_ptr<gpu::GraphiteSharedContext> graphite_shared_context;
 };
 
@@ -51,7 +44,7 @@ std::unique_ptr<MetalContextProvider> MetalContextProvider::Create() {
 
 bool MetalContextProvider::InitializeGraphiteContext(
     const skgpu::graphite::ContextOptions& options) {
-  CHECK(!objc_storage_->graphite_context);
+  CHECK(!objc_storage_->graphite_shared_context);
   CHECK(objc_storage_->device);
 
   skgpu::graphite::MtlBackendContext backend_context = {};
@@ -68,22 +61,11 @@ bool MetalContextProvider::InitializeGraphiteContext(
     return false;
   }
 
-  if (features::IsGraphiteContextThreadSafe()) {
-    objc_storage_->graphite_shared_context =
-        std::make_unique<gpu::GraphiteSharedContext>(
-            std::move(graphite_context), /*is_thread_safe=*/true);
-
-    // TODO(crbug.com/407874799): Return false for now. The feature is
-    // incomplete. Do not enable kGraphiteContextIsThreadSafe.
-    return false;
-  } else {
-    objc_storage_->graphite_context = std::move(graphite_context);
-    return true;
-  }
-}
-
-skgpu::graphite::Context* MetalContextProvider::GetGraphiteContext() {
-  return objc_storage_->graphite_context.get();
+  bool is_thread_safe = features::IsGraphiteContextThreadSafe();
+  objc_storage_->graphite_shared_context =
+      std::make_unique<gpu::GraphiteSharedContext>(std::move(graphite_context),
+                                                   is_thread_safe);
+  return true;
 }
 
 gpu::GraphiteSharedContext* MetalContextProvider::GetGraphiteSharedContext()

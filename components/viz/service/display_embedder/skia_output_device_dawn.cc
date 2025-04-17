@@ -69,7 +69,7 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     base::PassKey<SkiaOutputDeviceDawn>)
     : SkiaOutputDevice(
           /*gr_context=*/nullptr,
-          context_state->graphite_context(),
+          context_state->graphite_shared_context(),
           memory_tracker,
           did_swap_buffer_complete_callback),
       context_state_(std::move(context_state)) {

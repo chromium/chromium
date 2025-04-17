@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/graphite_image_provider.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -35,7 +36,7 @@ std::atomic<uint32_t> g_current_idle_id = 0;
 
 GraphiteCacheController::GraphiteCacheController(
     skgpu::graphite::Recorder* recorder,
-    skgpu::graphite::Context* context,
+    GraphiteSharedContext* context,
     DawnContextProvider* dawn_context_provider)
     : recorder_(recorder),
       context_(context),

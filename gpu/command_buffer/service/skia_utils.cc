@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/graphite_image_provider.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -169,7 +170,7 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
 }
 
 void DumpBackgroundGraphiteMemoryStatistics(
-    const skgpu::graphite::Context* context,
+    const GraphiteSharedContext* context,
     const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;

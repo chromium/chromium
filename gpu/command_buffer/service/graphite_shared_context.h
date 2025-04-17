@@ -16,7 +16,6 @@ class SkTraceMemoryDump;
 
 namespace skgpu ::graphite {
 class BackendTexture;
-class Context;
 struct InsertRecordingInfo;
 class PrecompileContext;
 class Recorder;

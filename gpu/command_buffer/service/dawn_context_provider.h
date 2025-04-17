@@ -28,10 +28,6 @@
 #include <wrl/client.h>
 #endif
 
-namespace skgpu::graphite {
-class Context;
-}  // namespace skgpu::graphite
-
 namespace gpu {
 
 class DawnSharedContext;
@@ -86,10 +82,6 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& context_options);
 
-  skgpu::graphite::Context* GetGraphiteContext() const {
-    return graphite_context_.get();
-  }
-
   GraphiteSharedContext* GetGraphiteSharedContext() const;
 
 #if BUILDFLAG(IS_WIN)
@@ -105,7 +97,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       scoped_refptr<DawnSharedContext> dawn_shared_context);
 
   scoped_refptr<DawnSharedContext> dawn_shared_context_;
-  std::unique_ptr<skgpu::graphite::Context> graphite_context_;
+  std::unique_ptr<gpu::GraphiteSharedContext> graphite_shared_context_;
 };
 
 }  // namespace gpu

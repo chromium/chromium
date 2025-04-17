@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -153,7 +154,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
                                       thread_safe),
       context_state_(std::move(context_state)) {
   CHECK(context_state_);
-  CHECK(context_state_->graphite_context());
+  CHECK(context_state_->graphite_shared_context());
 
   if (is_thread_safe()) {
     // If the backing is thread safe then it may be destroyed on a different
@@ -312,13 +313,13 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     const gfx::Size plane_size = format().GetPlaneSize(i, size());
     const SkIRect src_rect =
         SkIRect::MakeWH(plane_size.width(), plane_size.height());
-    context_state_->graphite_context()->asyncRescaleAndReadPixels(
+    context_state_->graphite_shared_context()->asyncRescaleAndReadPixels(
         sk_image.get(), pixmaps[i].info(), src_rect,
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
         &OnReadPixelsDone, &contexts[i]);
   }
 
-  if (!context_state_->graphite_context()->submit(
+  if (!context_state_->graphite_shared_context()->submit(
           skgpu::graphite::SyncToCpu::kYes)) {
     LOG(ERROR) << "Graphite context submit() failed";
     return false;
@@ -346,11 +347,11 @@ bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit() {
   }
   skgpu::graphite::InsertRecordingInfo info = {};
   info.fRecording = recording.get();
-  if (!context_state_->graphite_context()->insertRecording(info)) {
+  if (!context_state_->graphite_shared_context()->insertRecording(info)) {
     LOG(ERROR) << "Graphite insertRecording() failed";
     return false;
   }
-  if (!context_state_->graphite_context()->submit()) {
+  if (!context_state_->graphite_shared_context()->submit()) {
     LOG(ERROR) << "Graphite context submit() failed";
     return false;
   }

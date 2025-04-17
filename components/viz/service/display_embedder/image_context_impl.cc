@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -281,7 +282,7 @@ void ImageContextImpl::CreateFallbackImage(
     return;
   }
 
-  if (context_state->graphite_context()) {
+  if (context_state->graphite_shared_context()) {
     if (graphite_ycbcr_info_mismatch_) {
       // It is not possible to allocate a fallback texture if the failure was
       // due to a mismatch in YCBCr info between the promise image and the
@@ -353,7 +354,8 @@ void ImageContextImpl::CreateFallbackImage(
       skgpu::graphite::InsertRecordingInfo info = {};
       info.fRecording = recording.get();
       bool insert_success =
-          fallback_context_state_->graphite_context()->insertRecording(info);
+          fallback_context_state_->graphite_shared_context()->insertRecording(
+              info);
       if (!insert_success) {
         DLOG(ERROR) << "Failed to insert recording";
       }
@@ -446,7 +448,8 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   if (representation_scoped_read_access_) {
     CHECK(owned_promise_image_textures_.empty());
     CHECK(!context_state->gr_context() || !promise_image_textures_.empty());
-    CHECK(!context_state->graphite_context() || !graphite_textures_.empty());
+    CHECK(!context_state->graphite_shared_context() ||
+          !graphite_textures_.empty());
     return true;
   }
 
@@ -512,7 +515,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   // Only one promise texture for external sampler case.
   int num_planes =
       format().PrefersExternalSampler() ? 1 : format().NumberOfPlanes();
-  if (context_state->graphite_context()) {
+  if (context_state->graphite_shared_context()) {
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
     // In the case of video decoding, it is possible for there to be a mismatch
     // between the YCbCr info passed to Viz at the time of creating the promise

@@ -2241,7 +2241,7 @@ class OopTextBlobPixelTest
       surface = SkSurfaces::RenderTarget(
           context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
           kTopLeft_GrSurfaceOrigin, &surface_props);
-    } else if (context_state->graphite_context()) {
+    } else if (context_state->graphite_shared_context()) {
       surface = SkSurfaces::RenderTarget(
           context_state->gpu_main_graphite_recorder(), image_info,
           skgpu::Mipmapped::kNo, &surface_props);
@@ -2260,9 +2260,9 @@ class OopTextBlobPixelTest
       context_state->gr_context()->flushAndSubmit(surface.get(),
                                                   GrSyncCpu::kNo);
       success = surface->readPixels(expected, 0, 0);
-    } else if (context_state->graphite_context()) {
+    } else if (context_state->graphite_shared_context()) {
       success = gpu::GraphiteReadPixelsSync(
-          context_state->graphite_context(),
+          context_state->graphite_shared_context(),
           context_state->gpu_main_graphite_recorder(), surface.get(),
           image_info, expected.pixmap().writable_addr(),
           expected.pixmap().rowBytes(), 0, 0);

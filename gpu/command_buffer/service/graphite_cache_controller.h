@@ -13,12 +13,13 @@
 #include "gpu/gpu_gles2_export.h"
 
 namespace skgpu::graphite {
-class Context;
 class Recorder;
 }  // namespace skgpu::graphite
 
 namespace gpu {
 class DawnContextProvider;
+class GraphiteSharedContext;
+
 namespace raster {
 // GraphiteCacheController is not thread-safe; it can be created on any thread,
 // but it must be destroyed on the same thread that ScheduleCleanup is called.
@@ -30,7 +31,7 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   // DawnContextProvider which live on GPU main thread.
   explicit GraphiteCacheController(
       skgpu::graphite::Recorder* recorder,
-      skgpu::graphite::Context* context = nullptr,
+      gpu::GraphiteSharedContext* context = nullptr,
       DawnContextProvider* dawn_context_provider = nullptr);
 
   GraphiteCacheController(const GraphiteCacheController&) = delete;
@@ -66,7 +67,7 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   void CleanUpAllResourcesImpl();
 
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
-  const raw_ptr<skgpu::graphite::Context> context_;
+  const raw_ptr<GraphiteSharedContext> context_;
   const raw_ptr<DawnContextProvider> dawn_context_provider_;
 
   uint32_t local_idle_id_ = 0;

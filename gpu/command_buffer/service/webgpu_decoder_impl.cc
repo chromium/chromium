@@ -662,10 +662,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           success = false;
         }
       } else {
-        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->graphite_shared_context());
         DCHECK(shared_context_state_->gpu_main_graphite_recorder());
         if (success && !GraphiteReadPixelsSync(
-                           shared_context_state_->graphite_context(),
+                           shared_context_state_->graphite_shared_context(),
                            shared_context_state_->gpu_main_graphite_recorder(),
                            sk_image.get(), sk_image->imageInfo(), dst_pointer,
                            bytes_per_row, 0, 0)) {
@@ -833,10 +833,11 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       if (shared_context_state_->gr_context()) {
         skgpu::ganesh::Flush(surface);
       } else {
-        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->graphite_shared_context());
         DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-        GraphiteFlushAndSubmit(shared_context_state_->graphite_context(),
-                               shared_context_state_->gpu_main_graphite_recorder());
+        GraphiteFlushAndSubmit(
+            shared_context_state_->graphite_shared_context(),
+            shared_context_state_->gpu_main_graphite_recorder());
       }
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
@@ -2511,9 +2512,9 @@ bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
   if (shared_context_state_->gr_context()) {
     skgpu::ganesh::Flush(surface);
   } else {
-    DCHECK(shared_context_state_->graphite_context());
+    DCHECK(shared_context_state_->graphite_shared_context());
     DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-    GraphiteFlushAndSubmit(shared_context_state_->graphite_context(),
+    GraphiteFlushAndSubmit(shared_context_state_->graphite_shared_context(),
                            shared_context_state_->gpu_main_graphite_recorder());
   }
   // Transition the image back to the desired end state. This is used for

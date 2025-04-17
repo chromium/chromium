@@ -10,6 +10,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -64,16 +65,16 @@ void OnReadPixelsDone(
 
 void InsertRecordingAndSubmit(gpu::SharedContextState* context,
                               bool sync_cpu = false) {
-  CHECK(context->graphite_context());
+  CHECK(context->graphite_shared_context());
   auto recording = context->gpu_main_graphite_recorder()->snap();
   if (recording) {
     skgpu::graphite::InsertRecordingInfo info = {};
     info.fRecording = recording.get();
-    context->graphite_context()->insertRecording(info);
+    context->graphite_shared_context()->insertRecording(info);
   }
-  context->graphite_context()->submit(sync_cpu
-                                          ? skgpu::graphite::SyncToCpu::kYes
-                                          : skgpu::graphite::SyncToCpu::kNo);
+  context->graphite_shared_context()->submit(
+      sync_cpu ? skgpu::graphite::SyncToCpu::kYes
+               : skgpu::graphite::SyncToCpu::kNo);
 }
 
 }  // namespace
@@ -238,7 +239,7 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
   if (gr_context()) {
     VerifyPixelsWithReadbackGanesh(mailbox, expected_bitmaps);
   } else {
-    CHECK(context_state_->graphite_context());
+    CHECK(context_state_->graphite_shared_context());
     VerifyPixelsWithReadbackGraphite(mailbox, expected_bitmaps);
   }
 }
@@ -330,10 +331,10 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
         plane_color_type, skia_representation->alpha_type(), nullptr);
     ASSERT_TRUE(sk_image) << "plane_index=" << plane;
 
-    ASSERT_TRUE(context_state_->graphite_context());
+    ASSERT_TRUE(context_state_->graphite_shared_context());
     ReadPixelsContext context;
     const SkIRect src_rect = dst_info.bounds();
-    context_state_->graphite_context()->asyncRescaleAndReadPixels(
+    context_state_->graphite_shared_context()->asyncRescaleAndReadPixels(
         sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
     InsertRecordingAndSubmit(context_state_.get(), /*sync_cpu=*/true);
