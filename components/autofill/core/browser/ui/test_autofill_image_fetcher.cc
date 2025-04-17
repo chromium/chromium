@@ -16,7 +16,7 @@ void TestAutofillImageFetcher::FetchCreditCardArtImagesForURLs(
     base::span<const GURL> image_urls,
     base::span<const ImageSize> image_sizes) {}
 
-void TestAutofillImageFetcher::FetchPixAccountImages(
+void TestAutofillImageFetcher::FetchPixAccountImagesForURLs(
     base::span<const GURL> image_urls) {}
 
 const gfx::Image* TestAutofillImageFetcher::GetCachedImageForUrl(

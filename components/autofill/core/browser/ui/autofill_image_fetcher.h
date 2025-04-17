@@ -44,7 +44,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
       base::span<const GURL> image_urls,
       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused)
       override;
-  void FetchPixAccountImages(base::span<const GURL> image_urls) override;
+  void FetchPixAccountImagesForURLs(base::span<const GURL> image_urls) override;
   const gfx::Image* GetCachedImageForUrl(const GURL& image_url) const override;
 
   // Subclasses may override this to provide custom handling of a given card art

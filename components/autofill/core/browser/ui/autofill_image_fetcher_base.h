@@ -62,7 +62,8 @@ class AutofillImageFetcherBase {
 
   // Fetches images for the `image_urls`, treats them according to Pix image
   // specifications, and caches them in memory.
-  virtual void FetchPixAccountImages(base::span<const GURL> image_urls) = 0;
+  virtual void FetchPixAccountImagesForURLs(
+      base::span<const GURL> image_urls) = 0;
 
   // Returns the cached image for the `image_url` if it was fetched locally to
   // the client. If the image is not present in the cache, this function will

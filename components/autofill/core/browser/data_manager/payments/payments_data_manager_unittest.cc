@@ -272,7 +272,7 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
        base::span<const AutofillImageFetcherBase::ImageSize> image_sizes),
       (override));
   MOCK_METHOD(void,
-              FetchPixAccountImages,
+              FetchPixAccountImagesForURLs,
               (base::span<const GURL> card_art_urls),
               (override));
   MOCK_METHOD(const gfx::Image*,
@@ -2076,7 +2076,7 @@ TEST_F(PaymentsDataManagerTest,
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
       {bank_account1, bank_account2}));
 
-  EXPECT_CALL(mock_image_fetcher, FetchPixAccountImages);
+  EXPECT_CALL(mock_image_fetcher, FetchPixAccountImagesForURLs);
 
   // We need to call `Refresh()` to ensure that the BankAccounts are loaded
   // again from the WebDatabase which triggers the call to fetch icons from

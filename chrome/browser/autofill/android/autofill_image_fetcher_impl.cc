@@ -40,7 +40,7 @@ void AutofillImageFetcherImpl::FetchCreditCardArtImagesForURLs(
       base::android::ToJavaIntArray(env, image_sizes_vector));
 }
 
-void AutofillImageFetcherImpl::FetchPixAccountImages(
+void AutofillImageFetcherImpl::FetchPixAccountImagesForURLs(
     base::span<const GURL> image_urls) {
   if (image_urls.empty()) {
     return;

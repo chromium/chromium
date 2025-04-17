@@ -75,7 +75,7 @@ void AutofillImageFetcher::FetchCreditCardArtImagesForURLs(
 
 // Only implemented in Android clients. Pay with Pix is only available in Chrome
 // on Android.
-void AutofillImageFetcher::FetchPixAccountImages(
+void AutofillImageFetcher::FetchPixAccountImagesForURLs(
     base::span<const GURL> image_urls) {
   NOTREACHED();
 }
