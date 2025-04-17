@@ -23,7 +23,7 @@
 
   SetConfigurationTitle(footer.button, self.buttonText);
   footer.button.enabled = self.enabled;
-  [footer updateButtonColorBasedOnStatus];
+  UpdateButtonColorOnEnableDisable(footer.button);
 }
 
 @end
@@ -66,10 +66,6 @@
     ]];
   }
   return self;
-}
-
-- (void)updateButtonColorBasedOnStatus {
-  UpdateButtonColorOnEnableDisable(self.button);
 }
 
 - (void)didTapButton {
