@@ -54,22 +54,20 @@ bool GetAppOutputInternal(
     std::string* output,
     int* exit_code,
     TimeDelta timeout = TimeDelta::Max(),
+    LaunchOptions options = {},
     FunctionRef<void(std::string_view)> still_waiting =
         [](std::string_view partial_output) {},
     TerminationStatus* final_status = nullptr) {
   TRACE_EVENT0("base", "GetAppOutput");
 
+  if (final_status) {
+    *final_status = TERMINATION_STATUS_LAUNCH_FAILED;
+  }
   HANDLE out_read = nullptr;
   HANDLE out_write = nullptr;
 
-  SECURITY_ATTRIBUTES sa_attr;
-  // Set the bInheritHandle flag so pipe handles are inherited.
-  sa_attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-  sa_attr.bInheritHandle = TRUE;
-  sa_attr.lpSecurityDescriptor = nullptr;
-
   // Create the pipe for the child process's STDOUT.
-  if (!CreatePipe(&out_read, &out_write, &sa_attr, 0)) {
+  if (!CreatePipe(&out_read, &out_write, nullptr, 0)) {
     DPLOG(ERROR) << "Failed to create pipe";
     return false;
   }
@@ -78,38 +76,22 @@ bool GetAppOutputInternal(
   win::ScopedHandle scoped_out_read(out_read);
   win::ScopedHandle scoped_out_write(out_write);
 
-  // Ensure the read handles to the pipes are not inherited.
-  if (!SetHandleInformation(out_read, HANDLE_FLAG_INHERIT, 0)) {
-    DPLOG(ERROR) << "Failed to disabled pipe inheritance";
-    return false;
-  }
-
-  FilePath::StringType writable_command_line_string(cl);
-
-  STARTUPINFO start_info = {};
-
-  start_info.cb = sizeof(STARTUPINFO);
-  start_info.hStdOutput = out_write;
-  // Keep the normal stdin.
-  start_info.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+  // The std output (and std error if `include_stderr` is `true`) handles should
+  // not be specified, since this function overrides them.
+  CHECK(!options.stdout_handle);
+  options.stdout_handle = out_write;
   if (include_stderr) {
-    start_info.hStdError = out_write;
-  } else {
-    start_info.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+    CHECK(!options.stderr_handle);
+    options.stderr_handle = out_write;
   }
-  start_info.dwFlags |= STARTF_USESTDHANDLES;
+  options.handles_to_inherit.push_back(out_write);
 
   // Create the child process.
-  PROCESS_INFORMATION temp_process_info = {};
-  if (!CreateProcess(nullptr, data(writable_command_line_string), nullptr,
-                     nullptr,
-                     TRUE,  // Handles are inherited.
-                     0, nullptr, nullptr, &start_info, &temp_process_info)) {
-    DPLOG(ERROR) << "Failed to start process";
+  base::Process process =
+      base::LaunchProcess(CommandLine::StringType(cl), options);
+  if (!process.IsValid()) {
     return false;
   }
-
-  win::ScopedProcessInformation proc_info(temp_process_info);
 
   // Close our writing end of pipe now. Otherwise later read would not be able
   // to detect end of child's output.
@@ -118,7 +100,7 @@ bool GetAppOutputInternal(
   const ElapsedTimer timer;
 
   do {
-    DWORD wait_result = WAIT_FAILED;
+    bool process_exited = false;
     {
       // It is okay to allow this process to wait on the launched process as a
       // process launched with GetAppOutput*() shouldn't wait back on the
@@ -126,8 +108,7 @@ bool GetAppOutputInternal(
       internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
       ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                               BlockingType::MAY_BLOCK);
-      wait_result = WaitForSingleObject(proc_info.process_handle(),
-                                        Seconds(1).InMilliseconds());
+      process_exited = process.WaitForExitWithTimeout(Seconds(1), nullptr);
     }
 
     // Read output from the child process's pipe for STDOUT
@@ -152,8 +133,8 @@ bool GetAppOutputInternal(
         }
       }
 
-      if (wait_result == WAIT_TIMEOUT) {
-        // The process is still running, so loop back to the wait.
+      if (!process_exited) {
+        // Loop back to the wait.
         break;
       }
 
@@ -161,16 +142,15 @@ bool GetAppOutputInternal(
       // available.
     }
 
-    if (wait_result != WAIT_TIMEOUT) {
-      // The process ended, so exit and return from the function.
+    if (process_exited) {
+      // Exit and return from the function.
       break;
     }
 
     still_waiting({});
   } while (timer.Elapsed() < timeout);
 
-  TerminationStatus status =
-      GetTerminationStatus(proc_info.process_handle(), exit_code);
+  TerminationStatus status = GetTerminationStatus(process.Handle(), exit_code);
   if (final_status) {
     *final_status = status;
   }
@@ -521,15 +501,16 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
 }
 
 bool GetAppOutputWithExitCodeAndTimeout(
-    const CommandLine& cl,
+    CommandLine::StringViewType cl,
     bool include_stderr,
     std::string* output,
     int* exit_code,
     TimeDelta timeout,
+    const LaunchOptions& options,
     FunctionRef<void(std::string_view)> still_waiting,
     TerminationStatus* final_status) {
-  return GetAppOutputInternal(cl.GetCommandLineString(), include_stderr, output,
-                              exit_code, timeout, still_waiting, final_status);
+  return GetAppOutputInternal(cl, include_stderr, output, exit_code, timeout,
+                              options, still_waiting, final_status);
 }
 
 bool GetAppOutput(CommandLine::StringViewType cl, std::string* output) {

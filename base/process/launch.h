@@ -464,6 +464,7 @@ BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
 // specify:
 // * an optional `output` providing the complete output of `cl`.
 // * an optional `timeout` if `cl` does not complete in time.
+// * an optional `LaunchOptions`.
 // * an optional `FunctionRef`, called multiple times while waiting, with
 //   streaming partial output received since the last call to the `FunctionRef`
 //   from stdout/stderr of the running `cl` process. The implementation of the
@@ -476,11 +477,12 @@ BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
 // output from the `cl` process, since it waits a second each time between
 // reading the output.
 BASE_EXPORT bool GetAppOutputWithExitCodeAndTimeout(
-    const CommandLine& cl,
+    CommandLine::StringViewType cl,
     bool include_stderr,
     std::string* output,
     int* exit_code,
     TimeDelta timeout = TimeDelta::Max(),
+    const LaunchOptions& options = {},
     FunctionRef<void(std::string_view)> still_waiting =
         [](std::string_view partial_output) {},
     TerminationStatus* final_status = nullptr);
