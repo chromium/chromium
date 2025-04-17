@@ -27,6 +27,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/no_vary_search_cache_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,6 +35,8 @@
 namespace net {
 
 namespace {
+
+namespace nvs_test = no_vary_search_cache_test_utils;
 
 using ::testing::_;
 using ::testing::EndsWith;
@@ -55,62 +58,43 @@ class NoVarySearchCacheTest : public ::testing::TestWithParam<bool> {
 
   // Generates a URL with the query `query`.
   static GURL TestURL(std::string_view query = {}) {
-    GURL url("https://example.com/");
-    if (query.empty()) {
-      return url;
-    }
-
-    GURL::Replacements replacements;
-    replacements.SetQueryStr(query);
-    return url.ReplaceComponents(replacements);
+    return nvs_test::CreateTestURL(query);
   }
 
   // Generates an HttpRequestInfo object containing a URL that has the query
   // `query`.
   static HttpRequestInfo TestRequest(std::string_view query = {}) {
-    return TestRequest(TestURL(query));
+    return nvs_test::CreateTestRequest(query);
   }
 
   // Generates an HttpRequestInfo object with the URL `url`.
   static HttpRequestInfo TestRequest(const GURL& url) {
-    SchemefulSite site(url);
-    return TestRequest(url, NetworkIsolationKey(site, site));
+    return nvs_test::CreateTestRequest(url);
   }
 
   // Generates an HttpRequestInfo object with the given `url` and `nik`.
   static HttpRequestInfo TestRequest(const GURL& url,
                                      const NetworkIsolationKey& nik) {
-    // Only fill in the fields that GenerateCacheKeyForRequest() looks at.
-    HttpRequestInfo request;
-    request.url = url;
-    request.network_isolation_key = nik;
-    request.is_subframe_document_resource = false;
-    request.is_main_frame_navigation = true;
-    CHECK(!request.upload_data_stream);
-    request.load_flags = LOAD_NORMAL;
-    CHECK(!request.initiator);
-    return request;
+    return nvs_test::CreateTestRequest(url, nik);
   }
 
   // Returns a reference to an HttpResponseHeaders object with a No-Vary-Search
   // header with the value `no_vary_search`.
   const HttpResponseHeaders& TestHeaders(std::string_view no_vary_search) {
     response_header_storage_.push_back(
-        HttpResponseHeaders::Builder({1, 1}, "200 OK")
-            .AddHeader("No-Vary-Search", no_vary_search)
-            .Build());
+        nvs_test::CreateTestHeaders(no_vary_search));
     return *response_header_storage_.back();
   }
 
   // Inserts a URL with query `query` into cache with a No-Vary-Search header
   // value of `no_vary_search`.
   void Insert(std::string_view query, std::string_view no_vary_search) {
-    cache_.MaybeInsert(TestRequest(query), TestHeaders(no_vary_search));
+    nvs_test::Insert(cache_, query, no_vary_search);
   }
 
   // Returns true if TestURL(query) exists in cache.
   bool Exists(std::string_view query) {
-    return cache_.Lookup(TestRequest(query)).has_value();
+    return nvs_test::Exists(cache_, query);
   }
 
   // Returns true if inserting a request with query `insert` results in a lookup
