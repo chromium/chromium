@@ -1225,6 +1225,7 @@ if (use_blink) {
     sources = [
       "attribution_reporting/aggregatable_utils_perftest.cc",
       "attribution_reporting/privacy_math_perftest.cc",
+      "autofill/core/browser/ml_model/field_classification_model_executor_perftest.cc",
       "discardable_memory/common/discardable_shared_memory_heap_perftest.cc",
       "omnibox/browser/history_quick_provider_performance_unittest.cc",
       "subresource_filter/core/common/perftests/indexed_ruleset_perftest.cc",
@@ -1235,6 +1236,8 @@ if (use_blink) {
     deps = [
       "//base",
       "//components/attribution_reporting",
+      "//components/autofill/content/browser",
+      "//components/autofill/core/common:test_support",
       "//components/bookmarks/test",
       "//components/discardable_memory/common",
       "//components/history/core/test",
@@ -1260,6 +1263,7 @@ if (use_blink) {
     data = [
       "//components/subresource_filter/core/common/perftests/data/",
       "//third_party/subresource-filter-ruleset/data/",
+      "test/data/autofill/",
     ]
 
     if (is_android) {
