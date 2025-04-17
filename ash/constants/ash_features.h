@@ -81,6 +81,8 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskMuteArcAudio);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskPod);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBocaOnTaskUnmuteBrowserTabsOnUnlock);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaLockedModeCustomCountdownDuration);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
@@ -1077,6 +1079,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaExtensionConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskMuteArcAudioEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskPodEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaLockedModeCustomCountdownDurationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

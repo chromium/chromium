@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
-                       ShouldMuteTabsAudioWhenLockOnBundleUpdated) {
+                       ShouldMuteAndUnmuteTabsAudioWhenLockAndUnlock) {
   content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
   navigation_observer.StartWatchingNewWebContents();
 
@@ -727,10 +727,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   tab_strip_model->ActivateTabAt(1);
   EXPECT_FALSE(tab_strip_model->GetActiveWebContents()->IsAudioMuted());
 
-  // Tabs in other browsers are muted.
-  EXPECT_TRUE(
+  // Tabs in other browsers are unmuted.
+  EXPECT_FALSE(
       browser_1->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       browser_2->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
 }
 

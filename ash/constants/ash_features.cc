@@ -225,6 +225,11 @@ BASE_FEATURE(kBocaOnTaskMuteArcAudio,
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod, "BocaOnTaskPod", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables unmute browser tabs when unlock Boca.
+BASE_FEATURE(kBocaOnTaskUnmuteBrowserTabsOnUnlock,
+             "BocaOnTaskUnmuteBrowserTabsOnUnlock",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Boca OnTask enter locked mode countdown duration on
 // ChromeOS.
 BASE_FEATURE(kBocaLockedModeCustomCountdownDuration,
@@ -3460,6 +3465,10 @@ bool IsBocaOnTaskMuteArcAudioEnabled() {
 
 bool IsBocaOnTaskPodEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskPod);
+}
+
+bool IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskUnmuteBrowserTabsOnUnlock);
 }
 
 bool IsBocaLockedModeCustomCountdownDurationEnabled() {

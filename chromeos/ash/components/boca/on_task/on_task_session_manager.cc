@@ -329,6 +329,9 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
       EnterLockedMode();
     }
   } else {
+    if (features::IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled()) {
+      system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/false);
+    }
     // Re-enable extensions before attempting to unlock the window.
     extensions_manager_->ReEnableExtensions();
 
