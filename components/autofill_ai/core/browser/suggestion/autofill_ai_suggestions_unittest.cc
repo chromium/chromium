@@ -50,6 +50,13 @@ autofill::EntityInstance MakePassportWithRandomGuid(
   return autofill::test::GetPassportEntityInstance(options);
 }
 
+autofill::EntityInstance MakeVehicleWithRandomGuid(
+    autofill::test::VehicleOptions options = {}) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return autofill::test::GetVehicleEntityInstance(options);
+}
+
 class AutofillAiSuggestionsTest : public testing::Test {
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -345,10 +352,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
       SuggestionType::kUndoOrClear, &Suggestion::type));
 }
 
-// In the case of a single suggestion, no label besides the entity name is
-// needed.
-TEST_F(AutofillAiSuggestionsTest,
-       LabelGeneration_SingleSuggestion_NoLabelAdded) {
+TEST_F(AutofillAiSuggestionsTest, LabelGeneration_SingleEntity_NoLabelAdded) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
 
   FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
@@ -363,11 +367,33 @@ TEST_F(AutofillAiSuggestionsTest,
   EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
 }
 
-// Note that because the main text is not part of the disambiguating fields, we
-// do not take into account (even though they are different).
+// Check that the existence of an entity (in this case `vehicle_entity`) that
+// does not fill the triggering field, still affects label generation.
 TEST_F(
     AutofillAiSuggestionsTest,
-    LabelGeneration_TwoSuggestions_MainTextIsNotDisambiguating_AddDifferentiatingLabel) {
+    LabelGeneration_SingleSuggestion_OtherEntitiesFillOtherFieldsInForm_LabelAdded) {
+  autofill::EntityInstance vehicle_entity = MakeVehicleWithRandomGuid(
+      {.plate = nullptr, .make = nullptr, .model = nullptr, .year = nullptr});
+  autofill::EntityInstance vehicle_entity_b =
+      MakeVehicleWithRandomGuid({.name = nullptr, .number = nullptr});
+
+  FieldType triggering_field_type = autofill::VEHICLE_LICENSE_PLATE;
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::VEHICLE_VIN});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {vehicle_entity, vehicle_entity_b},
+      kAppLocaleUS);
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Vehicle · BMW · Series 2");
+}
+
+// In this test, the main test is the passport number, which is not the top
+// differentiating attribute (passport name), therefore, we add a label.
+TEST_F(AutofillAiSuggestionsTest,
+       LabelGeneration_TwoSuggestions_SameMainText_AddTopDifferentiatingLabel) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b = MakePassportWithRandomGuid(
       {.name = u"Machado de Assis", .number = u"123"});
@@ -389,18 +415,19 @@ TEST_F(
   EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Machado de Assis");
 }
 
-// Note that because the main text is part of the disambiguating fields, we take
-// it into account when differentiating suggestions.
+// Note that because the main text is the top disambiguating field (and is
+// different across entities), we do not need to add a label.
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_DifferentMainText_DoNotAddDifferentiatingLabel) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b = MakePassportWithRandomGuid(
-      {.name = u"Machado de Assis", .number = u"123"});
+      {.name = u"Machado de Assis", .country = u"Brazil"});
 
+  // Note that passport name is the first at the rank of disambiguating texts.
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
-  std::unique_ptr<FormStructure> form =
-      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
       {passport_entity, passport_entity_b}, kAppLocaleUS);
@@ -415,14 +442,48 @@ TEST_F(
   EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
 }
 
+// Note that while the main text is the top disambiguating field, we need
+// further labels since it is the same in both suggestions.
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_SameMainText_AddDifferentiatingLabel) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
-      MakePassportWithRandomGuid({.number = u"54321"});
+      MakePassportWithRandomGuid({.country = u"Brazil"});
 
+  // Note that passport name is the first at the rank of disambiguating texts.
   FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b}, kAppLocaleUS);
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Brazil");
+}
+
+// Note that because the main text is not the top disambiguating field, we do
+// need to add a label, even when all main texts are different and the the main
+// text disambiguating itself (but not the top one).
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_TwoSuggestions_MainTextIsNotTopDisambiguatingType_addDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
+  autofill::EntityInstance passport_entity_b = MakePassportWithRandomGuid(
+      {.name = u"Machado de Assis", .country = u"Brazil"});
+
+  // Passport country is a disambiguating text, meaning it can be used to
+  // further differentiate passport labels when the top type (passport name) is
+  // the same. However, we still add the top differentiating label as a label,
+  // as we always prioritize having it.
+  FieldType triggering_field_type = autofill::PASSPORT_ISSUING_COUNTRY;
   std::unique_ptr<FormStructure> form =
       CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
@@ -432,47 +493,45 @@ TEST_F(
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 123");
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Pippi Långstrump");
 
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 54321");
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Machado de Assis");
 }
 
+// Note that in this case all entities have the same maker, so it is removed
+// from the possible list of labels.
 TEST_F(AutofillAiSuggestionsTest,
        LabelGeneration_ThreeSuggestions_AddDifferentiatingLabel) {
-  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
-  autofill::EntityInstance passport_entity_b =
-      MakePassportWithRandomGuid({.country = u"Brazil"});
-  autofill::EntityInstance passport_entity_c =
-      MakePassportWithRandomGuid({.expiry_date = u"2018-12-31"});
+  autofill::EntityInstance vehicle_entity = MakeVehicleWithRandomGuid();
+  autofill::EntityInstance vehicle_entity_b =
+      MakeVehicleWithRandomGuid({.model = u"Series 3"});
+  autofill::EntityInstance vehicle_entity_c =
+      MakeVehicleWithRandomGuid({.name = u"Diego Maradona"});
 
-  FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
-  // Note that `autofill::PASSPORT_ISSUING_COUNTRY` appears twice in the
-  // form, yet due to deduping it only adds its equivalent label once.
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
-       autofill::PASSPORT_ISSUING_COUNTRY, autofill::PASSPORT_NAME_TAG,
-       autofill::PASSPORT_EXPIRATION_DATE});
+      {autofill::VEHICLE_LICENSE_PLATE, autofill::VEHICLE_MODEL,
+       autofill::VEHICLE_OWNER_TAG});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
-      {passport_entity, passport_entity_b, passport_entity_c}, kAppLocaleUS);
+      {vehicle_entity, vehicle_entity_b, vehicle_entity_c}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0][0].value,
-            u"Passport · Sweden · 2019-08-30");
+            u"Vehicle · Series 2 · Knecht Ruprecht");
 
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0][0].value,
-            u"Passport · Brazil · 2019-08-30");
+            u"Vehicle · Series 3 · Knecht Ruprecht");
 
   EXPECT_EQ(suggestions[2].labels.size(), 1u);
   EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[2].labels[0][0].value,
-            u"Passport · Sweden · 2018-12-31");
+            u"Vehicle · Series 2 · Diego Maradona");
 }
 
 TEST_F(
@@ -500,20 +559,21 @@ TEST_F(
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Brazil");
 
-  // The second suggestion can only fill the triggering field and can add no
-  // other label.
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Pippi Långstrump");
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
 
   EXPECT_EQ(suggestions[2].labels.size(), 1u);
   EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[2].labels[0][0].value, u"Passport · Sweden");
 }
 
+// In this test we see that while the passports have different expiry dates,
+// they are not added as labels since they are not part of the entity
+// disambiguating attributes.
 TEST_F(
     AutofillAiSuggestionsTest,
-    LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_AddDifferentiatingLabel) {
+    LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_DoNotAddDifferentiatingLabel) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
       MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"});
@@ -529,11 +589,11 @@ TEST_F(
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 2019-08-30");
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
 
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 2018-12-29");
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
 }
 
 }  // namespace

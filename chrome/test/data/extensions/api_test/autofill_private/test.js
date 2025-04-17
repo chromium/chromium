@@ -939,7 +939,7 @@ var availableTests = [
             },
           ],
           guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-          nickname: 'Personal car',
+          nickname: 'Personal car'
         },
         expectedLabel: 'John Dolan'
       },

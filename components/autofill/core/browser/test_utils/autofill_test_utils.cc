@@ -991,7 +991,7 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
   }
   if (options.year) {
     attributes.emplace_back(AttributeType(kVehicleYear));
-    attributes.back().SetInfo(VEHICLE_YEAR, options.model,
+    attributes.back().SetInfo(VEHICLE_YEAR, options.year,
                               /*app_locale=*/"", /*format_string=*/u"",
                               VerificationStatus::kNoStatus);
   }
