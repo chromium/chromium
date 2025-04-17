@@ -17,6 +17,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,24 +27,44 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.util.XrUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /** Unit tests for {@link HubToolbarCoordinator}. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class HubToolbarCoordinatorUnitTest {
+    // All the tests in this file will run twice, once for isXrDevice=true and once for
+    // isXrDevice=false. Expect all the tests with the same results on XR devices too.
+    // The setup ensures the correct environment is configured for each run.
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {{true}, {false}});
+    }
+
+    @Parameter(0)
+    public boolean mIsXrDevice;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
@@ -61,6 +82,8 @@ public class HubToolbarCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        XrUtils.setXrDeviceForTesting(mIsXrDevice);
+
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneOrderController.getPaneOrder()).thenReturn(ImmutableSet.of());
@@ -69,7 +92,9 @@ public class HubToolbarCoordinatorUnitTest {
     }
 
     private void onActivity(Activity activity) {
-        View rootView = LayoutInflater.from(activity).inflate(R.layout.hub_layout, null);
+        // Determine layout based on the parameter
+        int layoutId = mIsXrDevice ? R.layout.hub_xr_layout : R.layout.hub_layout;
+        View rootView = LayoutInflater.from(activity).inflate(layoutId, null);
         activity.setContentView(rootView);
         mHubToolbarView = spy(rootView.findViewById(R.id.hub_toolbar));
         mMenuButton = spy(mHubToolbarView.findViewById(R.id.menu_button_wrapper));
@@ -86,8 +111,16 @@ public class HubToolbarCoordinatorUnitTest {
         verify(mMenuButton).setOnKeyListener(mKeyListenerCaptor.capture());
     }
 
+    @After
+    public void tearDown() {
+        // Reset static state after each test run to ensure isolation
+        XrUtils.resetXrDeviceForTesting();
+    }
+
     @Test
     public void enterOpensMenu() {
+        // This test now runs twice, once for isXrDevice=true and once for isXrDevice=false.
+        // The setup ensures the correct environment is configured for each run.
         mKeyListenerCaptor
                 .getValue()
                 .onKey(

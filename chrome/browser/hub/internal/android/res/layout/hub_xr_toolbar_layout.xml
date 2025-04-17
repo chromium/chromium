@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  tools:ignore="MergeRootFrame">
+  <!-- Should only be visible during animations involving hub search. -->
+  <FrameLayout
+    android:id="@+id/search_box_background"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height_no_shadow"
+    android:layout_marginTop="@dimen/toolbar_height_no_shadow"
+    android:background="@android:color/white"
+    android:visibility="gone" />
+
+  <org.chromium.chrome.browser.hub.HubToolbarView
+    android:id="@+id/hub_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:id="@+id/toolbar_action_container"
+      android:clipChildren="false"
+      android:orientation="horizontal"
+      android:background="@drawable/xr_toolbar_rounded_rect"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/toolbar_height_no_shadow">
+
+      <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/toolbar_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="@dimen/min_touch_target_size"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:visibility="gone"
+        app:buttonColor="@android:color/transparent"
+        app:buttonTextColor="@color/default_text_color_list"
+        app:rippleColor="?attr/globalTextButtonRippleColor"
+        app:verticalInset="0dp" />
+
+      <com.google.android.material.tabs.TabLayout
+        android:id="@+id/pane_switcher"
+        style="@style/ToolbarButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:tabIndicator="@drawable/m3_tabs_line_indicator"
+        app:tabIndicatorFullWidth="true"
+        app:tabUnboundedRipple="true" />
+
+      <LinearLayout
+        android:id="@+id/menu_button_container"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end" >
+        <!-- On tablets, the searchbox (R.id.search_box) is hidden in favor of a button. -->
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/search_loupe"
+            android:visibility="gone"
+            android:gravity="center_vertical"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/search"
+            android:src="@drawable/ic_search"
+            style="@style/ToolbarMenuButton"
+            app:tint="@color/default_icon_color_tint_list"  />
+          <include layout="@layout/menu_button" />
+      </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Hub search is selectively hidden based on the feature flag. -->
+    <LinearLayout
+      android:id="@+id/search_box"
+      android:visibility="gone"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/hub_search_box_height"
+      android:layout_marginHorizontal="16dp"
+      android:layout_marginVertical="8dp"
+      android:paddingHorizontal="16dp"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:background="@drawable/hub_search_box_background">
+
+      <EditText
+        tools:ignore="Autofill,LabelFor"
+        style="@style/TextAppearance.TextLarge.Primary"
+        android:id="@+id/search_box_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:ellipsize="end"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:inputType="text"
+        android:singleLine="true" />
+    </LinearLayout>
+  </org.chromium.chrome.browser.hub.HubToolbarView>
+</FrameLayout>
