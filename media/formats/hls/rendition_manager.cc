@@ -373,14 +373,15 @@ RenditionManager::SelectRenditionBasedOnLanguage(
   // Check to see if the default rendition exists and matches the language, if
   // the language is specified. If language is specified but the default does
   // not specify a language at all, consider it a match.
-  if (auto* def = variant.audio_rendition_group->GetDefaultRendition()) {
+  const auto rendition = variant.audio_rendition_group->GetDefaultRendition();
+  if (rendition.has_value()) {
     // The rendition is guaranteed to be present.
-    RenditionID id = LookupRendition(def).value();
+    RenditionID id = LookupRendition(std::get<1>(*rendition)).value();
     if (!language.has_value()) {
       return id;
     }
 
-    auto default_lang = def->GetLanguage();
+    auto default_lang = std::get<1>(*rendition)->GetLanguage();
     if (!default_lang.has_value() || *default_lang == *language) {
       return id;
     }
@@ -400,10 +401,10 @@ RenditionManager::SelectRenditionBasedOnLanguage(
     }
   }
 
-  if (auto* def = variant.audio_rendition_group->GetDefaultRendition()) {
+  if (rendition.has_value()) {
     // Nothing acceptable matched our language, so select the default, if it
     // exists. The default rendition is guaranteed to exist in the map.
-    return LookupRendition(def).value();
+    return LookupRendition(std::get<1>(*rendition)).value();
   }
 
   // Select the first remotely acceptable rendition.
@@ -432,8 +433,10 @@ RenditionManager::SelectBestRendition(
   if (!maybe_rendition.has_value()) {
     // The user did not select anything, so we first try to get a default from
     // the group.
-    if (auto* def = variant.audio_rendition_group->GetDefaultRendition()) {
-      std::optional<RenditionID> id = LookupRendition(def);
+
+    auto rendition = variant.audio_rendition_group->GetDefaultRendition();
+    if (rendition.has_value()) {
+      std::optional<RenditionID> id = LookupRendition(std::get<1>(*rendition));
       if (id.has_value()) {
         return id.value();
       }

@@ -271,8 +271,9 @@ inline void MayAutoSelect(bool value,
 inline void HasDefaultRendition(std::optional<std::string> name,
                                 const base::Location& from,
                                 const RenditionGroup& group) {
-  if (group.GetDefaultRendition()) {
-    EXPECT_EQ(group.GetDefaultRendition()->GetName(), name) << from.ToString();
+  if (group.GetDefaultRendition().has_value()) {
+    EXPECT_EQ(std::get<1>(*group.GetDefaultRendition())->GetName(), name)
+        << from.ToString();
   } else {
     EXPECT_EQ(std::nullopt, name) << from.ToString();
   }
