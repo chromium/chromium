@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TriggerTypeAndEagerness">
+  <variant name="Embedder" summary="Embedder trigger"/>
   <variant name="SpeculationRule_Conservative"
       summary="SpeculationRules trigger, Conservative"/>
   <variant name="SpeculationRule_Eager"
