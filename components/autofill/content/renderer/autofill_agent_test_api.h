@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 
 namespace autofill {
@@ -29,10 +30,13 @@ class AutofillAgentTestApi {
     agent_->FocusedElementChanged(new_focused_element);
   }
 
-  void ShowSuggestions(const blink::WebFormControlElement& element,
-                       AutofillSuggestionTriggerSource trigger_source,
-                       const SynchronousFormCache& form_cache) {
-    agent_->ShowSuggestions(element, trigger_source, form_cache);
+  void ShowSuggestions(
+      const blink::WebFormControlElement& element,
+      AutofillSuggestionTriggerSource trigger_source,
+      const SynchronousFormCache& form_cache,
+      base::optional_ref<const PasswordSuggestionRequest> password_request) {
+    agent_->ShowSuggestions(element, trigger_source, form_cache,
+                            password_request);
   }
 
   void ShowSuggestionsForContentEditable(

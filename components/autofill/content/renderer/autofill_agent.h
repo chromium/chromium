@@ -377,9 +377,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   // of a suggestion popup (no popup is shown if there are no available
   // suggestions). `form_cache` can be used to optimize form extractions
   // occurring synchronously after this function call.
-  void ShowSuggestions(const blink::WebFormControlElement& element,
-                       AutofillSuggestionTriggerSource trigger_source,
-                       const SynchronousFormCache& form_cache);
+  void ShowSuggestions(
+      const blink::WebFormControlElement& element,
+      AutofillSuggestionTriggerSource trigger_source,
+      const SynchronousFormCache& form_cache,
+      base::optional_ref<const PasswordSuggestionRequest> password_request);
 
   // Shows Autofill suggestions for `element` if `element` is a contenteditable.
   void ShowSuggestionsForContentEditable(

@@ -1006,7 +1006,7 @@ void AutofillAgent::OnTextFieldValueChanged(
 
     ShowSuggestions(element,
                     AutofillSuggestionTriggerSource::kTextFieldValueChanged,
-                    form_cache);
+                    form_cache, password_request);
   }
 
   if (std::optional<FormAndField> form_and_field =
@@ -1051,15 +1051,22 @@ void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
       event.windows_key_code == ui::VKEY_UP) {
     ShowSuggestions(
         element, AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
-        /*form_cache=*/{});
+        /*form_cache=*/{},
+        password_autofill_agent_->CreateRequestForDomain(
+            element,
+            AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
+            /*form_cache=*/{}));
   }
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  ShowSuggestions(element,
-                  AutofillSuggestionTriggerSource::kOpenTextDataListChooser,
-                  /*form_cache=*/{});
+  ShowSuggestions(
+      element, AutofillSuggestionTriggerSource::kOpenTextDataListChooser,
+      /*form_cache=*/{},
+      password_autofill_agent_->CreateRequestForDomain(
+          element, AutofillSuggestionTriggerSource::kOpenTextDataListChooser,
+          /*form_cache=*/{}));
 }
 
 // Notifies the AutofillDriver about changes in the <datalist> options in
@@ -1258,7 +1265,17 @@ void AutofillAgent::TriggerSuggestions(
   if (WebFormControlElement control_element =
           form_util::GetFormControlByRendererId(field_id)) {
     last_queried_element_ = FieldRef(control_element);
-    ShowSuggestions(control_element, trigger_source, /*form_cache=*/{});
+    std::optional<PasswordSuggestionRequest> password_request;
+    if (auto input_element = control_element.DynamicTo<WebInputElement>()) {
+      password_request =
+          IsPasswordsAutofillManuallyTriggered(trigger_source)
+              ? password_autofill_agent_->CreateManualFallbackRequest(
+                    input_element, /*form_cache=*/{})
+              : password_autofill_agent_->CreateRequestForDomain(
+                    input_element, trigger_source, /*form_cache=*/{});
+    }
+    ShowSuggestions(control_element, trigger_source, /*form_cache=*/{},
+                    password_request);
     return;
   }
   if (trigger_source ==
@@ -1461,7 +1478,8 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(FieldRendererId field) {
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source,
-    const SynchronousFormCache& form_cache) {
+    const SynchronousFormCache& form_cache,
+    base::optional_ref<const PasswordSuggestionRequest> password_request) {
   // TODO(crbug.com/40068004): Make this a CHECK.
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   CHECK_NE(trigger_source, AutofillSuggestionTriggerSource::kUnspecified);
@@ -1515,12 +1533,6 @@ void AutofillAgent::ShowSuggestions(
       is_popup_possibly_visible_ = true;
       return;
     }
-    const std::optional<PasswordSuggestionRequest> password_request =
-        IsPasswordsAutofillManuallyTriggered(trigger_source)
-            ? password_autofill_agent_->CreateManualFallbackRequest(
-                  input_element, form_cache)
-            : password_autofill_agent_->CreateRequestForDomain(
-                  input_element, trigger_source, form_cache);
     bool password_agent_handled_request = TryShowPasswordSuggestions(
         input_element, IsPasswordsAutofillManuallyTriggered(trigger_source),
         password_request);
@@ -1974,12 +1986,21 @@ void AutofillAgent::HandleFocusChangeComplete(
 
   if (auto focused_control = focused_element.DynamicTo<WebFormControlElement>();
       form_util::IsTextAreaElementOrTextInput(focused_control)) {
+    std::optional<PasswordSuggestionRequest> password_request;
+    if (auto input_element = focused_control.DynamicTo<WebInputElement>()) {
+      password_request = password_autofill_agent_->CreateRequestForDomain(
+          input_element,
+          focused_node_was_last_clicked
+              ? AutofillSuggestionTriggerSource::kFormControlElementClicked
+              : AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick,
+          form_cache);
+    }
     if (focused_node_was_last_clicked) {
       was_last_action_fill_ = false;
       ShowSuggestions(
           focused_control,
           AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          form_cache);
+          form_cache, password_request);
     } else if (form_util::IsTextAreaElement(focused_control)) {
 #if !BUILDFLAG(IS_ANDROID)
       // Compose reacts to tab area focus even when not triggered by a click -
@@ -1987,7 +2008,7 @@ void AutofillAgent::HandleFocusChangeComplete(
       ShowSuggestions(
           focused_control,
           AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick,
-          form_cache);
+          form_cache, password_request);
 #endif
     }
   }

@@ -1554,7 +1554,8 @@ class AutofillAgentTestCaret
             .ShowSuggestions(
                 GetElement().DynamicTo<blink::WebFormControlElement>(),
                 AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                /*form_cache=*/{});
+                /*form_cache=*/{},
+                /*password_request=*/std::nullopt);
         break;
       default:
         NOTREACHED();
