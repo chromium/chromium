@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_IMPL_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_IMPL_H_
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -194,7 +195,7 @@ class POLICY_EXPORT PolicyServiceImpl
       observers_;
 
   // The status of all the providers for the indexed policy domain.
-  PolicyDomainStatus policy_domain_status_[POLICY_DOMAIN_SIZE];
+  std::array<PolicyDomainStatus, POLICY_DOMAIN_SIZE> policy_domain_status_;
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().

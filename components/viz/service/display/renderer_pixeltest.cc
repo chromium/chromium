@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -5354,12 +5355,18 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
   ResourceId mapped_resource = resource_map[resource];
 
   // Arbitrary dividing lengths to divide up the resource into 16 quads.
-  int widths[] = {
-      0, 60, 50, 40,
-  };
-  int heights[] = {
-      0, 10, 80, 50,
-  };
+  auto widths = std::to_array<int>({
+      0,
+      60,
+      50,
+      40,
+  });
+  auto heights = std::to_array<int>({
+      0,
+      10,
+      80,
+      50,
+  });
   size_t num_quads = 4;
   for (size_t i = 0; i < num_quads; ++i) {
     int x_start = widths[i];

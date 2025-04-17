@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ZUCCHINI_TEST_DISASSEMBLER_H_
 #define COMPONENTS_ZUCCHINI_TEST_DISASSEMBLER_H_
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -69,7 +70,7 @@ class TestDisassembler : public Disassembler {
   std::unique_ptr<ReferenceWriter> MakeWriteRefs(MutableBufferView image);
 
   ReferenceTypeTraits traits_[3];
-  std::vector<Reference> refs_[3];
+  std::array<std::vector<Reference>, 3> refs_;
 };
 
 }  // namespace zucchini

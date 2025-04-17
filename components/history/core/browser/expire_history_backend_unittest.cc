@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -607,8 +608,8 @@ TEST_F(ExpireHistoryTest, DeleteURLs) {
   AddExampleData(url_ids, visit_times);
 
   // Verify things are the way we expect with URL rows, favicons.
-  URLRow rows[3];
-  favicon_base::FaviconID favicon_ids[3];
+  std::array<URLRow, 3> rows;
+  std::array<favicon_base::FaviconID, 3> favicon_ids;
   std::vector<GURL> urls;
   // Push back a bogus URL (which shouldn't change anything).
   urls.push_back(GURL());

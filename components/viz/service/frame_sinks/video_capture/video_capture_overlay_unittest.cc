@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -90,15 +91,17 @@ class VideoCaptureOverlayTest : public testing::Test {
     // image blending algorithms are working properly.
     constexpr SkColor4f kTestImageBackground =
         SkColor4f{1.0f, 1.0f, 1.0f, 1.0f};
-    constexpr SkColor4f kTestImageColors[4] = {
+    constexpr std::array<SkColor4f, 4> kTestImageColors = {
         SkColor4f{1.0f, 0.0f, 0.0f, 0.667f},
         SkColor4f{0.0f, 0.933f, 0.0f, 0.733f},
         SkColor4f{0.0f, 0.0f, 0.467f, 0.8f},
         SkColor4f{0.4f, 0.4f, 0.0f, 0.867f},
     };
-    constexpr SkIRect kTestImageColorRects[4] = {
-        SkIRect::MakeXYWH(4, 2, 4, 4), SkIRect::MakeXYWH(16, 2, 4, 4),
-        SkIRect::MakeXYWH(4, 10, 4, 4), SkIRect::MakeXYWH(16, 10, 4, 4),
+    constexpr std::array<SkIRect, 4> kTestImageColorRects = {
+        SkIRect::MakeXYWH(4, 2, 4, 4),
+        SkIRect::MakeXYWH(16, 2, 4, 4),
+        SkIRect::MakeXYWH(4, 10, 4, 4),
+        SkIRect::MakeXYWH(16, 10, 4, 4),
     };
 
     SkBitmap result;
@@ -591,7 +594,7 @@ class VideoCaptureOverlayRenderTest
     return matches_golden_file;
   }
 
-  void ExpectRendersAs(VideoCaptureOverlay::OnceRenderer* renderers,
+  void ExpectRendersAs(base::span<VideoCaptureOverlay::OnceRenderer> renderers,
                        const char* const* expected_files,
                        const std::size_t count,
                        const gfx::Size& video_frame_size) {
@@ -694,7 +697,7 @@ TEST_P(VideoCaptureOverlayRenderTest, MovesAround) {
   const gfx::Size video_frame_size(test_bitmap.width() * 4,
                                    test_bitmap.height() * 4);
 
-  const gfx::RectF relative_image_bounds[6] = {
+  const std::array<gfx::RectF, 6> relative_image_bounds = {
       gfx::RectF(0.0f, 0.0f, 0.5f, 0.5f),
       gfx::RectF(1.0f / video_frame_size.width(), 0.0f, 0.5f, 0.5f),
       gfx::RectF(2.0f / video_frame_size.width(), 0.0f, 0.5f, 0.5f),
@@ -705,7 +708,7 @@ TEST_P(VideoCaptureOverlayRenderTest, MovesAround) {
       gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f),
   };
 
-  VideoCaptureOverlay::OnceRenderer renderers[6];
+  std::array<VideoCaptureOverlay::OnceRenderer, 6> renderers;
   for (int i = 0; i < 6; ++i) {
     if (i == 0) {
       overlay.SetImageAndBounds(test_bitmap, relative_image_bounds[i]);
@@ -765,14 +768,14 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToContentBounds) {
                                   test_bitmap.width() * 2,
                                   test_bitmap.height() * 2);
 
-  const gfx::RectF relative_image_bounds[4] = {
+  const std::array<gfx::RectF, 4> relative_image_bounds = {
       gfx::RectF(-0.25f, -0.25f, 0.5f, 0.5f),
       gfx::RectF(0.75f, -0.25f, 0.5f, 0.5f),
       gfx::RectF(0.75f, 0.75f, 0.5f, 0.5f),
       gfx::RectF(-0.25f, 0.75f, 0.5f, 0.5f),
   };
 
-  VideoCaptureOverlay::OnceRenderer renderers[4];
+  std::array<VideoCaptureOverlay::OnceRenderer, 4> renderers;
   for (int i = 0; i < 4; ++i) {
     if (i == 0) {
       overlay.SetImageAndBounds(test_bitmap, relative_image_bounds[i]);
@@ -842,14 +845,14 @@ TEST_P(VideoCaptureOverlayRenderTest, ClipsToSubregionBounds) {
   const gfx::Rect compositor_frame_subrect(
       test_bitmap.width(), test_bitmap.height(), test_bitmap.width() * 2,
       test_bitmap.height() * 2);
-  const gfx::RectF relative_image_bounds[4] = {
+  const std::array<gfx::RectF, 4> relative_image_bounds = {
       gfx::RectF(0.125f, .125f, 0.25f, 0.25f),
       gfx::RectF(0.625f, .125f, 0.25f, 0.25f),
       gfx::RectF(0.625f, 0.625f, 0.25f, 0.25f),
       gfx::RectF(.125f, 0.625f, 0.25f, 0.25f),
   };
 
-  VideoCaptureOverlay::OnceRenderer renderers[4];
+  std::array<VideoCaptureOverlay::OnceRenderer, 4> renderers;
   for (int i = 0; i < 4; ++i) {
     if (i == 0) {
       overlay.SetImageAndBounds(test_bitmap, relative_image_bounds[i]);
@@ -896,14 +899,14 @@ TEST_P(VideoCaptureOverlayRenderTest, ScalesToContentRegion) {
       test_bitmap.width() * 2, test_bitmap.height() * 2,
       test_bitmap.width() * 6, test_bitmap.height() * 6);
 
-  const gfx::RectF relative_image_bounds[4] = {
+  const std::array<gfx::RectF, 4> relative_image_bounds = {
       gfx::RectF(0.125f, .125f, 0.25f, 0.25f),
       gfx::RectF(0.625f, .125f, 0.25f, 0.25f),
       gfx::RectF(0.625f, 0.625f, 0.25f, 0.25f),
       gfx::RectF(.125f, 0.625f, 0.25f, 0.25f),
   };
 
-  VideoCaptureOverlay::OnceRenderer renderers[4];
+  std::array<VideoCaptureOverlay::OnceRenderer, 4> renderers;
   for (int i = 0; i < 4; ++i) {
     if (i == 0) {
       overlay.SetImageAndBounds(test_bitmap, relative_image_bounds[i]);
