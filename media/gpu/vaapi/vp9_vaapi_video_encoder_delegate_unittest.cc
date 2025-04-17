@@ -12,6 +12,7 @@
 #include <va/va.h>
 
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <memory>
 #include <numeric>
@@ -44,11 +45,12 @@ namespace {
 
 constexpr size_t kDefaultMaxNumRefFrames = kVp9NumRefsPerFrame;
 
-constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
-    {1, 0, 0},  // For one spatial layer.
-    {2, 1, 0},  // For two spatial layers.
-    {4, 2, 1},  // For three spatial layers.
-};
+constexpr auto kSpatialLayersResolutionScaleDenom =
+    std::to_array<std::array<int, 3>>({
+        {1, 0, 0},  // For one spatial layer.
+        {2, 1, 0},  // For two spatial layers.
+        {4, 2, 1},  // For three spatial layers.
+    });
 constexpr uint8_t kTemporalLayerPattern[][4] = {
     {0, 0, 0, 0},
     {0, 1, 0, 1},
@@ -762,7 +764,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
     size_t num_temporal_layers;
     std::vector<size_t> active_layers;
   };
-  std::vector<ActivationQuery> kQueries[2] = {
+  std::array<std::vector<ActivationQuery>, 2> kQueries = {{
       {
           // Two spatial layers.
           {num_temporal_layers, {0}},     // Deactivate the top layer.
@@ -793,7 +795,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
           {1, {0}},                          // L1T1
           {1, {0, 1, 2}},                    // L3T1
       },
-  };
+  }};
 
   // Allocate a default bitrate allocation with the maximum temporal layers so
   // that it has non-zero bitrate up to the maximum supported temporal layers.

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -166,18 +167,18 @@ class H265Decoder : public VideoDecoder {
   // Global state values, needed in decoding. See spec.
   scoped_refptr<H265Picture> prev_tid0_pic_;
   int max_pic_order_cnt_lsb_;
-  bool curr_delta_poc_msb_present_flag_[kMaxDpbSize];
-  bool foll_delta_poc_msb_present_flag_[kMaxDpbSize];
+  std::array<bool, kMaxDpbSize> curr_delta_poc_msb_present_flag_;
+  std::array<bool, kMaxDpbSize> foll_delta_poc_msb_present_flag_;
   int num_poc_st_curr_before_;
   int num_poc_st_curr_after_;
   int num_poc_st_foll_;
   int num_poc_lt_curr_;
   int num_poc_lt_foll_;
-  int poc_st_curr_before_[kMaxDpbSize];
-  int poc_st_curr_after_[kMaxDpbSize];
-  int poc_st_foll_[kMaxDpbSize];
-  int poc_lt_curr_[kMaxDpbSize];
-  int poc_lt_foll_[kMaxDpbSize];
+  std::array<int, kMaxDpbSize> poc_st_curr_before_;
+  std::array<int, kMaxDpbSize> poc_st_curr_after_;
+  std::array<int, kMaxDpbSize> poc_st_foll_;
+  std::array<int, kMaxDpbSize> poc_lt_curr_;
+  std::array<int, kMaxDpbSize> poc_lt_foll_;
   H265Picture::Vector ref_pic_list0_;
   H265Picture::Vector ref_pic_list1_;
   H265Picture::Vector ref_pic_set_lt_curr_;

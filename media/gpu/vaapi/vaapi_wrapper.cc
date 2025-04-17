@@ -22,6 +22,7 @@
 #include <xf86drm.h>
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -901,7 +902,7 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
   }
   va_entrypoints.resize(num_va_entrypoints);
 
-  const std::vector<VAEntrypoint> kAllowedEntryPoints[] = {
+  const auto kAllowedEntryPoints = std::to_array<std::vector<VAEntrypoint>>({
       {VAEntrypointVLD},  // kDecode.
 #if BUILDFLAG(IS_CHROMEOS)
       {VAEntrypointVLD, VAEntrypointProtectedContent},  // kDecodeProtected.
@@ -913,7 +914,8 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
       {VAEntrypointEncSlice,
        VAEntrypointEncSliceLP},  // kEncodeVariableBitrate.
       {VAEntrypointVideoProc}    // kVideoProcess.
-  };
+      ,
+  });
   static_assert(std::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
                 "");
 
