@@ -44,6 +44,9 @@ GlicIphController::~GlicIphController() = default;
 void GlicIphController::MaybeShowPromo() {
   // Determine that there is a valid active tab we could show the promo for.
   auto* const tab = window_->GetActiveTabInterface();
+  if (!tab) {
+    return;
+  }
   auto* const contents = tab->GetContents();
   if (!contents->GetURL().SchemeIsHTTPOrHTTPS() ||
       !contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
