@@ -2386,59 +2386,6 @@ TEST_F(SiteSettingsHandlerTest, IncrementsTrackingProtectionMetrics) {
             1);
 }
 
-class Reset3pcCategoryPermissionTest
-    : public SiteSettingsHandlerBaseTest,
-      public testing::WithParamInterface<bool> {
- public:
-  Reset3pcCategoryPermissionTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(
-        privacy_sandbox::kTrackingProtectionContentSettingUbControl);
-    if (GetParam()) {
-      enabled_features.push_back(
-          privacy_sandbox::kTrackingProtectionContentSettingInSettings);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, Reset3pcCategoryPermissionTest, testing::Bool());
-
-TEST_P(Reset3pcCategoryPermissionTest,
-       RemovesTrackingProtectionExceptionsWhenFeatureIsOff) {
-  constexpr char kOrigin[] = "https://www.test.com:443";
-  base::Value::List set_args;
-  set_args.Append("*");      // Primary pattern.
-  set_args.Append(kOrigin);  // Secondary pattern.
-  set_args.Append(kTrackingProtection);
-  set_args.Append(
-      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
-  set_args.Append(false);  // Incognito
-  handler()->HandleSetCategoryPermissionForPattern(set_args);
-  // We should have 1 Tracking Protection exception
-  base::Value::List initial_exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::TRACKING_PROTECTION, profile(), web_ui(),
-      /*incognito=*/false, &initial_exceptions);
-  EXPECT_EQ(initial_exceptions.size(), 1U);
-
-  base::Value::List reset_args;
-  reset_args.Append("*");      // Primary pattern.
-  reset_args.Append(kOrigin);  // Secondary pattern.
-  reset_args.Append(kCookies);
-  reset_args.Append(false);  // Incognito
-  handler()->HandleResetCategoryPermissionForPattern(reset_args);
-  base::Value::List actual_exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::TRACKING_PROTECTION, profile(), web_ui(),
-      /*incognito=*/false, &actual_exceptions);
-  // The exception should only have been removed if the feature is off.
-  EXPECT_EQ(actual_exceptions.size(), GetParam() ? 1U : 0U);
-}
-
 // TODO(crbug.com/40688152): Test flakes on TSAN and ASAN.
 #if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DefaultSettingSource DISABLED_DefaultSettingSource

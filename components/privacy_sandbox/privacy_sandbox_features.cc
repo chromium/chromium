@@ -143,10 +143,6 @@ BASE_FEATURE(kActUserBypassUx,
              "ActUserBypassUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackingProtectionContentSettingInSettings,
-             "TrackingProtectionContentSettingInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrackingProtectionContentSettingUbControl,
              "TrackingProtectionContentSettingUbControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
