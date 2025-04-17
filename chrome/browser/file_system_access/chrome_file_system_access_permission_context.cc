@@ -1757,10 +1757,12 @@ void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   auto after_blocklist_check_callback = base::BindOnce(
       &ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist,
       GetWeakPtr(), origin, path_info, handle_type, user_action, frame_id,
-      std::move(callback));
+      start_time, std::move(callback));
   CheckPathAgainstBlocklist(path_info, handle_type,
                             std::move(after_blocklist_check_callback));
 }
@@ -1951,9 +1953,14 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
     HandleType handle_type,
     UserAction user_action,
     content::GlobalRenderFrameHostId frame_id,
+    const base::TimeTicks start_time,
     base::OnceCallback<void(SensitiveEntryResult)> callback,
     bool should_block) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramTimes(
+      "Storage.FileSystemAccess.ConfirmSensitiveEntryAccessDuration",
+      base::TimeTicks::Now() - start_time);
 
   if (user_action == UserAction::kNone) {
     std::move(callback).Run(should_block ? SensitiveEntryResult::kAbort

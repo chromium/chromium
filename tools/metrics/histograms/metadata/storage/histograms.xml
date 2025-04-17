@@ -896,6 +896,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.ConfirmSensitiveEntryAccessDuration"
+    units="ms" expires_after="2025-10-12">
+  <owner>leimy@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Logs the time it takes to execute
+    ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(). This
+    metric will be used to estimate the impact of the performance improvements
+    made to the blocklists check within the method.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.FilePathWatcherCallbackError"
     enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2025-06-27">
   <owner>memmott@chromium.org</owner>
