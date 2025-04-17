@@ -3610,6 +3610,20 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WinJAWSCompatibleWithUIA" enum="Boolean"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks if the JAWS version predates the fix for Chrome’s UIA support. True
+    if the version is newer or exactly JAWS 2022.2402.1, 2023.2402.1,
+    2024.2312.99, or 2025. False otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WinJAWSVersion" enum="JAWSMajorVersion"
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->

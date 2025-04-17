@@ -162,6 +162,23 @@ JawsMajorVersion MapModuleVersionToJaws(const ModuleVersion& version) {
   return JawsMajorVersion::kLegacy;
 }
 
+// Older versions of JAWS are known to not work well with text fields when we
+// expose the native UIA provider. Disable it when we detect an older version
+// version of JAWS. JAWS fixed the issue in versions:
+//   * 2022.2402.1+
+//   * 2023.2402.1+
+//   * 2024.2312.99+
+//   * 2025+
+bool IsJawsCompatibleWithUIA(const ModuleVersion& version) {
+  return !(version.IsLowerThan(ModuleVersion{2022, 0, 0, 0}) ||
+           (version.major == 2022 &&
+            version.IsLowerThan(ModuleVersion{2022, 2402, 1, 0})) ||
+           (version.major == 2023 &&
+            version.IsLowerThan(ModuleVersion{2023, 2402, 1, 0})) ||
+           (version.major == 2024 &&
+            version.IsLowerThan(ModuleVersion{2024, 2312, 99, 0})));
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -462,13 +479,7 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
       ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     for (const auto& info : at_infos) {
       if (info.tech == AccessibilityTarget::kJaws && info.version.has_value()) {
-        if (info.version->IsLowerThan(ModuleVersion{2022, 0, 0, 0}) ||
-            (info.version->major == 2022 &&
-             info.version->IsLowerThan(ModuleVersion{2022, 2402, 1, 0})) ||
-            (info.version->major == 2023 &&
-             info.version->IsLowerThan(ModuleVersion{2023, 2402, 1, 0})) ||
-            (info.version->major == 2024 &&
-             info.version->IsLowerThan(ModuleVersion{2024, 2312, 99, 0}))) {
+        if (!IsJawsCompatibleWithUIA(*info.version)) {
           ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
           break;
         }
@@ -573,6 +584,8 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   // Histograms for the JAWS and NVDA versions.
   for (const auto& info : at_infos) {
     if (info.tech == AccessibilityTarget::kJaws && info.version) {
+      UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWSCompatibleWithUIA",
+                            IsJawsCompatibleWithUIA(*info.version));
       JawsMajorVersion jaws_version = MapModuleVersionToJaws(*info.version);
       base::UmaHistogramEnumeration("Accessibility.WinJAWSVersion",
                                     jaws_version);
