@@ -212,10 +212,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrUrlListItem) {
   RunTest("cr_elements/cr_url_list_item_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsTest, StoreClient) {
-  RunTest("cr_elements/store_client_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLoadingGradient) {
   RunTest("cr_elements/cr_loading_gradient_test.js", "mocha.run()");
 }
