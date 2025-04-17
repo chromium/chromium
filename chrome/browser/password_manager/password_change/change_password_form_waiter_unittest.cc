@@ -113,7 +113,27 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormNotFound) {
 
   ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
 
+  static_cast<content::WebContentsObserver*>(&waiter)
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
   EXPECT_CALL(completion_callback, Run(nullptr));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+}
+
+TEST_F(ChangePasswordFormWaiterTest,
+       NotFoundCallbackInvokedOnlyAfterPageLoaded) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+
+  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  EXPECT_CALL(completion_callback, Run).Times(0);
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout * 2);
+
+  static_cast<content::WebContentsObserver*>(&waiter)
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  EXPECT_CALL(completion_callback, Run(nullptr));
+  // Now the timeout starts.
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 }

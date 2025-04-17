@@ -33,10 +33,11 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     : web_contents_(web_contents->GetWeakPtr()),
       callback_(std::move(callback)) {
   GetFormCache(web_contents).SetObserver(weak_ptr_factory_.GetWeakPtr());
-
-  timeout_timer_.Start(
-      FROM_HERE, ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout,
-      this, &ChangePasswordFormWaiter::OnTimeout);
+  if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    DocumentOnLoadCompletedInPrimaryMainFrame();
+  } else {
+    Observe(web_contents);
+  }
 }
 
 ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
@@ -64,6 +65,15 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   // Do not invoke anything after calling the `callback_` as object might be
   // destroyed immediately after.
   std::move(callback_).Run(form_manager);
+}
+
+void ChangePasswordFormWaiter::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (timeout_timer_.IsRunning()) {
+    return;
+  }
+  timeout_timer_.Start(
+      FROM_HERE, ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout,
+      this, &ChangePasswordFormWaiter::OnTimeout);
 }
 
 void ChangePasswordFormWaiter::OnTimeout() {

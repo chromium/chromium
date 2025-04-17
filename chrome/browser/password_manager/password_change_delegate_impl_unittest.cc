@@ -148,6 +148,9 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
 
+  static_cast<PasswordChangeDelegateImpl*>(delegate.get())
+      ->form_waiter()
+      ->MarkPageFinishedLoading();
   FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
@@ -168,6 +171,9 @@ TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
 
+  static_cast<PasswordChangeDelegateImpl*>(delegate.get())
+      ->form_waiter()
+      ->MarkPageFinishedLoading();
   FastForwardBy(ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,

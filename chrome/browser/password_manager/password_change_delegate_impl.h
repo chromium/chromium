@@ -59,6 +59,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void SetNavigator(content::PageNavigator* navigator) {
     test_navigator_ = navigator;
   }
+
+  ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
 #endif
 
  private:
