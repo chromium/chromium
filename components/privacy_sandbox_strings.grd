@@ -296,42 +296,6 @@
       <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
         See who has issued private state tokens on your device and how they are used.
       </message>
-      <!-- Page Info: ACT -->
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_ON" desc="" formatter_data="android_java" translateable="false">
-        Protections are on
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF" desc="" formatter_data="android_java" translateable="false">
-        {COUNT, plural,
-              =1 {Protections are off until tomorrow}
-              other {Protections are off for # days}}
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_TODAY" desc="" formatter_data="android_java" translateable="false">
-        Protections are off until today
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_PERMANENT" desc="" formatter_data="android_java" translateable="false">
-        Protections are off
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_MANAGED_TITLE" desc="" formatter_data="android_java" translateable="false">
-        Managed protections
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_ON" desc="" formatter_data="android_java" translateable="false">
-        You have extra protections on this site to limit tracking while you browse, but some features might not work.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_OFF" desc="" formatter_data="android_java" translateable="false">
-        You temporarily allowed this site to use trackers, which means less browsing protection but site features are more likely to work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_OFF" desc="" formatter_data="android_java" translateable="false">
-        IP address visible
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_ON" desc="" formatter_data="android_java" translateable="false">
-        IP address hidden
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_OFF" desc="" formatter_data="android_java" translateable="false">
-        Digital fingerprinting allowed
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
-        Digital fingerprinting limited
-      </message>
       <!-- ACT Snackbar -->
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         App not working?

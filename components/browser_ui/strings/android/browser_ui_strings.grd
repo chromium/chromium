@@ -610,9 +610,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="The label used in the Page Info dialog to label a toggle button that when enabled allows third-party cookies and when disabled blocks third-party cookies.">
         Third-party cookies
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE" desc="The header label of Tracking Protection page.">
-        Tracking Protection
-      </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view. Contains a link to the 'Third-party cookies' settings page.">
         Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>

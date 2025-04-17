@@ -78,16 +78,11 @@ void CookieControlsBridge::OnStatusChanged(
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jobject> jfeatures = CreateTpFeaturesList(env);
-  for (auto& feature : features) {
-    CreateTpFeatureAndAddToList(env, jfeatures, feature);
-  }
-
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_, static_cast<bool>(controls_visible),
       static_cast<bool>(protections_on), static_cast<int>(enforcement_),
       static_cast<int>(blocking_status),
-      expiration.InMillisecondsSinceUnixEpoch(), jfeatures);
+      expiration.InMillisecondsSinceUnixEpoch());
 }
 
 void CookieControlsBridge::OnCookieControlsIconStatusChanged(
@@ -121,22 +116,6 @@ void CookieControlsBridge::OnUiClosing(JNIEnv* env) {
 
 void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
   controller_->OnEntryPointAnimated();
-}
-
-// static
-ScopedJavaLocalRef<jobject> CookieControlsBridge::CreateTpFeaturesList(
-    JNIEnv* env) {
-  return Java_CookieControlsBridge_createTpFeatureList(env);
-}
-
-// static
-void CookieControlsBridge::CreateTpFeatureAndAddToList(
-    JNIEnv* env,
-    base::android::ScopedJavaLocalRef<jobject> jfeatures,
-    TrackingProtectionFeature feature) {
-  Java_CookieControlsBridge_createTpFeatureAndAddToList(
-      env, jfeatures, static_cast<int>(feature.feature_type),
-      static_cast<int>(feature.enforcement), static_cast<int>(feature.status));
 }
 
 CookieControlsBridge::~CookieControlsBridge() = default;

@@ -744,15 +744,6 @@
   <message name="IDS_PAGE_INFO_COOKIES_HEADER" desc="The header label of cookies subpage in Page Info bubble.">
     Cookies and site data
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are allowed." formatter_data="android_java">
-    Third-party cookies allowed
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are blocked." formatter_data="android_java">
-    Third-party cookies blocked
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are limited." formatter_data="android_java">
-    Third-party cookies limited
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The description of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>

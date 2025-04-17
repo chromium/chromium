@@ -1390,7 +1390,6 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/share/android:javatests",
       "//components/browser_ui/site_settings/android:javatests",
       "//components/language/android:javatests",
-      "//components/page_info/android:javatests",
       "//components/paint_preview/player/android:javatests",
       "//components/privacy_sandbox/android:javatests",
       "//services:services_javatests",
