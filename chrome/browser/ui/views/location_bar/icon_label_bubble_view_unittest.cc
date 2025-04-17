@@ -757,6 +757,37 @@ TEST_F(IconLabelBubbleViewTest, AdditionalPaddingRespectsLabelVisibility) {
             view()->GetImageContainerView()->x());
 }
 
+// Tests that the client-provided additional padding for labels is not
+// applied when the label has not text.
+TEST_F(IconLabelBubbleViewTest, AdditionalPaddingNotShownOnEmptyText) {
+  view()->SetUpAnimation();
+  view()->SetLabel(u"");
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+
+  const int initial_width = view()->width();
+  const int initial_image_x = view()->GetImageContainerView()->x();
+
+  // Set the additional insets for labels. These shouldn't be applied until
+  // the label's text is non-empty.
+  constexpr int kExpandedLabelLeftPadding = 1;
+  constexpr int kExpandedLabelRightPadding = 2;
+  view()->SetExpandedLabelAdditionalInsets(
+      views::Inset1D(kExpandedLabelLeftPadding, kExpandedLabelRightPadding));
+  view()->SizeToPreferredSize();
+
+  // Nothing should have changed.
+  EXPECT_EQ(initial_image_x, view()->GetImageContainerView()->x());
+  EXPECT_EQ(initial_width, view()->width());
+
+  // Update the label's text. The additional padding should be applied.
+  view()->SetLabel(u"Foo");
+  view()->SizeToPreferredSize();
+  ASSERT_TRUE(view()->IsLabelVisible());
+  EXPECT_EQ(initial_image_x + kExpandedLabelLeftPadding,
+            view()->GetImageContainerView()->x());
+}
+
 #if defined(USE_AURA)
 // Verifies IconLabelBubbleView::CalculatePreferredSize() doesn't crash when
 // there is a widget but no compositor.

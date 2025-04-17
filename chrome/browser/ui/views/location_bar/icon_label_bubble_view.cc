@@ -290,11 +290,12 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
   // If the fully expanded label fits, or it is mid-animation, then we
   // accept the "_with_label" image bounds.
   const bool can_label_expand = available_label_width >= preferred_label_width;
+  const bool should_use_label_bounds =
+      ShouldShowLabel() &&
+      (can_label_expand || slide_animation_.is_animating());
   layout.child_layouts.emplace_back(
       const_cast<views::View*>(this->image_container_view()), true,
-      (can_label_expand || slide_animation_.is_animating())
-          ? image_bounds_with_label
-          : image_bounds);
+      should_use_label_bounds ? image_bounds_with_label : image_bounds);
 
   // The separator should be the same height as the icons.
   const int separator_height = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
