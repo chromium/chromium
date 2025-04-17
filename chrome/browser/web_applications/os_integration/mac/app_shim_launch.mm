@@ -212,7 +212,7 @@ void LaunchTheFirstShimThatWorksOnFileThread(
 
   LaunchApplicationWithRetry(
       shim_path, command_line, /*url_specs=*/{},
-      {.activate = false,
+      {.activate = launch_mode != ShimLaunchMode::kBackground,
        .hidden_in_background = launch_mode == ShimLaunchMode::kBackground},
       base::BindOnce(
           [](base::FilePath shim_path,
