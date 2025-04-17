@@ -392,6 +392,10 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
     }
   }
   base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState2.", notice}),
+      startup_state);
+  // TODO(chrstne): Deprecate existing histogram.
+  base::UmaHistogramEnumeration(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.", notice}),
       startup_state);
 }

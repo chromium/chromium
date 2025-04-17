@@ -765,6 +765,10 @@ TEST_F(PrivacySandboxServiceTest, HistogramsAreEmptyOnStartup) {
         histograms,
         testing::Not(testing::AnyOf(base::StrCat(
             {"PrivacySandbox.Notice.NoticeStartupState.", notice_name}))));
+    EXPECT_THAT(
+        histograms,
+        testing::Not(testing::AnyOf(base::StrCat(
+            {"PrivacySandbox.Notice.NoticeStartupState2.", notice_name}))));
   }
 }
 

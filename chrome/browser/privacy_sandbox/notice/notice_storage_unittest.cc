@@ -110,6 +110,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateDoesNotExist) {
   EXPECT_THAT(histograms, testing::Not(testing::AnyOf(
                               "PrivacySandbox.Notice.NoticeStartupState."
                               "TopicsConsentDesktopModal")));
+  EXPECT_THAT(histograms, testing::Not(testing::AnyOf(
+                              "PrivacySandbox.Notice.NoticeStartupState2."
+                              "TopicsConsentDesktopModal")));
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeNameExpectCrash) {
@@ -126,6 +129,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsPromptWaiting) {
   notice_storage()->RecordHistogramsOnStartup(prefs(), kTopicsConsentModal);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
+      NoticeStartupState::kPromptWaiting, 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState2.TopicsConsentDesktopModal",
       NoticeStartupState::kPromptWaiting, 1);
 }
 
@@ -147,6 +153,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsUnknownState) {
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
       NoticeStartupState::kUnknownState, 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState2.TopicsConsentDesktopModal",
+      NoticeStartupState::kUnknownState, 1);
 }
 
 class PrivacySandboxNoticeStorageStartupTest
@@ -166,6 +175,9 @@ TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
   notice_storage()->RecordHistogramsOnStartup(prefs(), kTopicsConsentModal);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
+      std::get<1>(GetParam()), 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState2.TopicsConsentDesktopModal",
       std::get<1>(GetParam()), 1);
 }
 
