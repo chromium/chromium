@@ -82,16 +82,25 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('minHeight_')) {
+      this.height_ = Math.max(this.height_, this.minHeight_);
+    }
+
+    if (changedPrivateProperties.has('width_')) {
+      const lastWidth =
+          changedPrivateProperties.get('width_') as number | undefined;
+      if (lastWidth !== undefined && lastWidth < this.width_) {
+        // Reset the minimum height to 0 here, because it will have changed due
+        // to the increase in width and needs to be recomputed.
+        this.minHeight_ = 0;
+      }
+    }
+
     if (changedPrivateProperties.has('width_') ||
         changedPrivateProperties.has('height_')) {
       this.hidden = this.width_ === 0 && this.height_ === 0;
-    }
-
-    if (changedPrivateProperties.has('minHeight_')) {
-      this.height_ = Math.max(this.height_, this.minHeight_);
     }
   }
 
@@ -158,11 +167,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   protected onPointerDown_(e: PointerEvent) {
     const target = e.composedPath()[0];
-    // Ignore pointer events that aren't on the handles.
-    // TODO(crbug.com/402546155): Handle pointer events on the lines to move
-    // the box around.
+    // Ignore pointer events on the textbox itself.
     if (e.button !== 0 || !(target instanceof HTMLElement) ||
-        !target.classList.contains('handle')) {
+        target === this.$.textbox) {
       return;
     }
 
@@ -186,29 +193,36 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private onHandlePointerMove_(e: PointerEvent) {
-    const handle = e.target as HTMLElement;
+    const target = e.target as HTMLElement;
     assert(this.pointerStart_);
     assert(this.startPosition_);
-    if (handle.classList.contains('left')) {
+    if (!target.classList.contains('handle')) {
+      // User is dragging the box itself.
+      const deltaX = e.x - this.pointerStart_.x;
+      const deltaY = e.y - this.pointerStart_.y;
+      this.locationX_ = this.startPosition_.locationX + deltaX;
+      this.locationY_ = this.startPosition_.locationY + deltaY;
+      return;
+    }
+
+    if (target.classList.contains('left')) {
       const deltaX = Math.min(
           e.x - this.pointerStart_.x, this.startPosition_.width - MIN_WIDTH_PX);
       this.locationX_ = this.startPosition_.locationX + deltaX;
       this.width_ = this.startPosition_.width - deltaX;
-    }
-    if (handle.classList.contains('right')) {
+    } else if (target.classList.contains('right')) {
       const deltaX = Math.max(
           e.x - this.pointerStart_.x,
           -1 * this.startPosition_.width + MIN_WIDTH_PX);
       this.width_ = this.startPosition_.width + deltaX;
     }
-    if (handle.classList.contains('top')) {
+    if (target.classList.contains('top')) {
       const deltaY = Math.min(
           e.y - this.pointerStart_.y,
           this.startPosition_.height - this.minHeight_);
       this.height_ = this.startPosition_.height - deltaY;
       this.locationY_ = this.startPosition_.locationY + deltaY;
-    }
-    if (handle.classList.contains('bottom')) {
+    } else if (target.classList.contains('bottom')) {
       const deltaY = Math.max(
           e.y - this.pointerStart_.y,
           -1 * this.startPosition_.height + this.minHeight_);
@@ -217,12 +231,12 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private onHandlePointerUp_(e: PointerEvent) {
-    const handle = e.target as HTMLElement;
+    const target = e.target as HTMLElement;
     this.pointerStart_ = null;
     this.startPosition_ = null;
-    this.eventTracker_.remove(handle, 'pointercancel');
-    this.eventTracker_.remove(handle, 'pointerup');
-    this.eventTracker_.remove(handle, 'pointermove');
+    this.eventTracker_.remove(target, 'pointercancel');
+    this.eventTracker_.remove(target, 'pointerup');
+    this.eventTracker_.remove(target, 'pointermove');
     Ink2Manager.getInstance().setTextBoxRect({
       height: this.height_,
       locationX: this.locationX_,

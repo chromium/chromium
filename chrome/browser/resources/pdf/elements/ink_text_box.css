@@ -16,6 +16,7 @@
   --textbox-location-y: 0;
   --textbox-width: 20px;
   border: 2px solid var(--google-blue-700);
+  cursor: grab;
   display: flex;
   flex-direction: column;
   height: var(--textbox-height);
@@ -86,6 +87,7 @@ textarea {
   border: none;
   display: block;
   field-sizing: content;
+  flex: 1;
   outline: none;
   overflow: hidden;
   padding: calc(var(--handle-size) / 2 + 2px);

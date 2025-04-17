@@ -65,7 +65,8 @@ import {AnnotationMode} from './constants.js';
       <div id="sizer">
       </div>
       <if expr="enable_pdf_ink2">
-        <ink-text-box></ink-text-box>
+        ${this.isInTextAnnotationMode_() ? html`
+          <ink-text-box></ink-text-box>` : ''}
       </if>
       <div id="content"></div>
     </div>

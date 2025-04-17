@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getRequiredElement, setupTestMockPluginForInk} from './test_util.js';
@@ -11,8 +12,11 @@ setupTestMockPluginForInk();
 const manager = Ink2Manager.getInstance();
 // Initialize a font, since this starts out empty.
 manager.setTextFont('Roboto');
-const textbox = document.createElement('ink-text-box');
-document.body.appendChild(textbox);
+const viewer = document.querySelector('pdf-viewer');
+assert(viewer);
+const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar');
+assert(toolbar);
+toolbar.setAnnotationMode(AnnotationMode.TEXT);
 
 function assertPositionAndSize(
     el: HTMLElement, expectedWidth: string, expectedHeight: string,
@@ -49,7 +53,13 @@ async function dragHandle(handle: HTMLElement, deltaX: number, deltaY: number) {
 chrome.test.runTests([
   // Test drawing the box based on position from the backend.
   async function testDrawsBox() {
-    // Initial state
+    // Initial state. Textbox is not visible even though annotation mode is
+    // TEXT, because it hasn't received an update-text-box event yet.
+    // Wait for annotationMode to propagate from the toolbar.
+    await microtasksFinished();
+    const textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
+
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
@@ -82,6 +92,8 @@ chrome.test.runTests([
 
   // Test that the textbox styles change based on an update event.
   async function testTextbox() {
+    const textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
     // Update to a 100x200 box at 400, 300.
     manager.dispatchEvent(new CustomEvent(
         'update-text-box',
@@ -136,6 +148,9 @@ chrome.test.runTests([
   },
 
   async function testDragHandles() {
+    const textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
+
     // Initialize to a 100x200 box at 400, 300.
     manager.dispatchEvent(new CustomEvent(
         'update-text-box',
@@ -218,6 +233,9 @@ chrome.test.runTests([
   },
 
   async function testAutoResize() {
+    const textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
+
     // Textbox is in clamped size from the previous test.
     const clampedWidth = textbox.$.textbox.clientWidth;
     const clampedHeight = textbox.$.textbox.clientHeight;
@@ -253,6 +271,69 @@ chrome.test.runTests([
     await dragHandle(bottom, 0, -100);
     assertPositionAndSize(
         textbox, '300px', `${updatedHeight - 100}px`, '404px', '300px');
+
+    // Reset the sample text for later tests.
+    textbox.$.textbox.value = 'Sample Text';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+
+    chrome.test.succeed();
+  },
+
+  async function testMove() {
+    const textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
+
+    // Initialize to a 100x100 box at 400, 300.
+    manager.dispatchEvent(new CustomEvent(
+        'update-text-box',
+        {detail: {height: 100, locationX: 400, locationY: 300, width: 100}}));
+    await microtasksFinished();
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    await dragHandle(textbox, 100, 100);
+    assertPositionAndSize(textbox, '100px', '100px', '500px', '400px');
+    await dragHandle(textbox, -200, 100);
+    assertPositionAndSize(textbox, '100px', '100px', '300px', '500px');
+    await dragHandle(textbox, 0, -200);
+    assertPositionAndSize(textbox, '100px', '100px', '300px', '300px');
+
+    // Make sure that clicking and trying to drag the textarea itself does
+    // not move the textbox.
+    await dragHandle(textbox.$.textbox, -200, -200);
+    assertPositionAndSize(textbox, '100px', '100px', '300px', '300px');
+    chrome.test.succeed();
+  },
+
+  async function testHideWhenTextAnnotationModeOff() {
+    let textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
+
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertTrue(isVisible(textbox));
+
+    // Switching to a different annotation mode removes the box from the DOM.
+    toolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+    textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    chrome.test.assertFalse(!!textbox);
+
+    // Switching back to TEXT mode doesn't immediately show the box, but it
+    // does put it back in the DOM.
+    toolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    textbox = viewer.shadowRoot.querySelector('ink-text-box');
+    assert(textbox);
+    chrome.test.assertTrue(textbox.hidden);
+    chrome.test.assertFalse(isVisible(textbox));
+
+    // After an update-text-box event, the box shows again.
+    manager.dispatchEvent(new CustomEvent(
+        'update-text-box',
+        {detail: {height: 100, locationX: 400, locationY: 300, width: 100}}));
+    await microtasksFinished();
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertTrue(isVisible(textbox));
+
     chrome.test.succeed();
   },
 ]);

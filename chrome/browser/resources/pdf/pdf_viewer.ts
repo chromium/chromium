@@ -1489,6 +1489,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
+  protected isInTextAnnotationMode_(): boolean {
+    return this.annotationMode_ === AnnotationMode.TEXT;
+  }
+
   /**
    * @return Whether the Ink bottom toolbar should be shown. It should never be
    *     shown if the Ink side panel is shown.
