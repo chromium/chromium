@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "chrome/browser/ui/tabs/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
@@ -24,48 +25,17 @@
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 
-class MultiContentsViewUiTest : public InteractiveBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
-
+class MultiContentsViewUiTest
+    : public SplitTabsInteractiveTestMixin<InteractiveBrowserTest> {
  protected:
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
-  MultiContentsView* multi_contents_view() {
-    return browser_view()->multi_contents_view_for_testing();
-  }
-
-  auto EnterSplitView() {
-    // MultiContentsView overrides Layout, causing an edge case where the
-    // resize area gets set to visible but doesn't gain nonzero size until the
-    // next layout pass. Use PollView and WaitForState to wait for a nonzero
-    // size, rather than just visible = true.
-    using ResizeAreaLoadObserver =
-        views::test::PollingViewObserver<bool, MultiContentsResizeArea>;
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ResizeAreaLoadObserver,
-                                        kResizeLoadObserver);
-
+  auto CreateTabsAndEnterSplitView() {
     auto result = Steps(
         AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
-        Check([=, this]() { return tab_strip_model()->count() == 2u; }),
-        Do([&]() {
-          tab_strip_model()->AddToNewSplit(
-              {1}, split_tabs::SplitTabLayout::kHorizontal);
-        }),
-        PollView(kResizeLoadObserver,
-                 MultiContentsResizeArea::kMultiContentsResizeAreaElementId,
-                 [](const MultiContentsResizeArea* resize_area) -> bool {
-                   return resize_area->size().width() > 0 &&
-                          resize_area->size().height() > 0;
-                 }),
-        WaitForState(kResizeLoadObserver, true));
-    AddDescriptionPrefix(result, "EnterSplitView()");
+        CheckResult([=, this]() { return tab_strip_model()->count(); }, 2u),
+        EnterSplitView(0, 1));
+    AddDescriptionPrefix(result, "CreateTabsAndEnterSplitView()");
     return result;
   }
 
@@ -103,24 +73,10 @@ class MultiContentsViewUiTest : public InteractiveBrowserTest {
     return result;
   }
 
-  auto ExitSplitView(int index) {
-    auto result = Steps(
-        Check([index, this]() {
-          return tab_strip_model()->GetSplitForTab(index).has_value();
-        }),
-        Do([index, this]() {
-          auto split_id = tab_strip_model()->GetSplitForTab(index);
-          tab_strip_model()->RemoveSplit(split_id.value());
-        }),
-        WaitForHide(MultiContentsResizeArea::kMultiContentsResizeAreaElementId),
-        Check([this]() {
-          return multi_contents_view()->GetInactiveContentsView()->GetVisible();
-        }));
-    AddDescriptionPrefix(result, "ExitSplitView()");
-    return result;
+  auto CheckTabIsActive(int index) {
+    return CheckResult([this]() { return tab_strip_model()->active_index(); },
+                       index);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Check that MultiContentsView exists when the side by side flag is enabled
@@ -133,28 +89,17 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
 // visible
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, EnterAndExitSplitViews) {
   RunTestSequence(
-      EnterSplitView(),
-      Check([this]() { return tab_strip_model()->active_index() == 0; }),
-      ExitSplitView(0),
-      Check([this]() { return tab_strip_model()->active_index() == 0; }),
-      Check([this]() { return tab_strip_model()->count() == 2u; }));
+      CreateTabsAndEnterSplitView(), CheckTabIsActive(0), ExitSplitView(0),
+      CheckTabIsActive(0),
+      CheckResult([this]() { return tab_strip_model()->count(); }, 2u));
 }
 
 // Check that MultiContentsView changes its active view when inactive view is
 // focused using mouse click.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        ActivatesInactiveViewUsingMouseClick) {
-  RunTestSequence(
-      EnterSplitView(),
-      Check([=, this]() { return tab_strip_model()->active_index() == 0; }),
-      MoveMouseTo(base::BindLambdaForTesting([this]() {
-        return multi_contents_view()
-            ->GetInactiveContentsView()
-            ->GetBoundsInScreen()
-            .CenterPoint();
-      })),
-      ClickMouse(),
-      Check([&]() { return tab_strip_model()->active_index() == 1; }));
+  RunTestSequence(CreateTabsAndEnterSplitView(), CheckTabIsActive(0),
+                  FocusInactiveTabInSplit(), CheckTabIsActive(1));
 }
 
 // Check that MultiContentsView changes its active view when inactive view is
@@ -162,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        ActivatesInactiveViewUsingKeyboard) {
   RunTestSequence(
-      EnterSplitView(),
-      Check([=, this]() { return tab_strip_model()->active_index() == 0; }),
+      CreateTabsAndEnterSplitView(), CheckTabIsActive(0),
       // The second contents view should be next in the focus order after
       // the resize handle so send a TAB key event to move focus to inactive tab
       FocusElement(
@@ -171,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       SendKeyPress(
           MultiContentsResizeHandle::kMultiContentsResizeHandleElementId,
           ui::VKEY_TAB),
-      Check([&]() { return tab_strip_model()->active_index() == 1; }));
+      CheckTabIsActive(1));
 }
 
 // TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng and
@@ -186,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 // end contents views via left and right key events.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
   RunTestSequence(
-      EnterSplitView(), Check([&]() {
+      CreateTabsAndEnterSplitView(), Check([&]() {
         double start_width = multi_contents_view()
                                  ->start_contents_view_for_testing()
                                  ->size()
@@ -225,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, InsetsOnlyInSplit) {
                    ->bounds()
                    .width() == multi_contents_view()->bounds().width();
       }),
-      EnterSplitView(), Check([&]() {
+      CreateTabsAndEnterSplitView(), Check([&]() {
         int contents_and_resize_width =
             multi_contents_view()->GetActiveContentsView()->bounds().width() +
             multi_contents_view()->GetInactiveContentsView()->bounds().width() +
@@ -238,17 +182,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, InsetsOnlyInSplit) {
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                        ActivatesMostRecentlyActiveTabInSplit) {
   RunTestSequence(
-      EnterSplitView(),
-      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
+      CreateTabsAndEnterSplitView(), CheckTabIsActive(0),
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
-      CheckResult([this]() { return tab_strip_model()->active_index(); }, 2),
+      CheckTabIsActive(2),
       // Since tab 0 and 1 are part of a split view and tab 0 was the most
       // recently focused half of the split it should become the active tab, but
       // both tabs will be visible.
       SelectTab(kTabStripElementId, 1, InputType::kMouse, 0),
-      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
+      CheckTabIsActive(0),
       // Select another tab in the split view and ensure the active index
       // doesn't change since it isn't the currently focused tab.
       SelectTab(kTabStripElementId, 1, InputType::kMouse, 0),
-      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0));
+      CheckTabIsActive(0));
 }

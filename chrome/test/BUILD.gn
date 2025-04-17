@@ -833,6 +833,7 @@ static_library("test_support") {
       "../browser/ui/performance_controls/test_support/resource_usage_collector_observer.cc",
       "../browser/ui/performance_controls/test_support/resource_usage_collector_observer.h",
       "../browser/ui/profiles/profile_ui_test_utils.h",
+      "../browser/ui/tabs/test/split_tabs_interactive_test_mixin.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
       "../browser/ui/test/pixel_test_configuration_mixin.h",
       "../browser/ui/test/test_browser_dialog.cc",
