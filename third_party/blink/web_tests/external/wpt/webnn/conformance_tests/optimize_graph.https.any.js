@@ -128,6 +128,105 @@ const optimizedgraphTests = [
       }
     }
   },
+  {
+    'name': 'Lesser output is consumed by Where and used as graph output',
+    'graph': {
+      'inputs': {
+        'LesserInputA': {
+          'data': [2],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        },
+        'LesserInputB': {
+          'data': [1],
+          'descriptor': {shape: [1], dataType: 'float32'},
+        },
+        'whereTrueValue': {
+          'data': [2.2],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        },
+        'whereFalseValue': {
+          'data': [1.1],
+          'descriptor': {shape: [1], dataType: 'float32'},
+        }
+      },
+      'operators': [
+        {
+          'name': 'lesser',
+          'arguments': [{'a': 'LesserInputA'}, {'b': 'LesserInputB'}],
+          'outputs': 'lesserOutput'
+        },
+        {
+          'name': 'where',
+          'arguments': [{'condition': 'lesserOutput'}, {'trueValue,': 'whereTrueValue'}, {'falseValue': 'whereFalseValue'}],
+          'outputs': 'whereOutput'
+        },
+      ],
+      'expectedOutputs': {
+        'lesserOutput': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'uint8'}
+        },
+        'whereOutput': {
+          'data': [1.1],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'Lesser output is consumed by Where and Add',
+    'graph': {
+      'inputs': {
+        'LesserInputA': {
+          'data': [2],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        },
+        'LesserInputB': {
+          'data': [1],
+          'descriptor': {shape: [1], dataType: 'float32'},
+        },
+        'whereTrueValue': {
+          'data': [2.2],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        },
+        'whereFalseValue': {
+          'data': [1.1],
+          'descriptor': {shape: [1], dataType: 'float32'},
+        },
+        'AddInputB': {
+          'data': [2],
+          'descriptor': {shape: [1], dataType: 'uint8'},
+        }
+      },
+      'operators': [
+        {
+          'name': 'lesser',
+          'arguments': [{'a': 'LesserInputA'}, {'b': 'LesserInputB'}],
+          'outputs': 'lesserOutput'
+        },
+        {
+          'name': 'where',
+          'arguments': [{'condition': 'lesserOutput'}, {'trueValue,': 'whereTrueValue'}, {'falseValue': 'whereFalseValue'}],
+          'outputs': 'whereOutput'
+        },
+        {
+          'name': 'add',
+          'arguments': [{'a': 'lesserOutput'}, {'b,': 'AddInputB'}],
+          'outputs': 'addOutput'
+        },
+      ],
+      'expectedOutputs': {
+        'whereOutput': {
+          'data': [1.1],
+          'descriptor': {shape: [1], dataType: 'float32'}
+        },
+        'addOutput': {
+          'data': [2],
+          'descriptor': {shape: [1], dataType: 'uint8'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
