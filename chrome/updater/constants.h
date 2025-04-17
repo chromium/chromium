@@ -286,11 +286,7 @@ inline constexpr base::TimeDelta kWaitForSetupLock = base::Seconds(5);
 inline constexpr base::TimeDelta kDefaultLastCheckPeriod =
     base::Hours(4) + base::Minutes(30);
 
-#if BUILDFLAG(IS_WIN)
-// How often the installer progress from registry is sampled. This value may
-// be changed to provide a smoother progress experience (crbug.com/1067475).
-inline constexpr int kWaitForInstallerProgressSec = 1;
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 // How long to wait for launchd changes to be reported by launchctl.
 inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // BUILDFLAG(IS_MAC)

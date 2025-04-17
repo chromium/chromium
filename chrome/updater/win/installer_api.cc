@@ -536,10 +536,7 @@ InstallerResult RunApplicationInstaller(
     base::TerminationStatus final_status =
         base::TerminationStatus::TERMINATION_STATUS_MAX_ENUM;
     const bool success = base::GetAppOutputWithExitCodeAndTimeout(
-        cmdline, true, nullptr, &exit_code,
-        std::max(timeout - timer.Elapsed(),
-                 base::Seconds(kWaitForInstallerProgressSec)),
-        options,
+        cmdline, true, nullptr, &exit_code, timeout - timer.Elapsed(), options,
         [&](std::string_view partial_output) {
           VLOG(1) << "Installer output: " << partial_output;
 
