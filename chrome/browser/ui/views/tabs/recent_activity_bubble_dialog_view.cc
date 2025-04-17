@@ -371,13 +371,6 @@ RecentActivityRowView::RecentActivityRowView(
   // Remove HoverButton's empty border.
   SetBorder({});
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE));
-  SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
-  SetEnabled(GetActionEnabledForItem(item_));
-
   image_view_ = AddChildView(
       std::make_unique<RecentActivityRowImageView>(item_, profile_));
   // Let hover button process events.
@@ -403,6 +396,13 @@ RecentActivityRowView::RecentActivityRowView(
   metadata_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
   metadata_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   metadata_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
+  GetViewAccessibility().SetName(activity_text_);
+  GetViewAccessibility().SetDescription(metadata_text_);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
+  SetEnabled(GetActionEnabledForItem(item_));
 
   // Set a preferred height so the HoverButton will not cut off the row's
   // contents. Set height based on image size and vertical row padding.
