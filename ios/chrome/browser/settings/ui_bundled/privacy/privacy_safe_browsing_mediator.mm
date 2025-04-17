@@ -139,14 +139,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_safeBrowsingItems) {
     NSMutableArray* items = [NSMutableArray array];
     NSInteger enhancedProtectionSummary;
-    if (base::FeatureList::IsEnabled(safe_browsing::kEsbAiStringUpdate)) {
-      enhancedProtectionSummary =
-          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED;
+    enhancedProtectionSummary =
+        IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED;
 
-    } else {
-      enhancedProtectionSummary =
-          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY;
-    }
     NSInteger standardProtectionSummary;
     standardProtectionSummary =
         IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY;
