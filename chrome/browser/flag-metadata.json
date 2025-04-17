@@ -5172,6 +5172,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "grid-tab-switcher-surface-color-update",
+    "owners": [ "jtanaristy@google.org", "wenyufu@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "grid-tab-switcher-update",
     "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
     "expiry_milestone": 142

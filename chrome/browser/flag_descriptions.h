@@ -2805,6 +2805,9 @@ extern const char kFullscreenInsetsApiMigrationDescription[];
 extern const char kFullscreenInsetsApiMigrationOnAutomotiveName[];
 extern const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[];
 
+extern const char kGridTabSwitcherSurfaceColorUpdateName[];
+extern const char kGridTabSwitcherSurfaceColorUpdateDescription[];
+
 extern const char kGtsCloseTabAnimationName[];
 extern const char kGtsCloseTabAnimationDescription[];
 

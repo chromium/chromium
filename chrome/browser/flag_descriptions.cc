@@ -4440,7 +4440,7 @@ const char kAndroidPdfAssistContentDescription[] =
 
 const char kAndroidSurfaceColorUpdateName[] = "Android surface color update.";
 const char kAndroidSurfaceColorUpdateDescription[] =
-    "If enabled, updates the android surface colors.";
+    "If enabled, updates the android surface colors for toolbar/omnibox.";
 
 const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
 const char kAndroidTabDeclutterDescription[] =
@@ -4779,6 +4779,11 @@ const char kFullscreenInsetsApiMigrationOnAutomotiveName[] =
 const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[] =
     "Migration from View#setSystemUiVisibility to WindowInsetsController on "
     "automotive.";
+
+const char kGridTabSwitcherSurfaceColorUpdateName[] =
+    "Grid tab switcher surface color update";
+const char kGridTabSwitcherSurfaceColorUpdateDescription[] =
+    "Enables grid tab switcher surface color update";
 
 const char kGtsCloseTabAnimationName[] =
     "Grid tab switcher close tab animation";
