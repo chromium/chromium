@@ -362,6 +362,10 @@ message DisplayDevice {
   optional int32 model_id = 6;
   // Year of manufacture.
   optional int32 manufacture_year = 7;
+  // 32 bits serial number.
+  optional uint32 serial_number = 8;
+  // EDID version.
+  optional string edid_version = 9;
 }
 
 // Information about keylocker. This is supported on Intel CPUs.

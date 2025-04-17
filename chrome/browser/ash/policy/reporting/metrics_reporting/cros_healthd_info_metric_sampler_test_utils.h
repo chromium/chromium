@@ -79,7 +79,9 @@ cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
     std::string manufacturer,
     int model_id,
     int manufacture_year,
-    std::string display_name);
+    std::string display_name,
+    std::string edid_version,
+    uint32_t serial_number);
 
 // Create an external display. Used to feed into `CreateDisplayResult`.
 cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
@@ -91,7 +93,9 @@ cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
     std::string manufacturer,
     int model_id,
     int manufacture_year,
-    std::string display_name);
+    std::string display_name,
+    std::string edid_version,
+    uint32_t serial_number);
 
 // -------- system ---------
 

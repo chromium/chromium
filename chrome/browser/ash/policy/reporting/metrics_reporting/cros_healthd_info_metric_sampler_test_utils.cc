@@ -131,7 +131,9 @@ cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
     std::string manufacturer,
     int model_id,
     int manufacture_year,
-    std::string display_name) {
+    std::string display_name,
+    std::string edid_version,
+    uint32_t serial_number) {
   return cros_healthd::EmbeddedDisplayInfo::New(
       privacy_screen_supported, /*privacy_screen_enabled*/ false,
       cros_healthd::NullableUint32::New(display_width),
@@ -140,10 +142,9 @@ cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
       cros_healthd::NullableUint32::New(resolution_vertical),
       cros_healthd::NullableDouble::New(refresh_rate), manufacturer,
       cros_healthd::NullableUint16::New(model_id),
-      /*serial_number*/ cros_healthd::NullableUint32::New(12345),
+      cros_healthd::NullableUint32::New(serial_number),
       /*manufacture_week*/ cros_healthd::NullableUint8::New(10),
-      cros_healthd::NullableUint16::New(manufacture_year),
-      /*edid_version*/ "V2.0",
+      cros_healthd::NullableUint16::New(manufacture_year), edid_version,
       /*input_type*/ cros_healthd::DisplayInputType::kDigital, display_name);
 }
 
@@ -156,7 +157,9 @@ cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
     std::string manufacturer,
     int model_id,
     int manufacture_year,
-    std::string display_name) {
+    std::string display_name,
+    std::string edid_version,
+    uint32_t serial_number) {
   return cros_healthd::ExternalDisplayInfo ::New(
       cros_healthd::NullableUint32::New(display_width),
       cros_healthd::NullableUint32::New(display_height),
@@ -164,10 +167,9 @@ cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
       cros_healthd::NullableUint32::New(resolution_vertical),
       cros_healthd::NullableDouble::New(refresh_rate), manufacturer,
       cros_healthd::NullableUint16::New(model_id),
-      /*serial_number*/ cros_healthd::NullableUint32::New(12345),
+      cros_healthd::NullableUint32::New(serial_number),
       /*manufacture_week*/ cros_healthd::NullableUint8::New(10),
-      cros_healthd::NullableUint16::New(manufacture_year),
-      /*edid_version*/ "V2.0",
+      cros_healthd::NullableUint16::New(manufacture_year), edid_version,
       /*input_type*/ cros_healthd::DisplayInputType::kDigital, display_name);
 }
 
