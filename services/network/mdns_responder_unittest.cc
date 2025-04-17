@@ -9,6 +9,7 @@
 
 #include "services/network/mdns_responder.h"
 
+#include <array>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -495,7 +496,7 @@ class MdnsResponderTest : public testing::Test {
   // of time and avoid any actual sleeps.
   NiceMock<net::MockMDnsSocketFactory> socket_factory_;
   NiceMock<MockFailingMdnsSocketFactory> failing_socket_factory_;
-  mojo::Remote<mojom::MdnsResponder> client_[2];
+  std::array<mojo::Remote<mojom::MdnsResponder>, 2> client_;
   std::unique_ptr<MdnsResponderManager> host_manager_;
   std::string last_name_created_;
 };

@@ -9,6 +9,8 @@
 
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 
+#include <array>
+
 #include "base/strings/pattern.h"
 
 using ::perfetto::protos::pbzero::ChromeThreadDescriptor;
@@ -20,7 +22,7 @@ struct ThreadType {
   ChromeThreadDescriptor::ThreadType type;
 };
 
-constexpr ThreadType kThreadTypes[] = {
+constexpr auto kThreadTypes = std::to_array<ThreadType>({
     {"CrBrowserMain", ChromeThreadDescriptor::THREAD_BROWSER_MAIN},
     {"CrRendererMain", ChromeThreadDescriptor::THREAD_RENDERER_MAIN},
     {"CrGpuMain", ChromeThreadDescriptor::THREAD_GPU_MAIN},
@@ -74,7 +76,7 @@ constexpr ThreadType kThreadTypes[] = {
     {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
     {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
     {"CompositorGpuThread", ChromeThreadDescriptor::THREAD_COMPOSITOR_GPU},
-};
+});
 
 ChromeThreadDescriptor::ThreadType GetThreadType(
     const char* const thread_name) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/geometry/rect.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -10,6 +9,7 @@
 
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/files/file_path.h"
@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 
@@ -37,7 +38,7 @@ constexpr int kMaxChildInTemplate = 3;
 struct NodeTemplate {
   ui::AXNodeID node_id;
   int child_count;
-  ui::AXNodeID child_ids[kMaxChildInTemplate];
+  std::array<ui::AXNodeID, kMaxChildInTemplate> child_ids;
 };
 
 ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(int root_id,
@@ -340,7 +341,7 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   const int nodes_count = sizeof(input_tree) / sizeof(NodeTemplate);
 
   // Expected order of nodes in the output.
-  int expected_order[] = {1, 2, 7, 8, 3, 4, 5, 6, 9, -20};
+  auto expected_order = std::to_array<int>({1, 2, 7, 8, 3, 4, 5, 6, 9, -20});
 
   // Create the tree, convert it, and decode from proto.
   ui::AXTreeUpdate tree_update =

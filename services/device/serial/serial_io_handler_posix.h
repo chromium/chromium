@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_SERIAL_SERIAL_IO_HANDLER_POSIX_H_
 #define SERVICES_DEVICE_SERIAL_SERIAL_IO_HANDLER_POSIX_H_
 
+#include <array>
 #include <memory>
 
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -68,7 +69,7 @@ class SerialIoHandlerPosix : public SerialIoHandler {
 
   ErrorDetectState error_detect_state_;
   bool parity_check_enabled_;
-  uint8_t chars_stashed_[2];
+  std::array<uint8_t, 2> chars_stashed_;
   size_t num_chars_stashed_;
 };
 
