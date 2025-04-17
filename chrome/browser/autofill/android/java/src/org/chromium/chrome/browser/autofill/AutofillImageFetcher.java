@@ -63,6 +63,7 @@ public class AutofillImageFetcher {
      * @param imageSizes The list of image sizes that should be fetched for each of the above URLs.
      */
     @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void prefetchCardArtImages(
             @JniType("base::span<const GURL>") GURL[] urls, @ImageSize int[] imageSizes) {
         Context context = ContextUtils.getApplicationContext();
@@ -86,6 +87,7 @@ public class AutofillImageFetcher {
      * @param urls The URLs to fetch the images.
      */
     @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void prefetchPixAccountImages(@JniType("base::span<const GURL>") GURL[] urls) {
         for (GURL url : urls) {
             if (url == null || !url.isValid()) {
