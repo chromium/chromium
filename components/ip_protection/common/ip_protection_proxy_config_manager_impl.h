@@ -111,7 +111,7 @@ class IpProtectionProxyConfigManagerImpl
   const base::TimeDelta proxy_list_refresh_interval_;
 
   // If false, proxy list refresh interval is not fuzzed.
-  bool enable_proxy_list_fetch_interval_fuzzing_for_testing_ = true;
+  bool enable_proxy_list_fetch_interval_fuzzing_ = true;
 
   // A timer to run `RefreshProxyList()` when necessary.
   base::OneShotTimer next_refresh_proxy_list_;

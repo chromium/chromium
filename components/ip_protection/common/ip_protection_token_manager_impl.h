@@ -163,7 +163,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   bool disable_cache_management_for_testing_ = false;
 
   // If false, token expiration is not fuzzed.
-  bool enable_token_expiration_fuzzing_for_testing_ = true;
+  bool enable_token_expiration_fuzzing_= true;
 
   base::RepeatingTimer measurement_timer_;
 

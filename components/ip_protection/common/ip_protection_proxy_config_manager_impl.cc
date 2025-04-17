@@ -158,7 +158,7 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
 
 base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
     base::TimeDelta delay) {
-  if (!enable_proxy_list_fetch_interval_fuzzing_for_testing_) {
+  if (!enable_proxy_list_fetch_interval_fuzzing_) {
     return delay;
   }
 
@@ -185,7 +185,7 @@ void IpProtectionProxyConfigManagerImpl::SetProxyListForTesting(
 
 void IpProtectionProxyConfigManagerImpl::
     EnableProxyListFetchIntervalFuzzingForTesting(bool enable) {
-  enable_proxy_list_fetch_interval_fuzzing_for_testing_ = enable;
+  enable_proxy_list_fetch_interval_fuzzing_ = enable;
 }
 
 void IpProtectionProxyConfigManagerImpl::ScheduleRefreshProxyList(

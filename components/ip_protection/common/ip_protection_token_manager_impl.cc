@@ -273,7 +273,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
 
   // Randomize the expiration time of the tokens, applying the same "fuzz" to
   // all tokens in the batch.
-  if (enable_token_expiration_fuzzing_for_testing_) {
+  if (enable_token_expiration_fuzzing_) {
     base::TimeDelta fuzz_limit = net::features::kIpPrivacyExpirationFuzz.Get();
     base::TimeDelta fuzz =
         base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
@@ -449,7 +449,7 @@ void IpProtectionTokenManagerImpl::DisableCacheManagementForTesting(
 
 void IpProtectionTokenManagerImpl::EnableTokenExpirationFuzzingForTesting(
     bool enable) {
-  enable_token_expiration_fuzzing_for_testing_ = enable;
+  enable_token_expiration_fuzzing_ = enable;
 }
 
 // Call `TryGetAuthTokens()`, which will call
