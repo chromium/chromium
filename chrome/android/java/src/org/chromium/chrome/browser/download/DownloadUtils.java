@@ -446,7 +446,7 @@ public class DownloadUtils {
                             context);
             intent.putExtra(
                     CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING,
-                    ChromeFeatureList.sCCTEphemeralMediaViewerExperiment.isEnabled());
+                    ChromeFeatureList.sCctEphemeralMediaViewerExperiment.isEnabled());
             IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileId);
             return true;

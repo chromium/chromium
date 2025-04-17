@@ -611,6 +611,8 @@ public abstract class ChromeFeatureList {
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
 
     /* Alphabetical: */
+    public static final CachedFlag sAndroidAppIntegration =
+            newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, true);
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
@@ -657,7 +659,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBlockTouchesDuringEnterAnimation =
             newCachedFlag(CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION, true);
-    public static final CachedFlag sCCTEphemeralMediaViewerExperiment =
+    public static final CachedFlag sCctEphemeralMediaViewerExperiment =
             newCachedFlag(
                     CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT,
                     /* defaultValue= */ false,
@@ -847,8 +849,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sWebApkMinShellApkVersion =
             newCachedFlag(WEB_APK_MIN_SHELL_APK_VERSION, true);
-    public static final CachedFlag sAndroidAppIntegration =
-            newCachedFlag(ANDROID_APP_INTEGRATION, true);
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
@@ -876,7 +876,7 @@ public abstract class ChromeFeatureList {
                     sCctAuthTabEnableHttpsRedirects,
                     sCctAutoTranslate,
                     sCctBlockTouchesDuringEnterAnimation,
-                    sCCTEphemeralMediaViewerExperiment,
+                    sCctEphemeralMediaViewerExperiment,
                     sCctEphemeralMode,
                     sCctFreInSameTask,
                     sCctGoogleBottomBar,
