@@ -1897,6 +1897,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     bool use_visible_rect) {
   auto* ri = raster_context_provider->RasterInterface();
 
+  gpu::SyncToken sync_token;
   // If we have single source shared image, just use CopySharedImage().
   if (video_frame->HasSharedImage()) {
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
@@ -1906,24 +1907,21 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     ri->CopySharedImage(video_frame->shared_image()->mailbox(), dest_mailbox, 0,
                         0, source_rect.x(), source_rect.y(),
                         source_rect.width(), source_rect.height());
+    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+
+    // If VideoFrame has textures, we need to update SyncToken or to keep frame
+    // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
+    // This is to make sure decoder doesn't re-use frame before copy is done.
+    SynchronizeVideoFrameRead(std::move(video_frame), ri,
+                              raster_context_provider->ContextSupport());
   } else {
     // TODO(vasilyt): Add caching support
-    internals::ConvertYuvVideoFrameToRgbSharedImage(
+    sync_token = internals::ConvertYuvVideoFrameToRgbSharedImage(
         video_frame.get(), raster_context_provider, dest_mailbox,
         dest_sync_token, use_visible_rect,
         /*shared_image_cache=*/nullptr);
   }
 
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  // If VideoFrame has textures, we need to update SyncToken or to keep frame
-  // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
-  // This is to make sure decoder doesn't re-use frame before copy is done.
-  if (video_frame->HasSharedImage()) {
-    SynchronizeVideoFrameRead(std::move(video_frame), ri,
-                              raster_context_provider->ContextSupport());
-  }
   return sync_token;
 }
 

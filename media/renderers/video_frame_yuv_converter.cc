@@ -75,7 +75,7 @@ bool IsPixelFormatSupportedForYuvSharedImageConversion(
   }
 }
 
-void ConvertYuvVideoFrameToRgbSharedImage(
+gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::Mailbox& dest_mailbox,
@@ -138,7 +138,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
     // Since the video frame id matches, no need to upload pixels or copy shared
     // image again.
-    return;
+    return dest_sync_token;
   }
 
   ri->WaitSyncTokenCHROMIUM(si_sync_token.GetConstData());
@@ -180,6 +180,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());
 
   shared_image_cache->UpdateSyncToken(ri_sync_token);
+  return ri_sync_token;
 }
 
 }  // namespace media::internals
