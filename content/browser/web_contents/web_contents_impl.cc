@@ -2346,6 +2346,11 @@ void WebContentsImpl::OnManifestUrlChanged(PageImpl& page) {
 }
 
 WebUI* WebContentsImpl::GetWebUI() {
+  // There is no frame host if the navigation fails.
+  if (!primary_frame_tree_.root()->current_frame_host()) {
+    return nullptr;
+  }
+
   return primary_frame_tree_.root()->current_frame_host()->web_ui();
 }
 
