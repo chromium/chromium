@@ -206,6 +206,7 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
           ->immersive_mode_controller();
   if (paused) {
     immersive_mode_controller->SetEnabled(false);
+    immersive_mode_controller_observation_.Reset();
     immersive_mode_controller_observation_.Observe(immersive_mode_controller);
   } else {
     immersive_mode_controller_observation_.Reset();
