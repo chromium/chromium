@@ -630,8 +630,9 @@ SVGImageChromeClient& SVGImage::ChromeClientForTesting() {
   return *chrome_client_;
 }
 
-void SVGImage::UpdateUseCounters(const Document& document) const {
+void SVGImage::UpdateUseCountersAfterLoad(const Document& document) const {
   if (SVGSVGElement* root_element = RootElement()) {
+    document.CountUse(WebFeature::kSVGImage);
     if (HasSmilAnimations(root_element->GetDocument())) {
       document.CountUse(WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
     }

@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <script src="../../js-test-resources/js-test.js"></script>
 <script>
-var SVGSMILAnimationInImageRegardlessOfCache = 768; // From UseCounter.h
+// From third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
+var SVGSMILAnimationInImageRegardlessOfCache = 768;
+var SVGImage = 5492;
+
 window.jsTestIsAsync = true;
 
 window.onload = function() {
@@ -13,8 +16,10 @@ window.onload = function() {
         }
     } else {
         shouldBeFalse("internals.isUseCounted(document, SVGSMILAnimationInImageRegardlessOfCache)");
+        shouldBeFalse("internals.isUseCounted(document, SVGImage)");
         img.onload = function() {
             shouldBeTrue("internals.isUseCounted(document, SVGSMILAnimationInImageRegardlessOfCache)");
+            shouldBeTrue("internals.isUseCounted(document, SVGImage)");
             finishJSTest();
         }
     }
