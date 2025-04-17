@@ -13,6 +13,28 @@
 
 namespace blink {
 
+enum class CanvasNoiseReason {
+  kAllConditionsMet = 0,
+  kNoRenderContext = 1,
+  kNoTrigger = 2,
+  kNo2d = 4,
+  kNoGpu = 8,
+  kNotEnabledInMode = 16,
+  kNoExecutionContext = 32,
+  kMaxValue = kNoExecutionContext
+};
+
+inline constexpr CanvasNoiseReason operator|(CanvasNoiseReason a,
+                                             CanvasNoiseReason b) {
+  return static_cast<CanvasNoiseReason>(static_cast<int>(a) |
+                                        static_cast<int>(b));
+}
+inline constexpr CanvasNoiseReason& operator|=(CanvasNoiseReason& a,
+                                               CanvasNoiseReason b) {
+  a = a | b;
+  return a;
+}
+
 class CORE_EXPORT CanvasInterventionsHelper {
  public:
   enum class CanvasInterventionType {
