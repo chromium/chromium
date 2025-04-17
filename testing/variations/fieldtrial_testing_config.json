@@ -11586,21 +11586,6 @@
             ]
         }
     ],
-    "HideTabletToolbarDownloadButtonAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HideTabletToolbarDownloadButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "HistoryEmbeddingsV2Images": [
         {
             "platforms": [

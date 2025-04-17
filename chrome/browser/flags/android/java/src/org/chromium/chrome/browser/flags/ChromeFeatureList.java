@@ -752,10 +752,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sGridTabSwitcherUpdate =
             newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
-            newCachedFlag(
-                    HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, true);
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
     public static final CachedFlag sLegacyTabStateDeprecation =
             newCachedFlag(
