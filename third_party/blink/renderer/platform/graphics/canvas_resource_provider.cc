@@ -388,10 +388,17 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     // current behavior) or call resource()->GetClientSharedImage() rather than
     // the latter (if the current behavior is a bug).
     WillDrawInternal(true);
-    RasterInterface()->WritePixels(
-        GetBackingClientSharedImageForOverwrite()->mailbox(), x, y,
-        resource()->GetClientSharedImage()->GetTextureTarget(),
-        SkPixmap(orig_info, pixels, row_bytes));
+
+    // End the internal write access before calling WillDrawInternal(), which
+    // has a precondition that there should be no current write access on the
+    // resource.
+    EndWriteAccess();
+    WillDrawInternal(false);
+
+    auto client_si = resource()->GetClientSharedImage();
+    RasterInterface()->WritePixels(client_si->mailbox(), x, y,
+                                   client_si->GetTextureTarget(),
+                                   SkPixmap(orig_info, pixels, row_bytes));
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
