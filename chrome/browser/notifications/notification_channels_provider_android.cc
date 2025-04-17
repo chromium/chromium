@@ -48,6 +48,33 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
+constexpr char kPendingChannelId[] = "pending";
+
+NotificationChannel CreatePendingChannel(const std::string& origin_string,
+                                         ContentSetting content_setting,
+                                         base::Time timestamp) {
+  NotificationChannelStatus status = NotificationChannelStatus::UNAVAILABLE;
+  switch (content_setting) {
+    case CONTENT_SETTING_ALLOW:
+      status = NotificationChannelStatus::ENABLED;
+      break;
+    case CONTENT_SETTING_BLOCK:
+      status = NotificationChannelStatus::BLOCKED;
+      break;
+    case CONTENT_SETTING_DEFAULT:
+      break;
+    default:
+      NOTREACHED();
+  }
+  return NotificationChannel(kPendingChannelId, origin_string, timestamp,
+                             status);
+}
+
+std::string GetOriginStringFromPattern(const ContentSettingsPattern& pattern) {
+  url::Origin origin = url::Origin::Create(GURL(pattern.ToString()));
+  DCHECK(!origin.opaque());
+  return origin.Serialize();
+}
 
 class NotificationChannelsBridgeImpl
     : public NotificationChannelsProviderAndroid::NotificationChannelsBridge {
@@ -182,9 +209,6 @@ NotificationChannel::NotificationChannel(const std::string& id,
                                          NotificationChannelStatus status)
     : id(id), origin(origin), timestamp(timestamp), status(status) {}
 
-NotificationChannel::NotificationChannel(const NotificationChannel& other) =
-    default;
-
 NotificationChannelsProviderAndroid::NotificationChannelsProviderAndroid(
     PrefService* pref_service)
     : NotificationChannelsProviderAndroid(
@@ -210,7 +234,7 @@ void NotificationChannelsProviderAndroid::Initialize(
   // contained any erroneously-created channels that need deleting.
   ClearBlockedChannelsIfNecessary(template_url_service);
 
-  InitCachedChannels(base::DoNothing());
+  GetCachedChannelsIfNecessary(base::DoNothing());
 }
 
 void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
@@ -228,7 +252,7 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
     return;
   }
 
-  InitCachedChannels(base::BindOnce(
+  GetCachedChannelsIfNecessary(base::BindOnce(
       &NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessaryImpl,
       weak_factory_.GetWeakPtr(), base::Unretained(pref_provider)));
 }
@@ -251,13 +275,6 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessaryImpl(
       patterns.emplace_back(std::move(rule->primary_pattern),
                             std::move(rule->secondary_pattern));
     }
-  }
-
-  // Remove the existing |rules| from the preference provider.
-  for (const auto& pattern : patterns) {
-    pref_provider->SetWebsiteSetting(
-        pattern.first, pattern.second, ContentSettingsType::NOTIFICATIONS,
-        base::Value(), {}, content_settings::PartitionKey::WipGetDefault());
   }
 
   pref_service_->SetBoolean(prefs::kMigratedToSiteNotificationChannels, true);
@@ -318,13 +335,30 @@ NotificationChannelsProviderAndroid::GetRuleIterator(
   auto* provider = const_cast<NotificationChannelsProviderAndroid*>(this);
   provider->RecordCachedChannelStatus();
 
-  if (!cached_channels_) {
-    return nullptr;
+  // Combine cached_channels_ with pending_channels_ and remove duplicated
+  // origins.
+  std::map<std::string, NotificationChannel> origin_channel_map;
+  std::set<std::string> origins_pending_default_settings;
+  for (const auto& pending_channel : pending_channels_) {
+    if (pending_channel.second.status ==
+        NotificationChannelStatus::UNAVAILABLE) {
+      origins_pending_default_settings.emplace(pending_channel.first);
+    } else {
+      origin_channel_map.emplace(pending_channel.first, pending_channel.second);
+    }
+  }
+  if (cached_channels_) {
+    for (const auto& cached_channel : *cached_channels_) {
+      if (origins_pending_default_settings.find(cached_channel.first) ==
+          origins_pending_default_settings.end()) {
+        origin_channel_map.emplace(cached_channel.first, cached_channel.second);
+      }
+    }
   }
 
   std::vector<NotificationChannel> channels;
-  for (const auto& cached_channel : *cached_channels_) {
-    channels.push_back(cached_channel.second);
+  for (const auto& channel : origin_channel_map) {
+    channels.push_back(channel.second);
   }
 
   // The returned RuleIterator is from cached channels, so it might not
@@ -366,10 +400,22 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   DCHECK_EQ(constraints.track_last_visit_for_autoexpiration(), false);
 
   ContentSetting setting = content_settings::ValueToContentSetting(value);
-  InitCachedChannels(base::BindOnce(
+  std::string origin_string = GetOriginStringFromPattern(primary_pattern);
+  // Create a new pending channel for future GetRuleIterator() call. The
+  // new channel should override the previous pending channel for the same
+  // origin.
+  NotificationChannel channel =
+      CreatePendingChannel(origin_string, setting, clock_->Now());
+  bool rule_changed = !IsSameAsCachedRule(channel);
+  pending_channels_.insert_or_assign(origin_string, channel);
+  GetCachedChannelsIfNecessary(base::BindOnce(
       &NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl,
       weak_factory_.GetWeakPtr(), primary_pattern, secondary_pattern,
-      content_type, setting, constraints.Clone()));
+      content_type, setting, constraints.Clone(), channel));
+  if (rule_changed) {
+    NotifyObservers(primary_pattern, secondary_pattern, content_type,
+                    /*partition_key=*/nullptr);
+  }
 
   if (setting == CONTENT_SETTING_DEFAULT) {
     return false;
@@ -378,37 +424,65 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   return true;
 }
 
+bool NotificationChannelsProviderAndroid::IsSameAsCachedRule(
+    const NotificationChannel& channel) {
+  if (auto iter = pending_channels_.find(channel.origin);
+      iter != pending_channels_.end()) {
+    return (channel == iter->second);
+  } else if (cached_channels_.has_value()) {
+    if (auto iter2 = cached_channels_->find(channel.origin);
+        iter2 != cached_channels_->end()) {
+      return (channel == iter2->second);
+    }
+  }
+  return false;
+}
+
 void NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     ContentSetting content_setting,
-    const content_settings::ContentSettingConstraints& constraints) {
-  url::Origin origin = url::Origin::Create(GURL(primary_pattern.ToString()));
-  DCHECK(!origin.opaque());
-  const std::string origin_string = origin.Serialize();
+    const content_settings::ContentSettingConstraints& constraints,
+    const NotificationChannel& pending_channel) {
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
-      CreateChannelIfRequired(primary_pattern, secondary_pattern, origin_string,
+      CreateChannelIfRequired(primary_pattern, secondary_pattern,
                               NotificationChannelStatus::ENABLED);
       break;
     case CONTENT_SETTING_BLOCK:
-      CreateChannelIfRequired(primary_pattern, secondary_pattern, origin_string,
+      CreateChannelIfRequired(primary_pattern, secondary_pattern,
                               NotificationChannelStatus::BLOCKED);
       break;
     case CONTENT_SETTING_DEFAULT: {
-      auto channel_to_delete = cached_channels_->find(origin_string);
+      auto channel_to_delete = cached_channels_->find(pending_channel.origin);
       if (channel_to_delete != cached_channels_->end()) {
         bridge_->DeleteChannel(channel_to_delete->second.id);
         cached_channels_->erase(channel_to_delete);
-        NotifyObservers(primary_pattern, secondary_pattern, content_type,
-                        /*partition_key=*/nullptr);
+        // The observers should have already been notified when creating the
+        // pending channel, thus there is no need to notify them here.
       }
       break;
     }
     default:
       // We rely on notification settings being one of ALLOW/BLOCK/DEFAULT.
       NOTREACHED();
+  }
+  // If this is the last pending update for this origin, we no longer need to
+  // keep it in `pending_channels_` and can move it to `cached_channels_`.
+  auto iter = pending_channels_.find(pending_channel.origin);
+  DCHECK(iter != pending_channels_.end());
+  if (iter->second == pending_channel &&
+      iter->second.timestamp == pending_channel.timestamp) {
+    pending_channels_.erase(pending_channel.origin);
+    // The notification channel in `cached_channels_` may have a wrong status
+    // since the actual android notification channel is not recreated.
+    // Therefore, it needs to be updated with the status from the
+    // pending channel.
+    auto channel_iter = cached_channels_->find(pending_channel.origin);
+    if (channel_iter != cached_channels_->end()) {
+      channel_iter->second.status = pending_channel.status;
+    }
   }
 }
 
@@ -419,24 +493,60 @@ void NotificationChannelsProviderAndroid::ClearAllContentSettingsRules(
     return;
   }
 
+  // Create default pending channels for all existing rules.
+  bool rule_changed = false;
+  std::set<std::string> origins;
+  for (const auto& iter : pending_channels_) {
+    origins.insert(iter.first);
+  }
+  if (cached_channels_) {
+    for (const auto& iter : *cached_channels_) {
+      origins.insert(iter.first);
+    }
+  }
+
+  base::Time timestamp = clock_->Now();
+  for (const std::string& origin : origins) {
+    NotificationChannel channel =
+        CreatePendingChannel(origin, CONTENT_SETTING_DEFAULT, timestamp);
+    rule_changed = rule_changed || !IsSameAsCachedRule(channel);
+    pending_channels_.insert_or_assign(origin, channel);
+  }
+
+  if (rule_changed) {
+    NotifyObservers(ContentSettingsPattern::Wildcard(),
+                    ContentSettingsPattern::Wildcard(), content_type,
+                    /*partition_key=*/nullptr);
+  }
+
   ScheduleGetChannels(
       /*skip_get_if_cached_channels_are_available=*/false,
       base::BindOnce(&NotificationChannelsProviderAndroid::ClearAllChannelsImpl,
-                     weak_factory_.GetWeakPtr(), content_type));
+                     weak_factory_.GetWeakPtr(), content_type, timestamp));
 }
 
 void NotificationChannelsProviderAndroid::ClearAllChannelsImpl(
     ContentSettingsType content_type,
+    base::Time channel_timestamp_at_invocation,
     const std::vector<NotificationChannel>& channels) {
   for (auto channel : channels) {
     bridge_->DeleteChannel(channel.id);
   }
-  cached_channels_->clear();
 
-  if (channels.size() > 0) {
-    NotifyObservers(ContentSettingsPattern::Wildcard(),
-                    ContentSettingsPattern::Wildcard(), content_type,
-                    /*partition_key=*/nullptr);
+  if (cached_channels_) {
+    cached_channels_->clear();
+  }
+
+  // Clean up pending channels that hasn't changed since the
+  // ClearAllContentSettingsRules() calls.
+  for (auto iter = pending_channels_.begin();
+       iter != pending_channels_.end();) {
+    if (iter->second.status == NotificationChannelStatus::UNAVAILABLE &&
+        iter->second.timestamp == channel_timestamp_at_invocation) {
+      iter = pending_channels_.erase(iter);
+    } else {
+      ++iter;
+    }
   }
 }
 
@@ -488,12 +598,12 @@ void NotificationChannelsProviderAndroid::SetClockForTesting(
   clock_ = clock;
 }
 
-// InitCachedChannels() must be called prior to calling this method.
+// GetCachedChannelsIfNecessary() must be called prior to calling this method.
 void NotificationChannelsProviderAndroid::CreateChannelIfRequired(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    const std::string& origin_string,
     NotificationChannelStatus new_channel_status) {
+  const std::string origin_string = GetOriginStringFromPattern(primary_pattern);
   auto channel_entry = cached_channels_->find(origin_string);
   if (channel_entry == cached_channels_->end()) {
     base::Time timestamp = clock_->Now();
@@ -503,30 +613,23 @@ void NotificationChannelsProviderAndroid::CreateChannelIfRequired(
         new_channel_status == NotificationChannelStatus::ENABLED);
     cached_channels_->emplace(origin_string, std::move(channel));
 
-    NotifyObservers(primary_pattern, secondary_pattern,
-                    ContentSettingsType::NOTIFICATIONS,
-                    /*partition_key=*/nullptr);
+    // The observers should have been notified when the pending channel was
+    // created, so there is no need to notify them.
   }
 }
 
-// InitCachedChannels() must be called prior to calling this method.
+// GetCachedChannelsIfNecessary() must be called prior to calling this method.
 void NotificationChannelsProviderAndroid::CreateChannelForRule(
     const content_settings::Rule& rule) {
-  url::Origin origin =
-      url::Origin::Create(GURL(rule.primary_pattern.ToString()));
-  DCHECK(!origin.opaque());
-  const std::string origin_string = origin.Serialize();
   ContentSetting content_setting =
       content_settings::ValueToContentSetting(rule.value);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       CreateChannelIfRequired(rule.primary_pattern, rule.secondary_pattern,
-                              origin_string,
                               NotificationChannelStatus::ENABLED);
       break;
     case CONTENT_SETTING_BLOCK:
       CreateChannelIfRequired(rule.primary_pattern, rule.secondary_pattern,
-                              origin_string,
                               NotificationChannelStatus::BLOCKED);
       break;
     default:
@@ -536,7 +639,7 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
 }
 
 // This method must be called prior to accessing |cached_channels_|.
-void NotificationChannelsProviderAndroid::InitCachedChannels(
+void NotificationChannelsProviderAndroid::GetCachedChannelsIfNecessary(
     base::OnceClosure on_channels_initialized_cb) {
   ScheduleGetChannels(
       /*skip_get_if_cached_channels_are_available=*/true,
@@ -561,7 +664,7 @@ void NotificationChannelsProviderAndroid::UpdateCachedChannelsImpl(
       cached_channels_ = std::move(updated_channels_map);
     }
   } else {
-    if (updated_channels_map != cached_channels_.value()) {
+    if (!cached_channels_ || updated_channels_map != cached_channels_.value()) {
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(&NotificationChannelsProviderAndroid::NotifyObservers,
