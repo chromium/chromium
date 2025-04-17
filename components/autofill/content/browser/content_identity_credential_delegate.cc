@@ -65,7 +65,8 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 }
 
 void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
-    const Suggestion& suggestion) const {
+    const Suggestion& suggestion,
+    OnFederatedTokenReceivedCallback callback) const {
   content::FederatedAuthAutofillSource* source =
       content::FederatedAuthAutofillSource::FromPage(
           web_contents_->GetPrimaryPage());
@@ -77,6 +78,7 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
   Suggestion::IdentityCredentialPayload payload =
       suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
 
+  // TODO(crbug.com/410533051): Pass the callback to the source.
   source->NotifyAutofillSuggestionAccepted(payload.config_url,
                                            payload.account_id);
 }

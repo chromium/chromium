@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_field.h"
 
 namespace autofill {
@@ -29,6 +30,10 @@ struct Suggestion;
 // possession of the email without involving OTPs or magic-links.
 class IdentityCredentialDelegate {
  public:
+  // For 3P logins usually the identity provider needs to issue a federated
+  // token such as ID token, access token etc. to complete the flow. This
+  // callback is triggered when the browser receives such a token.
+  using OnFederatedTokenReceivedCallback = base::OnceClosure;
   virtual ~IdentityCredentialDelegate() = default;
 
   // Generates verified Autofill suggestions from identity credential requests.
@@ -40,7 +45,15 @@ class IdentityCredentialDelegate {
   // the strings and UI affordances can be different.
   virtual std::vector<Suggestion> GetVerifiedAutofillSuggestions(
       const FieldType& field_type) const = 0;
-  virtual void NotifySuggestionAccepted(const Suggestion& suggestion) const = 0;
+
+  // Notifies the delegate that a suggestion from an identity credential
+  // conditional request was accepted. After a user selects the suggestion from
+  // the autofill dropdown UI, we should enter a loading state similar to the
+  // selecting passkeys UX.The callback will be called when a federated token is
+  // received. Once it's called, the loading menu will be hidden.
+  virtual void NotifySuggestionAccepted(
+      const Suggestion& suggestion,
+      OnFederatedTokenReceivedCallback callback) const = 0;
 };
 
 }  // namespace autofill

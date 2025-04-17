@@ -843,9 +843,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kIdentityCredential: {
+      // TODO(crbug.com/380367784): support filling and loading state.
       if (const IdentityCredentialDelegate* identity_credential_delegate =
               manager_->client().GetIdentityCredentialDelegate()) {
-        identity_credential_delegate->NotifySuggestionAccepted(suggestion);
+        identity_credential_delegate->NotifySuggestionAccepted(
+            suggestion, base::NullCallback());
 
         // TODO(crbug.com/380367784): generalize this to allow filling different
         // field types (e.g. passwords) as well as more than one one field
