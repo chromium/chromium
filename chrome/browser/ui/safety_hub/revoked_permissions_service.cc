@@ -816,7 +816,17 @@ RevokedPermissionsService::GetRevokedPermissions() {
       CHECK(disruptive_notification_manager_);
       permissions_data.permission_types.insert(
           static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
-      // TODO(crbug.com/406473591): Update constraints to the latest one.
+      // Update `constraints` to one with the latest expiration.
+      content_settings::SettingInfo info;
+      base::Value stored_disruptive_value(hcsm()->GetWebsiteSetting(
+          url, url,
+          ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+          &info));
+      CHECK(!stored_disruptive_value.is_none());
+      if (revoked_permissions.metadata.expiration() <
+          info.metadata.expiration()) {
+        permissions_data.constraints = GetConstraintFromInfo(info);
+      }
       permissions_data.revocation_type = PermissionsRevocationType::
           kUnusedPermissionsAndDisruptiveNotifications;
     } else {

@@ -68,6 +68,7 @@ const char url2[] = "https://example2.com:443";
 const char url3[] = "https://example3.com:443";
 const char url4[] = "https://example4.com:443";
 const char url5[] = "https://example5.com:443";
+const char url6[] = "https://example6.com:443";
 const ContentSettingsType automatic_downloads_type =
     ContentSettingsType::AUTOMATIC_DOWNLOADS;
 const ContentSettingsType geolocation_type = ContentSettingsType::GEOLOCATION;
@@ -1206,7 +1207,12 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
     SetupRevokedUnusedPermissionSite(url1);
     SetupRevokedUnusedPermissionSite(url2, shorter_lifetime);
     SetupRevokedUnusedPermissionSite(url4, longer_lifetime);
+    SetupRevokedUnusedPermissionSite(url5, longer_lifetime);
+    SetupRevokedUnusedPermissionSite(url6, shorter_lifetime);
   }
+
+  SetupRevokedDisruptiveNotificationSite(url5, shorter_lifetime);
+  SetupRevokedDisruptiveNotificationSite(url6, longer_lifetime);
 
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be immediately available.
@@ -1220,7 +1226,7 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
           opt_result.value().get());
   auto revoked_permissions = result->GetRevokedPermissions();
   if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(4U, revoked_permissions.size());
+    EXPECT_EQ(6U, revoked_permissions.size());
     // Verify the constraints are merged properly when there are multiple
     // revocation types.
     auto permission_1 = GetPermissionsDataByUrl(revoked_permissions, url1);
@@ -1234,16 +1240,26 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
 
     auto permission_4 = GetPermissionsDataByUrl(revoked_permissions, url4);
     EXPECT_EQ(permission_4.constraints.lifetime(), longer_lifetime);
+
+    auto permission_5 = GetPermissionsDataByUrl(revoked_permissions, url5);
+    EXPECT_EQ(permission_5.constraints.lifetime(), longer_lifetime);
+
+    auto permission_6 = GetPermissionsDataByUrl(revoked_permissions, url6);
+    EXPECT_EQ(permission_6.constraints.lifetime(), longer_lifetime);
   } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(3U, revoked_permissions.size());
+    EXPECT_EQ(5U, revoked_permissions.size());
     EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url1));
     EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
     EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
   } else if (ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(3U, revoked_permissions.size());
+    EXPECT_EQ(5U, revoked_permissions.size());
     EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
     EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url3));
     EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url5));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url6));
   }
 }
 
