@@ -212,6 +212,10 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
       case PRODUCT_BUSINESS_N:
       case PRODUCT_IOTENTERPRISE:
       case PRODUCT_IOTENTERPRISES:
+      // PRODUCT_SERVERRDSH (0xAF) has been reused for Windows 10/11 Enterprise
+      // Multi-Session, a client OS with multi-session support, commonly used
+      // with Azure Virtual Desktop.
+      case PRODUCT_SERVERRDSH:
         version_type_ = SUITE_ENTERPRISE;
         break;
       case PRODUCT_PRO_FOR_EDUCATION:
