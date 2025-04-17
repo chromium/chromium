@@ -50,6 +50,7 @@ class ContentsWebView : public views::WebView,
   void OnThemeChanged() override;
   void RenderViewReady() override;
   void OnLetterboxingChanged() override;
+  void SetWebContents(content::WebContents* web_contents) override;
 
   // ui::View overrides:
   std::unique_ptr<ui::Layer> RecreateLayer() override;

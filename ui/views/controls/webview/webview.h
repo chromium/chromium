@@ -78,7 +78,7 @@ class WEBVIEW_EXPORT WebView : public View,
 
   // WebView does not assume ownership of WebContents set via this method, only
   // those it implicitly creates via GetWebContents() above.
-  void SetWebContents(content::WebContents* web_contents);
+  virtual void SetWebContents(content::WebContents* web_contents);
 
   content::BrowserContext* GetBrowserContext();
   void SetBrowserContext(content::BrowserContext* browser_context);

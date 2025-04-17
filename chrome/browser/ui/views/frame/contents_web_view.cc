@@ -38,7 +38,10 @@ ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
 ContentsWebView::~ContentsWebView() = default;
 
 StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
-  return status_bubble_.get();
+  if (status_bubble_) {
+    return status_bubble_.get();
+  }
+  return nullptr;
 }
 
 WebContentsCloseHandler* ContentsWebView::GetWebContentsCloseHandler() const {
@@ -72,7 +75,9 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
-  status_bubble_->Reposition();
+  if (status_bubble_) {
+    status_bubble_->Reposition();
+  }
 }
 
 void ContentsWebView::OnThemeChanged() {
@@ -83,6 +88,16 @@ void ContentsWebView::OnThemeChanged() {
 void ContentsWebView::OnLetterboxingChanged() {
   if (GetWidget()) {
     UpdateBackgroundColor();
+  }
+}
+
+void ContentsWebView::SetWebContents(content::WebContents* web_contents) {
+  views::WebView::SetWebContents(web_contents);
+  if (web_contents == nullptr) {
+    status_bubble_ = nullptr;
+  } else if (status_bubble_ == nullptr) {
+    status_bubble_ = std::make_unique<StatusBubbleViews>(this);
+    status_bubble_->Reposition();
   }
 }
 
