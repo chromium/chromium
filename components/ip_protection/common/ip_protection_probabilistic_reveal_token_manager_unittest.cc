@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_test_consumer.h"
 #include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -30,8 +31,6 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace ip_protection {
 
@@ -50,44 +49,8 @@ constexpr char kSubsequentTokenAvailableHistogram[] =
 constexpr char kRandomizationTimeHistogram[] =
     "NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime";
 
-// Size of a PRT when TLS serialized, before base64 encoding.
-constexpr size_t kPRTSize = 79;
-constexpr size_t kPRTPointSize = 33;
-constexpr size_t kEpochIdSize = 8;
 constexpr size_t kPlaintextSize = 29;
 
-// Deserialize a given prt serialized using
-// `IpProtectionProbabilisticRevealTokenManager::SerializePrt()`.
-bool Deserialize(const std::string& serialized_prt,
-                 ProbabilisticRevealToken& token_out,
-                 std::string& epoch_id_out) {
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(serialized_prt.data()),
-           serialized_prt.size());
-  if (CBS_len(&cbs) != kPRTSize) {
-    return false;
-  }
-  uint8_t version;
-  uint16_t u_size;
-  uint16_t e_size;
-  std::string u(kPRTPointSize, '0');
-  std::string e(kPRTPointSize, '0');
-  std::string epoch_id(kEpochIdSize, '0');
-  if (!CBS_get_u8(&cbs, &version) || !CBS_get_u16(&cbs, &u_size) ||
-      u_size != kPRTPointSize ||
-      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(u.data()), u_size) ||
-      !CBS_get_u16(&cbs, &e_size) || e_size != kPRTPointSize ||
-      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(e.data()), e_size) ||
-      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(epoch_id.data()),
-                      kEpochIdSize)) {
-    return false;
-  }
-  token_out.version = version;
-  token_out.u = std::move(u);
-  token_out.e = std::move(e);
-  epoch_id_out = std::move(epoch_id);
-  return true;
-}
 
 // Mocks a PRT fetcher. Uses ProbabilisticRevealTokenTestIssuer for successful
 // fetches with valid tokens and SetResponse to mock error results.
@@ -204,6 +167,18 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
         fetcher_ptr_->SetIssuer(private_key, num_tokens, expiration, next_start,
                                 num_tokens_with_signal, std::move(epoch_id));
     ASSERT_TRUE(status.ok());
+  }
+
+  // Deserialize a given prt serialized using
+  // `IpProtectionProbabilisticRevealTokenManager::SerializePrt()`.
+  void Deserialize(const std::string& serialized_prt,
+                   ProbabilisticRevealToken& token_out,
+                   std::string& epoch_id_out) {
+    std::optional<ProbabilisticRevealTokenTestConsumer> consumer =
+        ProbabilisticRevealTokenTestConsumer::MaybeCreate(serialized_prt);
+    ASSERT_TRUE(consumer) << "Deserializing PRT failed";
+    token_out = consumer->Token();
+    epoch_id_out = consumer->EpochId();
   }
 
   // Decrypt given token, serialize returned point, and base64 encode.
@@ -385,12 +360,11 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
 
   ProbabilisticRevealToken token_ex;
   std::string epoch_id_ex;
-  ASSERT_TRUE(Deserialize(serialized_token_ex.value(), token_ex, epoch_id_ex));
+  Deserialize(serialized_token_ex.value(), token_ex, epoch_id_ex);
 
   ProbabilisticRevealToken token_com;
   std::string epoch_id_com;
-  ASSERT_TRUE(
-      Deserialize(serialized_token_com.value(), token_com, epoch_id_com));
+  Deserialize(serialized_token_com.value(), token_com, epoch_id_com);
 
   EXPECT_EQ(epoch_id_ex, epoch_id_com);
 
@@ -434,7 +408,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
 
   ProbabilisticRevealToken token;
   std::string epoch_id;
-  ASSERT_TRUE(Deserialize(serialized_token.value(), token, epoch_id));
+  Deserialize(serialized_token.value(), token, epoch_id);
   EXPECT_EQ(epoch_id, epoch_id_1);
 
   std::string point = DecryptSerializeEncode(token);
@@ -469,7 +443,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
       DecryptSerializeEncode(second_batch_tokens);
   serialized_token = manager_->GetToken("a", "b");
   ASSERT_TRUE(serialized_token.has_value());
-  ASSERT_TRUE(Deserialize(serialized_token.value(), token, epoch_id));
+  Deserialize(serialized_token.value(), token, epoch_id);
   EXPECT_EQ(epoch_id, epoch_id_2);
   point = DecryptSerializeEncode(token);
   EXPECT_THAT(second_batch_points, testing::Contains(point))
@@ -652,7 +626,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
 
   ProbabilisticRevealToken token;
   std::string epoch_id;
-  ASSERT_TRUE(Deserialize(serialized_token.value(), token, epoch_id));
+  Deserialize(serialized_token.value(), token, epoch_id);
   EXPECT_EQ(epoch_id, epoch_id_1);
 
   auto point = DecryptSerializeEncode(token);

@@ -706,6 +706,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
     ":ip_protection_probabilistic_reveal_token_crypter",
     ":ip_protection_probabilistic_reveal_token_fetcher",
     ":ip_protection_probabilistic_reveal_token_manager",
+    ":probabilistic_reveal_token_test_consumer",
     ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
@@ -818,6 +819,36 @@ source_set("probabilistic_reveal_token_test_issuer_unittest") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("probabilistic_reveal_token_test_consumer") {
+  testonly = true
+  sources = [
+    "probabilistic_reveal_token_test_consumer.cc",
+    "probabilistic_reveal_token_test_consumer.h",
+  ]
+  public_deps = [ ":ip_protection_data_types" ]
+  deps = [
+    "//base",
+    "//third_party/boringssl",
+  ]
+}
+
+source_set("probabilistic_reveal_token_test_consumer_unittest") {
+  testonly = true
+  sources = [ "probabilistic_reveal_token_test_consumer_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+    ":ip_protection_probabilistic_reveal_token_manager",
+    ":probabilistic_reveal_token_test_consumer",
+    ":probabilistic_reveal_token_test_issuer",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
