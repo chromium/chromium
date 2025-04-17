@@ -12,6 +12,8 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,11 +67,11 @@ TEST_F(GLVirtualContextsEXTWindowRectanglesTest, Basic) {
   // Context 1: Set window rectangles state.
   gl1_.MakeCurrent();
   {
-    GLint box[12] = {};
+    std::array<GLint, 12> box = {};
     for (int i = 0; i < 12; ++i) {
       box[i] = i;
     }
-    glWindowRectanglesEXT(GL_INCLUSIVE_EXT, 3, box);
+    glWindowRectanglesEXT(GL_INCLUSIVE_EXT, 3, box.data());
     EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   }
 

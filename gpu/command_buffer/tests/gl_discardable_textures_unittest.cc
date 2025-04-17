@@ -12,6 +12,8 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -88,8 +90,8 @@ TEST_F(DiscardableTextureTest, Limits) {
   SetCacheSizeLimitForTesting(cache_size_limit);
 
   constexpr size_t texture_count = 2;
-  GLuint textures[texture_count] = {};
-  glGenTextures(texture_count, textures);
+  std::array<GLuint, texture_count> textures = {};
+  glGenTextures(texture_count, textures.data());
   for (size_t i = 0; i < texture_count; i++) {
     glBindTexture(GL_TEXTURE_2D, textures[i]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_dimension_size,

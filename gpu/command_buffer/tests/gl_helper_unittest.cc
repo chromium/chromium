@@ -1289,7 +1289,7 @@ TEST_F(GLHelperTest, BGRAASyncReadbackTest) {
   EXPECT_EQ(result, true);
 }
 
-int kRGBReadBackSizes[] = {3, 6, 16};
+auto kRGBReadBackSizes = std::to_array<int>({3, 6, 16});
 
 class GLHelperPixelReadbackTest
     : public GLHelperPixelTest,

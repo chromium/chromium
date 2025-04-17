@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/command_line.h"
 #include "build/build_config.h"
@@ -53,7 +54,7 @@ void BlendEquationFuncAdd(float dst[4],
                           float src[4],
                           float src1[4],
                           uint8_t result[4]) {
-  float r[4];
+  std::array<float, 4> r;
   r[0] = src[0] * Weight<RGBs, 0>(dst, src, src1) +
          dst[0] * Weight<RGBd, 0>(dst, src, src1);
   r[1] = src[1] * Weight<RGBs, 1>(dst, src, src1) +

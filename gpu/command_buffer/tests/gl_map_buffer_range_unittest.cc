@@ -13,6 +13,8 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -582,8 +584,8 @@ TEST_F(ES3MapBufferRangeTest, Delete) {
   const int kNumBuffers = 3;
   const int kSize = sizeof(GLuint);
 
-  GLuint buffers[kNumBuffers];
-  glGenBuffers(kNumBuffers, buffers);
+  std::array<GLuint, kNumBuffers> buffers;
+  glGenBuffers(kNumBuffers, buffers.data());
   // Set each buffer to contain its name.
   for (int i = 0; i < kNumBuffers; ++i) {
     EXPECT_NE(0u, buffers[i]);
