@@ -27,11 +27,10 @@ namespace gpu {
 
 // static
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
-    gl::GLDisplay* display,
+    scoped_refptr<SharedContextState> context_state,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider) {
+    SurfaceHandle surface_handle) {
   if (gl::GetGLImplementation() == gl::kGLImplementationMockGL ||
       gl::GetGLImplementation() == gl::kGLImplementationStubGL)
     return nullptr;

@@ -40,12 +40,16 @@ gl::DCompPresenter::Settings CreatDCompPresenterSettings(
 
 // static
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
-    gl::GLDisplay* display,
+    scoped_refptr<SharedContextState> context_state,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider) {
+    SurfaceHandle surface_handle) {
   if (gl::DirectCompositionSupported()) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    // DirectComposition is only supported on Graphite with Dawn D3D11 backend.
+    DCHECK(!context_state->IsGraphiteDawn() ||
+           context_state->IsGraphiteDawnD3D11());
+#endif
     return base::MakeRefCounted<gl::DCompPresenter>(
         CreatDCompPresenterSettings(workarounds));
   }
