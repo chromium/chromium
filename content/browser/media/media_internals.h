@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_H_
 
+#include <array>
 #include <list>
 #include <map>
 #include <memory>
@@ -194,8 +195,10 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   base::Lock lock_;
   bool can_update_ = false;
   base::Value::Dict audio_streams_cached_data_;
-  int owner_ids_[base::to_underlying(
-      media::AudioLogFactory::AudioComponent::kAudiocomponentMax)] = {};
+  std::array<int,
+             base::to_underlying(
+                 media::AudioLogFactory::AudioComponent::kAudiocomponentMax)>
+      owner_ids_ = {};
 };
 
 }  // namespace content

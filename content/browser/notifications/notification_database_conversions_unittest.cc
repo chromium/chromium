@@ -54,7 +54,8 @@ const char kNotificationBadgeUrl[] = "https://example.com/badge.png";
 const char kNotificationActionIconUrl[] = "https://example.com/action_icon.png";
 const int kNotificationVibrationPattern[] = {100, 200, 300};
 const double kNotificationTimestamp = 621046800.;
-const unsigned char kNotificationData[] = {0xdf, 0xff, 0x0, 0x0, 0xff, 0xdf};
+const auto kNotificationData =
+    std::to_array<unsigned char>({0xdf, 0xff, 0x0, 0x0, 0xff, 0xdf});
 const double kShowTriggerTimestamp = 621086800.;
 const bool kHasTriggered = true;
 const char kNotificationMetadataKey[] = "content-detection";
@@ -68,7 +69,10 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
       kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
 
   std::vector<char> developer_data(
-      kNotificationData, kNotificationData + std::size(kNotificationData));
+      kNotificationData.data(),
+      base::span<const unsigned char>(kNotificationData)
+          .subspan(std::size(kNotificationData))
+          .data());
 
   blink::PlatformNotificationData notification_data;
   notification_data.title = kNotificationTitle;

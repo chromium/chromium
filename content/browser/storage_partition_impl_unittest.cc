@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -440,27 +441,44 @@ class RemoveLocalStorageTester {
 
   static std::vector<uint8_t> CreateAccessMetaDataKey(
       const url::Origin& origin) {
-    const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', 'A', 'C',
-                                   'C', 'E', 'S', 'S', ':'};
+    const auto kMetaPrefix = std::to_array<uint8_t>({
+        'M',
+        'E',
+        'T',
+        'A',
+        'A',
+        'C',
+        'C',
+        'E',
+        'S',
+        'S',
+        ':',
+    });
     auto origin_str = origin.Serialize();
     std::vector<uint8_t> serialized_origin(origin_str.begin(),
                                            origin_str.end());
     std::vector<uint8_t> key;
     key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
+    key.insert(key.end(), kMetaPrefix.data(),
+               base::span<const uint8_t>(kMetaPrefix)
+                   .subspan(std::size(kMetaPrefix))
+                   .data());
     key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
     return key;
   }
 
   static std::vector<uint8_t> CreateWriteMetaDataKey(
       const url::Origin& origin) {
-    const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
+    const auto kMetaPrefix = std::to_array<uint8_t>({'M', 'E', 'T', 'A', ':'});
     auto origin_str = origin.Serialize();
     std::vector<uint8_t> serialized_origin(origin_str.begin(),
                                            origin_str.end());
     std::vector<uint8_t> key;
     key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
+    key.insert(key.end(), kMetaPrefix.data(),
+               base::span<const uint8_t>(kMetaPrefix)
+                   .subspan(std::size(kMetaPrefix))
+                   .data());
     key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
     return key;
   }

@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -322,7 +323,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
   const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
   const int kLongStringLen = 1234;
-  char16_t long_string[kLongStringLen + 1];
+  std::array<char16_t, kLongStringLen + 1> long_string;
   for (int i = 0; i < kLongStringLen; ++i)
     long_string[i] = i;
   long_string[kLongStringLen] = 0;
@@ -332,7 +333,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
                                             u"foo",
                                             std::u16string(test_string_a),
                                             std::u16string(test_string_b),
-                                            std::u16string(long_string)};
+                                            std::u16string(long_string.data())};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     std::u16string s = test_cases[i];
