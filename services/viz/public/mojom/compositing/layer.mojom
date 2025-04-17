@@ -5,14 +5,15 @@
 module viz.mojom;
 
 import "cc/mojom/element_id.mojom";
+import "cc/mojom/hit_test_opaqueness.mojom";
 import "cc/mojom/layer_type.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "skia/public/mojom/skpath.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
-import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
@@ -90,6 +91,9 @@ struct Layer {
 
   // Indicates whether the layer produces any visual output for the compositor.
   bool is_drawable;
+
+  // Describes the opaqueness for hit testing in a layered content e.g. a layer.
+  cc.mojom.HitTestOpaqueness hit_test_opaqueness;
 
   // The background color (and safe opaque background color) used by this Layer.
   // See comments for equivalent fields on cc::Layer.

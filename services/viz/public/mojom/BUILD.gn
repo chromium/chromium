@@ -67,6 +67,7 @@ mojom("mojom") {
     ":shared_image_format",
     ":singleplanar_format",
     "//cc/mojom:element_id",
+    "//cc/mojom:hit_test_opaqueness",
     "//cc/mojom:layer_type",
     "//cc/mojom:paint_flags",
     "//gpu/ipc/common:interfaces",

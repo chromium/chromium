@@ -119,6 +119,22 @@ mojom("layer_type") {
   sources = [ "layer_type.mojom" ]
 }
 
+mojom("hit_test_opaqueness") {
+  generate_java = true
+  sources = [ "hit_test_opaqueness.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.HitTestOpaqueness"
+          cpp = "::cc::HitTestOpaqueness"
+        },
+      ]
+      traits_headers = [ "hit_test_opaqueness_mojom_traits.h" ]
+    },
+  ]
+}
+
 mojom("element_id") {
   generate_java = true
   sources = [ "element_id.mojom" ]

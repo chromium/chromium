@@ -406,6 +406,7 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetDrawsContent(wire.is_drawable);
   layer.SetBackgroundColor(wire.background_color);
   layer.SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
+  layer.SetHitTestOpaqueness(wire.hit_test_opaqueness);
   layer.SetElementId(wire.element_id);
   layer.UnionUpdateRect(wire.update_rect);
   layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
