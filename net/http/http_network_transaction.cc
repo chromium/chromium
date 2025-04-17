@@ -1332,6 +1332,16 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     }
   }
 
+  if (features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.Get() &&
+      !proxy_info_.is_direct()) {
+    if (std::optional<std::string> maybe_prt_header_value =
+            proxy_info_.PRTHeaderValue();
+        maybe_prt_header_value.has_value()) {
+      request_headers_.SetHeader("Sec-Probabilistic-Reveal-Token",
+                                 std::move(maybe_prt_header_value.value()));
+    }
+  }
+
   request_headers_.MergeFrom(request_->extra_headers);
 
   if (modify_headers_callbacks_) {

@@ -350,6 +350,12 @@ const base::FeatureParam<bool>
         /*name=*/"AttachProbabilisticRevealTokensOnAllProxiedRequests",
         /*default_value=*/false};
 
+const base::FeatureParam<bool>
+    kProbabilisticRevealTokensAddHeaderToProxiedRequests{
+        &kEnableProbabilisticRevealTokens,
+        /*name=*/"ProbabilisticRevealTokensAddHeaderToProxiedRequests",
+        /*default_value=*/false};
+
 // IP protection experiment configuration settings
 BASE_FEATURE(kEnableIpProtectionProxy,
              "EnableIpPrivacyProxy",
