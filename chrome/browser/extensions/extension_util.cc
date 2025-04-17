@@ -270,7 +270,7 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
   GURL icon = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_SMALLISH,
       ExtensionIconSet::Match::kBigger,
-      false);  // Not grayscale.
+      /*grayscale=*/false);
   dict.Set("icon", icon.spec());
 
   return dict;
