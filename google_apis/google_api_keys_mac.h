@@ -5,14 +5,13 @@
 #ifndef GOOGLE_APIS_GOOGLE_API_KEYS_MAC_H_
 #define GOOGLE_APIS_GOOGLE_API_KEYS_MAC_H_
 
-#include <string>
-
 #include "base/component_export.h"
+#include "base/strings/cstring_view.h"
 
 namespace google_apis {
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetAPIKeyFromInfoPlist(const std::string& key_name);
+std::string GetAPIKeyFromInfoPlist(base::cstring_view key_name);
 
 }  // namespace google_apis
 

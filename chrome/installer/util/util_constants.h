@@ -218,7 +218,10 @@ extern const char kVerboseLogging[];
 
 namespace env_vars {
 
-extern const char kGoogleUpdateIsMachineEnvVar[];
+// The presence of this environment variable with a value of 1 implies that
+// setup.exe should run as a system installation regardless of what is on the
+// command line.
+inline constexpr char kGoogleUpdateIsMachineEnvVar[] = "GoogleUpdateIsMachine";
 
 }  // namespace env_vars
 

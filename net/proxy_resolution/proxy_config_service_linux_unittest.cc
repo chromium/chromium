@@ -7,7 +7,6 @@
 #include <array>
 #include <map>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -20,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -139,7 +139,7 @@ class MockEnvironment : public base::Environment {
   }
 
   // Begin base::Environment implementation.
-  std::optional<std::string> GetVar(std::string_view variable_name) override {
+  std::optional<std::string> GetVar(base::cstring_view variable_name) override {
     auto it = table_.find(variable_name);
     if (it == table_.end() || !*it->second) {
       return std::nullopt;
@@ -149,13 +149,13 @@ class MockEnvironment : public base::Environment {
     return *(it->second);
   }
 
-  bool SetVar(std::string_view variable_name,
+  bool SetVar(base::cstring_view variable_name,
               const std::string& new_value) override {
     ADD_FAILURE();
     return false;
   }
 
-  bool UnSetVar(std::string_view variable_name) override {
+  bool UnSetVar(base::cstring_view variable_name) override {
     ADD_FAILURE();
     return false;
   }
@@ -165,7 +165,7 @@ class MockEnvironment : public base::Environment {
   EnvVarValues values;
 
  private:
-  std::map<std::string_view, const char**> table_;
+  std::map<base::cstring_view, const char**> table_;
 };
 
 class MockSettingGetter : public ProxyConfigServiceLinux::SettingGetter {

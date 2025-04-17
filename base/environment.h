@@ -9,9 +9,9 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/base_export.h"
+#include "base/strings/cstring_view.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -19,7 +19,9 @@ namespace base {
 namespace env_vars {
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-BASE_EXPORT extern const char kHome[];
+// On Posix systems, this variable contains the location of the user's home
+// directory. (e.g, /home/username/).
+inline constexpr char kHome[] = "HOME";
 #endif
 
 }  // namespace env_vars
@@ -34,24 +36,24 @@ class BASE_EXPORT Environment {
   // Returns an environment variable's value.
   // Returns std::nullopt if the key is unset.
   // Note that the variable may be set to an empty string.
-  virtual std::optional<std::string> GetVar(std::string_view variable_name) = 0;
+  virtual std::optional<std::string> GetVar(cstring_view variable_name) = 0;
 
   // DEPRECATED. Prefer GetVar() overload above.
   // Gets an environment variable's value and stores it in |result|.
   // Returns false if the key is unset.
-  bool GetVar(std::string_view variable_name, std::string* result);
+  bool GetVar(cstring_view variable_name, std::string* result);
 
   // Syntactic sugar for GetVar(variable_name).has_value();
-  bool HasVar(std::string_view variable_name);
+  bool HasVar(cstring_view variable_name);
 
   // Returns true on success, otherwise returns false. This method should not
   // be called in a multi-threaded process.
-  virtual bool SetVar(std::string_view variable_name,
+  virtual bool SetVar(cstring_view variable_name,
                       const std::string& new_value) = 0;
 
   // Returns true on success, otherwise returns false. This method should not
   // be called in a multi-threaded process.
-  virtual bool UnSetVar(std::string_view variable_name) = 0;
+  virtual bool UnSetVar(cstring_view variable_name) = 0;
 };
 
 #if BUILDFLAG(IS_WIN)
