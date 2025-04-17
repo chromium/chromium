@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // This file contains unit tests for webgpu commands
 
 #include <stddef.h>
@@ -29,7 +31,10 @@ class WebGPUFormatTest : public testing::Test {
  protected:
   static const unsigned char kInitialValue = 0xBD;
 
-  void SetUp() override { memset(buffer_, kInitialValue, sizeof(buffer_)); }
+  void SetUp() override {
+    memset(buffer_.data(), kInitialValue,
+           (buffer_.size() * sizeof(decltype(buffer_)::value_type)));
+  }
 
   void TearDown() override {}
 
@@ -43,7 +48,8 @@ class WebGPUFormatTest : public testing::Test {
                          size_t written_size) {
     size_t actual_size = static_cast<const unsigned char*>(end) -
                          GetBufferAs<const unsigned char>();
-    EXPECT_LT(actual_size, sizeof(buffer_));
+    EXPECT_LT(actual_size,
+              (buffer_.size() * sizeof(decltype(buffer_)::value_type)));
     EXPECT_GT(actual_size, 0u);
     EXPECT_EQ(expected_size, actual_size);
     EXPECT_EQ(kInitialValue, buffer_[written_size]);
@@ -56,7 +62,7 @@ class WebGPUFormatTest : public testing::Test {
   }
 
  private:
-  unsigned char buffer_[1024];
+  std::array<unsigned char, 1024> buffer_;
 };
 
 const unsigned char WebGPUFormatTest::kInitialValue;

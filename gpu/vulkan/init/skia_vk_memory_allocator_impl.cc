@@ -12,14 +12,16 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 
+#include <array>
+
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMemoryAllocator.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 
 namespace gpu {
 
@@ -204,8 +206,8 @@ class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
 
   std::pair<uint64_t, uint64_t> totalAllocatedAndUsedMemory() const override {
     uint64_t total_allocated_memory = 0, total_used_memory = 0;
-    VmaBudget budget[VK_MAX_MEMORY_HEAPS];
-    vma::GetBudget(allocator_, budget);
+    std::array<VmaBudget, VK_MAX_MEMORY_HEAPS> budget;
+    vma::GetBudget(allocator_, budget.data());
     const VkPhysicalDeviceMemoryProperties* physical_device_memory_properties;
     vmaGetMemoryProperties(allocator_, &physical_device_memory_properties);
     for (uint32_t i = 0; i < physical_device_memory_properties->memoryHeapCount;

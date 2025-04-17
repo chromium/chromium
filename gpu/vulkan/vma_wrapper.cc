@@ -9,9 +9,10 @@
 
 #include "gpu/vulkan/vma_wrapper.h"
 
-#include <algorithm>
-
 #include <vk_mem_alloc.h>
+
+#include <algorithm>
+#include <array>
 
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -191,8 +192,8 @@ std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
     VmaAllocator allocator) {
   // See VulkanAMDMemoryAllocator::totalAllocatedAndUsedMemory() in skia for
   // reference.
-  VmaBudget budget[VK_MAX_MEMORY_HEAPS];
-  GetBudget(allocator, budget);
+  std::array<VmaBudget, VK_MAX_MEMORY_HEAPS> budget;
+  GetBudget(allocator, budget.data());
   const VkPhysicalDeviceMemoryProperties* pPhysicalDeviceMemoryProperties;
   vmaGetMemoryProperties(allocator, &pPhysicalDeviceMemoryProperties);
   uint64_t total_allocated_memory = 0, total_used_memory = 0;
