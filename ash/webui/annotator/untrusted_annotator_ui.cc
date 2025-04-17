@@ -47,8 +47,6 @@ void CreateAndAddAnnotatorHTMLSource(content::WebUI* web_ui) {
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
   // Loads WASM resources shipped to Chromium by chrome://media-app.
-  source->AddResourcePath("ink_engine_ink.worker.js",
-                          IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS);
   source->AddResourcePath("ink_engine_ink.wasm",
                           IDR_MEDIA_APP_INK_ENGINE_INK_WASM);
   source->AddResourcePath("ink.js", IDR_MEDIA_APP_INK_JS);

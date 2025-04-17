@@ -98,8 +98,6 @@ ChromeComponentExtensionResourceManager::Data::Data() {
     {"chrome_app/chrome_app_icon_192.png", IDR_CHROME_APP_ICON_192},
 #if BUILDFLAG(ENABLE_INK)
     // Built in go/bbsrc/lib/BUILD
-    {"pdf/ink/ink_engine_ink.worker.js",
-     IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS},
     {"pdf/ink/ink_engine_ink.wasm", IDR_MEDIA_APP_INK_ENGINE_INK_WASM},
     {"pdf/ink/ink_lib_binary.js", IDR_MEDIA_APP_EXPORT_CANVAS_BIN_JS},
     {"pdf/ink/ink_loader.js", IDR_MEDIA_APP_INK_JS},
