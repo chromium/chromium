@@ -52,6 +52,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Prompt"/>
 </enum>
 
+<enum name="BooleanBrowserAlwaysActive">
+  <int value="0"
+      label="The browser changed its activation while a prompt was visible"/>
+  <int value="1" label="The browser was always active"/>
+</enum>
+
 <enum name="CrowdDenyNotificationUxQuality">
   <int value="0" label="Uknown"/>
   <int value="1" label="Accceptable"/>

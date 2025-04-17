@@ -82,6 +82,119 @@ std::string PermissionUtil::GetPermissionString(
   return blink::GetPermissionString(permission);
 }
 
+RequestTypeForUma PermissionUtil::GetUmaValueForRequests(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+        requests) {
+  CHECK(!requests.empty());
+  const RequestType request_type = requests[0]->request_type();
+  if (requests.size() == 1) {
+    return GetUmaValueForRequestType(request_type);
+  }
+  if (
+#if !BUILDFLAG(IS_ANDROID)
+      request_type == RequestType::kCameraPanTiltZoom ||
+#endif
+      request_type == RequestType::kCameraStream ||
+      request_type == RequestType::kMicStream) {
+    return RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (request_type == RequestType::kKeyboardLock ||
+      request_type == RequestType::kPointerLock) {
+    return RequestTypeForUma::MULTIPLE_KEYBOARD_AND_POINTER_LOCK;
+  }
+#endif
+  return RequestTypeForUma::UNKNOWN;
+}
+
+RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
+    RequestType request_type) {
+  switch (request_type) {
+    case RequestType::kArSession:
+      return RequestTypeForUma::PERMISSION_AR;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kCameraPanTiltZoom:
+      return RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM;
+#endif
+    case RequestType::kCameraStream:
+      return RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA;
+    case RequestType::kClipboard:
+      return RequestTypeForUma::PERMISSION_CLIPBOARD_READ_WRITE;
+    case RequestType::kDiskQuota:
+      return RequestTypeForUma::QUOTA;
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/40214907): Enable on Android
+    case RequestType::kLocalFonts:
+      return RequestTypeForUma::PERMISSION_LOCAL_FONTS;
+    // TODO(crbug.com/400455013): Enable on Android.
+    case RequestType::kLocalNetworkAccess:
+      return RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS;
+#endif
+    case RequestType::kGeolocation:
+      return RequestTypeForUma::PERMISSION_GEOLOCATION;
+    case RequestType::kHandTracking:
+      return RequestTypeForUma::PERMISSION_HAND_TRACKING;
+    case RequestType::kIdleDetection:
+      return RequestTypeForUma::PERMISSION_IDLE_DETECTION;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kKeyboardLock:
+      return RequestTypeForUma::PERMISSION_KEYBOARD_LOCK;
+#endif
+    case RequestType::kMicStream:
+      return RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC;
+    case RequestType::kMidiSysex:
+      return RequestTypeForUma::PERMISSION_MIDI_SYSEX;
+    case RequestType::kMultipleDownloads:
+      return RequestTypeForUma::DOWNLOAD;
+#if BUILDFLAG(IS_ANDROID)
+    case RequestType::kNfcDevice:
+      return RequestTypeForUma::PERMISSION_NFC;
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kPointerLock:
+      return RequestTypeForUma::PERMISSION_POINTER_LOCK;
+#endif
+    case RequestType::kNotifications:
+      return RequestTypeForUma::PERMISSION_NOTIFICATIONS;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    case RequestType::kProtectedMediaIdentifier:
+      return RequestTypeForUma::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kRegisterProtocolHandler:
+      return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return RequestTypeForUma::PERMISSION_SMART_CARD;
+#endif
+    case RequestType::kStorageAccess:
+      return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
+    case RequestType::kVrSession:
+      return RequestTypeForUma::PERMISSION_VR;
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+    case RequestType::kWebPrinting:
+      return RequestTypeForUma::PERMISSION_WEB_PRINTING;
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kWindowManagement:
+      return RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT;
+#endif
+    case RequestType::kTopLevelStorageAccess:
+      return RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS;
+    case RequestType::kFileSystemAccess:
+      return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kCapturedSurfaceControl:
+      return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
+    case RequestType::kWebAppInstallation:
+      return RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION;
+#endif
+    case RequestType::kIdentityProvider:
+      return RequestTypeForUma::PERMISSION_IDENTITY_PROVIDER;
+  }
+}
+
 PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
   return user_gesture ? PermissionRequestGestureType::GESTURE
                       : PermissionRequestGestureType::NO_GESTURE;

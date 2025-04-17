@@ -1266,6 +1266,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.Prompt.{PermissionType}.BrowserAlwaysActiveWhileShowing"
+    enum="Boolean" expires_after="2025-08-15">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the browser was always active while the {PermissionType}
+    prompt was displayed. Recorded when a permission prompt was destroyed.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.BrowserAlwaysActiveWhileShowing"
+    enum="Boolean" expires_after="2025-08-15">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the browser was always active while the {PermissionType}
+    prompt was displayed. Recorded when an ElementAnchoredBubble prompt was
+    destroyed.
+  </summary>
+  <token key="PermissionType"
+      variants="PermissionTypeForElementAnchoredBubble"/>
+</histogram>
+
+<histogram
     name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.DismissedReason"
     enum="DismissedReason" expires_after="2026-03-01">
   <owner>hkamila@chromium.org</owner>
@@ -1273,6 +1299,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks how a {PermissionType} prompt was dismissed by the user. Tracked when
     the user dimisses an ElementAnchoredBubble prompt.
+  </summary>
+  <token key="PermissionType"
+      variants="PermissionTypeForElementAnchoredBubble"/>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.ShownInActiveBrowser"
+    enum="Boolean" expires_after="2025-08-15">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the browser was active at the time the {PermissionType}
+    prompt was displayed. Recorded when an ElementAnchoredBubble prompt started
+    displaying.
   </summary>
   <token key="PermissionType"
       variants="PermissionTypeForElementAnchoredBubble"/>
@@ -1322,6 +1362,35 @@ chromium-metrics-reviews@google.com.
       variants="PermissionTypeForElementAnchoredBubble"/>
   <token key="OsScreen" variants="OsScreen"/>
   <token key="OsScreenAction" variants="OsScreenAction"/>
+</histogram>
+
+<histogram name="Permissions.Prompt.{PermissionType}.ShownInActiveBrowser"
+    enum="Boolean" expires_after="2025-08-15">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the browser was active at the time the {PermissionType}
+    prompt was displayed. Recorded when a permission prompt started displaying.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
+<histogram name="Permissions.Prompt.{PermissionType}.{Action}.WithBrowser"
+    enum="BooleanBrowserAlwaysActive" expires_after="2025-10-31">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the user resolves the {PermissionType} permission prompt.
+    Records whether the browser was always active before interacting with the
+    prompt.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="Action">
+    <variant name="Accepted"/>
+    <variant name="AcceptedOnce"/>
+    <variant name="Denied"/>
+    <variant name="Dismissed"/>
+  </token>
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Disposition}.Action"

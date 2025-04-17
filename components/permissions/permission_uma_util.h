@@ -901,6 +901,24 @@ class PermissionUmaUtil {
   static void RecordPermissionRequestRelevance(
       PermissionRequestRelevance permission_request_relevance);
 
+  // Records if the browser was always active while the prompt was
+  // displaying.
+  static void RecordBrowserAlwaysActiveWhilePrompting(
+      RequestTypeForUma request_type,
+      bool embedded_permission_element_initiated,
+      bool always_active);
+
+  // Records if the browser was always active before user's interaction.
+  static void RecordActionBrowserAlwaysActive(RequestTypeForUma request_type,
+                                              std::string permission_action,
+                                              bool always_active);
+
+  // Records if the browser was active at the time the prompt started displaying
+  static void RecordPromptShownInActiveBrowser(
+      RequestTypeForUma request_type,
+      bool embedded_permission_element_initiated,
+      bool active);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).

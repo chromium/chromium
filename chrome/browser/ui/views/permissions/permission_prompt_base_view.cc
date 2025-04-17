@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -41,14 +44,30 @@ PermissionPromptBaseView::PermissionPromptBaseView(
       url_identity_(GetUrlIdentity(browser, *delegate)),
       is_for_picture_in_picture_window_(browser &&
                                         browser->is_type_picture_in_picture()),
+      record_browser_always_active_value_(browser && browser->IsActive()),
       browser_(browser) {
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
   SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
+  // `browser` can be null in tests.
+  if (browser) {
+    browser_subscription_ = browser->RegisterDidBecomeActive(
+        base::BindRepeating(&PermissionPromptBaseView::DidBecomeInactive,
+                            base::Unretained(this)));
+  }
+  request_type_ =
+      permissions::PermissionUtil::GetUmaValueForRequests(delegate->Requests());
 }
 
-PermissionPromptBaseView::~PermissionPromptBaseView() = default;
+PermissionPromptBaseView::~PermissionPromptBaseView() {
+  // `request_type_` can be unknown in tests
+  if (request_type_ != permissions::RequestTypeForUma::UNKNOWN) {
+    permissions::PermissionUmaUtil::RecordBrowserAlwaysActiveWhilePrompting(
+        request_type_, /*embedded_permission_element_initiated*/ false,
+        record_browser_always_active_value_);
+  }
+}
 
 void PermissionPromptBaseView::AddedToWidget() {
   if (url_identity_.type == UrlIdentity::Type::kDefault) {
@@ -58,6 +77,9 @@ void PermissionPromptBaseView::AddedToWidget() {
         CreateTitleOriginLabel(GetWindowTitle(), GetTitleBoldedRanges()));
   }
 
+  permissions::PermissionUmaUtil::RecordPromptShownInActiveBrowser(
+      request_type_, /*embedded_permission_element_initiated*/ false,
+      record_browser_always_active_value_);
   StartTrackingPictureInPictureOcclusion();
 }
 
@@ -193,6 +215,11 @@ PermissionPromptBaseView::GetTitleBoldedRanges() {
 void PermissionPromptBaseView::SetTitleBoldedRanges(
     std::vector<std::pair<size_t, size_t>> bolded_ranges) {
   title_bolded_ranges_ = bolded_ranges;
+}
+
+void PermissionPromptBaseView::DidBecomeInactive(
+    BrowserWindowInterface* browser_window_interface) {
+  record_browser_always_active_value_ = false;
 }
 
 BEGIN_METADATA(PermissionPromptBaseView)

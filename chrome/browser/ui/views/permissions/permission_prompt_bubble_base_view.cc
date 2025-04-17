@@ -47,6 +47,22 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kAllowOnceButtonElementId);
 
+namespace {
+std::string GetPermissionActionString(
+    PermissionPromptBubbleBaseView::PermissionDialogButton button) {
+  switch (button) {
+    case PermissionPromptBubbleBaseView::PermissionDialogButton::kAccept:
+      return "Accepted";
+    case PermissionPromptBubbleBaseView::PermissionDialogButton::kAcceptOnce:
+      return "AcceptedOnce";
+    case PermissionPromptBubbleBaseView::PermissionDialogButton::kDeny:
+      return "Denied";
+    default:
+      NOTREACHED();
+  }
+}
+}  // namespace
+
 PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
@@ -228,13 +244,19 @@ bool PermissionPromptBubbleBaseView::ShouldShowCloseButton() const {
 
 void PermissionPromptBubbleBaseView::ClosingPermission() {
   DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
+
   if (delegate_) {
+    permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
+        request_type(), "Dismissed", record_browser_always_active_value());
     delegate_->Dismiss();
   }
 }
 
 void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   PermissionDialogButton button = GetPermissionDialogButton(button_id);
+  permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
+      request_type(), GetPermissionActionString(button),
+      record_browser_always_active_value());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
       browser_view->GetLocationBarView()

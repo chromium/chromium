@@ -107,8 +107,6 @@ class EmbeddedPermissionPrompt
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   std::set<ContentSettingsType> prompt_types_;
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests_;
 
   std::unique_ptr<permissions::EmbeddedPermissionPromptFlowModel> prompt_model_;
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
