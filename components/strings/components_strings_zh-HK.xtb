@@ -2466,7 +2466,6 @@
 <translation id="5273658854610202413">警告：此政策並非可合併的字典政策，因此未有按PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合併。</translation>
 <translation id="5278778426231952189">立即上載</translation>
 <translation id="5279286380302340275">管理下載檔案</translation>
-<translation id="5280963125494874678">網絡軟件</translation>
 <translation id="5282008206326321696">{count,plural, =0{# 個書籤}=1{# 個書籤}other{# 個書籤}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文件屬性</translation>
@@ -3923,7 +3922,6 @@
 <translation id="7761701407923456692">伺服器憑證與網址不符。</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7766518757692125295">預印</translation>
-<translation id="7766899888934244586">網絡軟件</translation>
 <translation id="7767278989746220252">露台、草坪和園藝</translation>
 <translation id="776749070095465053">布料</translation>
 <translation id="7773005668374414287">相同順序 (正面朝上)</translation>

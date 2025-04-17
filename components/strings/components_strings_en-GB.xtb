@@ -2467,7 +2467,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5273658854610202413">Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.</translation>
 <translation id="5278778426231952189">Upload now</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
-<translation id="5280963125494874678">web applications</translation>
 <translation id="5282008206326321696">{count,plural, =0{# bookmarks}=1{# bookmark}other{# bookmarks}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Document properties</translation>
@@ -3924,7 +3923,6 @@ Additional details:
 <translation id="7761701407923456692">Server's certificate does not match the URL.</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7766518757692125295">Skirt</translation>
-<translation id="7766899888934244586">Web applications</translation>
 <translation id="7767278989746220252">Patio, Lawn and Garden</translation>
 <translation id="776749070095465053">Fabric</translation>
 <translation id="7773005668374414287">Same order face up</translation>

@@ -498,6 +498,7 @@
 <translation id="1839331950812095887">ඔබේ සිතුවිලි සාරාංශ කරන වචන කිහිපයක්</translation>
 <translation id="1839551713262164453">ප්‍රතිපත්ති අගයන්ගේ වලංගු කිරීම දෝෂ සමග අසමත් වී ඇත</translation>
 <translation id="1840009953725035797">නිවාස නෘත්‍ය ශාලා පද්ධති</translation>
+<translation id="184153295865602321">අමතර ආරක්ෂාවක් සඳහා, ඔබ ස්වයං පිරවුම භාවිතයෙන් ගෙවන විට සැමවිටම ඔබගේ ඇඟිලි සලකුණ, මුහුණ හෝ වෙනත් තිර අගුල භාවිත කරන්න.</translation>
 <translation id="1842969606798536927">ගෙවන්න</translation>
 <translation id="184517536440397176">ඔබ මෙම වෙබ් අඩවියට පැමිණීම සුදුසු බව දෙමාපියෙකු හෝ භාරකරුවෙකු පැවසිය යුතු වේ. ඔබ ඔවුන්ගෙන් විමසීමට පෙර, ඒ ඔබ බව අපට සහතික විය යුතුය.</translation>
 <translation id="1846432862466000825">ප්ලාස්ටික් (ලේඛනාගාරය)</translation>
@@ -1931,6 +1932,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> යාවත්කාලීන කරන ලදි</translation>
 <translation id="4298000214066716287">ආයෝජනය</translation>
 <translation id="42981349822642051">දිගහරින්න</translation>
+<translation id="4298925811540301889">මෙම අඩවිය සඳහා කුකී ඔබගේ ChromeOS උපාංග හරහා සමමුහුර්ත කර ඇත. ඔබ සමමුහුර්ත කරන දේ කළමනාකරණය කිරීමට, <ph name="SYNC_SETTINGS" /> වෙත යන්න.</translation>
 <translation id="4300675098767811073">දකුණට බොහෝ වරක් අනින්න</translation>
 <translation id="4302514097724775343">වාදනය කිරීමට ඩයිනෝ තට්ටු කරන්න</translation>
 <translation id="4304049446746819918">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත ගෙන යාම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත ගෙන යාම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත ගෙන යාම නිර්දේශ නොකරයි}}</translation>
@@ -2030,6 +2032,7 @@
 <translation id="4477350412780666475">ඊළඟ ඛණ්ඩය</translation>
 <translation id="448363931695049633">පීසීරියා</translation>
 <translation id="4489023393592172404">ලියුම් කවරය කකු 4</translation>
+<translation id="4489977488133295402">ගෙවීම් ක්‍රම ස්වයංක්‍රීයව පිරවීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">සමමුහුර්ත කළ මුරපද ඔබගේ Google ගිණුම සමග සංකේතනය කරන්න</translation>
 <translation id="4493480324863638523">අවලංගු URL. සම්මත සැලැස්මක් සහිත URL එකක් විය යුතුමයි, උදා: http://example.com හෝ https://example.com.</translation>
@@ -2467,7 +2470,6 @@
 <translation id="5273658854610202413">අවවාදයයි: මෙය ඒකාබද්ධ කළ හැකි අකාරාදි ප්‍රතිපත්තිවල කොටසක් නොවන බැවින් මෙම ප්‍රතිපත්තිය PolicyDictionaryMultipleSourceMergeList ප්‍රතිපත්තිය තුළ සඳහන් කළ පරිදි ඒකාබද්ධ කළේ නැත.</translation>
 <translation id="5278778426231952189">දැන් උඩුගත කරන්න</translation>
 <translation id="5279286380302340275">බාගැනීම් කළමනාකරණය කරන්න</translation>
-<translation id="5280963125494874678">වෙබ් යෙදුම්</translation>
 <translation id="5282008206326321696">{count,plural, =0{පිටුසන් #ක්}=1{# පිටුසනක්}one{පිටුසන් #ක්}other{පිටුසන් #ක්}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ලේඛන ගුණාංග</translation>
@@ -3252,6 +3254,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">පරිගණක අධ්‍යාපනය</translation>
 <translation id="6633476656216409494">ව්‍යාපාර සහ කාර්යක්ෂමතා මෘදුකාංග</translation>
+<translation id="6641852376826221947">ඔබේ මිලදී ගැනීම තහවුරු කරන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6645291930348198241">කුකී සහ වෙබ් අඩවි දත්ත වෙත ප්‍රවේශ වන්න.</translation>
 <translation id="6645478838938543427">මිල පහත වැටීමේ ඇඟවීම් යවන්නේ <ph name="EMAIL_ADDRESS" /> වෙතයි</translation>
@@ -3923,7 +3926,6 @@
 <translation id="7761701407923456692">සර්වරයේ සහතිකය URL ලිපිනය හා නොගැළපෙයි.</translation>
 <translation id="7764225426217299476">ලිපිනය එක් කරන්න</translation>
 <translation id="7766518757692125295">සාය</translation>
-<translation id="7766899888934244586">වෙබ් යෙදුම්</translation>
 <translation id="7767278989746220252">පැටියෝව, තණකොළ සහ වත්ත</translation>
 <translation id="776749070095465053">රෙදි</translation>
 <translation id="7773005668374414287">එකම පිළිවෙළ මුහුණු ඉහළට</translation>
@@ -4551,6 +4553,7 @@
 <translation id="8918062451146297192">අතථ්‍ය කාඩ්පත සඳහා CVC</translation>
 <translation id="8919740778133505789">ක්‍රීඩා මෝටර් රථ</translation>
 <translation id="8919895429178014996">සියලුම අයිතම සඟවන්න</translation>
+<translation id="8919989290032064330">ගෙවීම් ක්‍රම ස්වයංක්‍රීයව පිරවීමට ඒ ඔබ බව සත්‍යාපනය කරන්නද?</translation>
 <translation id="8922013791253848639">මෙම අඩවිය මත වෙළඳ දැන්වීම්වලට සැම විටම ඉඩ දෙන්න</translation>
 <translation id="8922734931659847428">ඔබ පිවිසෙන පිටුවල URL ලිපිනවල සීමිත ලැයිස්තුවක් <ph name="BEGIN_LINK" />ලෙගසි තාක්ෂණ සිදුවීම්<ph name="END_LINK" /> සිදු වේ</translation>
 <translation id="892588693504540538">ඉහළ දකුණ අනින්න</translation>

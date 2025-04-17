@@ -2467,7 +2467,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5273658854610202413">Hoiatus! Seda reeglit ei liidetud reeglis PolicyDictionaryMultipleSourceMergeList määratud viisil, kuna see ei ole osa sõnastiku reeglitest, mida saab liita.</translation>
 <translation id="5278778426231952189">Laadi kohe üles</translation>
 <translation id="5279286380302340275">Allalaadimiste haldamine</translation>
-<translation id="5280963125494874678">veebirakendused</translation>
 <translation id="5282008206326321696">{count,plural, =0{# järjehoidjat}=1{# järjehoidja}other{# järjehoidjat}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumendi atribuudid</translation>
@@ -3924,7 +3923,6 @@ Lisateave:
 <translation id="7761701407923456692">Serveri sertifikaat ei vasta URL-ile.</translation>
 <translation id="7764225426217299476">Lisa aadress</translation>
 <translation id="7766518757692125295">Ümbris</translation>
-<translation id="7766899888934244586">Veebirakendused</translation>
 <translation id="7767278989746220252">Terrassi, muru- ja aiahooldus</translation>
 <translation id="776749070095465053">Kangas</translation>
 <translation id="7773005668374414287">Sama järjestus, esikülg ülespoole</translation>

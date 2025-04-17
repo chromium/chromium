@@ -2463,7 +2463,6 @@
 <translation id="5273658854610202413">警告：系统未按照 PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合并此政策，因为此政策不是可合并的字典政策的一部分。</translation>
 <translation id="5278778426231952189">立即上传</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
-<translation id="5280963125494874678">Web 应用</translation>
 <translation id="5282008206326321696">{count,plural, =0{# 个书签}=1{# 个书签}other{# 个书签}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
@@ -3919,7 +3918,6 @@
 <translation id="7761701407923456692">服务器的证书与网址不相符。</translation>
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7766518757692125295">裙式</translation>
-<translation id="7766899888934244586">Web 应用</translation>
 <translation id="7767278989746220252">庭院、草坪和花园</translation>
 <translation id="776749070095465053">织物</translation>
 <translation id="7773005668374414287">顺序不变，正面朝上</translation>

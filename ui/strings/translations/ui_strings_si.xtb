@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 නොකියවූ දැනුම්දීමක්}one{නොකියවූ දැනුම්දීම් # ක්}other{නොකියවූ දැනුම්දීම් # ක්}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{අප්‍රසිද්ධ තුළ පහත දිගුව ක්‍රියාත්මක කරන්න:}one{අප්‍රසිද්ධ තුළ පහත දිගු ක්‍රියාත්මක කරන්න:}other{අප්‍රසිද්ධ තුළ පහත දිගු ක්‍රියාත්මක කරන්න:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{මාස 1කට පෙර}one{මාස #කට පෙර}other{මාස #කට පෙර}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> තීරුව වැඩි වන අනුපිළිවෙළට සකසන ලදි</translation>
 <translation id="4289300219472526559">කතා කිරීම අරඹන්න</translation>
 <translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
 <translation id="4491109536499578614">රූපය</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">සියලු දැනුම්දීම් අවහිර කරන්න</translation>
 <translation id="6620110761915583480">ගොනුව සුරකින්න</translation>
 <translation id="6699343763173986273">මාධ්‍යය ඊළඟ ඛණ්ඩය</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> තීරුව</translation>
 <translation id="6808150112686056157">මාධ්‍ය නැවතුම</translation>
 <translation id="6845383723252244143">ෆෝල්ඩරය තෝරන්න</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{පැය 1 ක් ඉතිරියි}one{පැය # ක් ඉතිරියි}other{පැය # ක් ඉතිරියි}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{පැය 1 කට පෙර}one{පැය # කට පෙර}other{පැය # කට පෙර}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{තත්පර 1 ක් ඉතිරියි}one{තත්පර # ක් ඉතිරියි}other{තත්පර # ක් ඉතිරියි}}</translation>
 <translation id="8134065097954893699">මෙම පිටුව යළි පූරණ කෙරේ</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> තීරුව අනුපිළිවෙළට සැකසීම් ඉවත් කරන ලදි</translation>
 <translation id="815598010540052116">පහළට ස්ක්‍රෝල්</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8210608804940886430">පිටුව පහළට</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
 <translation id="8394908167088220973">මාධ්‍ය වාදනය/අත්හිටීම</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1y}one{#y}other{#y}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> තීරුව අඩු වන අනුපිළිවෙළට සකසන ලදි</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ගොනුව (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

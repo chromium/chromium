@@ -998,6 +998,7 @@ para llamar a esta API.</translation>
       Si estableces la política en 0, se utilizará el tamaño predeterminado de almacenamiento en caché. Los usuarios no podrán cambiarlo.
 
       Si no estableces la política, se utilizará el tamaño predeterminado de almacenamiento en caché, y los usuarios podrán cambiarlo con la marca --media-cache-size.</translation>
+<translation id="1647775511451132916">Inhabilitar el control con gestos faciales en la pantalla de acceso</translation>
 <translation id="1648816843164517573">Lista de nombres que omitirán la revisión de la política de HSTS</translation>
 <translation id="1651197070942919276">No permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="1651216316133158002">Esta política permite que los administradores especifiquen apps que funcionan como controladores predeterminados para las respectivas extensiones de archivo
@@ -2844,6 +2845,17 @@ Si el valor se establece en <ph name="ENABLED_ENUM_VALUE" />, las entidades se d
 Si el valor se establece como <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectan y no se pueden realizar acciones.
 Si el valor se establece como <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectan las entidades y solo se puede realizar una acción si se mantiene presionado.</translation>
 <translation id="3010907817113180883">Tasa de recopilación de la señal de monitoreo de funcionamiento de la actividad del dispositivo en milisegundos.</translation>
+<translation id="3015732569734756809">Cuando el control con gestos faciales está activo, puedes usar la cabeza para controlar el cursor del mouse y usar
+gestos faciales para realizar acciones del sistema. Esto te permite controlar tu dispositivo
+con manos libres.
+
+Si se establece esta política como verdadera, el control con gestos faciales estará siempre habilitado en la pantalla de acceso.
+
+Si se establece como falsa, el control con gestos faciales estará siempre inhabilitado en la pantalla de acceso.
+
+Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
+
+Si no la estableces, el control con gestos faciales estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="3016585641676676461">Bloquear la pantalla completa automática en estos sitios</translation>
 <translation id="3017578958356048910">El lector de PDF puede agregar anotaciones en archivos PDF</translation>
 <translation id="3020623128585817424">Inhabilitar la verificación de navegador predeterminado en el inicio</translation>
@@ -9166,6 +9178,7 @@ La compatibilidad con este parámetro de configuración de política finalizará
 
       Si no la estableces, se aplicará la política <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="7238335422094660594">Habilitar el proveedor de <ph name="UIA_NAME" />.</translation>
+<translation id="7241016798422122577">Habilitar el control con gestos faciales en la pantalla de acceso</translation>
 <translation id="7242191282517459095">YouTube (compatible a partir de la versión 135)</translation>
 <translation id="7244600351241637530">Si habilitas esta configuración, los usuarios que habilitaron la función Phone Hub podrán ver y descargar las fotos y los videos tomados recientemente con su teléfono en ChromeOS.
 

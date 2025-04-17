@@ -2467,7 +2467,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5273658854610202413">Advarsel: Denne regelen ble ikke sammenslått som angitt i PolicyDictionaryMultipleSourceMergeList-regelen fordi den ikke er en del av ordlistereglene som kan slås sammen.</translation>
 <translation id="5278778426231952189">Last opp nå</translation>
 <translation id="5279286380302340275">Administrer nedlastinger</translation>
-<translation id="5280963125494874678">nettapper</translation>
 <translation id="5282008206326321696">{count,plural, =0{# bokmerker}=1{# bokmerke}other{# bokmerker}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
@@ -3923,7 +3922,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7761701407923456692">Tjenerens sertifikat samsvarer ikke med nettadressen.</translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
 <translation id="7766518757692125295">Skjørt</translation>
-<translation id="7766899888934244586">Nettapper</translation>
 <translation id="7767278989746220252">Terrasse, plen og hage</translation>
 <translation id="776749070095465053">Stoff</translation>
 <translation id="7773005668374414287">Samme rekkefølge – forsiden opp</translation>

@@ -665,6 +665,7 @@
 <translation id="3858860766373142691">නම</translation>
 <translation id="3868495844258915202">සම්පූර්ණ URL එක පෙන්වන්න</translation>
 <translation id="3875783148670536197">කෙසේද කියා මට පෙන්වන්න</translation>
+<translation id="3878657761594430423">පත්‍ර අල්ලා ගන්නා</translation>
 <translation id="3885587018298784481">පවුලේ කණ්ඩායමකට එක් වන්න</translation>
 <translation id="3888863481921783344">ඔබේ සිදුවීමට හැකි ආරාධිතයන් පෙන්වීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="3891414008432200754">මිල</translation>
@@ -705,6 +706,7 @@
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4004204301268239848">මුරපද ඔබගේ Google ගිණුමේ සුරකිනු ලබන අතර, එම නිසා ඔබට ඒවා ඕනෑම උපාංගයක භාවිත කළ හැක</translation>
 <translation id="4011489366247192265">වෙතින්</translation>
+<translation id="4017599800655151880">සිඟිති රුව</translation>
 <translation id="4018440314314549819">සුරකින ලද මුරපද ස්වයංක්‍රීයව පුරවන්න</translation>
 <translation id="4021447724486050609">ඔබේ බ්‍රව්සරය යාවත්කාලීන කරන්න</translation>
 <translation id="4021931095789478915">කියවීම් ලැයිස්තුවට ${url} එක් කරන්න</translation>
@@ -743,6 +745,7 @@
 <translation id="4164514562270305824">බාගැනීම් ස්වයංක්‍රීයව මකන්න</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />වලින් නිමා වන <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">අවසර නොදෙන්න</translation>
+<translation id="417138788035229076">සමූහය කළමනාකරණය කරන්න</translation>
 <translation id="4172051516777682613">සැමවිට පෙන්වන්න</translation>
 <translation id="417273154673973994">{count,plural, =1{1 පටිති සමූහයක් වසා දමා සුරකින ලදි}one{පටිති සමූහ {count}ක් වසා දමා සුරකින ලදි}other{පටිති සමූහ {count}ක් වසා දමා සුරකින ලදි}}</translation>
 <translation id="417612446554534067">ඔබේ උපාංග වෙත යවන්න</translation>
@@ -910,6 +913,7 @@
 <translation id="4860895144060829044">අමතන්න</translation>
 <translation id="4861953997778766866">ඔබේ බෙදා ගත් පටිති සමූහ වලට සියලු දෙනාටම වෙනස්කම් කළ හැක</translation>
 <translation id="4865063548323785458">වෙබ් අඩවි සහ යෙදුම් වෙත පහසුවෙන් පුරනය වීමට ඔබේ මුරපද සුරකින්න සහ ස්වයං පුරවන්න</translation>
+<translation id="4867608294647017606">සෙවුමෙන් රූපය ඉවත් කරන්න</translation>
 <translation id="4869146460927742717">ලිපින තීරුවේ පිහිටීම</translation>
 <translation id="4870911314065352661">සියලු ටැබ වසන්නද?</translation>
 <translation id="4872664437015695612">බාගැනීම් තුළ විවෘත කරන්න</translation>
@@ -1202,6 +1206,7 @@
 <translation id="6074656473835429958">දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) උඩුගත කළ නොහැකි විය</translation>
 <translation id="6077126322656614846">කැමරා ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
+<translation id="6078236141387574983">පත්‍රයේ උස නැවත සකසන්න</translation>
 <translation id="6084848228346514841">ටැබ තෝරන්න</translation>
 <translation id="6089212833343035912">Google මුරපද කළමනාකරු PIN</translation>
 <translation id="6090760257419195752">ඉවත දැමූ අනතුරු ඇඟවීම්</translation>
@@ -1218,6 +1223,7 @@
 <translation id="6140600850356225166">වෙනත් යෙදුම්වලින් වන සබැඳි අප්‍රසිද්ධ තුළ විවෘත කිරීමට ඉල්ලන්න</translation>
 <translation id="6140948187512243695">විස්තර පෙන්වන්න</translation>
 <translation id="6144589619057374135">අප්‍රසිද්ධ තුළ ${url} විවෘත කරන්න</translation>
+<translation id="6145820728009071857">කියවීම් ප්‍රකාරය පෙන්වන්න</translation>
 <translation id="6147279996212084542">පැහැදිලි කරන්න</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අප්‍රකට ටැබ අගුළු හරින්න</translation>
 <translation id="6152340033632117531">අක්‍රිය</translation>
@@ -1598,6 +1604,7 @@
 <translation id="7669493687462784703"><ph name="WEBSITE" /> වෙතින් වින්‍යාස පැතිකඩක් බාගැනීම දිගටම කරගෙන යන්න ද?</translation>
 <translation id="7673346542062368520">අප්‍රසිද්ධව බ්‍රවුස් කිරීමට ඔබට වමට ස්වයිප් කළ හැක.</translation>
 <translation id="7679915578945954324">අඩවි ලිපින පිටපත් කර ඇත</translation>
+<translation id="7695953765525234038">සෙවීම් තීරුව</translation>
 <translation id="7696316012653762532">පිටුව පරිවර්තන කිරීමට විවෘත කරන්න</translation>
 <translation id="7700527812567437847">Google Lens සමග සෙවීම් තිරය</translation>
 <translation id="7701040980221191251">නොමැත</translation>

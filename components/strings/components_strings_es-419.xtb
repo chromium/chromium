@@ -2468,7 +2468,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5273658854610202413">Advertencia: Esta política no se combinó según la política PolicyDictionaryMultipleSourceMergeList porque no es parte de las políticas del diccionario que se pueden combinar.</translation>
 <translation id="5278778426231952189">Subir ahora</translation>
 <translation id="5279286380302340275">Administrar las descargas</translation>
-<translation id="5280963125494874678">aplicaciones web</translation>
 <translation id="5282008206326321696">{count,plural, =0{# favoritos}=1{# favorito}other{# favoritos}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propiedades del documento</translation>
@@ -3925,7 +3924,6 @@ Detalles adicionales:
 <translation id="7761701407923456692">El certificado del servidor no coincide con la dirección URL.</translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
 <translation id="7766518757692125295">Contorno</translation>
-<translation id="7766899888934244586">Aplicaciones web</translation>
 <translation id="7767278989746220252">Mantenimiento de césped y jardines</translation>
 <translation id="776749070095465053">Tela</translation>
 <translation id="7773005668374414287">Mismo orden hacia arriba</translation>

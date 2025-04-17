@@ -950,6 +950,7 @@ Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angege
       Wird der Wert dieser Richtlinie auf 0 gesetzt, wird die Standard-Cache-Größe verwendet und Nutzer können sie nicht ändern.
 
       Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--media-cache-size" ändern.</translation>
+<translation id="1647775511451132916">Mimik-Steuerung auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="1648816843164517573">Liste der Namen, die vom HSTS-Richtliniencheck ausgenommen sind</translation>
 <translation id="1651197070942919276">Ausführung von virtuellen Maschinen auf dem Gerät nicht zulassen</translation>
 <translation id="1651216316133158002">Mit dieser Richtlinie können Administratoren Apps festlegen, die als Standard-Handler für die einzelnen Dateiendungen unter <ph name="PRODUCT_OS_NAME" /> dienen und von Nutzern nicht geändert werden können.
@@ -2719,6 +2720,15 @@ Ist der Wert auf „<ph name="ENABLED_ENUM_VALUE" />“ gesetzt, werden Entität
 Wenn der Wert auf „<ph name="DISABLED_ENUM_VALUE" />“ gesetzt ist, werden Entitäten nicht erkannt und es können keine Aktionen dafür ausgeführt werden.
 Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden Entitäten erkannt und es können nur durch langes Drücken Aktionen dafür ausgeführt werden.</translation>
 <translation id="3010907817113180883">Häufigkeit der Erhebung des Geräteaktivität-Heartbeats in Millisekunden.</translation>
+<translation id="3015732569734756809">Wenn die Mimik-Steuerung aktiv ist, kannst du den Mauszeiger mit Kopfbewegungen steuern und Systemaktionen mit Gesichtsbewegungen ausführen. So kannst du dein Gerät steuern, ohne die Hände verwenden zu müssen.
+
+Wenn diese Richtlinie auf „true“ gesetzt ist, ist die Mimik-Steuerung auf dem Anmeldebildschirm immer aktiviert.
+
+Ist sie auf „false“ gesetzt, ist die Mimik-Steuerung auf dem Anmeldebildschirm immer deaktiviert.
+
+Wenn sie konfiguriert ist, kann sie von Nutzern nicht geändert oder überschrieben werden.
+
+Ist die Richtlinie nicht konfiguriert, ist die Mimik-Steuerung auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3016585641676676461">Automatischen Vollbildmodus auf diesen Websites blockieren</translation>
 <translation id="3017578958356048910">Mit dem PDF-Viewer können PDFs mit Anmerkungen versehen werden</translation>
 <translation id="3020623128585817424">Prüfung auf Standardbrowser beim Start deaktivieren</translation>
@@ -8763,6 +8773,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="7238335422094660594">Anbieter der <ph name="UIA_NAME" /> aktivieren.</translation>
+<translation id="7241016798422122577">Mimik-Steuerung auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="7242191282517459095">YouTube (wird seit Version 135 unterstützt)</translation>
 <translation id="7244600351241637530">Durch Aktivieren dieser Einstellung können Nutzer, die der Verwendung von Phone Hub zugestimmt haben, Fotos und Videos, die kürzlich mit ihrem Smartphone aufgenommen wurden, auf einem Chrome OS-Gerät abrufen und herunterladen.
 

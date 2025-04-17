@@ -2467,7 +2467,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5273658854610202413">Varning: Den här principen kombinerades inte enligt specifikationen i principen PolicyDictionaryMultipleSourceMergeList eftersom den inte ingår i de ordboksprinciper som kan kombineras.</translation>
 <translation id="5278778426231952189">Ladda upp nu</translation>
 <translation id="5279286380302340275">Hantera nedladdningar</translation>
-<translation id="5280963125494874678">webbappar</translation>
 <translation id="5282008206326321696">{count,plural, =0{# bokmärken}=1{# bokmärke}other{# bokmärken}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
@@ -3924,7 +3923,6 @@ Mer information.
 <translation id="7761701407923456692">Servercertifikatet överensstämmer inte med webbadressen.</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
 <translation id="7766518757692125295">Skirt</translation>
-<translation id="7766899888934244586">Webbappar</translation>
 <translation id="7767278989746220252">Uteplatser och trädgård</translation>
 <translation id="776749070095465053">Tyg</translation>
 <translation id="7773005668374414287">Samma ordning – framsidan uppåt</translation>

@@ -2467,7 +2467,6 @@
 <translation id="5273658854610202413">경고: 이 정책은 병합 가능한 사전 정책의 일부가 아니므로 PolicyDictionaryMultipleSourceMergeList 정책에 명시된 대로 병합되지 않았습니다.</translation>
 <translation id="5278778426231952189">지금 업로드</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>
-<translation id="5280963125494874678">웹 애플리케이션</translation>
 <translation id="5282008206326321696">{count,plural, =0{북마크 #개}=1{북마크 #개}other{북마크 #개}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">문서 속성</translation>
@@ -3923,7 +3922,6 @@
 <translation id="7761701407923456692">서버의 인증서가 URL과 일치하지 않습니다.</translation>
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7766518757692125295">스커트</translation>
-<translation id="7766899888934244586">웹 애플리케이션</translation>
 <translation id="7767278989746220252">발코니, 잔디, 정원 관리</translation>
 <translation id="776749070095465053">패브릭</translation>
 <translation id="7773005668374414287">같은 순서로 인쇄면이 위를 향하게</translation>

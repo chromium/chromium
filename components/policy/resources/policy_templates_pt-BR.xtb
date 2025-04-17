@@ -995,6 +995,7 @@ do usuário para chamar a API.</translation>
       Se o valor da política for definido como "0", o tamanho de cache padrão será usado e não será possível mudá-lo.
 
       Se a política não for definida, o tamanho de cache padrão será usado e será possível mudá-lo com a sinalização "--media-cache-size".</translation>
+<translation id="1647775511451132916">Desativar o controle facial na tela de login</translation>
 <translation id="1648816843164517573">Lista de nomes que contornarão a verificação de política HSTS</translation>
 <translation id="1651197070942919276">Não permitir que o dispositivo execute máquinas virtuais</translation>
 <translation id="1651216316133158002">Essa política permite que os administradores especifiquem apps que funcionam como gerenciadores padrão das respectivas extensões de arquivo
@@ -2846,6 +2847,17 @@ Se o valor for definido como <ph name="ENABLED_ENUM_VALUE" />, as entidades ser�
 Se o valor for definido como <ph name="DISABLED_ENUM_VALUE" />, as entidades não serão detectadas e não poderão ser acionadas.
 Se o valor for definido como <ph name="LONGPRESSONLY_ENUM_VALUE" />, as entidades serão detectadas e só poderão ser acionadas quando o usuário tocar e mantiver pressionado.</translation>
 <translation id="3010907817113180883">Taxa de coleta do sinal de funcionamento de atividade do dispositivo em milissegundos.</translation>
+<translation id="3015732569734756809">Quando o controle facial está ativo, você pode usar a cabeça para controlar o cursor do mouse e
+gestos faciais para realizar ações no sistema. Assim, você controla o dispositivo
+sem usar as mãos.
+
+Se esta política for definida como verdadeira, o controle facial vai ficar sempre ativado na tela de login.
+
+Se esta política for definida como falsa, o controle facial vai ficar sempre desativado na tela de login.
+
+Se você definir esta política, ela não poderá ser alterada nem substituída pelos usuários.
+
+Se esta política não for definida, o controle facial vai ficar inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="3016585641676676461">Bloquear a tela cheia automática nesses sites</translation>
 <translation id="3017578958356048910">O visualizador de PDF pode fazer anotações em PDFs</translation>
 <translation id="3020623128585817424">Desativar a verificação de navegador padrão na inicialização</translation>
@@ -9152,6 +9164,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se a política for deixada sem definição, a <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> será aplicada, mas o usuário poderá mudar essa configuração.</translation>
 <translation id="7238335422094660594">Ativar o provedor de <ph name="UIA_NAME" />.</translation>
+<translation id="7241016798422122577">Ativar o controle facial na tela de login</translation>
 <translation id="7242191282517459095">YouTube (compatível desde a versão 135)</translation>
 <translation id="7244600351241637530">Se esta configuração for ativada, os usuários que já ativaram o recurso Seu smartphone vão poder ver e baixar fotos e vídeos do smartphone pelo ChromeOS.
 
