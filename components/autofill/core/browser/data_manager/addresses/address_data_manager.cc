@@ -197,9 +197,28 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfilesByRecordType(
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesToSuggest()
     const {
-  return IsAutofillProfileEnabled()
-             ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
-             : std::vector<const AutofillProfile*>{};
+  if (!IsAutofillProfileEnabled()) {
+    return std::vector<const AutofillProfile*>{};
+  }
+  std::vector<const AutofillProfile*> profiles =
+      GetProfiles(ProfileOrder::kHighestFrecencyDesc);
+  // H/W addresses are prioritized for suggestion purposes.
+  std::ranges::stable_partition(profiles, [](const AutofillProfile* p) {
+    switch (p->record_type()) {
+      case AutofillProfile::RecordType::kLocalOrSyncable:
+      case AutofillProfile::RecordType::kAccount:
+        return false;
+      case AutofillProfile::RecordType::kAccountHome:
+      case AutofillProfile::RecordType::kAccountWork:
+        return true;
+    }
+  });
+  if (profiles.size() >= 2 &&
+      profiles[0]->record_type() == AutofillProfile::RecordType::kAccountWork &&
+      profiles[1]->record_type() == AutofillProfile::RecordType::kAccountHome) {
+    std::swap(profiles[0], profiles[1]);
+  }
+  return profiles;
 }
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesForSettings()
