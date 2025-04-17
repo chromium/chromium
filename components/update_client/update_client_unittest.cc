@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -194,10 +195,10 @@ auto ExpectErrorThenQuit(auto quit, Error expected_error) {
   return ExpectError(expected_error).Then(std::move(quit));
 }
 
-struct UpdateCheckerOneCrxUpdateOptions {
-  int64_t available_space = 3000;
-  size_t expected_components_check_count = 1u;
-  const char* json = R"()]}'
+struct UpdateCheckerOptionsOneCrxUpdate {
+  static constexpr int64_t kAvailableSpace = 3000;
+  static constexpr size_t kComponentCount = 1;
+  static constexpr std::string_view kJson = R"()]}'
 {
   "response": {
     "protocol": "4.0",
@@ -239,10 +240,10 @@ struct UpdateCheckerOneCrxUpdateOptions {
 })";
 };
 
-struct UpdateCheckerTwoCrxUpdateOptions {
-  int64_t available_space = 150000;
-  size_t expected_components_check_count = 2u;
-  const char* json = R"()]}'
+struct UpdateCheckerOptionsTwoCrxUpdate {
+  static constexpr int64_t kAvailableSpace = 150000;
+  static constexpr size_t kComponentCount = 2;
+  static constexpr std::string_view kJson = R"()]}'
 {
   "response": {
     "protocol": "4.0",
@@ -316,8 +317,8 @@ struct UpdateCheckerTwoCrxUpdateOptions {
 })";
 };
 
-struct UpdateCheckerOneCrxInstallOptions : UpdateCheckerOneCrxUpdateOptions {
-  const char* json = R"()]}'
+struct UpdateCheckerOptionsOneCrxInstall : UpdateCheckerOptionsOneCrxUpdate {
+  static constexpr std::string_view kJson = R"()]}'
 {
  "response": {
    "protocol": "4.0",
@@ -362,34 +363,163 @@ struct UpdateCheckerOneCrxInstallOptions : UpdateCheckerOneCrxUpdateOptions {
 })";
 };
 
-template <typename UpdateCheckerOptions>
+struct UpdateCheckerOptionsTwoCrxUpdateServerIgnoresSecond
+    : UpdateCheckerOptionsOneCrxInstall {
+  static constexpr size_t kComponentCount = 2;
+};
+
+struct UpdateCheckerOptionsTwoCrxUpdateNoUpdate {
+  static constexpr int64_t kAvailableSpace = 3000;
+  static constexpr size_t kComponentCount = 2;
+  static constexpr std::string_view kJson = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  },
+                  "size": 1015
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "appid": "abagagagagagagagagagagagagagagag",
+        "status": "ok",
+        "updatecheck": {
+          "status": "noupdate"
+        }
+      }
+    ]
+  }
+})";
+};
+
+struct UpdateCheckerOptionsActionRunNoUpdate {
+  static constexpr int64_t kAvailableSpace = 0;
+  static constexpr size_t kComponentCount = 1;
+  static constexpr std::string_view kJson = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "run",
+                  "path": "ChromeRecovery.crx3"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})";
+};
+
+struct UpdateCheckerOptionsOneCrxInstallDiskFull
+    : UpdateCheckerOptionsOneCrxInstall {
+  static constexpr int64_t kAvailableSpace = 0;
+};
+
+struct UpdateCheckerOptionsUnsupportedOperationType
+    : UpdateCheckerOptionsOneCrxUpdate {
+  static constexpr std::string_view kJson = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "badoperation"
+                },
+                {
+                  "type": "crx3",
+                  "arguments": "--arg1 --arg2",
+                  "path": "UpdaterSetup.exe",
+                  "in": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})";
+};
+
+template <typename T>
+concept IsUpdateCheckerOptions = requires(T t) {
+  T::kAvailableSpace;
+  T::kComponentCount;
+  T::kJson;
+};
+
+template <typename Options>
+  requires IsUpdateCheckerOptions<Options>
 class MockUpdateCheckerImpl : public UpdateChecker {
  public:
-  MockUpdateCheckerImpl() = default;
-
   void CheckForUpdates(
       scoped_refptr<UpdateContext> context,
       const base::flat_map<std::string, std::string>& additional_attributes,
       UpdateCheckCallback update_check_callback) override {
     context->get_available_space = base::BindRepeating(
-        [](int64_t available_space, const base::FilePath&) -> int64_t {
-          return available_space;
-        },
-        options_.available_space);
-
+        [](const base::FilePath&) { return Options::kAvailableSpace; });
     base::expected<ProtocolParser::Results, std::string> results =
-        ProtocolParserJSON::ParseJSON(options_.json);
+        ProtocolParserJSON::ParseJSON(std::string(Options::kJson));
     EXPECT_TRUE(results.has_value()) << results.error();
     EXPECT_FALSE(context->session_id.empty());
     EXPECT_EQ(context->components_to_check_for_updates.size(),
-              options_.expected_components_check_count);
+              Options::kComponentCount);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(update_check_callback),
                                   results.value(), ErrorCategory::kNone, 0, 0));
   }
-
- private:
-  UpdateCheckerOptions options_;
 };
 
 class MockUpdateCheckerAlwaysFails : public UpdateChecker {
@@ -690,59 +820,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     }
   };
 
-  struct MockUpdateCheckerMockTwoCrxUpdateNoUpdateOptions {
-    int64_t available_space = 3000;
-    size_t expected_components_check_count = 2u;
-    std::string json = R"()]}'
-{
-  "response": {
-    "protocol": "4.0",
-    "apps": [
-      {
-        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-        "status": "ok",
-        "updatecheck": {
-          "status": "ok",
-          "nextversion": "1.0",
-          "pipelines": [
-            {
-              "operations": [
-                {
-                  "type": "download",
-                  "urls": [
-                    {
-                      "url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"
-                    }
-                  ],
-                  "out": {
-                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
-                  },
-                  "size": 1015
-                },
-                {
-                  "type": "crx3",
-                  "in": {
-                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "appid": "abagagagagagagagagagagagagagagag",
-        "status": "ok",
-        "updatecheck": {
-          "status": "noupdate"
-        }
-      }
-    ]
-  }
-})";
-  };
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<MockUpdateCheckerMockTwoCrxUpdateNoUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsTwoCrxUpdateNoUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -924,17 +1003,10 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     }
   };
 
-  // Json will be equivalent to the UpdateCheckerOneCrxInstallOptions, but
-  // we expect 2 checks instead.
-  struct TwoCrxUpdateFirstServerIgnoresSecondOptions
-      : UpdateCheckerOneCrxInstallOptions {
-    size_t expected_components_check_count = 2u;
-  };
-
   // Note: even though 2 appid's are requested, we are intentionally only
   // sending the first.
-  MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<TwoCrxUpdateFirstServerIgnoresSecondOptions>>
+  MockUpdateCheckerFactory<MockUpdateCheckerImpl<
+      UpdateCheckerOptionsTwoCrxUpdateServerIgnoresSecond>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -1101,7 +1173,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   // Note: even though 2 appid's are requested, since "ihfo..." has no component
   // data, the response only contains the first appid's update response.
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -1345,7 +1417,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerTwoCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsTwoCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -1989,7 +2061,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxInstall>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -2666,7 +2738,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxInstall>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -3087,12 +3159,8 @@ TEST_F(UpdateClientTest, DiskFull) {
     }
   };
 
-  struct MockUpdateCheckerOneCrxInstallDiskFullOptions
-      : UpdateCheckerOneCrxInstallOptions {
-    int64_t available_space = 0;
-  };
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<MockUpdateCheckerOneCrxInstallDiskFullOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxInstallDiskFull>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -3832,7 +3900,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerTwoCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsTwoCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -4004,7 +4072,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -4646,38 +4714,8 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 // Tests that a run action is invoked in an update scenario when there was
 // no update.
 TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
-  struct MockUpdateCheckerActionRunNoUpdateOptions {
-    int64_t available_space = 0;
-    size_t expected_components_check_count = 1u;
-    const char* json = R"()]}'
-{
-  "response": {
-    "protocol": "4.0",
-    "apps": [
-      {
-        "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
-        "status": "ok",
-        "updatecheck": {
-          "status": "ok",
-          "nextversion": "1.0",
-          "pipelines": [
-            {
-              "operations": [
-                {
-                  "type": "run",
-                  "path": "ChromeRecovery.crx3"
-                }
-              ]
-            }
-          ]
-        }
-      }
-    ]
-  }
-})";
-  };
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<MockUpdateCheckerActionRunNoUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsActionRunNoUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -4961,7 +4999,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxInstall>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -5061,7 +5099,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxInstall>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -5201,7 +5239,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxInstall>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -5440,7 +5478,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -5880,7 +5918,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   };
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -6000,7 +6038,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
 
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsOneCrxUpdate>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
@@ -6219,44 +6257,8 @@ TEST_F(UpdateClientTest, UnsupportedOperationType) {
     }
   };
 
-  struct UnsupportedOperationTypeUpdateCheckOptions
-      : UpdateCheckerOneCrxUpdateOptions {
-    const char* json = R"()]}'
-{
-  "response": {
-    "protocol": "4.0",
-    "apps": [
-      {
-        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-        "status": "ok",
-        "updatecheck": {
-          "status": "ok",
-          "nextversion": "1.0",
-          "pipelines": [
-            {
-              "operations": [
-                {
-                  "type": "badoperation"
-                },
-                {
-                  "type": "crx3",
-                  "arguments": "--arg1 --arg2",
-                  "path": "UpdaterSetup.exe",
-                  "in": {
-                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      }
-    ]
-  }
-})";
-  };
   MockUpdateCheckerFactory<
-      MockUpdateCheckerImpl<UnsupportedOperationTypeUpdateCheckOptions>>
+      MockUpdateCheckerImpl<UpdateCheckerOptionsUnsupportedOperationType>>
       mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
