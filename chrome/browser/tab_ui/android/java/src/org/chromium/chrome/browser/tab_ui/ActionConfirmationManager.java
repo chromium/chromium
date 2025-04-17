@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.tab_ui;
 import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -38,6 +38,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * we might want to warn the user that they're about to delete a tab group. This is currently only
  * used for non-incognito tabs.
  */
+@NullMarked
 public class ActionConfirmationManager {
     private static final String TAB_GROUP_CONFIRMATION = "TabGroupConfirmation.";
     private static final String DELETE_GROUP_USER_ACTION = TAB_GROUP_CONFIRMATION + "DeleteGroup.";
@@ -87,7 +88,7 @@ public class ActionConfirmationManager {
      * @param modalDialogManager Used to show dialogs.
      */
     public ActionConfirmationManager(
-            Profile profile, Context context, @NonNull ModalDialogManager modalDialogManager) {
+            Profile profile, Context context, ModalDialogManager modalDialogManager) {
         assert modalDialogManager != null;
         mProfile = profile;
         mContext = context;
@@ -210,7 +211,7 @@ public class ActionConfirmationManager {
 
     private void processMaybeSyncAndPrefAction(
             String userActionBaseString,
-            @Nullable String stopShowingPref,
+            String stopShowingPref,
             @StringRes int titleRes,
             @StringRes int withSyncDescriptionRes,
             @StringRes int noSyncDescriptionRes,
@@ -422,7 +423,7 @@ public class ActionConfirmationManager {
         return shouldSkipDialog(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE);
     }
 
-    private boolean shouldSkipDialog(@NonNull String stopShowingPref) {
+    private boolean shouldSkipDialog(String stopShowingPref) {
         PrefService prefService = UserPrefs.get(mProfile);
         return prefService.getBoolean(stopShowingPref);
     }
