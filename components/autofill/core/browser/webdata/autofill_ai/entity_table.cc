@@ -106,7 +106,8 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          create_attribute(kPassportExpirationDate, u"2035-03-31"),
          create_attribute(kPassportIssueDate, u"1998-10-11")},
         base::Uuid::ParseLowercase("00000000-0000-4000-8000-123000000000"),
-        "My passport", base::Time::Now()));
+        "My passport", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
+        /*use_date=*/base::Time::FromTimeT(0)));
 
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kDriversLicense),
@@ -116,7 +117,8 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          create_attribute(kDriversLicenseExpirationDate, u"2069-12-31"),
          create_attribute(kDriversLicenseIssueDate, u"1969-12-24")},
         base::Uuid::ParseLowercase("00000000-0000-4000-8000-456000000000"),
-        "My license", base::Time::Now()));
+        "My license", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
+        /*use_date=*/base::Time::FromTimeT(0)));
 
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kVehicle),
@@ -128,7 +130,8 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          create_attribute(kVehiclePlateState, u"California"),
          create_attribute(kVehicleVin, u"3D73Y4CL2AG194665")},
         base::Uuid::ParseLowercase("00000000-0000-4000-8000-789000000000"),
-        "My wroom wroom car", base::Time::Now()));
+        "My wroom wroom car", /*date_modified=*/base::Time::Now(),
+        /*use_count=*/0, /*use_date=*/base::Time::FromTimeT(0)));
   }
 }
 
@@ -269,6 +272,8 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   s.BindString(1, entity.type().name_as_string());
   s.BindString(2, entity.nickname());
   s.BindInt64(3, entity.date_modified().ToTimeT());
+  // TODO(crbug.com/402616006): Store use count and use date in the db.
+
   if (!s.Run()) {
     return false;
   }
@@ -385,11 +390,15 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
     std::string type_name = s.ColumnString(1);
     std::string nickname = s.ColumnString(2);
     base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
+    // TODO(crbug.com/402616006): Read from db.
+    int use_count = 0;
+    // TODO(crbug.com/402616006): Read from db.
+    base::Time use_date = base::Time::FromTimeT(0);
 
     if (auto attributes = attribute_records.extract(guid)) {
-      if (std::optional<EntityInstance> e =
-              ValidateInstance(type_name, std::move(guid), std::move(nickname),
-                               date_modified, std::move(attributes.mapped()))) {
+      if (std::optional<EntityInstance> e = ValidateInstance(
+              type_name, std::move(guid), std::move(nickname), date_modified,
+              use_count, use_date, std::move(attributes.mapped()))) {
         entities.push_back(*std::move(e));
       }
     }
@@ -405,6 +414,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     base::Uuid guid,
     std::string nickname,
     base::Time date_modified,
+    int use_count,
+    base::Time use_date,
     std::map<std::string, std::vector<AttributeRecord>> attribute_records)
     const {
   std::optional<EntityType> entity_type =
@@ -447,7 +458,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
   }
 
   return EntityInstance(*entity_type, std::move(attributes), std::move(guid),
-                        std::move(nickname), date_modified);
+                        std::move(nickname), date_modified, use_count,
+                        use_date);
 }
 
 }  // namespace autofill

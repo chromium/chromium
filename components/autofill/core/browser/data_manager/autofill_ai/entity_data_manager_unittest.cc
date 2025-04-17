@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -90,6 +91,11 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
     return entity_data_manager().GetEntityInstances();
   }
 
+  base::optional_ref<const EntityInstance> GetInstance(const base::Uuid& guid) {
+    helper().WaitUntilIdle();
+    return entity_data_manager().GetEntityInstance(guid);
+  }
+
  private:
   EntityDataManager entity_data_manager_{helper().autofill_webdata_service(),
                                          /*history_service=*/nullptr,
@@ -109,6 +115,27 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
+}
+
+// Tests that recording an entity being used calls for a database entity update.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
+  // TODO(crbug.com/402616006): This test should re-read the entity from the db
+  // and make sure the persisted information is the expected one. Update once db
+  // columns are updated.
+  EntityInstance pp = test::GetPassportEntityInstance();
+  entity_data_manager().AddOrUpdateEntityInstance(pp);
+  EXPECT_EQ(pp.use_count(), 0u);
+  EXPECT_EQ(pp.use_date(), base::Time::FromTimeT(0));
+
+  base::Time use_date = base::Time::Now();
+  helper().WaitUntilIdle();
+  entity_data_manager().RecordEntityUsed(pp.guid(), use_date);
+  base::optional_ref<const EntityInstance> updated_passport =
+      GetInstance(pp.guid());
+  ASSERT_TRUE(updated_passport);
+
+  EXPECT_EQ(updated_passport->use_count(), 1u);
+  EXPECT_EQ(updated_passport->use_date(), use_date);
 }
 
 // Tests that AddOrUpdateEntityInstance() asynchronously updates entities.

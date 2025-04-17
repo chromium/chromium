@@ -2386,11 +2386,12 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                              filled_field_ids, safe_field_ids, *credit_card,
                              trigger_source, refill_trigger_reason.has_value());
                        },
-                       [&](const EntityInstance*) {
+                       [&](const EntityInstance* entity) {
                          if (AutofillAiDelegate* delegate =
                                  client().GetAutofillAiDelegate()) {
                            delegate->OnDidFillSuggestion(
-                               form_structure, trigger_autofill_field,
+                               entity->guid(), form_structure,
+                               trigger_autofill_field,
                                driver().GetPageUkmSourceId());
                          }
                        }},

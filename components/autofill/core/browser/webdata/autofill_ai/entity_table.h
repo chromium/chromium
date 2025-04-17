@@ -135,6 +135,8 @@ class EntityTable : public WebDatabaseTable {
       base::Uuid guid,
       std::string nickname,
       base::Time date_modified,
+      int use_count,
+      base::Time use_date,
       std::map<std::string, std::vector<AttributeRecord>> attribute_records)
       const;
 

@@ -907,7 +907,8 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
       base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(options.date_modified.ToTimeT()));
+      base::Time::FromTimeT(options.date_modified.ToTimeT()), /*use_count=*/0,
+      /*use_date=*/base::Time::FromTimeT(0));
 }
 
 EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
@@ -950,7 +951,8 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   return EntityInstance(
       EntityType(EntityTypeName::kDriversLicense), std::move(attributes),
       base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(options.date_modified.ToTimeT()));
+      base::Time::FromTimeT(options.date_modified.ToTimeT()), /*use_count=*/0,
+      /*use_date=*/base::Time::FromTimeT(0));
 }
 
 EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
@@ -1002,7 +1004,8 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
   return EntityInstance(
       EntityType(EntityTypeName::kVehicle), std::move(attributes),
       base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
-      base::Time::FromTimeT(kJune2017.ToTimeT()));
+      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      /*use_date=*/base::Time::FromTimeT(0));
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,

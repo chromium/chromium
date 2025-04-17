@@ -142,6 +142,7 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
     return std::make_pair(
         EntityInstance(existing_entity.type(), std::move(new_attributes),
                        existing_entity.guid(), existing_entity.nickname(),
+                       base::Time::Now(), existing_entity.use_count(),
                        base::Time::Now()),
         existing_entity);
   }
@@ -232,10 +233,16 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
 }
 
 void AutofillAiManager::OnDidFillSuggestion(
+    const base::Uuid& guid,
     const autofill::FormStructure& form,
     const autofill::AutofillField& field,
     ukm::SourceId ukm_source_id) {
   logger_.OnDidFillSuggestion(form, field, ukm_source_id);
+  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (!entity_manager) {
+    return;
+  }
+  entity_manager->RecordEntityUsed(guid, base::Time::Now());
 }
 
 void AutofillAiManager::OnEditedAutofilledField(

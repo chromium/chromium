@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -52,7 +53,8 @@ class AutofillAiDelegate {
                                   const AutofillField& field,
                                   ukm::SourceId ukm_source_id) = 0;
   virtual void OnFormSeen(const FormStructure& form) = 0;
-  virtual void OnDidFillSuggestion(const FormStructure& form,
+  virtual void OnDidFillSuggestion(const base::Uuid& guid,
+                                   const FormStructure& form,
                                    const AutofillField& field,
                                    ukm::SourceId ukm_source_id) = 0;
   virtual void OnEditedAutofilledField(const FormStructure& form,

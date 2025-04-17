@@ -148,7 +148,8 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
               attributes,
               &std::pair<const AttributeType, AttributeInstance>::second),
           base::Uuid::GenerateRandomV4(),
-          /*nickname=*/std::string(""), base::Time::Now());
+          /*nickname=*/std::string(""), base::Time::Now(), /*use_count=*/0,
+          /*use_date=*/base::Time::Now());
       if (!EntitySatisfiesImportConstraints(entity)) {
         continue;
       }

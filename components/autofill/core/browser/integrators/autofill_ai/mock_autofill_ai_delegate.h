@@ -40,7 +40,10 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
   MOCK_METHOD(void, OnFormSeen, (const FormStructure&), (override));
   MOCK_METHOD(void,
               OnDidFillSuggestion,
-              (const FormStructure&, const AutofillField&, ukm::SourceId),
+              (const base::Uuid& guid,
+               const FormStructure&,
+               const AutofillField&,
+               ukm::SourceId),
               (override));
   MOCK_METHOD(void,
               OnEditedAutofilledField,

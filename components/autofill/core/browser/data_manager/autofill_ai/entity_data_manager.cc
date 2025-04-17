@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/webdata/common/web_data_results.h"
 
@@ -110,12 +111,31 @@ base::optional_ref<const EntityInstance> EntityDataManager::GetEntityInstance(
   return *it;
 }
 
+base::optional_ref<EntityInstance> EntityDataManager::GetMutableEntityInstance(
+    const base::Uuid& guid) {
+  auto it = entities_.find(guid);
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+  return *it;
+}
+
 void EntityDataManager::OnHistoryDeletions(
     history::HistoryService*,
     const history::DeletionInfo& deletion_info) {
   if (save_strike_db_by_host_) {
     save_strike_db_by_host_->ClearStrikesWithHistory(deletion_info);
   }
+}
+
+void EntityDataManager::RecordEntityUsed(const base::Uuid& guid,
+                                         base::Time use_date) {
+  base::optional_ref<EntityInstance> entity = GetMutableEntityInstance(guid);
+  if (!entity) {
+    return;
+  }
+  entity->RecordEntityUsed(use_date);
+  AddOrUpdateEntityInstance(*entity);
 }
 
 void EntityDataManager::NotifyEntityInstancesChanged() {

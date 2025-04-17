@@ -244,12 +244,16 @@ EntityInstance::EntityInstance(
         attributes,
     base::Uuid guid,
     std::string nickname,
-    base::Time date_modified)
+    base::Time date_modified,
+    int use_count,
+    base::Time use_date)
     : type_(type),
       attributes_(std::move(attributes)),
       guid_(std::move(guid)),
       nickname_(std::move(nickname)),
-      date_modified_(date_modified) {
+      date_modified_(date_modified),
+      use_count_(use_count),
+      use_date_(use_date) {
   DCHECK(!attributes_.empty());
   DCHECK(std::ranges::all_of(attributes_, [this](const AttributeInstance& a) {
     return type_ == a.type().entity_type();
@@ -309,6 +313,11 @@ EntityInstance::EntityMergeability::operator=(
     EntityInstance::EntityMergeability&&) = default;
 
 EntityInstance::EntityMergeability::~EntityMergeability() = default;
+
+void EntityInstance::RecordEntityUsed(base::Time date) {
+  use_date_ = date;
+  ++use_count_;
+}
 
 EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
     const EntityInstance& newer) const {

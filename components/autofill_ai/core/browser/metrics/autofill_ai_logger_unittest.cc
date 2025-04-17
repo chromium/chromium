@@ -14,6 +14,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -279,8 +280,10 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   std::unique_ptr<autofill::FormStructure> form =
       is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
   // This will dictate whether we consider the form ready to be filled or not.
+  autofill::EntityInstance passport =
+      autofill::test::GetPassportEntityInstance();
   if (user_has_data()) {
-    AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
+    AddOrUpdateEntityInstance(passport);
   }
   manager().OnFormSeen(*form);
 
@@ -288,7 +291,8 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
     manager().OnSuggestionsShown(*form, *form->field(0), /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
-    manager().OnDidFillSuggestion(*form, *form->field(0), /*ukm_source_id=*/{});
+    manager().OnDidFillSuggestion(passport.guid(), *form, *form->field(0),
+                                  /*ukm_source_id=*/{});
   }
   if (user_corrected_filling()) {
     manager().OnEditedAutofilledField(*form, *form->field(0),
@@ -457,7 +461,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
                                                        /*ukm_source_id=*/{});
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
-                                                 /*submitted_state=*/true,
+                                                 /*submission_state=*/true,
                                                  /*opt_in_status=*/true);
   ASSERT_EQ(mqls_logs().size(), 4u);
   ExpectCorrectMqlsKeyMetricsLogging(
@@ -472,7 +476,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
   autofill::SetAutofillAiOptInStatus(autofill_client(), false);
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
-                                                 /*submitted_state=*/true,
+                                                 /*submission_state=*/true,
                                                  /*opt_in_status=*/false);
   EXPECT_TRUE(mqls_logs().empty());
 }
@@ -483,7 +487,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_FormAbandoned) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
-                                                 /*submitted_state=*/false,
+                                                 /*submission_state=*/false,
                                                  /*opt_in_status=*/true);
   EXPECT_TRUE(mqls_logs().empty());
 }

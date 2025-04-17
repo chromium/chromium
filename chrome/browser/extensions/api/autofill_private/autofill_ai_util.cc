@@ -281,7 +281,8 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
           : base::Uuid::ParseLowercase(private_api_entity_instance.guid);
   return EntityInstance(std::move(entity_type), attribute_instances,
                         std::move(guid), private_api_entity_instance.nickname,
-                        base::Time::Now());
+                        base::Time::Now(), /*use_count=*/0,
+                        /*use_date=*/base::Time::Now());
 }
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
