@@ -167,6 +167,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    public boolean isInitializationComplete() {
+        return true;
+    }
+
+    @Override
     public void moveTab(int id, int newIndex) {}
 
     @Override
@@ -201,11 +206,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     // TabModelJniBridge overrides.
-
-    @Override
-    public void broadcastSessionRestoreComplete() {
-        super.broadcastSessionRestoreComplete();
-    }
 
     @Override
     public void forceCloseAllTabs() {}

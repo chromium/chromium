@@ -106,10 +106,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @Override
     public abstract boolean isActiveModel();
 
+    /** Returns whether the model is done initializing itself and should be used. */
+    public abstract boolean isInitializationComplete();
+
     /** Broadcast a native-side notification that all tabs are now loaded from storage. */
-    @CallSuper
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
+        assert isInitializationComplete();
         TabModelJniBridgeJni.get()
                 .broadcastSessionRestoreComplete(mNativeTabModelJniBridge, TabModelJniBridge.this);
     }

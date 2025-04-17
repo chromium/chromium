@@ -88,6 +88,7 @@ public class TabModelImpl extends TabModelJniBridge {
     private int mIndex = INVALID_TAB_INDEX;
 
     private boolean mActive;
+    private boolean mInitializationComplete;
 
     // Undo State Tracking -------------------------------------------------------------------------
 
@@ -230,9 +231,9 @@ public class TabModelImpl extends TabModelJniBridge {
         super.destroy();
     }
 
-    @Override
-    public void broadcastSessionRestoreComplete() {
-        super.broadcastSessionRestoreComplete();
+    /** Required to be called before this object is ready for most usage. */
+    public void completeInitialization() {
+        mInitializationComplete = true;
 
         // This is to make sure TabModel has a valid index when it has at least one valid Tab after
         // TabState is initialized. Otherwise, TabModel can have an invalid index even though it has
@@ -765,6 +766,11 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public boolean isActiveModel() {
         return mActive;
+    }
+
+    @Override
+    public boolean isInitializationComplete() {
+        return mInitializationComplete;
     }
 
     /**
