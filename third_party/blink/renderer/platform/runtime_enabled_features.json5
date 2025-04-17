@@ -709,7 +709,7 @@
     },
     {
       name: "CanvasFloatingPoint",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://crbug.com/394052224
@@ -2449,7 +2449,7 @@
     },
     {
       name: "ImageDataPixelFormat",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ImplicitRootScroller",
