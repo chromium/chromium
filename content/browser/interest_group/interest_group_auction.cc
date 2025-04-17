@@ -4888,7 +4888,7 @@ void InterestGroupAuction::OnInterestGroupRead(
   int negative_groups = 0;
   size_t storage_used = 0;
   for (const SingleStorageInterestGroup& group : interest_groups) {
-    if (group->interest_group.additional_bid_key.has_value()) {
+    if (group->interest_group.IsNegativeInterestGroup()) {
       ++negative_groups;
     } else {
       ++positive_groups;

@@ -4815,10 +4815,17 @@ void AggregateViewAndClickCounts(const blink::mojom::ViewAndClickCounts& in,
     base::Time now,
     const url::Origin& owner,
     InterestGroupsByName& interest_groups_by_name) {
+  std::vector<url::Origin> default_providers = {owner};
+
   // Figure out which click tables we need.
   std::set<url::Origin> clickiness_providers;
   for (auto& [unused_name, storage_group] : interest_groups_by_name) {
-    if (!storage_group.interest_group.view_and_click_counts_providers) {
+    if (storage_group.interest_group.IsNegativeInterestGroup()) {
+      continue;
+    }
+    if (!storage_group.interest_group.view_and_click_counts_providers ||
+        storage_group.interest_group.view_and_click_counts_providers->empty()) {
+      clickiness_providers.insert(owner);
       continue;
     }
 
@@ -4853,13 +4860,16 @@ void AggregateViewAndClickCounts(const blink::mojom::ViewAndClickCounts& in,
         blink::mojom::ViewAndClickCounts::New(
             /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
             /*click_counts=*/blink::mojom::ViewOrClickCounts::New());
-
-    if (!storage_group.interest_group.view_and_click_counts_providers) {
+    if (storage_group.interest_group.IsNegativeInterestGroup()) {
       continue;
     }
 
     for (const url::Origin& provider_origin :
-         *storage_group.interest_group.view_and_click_counts_providers) {
+         storage_group.interest_group.view_and_click_counts_providers &&
+                 !storage_group.interest_group.view_and_click_counts_providers
+                      ->empty()
+             ? *storage_group.interest_group.view_and_click_counts_providers
+             : default_providers) {
       auto it = clickiness_summaries.find(provider_origin);
       if (it == clickiness_summaries.end()) {
         continue;
