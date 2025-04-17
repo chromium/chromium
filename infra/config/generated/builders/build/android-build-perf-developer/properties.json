@@ -64,7 +64,8 @@
     "experiments": [
       "no-fallback"
     ],
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 5120
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
