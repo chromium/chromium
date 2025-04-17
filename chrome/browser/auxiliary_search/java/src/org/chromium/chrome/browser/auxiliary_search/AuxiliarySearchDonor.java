@@ -84,6 +84,9 @@ public class AuxiliarySearchDonor {
 
     @VisibleForTesting static final String SCHEMA = "builtin:GlobalSearchApplicationInfo";
     @VisibleForTesting static final String SCHEMA_WEBPAGE = "builtin:WebPage";
+    @VisibleForTesting static final String SOURCE_TAB = "Tab";
+    @VisibleForTesting static final String SOURCE_CUSTOM_TAB = "CustomTab";
+    @VisibleForTesting static final String SOURCE_TOP_SITE = "TopSite";
 
     private static final String TAG = "AuxiliarySearchDonor";
     private static final String TAB_PREFIX = "Tab-";
@@ -400,6 +403,7 @@ public class AuxiliarySearchDonor {
                     calculateDocumentTtlMs(
                             /* isTab= */ true, tab.getTimestampMillis(), currentTime),
                     /* score= */ 0,
+                    SOURCE_TAB,
                     favicon);
         }
 
@@ -421,6 +425,7 @@ public class AuxiliarySearchDonor {
                             auxiliarySearchEntry.getLastAccessTimestamp(),
                             currentTime),
                     /* score= */ 0,
+                    SOURCE_TAB,
                     favicon);
         }
 
@@ -441,9 +446,25 @@ public class AuxiliarySearchDonor {
                 dataEntry.lastActiveTime,
                 calculateDocumentTtlMs(isTab, dataEntry.lastActiveTime, currentTime),
                 dataEntry.score,
+                getSource(dataEntry.type),
                 favicon);
     }
 
+    private String getSource(@AuxiliarySearchEntryType int type) {
+        switch (type) {
+            case AuxiliarySearchEntryType.CUSTOM_TAB -> {
+                return SOURCE_CUSTOM_TAB;
+            }
+            case AuxiliarySearchEntryType.TOP_SITE -> {
+                return SOURCE_TOP_SITE;
+            }
+            default -> {
+                return SOURCE_TAB;
+            }
+        }
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
     private WebPage buildDocumentImpl(
             WebPage.Builder builder,
             String documentId,
@@ -452,6 +473,7 @@ public class AuxiliarySearchDonor {
             long lastAccessTimestamp,
             long documentTtlMs,
             int score,
+            String source,
             @Nullable Bitmap favicon) {
         byte[] faviconBytes = null;
         if (favicon != null) {
@@ -462,7 +484,8 @@ public class AuxiliarySearchDonor {
                 .setName(title)
                 .setCreationTimestampMillis(lastAccessTimestamp)
                 .setDocumentTtlMillis(documentTtlMs)
-                .setDocumentScore(score);
+                .setDocumentScore(score)
+                .setSource(source);
 
         if (faviconBytes != null) {
             ImageObject faviconImage =
