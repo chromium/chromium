@@ -62,6 +62,8 @@ class MediaElementAudioSourceNode final
 
   HTMLMediaElement* mediaElement() const;
 
+  void ConnectToDestinationReady() override;
+
   // AudioSourceProviderClient functions:
   void SetFormat(uint32_t number_of_channels, float sample_rate) override;
   void lock() override EXCLUSIVE_LOCK_FUNCTION(

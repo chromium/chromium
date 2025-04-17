@@ -208,6 +208,11 @@ AudioNode* AudioNode::connect(AudioNode* destination,
                     destination->Handler().NodeTypeName().Utf8().c_str(),
                     reinterpret_cast<uintptr_t>(&destination->Handler())));
 
+  // Once the destination node is connected, the source node (e.g.,
+  // MediaElementAudioSourceNode) can eventually disable the MediaElement's
+  // audio output to the device.
+  ConnectToDestinationReady();
+
   AudioNodeWiring::Connect(Handler().Output(output_index),
                            destination->Handler().Input(input_index));
   if (!connected_nodes_[output_index]) {
@@ -253,6 +258,11 @@ void AudioNode::connect(AudioParam* param,
         "belonging to a different audio context.");
     return;
   }
+
+  // Once the destination node is connected, the source node (e.g.,
+  // MediaElementAudioSourceNode) can eventually disable the MediaElement's
+  // audio output to the device.
+  ConnectToDestinationReady();
 
   AudioNodeWiring::Connect(Handler().Output(output_index), param->Handler());
   if (!connected_params_[output_index]) {
