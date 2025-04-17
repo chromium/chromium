@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill::payments {
@@ -22,17 +23,25 @@ BnplLinkedIssuerPill::BnplLinkedIssuerPill()
     : views::Label(l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL),
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
-                   views::style::STYLE_SECONDARY) {
-  // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
-  // TODO (crbug.com/402646513): Update color token to use a context-specific
-  // token.
-  SetBackground(views::CreateRoundedRectBackground(ui::kColorBadgeBackground,
-                                                   gfx::RoundedCornersF(8)));
-  SetBorder(views::CreateRoundedRectBorder(0, 8, gfx::Insets::TLBR(0, 4, 0, 4),
-                                           ui::kColorBadgeBackground));
+                   views::style::STYLE_BODY_5) {
+  SetEnabledColor(kColorBnplIssuerLinkedPillForeground);
 }
 
 BnplLinkedIssuerPill::~BnplLinkedIssuerPill() = default;
+
+void BnplLinkedIssuerPill::AddedToWidget() {
+  views::Label::AddedToWidget();
+  // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
+  gfx::Size size = GetPreferredSize(views::SizeBounds());
+  size.Enlarge(0, 4);
+  SetBackground(views::CreateRoundedRectBackground(
+      kColorBnplIssuerLinkedPillBackground,
+      gfx::RoundedCornersF(size.height() / 2)));
+  SetBorder(views::CreateRoundedRectBorder(
+      0, size.height() / 2,
+      gfx::Insets::TLBR(2, size.height() / 2, 2, size.height() / 2),
+      kColorBnplIssuerLinkedPillBackground));
+}
 
 BEGIN_METADATA(BnplLinkedIssuerPill)
 END_METADATA

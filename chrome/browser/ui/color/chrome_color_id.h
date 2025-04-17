@@ -81,6 +81,8 @@
   E_CPONLY(kColorBnplIssuerLabelForeground) \
   E_CPONLY(kColorBnplIssuerLabelForegroundDisabled) \
   E_CPONLY(kColorBnplIssuerLinkedIneligibleBackground) \
+  E_CPONLY(kColorBnplIssuerLinkedPillBackground) \
+  E_CPONLY(kColorBnplIssuerLinkedPillForeground) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
   E_CPONLY(kColorComposeDialogDivider) \

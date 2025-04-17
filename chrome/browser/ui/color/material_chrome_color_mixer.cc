@@ -134,6 +134,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBnplIssuerLabelForegroundDisabled] = {
       ui::kColorLabelForegroundDisabled};
   mixer[kColorBnplIssuerLinkedIneligibleBackground] = {ui::kColorSysSurface2};
+  mixer[kColorBnplIssuerLinkedPillBackground] = {ui::kColorBadgeBackground};
+  mixer[kColorBnplIssuerLinkedPillForeground] = {ui::kColorBadgeForeground};
 
   // Tab Search colors.
   mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
