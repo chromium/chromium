@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // The rules for parsing content-types were borrowed from Firefox:
 // http://lxr.mozilla.org/mozilla/source/netwerk/base/src/nsURLHelper.cpp#834
 
 #include "net/http/http_util.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -304,11 +300,11 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
 
 // static
 std::string HttpUtil::TimeFormatHTTP(base::Time time) {
-  static constexpr char kWeekdayName[7][4] = {"Sun", "Mon", "Tue", "Wed",
-                                              "Thu", "Fri", "Sat"};
-  static constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr",
-                                             "May", "Jun", "Jul", "Aug",
-                                             "Sep", "Oct", "Nov", "Dec"};
+  static constexpr std::array<char[4], 7> kWeekdayName = {
+      "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+  static constexpr std::array<char[4], 12> kMonthName = {
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
   return base::StringPrintf(
@@ -705,14 +701,13 @@ std::string HttpUtil::AssembleRawHeaders(std::string_view input) {
   // line's field-value.
 
   // TODO(ericroman): is this too permissive? (delimits on [\r\n]+)
-  base::CStringTokenizer lines(input.data(), input.data() + input.size(),
-                               "\r\n");
+  base::StringViewTokenizer lines(input, "\r\n");
 
   // This variable is true when the previous line was continuable.
   bool prev_line_continuable = false;
 
   while (lines.GetNext()) {
-    std::string_view line = lines.token_piece();
+    std::string_view line = lines.token();
 
     if (prev_line_continuable && IsLWS(line[0])) {
       // Join continuation; reduce the leading LWS to a single SP.
