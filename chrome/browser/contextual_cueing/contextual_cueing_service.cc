@@ -120,6 +120,8 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   recent_nudge_tracker_.CueingNudgeShown();
+  shown_backoff_end_time_ =
+      base::TimeTicks::Now() + kMinTimeBetweenNudges.Get();
 
   if (kMinPageCountBetweenNudges.Get()) {
     // Let the cue logic be performed the next page after quiet count pages.
@@ -142,7 +144,7 @@ void ContextualCueingService::CueingNudgeDismissed() {
   base::TimeDelta backoff_duration =
       kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
 
-  backoff_end_time_ = base::Time::Now() + backoff_duration;
+  dismiss_backoff_end_time_ = base::TimeTicks::Now() + backoff_duration;
   ++dismiss_count_;
 }
 
@@ -158,8 +160,12 @@ NudgeDecision ContextualCueingService::CanShowNudge(const GURL& url) {
   if (remaining_quiet_loads_ > 0) {
     return NudgeDecision::kNotEnoughPageLoadsSinceLastNudge;
   }
+  if (shown_backoff_end_time_ &&
+      base::TimeTicks::Now() < shown_backoff_end_time_) {
+    return NudgeDecision::kNotEnoughTimeSinceLastNudgeShown;
+  }
   if (IsNudgeBlockedByBackoffRule()) {
-    return NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge;
+    return NudgeDecision::kNotEnoughTimeSinceLastNudgeDismissed;
   }
   if (!recent_nudge_tracker_.CanShowNudge()) {
     return NudgeDecision::kTooManyNudgesShownToTheUser;
@@ -174,7 +180,8 @@ NudgeDecision ContextualCueingService::CanShowNudge(const GURL& url) {
 bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return backoff_end_time_ && (base::Time::Now() < backoff_end_time_);
+  return dismiss_backoff_end_time_ &&
+         (base::TimeTicks::Now() < dismiss_backoff_end_time_);
 }
 
 bool ContextualCueingService::IsPageTypeEligibleForContextualSuggestions(

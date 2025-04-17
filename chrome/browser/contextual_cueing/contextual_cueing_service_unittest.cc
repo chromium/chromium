@@ -52,7 +52,8 @@ class ContextualCueingServiceTest : public testing::Test {
            {"BackoffMultiplierBase", "2.0"},
            {"NudgeCapTime", "24h"},
            {"NudgeCapCount", "3"},
-           {"MinPageCountBetweenNudges", "0"}}}},
+           {"MinPageCountBetweenNudges", "0"},
+           {"MinTimeBetweenNudges", "30s"}}}},
         {contextual_cueing::kGlicZeroStateSuggestions});
   }
 
@@ -99,7 +100,9 @@ class ContextualCueingServiceTestCapCountAndMinPageCount
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_cueing::kContextualCueing,
-          {{"NudgeCapCount", "3"}, {"MinPageCountBetweenNudges", "3"}}}},
+          {{"NudgeCapCount", "3"},
+           {"MinPageCountBetweenNudges", "3"},
+           {"MinTimeBetweenNudges", "0h"}}}},
         /*disabled_features=*/{});
   }
 };
@@ -163,6 +166,17 @@ TEST_F(ContextualCueingServiceTest, AllowsNudge) {
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
 }
 
+TEST_F(ContextualCueingServiceTest, NudgeBlockedByCooldownTime) {
+  InitializeContextualCueingService();
+  EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
+  service()->CueingNudgeShown(GURL(kFooURL));
+  FastForwardBy(base::Seconds(29));
+  EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)),
+            NudgeDecision::kNotEnoughTimeSinceLastNudgeShown);
+  FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
+}
+
 TEST_F(ContextualCueingServiceTest, DoesNotRegisterOptimizationType) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service(),
               RegisterOptimizationTypes(ElementsAre(
@@ -177,27 +191,29 @@ TEST_F(ContextualCueingServiceTest, NudgesCappedByBackoffRule) {
 
   service()->CueingNudgeShown(GURL(kFooURL));
   service()->CueingNudgeDismissed();  // Backoff time is 24 hours.
+  FastForwardBy(base::Minutes(1));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBarURL)),
-            NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge);
-  FastForwardBy(base::Hours(13));
+            NudgeDecision::kNotEnoughTimeSinceLastNudgeDismissed);
+  FastForwardBy(base::Hours(12));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBarURL)),
-            NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge);
+            NudgeDecision::kNotEnoughTimeSinceLastNudgeDismissed);
   FastForwardBy(base::Hours(12));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBarURL)), NudgeDecision::kSuccess);
 
   service()->CueingNudgeShown(GURL(kBarURL));
   service()->CueingNudgeDismissed();  // Backoff time is 48 hours.
+  FastForwardBy(base::Minutes(1));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBazURL)),
-            NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge);
-  FastForwardBy(base::Minutes(48 * 60 + 1));
+            NudgeDecision::kNotEnoughTimeSinceLastNudgeDismissed);
+  FastForwardBy(base::Hours(48));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBazURL)), NudgeDecision::kSuccess);
 
   service()->CueingNudgeShown(GURL(kBazURL));
   service()->CueingNudgeDismissed();  // Backoff time is 96 hours.
-  FastForwardBy(base::Minutes(96 * 60 - 1));
+  FastForwardBy(base::Hours(95));
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)),
-            NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge);
-  FastForwardBy(base::Minutes(2));
+            NudgeDecision::kNotEnoughTimeSinceLastNudgeDismissed);
+  FastForwardBy(base::Hours(2));
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
 }
 
@@ -220,7 +236,7 @@ TEST_F(ContextualCueingServiceTest, BackoffCountResetAfterClick) {
 
   FastForwardBy(base::Hours(23));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBarURL)),
-            NudgeDecision::kNotEnoughTimeHasElapsedSinceLastNudge);
+            NudgeDecision::kNotEnoughTimeSinceLastNudgeDismissed);
   FastForwardBy(base::Hours(2));
   EXPECT_EQ(service()->CanShowNudge(GURL(kBarURL)), NudgeDecision::kSuccess);
 }
@@ -230,19 +246,23 @@ TEST_F(ContextualCueingServiceTest, NudgesCappedByFrequency) {
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kFooURL));
   FastForwardBy(base::Hours(1));
+  EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kBarURL));
   FastForwardBy(base::Hours(4));
+  EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kBazURL));
+  FastForwardBy(base::Minutes(1));
   EXPECT_EQ(service()->CanShowNudge(GURL(kQuxURL)),
             NudgeDecision::kTooManyNudgesShownToTheUser);
 
   FastForwardBy(base::Hours(18));
   EXPECT_EQ(service()->CanShowNudge(GURL(kQuxURL)),
             NudgeDecision::kTooManyNudgesShownToTheUser);
-  FastForwardBy(base::Hours(2));
+  FastForwardBy(base::Hours(1));
   EXPECT_EQ(service()->CanShowNudge(GURL(kQuxURL)), NudgeDecision::kSuccess);
 
   service()->CueingNudgeShown(GURL(kFooURL));
+  FastForwardBy(base::Minutes(1));
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)),
             NudgeDecision::kTooManyNudgesShownToTheUser);
 }
@@ -255,7 +275,8 @@ class ContextualCueingServiceTestMinPageCountBetweenNudges
           {{"BackoffTime", "0h"},
            {"BackoffMultiplierBase", "0"},
            {"NudgeCapTime", "0h"},
-           {"MinPageCountBetweenNudges", "3"}}}},
+           {"MinPageCountBetweenNudges", "3"},
+           {"MinTimeBetweenNudges", "0h"}}}},
         /*disabled_features=*/{});
   }
 };
@@ -293,6 +314,7 @@ class ContextualCueingServiceTestPerDomainLimits
            {"NudgeCapTime", "100h"},
            {"NudgeCapCount", "100"},
            {"MinPageCountBetweenNudges", "0"},
+           {"MinTimeBetweenNudges", "0h"},
            {"NudgeCapTimePerDomain", "24h"},
            {"NudgeCapCountPerDomain", "1"}}}},
         /*disabled_features=*/{});

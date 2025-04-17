@@ -4180,7 +4180,8 @@ const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
     {"BackoffMultiplierBase", "0.0"},
     {"NudgeCapTime", "0h"},
     {"NudgeCapTimePerDomain", "0h"},
-    {"MinPageCountBetweenNudges", "0"}};
+    {"MinPageCountBetweenNudges", "0"},
+    {"MinTimeBetweenNudges", "0h"}};
 const FeatureEntry::FeatureVariation kContextualCueingEnabledOptions[] = {
     {"no engagement caps", kContextualCueingEnabledNoEngagementCap,
      std::size(kContextualCueingEnabledNoEngagementCap), nullptr},

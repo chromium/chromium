@@ -119,8 +119,11 @@ class ContextualCueingService
   // user). This count resets to 0 if nudge is clicked on by the user.
   int dismiss_count_ = 0;
 
-  // The last time the cueing nudge was dismissed.
-  std::optional<base::Time> backoff_end_time_;
+  // The end of the backoff period triggered by the last nudge dismissal.
+  std::optional<base::TimeTicks> dismiss_backoff_end_time_;
+
+  // The end of the backoff period triggered by the last shown nudge.
+  std::optional<base::TimeTicks> shown_backoff_end_time_;
 
   // A counter for how many subsequent page load events will be prevented from
   // showing a nudge. This is to limit the frequency at which consecutive page
