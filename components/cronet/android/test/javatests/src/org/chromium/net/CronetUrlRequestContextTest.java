@@ -211,7 +211,7 @@ public class CronetUrlRequestContextTest {
         try (LogcatCapture logcatSink =
                 new LogcatCapture(
                         Arrays.asList(
-                                Log.normalizeTag(HttpFlagsLoader.TAG + ":I"),
+                                HttpFlagsLoader.TAG + ":I",
                                 Log.normalizeTag(TAG + ":I"),
                                 "chromium:I"))) {
             // Run the action that should do printing to logcat.

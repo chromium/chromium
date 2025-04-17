@@ -283,7 +283,6 @@ cronet_shared_java_deps_to_package = [
   "//build/android:build_java",
   ":base_feature_overrides_java_proto",
   ":flags_java_proto",
-  "//base:log_java",
 ]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
@@ -543,18 +542,7 @@ cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
   ":request_context_config_java_proto",
   "//base/version_info/android:version_constants_java",
-  "//base:tasks_java",
-  "//base:metrics_ScopedSysTraceEvent_java",
-  "//base:build_info_java",
-  "//base:android_info_java",
-  "//base:command_line_java",
-  "//base:time_utils_java",
-  "//base:jni_utils_java",
-  "//base:jni_android_java",
-  "//base:pii_elider_java",
-  "//base:wrapped_class_loader_java",
-  "//base:metrics_java",
-  "//base:bundle_utils_java",
+  "//base:base_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",
