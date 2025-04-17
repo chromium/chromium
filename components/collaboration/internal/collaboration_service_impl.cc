@@ -43,17 +43,13 @@ CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service,
     signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service,
     PrefService* profile_prefs)
     : tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service),
       identity_manager_(identity_manager),
-      sync_service_(sync_service),
       profile_prefs_(profile_prefs) {
   // Initialize ServiceStatus.
-  current_status_.sync_status = GetSyncStatus();
-  sync_observer_.Observe(sync_service_);
-
+  current_status_.sync_status = SyncStatus::kNotSyncing;
   current_status_.signin_status = GetSigninStatus();
   identity_manager_observer_.Observe(identity_manager_);
 
@@ -158,6 +154,15 @@ void CollaborationServiceImpl::CancelAllFlows(
       FROM_HERE, std::move(finish_callback));
 }
 
+void CollaborationServiceImpl::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  // This is invoked right after the sync service is created.
+  // Update the internal status.
+  sync_service_ = sync_service;
+  sync_observer_.Observe(sync_service_);
+  current_status_.sync_status = GetSyncStatus();
+}
+
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {
   return current_status_;
 }
@@ -186,6 +191,7 @@ void CollaborationServiceImpl::OnStateChanged(syncer::SyncService* sync) {
 
 void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
   sync_observer_.Reset();
+  sync_service_ = nullptr;
 }
 
 void CollaborationServiceImpl::OnPrimaryAccountChanged(
@@ -277,6 +283,10 @@ void CollaborationServiceImpl::FinishCollaborationFlow(
 }
 
 SyncStatus CollaborationServiceImpl::GetSyncStatus() {
+  if (!sync_service_) {
+    return SyncStatus::kNotSyncing;
+  }
+
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   // The mapping between the selected type and what is actually sync'ed is done
   // in `GetUserSelectableTypeInfo()`.

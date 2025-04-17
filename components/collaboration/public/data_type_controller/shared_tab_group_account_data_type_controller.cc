@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "components/collaboration/public/data_type_controller/managed_account_precondition_checker.h"
+#include "components/collaboration/public/data_type_controller/collaboration_service_precondition_checker.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 
@@ -20,13 +20,12 @@ SharedTabGroupAccountDataTypeController::
         std::unique_ptr<syncer::DataTypeControllerDelegate>
             delegate_for_transport_mode,
         syncer::SyncService* sync_service,
-        signin::IdentityManager* identity_manager)
+        collaboration::CollaborationService* collaboration_service)
     : DataTypeController(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
       precondition_checker_(
-          sync_service,
-          identity_manager,
+          collaboration_service,
           base::BindRepeating(&syncer::SyncService::DataTypePreconditionChanged,
                               base::Unretained(sync_service),
                               type())) {}

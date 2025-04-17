@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "components/collaboration/public/data_type_controller/managed_account_precondition_checker.h"
+#include "components/collaboration/public/data_type_controller/collaboration_service_precondition_checker.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 
-namespace signin {
-class IdentityManager;
-}
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -31,7 +31,7 @@ class SharedTabGroupAccountDataTypeController
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_transport_mode,
       syncer::SyncService* sync_service,
-      signin::IdentityManager* identity_manager);
+      collaboration::CollaborationService* collaboration_service);
   ~SharedTabGroupAccountDataTypeController() override;
 
   SharedTabGroupAccountDataTypeController(
@@ -43,7 +43,7 @@ class SharedTabGroupAccountDataTypeController
   PreconditionState GetPreconditionState() const override;
 
  private:
-  collaboration::ManagedAccountPreconditionChecker precondition_checker_;
+  collaboration::CollaborationServicePreconditionChecker precondition_checker_;
 };
 
 }  // namespace collaboration

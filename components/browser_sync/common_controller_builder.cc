@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/valuables/valuable_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/data_type_controller/collaboration_group_data_type_controller.h"
 #include "components/collaboration/public/data_type_controller/shared_tab_group_account_data_type_controller.h"
 #include "components/collaboration/public/data_type_controller/shared_tab_group_data_type_controller.h"
@@ -310,6 +311,11 @@ void CommonControllerBuilder::SetBookmarkSyncService(
 void CommonControllerBuilder::SetConsentAuditor(
     consent_auditor::ConsentAuditor* consent_auditor) {
   consent_auditor_.Set(consent_auditor);
+}
+
+void CommonControllerBuilder::SetCollaborationService(
+    collaboration::CollaborationService* collaboration_service) {
+  collaboration_service_.Set(collaboration_service);
 }
 
 void CommonControllerBuilder::SetDataSharingService(
@@ -781,7 +787,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             /*delegate_for_transport_mode=*/
             std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                 delegate),
-            sync_service, identity_manager_.value()));
+            sync_service, collaboration_service_.value()));
   }
 
   if (!disabled_types.Has(syncer::SHARING_MESSAGE) &&
@@ -920,7 +926,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             /*delegate_for_transport_mode=*/
             std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                 delegate),
-            sync_service, identity_manager_.value()));
+            sync_service, collaboration_service_.value()));
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -965,7 +971,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             /*delegate_for_transport_mode=*/
             std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                 delegate),
-            sync_service, identity_manager_.value()));
+            sync_service, collaboration_service_.value()));
   }
 
   return controllers;

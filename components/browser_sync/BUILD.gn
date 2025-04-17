@@ -31,6 +31,7 @@ static_library("browser_sync") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/bookmarks/browser",
+    "//components/collaboration/public",
     "//components/collaboration/public:data_type_controller",
     "//components/commerce/core:feature_list",
     "//components/commerce/core/product_specifications:product_specifications",

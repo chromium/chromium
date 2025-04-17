@@ -6,6 +6,7 @@
 #define COMPONENTS_COLLABORATION_INTERNAL_EMPTY_COLLABORATION_SERVICE_H_
 
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace collaboration {
 
@@ -32,6 +33,7 @@ class EmptyCollaborationService : public CollaborationService {
       CollaborationServiceLeaveOrDeleteEntryPoint entry) override;
   void CancelAllFlows(base::OnceCallback<void()> finish_callback) override;
   ServiceStatus GetServiceStatus() override;
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
   std::optional<data_sharing::GroupData> GetGroupData(

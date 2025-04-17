@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/browser_sync/common_controller_builder.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/history/core/browser/features.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
@@ -96,6 +98,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
       ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
       ios::AccountBookmarkSyncServiceFactory::GetForProfile(profile));
   builder.SetConsentAuditor(ConsentAuditorFactory::GetForProfile(profile));
+  builder.SetCollaborationService(
+      collaboration::CollaborationServiceFactory::GetForProfile(profile));
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
   builder.SetDeviceInfoSyncService(
@@ -237,6 +241,8 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
 
   SendTabToSelfSyncServiceFactory::GetForProfile(profile)
       ->OnSyncServiceInitialized(sync_service.get());
+  collaboration::CollaborationServiceFactory::GetForProfile(profile)
+      ->OnSyncServiceInitialized(sync_service.get());
 
   if (GoogleGroupsManager* groups_updater_service =
           GoogleGroupsManagerFactory::GetForProfile(profile)) {
@@ -309,6 +315,7 @@ SyncServiceFactory::SyncServiceFactory()
   // actually plumbed in IOSChromeSyncClient, which this factory constructs.
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
+  DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());

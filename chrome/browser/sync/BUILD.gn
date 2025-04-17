@@ -57,6 +57,7 @@ source_set("sync") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/browser_sync",
+    "//components/collaboration/public",
     "//components/favicon/core",
     "//components/keyed_service/core",
     "//components/prefs",

@@ -49,8 +49,8 @@ source_set("data_type_controller") {
   sources = [
     "data_type_controller/collaboration_group_data_type_controller.cc",
     "data_type_controller/collaboration_group_data_type_controller.h",
-    "data_type_controller/managed_account_precondition_checker.cc",
-    "data_type_controller/managed_account_precondition_checker.h",
+    "data_type_controller/collaboration_service_precondition_checker.cc",
+    "data_type_controller/collaboration_service_precondition_checker.h",
     "data_type_controller/shared_tab_group_account_data_type_controller.cc",
     "data_type_controller/shared_tab_group_account_data_type_controller.h",
     "data_type_controller/shared_tab_group_data_type_controller.cc",
@@ -58,6 +58,7 @@ source_set("data_type_controller") {
   ]
 
   deps = [
+    ":core_public",
     "//base",
     "//components/data_sharing/public:features",
     "//components/signin/public/identity_manager",

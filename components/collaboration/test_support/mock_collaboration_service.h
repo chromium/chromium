@@ -37,6 +37,10 @@ class MockCollaborationService : public CollaborationService {
               (override));
   MOCK_METHOD(void, CancelAllFlows, (base::OnceCallback<void()>), (override));
   MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (override));
+  MOCK_METHOD(void,
+              OnSyncServiceInitialized,
+              (syncer::SyncService*),
+              (override));
   MOCK_METHOD(data_sharing::MemberRole,
               GetCurrentUserRoleForGroup,
               (const data_sharing::GroupId& group_id),

@@ -36,6 +36,9 @@ ServiceStatus EmptyCollaborationService::GetServiceStatus() {
   return ServiceStatus();
 }
 
+void EmptyCollaborationService::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {}
+
 void EmptyCollaborationService::CancelAllFlows(
     base::OnceCallback<void()> finish_callback) {}
 

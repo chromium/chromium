@@ -16,6 +16,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
@@ -67,6 +68,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -202,6 +204,8 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
       LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
       AccountBookmarkSyncServiceFactory::GetForProfile(profile));
   builder.SetConsentAuditor(ConsentAuditorFactory::GetForProfile(profile));
+  builder.SetCollaborationService(
+      collaboration::CollaborationServiceFactory::GetForProfile(profile));
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
   builder.SetDeviceInfoSyncService(
@@ -438,6 +442,9 @@ std::unique_ptr<KeyedService> BuildSyncService(
   SendTabToSelfSyncServiceFactory::GetForProfile(profile)
       ->OnSyncServiceInitialized(sync_service.get());
 
+  collaboration::CollaborationServiceFactory::GetForProfile(profile)
+      ->OnSyncServiceInitialized(sync_service.get());
+
   // Allow sync_preferences/ components to use SyncService.
   sync_preferences::PrefServiceSyncable* pref_service =
       PrefServiceSyncableFromProfile(profile);
@@ -492,6 +499,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
+  DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());

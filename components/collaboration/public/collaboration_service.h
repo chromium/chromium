@@ -21,6 +21,10 @@
 #include "base/android/jni_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace collaboration {
 
 // The core class for managing collaboration group flows.
@@ -92,6 +96,9 @@ class CollaborationService : public KeyedService,
 
   // Get the current ServiceStatus.
   virtual ServiceStatus GetServiceStatus() = 0;
+
+  // Invoked on startup to start observing sync service for sync status changes.
+  virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 
   // Get the group member information of the current user.
   virtual data_sharing::MemberRole GetCurrentUserRoleForGroup(

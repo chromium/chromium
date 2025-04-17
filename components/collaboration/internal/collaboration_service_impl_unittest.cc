@@ -71,8 +71,8 @@ class CollaborationServiceImplTest : public testing::Test {
   void InitService() {
     service_ = std::make_unique<CollaborationServiceImpl>(
         &mock_tab_group_sync_service_, &mock_data_sharing_service_,
-        identity_test_env_.identity_manager(), test_sync_service_.get(),
-        &pref_service_);
+        identity_test_env_.identity_manager(), &pref_service_);
+    service_->OnSyncServiceInitialized(test_sync_service_.get());
   }
 
  protected:
