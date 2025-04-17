@@ -67,17 +67,14 @@ class AudioArray final {
     CHECK_LE(n, std::numeric_limits<unsigned>::max() / sizeof(T));
     uint32_t initial_size = static_cast<uint32_t>(sizeof(T) * n);
 
-    // Minimmum alignment requirements for arrays so that we can use
-    // SIMD.
-#if defined(ARCH_CPU_X86_FAMILY)
-    const unsigned kAlignment = 32;
-#else
-    const unsigned kAlignment = 16;
-#endif
-
     if (allocation_) {
       WTF::Partitions::FastFree(allocation_);
     }
+
+    // Minimum alignment requirements for arrays so that we can use SIMD.
+    // This value matches media::AudioBus::kChannelAlignment, for ease of
+    // interop with media::AudioBus.
+    static constexpr unsigned kAlignment = 32;
 
     // Always allocate extra space so that we are guaranteed to get
     // the desired alignment.  Some memory is wasted, but it should be

@@ -46,6 +46,7 @@
 #include "chromecast/media/cma/backend/volume_map.h"
 #include "chromecast/public/media/mixer_output_stream.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/vector_math.h"
 
 #define RUN_ON_MIXER_THREAD(method, ...)                                   \
   do {                                                                     \
@@ -77,6 +78,11 @@ const int kUseDefaultFade = -1;
 const int kMediaDuckFadeMs = 150;
 const int kMediaUnduckFadeMs = 700;
 const int kDefaultFilterFrameAlignment = 64;
+
+// `kDefaultFilterFrameAlignment` must be as big as `kRequirementAlignment`, to
+// use vector_math helpers.
+static_assert(kDefaultFilterFrameAlignment >=
+              ::media::vector_math::kRequiredAlignment);
 
 constexpr base::TimeDelta kMixerThreadCheckTimeout = base::Seconds(10);
 constexpr base::TimeDelta kHealthCheckInterval = base::Seconds(5);

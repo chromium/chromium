@@ -87,12 +87,19 @@ class AudioSocket : public SmallMessageSocket::Delegate {
   // given message, a normal IOBuffer will be dynamically allocated instead.
   void UseBufferPool(scoped_refptr<IOBufferPool> buffer_pool);
 
-  // 16-bit type and 64-bit timestamp, plus 32-bit padding to align to 16 bytes.
+  // 16-bit type and 64-bit timestamp, plus padding to align the total message
+  // header size to 32 bytes.
+  static constexpr size_t kAudioDataHeaderPadding = 5 * sizeof(int32_t);
   static constexpr size_t kAudioHeaderSize =
-      sizeof(int16_t) + sizeof(int64_t) + sizeof(int32_t);
+      sizeof(int16_t) + sizeof(int64_t) + kAudioDataHeaderPadding;
   // Includes additional 16-bit size field for SmallMessageSocket.
   static constexpr size_t kAudioMessageHeaderSize =
       sizeof(uint16_t) + kAudioHeaderSize;
+
+  // Audio data following the header must be aligned to 32 bytes to allow
+  // optimized SIMD vector math.
+  static_assert(kAudioMessageHeaderSize % 32u == 0u,
+                "kAudioMessageHeaderSize must be a multiple of 32");
 
   // Fills in the audio message header for |buffer|, so it can later be sent via
   // SendPreparedAudioBuffer(). |buffer| should have |kAudioMessageHeaderSize|

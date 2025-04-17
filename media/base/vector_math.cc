@@ -44,8 +44,8 @@ void FMAC(base::span<const float> src, float scale, base::span<float> dest) {
     return;
   }
   CHECK_LE(src.size(), dest.size());
-  DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
-  DCHECK(base::IsAligned(dest.data(), kRequiredAlignment));
+  CHECK(base::IsAligned(src.data(), kRequiredAlignment));
+  CHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fmac_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
     base::CPU cpu;
@@ -73,8 +73,8 @@ void FMUL(base::span<const float> src, float scale, base::span<float> dest) {
     return;
   }
   CHECK_LE(src.size(), dest.size());
-  DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
-  DCHECK(base::IsAligned(dest.data(), kRequiredAlignment));
+  CHECK(base::IsAligned(src.data(), kRequiredAlignment));
+  CHECK(base::IsAligned(dest.data(), kRequiredAlignment));
   static const auto fmul_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
     base::CPU cpu;
@@ -135,7 +135,7 @@ void FCLAMP_C(const float src[], int len, float dest[]) {
 std::pair<float, float> EWMAAndMaxPower(float initial_value,
                                         base::span<const float> src,
                                         float smoothing_factor) {
-  DCHECK(base::IsAligned(src.data(), kRequiredAlignment));
+  CHECK(base::IsAligned(src.data(), kRequiredAlignment));
   static const auto ewma_and_max_power_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
     base::CPU cpu;
@@ -171,6 +171,9 @@ std::pair<float, float> EWMAAndMaxPower_C(float initial_value,
 
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
 void FMUL_SSE(const float src[], float scale, int len, float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 4;
   const int last_index = len - rem;
   __m128 m_scale = _mm_set_ps1(scale);
@@ -188,37 +191,14 @@ __attribute__((target("avx2"))) void FMUL_AVX2(const float src[],
                                                float scale,
                                                int len,
                                                float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 8;
   const int last_index = len - rem;
   __m256 m_scale = _mm256_set1_ps(scale);
-  // TODO(crbug.com/40756517): Remove below alignment conditionals when AudioBus
-  // |kChannelAlignment| updated to 32.
-  bool aligned_src = (reinterpret_cast<uintptr_t>(src) & 0x1F) == 0;
-  bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
-  if (aligned_src) {
-    if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_store_ps(dest + i,
-                        _mm256_mul_ps(_mm256_load_ps(src + i), m_scale));
-      }
-    } else {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_storeu_ps(dest + i,
-                         _mm256_mul_ps(_mm256_load_ps(src + i), m_scale));
-      }
-    }
-  } else {
-    if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_store_ps(dest + i,
-                        _mm256_mul_ps(_mm256_loadu_ps(src + i), m_scale));
-      }
-    } else {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_storeu_ps(dest + i,
-                         _mm256_mul_ps(_mm256_loadu_ps(src + i), m_scale));
-      }
-    }
+  for (int i = 0; i < last_index; i += 8) {
+    _mm256_store_ps(dest + i, _mm256_mul_ps(_mm256_load_ps(src + i), m_scale));
   }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
@@ -228,6 +208,9 @@ __attribute__((target("avx2"))) void FMUL_AVX2(const float src[],
 }
 
 void FMAC_SSE(const float src[], float scale, int len, float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 4;
   const int last_index = len - rem;
   __m128 m_scale = _mm_set_ps1(scale);
@@ -250,38 +233,9 @@ __attribute__((target("avx2,fma"))) void FMAC_AVX2(const float src[],
   const int rem = len % 8;
   const int last_index = len - rem;
   __m256 m_scale = _mm256_set1_ps(scale);
-  // TODO(crbug.com/40756517): Remove below alignment conditionals when AudioBus
-  // |kChannelAlignment| updated to 32.
-  bool aligned_src = (reinterpret_cast<uintptr_t>(src) & 0x1F) == 0;
-  bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
-  if (aligned_src) {
-    if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_store_ps(dest + i,
-                        _mm256_fmadd_ps(_mm256_load_ps(src + i), m_scale,
-                                        _mm256_load_ps(dest + i)));
-      }
-    } else {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_storeu_ps(dest + i,
-                         _mm256_fmadd_ps(_mm256_load_ps(src + i), m_scale,
-                                         _mm256_loadu_ps(dest + i)));
-      }
-    }
-  } else {
-    if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_store_ps(dest + i,
-                        _mm256_fmadd_ps(_mm256_loadu_ps(src + i), m_scale,
-                                        _mm256_load_ps(dest + i)));
-      }
-    } else {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_storeu_ps(dest + i,
-                         _mm256_fmadd_ps(_mm256_loadu_ps(src + i), m_scale,
-                                         _mm256_loadu_ps(dest + i)));
-      }
-    }
+  for (int i = 0; i < last_index; i += 8) {
+    _mm256_store_ps(dest + i, _mm256_fmadd_ps(_mm256_load_ps(src + i), m_scale,
+                                              _mm256_load_ps(dest + i)));
   }
 
   // Handle any remaining values that wouldn't fit in an SSE pass.
@@ -290,6 +244,9 @@ __attribute__((target("avx2,fma"))) void FMAC_AVX2(const float src[],
   }
 }
 void FCLAMP_SSE(const float src[], int len, float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 4;
   const int last_index = len - rem;
   const __m128 m_min = _mm_set_ps1(kClampMin);
@@ -314,63 +271,27 @@ void FCLAMP_SSE(const float src[], int len, float dest[]) {
   }
 }
 
-inline __attribute__((target("avx"))) __m256 SanitizeNan(const __m256 values) {
-  // Compare each value with itself. Since NaN != NaN, we end up with a mask
-  // with 0s instead of NaNs, and 1s for the original values.
-  const __m256 valid_mask = _mm256_cmp_ps(values, values, _CMP_EQ_OQ);
-
-  // Zero-out all NaNs by applying the mask with a logical AND.
-  return _mm256_and_ps(valid_mask, values);
-}
-
 __attribute__((target("avx"))) void FCLAMP_AVX(const float src[],
                                                int len,
                                                float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 8;
   const int last_index = len - rem;
   const __m256 m_max = _mm256_set1_ps(kClampMax);
   const __m256 m_min = _mm256_set1_ps(kClampMin);
 
-  // TODO(crbug.com/40756517): Remove below alignment conditionals when AudioBus
-  // |kChannelAlignment| updated to 32.
-  bool aligned_src = (reinterpret_cast<uintptr_t>(src) & 0x1F) == 0;
-  bool aligned_dest = (reinterpret_cast<uintptr_t>(dest) & 0x1F) == 0;
-  if (aligned_src) {
-    if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_store_ps(
-            dest + i,
-            _mm256_max_ps(
-                _mm256_min_ps(SanitizeNan(_mm256_load_ps(src + i)), m_max),
-                m_min));
-      }
-    } else {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_storeu_ps(
-            dest + i,
-            _mm256_max_ps(
-                _mm256_min_ps(SanitizeNan(_mm256_load_ps(src + i)), m_max),
-                m_min));
-      }
-    }
-  } else {
-    if (aligned_dest) {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_store_ps(
-            dest + i,
-            _mm256_max_ps(
-                _mm256_min_ps(SanitizeNan(_mm256_loadu_ps(src + i)), m_max),
-                m_min));
-      }
-    } else {
-      for (int i = 0; i < last_index; i += 8) {
-        _mm256_storeu_ps(
-            dest + i,
-            _mm256_max_ps(
-                _mm256_min_ps(SanitizeNan(_mm256_loadu_ps(src + i)), m_max),
-                m_min));
-      }
-    }
+  for (int i = 0; i < last_index; i += 8) {
+    const __m256 values = _mm256_load_ps(src + i);
+    // Compare each value with itself. Since NaN != NaN, we end up with a mask
+    // with 0s instead of NaNs, and 1s for the original values.
+    const __m256 comparisons = _mm256_cmp_ps(values, values, _CMP_EQ_OQ);
+    // Zero-out all NaNs by applying the mask with a logical AND.
+    const __m256 sanitized_values = _mm256_and_ps(comparisons, values);
+
+    _mm256_store_ps(
+        dest + i, _mm256_max_ps(_mm256_min_ps(sanitized_values, m_max), m_min));
   }
 
   // Handle any remaining values that wouldn't fit in an AVX2 pass.
@@ -404,6 +325,7 @@ std::pair<float, float> EWMAAndMaxPower_SSE(float initial_value,
   // Thus, the strategy here is to compute z[n], z[n-1], z[n-2], and z[n-3] in
   // each of the 4 lanes, and then combine them to give y[n].
 
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
   const int rem = len % 4;
   const int last_index = len - rem;
 
@@ -464,6 +386,8 @@ EWMAAndMaxPower_AVX2(float initial_value,
                      const float src[],
                      int len,
                      float smoothing_factor) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+
   const int rem = len % 8;
   const int last_index = len - rem;
   const float weight_prev = 1.0f - smoothing_factor;
@@ -535,6 +459,9 @@ EWMAAndMaxPower_AVX2(float initial_value,
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
 void FMAC_NEON(const float src[], float scale, int len, float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 4;
   const int last_index = len - rem;
   float32x4_t m_scale = vmovq_n_f32(scale);
@@ -550,6 +477,9 @@ void FMAC_NEON(const float src[], float scale, int len, float dest[]) {
 }
 
 void FMUL_NEON(const float src[], float scale, int len, float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 4;
   const int last_index = len - rem;
   float32x4_t m_scale = vmovq_n_f32(scale);
@@ -564,6 +494,9 @@ void FMUL_NEON(const float src[], float scale, int len, float dest[]) {
 }
 
 void FCLAMP_NEON(const float src[], int len, float dest[]) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+  DCHECK(base::IsAligned(dest, kRequiredAlignment));
+
   const int rem = len % 4;
   const int last_index = len - rem;
   const float32x4_t m_min = vmovq_n_f32(kClampMin);
@@ -595,6 +528,8 @@ std::pair<float, float> EWMAAndMaxPower_NEON(float initial_value,
                                              const float src[],
                                              int len,
                                              float smoothing_factor) {
+  DCHECK(base::IsAligned(src, kRequiredAlignment));
+
   // When the recurrence is unrolled, we see that we can split it into 4
   // separate lanes of evaluation:
   //

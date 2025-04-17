@@ -88,6 +88,7 @@ bool AudioSocket::Delegate::HandleAudioBuffer(
 }
 
 // static
+constexpr size_t AudioSocket::kAudioDataHeaderPadding;
 constexpr size_t AudioSocket::kAudioHeaderSize;
 constexpr size_t AudioSocket::kAudioMessageHeaderSize;
 
@@ -143,7 +144,7 @@ void AudioSocket::PrepareAudioBuffer(net::IOBuffer* audio_buffer,
   //   == AudioHeader ==
   //   uint16_t type (audio or metadata)
   //   uint64_t timestamp
-  //   uint32_t padding
+  //   5 * uint32_t padding
   //   == End of AudioHeader ==
   //   ... audio data ...
 
@@ -165,7 +166,7 @@ void AudioSocket::PrepareAudioBuffer(net::IOBuffer* audio_buffer,
       base::byte_span_from_ref(timestamp));
   buffer = buffer.subspan(sizeof(uint64_t));
 
-  std::ranges::fill(buffer.first<sizeof(uint32_t)>(), uint8_t{0});
+  std::ranges::fill(buffer.first<kAudioDataHeaderPadding>(), uint8_t{0});
 }
 
 bool AudioSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
@@ -362,8 +363,8 @@ bool AudioSocket::ParseAudio(char* data, size_t size) {
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
-  data += sizeof(int32_t);
-  size -= sizeof(int32_t);
+  data += kAudioDataHeaderPadding;
+  size -= kAudioDataHeaderPadding;
 
   return delegate_->HandleAudioData(data, size, timestamp);
 }
@@ -383,8 +384,8 @@ bool AudioSocket::ParseAudioBuffer(scoped_refptr<net::IOBuffer> buffer,
   size -= sizeof(timestamp);
 
   // Handle padding bytes.
-  data += sizeof(int32_t);
-  size -= sizeof(int32_t);
+  data += kAudioDataHeaderPadding;
+  size -= kAudioDataHeaderPadding;
 
   return delegate_->HandleAudioBuffer(std::move(buffer), data, size, timestamp);
 }

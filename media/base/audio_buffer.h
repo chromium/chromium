@@ -311,23 +311,20 @@ class MEDIA_EXPORT AudioBufferMemoryPool
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  explicit AudioBufferMemoryPool(int alignment = AudioBus::kChannelAlignment);
+  AudioBufferMemoryPool();
   AudioBufferMemoryPool(const AudioBufferMemoryPool&) = delete;
   AudioBufferMemoryPool& operator=(const AudioBufferMemoryPool&) = delete;
 
   size_t GetPoolSizeForTesting();
-  int GetChannelAlignment() { return alignment_; }
 
   struct ExternalMemoryFromPool : public AudioBuffer::ExternalMemory {
    public:
-    ExternalMemoryFromPool(
-        scoped_refptr<AudioBufferMemoryPool> pool,
-        std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
-        size_t size);
+    ExternalMemoryFromPool(scoped_refptr<AudioBufferMemoryPool> pool,
+                           base::AlignedHeapArray<uint8_t> memory);
     ExternalMemoryFromPool(ExternalMemoryFromPool&&);
     ~ExternalMemoryFromPool() override;
 
-    std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory_;
+    base::AlignedHeapArray<uint8_t> memory_;
     scoped_refptr<AudioBufferMemoryPool> pool_;
   };
 
@@ -340,7 +337,6 @@ class MEDIA_EXPORT AudioBufferMemoryPool
   std::unique_ptr<ExternalMemoryFromPool> CreateBuffer(size_t size);
   void ReturnBuffer(ExternalMemoryFromPool memory);
 
-  const int alignment_;
   base::Lock entry_lock_;
   std::list<ExternalMemoryFromPool> entries_ GUARDED_BY(entry_lock_);
 };

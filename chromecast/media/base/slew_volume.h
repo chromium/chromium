@@ -43,7 +43,7 @@ class SlewVolume {
   // |src| and |dest| are interleaved buffers with |channels| channels and at
   // least |frames| frames (|channels| * |frames| total size).
   // |src| and |dest| may be the same.
-  // |src| and |dest| must be 16-byte aligned.
+  // |src| and |dest| must be ::media::vector_math::kRequiredAlignment aligned.
   // If using planar data, |repeat_transition| should be true for channels 2
   // through n, which will cause the slewing process to be repeated.
   void ProcessFMAC(bool repeat_transition,
@@ -57,7 +57,7 @@ class SlewVolume {
   // |src| and |dest| are interleaved buffers with |channels| channels and at
   // least |frames| frames (|channels| * |frames| total size).
   // |src| and |dest| may be the same.
-  // |src| and |dest| must be 16-byte aligned.
+  // |src| and |dest| must be ::media::vector_math::kRequiredAlignment aligned.
   // If using planar data, |repeat_transition| should be true for channels 2
   // through n, which will cause the slewing process to be repeated.
   void ProcessFMUL(bool repeat_transition,

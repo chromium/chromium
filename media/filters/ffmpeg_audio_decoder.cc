@@ -55,6 +55,10 @@ static void ReleaseAudioBufferImpl(void* opaque, uint8_t* data) {
     static_cast<AudioBuffer*>(opaque)->Release();
 }
 
+// AudioBufferMemoryPool uses `AudioBus::kChannelAlignment` under the hood,
+// which must be aligned to at least `kFFmpegBufferAddressAlignment`.
+static_assert(kFFmpegBufferAddressAlignment == AudioBus::kChannelAlignment);
+
 FFmpegAudioDecoder::FFmpegAudioDecoder(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
@@ -62,8 +66,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
       state_(DecoderState::kUninitialized),
       av_sample_format_(0),
       media_log_(media_log),
-      pool_(base::MakeRefCounted<AudioBufferMemoryPool>(
-          kFFmpegBufferAddressAlignment)) {
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

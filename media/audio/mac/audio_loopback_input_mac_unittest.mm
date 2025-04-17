@@ -8,7 +8,6 @@
 #endif
 
 #include "media/audio/mac/audio_loopback_input_mac.h"
-#include "media/audio/mac/audio_loopback_input_mac_impl.h"
 
 #include <ScreenCaptureKit/ScreenCaptureKit.h>
 
@@ -23,6 +22,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/mac/audio_loopback_input_mac_impl.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/mac/audio_latency_mac.h"
@@ -515,8 +516,9 @@ TEST_F(SCKAudioInputStreamTest, CaptureSamples) {
     FakeAudioInputCallback sink;
     stream->Start(&sink);
 
-    // Buffer must be 16-bit aligned.
-    alignas(16) std::array<float, 2 * kFramesPerBuffer> buffer;
+    // Buffer must be 32-bit aligned.
+    alignas(AudioBus::kChannelAlignment) std::array<float, 2 * kFramesPerBuffer>
+        buffer;
     for (size_t i = 0; i < buffer.size(); i++) {
       buffer[i] = i;
     }

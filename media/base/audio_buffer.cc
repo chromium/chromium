@@ -9,6 +9,7 @@
 
 #include "media/base/audio_buffer.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/bits.h"
@@ -38,16 +39,12 @@ class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
  public:
   explicit SelfOwnedMemory(size_t size)
       : heap_array_(
-            base::HeapArray<uint8_t, base::AlignedFreeDeleter>::
-                FromOwningPointer(
-                    static_cast<uint8_t*>(
-                        base::AlignedAlloc(size, AudioBus::kChannelAlignment)),
-                    size)) {
+            base::AlignedUninit<uint8_t>(size, AudioBus::kChannelAlignment)) {
     span_ = heap_array_.as_span();
   }
 
  private:
-  base::HeapArray<uint8_t, base::AlignedFreeDeleter> heap_array_;
+  base::AlignedHeapArray<uint8_t> heap_array_;
 };
 
 std::unique_ptr<AudioBuffer::ExternalMemory> AllocateMemory(size_t size) {
@@ -62,18 +59,16 @@ static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
                             sample_rate);
 }
 
-AudioBufferMemoryPool::AudioBufferMemoryPool(int alignment)
-    : alignment_(alignment) {}
+AudioBufferMemoryPool::AudioBufferMemoryPool() = default;
 AudioBufferMemoryPool::~AudioBufferMemoryPool() = default;
 
 AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
     ExternalMemoryFromPool&& am) = default;
 AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
     scoped_refptr<AudioBufferMemoryPool> pool,
-    std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
-    size_t size)
+    base::AlignedHeapArray<uint8_t> memory)
     : memory_(std::move(memory)), pool_(pool) {
-  span_ = {memory_.get(), size};
+  span_ = memory_.as_span();
 }
 
 AudioBufferMemoryPool::ExternalMemoryFromPool::~ExternalMemoryFromPool() {
@@ -106,11 +101,10 @@ AudioBufferMemoryPool::CreateBuffer(size_t size) {
 
   // FFmpeg may not always initialize the entire output memory, so just like
   // for VideoFrames we need to zero out the memory. https://crbug.com/1144070.
-  auto memory = std::unique_ptr<uint8_t, base::AlignedFreeDeleter>(
-      static_cast<uint8_t*>(base::AlignedAlloc(size, GetChannelAlignment())));
-  memset(memory.get(), 0, size);
+  auto memory = base::AlignedUninit<uint8_t>(size, AudioBus::kChannelAlignment);
+  std::ranges::fill(memory, 0);
   return std::make_unique<ExternalMemoryFromPool>(
-      ExternalMemoryFromPool(this, std::move(memory), size));
+      ExternalMemoryFromPool(this, std::move(memory)));
 }
 
 void AudioBufferMemoryPool::ReturnBuffer(ExternalMemoryFromPool memory) {
@@ -148,10 +142,8 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
   DCHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
          ChannelLayoutToChannelCount(channel_layout) == channel_count);
 
-  const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-  const int channel_alignment =
-      pool_ ? pool_->GetChannelAlignment() : AudioBus::kChannelAlignment;
-  CHECK_LE(bytes_per_channel, channel_alignment);
+  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+  CHECK_LE(bytes_per_channel, AudioBus::kChannelAlignment);
 
   // Empty buffer?
   if (!create_buffer) {
@@ -184,13 +176,13 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
     std::ranges::fill(needs_zeroing, 0u);
     return;
   }
-  int data_size_per_channel = frame_count * bytes_per_channel;
+  size_t data_size_per_channel = frame_count * bytes_per_channel;
   if (IsPlanar(sample_format)) {
     DCHECK(!IsBitstreamFormat()) << sample_format_;
     // Planar data, so need to allocate buffer for each channel.
     // Determine per channel data size, taking into account alignment.
-    int block_size_per_channel = base::bits::AlignUpDeprecatedDoNotUse(
-        data_size_per_channel, channel_alignment);
+    size_t block_size_per_channel =
+        base::bits::AlignUp(data_size_per_channel, AudioBus::kChannelAlignment);
     DCHECK_GE(block_size_per_channel, data_size_per_channel);
 
     // Allocate a contiguous buffer for all the channel data.
