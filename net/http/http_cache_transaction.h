@@ -329,7 +329,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     kCouldntConditionalize = 8,    // Couldn't send conditional request.
     kValidated = 9,                // Original URL response was revalidated.
     kUpdated = 10,                 // Original URL response was updated.
-    kMaxValue = kUpdated,
+    kCacheLockTimeout = 11,        // Failed to get cache lock; cache not used.
+    kMaxValue = kCacheLockTimeout,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchUseResult)
 

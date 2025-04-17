@@ -1981,6 +1981,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Updated">
     There was a match, and the original cache entry was updated.
   </int>
+  <int value="11" label="Cache lock timeout">
+    There was a match, but the cache lock timed out. The request then bypassed
+    the cache, so the match was not used.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//net/http/http_cache_transaction.h:NoVarySearchUseResult) -->
