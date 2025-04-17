@@ -247,9 +247,11 @@ void AddResourcePaths(content::WebUIDataSource* html_source,
   };
   html_source->AddResourcePaths(kResourcePaths);
 
+#if BUILDFLAG(ENABLE_GLIC)
   html_source->AddResourcePath("picker_logo.svg", is_glic_version
                                                       ? IDR_GLIC_PROFILE_LOGO
                                                       : IDR_PRODUCT_LOGO_SVG);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 }  // namespace
