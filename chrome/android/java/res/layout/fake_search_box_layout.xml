@@ -38,6 +38,8 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:background="@null"
             android:ellipsize="end"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
             android:inputType="text"
             android:singleLine="true"
             android:hint="@string/omnibox_empty_hint" />

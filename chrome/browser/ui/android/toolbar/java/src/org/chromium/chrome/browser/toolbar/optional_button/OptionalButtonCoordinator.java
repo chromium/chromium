@@ -236,7 +236,7 @@ public class OptionalButtonCoordinator {
     }
 
     /** Gets the underlying ButtonView. */
-    public View getButtonView() {
+    public View getButtonViewForTesting() {
         return mView.getButtonView();
     }
 

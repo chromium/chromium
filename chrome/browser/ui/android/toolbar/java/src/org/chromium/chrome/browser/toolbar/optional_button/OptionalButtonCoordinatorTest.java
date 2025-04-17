@@ -183,7 +183,7 @@ public class OptionalButtonCoordinatorTest {
         View mockView = mock(View.class);
         when(mMockOptionalButtonView.getButtonView()).thenReturn(mockView);
 
-        assertEquals(mockView, mOptionalButtonCoordinator.getButtonView());
+        assertEquals(mockView, mOptionalButtonCoordinator.getButtonViewForTesting());
 
         verify(mMockOptionalButtonView).getButtonView();
     }
