@@ -520,19 +520,22 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserGetZeroStateSuggestionsForFocusedTab(request: {
     isFirstRun?: boolean,
-  }): Promise<{suggestions: ZeroStateSuggestions}> {
+  }): Promise<{suggestions?: ZeroStateSuggestions}> {
     const zeroStateResult =
         await this.handler.getZeroStateSuggestionsForFocusedTab(
             optionalFromClient(request.isFirstRun));
-
     const zeroStateData = zeroStateResult.suggestions;
-    return {
-      suggestions: {
-        tabId: tabIdToClient(zeroStateData.tabId),
-        url: urlToClient(zeroStateData.tabUrl),
-        suggestions: zeroStateData.suggestions,
-      },
-    };
+    if (!zeroStateData) {
+      return {};
+    } else {
+      return {
+        suggestions: {
+          tabId: tabIdToClient(zeroStateData.tabId),
+          url: urlToClient(zeroStateData.tabUrl),
+          suggestions: zeroStateData.suggestions,
+        },
+      };
+    }
   }
 }
 

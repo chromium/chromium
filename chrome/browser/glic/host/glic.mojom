@@ -474,7 +474,7 @@ interface WebClientHandler {
 
   // Returns zero-state suggestions from the currently active tab.
   GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
-      => (ZeroStateSuggestions suggestions);
+      => (ZeroStateSuggestions? suggestions);
 
 };
 

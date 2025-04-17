@@ -182,7 +182,7 @@ export declare interface HostRequestTypes {
       isFirstRun?: boolean,
     },
     response: {
-      suggestions: ZeroStateSuggestions,
+      suggestions?: ZeroStateSuggestions,
     },
   };
 }

@@ -481,6 +481,13 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       (isFirstRun?: boolean): Promise<ZeroStateSuggestions> {
     const zeroStateResult = await this.sender.requestWithResponse(
         'glicBrowserGetZeroStateSuggestionsForFocusedTab', {isFirstRun});
+    if (!zeroStateResult.suggestions) {
+      return {
+        suggestions: [],
+        tabId: '',
+        url: '',
+      };
+    }
     return zeroStateResult.suggestions;
   }
 }
