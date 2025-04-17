@@ -110,13 +110,9 @@ public abstract class MultiInstanceManager {
      * @param activity Activity of the Chrome Window in which the tab group is to be moved.
      * @param tabGroupMetadata The object containing the metadata of the tab group.
      * @param atIndex Tab position index in the destination window instance.
-     * @param onFinishedRunnable Runnable to execute after the group reparenting is finished.
      */
     public void moveTabGroupToWindow(
-            Activity activity,
-            TabGroupMetadata tabGroupMetadata,
-            int atIndex,
-            @Nullable Runnable onFinishedRunnable) {
+            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         // Not implemented
     }
 

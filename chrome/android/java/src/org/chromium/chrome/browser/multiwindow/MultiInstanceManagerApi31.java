@@ -205,18 +205,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    void moveTabGroupAction(
-            InstanceInfo info,
-            TabGroupMetadata tabGroupMetadata,
-            int startIndex,
-            @Nullable Runnable onFinishedRunnable) {
+    void moveTabGroupAction(InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         assert targetActivity != null;
         reparentTabGroupToRunningActivity(
-                (ChromeTabbedActivity) targetActivity,
-                tabGroupMetadata,
-                startIndex,
-                onFinishedRunnable);
+                (ChromeTabbedActivity) targetActivity, tabGroupMetadata, startIndex);
     }
 
     @VisibleForTesting
@@ -248,8 +241,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     void reparentTabGroupToRunningActivity(
             ChromeTabbedActivity targetActivity,
             TabGroupMetadata tabGroupMetadata,
-            int tabAtIndex,
-            @Nullable Runnable onFinishedRunnable) {
+            int tabAtIndex) {
         // 1. Temporarily disable sync service from observing local changes to prevent unintended
         // updates during tab group re-parenting.
         @Nullable
@@ -277,8 +269,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Re-enable sync service observation after re-parenting is completed to resume
                     // normal sync behavior.
                     setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ true);
-
-                    if (onFinishedRunnable != null) onFinishedRunnable.run();
                 });
     }
 
@@ -1072,16 +1062,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void moveTabGroupToWindow(
-            Activity activity,
-            TabGroupMetadata tabGroupMetadata,
-            int atIndex,
-            @Nullable Runnable onFinishedRunnable) {
+            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
 
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
-            moveTabGroupAction(info, tabGroupMetadata, atIndex, onFinishedRunnable);
+            moveTabGroupAction(info, tabGroupMetadata, atIndex);
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }

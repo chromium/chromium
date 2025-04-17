@@ -4511,13 +4511,14 @@ public class StripLayoutHelper
             // Adjust by a half tab-width so that we target the nearest tab gap.
             float startX = StripLayoutUtils.adjustXForTabDrop(currX, mCachedTabWidthSupplier);
 
-            // 3. Mark the "interacting" view. This is not the DnD dragged tab, but rather the tab
+            // 3. Mark the "interacting" view. This is not the DnD dragged view, but rather the view
             // in the strip that is currently being hovered by the DnD drag.
-            StripLayoutTab hoveredTab = getTabAtPosition(startX);
-            if (hoveredTab == null) hoveredTab = mStripTabs[mStripTabs.length - 1];
+            StripLayoutView hoveredView =
+                    getViewAtPositionX(startX, /* includeGroupTitles= */ true);
+            if (hoveredView == null) hoveredView = mStripViews[mStripViews.length - 1];
 
             // 4. Start reorder - prepare strip to indicate drop target.
-            startReorderMode(startX, /* y= */ 0.f, hoveredTab, ReorderType.DRAG_ONTO_STRIP);
+            startReorderMode(startX, /* y= */ 0.f, hoveredView, ReorderType.DRAG_ONTO_STRIP);
         }
     }
 

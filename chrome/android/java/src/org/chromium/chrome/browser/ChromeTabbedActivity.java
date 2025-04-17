@@ -2368,8 +2368,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private boolean maybeLaunchDraggedTabGroupInWindow(@NonNull TabGroupMetadata tabGroupMetadata) {
         if (mMultiInstanceManager == null) return false;
 
-        mMultiInstanceManager.moveTabGroupToWindow(
-                this, tabGroupMetadata, /* atIndex= */ 0, /* onFinishedRunnable= */ null);
+        mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, /* atIndex= */ 0);
         return true;
     }
 

@@ -1302,7 +1302,7 @@ public class TabDragSourceTest {
 
             // Verify - Move to new window not invoked.
             verify(mDestMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), any(), anyInt(), any());
+                    .moveTabGroupToWindow(any(), any(), anyInt());
         } else {
             event =
                     mockDragEvent(
@@ -1634,7 +1634,7 @@ public class TabDragSourceTest {
         if (isGroupDrag) {
             // Verify tab group is not moved.
             verify(mSourceMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt(), any());
+                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt());
         } else {
             // Verify tab is not moved.
             verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
@@ -1646,7 +1646,7 @@ public class TabDragSourceTest {
         if (isGroupDrag) {
             // Verify tab group is moved.
             verify(mDestMultiInstanceManager, times(1))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), eq(index), any());
+                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), eq(index));
         } else {
             // Verify tab is moved.
             verify(mDestMultiInstanceManager, times(1)).moveTabToWindow(any(), any(), eq(index));

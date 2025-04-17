@@ -94,6 +94,23 @@ public class StripLayoutUtils {
     }
 
     /**
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
+     * @param tabModel The {@link TabModel} that holds the give tab.
+     * @param stripTab The {@link StripLayoutTab}
+     * @return Whether the given tab is at the last position in any group.
+     */
+    public static boolean isTabAtLastPositionInGroup(
+            TabGroupModelFilter modelFilter, TabModel tabModel, StripLayoutTab stripTab) {
+        Tab tab = tabModel.getTabById(stripTab.getTabId());
+        if (modelFilter.isTabInTabGroup(tab)) {
+            List<Tab> relatedTabs = modelFilter.getRelatedTabList(tab.getId());
+            Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
+            return tab.getId() == lastTab.getId();
+        }
+        return false;
+    }
+
+    /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.

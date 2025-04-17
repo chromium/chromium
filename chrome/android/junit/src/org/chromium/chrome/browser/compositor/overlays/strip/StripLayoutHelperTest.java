@@ -2298,6 +2298,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupMargins_BetweenTabs() {
         // Initialize with 3 tabs.
         initializeTest(false, false, 0, 3);
+        setupDragDropState();
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
 
@@ -2316,6 +2317,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupMargins_ResetMarginsOnStopReorder() {
         // Mock 1 tab to the left of a tab group with 3 tabs.
         initializeTest(false, false, 0, 4);
+        setupDragDropState();
         groupTabs(1, 4);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
@@ -2337,6 +2339,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupMargins_NoScrollOnReorder() {
         // Mock 2 tabs to the left and 1 tab to the right of a tab group with two tabs.
         initializeTest(false, false, 0, 5);
+        setupDragDropState();
         groupTabs(2, 4);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
@@ -3083,6 +3086,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_Reorder_Collaboration() {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3118,6 +3122,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_Reorder_Sync_ImmediateContinue() {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3152,6 +3157,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_Reorder_Sync_Positive() {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3185,6 +3191,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_Reorder_Sync_Negative() {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3221,6 +3228,7 @@ public class StripLayoutHelperTest {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 2);
         setTabDragSourceMock();
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
@@ -3242,6 +3250,7 @@ public class StripLayoutHelperTest {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
         setTabDragSourceMock();
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
@@ -3264,6 +3273,7 @@ public class StripLayoutHelperTest {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
         setTabDragSourceMock();
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
         Tab tab = mModel.getTabAt(0);
@@ -3308,6 +3318,7 @@ public class StripLayoutHelperTest {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
         setTabDragSourceMock();
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
@@ -3346,6 +3357,7 @@ public class StripLayoutHelperTest {
         // Set up resources for testing tab group delete dialog.
         setupTabGroup(0, 1);
         setTabDragSourceMock();
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
@@ -4705,6 +4717,7 @@ public class StripLayoutHelperTest {
         // Setup and start drag.
         initializeTest(false, false, 1, 5);
         setTabDragSourceMock();
+        setupDragDropState();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab draggedTab = tabs[1];
         mStripLayoutHelper.startDragAndDropTabForTesting(draggedTab, DRAG_START_POINT);

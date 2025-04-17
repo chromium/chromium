@@ -80,10 +80,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         // inserted should the drag be dropped.
         ArrayList<Animator> animationList = new ArrayList<>();
         setTrailingMarginForView(
-                interactingView,
-                stripGroupTitles,
-                TabDragSource.canMergeIntoGroupOnDrop(),
-                animationList);
+                interactingView, stripGroupTitles, /* isInteracting= */ true, animationList);
 
         // 3. Kick-off animations and request an update.
         mAnimationHost.startAnimations(animationList, null);
@@ -123,10 +120,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             mAnimationHost.finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
             setTrailingMarginForView(
-                    mInteractingView,
-                    groupTitles,
-                    /* shouldHaveTrailingMargin= */ false,
-                    animationList);
+                    mInteractingView, groupTitles, /* isInteracting= */ false, animationList);
             mInteractingView = null;
             mAnimationHost.startAnimations(animationList, null);
 
@@ -145,18 +139,12 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             ArrayList<Animator> animationList = new ArrayList<>();
             if (mInteractingView != null) {
                 setTrailingMarginForView(
-                        mInteractingView,
-                        groupTitles,
-                        /* shouldHaveTrailingMargin= */ false,
-                        animationList);
+                        mInteractingView, groupTitles, /* isInteracting= */ false, animationList);
             }
 
             // 3.b. Set state for the new "interacting" view.
             setTrailingMarginForView(
-                    hoveredView,
-                    groupTitles,
-                    TabDragSource.canMergeIntoGroupOnDrop(),
-                    animationList);
+                    hoveredView, groupTitles, /* isInteracting= */ true, animationList);
             mInteractingView = hoveredView;
 
             // 3.c. Animate.

@@ -63,7 +63,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -554,25 +553,12 @@ public class TabDragSource implements View.OnDragListener {
             mMultiInstanceManager.moveTabGroupToWindow(
                     getActivity(),
                     tabGroupMetadata,
-                    mTabModelSelector.getModel(tabGroupMetadata.isIncognito).getCount(),
-                    /* onFinishedRunnable= */ null);
+                    mTabModelSelector.getModel(tabGroupMetadata.isIncognito).getCount());
             showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
         } else {
-            // Reparent tab group at drop index and merge to group on destination if needed.
+            // Reparent tab group at drop index.
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
-            ArrayList<Integer> tabIds = new ArrayList<>(tabGroupMetadata.tabIdsToUrls.keySet());
-
-            // Do not merge a collaboration group into another group.
-            @Nullable Runnable maybeMergeToGroupOnDrop = null;
-            if (!tabGroupMetadata.isGroupShared) {
-                maybeMergeToGroupOnDrop =
-                        () -> {
-                            helper.maybeMergeToGroupOnDrop(
-                                    tabIds, tabIndex, tabGroupMetadata.tabGroupCollapsed);
-                        };
-            }
-            mMultiInstanceManager.moveTabGroupToWindow(
-                    getActivity(), tabGroupMetadata, tabIndex, maybeMergeToGroupOnDrop);
+            mMultiInstanceManager.moveTabGroupToWindow(getActivity(), tabGroupMetadata, tabIndex);
         }
         return true;
     }
@@ -714,10 +700,10 @@ public class TabDragSource implements View.OnDragListener {
 
     public static boolean canMergeIntoGroupOnDrop() {
         @Nullable
-        TabGroupMetadata tabGroupMetadata =
-                ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(
+        Tab tab =
+                ChromeDragDropUtils.getTabFromGlobalState(
                         getDragDropGlobalState(/* dragEvent= */ null));
-        return tabGroupMetadata == null || !tabGroupMetadata.isGroupShared;
+        return tab != null;
     }
 
     public static void setDragTrackerTokenForTesting(TrackerToken token) {

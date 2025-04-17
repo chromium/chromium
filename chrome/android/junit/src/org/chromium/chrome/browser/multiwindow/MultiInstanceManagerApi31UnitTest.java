@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -1145,18 +1144,15 @@ public class MultiInstanceManagerApi31UnitTest {
 
         doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex), any());
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
 
         // Action
         mMultiInstanceManager.moveTabGroupToWindow(
-                mTabbedActivityTask63,
-                tabGroupMetadata,
-                tabAtIndex,
-                /* onFinishedRunnable= */ null);
+                mTabbedActivityTask63, tabGroupMetadata, tabAtIndex);
 
         // Verify moveTabGroupAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1))
-                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex), any());
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
@@ -1445,12 +1441,9 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* isIncognito= */ false);
         allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);
 
-        // Create onFinishedRunnable when the group is not shared.
-        Runnable onFinishedRunnable = isGroupShared ? null : mock(Runnable.class);
-
         // Trigger a group reparent.
         mMultiInstanceManager.reparentTabGroupToRunningActivity(
-                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0, onFinishedRunnable);
+                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0);
 
         // Verify we pause the TabGroupSyncService to stop observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ false);
@@ -1466,12 +1459,5 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
-
-        // Verify the onFinishedRunnable is executed for unshared group.
-        if (isGroupShared) {
-            assertNull(onFinishedRunnable);
-        } else {
-            verify(onFinishedRunnable).run();
-        }
     }
 }
