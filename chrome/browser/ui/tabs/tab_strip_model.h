@@ -1117,7 +1117,13 @@ class TabStripModel : public TabGroupController {
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
       split_tabs::SplitTabId split_id);
 
-  bool InsertionBreaksSplitContiguity(int index);
+  // Returns [start, end) where the leftmost tab in the split has index start
+  // and the rightmost tab in the split has index end - 1.
+  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id);
+
+  // If inserting at `index` breaks a split, returns its id, otherwise nullopt.
+  std::optional<split_tabs::SplitTabId> InsertionBreaksSplitContiguity(
+      int index);
 
   // Helper to determine if moving a block of tabs from `start_index` with block
   // size `length` to `final_index` breaks contiguity.

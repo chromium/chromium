@@ -1188,11 +1188,11 @@ void TabStripModel::SelectTabAt(int index) {
 
   const size_t selection_index = static_cast<size_t>(index);
   ui::ListSelectionModel new_model = selection_model();
-  if (GetSplitForTab(index).has_value()) {
-    for (const auto& tab_pair : GetTabsAndIndicesInSplit(
-             GetTabModelAtIndex(index)->GetSplit().value())) {
-      new_model.AddIndexToSelection(tab_pair.second);
-    }
+  if (std::optional<split_tabs::SplitTabId> split_id = GetSplitForTab(index);
+      split_id.has_value()) {
+    gfx::Range index_range = GetIndexRangeOfSplit(split_id.value());
+    new_model.AddIndexRangeToSelection(index_range.start(),
+                                       index_range.end() - 1);
   } else {
     new_model.AddIndexToSelection(selection_index);
   }
@@ -1220,10 +1220,10 @@ void TabStripModel::DeselectTabAt(int index) {
 
   const size_t selection_index = static_cast<size_t>(index);
   ui::ListSelectionModel new_model = selection_model();
-  if (GetSplitForTab(index).has_value()) {
-    for (const auto& tab_pair : GetTabsAndIndicesInSplit(
-             GetTabModelAtIndex(index)->GetSplit().value())) {
-      new_model.RemoveIndexFromSelection(tab_pair.second);
+  if (std::optional<split_tabs::SplitTabId> split_id = GetSplitForTab(index);
+      split_id.has_value()) {
+    for (auto [_, i] : GetTabsAndIndicesInSplit(split_id.value())) {
+      new_model.RemoveIndexFromSelection(i);
     }
   } else {
     new_model.RemoveIndexFromSelection(selection_index);
@@ -1348,10 +1348,10 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
   }
 
   // Move insertion index after the split group if it breaks contiguity.
-  if (InsertionBreaksSplitContiguity(index)) {
-    std::vector<std::pair<tabs::TabInterface*, int>> tabs_in_split =
-        GetTabsAndIndicesInSplit(GetTabAtIndex(index)->GetSplit().value());
-    index = tabs_in_split[tabs_in_split.size() - 1].second + 1;
+  if (std::optional<split_tabs::SplitTabId> split_id =
+          InsertionBreaksSplitContiguity(index);
+      split_id.has_value()) {
+    index = GetIndexRangeOfSplit(split_id.value()).GetMax();
   }
 
   if (ui::PageTransitionTypeIncludingQualifiersIs(transition,
@@ -1443,15 +1443,19 @@ bool TabStripModel::ContainsSplit(split_tabs::SplitTabId split_id) const {
   return contents_data_->GetSplitTabCollection(split_id);
 }
 
-bool TabStripModel::InsertionBreaksSplitContiguity(int index) {
+std::optional<split_tabs::SplitTabId>
+TabStripModel::InsertionBreaksSplitContiguity(int index) {
   CHECK(index >= 0 && index <= count());
   if (!ContainsIndex(index)) {
-    return false;
+    return std::nullopt;
   }
   tabs::TabInterface* tab = GetTabAtIndex(index);
-  return tab->IsSplit() &&
-         contents_data_->GetSplitTabCollection(tab->GetSplit().value())
-                 ->GetIndexOfTab(tab) > 0;
+  if (tab->IsSplit() &&
+      contents_data_->GetSplitTabCollection(tab->GetSplit().value())
+              ->GetIndexOfTab(tab) > 0) {
+    return tab->GetSplit();
+  }
+  return std::nullopt;
 }
 
 std::optional<split_tabs::SplitTabId> TabStripModel::MoveBreaksSplitContiguity(
@@ -3287,13 +3291,9 @@ void TabStripModel::RemoveSplitImpl(split_tabs::SplitTabId split_id) {
 
   const ui::ListSelectionModel old_selection_model = selection_model();
 
-  // TODO(crbug.com/392950857): Use collection API to remove the split.
-  for (const auto& tab_pair : tabs_with_indices) {
-    GetTabModelAtIndex(tab_pair.second)->set_split(std::nullopt);
-
-    if (selection_model().IsSelected(tab_pair.second) &&
-        tab_pair.second != active_index()) {
-      selection_model_.RemoveIndexFromSelection(tab_pair.second);
+  for (const auto& [_, i] : tabs_with_indices) {
+    if (selection_model().IsSelected(i) && i != active_index()) {
+      selection_model_.RemoveIndexFromSelection(i);
     }
   }
 
@@ -3481,8 +3481,10 @@ void TabStripModel::InsertTabAtIndexImpl(
     bool active) {
   tabs::TabModel* const tab_ptr = tab_model.get();
 
-  if (InsertionBreaksSplitContiguity(index)) {
-    RemoveSplitImpl(GetTabAtIndex(index)->GetSplit().value());
+  if (std::optional<split_tabs::SplitTabId> split_id =
+          InsertionBreaksSplitContiguity(index);
+      split_id.has_value()) {
+    RemoveSplitImpl(split_id.value());
   }
 
   tabs::TabInterface* old_active_tab = GetActiveTab();
@@ -3828,12 +3830,11 @@ void TabStripModel::SetSelectedIndex(ui::ListSelectionModel* selection,
                                      int index) {
   selection->SetSelectedIndex(index);
 
-  if (GetSplitForTab(index).has_value()) {
-    split_tabs::SplitTabId split_id =
-        GetTabModelAtIndex(index)->GetSplit().value();
-    for (const auto& tab_pair : GetTabsAndIndicesInSplit(split_id)) {
-      selection->AddIndexToSelection(tab_pair.second);
-    }
+  if (std::optional<split_tabs::SplitTabId> split_id = GetSplitForTab(index);
+      split_id.has_value()) {
+    gfx::Range index_range = GetIndexRangeOfSplit(split_id.value());
+    selection->AddIndexRangeToSelection(index_range.start(),
+                                        index_range.end() - 1);
   }
 }
 
@@ -3847,25 +3848,19 @@ std::pair<int, int> TabStripModel::GetRangeFromAnchorTo(int index) {
   // If the start index is part of a split, find the leftmost index in that
   // split.
   int start_index = std::min(index, anchor_index);
-  if (GetSplitForTab(start_index).has_value()) {
-    for (const auto& tab_pair : GetTabsAndIndicesInSplit(
-             GetTabAtIndex(start_index)->GetSplit().value())) {
-      if (tab_pair.second < start_index) {
-        start_index = tab_pair.second;
-      }
-    }
+  if (std::optional<split_tabs::SplitTabId> split_id =
+          GetSplitForTab(start_index);
+      split_id.has_value()) {
+    start_index = GetIndexRangeOfSplit(split_id.value()).GetMin();
   }
 
   // If the end index is part of a split, find the rightmost index in that
   // split.
   int end_index = std::max(index, anchor_index);
-  if (GetSplitForTab(end_index).has_value()) {
-    for (const auto& tab_pair : GetTabsAndIndicesInSplit(
-             GetTabAtIndex(end_index)->GetSplit().value())) {
-      if (tab_pair.second > end_index) {
-        end_index = tab_pair.second;
-      }
-    }
+  if (std::optional<split_tabs::SplitTabId> split_id =
+          GetSplitForTab(end_index);
+      split_id.has_value()) {
+    end_index = GetIndexRangeOfSplit(split_id.value()).GetMax() - 1;
   }
 
   return std::pair(start_index, end_index);
@@ -4369,6 +4364,19 @@ TabStripModel::GetTabsAndIndicesInSplit(split_tabs::SplitTabId split_id) {
   }
 
   return split_tabs_with_indices;
+}
+
+gfx::Range TabStripModel::GetIndexRangeOfSplit(
+    split_tabs::SplitTabId split_id) {
+  const tabs::SplitTabCollection* split =
+      contents_data_->GetSplitTabCollection(split_id);
+  if (!split) {
+    return gfx::Range();
+  }
+
+  std::vector<tabs::TabModel*> tabs = split->GetTabsRecursive();
+  size_t start = GetIndexOfTab(tabs[0]);
+  return gfx::Range(start, start + tabs.size());
 }
 
 TabStripModel::ScopedTabStripModalUIImpl::ScopedTabStripModalUIImpl(
