@@ -107,7 +107,14 @@ bool SoftwareOutputDeviceWinSwapChain::ResizeDelegated(
     Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device;
     HRESULT hr = output_backing_->GetOrCreateDXObjects(
         &d3d11_device, &dxgi_factory, &dcomp_device);
-    CHECK_EQ(hr, S_OK);
+    if (FAILED(hr)) {
+      // If the error code is E_ACCESSDENIED, it indicates that the browser is
+      // running in session 0, which is non-interactive. There would be no
+      // rendering in this case, and there is no need to terminate the GPU
+      // process.
+      CHECK_EQ(hr, E_ACCESSDENIED);
+      return false;
+    }
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
     d3d11_device->GetImmediateContext(&d3d11_device_context);
