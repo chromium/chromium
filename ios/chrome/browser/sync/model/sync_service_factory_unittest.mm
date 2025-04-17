@@ -16,10 +16,13 @@
 #import "components/sync/service/sync_service_impl.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -38,6 +41,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     profile_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
         ios::WebDataServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(profile_builder).Build();
   }
 
@@ -86,10 +92,12 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
-    if (base::FeatureList::IsEnabled(
-            data_sharing::features::kDataSharingFeature)) {
-      datatypes.Put(syncer::COLLABORATION_GROUP);
-      datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
+    if (IsTabGroupSyncEnabled()) {
+      datatypes.Put(syncer::SAVED_TAB_GROUP);
+      if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+        datatypes.Put(syncer::COLLABORATION_GROUP);
+        datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
+      }
     }
     datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
@@ -122,8 +130,5 @@ TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
       SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(profile());
   syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   const syncer::DataTypeSet default_types = DefaultDatatypes();
-  EXPECT_EQ(default_types.size(), types.size());
-  for (syncer::DataType type : default_types) {
-    EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
-  }
+  EXPECT_THAT(types, testing::ContainerEq(default_types));
 }
