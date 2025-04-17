@@ -796,9 +796,10 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
                        user_context.GetAccountId(), true));
   }
 
-  if (user_context.GetUserType() == user_manager::UserType::kPublicAccount) {
-    SYSLOG(INFO) << "MGS: Finished login, starting session to load the profile";
-  }
+  const bool is_managed_guest_session =
+      user_context.GetUserType() == user_manager::UserType::kPublicAccount;
+  SYSLOG(INFO) << "(LOGIN) " << (is_managed_guest_session ? "(MGS) " : "")
+               << "Finished login, starting session to load the profile.";
 
   UserSessionManager::StartSessionType start_session_type =
       UserAddingScreen::Get()->IsRunning()
@@ -914,9 +915,10 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
     return;
   }
 
-  if (user_context.GetUserType() == user_manager::UserType::kPublicAccount) {
-    SYSLOG(INFO) << "MGS: Session started, the profile is ready";
-  }
+  const bool is_managed_guest_session =
+      user_context.GetUserType() == user_manager::UserType::kPublicAccount;
+  SYSLOG(INFO) << "(LOGIN) " << (is_managed_guest_session ? "(MGS) " : "")
+               << "Session started, the profile is ready ";
 
   // Inform `auth_status_consumers_` about successful login.
   // TODO(nkostylev): Pass UserContext back crbug.com/424550

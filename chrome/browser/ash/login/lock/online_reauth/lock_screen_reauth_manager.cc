@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
@@ -127,6 +128,7 @@ void LockScreenReauthManager::OnSessionStateChanged() {
 }
 
 void LockScreenReauthManager::ForceOnlineReauth() {
+  SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::ForceOnlineReauth";
   const auto account_id = primary_user_->GetAccountId();
   screenlock_bridge_->lock_handler()->SetAuthType(
       account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, u"");
@@ -134,8 +136,8 @@ void LockScreenReauthManager::ForceOnlineReauth() {
   const bool auto_start_reauth = primary_profile_->GetPrefs()->GetBoolean(
       ::prefs::kLockScreenAutoStartOnlineReauth);
   if (auto_start_reauth) {
-    // TODO(b/333882432): Remove this log after the bug fixed.
-    LOG(WARNING) << "b/333882432: LoginScreenReauthManager::ForceOnlineReauth";
+    SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::ForceOnlineReauth "
+                    "ShowGaiaSignin()";
     Shell::Get()->login_screen_controller()->ShowGaiaSignin(
         /*prefilled_account=*/account_id);
   }
@@ -217,17 +219,21 @@ void LockScreenReauthManager::OnAuthFailure(const AuthFailure& error) {
 }
 
 void LockScreenReauthManager::OnAuthSuccess(const UserContext& user_context) {
+  SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::OnAuthSuccess";
   if (user_context.GetAccountId() != primary_user_->GetAccountId()) {
     // Tried to re-authenicate with non-primary user: the authentication was
     // successful but we are allowed to unlock only with valid credentials of
     // the user who locked the screen. In this case show customized version
     // of first re-auth flow dialog with an error message.
-    LOG(FATAL) << "Different user is unlocking the device";
+    const std::string msg = "(LOGIN) Different user is unlocking the device ";
+    SYSLOG(INFO) << msg;
+    LOG(FATAL) << msg;
   }
 
   ResetOnlineReauth();
   SendLockscreenReauthReason();
   if (is_reauth_required_by_saml_token_mismatch_) {
+    SYSLOG(INFO) << "(LOGIN) Reauth due to SAML token mismatch. Fetch token. ";
     in_session_password_sync_manager_.FetchTokenAsync();
   }
 
