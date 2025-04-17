@@ -49,7 +49,7 @@ namespace {
 // TrustedParams based on a member pointer, or using a fallback pointer.
 template <typename T>
 ObserverWrapper<T> CreateObserverWrapper(
-    const std::optional<ResourceRequest::TrustedParams> trusted_params,
+    const std::optional<ResourceRequest::TrustedParams>& trusted_params,
     mojo::PendingRemote<T> ResourceRequest::TrustedParams::* remote_member_ptr,
     T* fallback_ptr) {
   mojo::PendingRemote<T> remote_to_pass;
@@ -68,7 +68,7 @@ ObserverWrapper<T> CreateObserverWrapper(
 // for the fallback, simplifying calls where the fallback is held in a Remote.
 template <typename T>
 ObserverWrapper<T> CreateObserverWrapper(
-    const std::optional<ResourceRequest::TrustedParams> trusted_params,
+    const std::optional<ResourceRequest::TrustedParams>& trusted_params,
     mojo::PendingRemote<T> ResourceRequest::TrustedParams::* remote_member_ptr,
     mojo::Remote<T>& remote_for_fallback_ptr) {
   return CreateObserverWrapper<T>(
