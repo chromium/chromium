@@ -1096,46 +1096,20 @@ class ComputedStyle final : public ComputedStyleBase {
   // Grid axis utility functions, usable in Grid and Masonry.
   const NGGridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(Display())) {
-      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the auto tracks of its stacking axis.";
-      return MasonryAutoTracks();
-    }
     return (track_direction == kForColumns) ? GridAutoColumns()
                                             : GridAutoRows();
   }
   const ComputedGridTrackList& TemplateTracks(
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(Display())) {
-      DCHECK_EQ(track_direction, MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the template tracks of its stacking axis.";
-      return MasonryTemplateTracks();
-    }
     return (track_direction == kForColumns) ? GridTemplateColumns()
                                             : GridTemplateRows();
   }
   const GridPosition& TrackStart(
-      const ComputedStyle& parent_style,
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(parent_style.Display())) {
-      DCHECK_EQ(track_direction, parent_style.MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the track start in the stacking axis.";
-      return MasonryTrackStart();
-    }
     return (track_direction == kForColumns) ? GridColumnStart()
                                             : GridRowStart();
   }
-  const GridPosition& TrackEnd(const ComputedStyle& parent_style,
-                               GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox(parent_style.Display())) {
-      DCHECK_EQ(track_direction, parent_style.MasonryTrackSizingDirection())
-          << "Masonry containers have a single grid axis, we shouldn't try to "
-             "get the track end in the stacking axis.";
-      return MasonryTrackEnd();
-    }
+  const GridPosition& TrackEnd(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? GridColumnEnd() : GridRowEnd();
   }
 

@@ -322,10 +322,9 @@ const char kCssMasonryLayoutDescription[] =
     "Enable experimental CSS Masonry Layout implementation. Simple layouts "
     "with masonry in the block direction are supported. Subgrid, "
     "fragmentation, and out-of-flow items are not supported yet. The syntax to "
-    "use CSS Masonry is `display: masonry` and masonry-specific properties "
-    "must be used (i.e. `masonry-template-tracks`, `masonry-track-start`, "
-    "`masonry-track-end`). More details on masonry syntax can be found at "
-    "https://tabatkins.github.io/specs/css-masonry/#masonry-model.";
+    "use CSS Masonry is `display: masonry` together with grid properties (i.e. "
+    "`grid-column`, `grid-row`, etc.). More details on masonry syntax can be "
+    "found at https://www.w3.org/TR/css-grid-3/#masonry-model.";
 
 const char kCssTextBoxTrimName[] = "CSS text-box-trim";
 const char kCssTextBoxTrimDescription[] =

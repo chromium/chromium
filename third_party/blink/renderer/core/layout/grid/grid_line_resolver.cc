@@ -404,8 +404,8 @@ void GridLineResolver::InitialAndFinalPositionsFromStyle(
     GridTrackSizingDirection track_direction,
     GridPosition& initial_position,
     GridPosition& final_position) const {
-  initial_position = item_style.TrackStart(*style_, track_direction);
-  final_position = item_style.TrackEnd(*style_, track_direction);
+  initial_position = item_style.TrackStart(track_direction);
+  final_position = item_style.TrackEnd(track_direction);
 
   // We must handle the placement error handling code here instead of in the
   // StyleAdjuster because we don't want to overwrite the specified values.
