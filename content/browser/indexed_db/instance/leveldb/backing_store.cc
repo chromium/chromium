@@ -2855,8 +2855,7 @@ void BackingStore::CleanRecoveryJournalIgnoreReturn() {
   CleanUpBlobJournal(RecoveryBlobJournalKey::Encode());
 }
 
-std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
-BackingStore::GetPreCloseTasks() {
+void BackingStore::StartPreCloseTasks(base::OnceClosure on_done) {
   std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>> tasks;
   if (ShouldRunTombstoneSweeper()) {
     tasks.push_back(std::make_unique<LevelDbTombstoneSweeper>(db_->db()));
@@ -2865,7 +2864,21 @@ BackingStore::GetPreCloseTasks() {
   if (ShouldRunCompaction()) {
     tasks.push_back(std::make_unique<IndexedDBCompactionTask>(db_->db()));
   }
-  return tasks;
+
+  pre_close_task_queue_ = std::make_unique<BackingStorePreCloseTaskQueue>(
+      std::move(tasks), std::move(on_done),
+      // Total time we let pre-close tasks run.
+      base::Seconds(60),
+      base::BindOnce(&BackingStore::GetCompleteMetadata,
+                     base::Unretained(this)));
+  pre_close_task_queue_->Start();
+}
+
+void BackingStore::StopPreCloseTasks() {
+  if (pre_close_task_queue_) {
+    pre_close_task_queue_->Stop();
+    pre_close_task_queue_.reset();
+  }
 }
 
 bool BackingStore::ShouldRunTombstoneSweeper() {

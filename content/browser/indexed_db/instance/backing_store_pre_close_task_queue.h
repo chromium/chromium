@@ -73,12 +73,12 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
     const raw_ptr<leveldb::DB> database_;
   };
 
-  // |on_complete| must not contain a refptr to the BackingStore, as this would
-  // create a cycle.
+  // |on_complete| is guaranteed to be run after Start() is called.
+  // MetadataFetcher is expected to load the metadata from the database on disk.
   BackingStorePreCloseTaskQueue(std::list<std::unique_ptr<PreCloseTask>> tasks,
                                 base::OnceClosure on_complete,
                                 base::TimeDelta max_run_time,
-                                std::unique_ptr<base::OneShotTimer> timer);
+                                MetadataFetcher metadata_fetcher);
 
   BackingStorePreCloseTaskQueue(const BackingStorePreCloseTaskQueue&) = delete;
   BackingStorePreCloseTaskQueue& operator=(
@@ -95,14 +95,15 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   // immediately called.
   void Stop();
 
-  // Starts running tasks. Can only be called once. MetadataFetcher is expected
-  // to load the metadata from the database on disk.
-  void Start(MetadataFetcher metadata_fetcher);
+  // Starts running tasks. Can only be called once.
+  void Start();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BackingStorePreCloseTaskQueueTest, StopForTimeout);
+
   void OnComplete();
 
-  void StopForTimout();
+  void StopForTimeout();
   void StopForMetadataError(const Status& status);
 
   void RunLoop();
@@ -120,7 +121,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   base::OnceClosure on_done_;
 
   base::TimeDelta timeout_time_;
-  std::unique_ptr<base::OneShotTimer> timeout_timer_;
+  base::OneShotTimer timeout_timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<BackingStorePreCloseTaskQueue> ptr_factory_{this};

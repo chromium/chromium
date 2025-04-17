@@ -12,7 +12,6 @@
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
-#include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/status.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -147,12 +146,10 @@ class BackingStore {
   virtual ~BackingStore() = default;
 
   // Get tasks to be run after a BackingStore no longer has any connections.
-  virtual std::list<
-      std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
-  GetPreCloseTasks() = 0;
   virtual void TearDown(base::WaitableEvent* signal_on_destruction) = 0;
-  // Called during shutdown, but before `TearDown()`.
   virtual void InvalidateBlobReferences() = 0;
+  virtual void StartPreCloseTasks(base::OnceClosure on_done) = 0;
+  virtual void StopPreCloseTasks() = 0;
   // Gets the total size of blobs and the database for in-memory backing
   // stores.
   virtual int64_t GetInMemorySize() const = 0;

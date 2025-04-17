@@ -4,11 +4,18 @@
 
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 
+#include <list>
+#include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/browser/indexed_db/status.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -33,11 +40,11 @@ BackingStorePreCloseTaskQueue::BackingStorePreCloseTaskQueue(
         tasks,
     base::OnceClosure on_complete,
     base::TimeDelta max_run_time,
-    std::unique_ptr<base::OneShotTimer> timer)
-    : tasks_(std::move(tasks)),
+    MetadataFetcher metadata_fetcher)
+    : metadata_fetcher_(std::move(metadata_fetcher)),
+      tasks_(std::move(tasks)),
       on_done_(std::move(on_complete)),
       timeout_time_(max_run_time),
-      timeout_timer_(std::move(timer)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 BackingStorePreCloseTaskQueue::~BackingStorePreCloseTaskQueue() = default;
@@ -53,18 +60,17 @@ void BackingStorePreCloseTaskQueue::Stop() {
   OnComplete();
 }
 
-void BackingStorePreCloseTaskQueue::Start(MetadataFetcher metadata_fetcher) {
+void BackingStorePreCloseTaskQueue::Start() {
   DCHECK(!started_);
   started_ = true;
   if (tasks_.empty()) {
     OnComplete();
     return;
   }
-  timeout_timer_->Start(
+  timeout_timer_.Start(
       FROM_HERE, timeout_time_,
-      base::BindOnce(&BackingStorePreCloseTaskQueue::StopForTimout,
+      base::BindOnce(&BackingStorePreCloseTaskQueue::StopForTimeout,
                      ptr_factory_.GetWeakPtr()));
-  metadata_fetcher_ = std::move(metadata_fetcher);
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&BackingStorePreCloseTaskQueue::RunLoop,
                                         ptr_factory_.GetWeakPtr()));
@@ -74,12 +80,13 @@ void BackingStorePreCloseTaskQueue::OnComplete() {
   DCHECK(started_);
   DCHECK(!done_);
   ptr_factory_.InvalidateWeakPtrs();
-  timeout_timer_->Stop();
+  timeout_timer_.Stop();
   done_ = true;
   std::move(on_done_).Run();
+  // `this` may be deleted.
 }
 
-void BackingStorePreCloseTaskQueue::StopForTimout() {
+void BackingStorePreCloseTaskQueue::StopForTimeout() {
   DCHECK(started_);
   if (done_) {
     return;

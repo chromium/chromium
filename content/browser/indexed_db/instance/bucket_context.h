@@ -58,7 +58,6 @@ class BackingStoreTest;
 }  // namespace level_db
 
 class BackingStore;
-class BackingStorePreCloseTaskQueue;
 class BucketContextHandle;
 class Database;
 struct PendingConnection;
@@ -224,10 +223,6 @@ class CONTENT_EXPORT BucketContext
   const PartitionedLockManager& lock_manager() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return *lock_manager_;
-  }
-  BackingStorePreCloseTaskQueue* pre_close_task_queue() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return pre_close_task_queue_.get();
   }
 
   Delegate& delegate() { return delegate_; }
@@ -453,8 +448,6 @@ class CONTENT_EXPORT BucketContext
            std::tuple<std::unique_ptr<BlobReader>,
                       base::ScopedClosureRunner /*release_callback*/>>
       file_reader_map_;
-
-  std::unique_ptr<BackingStorePreCloseTaskQueue> pre_close_task_queue_;
 
   Delegate delegate_;
 

@@ -64,7 +64,6 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
@@ -1840,15 +1839,14 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     // The pre-close tasks should be running now.
     EXPECT_EQ(BucketContext::ClosingState::kRunningPreCloseTasks,
               bucket_context->closing_stage());
-    ASSERT_TRUE(bucket_context->pre_close_task_queue());
-    EXPECT_TRUE(bucket_context->pre_close_task_queue()->started());
   }
 
   {
     // Stop sweep by opening a connection.
     BucketContextHandle bucket_context_handle(*bucket_context);
     storage::BucketId bucket_id = bucket_context_handle->bucket_locator().id;
-    EXPECT_FALSE(bucket_context_handle->pre_close_task_queue());
+    EXPECT_NE(BucketContext::ClosingState::kRunningPreCloseTasks,
+              bucket_context->closing_stage());
 
     // Move clock forward to trigger next sweep, but storage key has longer
     // sweep minimum, so no tasks should execute.
@@ -1880,8 +1878,6 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     ASSERT_TRUE(context_->BucketContextExists(bucket_id));
     EXPECT_EQ(BucketContext::ClosingState::kRunningPreCloseTasks,
               bucket_context->closing_stage());
-    ASSERT_TRUE(bucket_context->pre_close_task_queue());
-    EXPECT_TRUE(bucket_context->pre_close_task_queue()->started());
   }
 }
 

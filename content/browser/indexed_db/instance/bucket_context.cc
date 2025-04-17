@@ -78,7 +78,6 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/active_blob_registry.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/database.h"
@@ -110,8 +109,6 @@ namespace {
 // Time after the last connection to a database is closed and when we destroy
 // the backing store.
 const int64_t kBackingStoreGracePeriodSeconds = 2;
-// Total time we let pre-close tasks run.
-const int64_t kRunningPreCloseTasksMaxRunPeriodSeconds = 60;
 
 // This struct facilitates requesting bucket space usage from the quota manager.
 // There have been reports of the callback being passed to the quota manager
@@ -282,17 +279,13 @@ void BucketContext::ForceClose(bool doom, const std::string& message) {
     }
     databases_.clear();
     has_blobs_outstanding_ = false;
+    close_timer_.Stop();
     if (backing_store()) {
       backing_store()->InvalidateBlobReferences();
-    }
-
-    // Don't run the preclosing tasks after a ForceClose, whether or not we've
-    // started them.  Compaction in particular can run long and cannot be
-    // interrupted, so it can cause shutdown hangs.
-    close_timer_.Stop();
-    if (pre_close_task_queue_) {
-      pre_close_task_queue_->Stop();
-      pre_close_task_queue_.reset();
+      // Don't run the preclosing tasks after a ForceClose, whether or not we've
+      // started them.  Compaction in particular can run long and cannot be
+      // interrupted, so it can cause shutdown hangs.
+      backing_store()->StopPreCloseTasks();
     }
     skip_closing_sequence_ = true;
   }
@@ -805,9 +798,8 @@ void BucketContext::OnHandleCreated() {
   if (closing_stage_ != ClosingState::kNotClosing) {
     closing_stage_ = ClosingState::kNotClosing;
     close_timer_.Stop();
-    if (pre_close_task_queue_) {
-      pre_close_task_queue_->Stop();
-      pre_close_task_queue_.reset();
+    if (backing_store()) {
+      backing_store()->StopPreCloseTasks();
     }
   }
 }
@@ -847,26 +839,19 @@ void BucketContext::StartClosing() {
   // in the mean time.
   DCHECK(!close_timer_.IsRunning());
   closing_stage_ = ClosingState::kPreCloseGracePeriod;
-  close_timer_.Start(
-      FROM_HERE, base::Seconds(kBackingStoreGracePeriodSeconds),
-      base::BindOnce(
-          [](base::WeakPtr<BucketContext> bucket_context) {
-            if (!bucket_context || bucket_context->closing_stage_ !=
-                                       ClosingState::kPreCloseGracePeriod) {
-              return;
-            }
-            bucket_context->StartPreCloseTasks();
-          },
-          weak_factory_.GetWeakPtr()));
+  close_timer_.Start(FROM_HERE, base::Seconds(kBackingStoreGracePeriodSeconds),
+                     base::BindOnce(&BucketContext::StartPreCloseTasks,
+                                    weak_factory_.GetWeakPtr()));
 }
 
 void BucketContext::StartPreCloseTasks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(closing_stage_ == ClosingState::kPreCloseGracePeriod);
+  if (closing_stage_ != ClosingState::kPreCloseGracePeriod) {
+    return;
+  }
   closing_stage_ = ClosingState::kRunningPreCloseTasks;
 
-  // The callback will run on all early returns in this function.
-  base::ScopedClosureRunner maybe_close_backing_store_runner(base::BindOnce(
+  backing_store()->StartPreCloseTasks(base::BindOnce(
       [](base::WeakPtr<BucketContext> bucket_context) {
         if (!bucket_context || bucket_context->closing_stage_ !=
                                    ClosingState::kRunningPreCloseTasks) {
@@ -875,25 +860,14 @@ void BucketContext::StartPreCloseTasks() {
         bucket_context->CloseNow();
       },
       weak_factory_.GetWeakPtr()));
-
-  std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
-      tasks = leveldb_backing_store()->GetPreCloseTasks();
-
-  if (!tasks.empty()) {
-    pre_close_task_queue_ = std::make_unique<BackingStorePreCloseTaskQueue>(
-        std::move(tasks), maybe_close_backing_store_runner.Release(),
-        base::Seconds(kRunningPreCloseTasksMaxRunPeriodSeconds),
-        std::make_unique<base::OneShotTimer>());
-    pre_close_task_queue_->Start(
-        base::BindOnce(&level_db::BackingStore::GetCompleteMetadata,
-                       base::Unretained(leveldb_backing_store())));
-  }
 }
 
 void BucketContext::CloseNow() {
   closing_stage_ = ClosingState::kClosed;
   close_timer_.Stop();
-  pre_close_task_queue_.reset();
+  if (backing_store()) {
+    backing_store()->StopPreCloseTasks();
+  }
   QueueRunTasks();
 }
 

@@ -378,8 +378,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // BackingStore:
   void TearDown(base::WaitableEvent* signal_on_destruction) override;
   void InvalidateBlobReferences() override;
-  std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
-  GetPreCloseTasks() override;
+  void StartPreCloseTasks(base::OnceClosure on_done) override;
+  void StopPreCloseTasks() override;
   // Creates a new database in the backing store. `metadata` is an in-out param.
   // The `name` and `version` fields are inputs, while the `id` and
   // `max_object_store_id` fields are outputs.
@@ -715,6 +715,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 #if DCHECK_IS_ON()
   bool initialized_ = false;
 #endif
+
+  std::unique_ptr<BackingStorePreCloseTaskQueue> pre_close_task_queue_;
 
   base::WeakPtrFactory<BackingStore> weak_factory_{this};
 };
