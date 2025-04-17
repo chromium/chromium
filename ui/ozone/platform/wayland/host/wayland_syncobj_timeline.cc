@@ -149,9 +149,14 @@ WaylandSyncobjReleaseTimeline::WaylandSyncobjReleaseTimeline(
 WaylandSyncobjReleaseTimeline::~WaylandSyncobjReleaseTimeline() = default;
 
 void WaylandSyncobjReleaseTimeline::IncrementSyncPoint() {
-  // Sync point shouldn't be incremented if we are still waiting for fence to be
-  // available at the current sync point.
-  CHECK(fence_available_callback_.is_null());
+  if (!fence_available_callback_.is_null()) {
+    // If sync point was incremented before fence became available at the
+    // current sync point, it means caller is no longer interested in waiting at
+    // that sync point. So reset the callback.
+    DVLOG(2)
+        << "Sync point incremented before fence appeared. Clearing callback";
+    fence_available_callback_.Reset();
+  }
   WaylandSyncobjTimeline::IncrementSyncPoint();
 }
 
@@ -186,9 +191,9 @@ void WaylandSyncobjReleaseTimeline::OnFileCanReadWithoutBlocking(int fd) {
   uint64_t value;
   ssize_t n = HANDLE_EINTR(read(event_fd_.get(), &value, sizeof(value)));
   DPCHECK(n == sizeof(value));
-  DCHECK(1 == value);
-  CHECK(!fence_available_callback_.is_null());
-  std::move(fence_available_callback_).Run(ExportCurrentSyncPointToSyncFd());
+  if (fence_available_callback_) {
+    std::move(fence_available_callback_).Run(ExportCurrentSyncPointToSyncFd());
+  }
 }
 
 void WaylandSyncobjReleaseTimeline::OnFileCanWriteWithoutBlocking(int fd) {
