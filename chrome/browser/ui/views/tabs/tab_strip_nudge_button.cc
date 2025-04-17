@@ -25,7 +25,7 @@ namespace {
 constexpr int kTabStripNudgeCornerRadius = 10;
 constexpr int kTabStripNudgeFlatCornerRadius = 4;
 constexpr int kTabStripNudgeIconMargin = 6;
-constexpr int kTabStripNudgeLabelMargin = 10;
+constexpr int kTabStripNudgeLabelMargin = 4;
 constexpr int kTabStripNudgeCloseButtonMargin = 8;
 constexpr int kTabStripNudgeCloseButtonSize = 16;
 }  // namespace
