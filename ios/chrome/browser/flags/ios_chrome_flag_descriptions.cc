@@ -1386,12 +1386,6 @@ const char kEnableLensContextMenuUnifiedExperienceName[] =
 const char kEnableLensContextMenuUnifiedExperienceDescription[] =
     "Enables unified native experience for Lens Context Menu";
 
-const char kExplainGeminiEditMenuName[] =
-    "Enable Explain Gemini Edit Menu Experience";
-const char kExplainGeminiEditMenuDescription[] =
-    "Enables a new button in the Edit Menu that explains the selected text "
-    "with Gemini.";
-
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"

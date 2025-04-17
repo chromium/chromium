@@ -816,9 +816,6 @@ extern const char kEnableLensViewFinderUnifiedExperienceDescription[];
 extern const char kEnableLensContextMenuUnifiedExperienceName[];
 extern const char kEnableLensContextMenuUnifiedExperienceDescription[];
 
-extern const char kExplainGeminiEditMenuName[];
-extern const char kExplainGeminiEditMenuDescription[];
-
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
