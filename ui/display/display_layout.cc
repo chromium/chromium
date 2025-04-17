@@ -500,6 +500,7 @@ void DisplayLayout::ApplyToDisplayList(Displays* display_list,
   if (!DisplayLayout::Validate(DisplayListToDisplayIdList(*display_list),
                                *this)) {
     // Prevent invalid and non-relevant display layouts.
+    LOG(ERROR) << "Invalid Display Layout";
     return;
   }
 
@@ -549,15 +550,19 @@ bool DisplayLayout::Validate(const DisplayIdList& list,
 
   bool has_primary_as_parent = false;
   // The placement list must be sorted by the first 8 bits of the display IDs.
+#if BUILDFLAG(IS_CHROMEOS)
   int64_t prev_id = std::numeric_limits<int8_t>::min();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   for (const auto& placement : layout.placement_list) {
-    // Placements are sorted by display_id.
+#if BUILDFLAG(IS_CHROMEOS)
+    // Placements are sorted by display_id on ChromeOS.
     if (prev_id >= (placement.display_id & 0xFF)) {
       DISPLAY_LOG(ERROR) << "PlacementList must be sorted by first 8 bits of"
                          << " display_id ";
       return false;
     }
     prev_id = (placement.display_id & 0xFF);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     if (placement.display_id == kInvalidDisplayId) {
       DISPLAY_LOG(ERROR) << "display_id is not initialized";
       return false;
