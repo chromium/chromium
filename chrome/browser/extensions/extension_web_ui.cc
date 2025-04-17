@@ -587,10 +587,10 @@ void ExtensionWebUI::GetFaviconForURL(
     if (!icon_resource.empty()) {
       ui::ResourceScaleFactor resource_scale_factor =
           ui::GetSupportedResourceScaleFactor(scale);
-      info_list.push_back(extensions::ImageLoader::ImageRepresentation(
+      info_list.emplace_back(
           icon_resource,
           extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
-          gfx::Size(pixel_size, pixel_size), resource_scale_factor));
+          gfx::Size(pixel_size, pixel_size), resource_scale_factor);
     }
   }
 
