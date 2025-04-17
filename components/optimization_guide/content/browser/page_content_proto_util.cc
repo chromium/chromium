@@ -163,6 +163,8 @@ void ConvertNodeInteractionInfo(
       mojom_node_interaction_info.is_draggable);
   proto_interaction_info->set_is_clickable(
       mojom_node_interaction_info.is_clickable);
+  proto_interaction_info->set_for_dom_node_id(
+      mojom_node_interaction_info.for_dom_node_id);
 }
 
 void ConvertPoint(const gfx::Point& mojom_point,

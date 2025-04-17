@@ -255,6 +255,25 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
       page_content().root_node().content_attributes().has_interaction_info());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       ForLabel) {
+  LoadPage(https_server()->GetURL("/for_label.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 2);
+
+  const auto& input = page_content().root_node().children_nodes()[0];
+  ASSERT_TRUE(input.content_attributes().has_interaction_info());
+  EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
+
+  const auto& label = page_content().root_node().children_nodes()[1];
+  ASSERT_TRUE(label.content_attributes().has_interaction_info());
+  EXPECT_TRUE(label.content_attributes().interaction_info().is_clickable());
+  EXPECT_EQ(label.content_attributes().interaction_info().for_dom_node_id(),
+            input.content_attributes().common_ancestor_dom_node_id());
+}
+
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoGeometry) {
   LoadPage(https_server()->GetURL("/simple.html"),
