@@ -1939,14 +1939,6 @@ const char kExtensionManifestV2DeprecationUnsupportedDescription[] =
     "Displays a warning that affected MV2 extensions were turned off due to "
     "the Manifest V2 deprecation and cannot be re-enabled.";
 
-const char kWebAuthFlowInBrowserTabName[] =
-    "Web Authentication Flow in Browser Tab";
-const char kWebAuthFlowInBrowserTabDescription[] =
-    "Web authentication flows to be displayed in a Browser Tab instead of an "
-    "App Window. The flows are used via the Chrome Extension API, using "
-    "`chrome.identity` functions. Browser Tab can be displayed either in a New "
-    "Tab or a Popup Window via the feature parameters.";
-
 const char kCWSInfoFastCheckName[] = "CWS Info Fast Check";
 const char kCWSInfoFastCheckDescription[] =
     "When enabled, Chrome checks and fetches metadata for installed extensions "

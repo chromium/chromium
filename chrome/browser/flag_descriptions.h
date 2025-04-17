@@ -1044,9 +1044,6 @@ extern const char
 extern const char kEnableWebAppUpdateTokenParsingName[];
 extern const char kEnableWebAppUpdateTokenParsingDescription[];
 
-extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
-extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
-
 extern const char kEnableZeroCopyTabCaptureName[];
 extern const char kEnableZeroCopyTabCaptureDescription[];
 
@@ -1111,9 +1108,6 @@ extern const char kExtensionsToolbarZeroStateDescription[];
 extern const char kExtensionsToolbarZeroStateChoicesDisabled[];
 extern const char kExtensionsToolbarZeroStateVistWebStore[];
 extern const char kExtensionsToolbarZeroStateExploreExtensionsByCategory[];
-
-extern const char kWebAuthFlowInBrowserTabName[];
-extern const char kWebAuthFlowInBrowserTabDescription[];
 
 extern const char kCWSInfoFastCheckName[];
 extern const char kCWSInfoFastCheckDescription[];
