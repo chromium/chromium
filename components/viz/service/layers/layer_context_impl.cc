@@ -66,7 +66,8 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
       return cc::MirrorLayerImpl::Create(&tree, id);
 
     case cc::mojom::LayerType::kSurface:
-      // TODO(394137303): handle |update_submission_state_callback|.
+      // The callback is triggered in the renderer side during WillDraw(),
+      // and there is no need to do it in viz.
       return cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
 
     case cc::mojom::LayerType::kPicture:
