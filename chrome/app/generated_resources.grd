@@ -16123,16 +16123,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Expanded
       </message>
       <message name="IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has not been named by the user gets focused in the bookmarks bar. Example: 'Unnamed group - Opened'">
-        Unnamed group - <ph name="OPENED_STATE">$1</ph>
+        <ph name="SHARED_STATE">$1</ph> unnamed group - <ph name="OPENED_STATE">$2</ph>
       </message>
       <message name="IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has been named by the user gets focused in the bookmarks bar. Example: 'MyGroupName group - Closed'">
-        <ph name="GROUP_NAME">$1</ph> group - <ph name="OPENED_STATE">$2</ph>
+        <ph name="SHARED_STATE">$1</ph> <ph name="GROUP_NAME">$2</ph> group - <ph name="OPENED_STATE">$3</ph>
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_GROUP_MENU_ITEM_FORMAT" desc="Spoken by screen readers when a saved group that has been named by the user gets focused in the menu. Example: 'Shared MyGroupName group'">
+        <ph name="SHARED_STATE">$1</ph> <ph name="GROUP_NAME">$2</ph> group - <ph name="OPENED_STATE">$3</ph>
       </message>
       <message name="IDS_SAVED_GROUP_AX_LABEL_OPENED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is opened in the tabstrip.">
         Opened
       </message>
       <message name="IDS_SAVED_GROUP_AX_LABEL_CLOSED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is closed in the tabstrip.">
         Closed
+      </message>
+      <message name="IDS_SAVED_GROUP_AX_LABEL_SHARED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is shared">
+        Shared
       </message>
       <message name="IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the right">
         Tab moved right
