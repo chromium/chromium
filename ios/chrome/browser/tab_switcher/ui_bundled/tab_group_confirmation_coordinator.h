@@ -31,7 +31,7 @@ typedef void (^TabGroupActionBlock)();
 // The name of the tab group.
 @property(nonatomic, copy) NSString* tabGroupName;
 
-// The action to execute when dismissing the comfiration coordinator. Can be
+// The action to execute when dismissing the confirmation coordinator. Can be
 // `nil`.
 @property(nonatomic, strong) TabGroupActionBlock dismissAction;
 
