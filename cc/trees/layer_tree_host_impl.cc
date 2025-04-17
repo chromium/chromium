@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/trees/layer_tree_host_impl.h"
 
 #include <stddef.h>
@@ -230,7 +225,7 @@ bool VerboseLogEnabled() {
   if (VLOG_IS_ON(4))
     return true;
   const char* client_name = GetClientNameForMetrics();
-  return client_name && strcmp(client_name, "Renderer") == 0;
+  return client_name && UNSAFE_TODO(strcmp(client_name, "Renderer")) == 0;
 }
 
 const char* ClientNameForVerboseLog() {
