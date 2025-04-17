@@ -52,6 +52,15 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
         ->tab_search_container_for_testing();
   }
 
+ protected:
+  void ResetAnimation(int value) {
+    if (tab_search_container()->animation_session_for_testing()) {
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->ResetAnimationForTesting(value);
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -160,9 +169,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
 
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -173,9 +180,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(0);
+  ResetAnimation(0);
 
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -207,9 +212,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
@@ -235,9 +238,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonClicked) {
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -256,9 +257,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonDismissed) {
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -280,9 +279,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -310,9 +307,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
@@ -335,9 +330,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
@@ -358,9 +351,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
@@ -490,9 +481,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 
   // Finish showing declutter chip.
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Hide the declutter chip.
@@ -517,9 +506,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->animation_session_for_testing()
                   ->expansion_animation()
                   ->IsShowing());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Try to show the declutter chip while auto-tab group chip is already shown.
