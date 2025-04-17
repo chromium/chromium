@@ -21,7 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
@@ -593,14 +593,14 @@ std::string DEPRECATED_KAnonKeyForAdBid(
 std::string HashedKAnonKeyForAdBid(const url::Origin& owner,
                                    const GURL& bidding_url,
                                    const std::string& ad_url_from_gurl_spec) {
-  return crypto::SHA256HashString(
-      DEPRECATED_KAnonKeyForAdBid(owner, bidding_url, ad_url_from_gurl_spec));
+  return std::string(base::as_string_view(crypto::hash::Sha256(
+      DEPRECATED_KAnonKeyForAdBid(owner, bidding_url, ad_url_from_gurl_spec))));
 }
 
 std::string HashedKAnonKeyForAdBid(const InterestGroup& group,
                                    const std::string& ad_url_from_gurl_spec) {
-  return crypto::SHA256HashString(
-      DEPRECATED_KAnonKeyForAdBid(group, ad_url_from_gurl_spec));
+  return std::string(base::as_string_view(crypto::hash::Sha256(
+      DEPRECATED_KAnonKeyForAdBid(group, ad_url_from_gurl_spec))));
 }
 
 std::string HashedKAnonKeyForAdBid(const InterestGroup& group,
@@ -616,13 +616,13 @@ std::string DEPRECATED_KAnonKeyForAdComponentBid(
 
 std::string HashedKAnonKeyForAdComponentBid(
     const std::string& ad_url_from_gurl_spec) {
-  return crypto::SHA256HashString(
-      DEPRECATED_KAnonKeyForAdComponentBid(ad_url_from_gurl_spec));
+  return std::string(base::as_string_view(crypto::hash::Sha256(
+      DEPRECATED_KAnonKeyForAdComponentBid(ad_url_from_gurl_spec))));
 }
 
 std::string HashedKAnonKeyForAdComponentBid(const GURL& ad_url) {
-  return crypto::SHA256HashString(
-      DEPRECATED_KAnonKeyForAdComponentBid(ad_url.spec()));
+  return std::string(base::as_string_view(crypto::hash::Sha256(
+      DEPRECATED_KAnonKeyForAdComponentBid(ad_url.spec()))));
 }
 
 std::string HashedKAnonKeyForAdComponentBid(
@@ -649,8 +649,8 @@ std::string HashedKAnonKeyForAdNameReporting(
     const blink::InterestGroup::Ad& ad,
     base::optional_ref<const std::string>
         selected_buyer_and_seller_reporting_id) {
-  return crypto::SHA256HashString(DEPRECATED_KAnonKeyForAdNameReporting(
-      group, ad, selected_buyer_and_seller_reporting_id));
+  return std::string(base::as_string_view(crypto::hash::Sha256(DEPRECATED_KAnonKeyForAdNameReporting(
+      group, ad, selected_buyer_and_seller_reporting_id))));
 }
 
 std::string HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
@@ -662,9 +662,9 @@ std::string HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
     base::optional_ref<const std::string> buyer_and_seller_reporting_id,
     base::optional_ref<const std::string>
         selected_buyer_and_seller_reporting_id) {
-  return crypto::SHA256HashString(InternalPlainTextKAnonKeyForAdNameReporting(
+  return std::string(base::as_string_view(crypto::hash::Sha256(InternalPlainTextKAnonKeyForAdNameReporting(
       interest_group_owner, interest_group_name, interest_group_bidding_url,
       ad_render_url, buyer_reporting_id, buyer_and_seller_reporting_id,
-      selected_buyer_and_seller_reporting_id));
+      selected_buyer_and_seller_reporting_id))));
 }
 }  // namespace blink

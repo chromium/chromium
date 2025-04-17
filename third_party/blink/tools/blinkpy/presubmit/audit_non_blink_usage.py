@@ -388,7 +388,7 @@ _CONFIG = [
         ],
         'allowed': [
             # For hashing of k-anonymity keys
-            'crypto::SHA256HashString',
+            'crypto::hash::Sha256',
 
             # Types used to compute k-anonymity keys, also many IG fields are
             # origins and URLs.
