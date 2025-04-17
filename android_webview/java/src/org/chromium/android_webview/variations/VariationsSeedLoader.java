@@ -46,7 +46,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * VariationsSeedLoader asynchronously loads and updates the variations seed. VariationsSeedLoader
@@ -120,7 +119,7 @@ public class VariationsSeedLoader {
 
     @Nullable private FutureTask<SeedLoadResult> mLoadTask;
     private final SeedServerCallback mSeedServerCallback = new SeedServerCallback();
-    private final AtomicBoolean mIsServiceBound = new AtomicBoolean();
+    private boolean mPostedServiceConnected;
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -377,9 +376,13 @@ public class VariationsSeedLoader {
 
         @Override
         public void onServiceConnectedImpl(ComponentName name, IBinder service) {
+            if (mPostedServiceConnected) {
+                // Only post this task once.
+                return;
+            }
             // onServiceConnected is called on the app's main thread. Punt this back to the
             // background thread as this work is not time critical.
-            mIsServiceBound.set(true);
+            mPostedServiceConnected = true;
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
                     () -> {
@@ -391,18 +394,14 @@ public class VariationsSeedLoader {
                         } catch (RemoteException e) {
                             Log.e(TAG, "Faild requesting seed", e);
                         } finally {
-                            if (mIsServiceBound.get()) {
-                                ContextUtils.getApplicationContext().unbindService(this);
-                            }
+                            ContextUtils.getApplicationContext().unbindService(this);
                             VariationsUtils.closeSafely(mNewSeedFd);
                         }
                     });
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mIsServiceBound.set(false);
-        }
+        public void onServiceDisconnected(ComponentName name) {}
     }
 
     private static class SeedServerCallback extends IVariationsSeedServerCallback.Stub {
