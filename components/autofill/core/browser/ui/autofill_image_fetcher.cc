@@ -89,20 +89,6 @@ const gfx::Image* AutofillImageFetcher::GetCachedImageForUrl(
   return it->second.get();
 }
 
-GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {
-  // TODO(crbug.com/40221039): There is only one gstatic card art image we are
-  // using currently, that returns as metadata when it isn't. Remove this logic
-  // and append FIFE URL suffix by default when the static image is deprecated,
-  // and we send rich card art instead.
-  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
-    return card_art_url;
-  }
-
-  // A FIFE image fetching param suffix is appended to the URL. The image
-  // should be center cropped and of Size(32, 20).
-  return GURL(card_art_url.spec() + "=w32-h20-n");
-}
-
 gfx::Image AutofillImageFetcher::ResolveCardArtImage(
     const GURL& card_art_url,
     const gfx::Image& card_art_image) {

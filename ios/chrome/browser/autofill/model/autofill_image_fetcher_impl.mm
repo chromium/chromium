@@ -27,7 +27,8 @@ AutofillImageFetcherImpl::AutofillImageFetcherImpl(
 
 AutofillImageFetcherImpl::~AutofillImageFetcherImpl() {}
 
-GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
+GURL AutofillImageFetcherImpl::ResolveCardArtURL(
+    const GURL& card_art_url) const {
   // Some Capital One cards have a static URL rather than 'proper' card art
   // metadata, and so cannot be fetched at different sizes. We defer handling
   // that URL to the base class.
@@ -35,7 +36,7 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
   // TODO(crbug.com/40221039): Remove this once the server stops sending down
   // this static URL for some cards.
   if (card_art_url.spec() == kCapitalOneCardArtUrl) {
-    return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
+    return card_art_url;
   }
 
   // A FIFE image fetching param suffix is appended to the URL. The image

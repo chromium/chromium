@@ -37,9 +37,6 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
     return mock_image_fetcher_.get();
   }
 
-  void set_card_art_url_override(const GURL& card_art_url_override) {
-    card_art_url_override_ = card_art_url_override;
-  }
   void set_card_art_image_override(const gfx::Image& card_art_image_override) {
     card_art_image_override_ = card_art_image_override;
   }
@@ -59,10 +56,14 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
   base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  GURL ResolveCardArtURL(const GURL& card_art_url) override {
-    return card_art_url_override_.is_valid()
-               ? card_art_url_override_
-               : AutofillImageFetcher::ResolveCardArtURL(card_art_url);
+  GURL ResolveCardArtURL(const GURL& card_art_url) const override {
+    if (card_art_url.spec() == kCapitalOneCardArtUrl) {
+      return card_art_url;
+    }
+
+    // A FIFE image fetching param suffix is appended to the URL. The image
+    // should be center cropped and of Size(32, 20).
+    return GURL(card_art_url.spec() + "=w32-h20-n");
   }
   gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                  const gfx::Image& card_art_image) override {
@@ -73,7 +74,6 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
   }
 
  private:
-  GURL card_art_url_override_;
   gfx::Image card_art_image_override_;
 
   std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
@@ -146,23 +146,6 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 2);
   histogram_tester.ExpectUniqueSample("Autofill.ImageFetcher.RequestLatency",
                                       200, 2);
-}
-
-TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtURL) {
-  // Set the AutofillImageFetcher to replace the input `fake_url1` in
-  // ResolveCardArtURL.
-  GURL override_url = GURL("https://www.other.com/fake_image2");
-  autofill_image_fetcher()->set_card_art_url_override(override_url);
-
-  GURL fake_url1 = GURL("https://www.example.com/fake_image1");
-
-  // The underlying image fetcher should only get called for the modified URL.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url1, _, _, _))
-      .Times(0);
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(override_url, _, _, _));
-  std::vector<GURL> urls = {fake_url1};
-  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {

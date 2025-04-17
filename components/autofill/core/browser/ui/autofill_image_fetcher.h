@@ -49,7 +49,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
 
   // Subclasses may override this to provide custom handling of a given card art
   // URL.
-  virtual GURL ResolveCardArtURL(const GURL& card_art_url);
+  virtual GURL ResolveCardArtURL(const GURL& card_art_url) const = 0;
 
   // Subclasses may override this to provide custom handling of a fetched card
   // art image. The default behavior is a no-op. The passed-in `card_art_url` is
