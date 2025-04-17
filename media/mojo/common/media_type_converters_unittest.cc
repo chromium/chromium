@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <memory>
 #include <variant>
 
@@ -67,7 +68,7 @@ void CompareAudioBuffers(SampleFormat sample_format,
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   const uint8_t kData[] = "hello, world";
   const uint8_t kAlphaData[] = "sideshow bob";
-  const uint32_t kSpatialLayers[] = {36, 24, 36};
+  const auto kSpatialLayers = std::to_array<uint32_t>({36, 24, 36});
   const size_t kDataSize = std::size(kData);
   const size_t kSpatialLayersSize = std::size(kSpatialLayers);
   const size_t kSecureHandle = 42;
@@ -81,7 +82,9 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   buffer->WritableSideData().alpha_data =
       base::HeapArray<uint8_t>::CopiedFrom(kAlphaData);
   buffer->WritableSideData().spatial_layers.assign(
-      kSpatialLayers, kSpatialLayers + kSpatialLayersSize);
+      kSpatialLayers.data(), base::span<const uint32_t>(kSpatialLayers)
+                                 .subspan(kSpatialLayersSize)
+                                 .data());
   buffer->WritableSideData().secure_handle = kSecureHandle;
 
   // Convert from and back.
