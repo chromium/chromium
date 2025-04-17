@@ -3777,7 +3777,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_1ms",
+                    "params": {
+                        "busy_loop_for": "1ms"
+                    },
                     "enable_features": [
                         "BusyLoopOnMainThread"
                     ]
