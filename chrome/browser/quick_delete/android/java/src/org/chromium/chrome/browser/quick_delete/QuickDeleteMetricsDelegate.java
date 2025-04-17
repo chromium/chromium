@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.quick_delete;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 /** A delegate class to record metrics associated with {@link QuickDeleteController}. */
+@NullMarked
 public class QuickDeleteMetricsDelegate {
     public static final String HISTOGRAM_NAME = "Privacy.QuickDelete";
 

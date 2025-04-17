@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A class responsible for providing logic around filtered tabs. */
+@NullMarked
 class QuickDeleteTabsFilter {
     static final long FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
     static final long ONE_HOUR_IN_MS = FIFTEEN_MINUTES_IN_MS * 4;
@@ -46,7 +46,7 @@ class QuickDeleteTabsFilter {
      * @param tabModel A regular {@link TabGroupModelFilter} which is used to observe the tab
      *     related changes.
      */
-    QuickDeleteTabsFilter(@NonNull TabGroupModelFilter tabGroupModelFilter) {
+    QuickDeleteTabsFilter(TabGroupModelFilter tabGroupModelFilter) {
         assert !tabGroupModelFilter.getTabModel().isIncognito()
                 : "Incognito tab model is not supported.";
         mTabGroupModelFilter = tabGroupModelFilter;

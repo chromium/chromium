@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.annotation.NonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
@@ -21,6 +23,7 @@ import java.util.List;
  * An interface for providing and handling quick-delete operations, such as the browsing data
  * deletion.
  */
+@NullMarked
 abstract class QuickDeleteDelegate {
     /** A data-structure to hold the strings for the Browsing history row in the dialog. */
     static class DomainVisitsData {
@@ -34,7 +37,7 @@ abstract class QuickDeleteDelegate {
          *  history
          *                          row of the dialog.
          */
-        DomainVisitsData(@NonNull String lastVisitedDomain, int domainsCount) {
+        DomainVisitsData(String lastVisitedDomain, int domainsCount) {
             mLastVisitedDomain = lastVisitedDomain;
             mDomainsCount = domainsCount;
         }
@@ -45,10 +48,9 @@ abstract class QuickDeleteDelegate {
      *
      * @return A boolean indicating whether the user is signed in or not.
      */
-    static boolean isSignedIn(@NonNull Profile profile) {
-        return IdentityServicesProvider.get()
-                .getIdentityManager(profile)
-                .hasPrimaryAccount(ConsentLevel.SIGNIN);
+    static boolean isSignedIn(Profile profile) {
+        IdentityManager manager = IdentityServicesProvider.get().getIdentityManager(profile);
+        return assumeNonNull(manager).hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
     /**
@@ -56,7 +58,7 @@ abstract class QuickDeleteDelegate {
      * @return A boolean indicating whether the user is syncing history and history deletions are
      *     propagated.
      */
-    static boolean isSyncingHistory(@NonNull Profile profile) {
+    static boolean isSyncingHistory(Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         return syncService != null
                 && syncService.getActiveDataTypes().contains(DataType.HISTORY_DELETE_DIRECTIVES);
@@ -69,8 +71,7 @@ abstract class QuickDeleteDelegate {
      *     cleared.
      * @param timePeriod The {@link TimePeriod} of the browsing data to delete.
      */
-    abstract void performQuickDelete(
-            @NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod);
+    abstract void performQuickDelete(Runnable onDeleteFinished, @TimePeriod int timePeriod);
 
     /**
      * Show the Quick Delete animation on the tab list.
@@ -79,8 +80,7 @@ abstract class QuickDeleteDelegate {
      * @param tabs The tabs to fade with the animation. These tabs will get closed after the
      *     animation is complete.
      */
-    abstract void showQuickDeleteAnimation(
-            @NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs);
+    abstract void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
 
     /**
      * @return True if the user has more than one restorable window.
