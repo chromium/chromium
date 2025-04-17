@@ -29,6 +29,10 @@ namespace {
 
 using ::testing::Values;
 
+constexpr auto kAutofillPredictionSettingsAllowWithoutLogging =
+    base::to_underlying(
+        optimization_guide::model_execution::prefs::
+            ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 constexpr auto kAutofillPredictionSettingsDisable =
     base::to_underlying(optimization_guide::model_execution::prefs::
                             ModelExecutionEnterprisePolicyValue::kDisable);
@@ -50,6 +54,8 @@ std::string GetTestSuffix(
       return "kIphForOptIn";
     case AutofillAiAction::kListEntityInstancesInSettings:
       return "kListEntityInstancesInSettings";
+    case AutofillAiAction::kLogToMqls:
+      return "kLogToMqls";
     case AutofillAiAction::kOptIn:
       return "kOptIn";
     case AutofillAiAction::kServerClassificationModel:
@@ -159,6 +165,20 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
 
   SetAutofillAiOptInStatus(client(), false);
   const bool is_allowed = GetParam() == AutofillAiAction::kOptIn;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that everything but logging is enabled if the AutofillAI enterprise
+// policy allows the feature without logging.
+TEST_P(AutofillAiMayPerformActionTest,
+       ActionsWhenAutofillAiEnterprisePolicyLoggingDisabled) {
+  client().GetPrefs()->SetInteger(
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      kAutofillPredictionSettingsAllowWithoutLogging);
+
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn &&
+                          GetParam() != AutofillAiAction::kLogToMqls;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -302,6 +322,7 @@ INSTANTIATE_TEST_SUITE_P(
            AutofillAiAction::kImport,
            AutofillAiAction::kIphForOptIn,
            AutofillAiAction::kListEntityInstancesInSettings,
+           AutofillAiAction::kLogToMqls,
            AutofillAiAction::kOptIn,
            AutofillAiAction::kServerClassificationModel,
            AutofillAiAction::kUseCachedServerClassificationModelResults),
