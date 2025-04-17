@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
+namespace media {
+class PaintCanvasVideoRenderer;
+}  // namespace media
+
 namespace blink {
 
 class ExceptionState;

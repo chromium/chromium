@@ -82,9 +82,6 @@ class WebGraphicsContext3DProviderForTests
   gpu::TestSharedImageInterface* SharedImageInterface() override {
     return test_shared_image_interface_.get();
   }
-  void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
-                      media::VideoFrame* video_frame,
-                      cc::PaintCanvas* canvas) override {}
   viz::RasterContextProvider* RasterContextProvider() const override {
     return nullptr;
   }
