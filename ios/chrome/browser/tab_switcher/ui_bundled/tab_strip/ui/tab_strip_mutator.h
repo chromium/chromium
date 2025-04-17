@@ -63,18 +63,6 @@ class TabGroup;
 /// Tells the receiver to close the group associated with `tabGroupItem`.
 - (void)closeGroup:(TabGroupItem*)tabGroupItem;
 
-/// Tells the receiver to delete the shared group associated with
-/// `tabGroupItem`. `sourceView` is the view that the delete action originated
-/// from.
-- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem
-              sourceView:(UIView*)sourceView;
-
-/// Tells the receiver to delete the shared group associated with
-/// `tabGroupItem`. `sourceView` is the view that the delete action originated
-/// from.
-- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem
-               sourceView:(UIView*)sourceView;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_TAB_STRIP_MUTATOR_H_

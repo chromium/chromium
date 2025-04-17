@@ -69,19 +69,6 @@ const CGFloat kScrimOpacity = 0.3;
 // Maximum delay to return preview items.
 constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(15);
 
-// Converts `outcome` between the two enums.
-CollaborationControllerDelegate::Outcome ConvertOutcome(
-    ShareKitFlowOutcome outcome) {
-  switch (outcome) {
-    case ShareKitFlowOutcome::kSuccess:
-      return CollaborationControllerDelegate::Outcome::kSuccess;
-    case ShareKitFlowOutcome::kFailure:
-      return CollaborationControllerDelegate::Outcome::kFailure;
-    case ShareKitFlowOutcome::kCancel:
-      return CollaborationControllerDelegate::Outcome::kCancel;
-  }
-}
-
 }  // namespace
 
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
@@ -310,13 +297,15 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
 void IOSCollaborationControllerDelegate::ShowLeaveDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+  CHECK(leave_or_delete_confirmation_callback_);
+  std::move(leave_or_delete_confirmation_callback_).Run(std::move(result));
 }
 
 void IOSCollaborationControllerDelegate::ShowDeleteDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+  CHECK(leave_or_delete_confirmation_callback_);
+  std::move(leave_or_delete_confirmation_callback_).Run(std::move(result));
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
@@ -382,6 +371,11 @@ void IOSCollaborationControllerDelegate::ShareGroupAndGenerateLink(
       .Run(CollaborationControllerDelegate::Outcome::kSuccess, token);
 }
 
+void IOSCollaborationControllerDelegate::SetLeaveOrDeleteConfirmationCallback(
+    base::OnceCallback<void(ResultCallback)> callback) {
+  leave_or_delete_confirmation_callback_ = std::move(callback);
+}
+
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
     SigninCoordinatorResult sign_in_result,
@@ -418,7 +412,7 @@ void IOSCollaborationControllerDelegate::OnShareFlowComplete(
     return;
   }
   std::move(share_screen_callback_)
-      .Run(ConvertOutcome(outcome), data_sharing::GroupToken());
+      .Run(ConvertShareKitFlowOutcome(outcome), data_sharing::GroupToken());
 }
 
 void IOSCollaborationControllerDelegate::WillUnshareGroup(
@@ -562,7 +556,7 @@ void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
 
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome));
+    completion_block(ConvertShareKitFlowOutcome(outcome));
   };
 
   session_id_ = share_kit_service_->JoinTabGroup(config);
@@ -627,7 +621,7 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome));
+    completion_block(ConvertShareKitFlowOutcome(outcome));
   };
   std::optional<tab_groups::LocalTabGroupID> local_id = group->local_group_id();
   config.willUnshareGroupBlock = base::CallbackToBlock(

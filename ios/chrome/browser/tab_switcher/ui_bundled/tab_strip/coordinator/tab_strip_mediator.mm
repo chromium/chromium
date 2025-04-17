@@ -1042,26 +1042,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 }
 
-- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem
-              sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupSyncEnabled());
-
-  [_tabStripHandler
-      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
-                              groupItem:tabGroupItem
-                             sourceView:sourceView];
-}
-
-- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem
-               sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupSyncEnabled());
-
-  [_tabStripHandler showTabGroupConfirmationForAction:TabGroupActionType::
-                                                          kDeleteSharedTabGroup
-                                            groupItem:tabGroupItem
-                                           sourceView:sourceView];
-}
-
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {

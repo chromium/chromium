@@ -26,6 +26,7 @@ source_set("context_menu") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui:utils",
     "//url",

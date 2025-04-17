@@ -74,6 +74,10 @@ class IOSCollaborationControllerDelegate
                                  std::string access_token,
                                  base::OnceCallback<void(GURL)> callback);
 
+  // Sets the `callback` used to present the leave or delete confirmation.
+  void SetLeaveOrDeleteConfirmationCallback(
+      base::OnceCallback<void(ResultCallback)> callback);
+
  private:
   using PreviewItemsCallBack =
       base::OnceCallback<void(NSArray<ShareKitPreviewItem*>*)>;
@@ -161,6 +165,10 @@ class IOSCollaborationControllerDelegate
   // The callback to generate the link and continue the share flow (present the
   // share sheet).
   base::OnceCallback<void(GURL)> link_generation_callback_;
+
+  // The callback called to present the leave or delete confirmation.
+  base::OnceCallback<void(ResultCallback)>
+      leave_or_delete_confirmation_callback_;
 
   base::WeakPtrFactory<IOSCollaborationControllerDelegate> weak_ptr_factory_{
       this};

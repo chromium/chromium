@@ -12,6 +12,7 @@ source_set("model") {
     "share_kit_face_pile_configuration.h",
     "share_kit_face_pile_configuration.mm",
     "share_kit_flow_outcome.h",
+    "share_kit_flow_outcome.mm",
     "share_kit_join_configuration.h",
     "share_kit_join_configuration.mm",
     "share_kit_leave_configuration.h",
@@ -30,6 +31,7 @@ source_set("model") {
     "share_kit_share_group_configuration.mm",
   ]
   deps = [
+    "//components/collaboration/internal",
     "//components/data_sharing/public",
     "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",

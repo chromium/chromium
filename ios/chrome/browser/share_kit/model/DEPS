@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/collaboration/public",
   "+components/data_sharing/public",
   "+components/saved_tab_groups/public",
   "+ios/chrome/browser/collaboration/model",
