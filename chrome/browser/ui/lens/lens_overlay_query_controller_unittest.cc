@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -57,6 +58,7 @@
 namespace lens {
 
 using LatencyType = LensOverlayGen204Controller::LatencyType;
+using base::test::EqualsProto;
 
 // The fake multimodal query text.
 constexpr char kTestQueryText[] = "query_text";
@@ -162,13 +164,6 @@ const base::test::FeatureRefAndParams
              {"send-lens-inputs-for-lens-suggest", "true"},
              {"send-lens-visual-interaction-data-for-lens-suggest", "true"},
              {"characters-per-page-heuristic", "50"}});
-
-MATCHER_P(EqualsProto, message, "") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
 
 // Fake VariationsClient for testing. Without it, tests crash.
 class FakeVariationsClient : public variations::VariationsClient {
