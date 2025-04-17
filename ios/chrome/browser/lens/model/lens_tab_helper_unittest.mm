@@ -42,10 +42,10 @@ class LensTabHelperTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<web::WebState> web_state_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<web::WebState> web_state_;
   raw_ptr<LensTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;

@@ -21,9 +21,9 @@ class SessionProtoDBFactoryTest : public PlatformTest {
   }
 
  protected:
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_a_;
   std::unique_ptr<TestProfileIOS> profile_b_;
-  web::WebTaskEnvironment task_environment_;
 };
 
 TEST_F(SessionProtoDBFactoryTest, TestIncognito) {
