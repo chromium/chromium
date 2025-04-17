@@ -382,8 +382,4 @@ BASE_FEATURE(kByDateHistoryInSidePanel,
              "ByDateHistoryInSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabStripBrowserApi,
-             "TabStripBrowserApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
