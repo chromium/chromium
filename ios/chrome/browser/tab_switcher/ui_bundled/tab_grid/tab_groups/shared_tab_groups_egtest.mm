@@ -315,7 +315,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using the face pile.
-- (void)testShareGroupAndManageGroupUsingFacePile {
+// TODO(crbug.com/411307020): Test is flaky.
+- (void)DISABLED_testShareGroupAndManageGroupUsingFacePile {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
