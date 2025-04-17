@@ -287,7 +287,6 @@ absl_source_set("strerror") {
 absl_source_set("fast_type_id") {
   public = [ "fast_type_id.h" ]
   deps = [ ":config" ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
 
 absl_source_set("prefetch") {
