@@ -90,7 +90,7 @@ class MstSolver {
   // error.  Discards existing state; call AddArc() and AddRoot() to add arcs
   // and root selections.  If |forest| is true, then this solves for a maximum
   // spanning forest (i.e., a set of disjoint trees that span the digraph).
-  tensorflow::Status Init(bool forest, Index num_nodes);
+  absl::Status Init(bool forest, Index num_nodes);
 
   // Adds an arc from the |source| node to the |target| node with the |score|.
   // The |source| and |target| must be distinct node indices in [0,n), and the
@@ -116,10 +116,10 @@ class MstSolver {
   //
   // NB: If multiple spanning trees achieve the maximum score, |argmax| will be
   // set to one of the maximal trees, but it is unspecified which one.
-  tensorflow::Status Solve(absl::Span<Index> argmax);
+  absl::Status Solve(absl::Span<Index> argmax);
 
   // Convience method
-  tensorflow::Status Solve(std::vector<Index>* argmax) {
+  absl::Status Solve(std::vector<Index> *argmax) {
     return Solve(absl::MakeSpan(argmax->data(), argmax->size()));
   }
 
@@ -235,12 +235,12 @@ class MstSolver {
   // phase finds the best inbound arc for each node, contracting cycles as they
   // are formed.  Stops when every node has selected an inbound arc and there
   // are no cycles.
-  tensorflow::Status ContractionPhase();
+  absl::Status ContractionPhase();
 
   // Runs the expansion phase of the solver, or returns non-OK on error.  This
   // phase expands each contracted node, breaks cycles, and populates |argmax|
   // with the maximum spanning tree.
-  tensorflow::Status ExpansionPhase(absl::Span<Index> argmax);
+  absl::Status ExpansionPhase(absl::Span<Index> argmax);
 
   // If true, solve for a spanning forest instead of a spanning tree.
   bool forest_ = false;
@@ -303,7 +303,7 @@ class MstSolver {
 // Implementation details below.
 
 template <class Index, class Score>
-tensorflow::Status MstSolver<Index, Score>::Init(bool forest, Index num_nodes) {
+absl::Status MstSolver<Index, Score>::Init(bool forest, Index num_nodes) {
   if (num_nodes <= 0) {
     return tensorflow::errors::InvalidArgument("Non-positive number of nodes: ",
                                                num_nodes);
@@ -374,7 +374,7 @@ Score MstSolver<Index, Score>::RootScore(Index root) const {
 }
 
 template <class Index, class Score>
-tensorflow::Status MstSolver<Index, Score>::Solve(absl::Span<Index> argmax) {
+absl::Status MstSolver<Index, Score>::Solve(absl::Span<Index> argmax) {
   MaybePenalizeRootScoresForTree();
   TF_RETURN_IF_ERROR(ContractionPhase());
   TF_RETURN_IF_ERROR(ExpansionPhase(argmax));
@@ -503,14 +503,14 @@ void MstSolver<Index, Score>::ContractCycle(Index node) {
   for (const auto &node_and_arc : cycle_) {
     // Set the |score_offset| to the cost of breaking the cycle by replacing the
     // arc currently directed into the |cycle_node|.
-    const Index current_cycle_node = node_and_arc.first;
+    const Index local_cycle_node = node_and_arc.first;
     const Score score_offset = -node_and_arc.second->score;
-    MergeInboundArcs(current_cycle_node, score_offset, contracted_node);
+    MergeInboundArcs(local_cycle_node, score_offset, contracted_node);
   }
 }
 
 template <class Index, class Score>
-tensorflow::Status MstSolver<Index, Score>::ContractionPhase() {
+absl::Status MstSolver<Index, Score>::ContractionPhase() {
   // Skip the artificial root since it has no inbound arcs.
   for (Index target = 1; target < num_current_nodes_; ++target) {
     // Find the maximum inbound arc for the current |target|, if any.
@@ -541,8 +541,7 @@ tensorflow::Status MstSolver<Index, Score>::ContractionPhase() {
 }
 
 template <class Index, class Score>
-tensorflow::Status MstSolver<Index, Score>::ExpansionPhase(
-    absl::Span<Index> argmax) {
+absl::Status MstSolver<Index, Score>::ExpansionPhase(absl::Span<Index> argmax) {
   if (argmax.size() < num_original_nodes_) {
     return tensorflow::errors::InvalidArgument(
         "Argmax array too small: ", num_original_nodes_,
@@ -594,7 +593,7 @@ tensorflow::Status MstSolver<Index, Score>::ExpansionPhase(
   // produce an all-root structure in spite of the root score penalty.  As this
   // example illustrates, however, |num_roots| will be more than 1 if and only
   // if the original digraph is infeasible for trees.
-  if (num_roots < 1 || (!forest_ && num_roots != 1)) {
+  if (!forest_ && num_roots != 1) {
     return tensorflow::errors::FailedPrecondition("Infeasible digraph");
   }
 
