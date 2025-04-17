@@ -126,6 +126,9 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
             summaryView.setText(R.string.some_passwords_are_not_accessible_subtitle);
         } else if (!isPasswordManagerAvailable) {
             summaryView.setText(R.string.gpm_stopped_working_subtitle);
+        } else {
+            // No error subtitle also means no error icon, so return before the icon would be set.
+            return;
         }
 
         // ChromeBasePreference sets summary text view to be not visible by default if it's empty.
