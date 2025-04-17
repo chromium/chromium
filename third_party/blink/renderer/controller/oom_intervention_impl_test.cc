@@ -127,9 +127,6 @@ class OomInterventionImplTest : public testing::Test {
 TEST_F(OomInterventionImplTest, NoDetectionOnBelowThreshold) {
   MemoryUsage usage;
   // Set value less than the threshold to not trigger intervention.
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
   usage.private_footprint_bytes = kTestPMFThreshold - 1024;
   usage.swap_bytes = 0;
   usage.vm_size_bytes = 0;
@@ -142,9 +139,6 @@ TEST_F(OomInterventionImplTest, NoDetectionOnBelowThreshold) {
 
 TEST_F(OomInterventionImplTest, PmfThresholdDetection) {
   MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
   // Set value more than the threshold to trigger intervention.
   usage.private_footprint_bytes = kTestPMFThreshold + 1024;
   usage.swap_bytes = 0;
@@ -160,9 +154,6 @@ TEST_F(OomInterventionImplTest, PmfThresholdDetection) {
 
 TEST_F(OomInterventionImplTest, StopWatchingAfterDetection) {
   MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
   // Set value more than the threshold to trigger intervention.
   usage.private_footprint_bytes = kTestPMFThreshold + 1024;
   usage.swap_bytes = 0;
@@ -178,9 +169,6 @@ TEST_F(OomInterventionImplTest, StopWatchingAfterDetection) {
 TEST_F(OomInterventionImplTest, ContinueWatchingWithoutDetection) {
   MemoryUsage usage;
   // Set value less than the threshold to not trigger intervention.
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
   usage.private_footprint_bytes = 0;
   usage.swap_bytes = 0;
   usage.vm_size_bytes = 0;
@@ -196,9 +184,6 @@ TEST_F(OomInterventionImplTest, ContinueWatchingWithoutDetection) {
 // with OOPIF enabled.
 TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
   // Set value more than the threshold to trigger intervention.
   usage.private_footprint_bytes = kTestPMFThreshold + 1024;
   usage.swap_bytes = 0;
@@ -252,9 +237,6 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
 
 TEST_F(OomInterventionImplTest, V2DetectionV8PurgeMemory) {
   MemoryUsage usage;
-  usage.v8_bytes = 0;
-  usage.blink_gc_bytes = 0;
-  usage.partition_alloc_bytes = 0;
   // Set value more than the threshold to trigger intervention.
   usage.private_footprint_bytes = kTestPMFThreshold + 1024;
   usage.swap_bytes = 0;

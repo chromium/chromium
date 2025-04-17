@@ -59,31 +59,8 @@ void MemoryUsageMonitor::StopMonitoring() {
 
 MemoryUsage MemoryUsageMonitor::GetCurrentMemoryUsage() {
   MemoryUsage usage;
-  GetV8MemoryUsage(usage);
-  GetBlinkMemoryUsage(usage);
   GetProcessMemoryUsage(usage);
   return usage;
-}
-
-void MemoryUsageMonitor::GetV8MemoryUsage(MemoryUsage& usage) {
-  usage.v8_bytes = 0;
-  // TODO: Add memory usage for worker threads.
-  Thread::MainThread()
-      ->Scheduler()
-      ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](MemoryUsage& usage, v8::Isolate* isolate) {
-            v8::HeapStatistics heap_statistics;
-            isolate->GetHeapStatistics(&heap_statistics);
-            usage.v8_bytes += heap_statistics.total_heap_size() +
-                              heap_statistics.malloced_memory();
-          },
-          std::ref(usage)));
-}
-
-void MemoryUsageMonitor::GetBlinkMemoryUsage(MemoryUsage& usage) {
-  usage.blink_gc_bytes = ProcessHeap::TotalAllocatedObjectSize();
-  usage.partition_alloc_bytes = WTF::Partitions::TotalSizeOfCommittedPages();
 }
 
 void MemoryUsageMonitor::TimerFired() {
