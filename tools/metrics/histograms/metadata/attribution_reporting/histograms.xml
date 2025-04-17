@@ -599,6 +599,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DistinctReportingOrigins" units="origins"
+    expires_after="2025-08-24">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many distinct reporting origins are in a given database.
+    Reporting origins are counted during database initialization and migration.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ExtraReportDelay2" units="ms"
     expires_after="2025-08-24">
   <owner>apaseltiner@chromium.org</owner>

@@ -2770,5 +2770,37 @@ TEST_F(AttributionStorageSqlTest, ClearData_OsRegistrationsDataDeleted) {
   EXPECT_THAT(storage()->GetAllDataKeys(), IsEmpty());
 }
 
+TEST_F(AttributionStorageSqlTest, UniqueReportingOriginsCounted) {
+  OpenDatabase();
+
+  auto s1 =
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.test"))
+          .Build();
+  auto s2 =
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.test"))
+          .Build();
+  auto s3 =
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.test"))
+          .Build();
+  storage()->StoreSource(s1);
+  storage()->StoreSource(s2);
+  storage()->StoreSource(s3);
+
+  storage()->StoreOsRegistrations(
+      {url::Origin::Create(GURL("https://c.test"))});
+  CloseDatabase();
+
+  base::HistogramTester histograms;
+
+  OpenDatabase();
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(3));
+  CloseDatabase();
+
+  histograms.ExpectUniqueSample("Conversions.DistinctReportingOrigins", 3, 1);
+}
+
 }  // namespace
 }  // namespace content
