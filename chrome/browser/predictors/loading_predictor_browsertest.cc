@@ -1331,7 +1331,13 @@ class LCPPTimingPredictorBrowserTest : public LCPPTimingPredictorTestBase {
 
 // Confirm image element of the first LCP is predicted rather than div, or the
 // actual LCP(current implementation)
-IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, Base) {
+// TODO(crbug.com/411280030): Flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Base DISABLED_Base
+#else
+#define MAYBE_Base Base
+#endif
+IN_PROC_BROWSER_TEST_F(LCPPTimingPredictorBrowserTest, MAYBE_Base) {
   TestPrediction();
 }
 
