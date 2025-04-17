@@ -112,6 +112,7 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {
+
   base::TimeDelta backoff_duration =
       kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
 
