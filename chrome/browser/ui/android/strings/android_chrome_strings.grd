@@ -5535,6 +5535,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_NEW_INCOGNITO_TAB" desc="A text label that appears next to a keyboard shortcut to open a new tab in Incognito mode in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open a new tab in Incognito mode
       </message>
+       <message name="IDS_KEYBOARD_SHORTCUT_SPECIFIC_TAB" desc="A text label that appears next to the keyboard shortcut that will move the user to a specific tab in the Chrome app. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Jump to a specific tab (1–8)
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_LAST_TAB" desc="A text label that appears next to the keyboard shortcut that will move the user to the last tab in the Chrome app. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Jump to the last tab
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_TAB_NAVIGATION_GROUP_HEADER" desc="A text label that appears above a list of shortcuts that are related to navigating the tab window. This group is part of several groups of keyboard shortcuts all shown in a dialog.">
+        Tab navigation shortcuts
+      </message>
       <message name="IDS_KEYBOARD_SHORTCUT_OPEN_MENU" desc="A text label that appears next to a keyboard shortcut that opens the overflow menu in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open the menu
       </message>

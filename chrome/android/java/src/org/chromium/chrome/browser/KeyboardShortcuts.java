@@ -230,52 +230,6 @@ public class KeyboardShortcuts {
         }
 
         switch (keyCodeAndMeta) {
-            case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
-            case CTRL | KeyEvent.KEYCODE_PAGE_UP:
-            case KeyEvent.KEYCODE_BUTTON_L1:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT;
-            case CTRL | KeyEvent.KEYCODE_TAB:
-            case CTRL | KeyEvent.KEYCODE_PAGE_DOWN:
-            case KeyEvent.KEYCODE_BUTTON_R1:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT;
-            case CTRL | KeyEvent.KEYCODE_1:
-            case CTRL | KeyEvent.KEYCODE_2:
-            case CTRL | KeyEvent.KEYCODE_3:
-            case CTRL | KeyEvent.KEYCODE_4:
-            case CTRL | KeyEvent.KEYCODE_5:
-            case CTRL | KeyEvent.KEYCODE_6:
-            case CTRL | KeyEvent.KEYCODE_7:
-            case CTRL | KeyEvent.KEYCODE_8:
-            case ALT | KeyEvent.KEYCODE_1:
-            case ALT | KeyEvent.KEYCODE_2:
-            case ALT | KeyEvent.KEYCODE_3:
-            case ALT | KeyEvent.KEYCODE_4:
-            case ALT | KeyEvent.KEYCODE_5:
-            case ALT | KeyEvent.KEYCODE_6:
-            case ALT | KeyEvent.KEYCODE_7:
-            case ALT | KeyEvent.KEYCODE_8:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_1:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_2:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_3:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_4:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_5:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_6:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_7:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_8:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_1:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_2:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_3:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_4:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_5:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_6:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_7:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_8:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB;
-            case CTRL | KeyEvent.KEYCODE_9:
-            case ALT | KeyEvent.KEYCODE_9:
-            case CTRL | KeyEvent.KEYCODE_NUMPAD_9:
-            case ALT | KeyEvent.KEYCODE_NUMPAD_9:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB;
             case CTRL | SHIFT | KeyEvent.KEYCODE_A:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TAB_SEARCH;
                 // TODO(crbug.com/402775002): Figure out what shortcut does TOGGLE_MULTITASK_MENU.
@@ -512,7 +466,7 @@ public class KeyboardShortcuts {
             KEYBOARD_SHORTCUT_SEMANTIC_MAP.put(
                     primaryShortcut.mMetaStateAndKeyCode, semanticMeaning);
 
-            // Add alternate combinations to the semantic map, but not the shortcut helper.
+            // Add alternate combinations to the semantic map, but not to the shortcut helper.
             for (var alternateShortcut : alternateShortcuts) {
                 KEYBOARD_SHORTCUT_SEMANTIC_MAP.put(
                         alternateShortcut.mMetaStateAndKeyCode, semanticMeaning);
@@ -599,6 +553,79 @@ public class KeyboardShortcuts {
                 new KeyCombo[] {
                     new KeyCombo(KeyEvent.KEYCODE_F4, KeyEvent.META_CTRL_ON),
                     new KeyCombo(KeyEvent.KEYCODE_BUTTON_B, NO_MODIFIER),
+                });
+
+        // Navigation shortcuts (keyboard_shortcut_tab_navigation_group_header).
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT,
+                new KeyCombo(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_next_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_R1, NO_MODIFIER)
+                });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT,
+                new KeyCombo(
+                        KeyEvent.KEYCODE_TAB, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                R.string.keyboard_shortcut_prev_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_PAGE_UP, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_BUTTON_L1, NO_MODIFIER)
+                });
+
+        // Move to specific tab (1-8)
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_specific_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_2, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_3, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_4, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_5, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_6, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_7, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_8, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_1, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_2, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_3, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_4, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_5, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_6, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_7, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_8, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_1, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_2, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_3, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_4, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_5, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_6, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_7, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_8, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_1, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_2, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_3, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_4, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_5, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_6, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_7, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_8, KeyEvent.META_ALT_ON),
+                });
+
+        // Move to last tab.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB,
+                new KeyCombo(KeyEvent.KEYCODE_9, KeyEvent.META_CTRL_ON),
+                R.string.keyboard_shortcut_last_tab,
+                R.string.keyboard_shortcut_tab_navigation_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(KeyEvent.KEYCODE_9, KeyEvent.META_ALT_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_9, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_NUMPAD_9, KeyEvent.META_ALT_ON),
                 });
     }
 
@@ -718,23 +745,6 @@ public class KeyboardShortcuts {
         }
 
         List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>(shortcutGroupsById.values());
-
-        KeyboardShortcutGroup tabShortcutGroup =
-                new KeyboardShortcutGroup(
-                        context.getString(R.string.keyboard_shortcut_tab_group_header));
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_next_tab,
-                KeyEvent.KEYCODE_TAB,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_prev_tab,
-                KeyEvent.KEYCODE_TAB,
-                ctrlShift);
-        shortcutGroups.add(tabShortcutGroup);
 
         KeyboardShortcutGroup chromeFeatureShortcutGroup =
                 new KeyboardShortcutGroup(
