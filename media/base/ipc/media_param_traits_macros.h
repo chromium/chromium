@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_MACROS_H_
 #define MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_MACROS_H_
 
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/buffering_state.h"
@@ -39,6 +39,11 @@
 #if BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 #include "media/base/media_drm_key_type.h"
 #endif  // BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
+
+// Note that this file historically used the same value as
+// ipc/ipc_message_macros.h, and not `COMPONENT_EXPORT(MEDIA)`.
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 // Enum traits.
 
