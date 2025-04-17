@@ -160,8 +160,11 @@
     'android_webview_network_service': {
       'filepath': 'android_webview/browser/network_service/',
     },
+    'android_webview_stable_webexposed': {
+      'filepath': 'android_webview/test/data/web_tests/virtual/stable/webexposed/global-interface-listing-expected.txt',
+    },
     'android_webview_webexposed': {
-      'filepath': 'android_webview/test/data/web_tests/(virtual/stable/)?webexposed/global-interface-listing-expected.txt',
+      'filepath': 'android_webview/test/data/web_tests/webexposed/global-interface-listing-expected.txt',
     },
     'app_service_protos': {
       'filepath': 'components/services/app_service/public/protos/',
@@ -2545,8 +2548,9 @@
     'android_webapk': ['webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
-    'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
-                                   'peter+watch-webexposed@chromium.org'],
+    'android_webview_stable_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
+                                          'peter+watch-webexposed@chromium.org'],
+    'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org'],
     'app_service_protos': ['cros-reporting-team+watch@google.com',
                            'vshenvi+watch@google.com'],
     'app_shortcuts': ['loyso+watch@chromium.org',
