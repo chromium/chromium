@@ -230,9 +230,11 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
   // TODO(crbug.com/383307455): Forward events seen on Browser post transfer
   // over to Viz.
   if (event.GetAction() == ui::MotionEvent::Action::CANCEL) {
-    // Check if this cancel has same downtime as the original down used for
-    // transfer.
-    CHECK(event.GetDownTime() == cached_transferred_sequence_down_time_ms_);
+    if (event.GetDownTime() != cached_transferred_sequence_down_time_ms_) {
+      // TODO(crbug.com/411338242): Investigate touch cancel received with
+      // different downtime.
+      TRACE_EVENT_INSTANT("input", "CancelWithDifferentDownTime");
+    }
     base::UmaHistogramCustomCounts(
         kTouchMovesSeenHistogram, touch_moves_seen_after_transfer_,
         kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
