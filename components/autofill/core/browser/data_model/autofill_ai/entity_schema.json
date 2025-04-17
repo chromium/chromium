@@ -26,6 +26,7 @@
   {
     "name": "Vehicle",
     "attributes": [ "Make", "Model", "Year", "Owner", "Plate number", "Plate state", "VIN" ],
+    "obfuscated attributes": [ "VIN" ],
     "import constraints": [
       [ "Plate number" ],
       [ "VIN" ]
