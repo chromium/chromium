@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {
@@ -28,6 +29,8 @@ inline constexpr int kDesiredAvatarSize = 40;
 // The desired size of the avatars of user accounts.
 inline constexpr int kDesiredAvatarSize = 30;
 #endif  // BUILDFLAG(IS_ANDROID)
+// The desired size of the avatars of user accounts in autofill dropdown.
+inline constexpr int kDesiredAvatarSizeInAutofillDropdown = 20;
 // The size of avatars in the modal dialog.
 inline constexpr int kModalAvatarSize = 36;
 // Size of the IDP icon offset when badging the IDP icon in the account button.
@@ -53,4 +56,45 @@ gfx::ImageSkia ComputeAccountCircleCroppedPicture(
     int avatar_size,
     std::optional<gfx::ImageSkia> idp_image);
 
+// A CanvasImageSource that draws a letter in a circle.
+class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  LetterCircleCroppedImageSkiaSource(const std::u16string& letter, int size);
+  LetterCircleCroppedImageSkiaSource(
+      const LetterCircleCroppedImageSkiaSource&) = delete;
+  LetterCircleCroppedImageSkiaSource& operator=(
+      const LetterCircleCroppedImageSkiaSource&) = delete;
+  ~LetterCircleCroppedImageSkiaSource() override = default;
+
+  void Draw(gfx::Canvas* canvas) override;
+
+ private:
+  const std::u16string letter_;
+};
+
+// A CanvasImageSource that:
+// 1) Applies an optional square center-crop.
+// 2) Resizes the cropped image (while maintaining the image's aspect ratio) to
+//    fit into the target canvas. If no center-crop was applied and the source
+//    image is rectangular, the image is resized so that
+//    `avatar` small edge size == `canvas_edge_size`.
+// 3) Circle center-crops the resized image.
+class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
+ public:
+  CircleCroppedImageSkiaSource(
+      gfx::ImageSkia avatar,
+      const std::optional<int>& pre_resize_avatar_crop_size,
+      int canvas_edge_size);
+
+  CircleCroppedImageSkiaSource(const CircleCroppedImageSkiaSource&) = delete;
+  CircleCroppedImageSkiaSource& operator=(const CircleCroppedImageSkiaSource&) =
+      delete;
+  ~CircleCroppedImageSkiaSource() override = default;
+
+  // CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override;
+
+ private:
+  gfx::ImageSkia avatar_;
+};
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_UI_UTILS_H_
