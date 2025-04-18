@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -1502,6 +1503,54 @@ void BlockNode::CopyFragmentItemsToLayoutBox(
       }
     }
   }
+}
+
+bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {
+  auto* block = DynamicTo<LayoutBlock>(box_.Get());
+  if (!block) {
+    return false;
+  }
+
+  const ComputedStyle& style = Style();
+  const bool in_quirks_mode = GetDocument().InQuirksMode();
+  // Anonymous blocks should not impede percentage resolution on a child.
+  // Examples of such anonymous blocks are blocks wrapped around inlines that
+  // have block siblings (from the CSS spec) and multicol flow threads (an
+  // implementation detail). Another implementation detail, ruby columns, create
+  // anonymous inline-blocks, so skip those too. All other types of anonymous
+  // objects, such as table-cells, will be treated just as if they were
+  // non-anonymous.
+  if (block->IsAnonymous()) {
+    if (!in_quirks_mode && block->Parent() && block->Parent()->IsFieldset()) {
+      return false;
+    }
+    EDisplay display = style.Display();
+    return display == EDisplay::kBlock || display == EDisplay::kInlineBlock ||
+           display == EDisplay::kFlowRoot;
+  }
+
+  // For quirks mode, we skip most auto-height containing blocks when computing
+  // percentages.
+  if (!in_quirks_mode || !style.LogicalHeight().HasAuto()) {
+    return false;
+  }
+
+  const Node* node = GetDOMNode();
+  if (node->IsInUserAgentShadowRoot()) [[unlikely]] {
+    const Element* host = node->OwnerShadowHost();
+    if (const auto* input = DynamicTo<HTMLInputElement>(host)) {
+      // In web_tests/fast/forms/range/range-thumb-height-percentage.html, a
+      // percent height for the slider thumb element should refer to the height
+      // of the INPUT box.
+      if (input->FormControlType() == FormControlType::kInputRange) {
+        return true;
+      }
+    }
+  }
+
+  return !block->IsLayoutReplaced() && !block->IsTableCell() &&
+         !block->IsOutOfFlowPositioned() && !block->IsLayoutGrid() &&
+         !block->IsFlexibleBox() && !block->IsLayoutCustom();
 }
 
 bool BlockNode::IsInlineFormattingContextRoot(

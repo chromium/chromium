@@ -983,10 +983,9 @@ void PhysicalFragment::AddOutlineRectsForDescendant(
 
 bool PhysicalFragment::DependsOnPercentageBlockSize(
     const FragmentBuilder& builder) {
-  LayoutInputNode node = builder.node_;
-
-  if (!node || node.IsInline())
+  if (!builder.node_ || builder.node_.IsInline()) {
     return builder.has_descendant_that_depends_on_percentage_block_size_;
+  }
 
   // NOTE: If an element is OOF positioned, and has top/bottom constraints
   // which are percentage based, this function will return false.
@@ -1011,6 +1010,7 @@ bool PhysicalFragment::DependsOnPercentageBlockSize(
   // NOTE(ikilpatrick): For the flex-item case this is potentially too general.
   // We only need to know about if this flex-item has a %-block-size child if
   // the "definiteness" changes, not if the percentage resolution size changes.
+  const BlockNode node = To<BlockNode>(builder.node_);
   if (builder.has_descendant_that_depends_on_percentage_block_size_ &&
       (node.UseParentPercentageResolutionBlockSizeForChildren() ||
        node.IsFlexItem())) {
