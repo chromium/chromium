@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 
+#include <array>
 #include <optional>
 #include <tuple>
 
@@ -121,8 +122,8 @@ class LazyLoadImagesParamsTest
   }
 
   int GetMargin() const {
-    static constexpr int kDistanceThresholdByEffectiveConnectionType[] = {
-        200, 300, 400, 500, 600, 700};
+    static constexpr auto kDistanceThresholdByEffectiveConnectionType =
+        std::to_array<int>({200, 300, 400, 500, 600, 700});
     return kDistanceThresholdByEffectiveConnectionType[static_cast<int>(
         GetParam())];
   }

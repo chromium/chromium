@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
+#include <array>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +15,7 @@
 #include "third_party/blink/public/web/web_content_capture_client.h"
 #include "third_party/blink/public/web/web_content_holder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -1048,10 +1049,17 @@ TEST_F(ContentCaptureSimTest, DeleteNodeContent) {
 }
 
 TEST_F(ContentCaptureSimTest, UserActivatedDelay) {
-  base::TimeDelta expected_delays[] = {
-      base::Milliseconds(500), base::Seconds(1),  base::Seconds(2),
-      base::Seconds(4),        base::Seconds(8),  base::Seconds(16),
-      base::Seconds(32),       base::Seconds(64), base::Seconds(128)};
+  auto expected_delays = std::to_array<base::TimeDelta>({
+      base::Milliseconds(500),
+      base::Seconds(1),
+      base::Seconds(2),
+      base::Seconds(4),
+      base::Seconds(8),
+      base::Seconds(16),
+      base::Seconds(32),
+      base::Seconds(64),
+      base::Seconds(128),
+  });
   size_t expected_delays_size = std::size(expected_delays);
   // The first task has been scheduled but not run yet, the delay will be
   // increased until current task starts to run. Verifies the value is

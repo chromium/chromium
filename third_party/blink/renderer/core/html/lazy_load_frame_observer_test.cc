@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/lazy_load_frame_observer.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -76,8 +77,8 @@ class LazyLoadFramesParamsTest
   }
 
   int GetLoadingDistanceThreshold() const {
-    static constexpr int kDistanceThresholdByEffectiveConnectionType[] = {
-        200, 300, 400, 500, 600, 700};
+    static constexpr auto kDistanceThresholdByEffectiveConnectionType =
+        std::to_array<int>({200, 300, 400, 500, 600, 700});
     return kDistanceThresholdByEffectiveConnectionType[static_cast<int>(
         std::get<WebEffectiveConnectionType>(GetParam()))];
   }

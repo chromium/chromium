@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_POINTER_EVENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_POINTER_EVENT_MANAGER_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
@@ -251,8 +253,10 @@ class CORE_EXPORT PointerEventManager final
   // pointerdown and next pointerup/pointercancel.
   // See "PREVENT MOUSE EVENT flag" in the spec:
   //   https://w3c.github.io/pointerevents/#compatibility-mapping-with-mouse-events
-  bool prevent_mouse_event_for_pointer_type_
-      [static_cast<size_t>(WebPointerProperties::PointerType::kMaxValue) + 1];
+  std::array<bool,
+             static_cast<size_t>(WebPointerProperties::PointerType::kMaxValue) +
+                 1>
+      prevent_mouse_event_for_pointer_type_;
 
   // Set upon scrolling starts when sending a pointercancel, prevents PE
   // dispatches for non-hovering pointers until all of them become inactive.

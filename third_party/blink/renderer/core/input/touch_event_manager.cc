@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -395,10 +396,10 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
   TargetTouchesHeapMap touches_by_target;
 
   // Array of touches per state, used to assemble the |changedTouches| list.
-  ChangedTouches
-      changed_touches[static_cast<int>(WebInputEvent::Type::kPointerTypeLast) -
-                      static_cast<int>(WebInputEvent::Type::kPointerTypeFirst) +
-                      1];
+  std::array<ChangedTouches,
+             static_cast<int>(WebInputEvent::Type::kPointerTypeLast) -
+                 static_cast<int>(WebInputEvent::Type::kPointerTypeFirst) + 1>
+      changed_touches;
 
   Vector<int> available_ids;
   for (const auto& id : touch_attribute_map_.Keys())
