@@ -18,6 +18,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
           kChromiumExperimentalTimestampQueryInsidePasses;
     case wgpu::FeatureName::TextureCompressionBC:
       return V8GPUFeatureName::Enum::kTextureCompressionBc;
+    case wgpu::FeatureName::TextureCompressionBCSliced3D:
+      return V8GPUFeatureName::Enum::kTextureCompressionBcSliced3d;
     case wgpu::FeatureName::TextureCompressionETC2:
       return V8GPUFeatureName::Enum::kTextureCompressionEtc2;
     case wgpu::FeatureName::TextureCompressionASTC:

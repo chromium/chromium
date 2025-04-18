@@ -1277,6 +1277,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
     case wgpu::FeatureName::MultiDrawIndirect:
+    case wgpu::FeatureName::TextureCompressionBCSliced3D:
     case wgpu::FeatureName::Unorm16TextureFormats:
     case wgpu::FeatureName::Snorm16TextureFormats:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;

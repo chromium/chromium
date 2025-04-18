@@ -689,6 +689,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
   switch (webgpu_enum.AsEnum()) {
     case V8GPUFeatureName::Enum::kTextureCompressionBc:
       return wgpu::FeatureName::TextureCompressionBC;
+    case V8GPUFeatureName::Enum::kTextureCompressionBcSliced3d:
+      return wgpu::FeatureName::TextureCompressionBCSliced3D;
     case V8GPUFeatureName::Enum::kTextureCompressionEtc2:
       return wgpu::FeatureName::TextureCompressionETC2;
     case V8GPUFeatureName::Enum::kTextureCompressionAstc:
