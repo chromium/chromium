@@ -3931,8 +3931,6 @@ static_library("ui") {
       "views/controls/site_icon_text_and_origin_view.h",
       "views/controls/subpage_view.cc",
       "views/controls/subpage_view.h",
-      "views/controls/text_with_controls_view.cc",
-      "views/controls/text_with_controls_view.h",
       "views/data_sharing/account_card_view.cc",
       "views/data_sharing/account_card_view.h",
       "views/data_sharing/collaboration_controller_delegate_desktop.cc",
