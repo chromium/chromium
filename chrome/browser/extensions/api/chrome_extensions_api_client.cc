@@ -298,15 +298,15 @@ void ChromeExtensionsAPIClient::OpenFileUrl(
 }
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-AppViewGuestDelegate* ChromeExtensionsAPIClient::CreateAppViewGuestDelegate()
-    const {
-  return new ChromeAppViewGuestDelegate;
+std::unique_ptr<AppViewGuestDelegate>
+ChromeExtensionsAPIClient::CreateAppViewGuestDelegate() const {
+  return std::make_unique<ChromeAppViewGuestDelegate>();
 }
 
-ExtensionOptionsGuestDelegate*
+std::unique_ptr<ExtensionOptionsGuestDelegate>
 ChromeExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
     ExtensionOptionsGuest* guest) const {
-  return new ChromeExtensionOptionsGuestDelegate(guest);
+  return std::make_unique<ChromeExtensionOptionsGuestDelegate>(guest);
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
@@ -320,15 +320,17 @@ ChromeExtensionsAPIClient::CreateMimeHandlerViewGuestDelegate(
   return std::make_unique<ChromeMimeHandlerViewGuestDelegate>();
 }
 
-WebViewGuestDelegate* ChromeExtensionsAPIClient::CreateWebViewGuestDelegate(
+std::unique_ptr<WebViewGuestDelegate>
+ChromeExtensionsAPIClient::CreateWebViewGuestDelegate(
     WebViewGuest* web_view_guest) const {
-  return new ChromeWebViewGuestDelegate(web_view_guest);
+  return std::make_unique<ChromeWebViewGuestDelegate>(web_view_guest);
 }
 
-WebViewPermissionHelperDelegate*
+std::unique_ptr<WebViewPermissionHelperDelegate>
 ChromeExtensionsAPIClient::CreateWebViewPermissionHelperDelegate(
     WebViewPermissionHelper* web_view_permission_helper) const {
-  return new ChromeWebViewPermissionHelperDelegate(web_view_permission_helper);
+  return std::make_unique<ChromeWebViewPermissionHelperDelegate>(
+      web_view_permission_helper);
 }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 

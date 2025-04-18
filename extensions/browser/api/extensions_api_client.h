@@ -147,14 +147,14 @@ class ExtensionsAPIClient {
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Creates the AppViewGuestDelegate.
-  virtual AppViewGuestDelegate* CreateAppViewGuestDelegate() const;
+  virtual std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
+      const;
 
-  // Returns a delegate for ExtensionOptionsGuest. The caller owns the returned
-  // ExtensionOptionsGuestDelegate.
-  virtual ExtensionOptionsGuestDelegate* CreateExtensionOptionsGuestDelegate(
-      ExtensionOptionsGuest* guest) const;
+  // Creates a delegate for ExtensionOptionsGuest.
+  virtual std::unique_ptr<ExtensionOptionsGuestDelegate>
+  CreateExtensionOptionsGuestDelegate(ExtensionOptionsGuest* guest) const;
 
-  // Returns a delegate for GuestViewManagerDelegate.
+  // Creates a delegate for GuestViewManagerDelegate.
   virtual std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const;
 
@@ -162,14 +162,12 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<MimeHandlerViewGuestDelegate>
   CreateMimeHandlerViewGuestDelegate(MimeHandlerViewGuest* guest) const;
 
-  // Returns a delegate for some of WebViewGuest's behavior. The caller owns the
-  // returned WebViewGuestDelegate.
-  virtual WebViewGuestDelegate* CreateWebViewGuestDelegate(
+  // Creates a delegate for some of WebViewGuest's behavior.
+  virtual std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const;
 
-  // Returns a delegate for some of WebViewPermissionHelper's behavior. The
-  // caller owns the returned WebViewPermissionHelperDelegate.
-  virtual WebViewPermissionHelperDelegate*
+  // Creates a delegate for some of WebViewPermissionHelper's behavior.
+  virtual std::unique_ptr<WebViewPermissionHelperDelegate>
   CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const;
 #endif
