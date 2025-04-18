@@ -50,7 +50,6 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
   explicit CharacterBreakIterator(base::span<const UChar>);
   CharacterBreakIterator(const CharacterBreakIterator&) = delete;
   CharacterBreakIterator& operator=(const CharacterBreakIterator&) = delete;
-  ~CharacterBreakIterator();
 
   int Next();
   int Current();

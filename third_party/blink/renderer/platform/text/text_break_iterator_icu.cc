@@ -815,12 +815,6 @@ void CharacterBreakIterator::CreateIteratorForBuffer(
   SetText16(iterator_, buffer);
 }
 
-CharacterBreakIterator::~CharacterBreakIterator() {
-  if (is_8bit_) {
-    return;
-  }
-}
-
 int CharacterBreakIterator::Next() {
   if (!is_8bit_) {
     return iterator_->next();
