@@ -609,9 +609,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
   DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
 #else
-// Flaky, see https://crbug.com/355141780
-#define MAYBE_CrashReport DISABLED_CrashReport
-
+#define MAYBE_CrashReport CrashReport
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
 #define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
   CrashReportUnresponsiveCrossOriginIframe
