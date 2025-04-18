@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -50,14 +49,12 @@ class ChromeTestExtensionLoader {
   // unpacked extensions.
   scoped_refptr<const Extension> LoadExtension(const base::FilePath& file_path);
 
-#if !BUILDFLAG(IS_ANDROID)
   // A limited asynchronous version of LoadExtension. It only supports unpacked
   // extensions and the callback is run as soon as the OnExtensionLoaded fires.
   // It also does not support any of the custom settings below.
   void LoadUnpackedExtensionAsync(
       const base::FilePath& file_path,
       base::OnceCallback<void(const Extension*)> callback);
-#endif
 
   // Myriad different settings. See the member variable declarations for
   // explanations and defaults.

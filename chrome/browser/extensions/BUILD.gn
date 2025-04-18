@@ -1533,6 +1533,8 @@ static_library("test_support") {
     "chrome_test_extension_loader.h",
     "extension_management_test_util.cc",
     "extension_management_test_util.h",
+    "load_error_waiter.cc",
+    "load_error_waiter.h",
     "mock_extension_special_storage_policy.cc",
     "mock_extension_special_storage_policy.h",
   ]
@@ -1546,12 +1548,6 @@ static_library("test_support") {
     "//extensions:test_support",
     "//testing/gmock",
   ]
-
-  if (is_android) {
-    sources += [ "chrome_test_extension_loader_android.cc" ]
-  } else {
-    sources += [ "chrome_test_extension_loader_non_android.cc" ]
-  }
 
   if (enable_extensions) {
     sources += [
@@ -1567,8 +1563,6 @@ static_library("test_support") {
       "external_testing_loader.h",
       "fake_crx_installer.cc",
       "fake_crx_installer.h",
-      "load_error_waiter.cc",
-      "load_error_waiter.h",
       "menu_manager_test_observer.cc",
       "menu_manager_test_observer.h",
       "mock_crx_installer.cc",
