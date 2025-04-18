@@ -3011,8 +3011,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     return {};
   }
 
-  // TODO(crbug.com/380367784): Figure out how verified identity attributes
-  // (e.g. email addresses) rank compared to other sources.
   if (const IdentityCredentialDelegate* identity_credential_delegate =
           client().GetIdentityCredentialDelegate()) {
     // Only <input autocomplete="email"> fields are considered.
@@ -3020,9 +3018,14 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
             ParseAutocompleteAttribute(
                 autofill_field->autocomplete_attribute());
         autocomplete && autocomplete->field_type == HtmlFieldType::kEmail) {
-      base::Extend(suggestions,
-                   identity_credential_delegate->GetVerifiedAutofillSuggestions(
-                       FieldType::EMAIL_ADDRESS));
+      std::vector<Suggestion> verified_suggestions =
+          identity_credential_delegate->GetVerifiedAutofillSuggestions(
+              FieldType::EMAIL_ADDRESS);
+      // Insert verified suggestions above unverified ones.
+      // TODO(crbug.com/380367784): figure out what to do when both verified
+      // and unverified suggestions point to the same email address.
+      suggestions.insert(suggestions.begin(), verified_suggestions.begin(),
+                         verified_suggestions.end());
     }
   }
 
