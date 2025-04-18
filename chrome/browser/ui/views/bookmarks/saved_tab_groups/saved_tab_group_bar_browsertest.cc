@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service);
   service_impl->SetIsInitializedForTesting(true);
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
 
   {  // Create 1 pinned group
     ScopedAddObservation observer(service);
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     SavedTabGroup group{
         u"group_title", TabGroupColorId::kGrey, {}, 0, group_guid};
 
-    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    SavedTabGroupModel* model = service_impl->GetModel();
     model->AddedFromSync(std::move(group));
     observer.Wait();
 
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     TabGroupSyncService* service =
         SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
     auto* service_impl = static_cast<TabGroupSyncServiceImpl*>(service);
-    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    SavedTabGroupModel* model = service_impl->GetModel();
     for (int i = 0; i < kLargeGroupCount; i++) {
       base::Uuid group_guid = base::Uuid::GenerateRandomV4();
       SavedTabGroup group(u"Group Title", TabGroupColorId::kGrey, {}, 0,
