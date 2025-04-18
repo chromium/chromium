@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
@@ -49,7 +50,9 @@ class DesktopViewManager {
   friend class DesktopViewManagerTest;
 
   // Performs necessary checks to determine if a new view should be created.
-  void MaybeCreateView();
+  // TODO(chrstne): Use BrowserWindowInterace here.
+  void MaybeCreateView(
+      base::OnceCallback<void(notice::mojom::PrivacySandboxNotice)> show);
 
   // Notifies open views to close.
   void CloseAllOpenViews();

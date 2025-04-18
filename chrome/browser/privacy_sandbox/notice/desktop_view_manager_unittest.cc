@@ -49,8 +49,9 @@ class DesktopViewManagerTest : public testing::Test {
   }
 
   void CreateView(MockDesktopViewManagerObserver* observer) {
-    desktop_view_manager()->MaybeCreateView();
-    // Once a view is created, an observer is added.
+    desktop_view_manager()->MaybeCreateView(
+        base::BindOnce([](PrivacySandboxNotice notice) {}));
+    // An observer is added once a view is created.
     desktop_view_manager()->AddObserver(observer);
   }
 

@@ -32,7 +32,8 @@ void DesktopViewManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DesktopViewManager::MaybeCreateView() {
+void DesktopViewManager::MaybeCreateView(
+    base::OnceCallback<void(PrivacySandboxNotice)> show) {
   if (!notice_service_) {
     return;
   }
@@ -45,8 +46,7 @@ void DesktopViewManager::MaybeCreateView() {
   }
 
   pending_notices_to_show_ = required_notices;
-  // TODO(crbug.com/408016824): Call into dialog view to actually create a new
-  // view.
+  std::move(show).Run(pending_notices_to_show_[0]);
 }
 
 void DesktopViewManager::CloseAllOpenViews() {
