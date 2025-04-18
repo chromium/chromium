@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -322,7 +321,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   raw_ptr<PrefService> pref_service_;
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;
-  std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;

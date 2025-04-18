@@ -23,7 +23,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
@@ -505,9 +504,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   fake_blocked_topics_ = {{browsing_topics::Topic(3), kFakeTaxonomyVersion},
                           {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
 
-  // Create notice storage
-  notice_storage_ =
-      std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
 // Create queue manager
 #if !BUILDFLAG(IS_ANDROID)
   queue_manager_ =
@@ -518,7 +514,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
   CHECK(tracking_protection_settings_);
-  CHECK(notice_storage_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(queue_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1440,14 +1435,6 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   RecordFirstPartySetsStateHistogram(rws_status);
 
   RecordPrivacySandbox4StartupMetrics();
-
-  // TODO(crbug.com/333406690): After migration, move this portion to the
-  // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h constructor
-  // and emit ALL startup histograms instead of just Topics consent related
-  // histograms.
-  for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
-    notice_storage_->RecordHistogramsOnStartup(pref_service_, notice_name);
-  }
 }
 
 void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(

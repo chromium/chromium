@@ -29,6 +29,8 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(
   desktop_view_manager_ = std::make_unique<DesktopViewManager>(this);
   CHECK(desktop_view_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  EmitStartupHistograms();
 }
 
 PrivacySandboxNoticeService::~PrivacySandboxNoticeService() = default;
@@ -74,6 +76,13 @@ PrefService* PrivacySandboxNoticeService::GetPrefService() {
 
 NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
   return catalog_.get();
+}
+
+void PrivacySandboxNoticeService::EmitStartupHistograms() {
+  for (const auto& [notice_id, notice] : catalog_->GetNoticeMap()) {
+    GetNoticeStorage()->RecordHistogramsOnStartup(GetPrefService(),
+                                                  notice->GetStorageName());
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

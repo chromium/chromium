@@ -17,5 +17,10 @@ group("unit_tests") {
   deps = [ "notice:unit_tests" ]
   public_deps = [ "notice:test_support" ]
 }
+
+group("browser_tests") {
+  testonly = true
+  deps = [ "notice:browser_tests" ]
+}
 # TODO(crbug.com/408801109) move other privacy_sandbox sources
 # from chrome/test/BUILD.gn here.

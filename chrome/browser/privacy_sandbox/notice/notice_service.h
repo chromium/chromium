@@ -57,6 +57,7 @@ class PrivacySandboxNoticeService
   void Shutdown() override;
 
  private:
+  void EmitStartupHistograms();
   // TODO(crbug.com/392612108): Create eligibility and notice result callbacks.
   raw_ptr<Profile> profile_;
   std::unique_ptr<NoticeCatalog> catalog_;

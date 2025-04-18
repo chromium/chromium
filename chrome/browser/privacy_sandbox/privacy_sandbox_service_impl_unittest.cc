@@ -26,10 +26,8 @@
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -339,8 +337,6 @@ class PrivacySandboxServiceTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_attestations_(
             privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
-    notice_storage_ =
-        std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
     CreateDefaultProfile();
     first_party_sets_policy_service_ =
         std::make_unique<first_party_sets::FirstPartySetsPolicyService>(
@@ -548,7 +544,6 @@ class PrivacySandboxServiceTest : public testing::Test {
 
  protected:
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<privacy_sandbox::NoticeStorage> notice_storage_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -756,20 +751,6 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   ASSERT_EQ(returned_sites.size(), 2u);
   EXPECT_EQ(returned_sites[0], sites[1]);
   EXPECT_EQ(returned_sites[1], sites[2]);
-}
-
-TEST_F(PrivacySandboxServiceTest, HistogramsAreEmptyOnStartup) {
-  const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
-  for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
-    EXPECT_THAT(
-        histograms,
-        testing::Not(testing::AnyOf(base::StrCat(
-            {"PrivacySandbox.Notice.NoticeStartupState.", notice_name}))));
-    EXPECT_THAT(
-        histograms,
-        testing::Not(testing::AnyOf(base::StrCat(
-            {"PrivacySandbox.Notice.NoticeStartupState2.", notice_name}))));
-  }
 }
 
 TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
