@@ -243,7 +243,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 23
+// Next ID: 24
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -251,6 +251,9 @@ message ContentAttributes {
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_IMAGE.
     ImageInfo image_data = 11;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_SVG.
+    SVGData svg_data = 23;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_ANCHOR.
     AnchorData anchor_data = 14;
@@ -431,6 +434,11 @@ message SecurityOrigin {
   // The raw value of the origin. It is set to the nonce for opaque origins and
   // scheme-host-port string for non-opaque origins.
   string value = 2;
+}
+
+message SVGData {
+  // The inner text for the SVG subtree.
+  string inner_text = 1;
 }
 
 message AnchorData {
@@ -1606,7 +1614,7 @@ enum AnnotatedPageContentVersion {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 25;
+// Next ID: 26;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1627,6 +1635,8 @@ enum ContentAttributeType {
 
   // Image chunks.
   CONTENT_ATTRIBUTE_IMAGE = 9;
+
+  CONTENT_ATTRIBUTE_SVG = 25;
 
   // Structured chunks.
   CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
