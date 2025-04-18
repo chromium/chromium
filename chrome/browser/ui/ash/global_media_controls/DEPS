@@ -15,7 +15,13 @@ include_rules = [
   "+chrome/browser/media/router",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/global_media_controls",
-  "+chrome/browser/ui/views/chrome_layout_provider.h",
   "+chrome/browser/ui/views/global_media_controls",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Allow access for tests.
+  "media_notification_provider_impl_unittest\\.cc": [
+    "+chrome/browser/ui/views/chrome_layout_provider.h",
+  ],
+}
