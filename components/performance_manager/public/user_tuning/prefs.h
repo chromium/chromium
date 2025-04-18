@@ -97,9 +97,10 @@ inline constexpr char kPerformanceInterventionNotificationLastShown[] =
 
 // The pref storing a boolean list which keeps track whether the user has
 // accepted performance intervention with a true value and false if the
-// intervention was rejected.
+// intervention was rejected. This is the second version of this pref
+// because the first was deprecated for saving inaccurate entries.
 inline constexpr char kPerformanceInterventionNotificationAcceptHistory[] =
-    "performance_tuning.intervention_notification.accept_history";
+    "performance_tuning.intervention_notification.accept_history2";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

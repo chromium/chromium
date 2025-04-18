@@ -249,12 +249,14 @@ bool PerformanceInterventionButtonController::ShouldShowNotification(
 
 void PerformanceInterventionButtonController::HideToolbarButton(
     bool accept_intervention) {
+  const bool was_showing = delegate_->IsButtonShowing();
   hide_button_timer_.Stop();
   delegate_->Hide();
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
-              kPerformanceInterventionNotificationImprovements)) {
+              kPerformanceInterventionNotificationImprovements) &&
+      was_showing) {
     PrefService* const pref_service = g_browser_process->local_state();
     const base::Value::List& historical_acceptance = pref_service->GetList(
         performance_manager::user_tuning::prefs::

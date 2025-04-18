@@ -1092,6 +1092,10 @@ inline constexpr char kRecurrentSSLInterstitial[] =
 // Deprecated 04/2025.
 inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
     "default_search_provider.choice_screen_shuffle_milestone";
+#if !BUILDFLAG(IS_ANDROID)
+inline char kPerformanceInterventionNotificationAcceptHistoryDeprecated[] =
+    "performance_tuning.intervention_notification.accept_history";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Deprecated 04/2025.
 inline constexpr char kAddedBookmarkSincePowerBookmarksLaunch[] =
@@ -1200,6 +1204,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 03/2025.
   registry->RegisterTimePref(kDeviceRestrictionScheduleHighestSeenTime,
                              base::Time());
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 04/2025.
+  registry->RegisterListPref(
+      kPerformanceInterventionNotificationAcceptHistoryDeprecated);
 #endif
 }
 
@@ -2442,6 +2452,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS)
   local_state->ClearPref(kDeviceRestrictionScheduleHighestSeenTime);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(
+      kPerformanceInterventionNotificationAcceptHistoryDeprecated);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
