@@ -51,7 +51,8 @@ const char kExceptionMessageInvalidTopK[] =
 const char kExceptionMessageInvalidTemperature[] =
     "The temperature value provided is invalid.";
 const char kExceptionMessageUnableToCreateSession[] =
-    "The session cannot be created.";
+    "The device is unable to create a session to run the model. "
+    "Please check the result of availability() first.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
 const char kExceptionMessageUnableToCalculateUsage[] =
