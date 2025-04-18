@@ -119,6 +119,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
             mCoordinator =
                     new FullscreenSigninAndHistorySyncCoordinator(
+                            getWindowAndroid(),
                             this,
                             getModalDialogManager(),
                             getProfileProviderSupplier(),
@@ -126,7 +127,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                             config,
                             signinAccessPoint,
                             this,
-                            getStartTime());
+                            getStartTime(),
+                            DeviceLockActivityLauncherImpl.get());
 
             setInitialContentView(mCoordinator.getView());
             onInitialLayoutInflationComplete();

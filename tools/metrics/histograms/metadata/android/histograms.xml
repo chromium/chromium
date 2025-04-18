@@ -663,6 +663,7 @@ chromium-metrics-reviews@google.com.
     <variant name="AccountPicker"/>
     <variant name="Autofill"/>
     <variant name="FirstRun"/>
+    <variant name="FullscreenSignin"/>
     <variant name="SyncConsent"/>
   </token>
 </histogram>

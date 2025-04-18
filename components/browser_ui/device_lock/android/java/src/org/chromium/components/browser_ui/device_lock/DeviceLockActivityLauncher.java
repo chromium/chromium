@@ -23,19 +23,27 @@ public interface DeviceLockActivityLauncher {
      * Enum representing the flow user took to arrive at the device lock UI that corresponds with
      * the right histogram name.
      */
-    @StringDef({Source.FIRST_RUN, Source.SYNC_CONSENT, Source.ACCOUNT_PICKER, Source.AUTOFILL})
+    @StringDef({
+        Source.FIRST_RUN,
+        Source.SYNC_CONSENT,
+        Source.ACCOUNT_PICKER,
+        Source.AUTOFILL,
+        Source.FULLSCREEN_SIGNIN
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Source {
         String FIRST_RUN = "FirstRun";
         String SYNC_CONSENT = "SyncConsent";
         String ACCOUNT_PICKER = "AccountPicker";
         String AUTOFILL = "Autofill";
+        String FULLSCREEN_SIGNIN = "FullscreenSignin";
     }
 
     public static boolean isSignInFlow(@Source String source) {
         return source.equals(Source.FIRST_RUN)
                 || source.equals(Source.SYNC_CONSENT)
-                || source.equals(Source.ACCOUNT_PICKER);
+                || source.equals(Source.ACCOUNT_PICKER)
+                || source.equals(Source.FULLSCREEN_SIGNIN);
     }
 
     /**

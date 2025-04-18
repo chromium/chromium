@@ -139,16 +139,18 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)
-    public void promoNotShownWhenForcingSigninPromoAtStartupOnAuto() {
+    public void promoShownWhenForcingSigninPromoAtStartupOnAuto() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO)))
+                .thenReturn(mSigninIntent);
 
-        Assert.assertFalse(
+        Assert.assertTrue(
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(
-                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO));
+
+        verify(mContext).startActivity(mSigninIntent);
     }
 
     @Test
