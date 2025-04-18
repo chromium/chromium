@@ -121,9 +121,7 @@ class SlewVolumeBaseTest : public ::testing::Test {
   }
 
   void ClearInterrupted() {
-    float throwaway
-        __attribute__((__aligned__(::media::AudioBus::kChannelAlignment))) =
-            0.0f;
+    float throwaway __attribute__((__aligned__(16))) = 0.0f;
     slew_volume_->ProcessFMUL(false, &throwaway, 1, 1, &throwaway);
   }
 

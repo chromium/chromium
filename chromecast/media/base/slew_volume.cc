@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/memory/aligned_memory.h"
 #include "media/base/vector_math.h"
 
 namespace {
@@ -158,9 +157,11 @@ void SlewVolume::ProcessData(bool repeat_transition,
                              float* dest) {
   DCHECK(src);
   DCHECK(dest);
-  // Ensure |src| and |dest| are aligned.
-  CHECK(base::IsAligned(src, ::media::vector_math::kRequiredAlignment));
-  CHECK(base::IsAligned(dest, ::media::vector_math::kRequiredAlignment));
+  // Ensure |src| and |dest| are 16-byte aligned.
+  DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(src) &
+                    (::media::vector_math::kRequiredAlignment - 1));
+  DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(dest) &
+                    (::media::vector_math::kRequiredAlignment - 1));
 
   if (!frames) {
     return;

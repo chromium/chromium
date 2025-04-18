@@ -14,7 +14,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
@@ -827,18 +826,19 @@ TEST(AudioBufferTest, AudioBufferMemoryPool) {
 
 // Test that the channels are aligned according to the pool parameter.
 TEST(AudioBufferTest, AudioBufferMemoryPoolAlignment) {
+  const int kAlignment = 512;
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_6_1;
   const size_t kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
 
-  auto pool = base::MakeRefCounted<AudioBufferMemoryPool>();
+  auto pool = base::MakeRefCounted<AudioBufferMemoryPool>(kAlignment);
   scoped_refptr<AudioBuffer> buffer =
       AudioBuffer::CreateBuffer(kSampleFormatPlanarU8, kChannelLayout,
                                 kChannelCount, kSampleRate, kSampleRate, pool);
 
   ASSERT_EQ(kChannelCount, buffer->channel_data().size());
   for (size_t i = 0; i < kChannelCount; i++) {
-    EXPECT_TRUE(
-        base::IsAligned(buffer->channel_data()[i], AudioBus::kChannelAlignment))
+    EXPECT_EQ(
+        0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i]) % kAlignment)
         << " channel: " << i;
   }
 
@@ -857,8 +857,8 @@ TEST(AudioBufferTest, AudioBufferAlignmentUnpooled) {
 
   ASSERT_EQ(kChannelCount, buffer->channel_data().size());
   for (size_t i = 0; i < kChannelCount; i++) {
-    EXPECT_TRUE(
-        base::IsAligned(buffer->channel_data()[i], AudioBus::kChannelAlignment))
+    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i]) %
+                      AudioBus::kChannelAlignment)
         << " channel: " << i;
   }
 }

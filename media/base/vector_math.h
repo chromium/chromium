@@ -13,7 +13,7 @@
 namespace media::vector_math {
 
 // Required alignment for inputs and outputs to all vector math functions
-inline constexpr size_t kRequiredAlignment = 32;
+enum { kRequiredAlignment = 16 };
 
 // Multiply each element of `src` by `scale` and add to `dest`.
 // `src` and `dest` must be aligned by `kRequiredAlignment`.

@@ -38,9 +38,9 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   using ConstChannel = base::span<const float>;
   using ChannelVector = std::vector<Channel>;
 
-  // Guaranteed alignment of each channel's data; use 32-byte alignment for easy
+  // Guaranteed alignment of each channel's data; use 16-byte alignment for easy
   // SSE optimizations.
-  static constexpr size_t kChannelAlignment = 32;
+  static constexpr size_t kChannelAlignment = 16;
 
   // Creates a new AudioBus and allocates |channels| of length |frames|.  Uses
   // channels() and frames_per_buffer() from AudioParameters if given.

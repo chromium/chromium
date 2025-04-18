@@ -71,10 +71,7 @@ class IOBufferPool::Internal {
   class Wrapper;
   union Storage;
 
-  // Some of these buffers are passed to optimized SIMD audio algorithms and
-  // have a minimum alignment requirement of
-  // ::media::vector_math::kRequiredAlignment.
-  static constexpr size_t kAlignment = 32;
+  static constexpr size_t kAlignment = 16;
 
   static Storage* AllocateStorageUnionAndDataArea(size_t data_area_size);
   static char* DataAreaFromStorageUnion(Storage* ptr);

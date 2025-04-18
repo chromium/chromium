@@ -34,7 +34,7 @@ namespace media {
 #pragma warning(push)
 #pragma warning(disable : 4324)  // Disable warning for added padding.
 #endif
-inline constexpr int kParametersAlignment = 32;
+constexpr int kParametersAlignment = 16;
 
 // ****WARNING****: Do not change the field types or ordering of these fields
 // without checking that alignment is correct. The structs may be concurrently
