@@ -20,6 +20,7 @@ build_webui("build") {
     "privacy_sandbox_notice_dialog.html",
     "privacy_sandbox_notice_restricted_dialog.html",
     "privacy_sandbox_privacy_policy.html",
+    "base_dialog.html",
   ]
 
   web_component_files = [

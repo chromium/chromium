@@ -12,3 +12,42 @@ mojom("mojo_bindings") {
   sources = [ "privacy_sandbox_internals.mojom" ]
   webui_module_path = "/"
 }
+
+if (!is_android) {
+  source_set("privacy_sandbox") {
+    public = [ "privacy_sandbox_base_dialog_ui.h" ]
+
+    sources = [ "privacy_sandbox_base_dialog_ui.cc" ]
+
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/privacy_sandbox:resources",
+      "//chrome/common",
+      "//components/privacy_sandbox:features",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "privacy_sandbox_base_dialog_browsertest.cc" ]
+
+    deps = [
+      ":privacy_sandbox",
+      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/views",
+    ]
+  }
+}

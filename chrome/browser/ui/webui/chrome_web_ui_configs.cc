@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_base_dialog_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_ui.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
@@ -307,6 +308,8 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerUIConfig>());
   map.AddWebUIConfig(std::make_unique<PrivacySandboxDialogUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<privacy_sandbox::PrivacySandboxBaseDialogUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<commerce::ProductSpecificationsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ProfileInternalsUIConfig>());
