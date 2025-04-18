@@ -7,6 +7,7 @@ import {MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, State, when
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultMediaSize, getDefaultOrientation} from './print_preview_test_utils.js';
@@ -65,7 +66,7 @@ suite('InvalidSettingsTest', function() {
   // preview area displays an invalid printer error message and printing
   // is disabled. Verifies that the user can recover from this error by
   // selecting a different, valid printer.
-  test('invalid settings error', function() {
+  test('invalid settings error', async function() {
     createPage();
     const barDevice = getCddTemplate('BarDevice');
     nativeLayer.setLocalDestinationCapabilities(barDevice);
@@ -141,8 +142,9 @@ suite('InvalidSettingsTest', function() {
           // Wait for the preview to be updated.
           return nativeLayer.whenCalled('getPreview');
         })
-        .then(function() {
+        .then(async function() {
           // Message should be gone.
+          await microtasksFinished();
           assertTrue(overlay.classList.contains('invisible'));
           assertFalse(messageEl.textContent!.includes(expectedMessage));
 

@@ -8,6 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate, getPdfPrinter} from './print_preview_test_utils.js';
 
@@ -118,7 +119,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     return Promise.resolve();
   }
 
-  getPreview(printTicket: string) {
+  async getPreview(printTicket: string) {
     this.methodCalled('getPreview', {printTicket: printTicket});
     const printTicketParsed = JSON.parse(printTicket);
     if (printTicketParsed.deviceName === this.badPrinterId_) {
@@ -133,6 +134,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     if (pageRanges.length === 0) {  // assume full length document, 1 page.
       webUIListenerCallback(
           'page-count-ready', this.pageCount_, requestId, 100);
+      await microtasksFinished();
       for (let i = 0; i < this.pageCount_; i++) {
         webUIListenerCallback('page-preview-ready', i, 0, requestId);
       }
@@ -147,11 +149,12 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
           []);
       webUIListenerCallback(
           'page-count-ready', this.pageCount_, requestId, 100);
+      await microtasksFinished();
       pages.forEach(function(page: number) {
         webUIListenerCallback('page-preview-ready', page - 1, 0, requestId);
       });
     }
-    return Promise.resolve(requestId);
+    return requestId;
   }
 
   getPrinterCapabilities(printerId: string, type: PrinterType) {
