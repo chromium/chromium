@@ -14,51 +14,38 @@ import os
 import re
 import subprocess
 import sys
+import uuid
 
-def _gn_lines(output_dir, path):
-    """
-    Generator function that returns args.gn lines one at a time, following
-    import directives as needed.
-    """
-    import_re = re.compile(r'\s*import\("(.*)"\)')
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            match = import_re.match(line)
-            if match:
-                raw_import_path = match.groups()[0]
-                if raw_import_path[:2] == "//":
-                    import_path = os.path.normpath(
-                        os.path.join(output_dir, "..", "..",
-                                     raw_import_path[2:]))
-                else:
-                    import_path = os.path.normpath(
-                        os.path.join(os.path.dirname(path), raw_import_path))
-                for import_line in _gn_lines(output_dir, import_path):
-                    yield import_line
-            else:
-                yield line
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                             'third_party', 'depot_tools'))
+import android_build_server_helper
+import gn_helper
 
-
-def _use_reclient(outdir):
-  use_remoteexec = False
+def _retrieve_gn_args(out_dir):
+  """
+  Retrieves relevant GN args and calculate the defaults.
+  """
+  is_android = False
+  use_android_build_server = True
   use_reclient = None
-  args_gn = os.path.join(outdir, 'args.gn')
-  if not os.path.exists(args_gn):
-    return False
-  for line in _gn_lines(outdir, args_gn):
-    line_without_comment = line.split('#')[0]
-    m = re.match(r"(^|\s*)use_remoteexec\s*=\s*(true|false)\s*$",
-                 line_without_comment)
-    if m:
-      use_remoteexec = m.group(2) == 'true'
-      continue
-    m = re.match(r"(^|\s*)use_reclient\s*=\s*(true|false)\s*$",
-                 line_without_comment)
-    if m:
-      use_reclient = m.group(2) == 'true'
-  if use_reclient == None:
-      use_reclient = use_remoteexec
-  return use_reclient
+  if gn_helper.exists(out_dir):
+    for k, v in gn_helper.args(out_dir):
+      if k == "use_reclient" and v == "true":
+        use_reclient = True
+        continue
+      if k == "use_reclient" and v == "false":
+        use_reclient = False
+        continue
+      if k == "android_static_analysis" and v != '"build_server"':
+        use_android_build_server = False
+        continue
+      if k == "target_os" and v == '"android"':
+        is_android = True
+        continue
+  if use_android_build_server is None and is_android:
+    use_android_build_server = True
+
+  return use_reclient, use_android_build_server
 
 
 def main():
@@ -100,7 +87,9 @@ def main():
     target = os.path.relpath(source, start=options.out_dir) + "^"
     targets.append(target)
 
-  if _use_reclient(options.out_dir):
+  use_reclient, use_android_build_server = _retrieve_gn_args(options.out_dir)
+
+  if use_reclient:
     # b/335795623 ide_query compiler_arguments contain non-compiler arguments
     sys.stderr.write(
         'ide_query won\'t work well with "use_reclient=true"\n'
@@ -128,22 +117,30 @@ def main():
         env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only,ignore-missing-targets'
     else:
         env['SISO_EXPERIMENTS'] = 'no-fast-deps,ignore-missing-targets'
-    with subprocess.Popen(
-        args,
-        cwd=repo_root,
-        env=env,
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        universal_newlines=True
-    ) as p:
-      for line in p.stdout:
-          print(line, end='', file=sys.stderr)
-      # loop ends when program finishes, but must wait else returncode is None.
-      p.wait()
-      if p.returncode != 0:
-        # TODO: report error in IdeAnalysis.Status?
-        sys.stderr.write('build failed with %d\n' % p.returncode)
-        # even if build fails, it should report ideanalysis back.
+    # Set build ID for android build server.
+    build_id = str(uuid.uuid4())
+    os.environ.setdefault("AUTONINJA_BUILD_ID", build_id)
+    with android_build_server_helper.build_server_context(
+        build_id,
+        options.out_dir,
+        use_android_build_server=use_android_build_server,
+    ):
+        with subprocess.Popen(
+            args,
+            cwd=repo_root,
+            env=env,
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE,
+            universal_newlines=True
+        ) as p:
+          for line in p.stdout:
+              print(line, end='', file=sys.stderr)
+          # loop ends when program finishes, but must wait else returncode is None.
+          p.wait()
+          if p.returncode != 0:
+            # TODO: report error in IdeAnalysis.Status?
+            sys.stderr.write('build failed with %d\n' % p.returncode)
+            # even if build fails, it should report ideanalysis back.
 
   args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
   if options.format:
