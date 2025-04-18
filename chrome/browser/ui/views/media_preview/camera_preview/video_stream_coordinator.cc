@@ -13,6 +13,10 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/views/controls/throbber.h"
@@ -228,6 +232,25 @@ void VideoStreamCoordinator::OnClosing() {
   Stop();
   time_to_action_without_preview_ =
       base::TimeTicks::Now() - video_stream_construction_time_;
+
+  // We now know that the decision was made by the user.
+  // `time_to_action_without_preview_` is equivalent to "time to decision",
+  // since this is how much time has passed between the construction of the
+  // coordinator to the moment a decision was made.
+  if (metrics_context_.request) {
+    auto preview_params =
+        metrics_context_.request->get_preview_parameters().value_or(
+            permissions::PermissionHatsTriggerHelper::
+                PreviewParametersForHats{});
+    preview_params.MergeParameters(
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats(
+            /*was_visible=*/false, /*dropdown_was_interacted=*/false,
+            /*was_prompt_combined=*/metrics_context_.prompt_type ==
+                media_preview_metrics::PromptType::kCombined,
+            /*time_to_decision=*/*time_to_action_without_preview_,
+            /*time_to_visible=*/{}));
+    metrics_context_.request->set_preview_parameters(preview_params);
+  }
 }
 
 void VideoStreamCoordinator::OnReceivedFirstFrame() {
@@ -240,6 +263,24 @@ void VideoStreamCoordinator::OnReceivedFirstFrame() {
       *video_stream_start_time_ - *video_stream_request_time_;
   media_preview_metrics::RecordPreviewDelayTime(metrics_context_,
                                                 preview_delay_time);
+
+  // We now know that frames are being shown, so the preview was visible.
+  // We also now know how long it took for the preview to show.
+  if (metrics_context_.request) {
+    auto preview_params =
+        metrics_context_.request->get_preview_parameters().value_or(
+            permissions::PermissionHatsTriggerHelper::
+                PreviewParametersForHats{});
+    preview_params.MergeParameters(
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats(
+            /*was_visible=*/true, /*dropdown_was_interacted=*/false,
+            /*was_prompt_combined=*/metrics_context_.prompt_type ==
+                media_preview_metrics::PromptType::kCombined,
+            /*time_to_decision=*/{},
+            /*time_to_visible=*/preview_delay_time));
+    metrics_context_.request->set_preview_parameters(preview_params);
+  }
+
   video_stream_request_time_.reset();
 }
 

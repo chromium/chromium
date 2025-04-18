@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
@@ -46,7 +47,12 @@ class AudioStreamCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     TestWithBrowserView::SetUp();
     parent_view_ = std::make_unique<views::View>();
-    coordinator_ = std::make_unique<AudioStreamCoordinator>(*parent_view_);
+    coordinator_ = std::make_unique<AudioStreamCoordinator>(
+        *parent_view_, media_preview_metrics::Context(
+                           media_preview_metrics::UiLocation::kPermissionPrompt,
+                           media_preview_metrics::PreviewType::kMic,
+                           media_preview_metrics::PromptType::kSingle,
+                           /*request=*/nullptr));
   }
 
   void TearDown() override {

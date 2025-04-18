@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/messages/android/message_enums.h"
@@ -48,6 +49,37 @@ class PermissionHatsTriggerHelper {
     BUCKET_GT20    // >20
   };
 
+  struct PreviewParametersForHats {
+    PreviewParametersForHats();
+    PreviewParametersForHats(bool was_visible,
+                             bool dropdown_was_interacted,
+                             bool was_prompt_combined,
+                             base::TimeDelta time_to_decision,
+                             base::TimeDelta time_to_visible);
+
+    PreviewParametersForHats(const PreviewParametersForHats& other);
+    PreviewParametersForHats& operator=(const PreviewParametersForHats& other);
+
+    // Merges parameters contained in `other` with the parameters in the current
+    // instance. The aggregation logic is as follows:
+    // - `was_visible` becomes true if `other.was_visible` is true.
+    // - `dropdown_was_interacted` becomes true if
+    // `other.dropdown_was_interacted` is true.
+    // - `time_to_decision` becomes `max(time_to_decision,
+    // other.time_to_decision)`.
+    // - `time_to_visible` becomes `max(time_to_visible,
+    // other.time_to_visible)`.
+    void MergeParameters(const PreviewParametersForHats& other);
+
+    std::string ToString() const;
+
+    bool was_visible = false;
+    bool dropdown_was_interacted = false;
+    bool was_prompt_combined = false;
+    base::TimeDelta time_to_decision;
+    base::TimeDelta time_to_visible;
+  };
+
   struct PromptParametersForHats {
     PromptParametersForHats(
         permissions::RequestType request_type,
@@ -64,7 +96,9 @@ class PermissionHatsTriggerHelper {
         std::optional<
             permissions::feature_params::PermissionElementPromptPosition>
             pepc_prompt_position,
-        ContentSetting initial_permission_status);
+        ContentSetting initial_permission_status,
+        std::optional<PreviewParametersForHats> preview_parameters =
+            std::nullopt);
     PromptParametersForHats(const PromptParametersForHats& other);
     ~PromptParametersForHats();
 
@@ -81,6 +115,7 @@ class PermissionHatsTriggerHelper {
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position;
     ContentSetting initial_permission_status;
+    std::optional<PreviewParametersForHats> preview_parameters;
   };
 
   struct SurveyParametersForHats {

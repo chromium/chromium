@@ -5,6 +5,7 @@
 #include "components/permissions/permission_request_manager.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -1042,7 +1043,8 @@ void PermissionRequestManager::ShowPrompt() {
         GetRequestInitialStatus(requests_[0]),
         hats_shown_callback_.has_value()
             ? std::move(hats_shown_callback_.value())
-            : base::DoNothing());
+            : base::DoNothing(),
+        /*preview_parameters=*/std::nullopt);
 
     hats_shown_callback_.reset();
   }
@@ -1162,7 +1164,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
         DetermineCurrentRequestUIDispositionReasonForUMA(),
         request->GetGestureType(), quiet_ui_reason, time_since_shown,
         current_request_pepc_prompt_position_, GetRequestInitialStatus(request),
-        web_contents());
+        web_contents(), request->get_preview_parameters());
 
     PermissionUmaUtil::RecordEmbargoStatus(RecordActionAndGetEmbargoStatus(
         browser_context, request, permission_action));

@@ -33,7 +33,9 @@ MicCoordinator::MicCoordinator(
       prefs_(&prefs),
       allow_device_selection_(allow_device_selection),
       metrics_context_(metrics_context.ui_location,
-                       media_preview_metrics::PreviewType::kMic) {
+                       media_preview_metrics::PreviewType::kMic,
+                       metrics_context.prompt_type,
+                       metrics_context.request) {
   auto* mic_view = parent_view.AddChildView(std::make_unique<MediaView>());
   mic_view_tracker_.SetView(mic_view);
   // Safe to use base::Unretained() because `this` owns / outlives
@@ -50,7 +52,7 @@ MicCoordinator::MicCoordinator(
       metrics_context_);
 
   audio_stream_coordinator_.emplace(
-      mic_view_controller_->GetLiveFeedContainer());
+      mic_view_controller_->GetLiveFeedContainer(), metrics_context_);
 
   mic_mediator_.InitializeDeviceList();
 }
@@ -160,6 +162,8 @@ void MicCoordinator::UpdateDevicePreferenceRanking() {
 
   media_prefs::UpdateAudioDevicePreferenceRanking(*prefs_, active_device_iter,
                                                   eligible_device_infos_);
+
+  audio_stream_coordinator_->OnClosing();
 }
 
 void MicCoordinator::ResetViewController() {

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 
@@ -17,6 +16,8 @@ class WebContents;
 }
 
 namespace permissions {
+
+class PermissionRequest;
 
 // The interface for implementations that decide if the quiet prompt UI should
 // be used to display a permission |request|, whether a warning should be

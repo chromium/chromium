@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "components/media_effects/test/fake_video_source.h"
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +60,9 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
     coordinator_ = std::make_unique<VideoStreamCoordinator>(
         *parent_view_, media_preview_metrics::Context(
                            media_preview_metrics::UiLocation::kPermissionPrompt,
-                           media_preview_metrics::PreviewType::kCamera));
+                           media_preview_metrics::PreviewType::kCamera,
+                           media_preview_metrics::PromptType::kSingle,
+                           /*request=*/nullptr));
   }
 
   void TearDown() override {

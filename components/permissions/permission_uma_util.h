@@ -15,11 +15,11 @@
 #include "base/version.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/permission_result.h"
+#include "url/gurl.h"
 
 namespace blink {
 enum class PermissionType;
@@ -31,8 +31,6 @@ class RenderFrameHost;
 class WebContents;
 class RenderFrameHost;
 }  // namespace content
-
-class GURL;
 
 namespace permissions {
 enum class PermissionRequestGestureType;

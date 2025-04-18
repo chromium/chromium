@@ -190,6 +190,7 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
           visible_requests[i]->GetRequestedAudioCaptureDeviceIds();
     }
   }
+
   MaybeAddMediaPreview(requested_audio_capture_device_ids,
                        requested_video_capture_device_ids,
                        visible_requests.size());
@@ -300,7 +301,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 
   media_previews_.emplace(browser(), this, index,
                           requested_audio_capture_device_ids,
-                          requested_video_capture_device_ids);
+                          requested_video_capture_device_ids, delegate());
 #endif
 }
 

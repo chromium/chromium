@@ -207,7 +207,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPermissionsPrompt,
       /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{
-          permissions::kPermissionsPromptSurveyHadGestureKey},
+          permissions::kPermissionsPromptSurveyHadGestureKey,
+          permissions::kPermissionPromptSurveyPreviewVisibleKey,
+          permissions::kPermissionPromptSurveyPreviewDropdownInteractedKey,
+          permissions::kPermissionPromptSurveyPreviewWasCombinedKey},
       std::vector<std::string>{
           permissions::kPermissionsPromptSurveyPromptDispositionKey,
           permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
@@ -218,7 +221,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
           permissions::kPermissionPromptSurveyUrlKey,
           permissions::kPermissionPromptSurveyPepcPromptPositionKey,
-          permissions::kPermissionPromptSurveyInitialPermissionStatusKey});
+          permissions::kPermissionPromptSurveyInitialPermissionStatusKey,
+          permissions::kPermissionPromptSurveyPreviewTimeToDecisionKey,
+          permissions::kPermissionPromptSurveyPreviewTimeToVisibleKey});
 
   // Privacy sandbox always on sentiment survey
   survey_configs.emplace_back(

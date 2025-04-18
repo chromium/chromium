@@ -26,6 +26,7 @@
 #include "components/optimization_guide/proto/features/permissions_ai.pb.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_common.h"

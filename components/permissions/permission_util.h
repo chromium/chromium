@@ -28,6 +28,7 @@ class GURL;
 
 namespace permissions {
 class PermissionRequest;
+struct PermissionRequestData;
 
 // This enum backs a UMA histogram, so it must be treated as append-only.
 enum class PermissionAction {

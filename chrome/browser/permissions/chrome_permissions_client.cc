@@ -60,6 +60,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -344,7 +345,10 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    base::OnceCallback<void()> hats_shown_callback) {
+    base::OnceCallback<void()> hats_shown_callback,
+    std::optional<
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats>
+        preview_parameters) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<GURL> recorded_gurl =
@@ -363,7 +367,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           prompt_display_duration,
           permissions::PermissionHatsTriggerHelper::
               GetOneTimePromptsDecidedBucket(profile->GetPrefs()),
-          recorded_gurl, pepc_prompt_position, initial_permission_status);
+          recorded_gurl, pepc_prompt_position, initial_permission_status,
+          preview_parameters);
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
@@ -440,7 +445,10 @@ void ChromePermissionsClient::OnPromptResolved(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    std::optional<
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats>
+        preview_parameters) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PermissionActionsHistoryFactory::GetForProfile(profile)->RecordAction(
@@ -484,7 +492,8 @@ void ChromePermissionsClient::OnPromptResolved(
       prompt_disposition, prompt_disposition_reason, gesture_type,
       std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
-      pepc_prompt_position, initial_permission_status, base::DoNothing());
+      pepc_prompt_position, initial_permission_status, base::DoNothing(),
+      preview_parameters);
 }
 
 std::optional<bool>

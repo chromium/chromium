@@ -177,7 +177,7 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
           /*is_subsection=*/true, eligible_devices,
           web_contents_->GetBrowserContext()->GetWeakPtr(),
           /*allow_device_selection=*/!active_device_id.has_value(),
-          media_preview_metrics_context_));
+          media_preview_metrics_context_, /*delegate=*/nullptr));
   separators_.emplace(coordinator_key,
                       container_->AddChildView(CreateSeparator()));
 }

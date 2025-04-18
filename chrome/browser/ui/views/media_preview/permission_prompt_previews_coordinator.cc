@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
+#include "components/permissions/permission_prompt.h"
 
 namespace {
 
@@ -37,7 +38,8 @@ PermissionPromptPreviewsCoordinator::PermissionPromptPreviewsCoordinator(
     views::View* parent_view,
     size_t index,
     std::vector<std::string> requested_audio_capture_device_ids,
-    std::vector<std::string> requested_video_capture_device_ids)
+    std::vector<std::string> requested_video_capture_device_ids,
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
     : view_type_(ComputePreviewType(requested_audio_capture_device_ids,
                                     requested_video_capture_device_ids)) {
   CHECK(parent_view);
@@ -53,14 +55,15 @@ PermissionPromptPreviewsCoordinator::PermissionPromptPreviewsCoordinator(
 
   const auto metrics_context = media_preview_metrics::Context(
       media_preview_metrics::UiLocation::kPermissionPrompt,
-      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(
-          view_type_));
+      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(view_type_),
+      media_coordinator::GetPromptTypeFromMediaCoordinatorViewType(view_type_),
+      /*request=*/nullptr);
 
   media_preview_coordinator_.emplace(view_type_, *container_view,
                                      /*is_subsection=*/false, eligible_devices,
                                      browser->profile()->GetWeakPtr(),
                                      /*allow_device_selection=*/true,
-                                     metrics_context);
+                                     metrics_context, delegate);
 
   start_time_ = base::TimeTicks::Now();
 }
@@ -69,7 +72,9 @@ PermissionPromptPreviewsCoordinator::~PermissionPromptPreviewsCoordinator() {
   media_preview_metrics::RecordMediaPreviewDuration(
       {media_preview_metrics::UiLocation::kPermissionPrompt,
        media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(
-           view_type_)},
+           view_type_),
+       media_coordinator::GetPromptTypeFromMediaCoordinatorViewType(view_type_),
+       nullptr},
       base::TimeTicks::Now() - start_time_);
 }
 

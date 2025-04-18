@@ -14,6 +14,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
@@ -175,7 +176,9 @@ class PermissionsClient {
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      base::OnceCallback<void()> hats_shown_callback_);
+      base::OnceCallback<void()> hats_shown_callback_,
+      std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+          preview_parameters);
 
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(
@@ -191,7 +194,9 @@ class PermissionsClient {
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+          preview_parameters);
 
   // Returns true if user has 3 consecutive notifications permission denies,
   // returns false otherwise.

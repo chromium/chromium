@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
