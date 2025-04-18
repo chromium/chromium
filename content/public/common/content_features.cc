@@ -1391,7 +1391,7 @@ BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
 // Enable open PDF inline on Android.
 BASE_FEATURE(kAndroidOpenPdfInline,
              "AndroidOpenPdfInline",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A feature to enable launch handler and file handler api for Chrome on Android
 BASE_FEATURE(kAndroidWebAppLaunchHandler,
