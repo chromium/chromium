@@ -1445,7 +1445,7 @@ class Browser : public TabStripModelObserver,
   // Helper which handles bookmark app specific browser configuration.
   // This must be initialized before |command_controller_| to ensure the correct
   // set of commands are enabled.
-  std::unique_ptr<web_app::AppBrowserController> app_controller_;
+  const std::unique_ptr<web_app::AppBrowserController> app_controller_;
 
   BookmarkBar::State bookmark_bar_state_;
 

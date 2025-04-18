@@ -92,7 +92,7 @@ class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
   }
 
  private:
-  raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
+  const raw_ptr<const ash::SystemWebAppDelegate> system_app_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
