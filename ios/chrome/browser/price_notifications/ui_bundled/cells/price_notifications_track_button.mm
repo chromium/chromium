@@ -42,9 +42,7 @@ const CGFloat kTrackButtonLightVariantAlpha = 0.11f;
     }
 
     // Customize title string.
-    UIFont* font = [UIFont
-        preferredFontForTextStyle:_useLightVariant ? UIFontTextStyleSubheadline
-                                                   : UIFontTextStyleHeadline];
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     NSDictionary* attributes = @{NSFontAttributeName : font};
     NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
         initWithString:
@@ -91,15 +89,11 @@ const CGFloat kTrackButtonLightVariantAlpha = 0.11f;
                              : horizontalPadding);
 
   if (_useLightVariant) {
-    // This is necessary to ensure the button does not get shorter
-    // than the text, even with larger accessibility text.
+    float light_button_width = self.titleLabel.intrinsicContentSize.width +
+                               kTrackButtonSidePaddingLightVariant * 2;
+
     [NSLayoutConstraint activateConstraints:@[
-      [self.leadingAnchor
-          constraintEqualToAnchor:self.titleLabel.leadingAnchor
-                         constant:kTrackButtonSidePaddingLightVariant],
-      [self.trailingAnchor
-          constraintEqualToAnchor:self.titleLabel.trailingAnchor
-                         constant:kTrackButtonSidePaddingLightVariant],
+      [self.widthAnchor constraintEqualToConstant:light_button_width]
     ]];
   } else {
     [NSLayoutConstraint activateConstraints:@[
