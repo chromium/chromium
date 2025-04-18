@@ -1671,7 +1671,7 @@ enum class ToolbarKind {
             ntpCoordinator:_NTPCoordinator
                    tracker:feature_engagement::TrackerFactory::GetForProfile(
                                self.profile)
-                 incognito:self.profile->IsOffTheRecord()
+                 incognito:self.isOffTheRecord
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
   self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   self.tabEventsMediator.consumer = browserViewController;
@@ -1684,7 +1684,7 @@ enum class ToolbarKind {
 
   browserViewController.nonModalPromoPresentationDelegate = self;
 
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
 
@@ -3838,7 +3838,7 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   [applicationCommandsHandler
       openURLInNewTab:[OpenNewTabCommand
-                          commandWithIncognito:self.profile->IsOffTheRecord()]];
+                          commandWithIncognito:self.isOffTheRecord]];
 }
 
 - (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {

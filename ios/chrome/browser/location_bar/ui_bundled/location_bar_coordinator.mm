@@ -167,7 +167,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       startDispatchingToTarget:self
                    forProtocol:@protocol(LoadQueryCommands)];
 
-  BOOL isIncognito = self.profile->IsOffTheRecord();
+  BOOL isIncognito = self.isOffTheRecord;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
@@ -408,8 +408,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
     }
     NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
-        [web_navigation_util::VariationHeadersForURL(
-            url, self.profile->IsOffTheRecord()) mutableCopy];
+        [web_navigation_util::VariationHeadersForURL(url, self.isOffTheRecord)
+            mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
     web_params.extra_headers = [combinedExtraHeaders copy];
     UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
@@ -428,8 +428,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)focusOmnibox {
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
-  if (IsVisibleURLNewTabPage([self webState]) &&
-      !self.profile->IsOffTheRecord()) {
+  if (IsVisibleURLNewTabPage([self webState]) && !self.isOffTheRecord) {
     id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            BrowserCoordinatorCommands);
@@ -491,7 +490,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)locationBarVisitCopyLinkTapped {
   default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
-      self.profile->IsOffTheRecord(),
+      self.isOffTheRecord,
       feature_engagement::TrackerFactory::GetForProfile(self.profile),
       self.browser->GetSceneState());
 }
