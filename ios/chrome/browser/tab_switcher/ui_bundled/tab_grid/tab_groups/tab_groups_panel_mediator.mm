@@ -425,11 +425,14 @@ NSString* CreationText(base::Time creation_date) {
   if (!group) {
     return;
   }
+
   [self.delegate tabGroupsPanelMediator:self
-      showLeaveSharedGroupConfirmationWithSyncID:item.savedTabGroupID
-                                      groupTitle:base::SysUTF16ToNSString(
-                                                     group->title())
-                                      sourceView:sourceView];
+      startLeaveOrDeleteSharedGroupWithSyncID:item.savedTabGroupID
+                                   groupTitle:base::SysUTF16ToNSString(
+                                                  group->title())
+                                    forAction:TabGroupActionType::
+                                                  kLeaveSharedTabGroup
+                                   sourceView:sourceView];
 }
 
 - (void)deleteSharedTabGroupsPanelItem:(TabGroupsPanelItem*)item
@@ -439,11 +442,14 @@ NSString* CreationText(base::Time creation_date) {
   if (!group) {
     return;
   }
+
   [self.delegate tabGroupsPanelMediator:self
-      showDeleteSharedGroupConfirmationWithSyncID:item.savedTabGroupID
-                                       groupTitle:base::SysUTF16ToNSString(
-                                                      group->title())
-                                       sourceView:sourceView];
+      startLeaveOrDeleteSharedGroupWithSyncID:item.savedTabGroupID
+                                   groupTitle:base::SysUTF16ToNSString(
+                                                  group->title())
+                                    forAction:TabGroupActionType::
+                                                  kDeleteSharedTabGroup
+                                   sourceView:sourceView];
 }
 
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item {
