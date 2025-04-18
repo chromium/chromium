@@ -1531,7 +1531,12 @@ bool BlockNode::UseParentPercentageResolutionBlockSizeForChildren() const {
 
   // For quirks mode, we skip most auto-height containing blocks when computing
   // percentages.
-  if (!in_quirks_mode || !style.LogicalHeight().HasAuto()) {
+  if (!in_quirks_mode || !style.LogicalHeight().IsAuto()) {
+    return false;
+  }
+
+  // A quirky <body> with "height:auto" will have a definite height.
+  if (IsQuirkyAndFillsViewport()) {
     return false;
   }
 
