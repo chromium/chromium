@@ -52,9 +52,8 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
     CHECK(web_state);
     if (!FromWebState(web_state)) {
       CHECK(!web_state->IsBeingDestroyed());
-      web_state->SetUserData(
-          UserDataKey(),
-          base::WrapUnique(new T(web_state, std::forward<Args>(args)...)));
+      web_state->SetUserData(UserDataKey(),
+                             T::Create(web_state, std::forward<Args>(args)...));
     }
 
     return FromWebState(web_state);
@@ -65,6 +64,7 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
     web_state->RemoveUserData(UserDataKey());
   }
 
+  // The key under which to store the user data.
   static inline const void* UserDataKey() {
     static const int kId = 0;
     return &kId;
@@ -76,6 +76,13 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
   // of the type was attached, returns nullptr.
   static T* FromWebState(WebState* web_state) {
     return static_cast<T*>(web_state->GetUserData(UserDataKey()));
+  }
+
+  // Default factory for T that invoke T's constructor. Can be overloaded
+  // by sub-class if they want to create a sub-class of T instead.
+  template <typename... Args>
+  static std::unique_ptr<T> Create(WebState* web_state, Args&&... args) {
+    return base::WrapUnique(new T(web_state, std::forward<Args>(args)...));
   }
 };
 

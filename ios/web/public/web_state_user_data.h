@@ -36,9 +36,8 @@ class WebStateUserData : public base::SupportsUserData::Data {
     CHECK(web_state);
     CHECK(!web_state->IsBeingDestroyed());
     if (!FromWebState(web_state)) {
-      web_state->SetUserData(
-          UserDataKey(),
-          base::WrapUnique(new T(web_state, std::forward<Args>(args)...)));
+      web_state->SetUserData(UserDataKey(),
+                             T::Create(web_state, std::forward<Args>(args)...));
     }
   }
 
@@ -57,9 +56,18 @@ class WebStateUserData : public base::SupportsUserData::Data {
     web_state->RemoveUserData(UserDataKey());
   }
 
+  // The key under which to store the user data.
   static inline const void* UserDataKey() {
     static const int kId = 0;
     return &kId;
+  }
+
+ private:
+  // Default factory for T that invoke T's constructor. Can be overloaded
+  // by sub-class if they want to create a sub-class of T instead.
+  template <typename... Args>
+  static std::unique_ptr<T> Create(WebState* web_state, Args&&... args) {
+    return base::WrapUnique(new T(web_state, std::forward<Args>(args)...));
   }
 };
 
