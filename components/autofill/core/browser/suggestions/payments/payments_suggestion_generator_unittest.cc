@@ -2062,7 +2062,13 @@ class AutofillIbanSuggestionContentTest
     did_set_up_image_resource_for_test_ = true;
   }
 
-  bool IsNewFopDisplayEnabled() const { return GetParam(); }
+  bool IsNewFopDisplayEnabled() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return false;
+#else
+    return GetParam();
+#endif
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_metadata_;

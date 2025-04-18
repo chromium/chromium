@@ -99,7 +99,13 @@ class IbanManagerTest : public testing::Test,
         .WillByDefault(testing::Return(false));
   }
 
-  bool IsNewFopDisplayEnabled() const { return GetParam(); }
+  bool IsNewFopDisplayEnabled() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return false;
+#else
+    return GetParam();
+#endif
+  }
 
   void TearDown() override {
     ui::ResourceBundle::CleanupSharedInstance();

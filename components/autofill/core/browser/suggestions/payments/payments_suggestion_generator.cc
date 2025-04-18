@@ -1449,10 +1449,8 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
     Suggestion suggestion;
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableNewFopDisplayDesktop)
-                ? IDR_AUTOFILL_IBAN
-                : IDR_AUTOFILL_IBAN_OLD);
+            ShouldUseNewFopDisplay() ? IDR_AUTOFILL_IBAN
+                                     : IDR_AUTOFILL_IBAN_OLD);
     suggestion.icon = Suggestion::Icon::kIban;
     suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kLocalIban) {
