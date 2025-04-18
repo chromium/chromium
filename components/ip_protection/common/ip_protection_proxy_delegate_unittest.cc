@@ -104,6 +104,8 @@ class MockIpProtectionCore : public IpProtectionCore {
 
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
 
+  bool IsProbabilisticRevealTokenAvailable() override { NOTREACHED(); }
+
   bool WereTokenCachesEverFilled() override {
     return were_token_caches_ever_filled_;
   }
