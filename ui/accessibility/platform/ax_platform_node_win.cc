@@ -5981,7 +5981,9 @@ STDMETHODIMP AXPlatformNodeWin::InternalQueryInterface(
   *object = nullptr;
   AXPlatformNodeWin* accessible =
       reinterpret_cast<AXPlatformNodeWin*>(this_ptr);
-  DCHECK(accessible);
+  if (!accessible || accessible->IsDestroyed()) {
+    return E_NOINTERFACE;
+  }
 
   if (riid == IID_IAccessibleTable || riid == IID_IAccessibleTable2) {
     if (!IsTableLike(accessible->GetRole()))
