@@ -349,13 +349,27 @@ public class TabDragSourceTest {
 
     @Test
     public void test_startTabDragAction_withHasOneTabWithHomepage_ReturnsFalse() {
-        XrUtils.setXrDeviceForTesting(true);
         when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(true);
         assertFalse(
                 "Should not startTabDragAction since last tab with homepage enabled.",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView,
                         mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startGroupDragAction_withHasOneTabGroupWithHomepage_ReturnsFalse() {
+        when(mMultiWindowUtils.hasAtMostOneTabGroupWithHomepageEnabled(any(), any()))
+                .thenReturn(true);
+        assertFalse(
+                "Should not startGroupDragAction since last tab group with homepage enabled.",
+                mSourceInstance.startGroupDragAction(
+                        mTabsToolbarView,
+                        TAB_GROUP_ID,
+                        /* isGroupShared= */ false,
                         DRAG_START_POINT,
                         TAB_POSITION_X,
                         VIEW_WIDTH));

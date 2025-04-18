@@ -246,8 +246,13 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
 
-        // TODO(crbug.com/380327012): Block drag for last group when homepage enabled and is set to
-        //  a custom url.
+        // Block drag for last tab group when homepage enabled and is set to a custom url.
+        if (MultiWindowUtils.getInstance()
+                .hasAtMostOneTabGroupWithHomepageEnabled(
+                        mTabModelSelector, mCurrentTabGroupModelFilterSupplier.get())) {
+            return false;
+        }
+
         // Allow drag to create new instance based on feature checks / current instance count.
         allowDragToCreateInstance =
                 allowDragToCreateInstance
