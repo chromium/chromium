@@ -132,9 +132,6 @@ public class HubManagerImplUnitTest {
 
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
-        when(mHubLayoutController.getIsAnimatingSupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
-
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 

@@ -47,7 +47,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -95,12 +94,13 @@ public class HubCoordinatorUnitTest {
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private DisplayButtonData mReferenceButtonData;
     @Mock private ProfileProvider mProfileProvider;
-    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private HubColorMixer mHubColorMixer;
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterArgumentCaptor;
+    private final ObservableSupplierImpl<Integer> mColorOverviewSupplier =
+            new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
@@ -129,7 +129,6 @@ public class HubCoordinatorUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
-        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
@@ -157,8 +156,6 @@ public class HubCoordinatorUnitTest {
         when(mIncognitoTab.isIncognito()).thenReturn(true);
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
-        when(mHubLayoutController.getIsAnimatingSupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -30,7 +28,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
@@ -106,11 +103,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
         ProfileProvider profileProvider = profileProviderSupplier.get();
         assert profileProvider != null;
-        Profile profile = profileProvider.getOriginalProfile();
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profileProvider.getOriginalProfile());
         HubToolbarView hubToolbarView = mContainerView.findViewById(R.id.hub_toolbar);
-        UserEducationHelper userEducationHelper =
-                new UserEducationHelper(activity, profile, new Handler());
         mHubToolbarCoordinator =
                 new HubToolbarCoordinator(
                         activity,
@@ -119,9 +113,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                         menuButtonCoordinator,
                         tracker,
                         searchActivityClient,
-                        hubColorMixer,
-                        userEducationHelper,
-                        hubLayoutController.getIsAnimatingSupplier());
+                        hubColorMixer);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =

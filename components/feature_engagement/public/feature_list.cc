@@ -94,7 +94,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,
     &kIPHTabGroupSyncOnStripFeature,
-    &kIPHTabSwitcherAddToGroup,
     &kIPHTabSwitcherButtonFeature,
     &kIPHTabSwitcherButtonSwitchIncognitoFeature,
     &kIPHTranslateMenuButtonFeature,

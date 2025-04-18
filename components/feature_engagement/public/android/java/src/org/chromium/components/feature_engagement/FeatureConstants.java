@@ -266,12 +266,6 @@ public @interface FeatureConstants {
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
 
-    /**
-     * An IPH feature to prompt users to select the 'Add to group' option in the Tab Switcher 3-Dot
-     * menu.
-     */
-    String TAB_SWITCHER_ADD_TO_GROUP = "IPH_TabSwitcherAddToGroup";
-
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
 

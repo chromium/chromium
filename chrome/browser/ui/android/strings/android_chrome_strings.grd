@@ -2973,9 +2973,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TAB_LOADING_DEFAULT_TITLE" desc="The title of a tab when we are still waiting for either the URL or the real title. This generally shows when the page is first loading.">
         Loading…
       </message>
-      <message name="IDS_TAB_SWITCHER_ADD_TO_GROUP_IPH" desc="IPH text to hint the user to try selecting the 'Add to Group' option in the Tab Switcher 3-Dot Menu.">
-        You can now easily add tabs to groups here
-      </message>
 
       <!-- DuplicateDownloadInfoBar -->
       <message name="IDS_DUPLICATE_DOWNLOAD_INFOBAR_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when there already exists a file with the same name">
