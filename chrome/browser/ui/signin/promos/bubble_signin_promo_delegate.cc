@@ -51,10 +51,17 @@ BubbleSignInPromoDelegate::BubbleSignInPromoDelegate(
 BubbleSignInPromoDelegate::~BubbleSignInPromoDelegate() = default;
 
 void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
+  // Do not continue if the web contents were destroyed while the bubble was
+  // opened.
+  if (!web_contents_) {
+    return;
+  }
+
   // Signing in is triggered by the user interacting with the sign-in promo.
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())
           ->GetOriginalProfile();
+  CHECK(profile);
 
   if (!signin::IsSignInPromo(access_point_)) {
     signin_ui_util::EnableSyncFromSingleAccountPromo(profile, account,
