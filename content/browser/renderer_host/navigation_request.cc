@@ -6932,9 +6932,15 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
       response_head_->load_timing.connect_timing.ssl_start;
 
   if (is_first_response) {
+    CHECK(!navigation_handle_timing_.first_fetch_start_time.has_value());
     DCHECK(navigation_handle_timing_.first_request_start_time.is_null());
     DCHECK(navigation_handle_timing_.first_response_start_time.is_null());
     DCHECK(navigation_handle_timing_.first_loader_callback_time.is_null());
+
+    if (!response_head_->request_start.is_null()) {
+      navigation_handle_timing_.first_fetch_start_time =
+          response_head_->request_start;
+    }
     navigation_handle_timing_.first_request_start_time =
         response_head_->load_timing.send_start;
     navigation_handle_timing_.first_response_start_time =

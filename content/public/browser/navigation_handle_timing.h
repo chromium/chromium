@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_HANDLE_TIMING_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_HANDLE_TIMING_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 
@@ -22,6 +24,10 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // The time the URLLoader for the navigation started.
   base::TimeTicks loader_start_time;
+
+  // The time the browser is ready to fetch the first HTTP request.
+  // This is filled with URLResponseHead::request_start during navigation.
+  std::optional<base::TimeTicks> first_fetch_start_time;
 
   // The time the first HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.

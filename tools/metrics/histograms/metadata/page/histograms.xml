@@ -1292,6 +1292,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.FirstFetchStartToFirstRequestStart"
+    units="ms" expires_after="2025-10-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's first fetch start, the browser is
+    ready to fetch the first HTTP request, to the first request start, the time
+    the first HTTP request was sent for the main resource of a main frame
+    navigation, for Google Search page loads. Only recorded for Search
+    navigations that happen entirely in the foreground. The metric is emitted
+    when the navigation is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.InitializeStreamDelay"
     units="ms" expires_after="2025-09-01">
   <owner>hayato@chromium.org</owner>
