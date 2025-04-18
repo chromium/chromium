@@ -150,6 +150,91 @@ class ParseArgsTest(unittest.TestCase):
     args = run.parse_args(argv)
     self.assertEqual(args.project, 'chromium')
 
+    argv = [
+        '-p',
+        'chromium',
+        '-B',
+        'bucket',
+        '-b',
+        'builder',
+        '-t',
+        'some_test',
+        '-d',
+        'foo:bar',
+        'compile',
+    ]
+    # Dimensions with 'compile' should error out.
+    with self.assertRaises(SystemExit):
+      args = run.parse_args(argv)
+
+    argv = [
+        '-p',
+        'chromium',
+        '-B',
+        'bucket',
+        '-b',
+        'builder',
+        '-t',
+        'some_test',
+        '-d',
+        'foobar',
+        'test',
+    ]
+    # Bad dimension arg should error out.
+    with self.assertRaises(SystemExit):
+      args = run.parse_args(argv)
+
+    argv = [
+        '-p',
+        'chromium',
+        '-B',
+        'bucket',
+        '-b',
+        'builder',
+        '-t',
+        'some_test',
+        '-d',
+        'foo=bar',
+        'test',
+    ]
+    # Key=Value dimension passes the regex.
+    args = run.parse_args(argv)
+    self.assertEqual(args.dimensions, ['foo=bar'])
+
+    argv = [
+        '-p',
+        'chromium',
+        '-B',
+        'bucket',
+        '-b',
+        'builder',
+        '-t',
+        'some_test',
+        '-d',
+        'foo=',
+        'test',
+    ]
+    # Key= dimension passes the regex.
+    args = run.parse_args(argv)
+    self.assertEqual(args.dimensions, ['foo='])
+
+    argv = [
+        '-p',
+        'chromium',
+        '-B',
+        'bucket',
+        '-b',
+        'builder',
+        '-t',
+        'some_test',
+        '-d',
+        'foo=bar=baz',
+        'test',
+    ]
+    # Accept dimension value with =.
+    args = run.parse_args(argv)
+    self.assertEqual(args.dimensions, ['foo=bar=baz'])
+
 
 if __name__ == '__main__':
   unittest.main()

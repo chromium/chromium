@@ -104,6 +104,17 @@ def add_common_args(parser):
       help='Disables the use of siso ("use_siso" GN arg) in the compile, as '
       "well as the use of siso when isolating tests. Will use the builder's "
       'settings if not specified.')
+  # This only applies to test commands but making it common lets us avoid
+  # breaking up flag args with positional args
+  parser.add_argument('--dimension',
+                      '-d',
+                      action='append',
+                      default=[],
+                      dest='dimensions',
+                      help='Custom swarming dimensions to apply to all the '
+                      'tests to be run. These should be in the form '
+                      '"{key}={value}". To remove an existing dimension leave '
+                      'the value empty: "{key}="')
 
 
 def add_compile_args(parser):
@@ -142,22 +153,18 @@ def parse_args(args=None):
   add_common_args(parser)
   subparsers = parser.add_subparsers(dest='run_mode')
 
-  compile_subp = subparsers.add_parser(
-      'compile',
-      aliases=['build'],
-      help='Only compiles. WARNING: this mode is not yet supported.')
+  compile_subp = subparsers.add_parser('compile',
+                                       aliases=['build'],
+                                       help='Only compiles.')
   add_compile_args(compile_subp)
 
-  test_subp = subparsers.add_parser(
-      'test',
-      help='Only run/trigger tests. WARNING: this mode is not yet supported.')
+  test_subp = subparsers.add_parser('test', help='Only run/trigger tests.')
   add_test_args(test_subp)
 
   compile_and_test_subp = subparsers.add_parser(
       'compile-and-test',
       aliases=['build-and-test', 'run'],
-      help='Both compile and run/trigger tests. WARNING: this mode is not yet '
-      'supported.')
+      help='Both compile and run/trigger tests.')
   add_compile_args(compile_and_test_subp)
   add_test_args(compile_and_test_subp)
 
@@ -168,6 +175,14 @@ def parse_args(args=None):
   if args.reuse_task and args.run_mode != 'test':
     parser.print_help()
     parser.error('reuse-task is only compatible with "test"')
+  if args.run_mode == 'compile' and args.dimensions:
+    parser.error(
+        'Dimensions flags (-d) are only applicable to run modes that run '
+        'tests: test or compile-and-test.')
+  if args.dimensions and any(not re.match(r'^[^=]+=.*$', d)
+                             for d in args.dimensions):
+    parser.error('Dimensions flags (-d) must be in the format {key}={value} or '
+                 '{key}= to remove an existing dimenion.')
   if not args.tests:
     # Only compile mode should default to compile all
     if args.run_mode != 'compile':
@@ -223,7 +238,6 @@ def main():
                                             args.verbosity).joinpath('recipes')
   else:
     recipes_path = args.recipe_dir.joinpath('recipes')
-
   skip_compile = args.run_mode == 'test'
   skip_test = args.run_mode == 'compile'
   recipe_runner = recipe.LegacyRunner(
@@ -238,6 +252,7 @@ def main():
       args.force,
       build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
+      swarming_dimensions=args.dimensions,
       reuse_task=args.reuse_task,
       skip_coverage=not skip_compile and args.no_coverage_instrumentation,
       no_rbe=not skip_compile and args.no_rbe,
