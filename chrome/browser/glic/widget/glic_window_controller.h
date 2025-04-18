@@ -273,8 +273,6 @@ class GlicWindowController : public views::WidgetObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerUiTest, TestInitialBounds);
-  FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerWithPreviousPostionUiTest,
-                           TestInitialBounds);
 
   Host& host() const;
 
@@ -297,10 +295,17 @@ class GlicWindowController : public views::WidgetObserver,
 
   gfx::Rect GetInitialBounds(Browser* browser);
 
-  // Get the default detached bounds relative to browser.
-  gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser& browser);
+  // Return the default detached bounds which are just below the tab strip
+  // button on the active browser.
+  gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser& browser,
+                                                const gfx::Size& target_size);
 
-  // Get the default bounds when attached to the browser.
+  // Return the default detached bounds when there is no active browser. The
+  // position is relative to the top right of the current display.
+  gfx::Rect GetInitialDetachedBoundsNoBrowser(const gfx::Size& target_size);
+
+  // Return the default bounds when attached to the browser which cover the tab
+  // strip button on the active browser.
   gfx::Rect GetInitialAttachedBounds(Browser& browser);
 
   // Creates the glic view, waits for the web client to initialize, and then
@@ -347,6 +352,10 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Save the top-right corner position for re-opening.
   void SaveWidgetPosition();
+
+  // Clear the previous position if the widget would not be on an existing
+  // display when shown.
+  void MaybeResetPreviousPosition(const gfx::Size& target_size);
 
   // Determines the correct position for the glic window when attached to a
   // browser window. The top right of the widget should be placed here.
@@ -472,6 +481,8 @@ class GlicWindowController : public views::WidgetObserver,
   // opening the glic window may not actually load the client, there's no
   // guarantee that this value is sent to the web client.
   std::optional<mojom::InvocationSource> opening_source_;
+
+  std::optional<gfx::Point> previous_position_ = std::nullopt;
 
   std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
 

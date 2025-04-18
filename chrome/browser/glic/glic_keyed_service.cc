@@ -422,14 +422,6 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
          contents == window_controller().GetFreWebContents();
 }
 
-void GlicKeyedService::SetPosition(const gfx::Point& position) {
-  previous_position_ = position;
-}
-
-std::optional<gfx::Point> GlicKeyedService::GetPreviousPosition() {
-  return previous_position_;
-}
-
 void GlicKeyedService::FinishPreload(Profile* profile, bool should_preload) {
   if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile &&
       GlicEnabling::IsEnabledAndConsentForProfile(profile)) {

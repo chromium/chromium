@@ -512,12 +512,23 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   int expected_x = top_right.x() - GlicWidget::GetInitialSize().width() -
                    glic::kDefaultDetachedTopRightDistance;
   int expected_y = top_right.y() + glic::kDefaultDetachedTopRightDistance;
-  ASSERT_EQ(initial_bounds.origin(), gfx::Point(expected_x, expected_y));
+  gfx::Point default_origin(expected_x, expected_y);
+  ASSERT_EQ(initial_bounds.origin(), default_origin);
 
   // A position set on an active GlicService is used over the default.
-  glic_service()->SetPosition({10, 20});
+  window_controller().previous_position_ = {10, 20};
   initial_bounds = window_controller().GetInitialBounds(nullptr);
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(10, 20));
+
+  // A position just off of the screen is still used
+  window_controller().previous_position_ = {-5, -5};
+  initial_bounds = window_controller().GetInitialBounds(nullptr);
+  ASSERT_EQ(initial_bounds.origin(), gfx::Point(-5, -5));
+
+  // A position off the screen is reset back to the default location.
+  window_controller().previous_position_ = {-100, 20};
+  initial_bounds = window_controller().GetInitialBounds(nullptr);
+  ASSERT_EQ(initial_bounds.origin(), default_origin);
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest
