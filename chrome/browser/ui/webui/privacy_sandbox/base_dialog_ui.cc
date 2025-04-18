@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_base_dialog_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -14,7 +14,7 @@
 
 namespace privacy_sandbox {
 
-PrivacySandboxBaseDialogUI::PrivacySandboxBaseDialogUI(content::WebUI* web_ui)
+BaseDialogUI::BaseDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui),
@@ -28,8 +28,8 @@ PrivacySandboxBaseDialogUI::PrivacySandboxBaseDialogUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(PrivacySandboxBaseDialogUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(BaseDialogUI)
 
-PrivacySandboxBaseDialogUI::~PrivacySandboxBaseDialogUI() = default;
+BaseDialogUI::~BaseDialogUI() = default;
 
 }  // namespace privacy_sandbox

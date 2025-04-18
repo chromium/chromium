@@ -12,9 +12,9 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class PrivacySandboxBaseDialogTest : public InProcessBrowserTest {};
+class BaseDialogTest : public InProcessBrowserTest {};
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxBaseDialogTest, PageLoadsWhenFeatureOn) {
+IN_PROC_BROWSER_TEST_F(BaseDialogTest, PageLoads) {
   GURL kUrl(chrome::kChromeUIPrivacySandboxBaseDialogURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
   content::WebContents* web_contents =

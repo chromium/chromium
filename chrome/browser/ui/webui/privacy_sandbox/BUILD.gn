@@ -15,9 +15,9 @@ mojom("mojo_bindings") {
 
 if (!is_android) {
   source_set("privacy_sandbox") {
-    public = [ "privacy_sandbox_base_dialog_ui.h" ]
+    public = [ "base_dialog_ui.h" ]
 
-    sources = [ "privacy_sandbox_base_dialog_ui.cc" ]
+    sources = [ "base_dialog_ui.cc" ]
 
     deps = [
       "//base",
@@ -37,7 +37,7 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "privacy_sandbox_base_dialog_browsertest.cc" ]
+    sources = [ "base_dialog_browsertest.cc" ]
 
     deps = [
       ":privacy_sandbox",
