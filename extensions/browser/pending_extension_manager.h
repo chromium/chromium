@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_PENDING_EXTENSION_MANAGER_H_
-#define CHROME_BROWSER_EXTENSIONS_PENDING_EXTENSION_MANAGER_H_
+#ifndef EXTENSIONS_BROWSER_PENDING_EXTENSION_MANAGER_H_
+#define EXTENSIONS_BROWSER_PENDING_EXTENSION_MANAGER_H_
 
 #include <list>
 #include <map>
@@ -38,7 +38,8 @@ class PendingExtensionManager;
 
 class ExtensionUpdaterTest;
 void SetupPendingExtensionManagerForTest(
-    int count, const GURL& update_url,
+    int count,
+    const GURL& update_url,
     PendingExtensionManager* pending_extension_manager);
 
 // Class PendingExtensionManager manages the set of extensions which are
@@ -188,10 +189,11 @@ class PendingExtensionManager : public KeyedService {
                            UpdatePendingExtensionAlreadyInstalled);
   friend class ExtensionUpdaterTest;
   friend void SetupPendingExtensionManagerForTest(
-      int count, const GURL& update_url,
+      int count,
+      const GURL& update_url,
       PendingExtensionManager* pending_extension_manager);
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_PENDING_EXTENSION_MANAGER_H_
+#endif  // EXTENSIONS_BROWSER_PENDING_EXTENSION_MANAGER_H_

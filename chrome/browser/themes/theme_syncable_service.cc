@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -40,6 +39,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pending_extension_info.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/manifest_url_handlers.h"
 
 using std::string;

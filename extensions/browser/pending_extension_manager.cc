@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/pending_extension_manager.h"
+#include "extensions/browser/pending_extension_manager.h"
 
 #include <algorithm>
 
@@ -13,13 +13,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/pending_extension_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/pending_extension_manager_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
@@ -58,8 +55,9 @@ PendingExtensionManager* PendingExtensionManager::Get(
 const PendingExtensionInfo* PendingExtensionManager::GetById(
     const std::string& id) const {
   auto it = pending_extensions_.find(id);
-  if (it != pending_extensions_.end())
+  if (it != pending_extensions_.end()) {
     return &it->second;
+  }
 
   return nullptr;
 }
@@ -128,16 +126,9 @@ bool PendingExtensionManager::AddFromSync(
       mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
 
-  return AddExtensionImpl(id,
-                          std::string(),
-                          update_url,
-                          version,
-                          should_allow_install,
-                          kIsFromSync,
-                          kSyncLocation,
-                          Extension::NO_FLAGS,
-                          kMarkAcknowledged,
-                          remote_install);
+  return AddExtensionImpl(
+      id, std::string(), update_url, version, should_allow_install, kIsFromSync,
+      kSyncLocation, Extension::NO_FLAGS, kMarkAcknowledged, remote_install);
 }
 
 bool PendingExtensionManager::AddFromExtensionImport(
@@ -159,15 +150,9 @@ bool PendingExtensionManager::AddFromExtensionImport(
   static const bool kMarkAcknowledged = false;
   static const bool kRemoteInstall = false;
 
-  return AddExtensionImpl(id,
-                          std::string(),
-                          update_url,
-                          base::Version(),
-                          should_allow_install,
-                          kIsFromSync,
-                          kManifestLocation,
-                          Extension::NO_FLAGS,
-                          kMarkAcknowledged,
+  return AddExtensionImpl(id, std::string(), update_url, base::Version(),
+                          should_allow_install, kIsFromSync, kManifestLocation,
+                          Extension::NO_FLAGS, kMarkAcknowledged,
                           kRemoteInstall);
 }
 
@@ -183,8 +168,9 @@ bool PendingExtensionManager::AddFromExternalUpdateUrl(
   static const bool kIsFromSync = false;
   static const bool kRemoteInstall = false;
 
-  const Extension* extension = ExtensionRegistry::Get(context_)
-      ->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
+  const Extension* extension =
+      ExtensionRegistry::Get(context_)->GetExtensionById(
+          id, ExtensionRegistry::EVERYTHING);
   if (extension && location == Manifest::GetHigherPriorityLocation(
                                    location, extension->location())) {
     // If the new location has higher priority than the location of an existing
@@ -223,16 +209,9 @@ bool PendingExtensionManager::AddFromExternalFile(
   static const bool kIsFromSync = false;
   static const bool kRemoteInstall = false;
 
-  return AddExtensionImpl(id,
-                          std::string(),
-                          kUpdateUrl,
-                          version,
-                          &AlwaysInstall,
-                          kIsFromSync,
-                          install_source,
-                          creation_flags,
-                          mark_acknowledged,
-                          kRemoteInstall);
+  return AddExtensionImpl(id, std::string(), kUpdateUrl, version,
+                          &AlwaysInstall, kIsFromSync, install_source,
+                          creation_flags, mark_acknowledged, kRemoteInstall);
 }
 
 std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
@@ -309,8 +288,9 @@ bool PendingExtensionManager::AddExtensionImpl(
 
     // If |pending| has the same or higher precedence than |info| then don't
     // install |info| over |pending|.
-    if (pending->CompareTo(info) >= 0)
+    if (pending->CompareTo(info) >= 0) {
       return false;
+    }
 
     VLOG(1) << "Overwrite existing record.";
 

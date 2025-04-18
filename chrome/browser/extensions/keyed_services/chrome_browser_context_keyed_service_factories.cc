@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
-#include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
@@ -72,7 +71,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::InstallStageTrackerFactory::GetInstance();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
-  extensions::PendingExtensionManagerFactory::GetInstance();
   extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
   extensions::SharedModuleServiceFactory::GetInstance();
 

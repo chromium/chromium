@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/pending_extension_manager_factory.h"
+#include "extensions/browser/pending_extension_manager_factory.h"
 
 #include "base/check.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/pending_extension_manager.h"
 
 using content::BrowserContext;
 

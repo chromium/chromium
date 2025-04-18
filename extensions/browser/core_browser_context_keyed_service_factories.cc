@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/image_loader_factory.h"
 #include "extensions/browser/message_tracker.h"
+#include "extensions/browser/pending_extension_manager_factory.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -58,6 +59,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   MimeHandlerStreamManager::EnsureFactoryBuilt();
 #endif
+  PendingExtensionManagerFactory::GetInstance();
   PermissionsManager::GetFactory();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();

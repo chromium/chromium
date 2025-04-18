@@ -5,11 +5,11 @@
 #include "chrome/browser/extensions/extension_error_controller.h"
 
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
