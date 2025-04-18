@@ -599,6 +599,15 @@ export class AppElement extends AppElementBase {
       htmlTag = 'div';
     }
 
+    // details tags hide content beneath them if closed. If opened, there is
+    // content underneath we should show, but surrounding it with a generic
+    // details tag causes it to be hidden in reading mode. So use a div instead.
+    // In the cases that the details are closed, then nothing will be returned
+    // beneath the details tag so nothing is rendered on reading mode.
+    if (htmlTag === 'details') {
+      htmlTag = 'div';
+    }
+
     // Images will be written to a canvas.
     if (htmlTag === 'img') {
       htmlTag = 'canvas';
