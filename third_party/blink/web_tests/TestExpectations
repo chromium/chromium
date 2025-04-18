@@ -9089,3 +9089,6 @@ crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Fail
 crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Failure Pass ]
 crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.html [ Failure Pass ]
 crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.worker.html [ Failure Pass ]
+
+crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Failure Pass ]
+crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Failure Pass ]
