@@ -41,6 +41,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -142,7 +143,8 @@ public class AuxiliarySearchControllerImplUnitTest {
                         mProfile,
                         mAuxiliarySearchProvider,
                         mAuxiliarySearchDonor,
-                        mFaviconHelper);
+                        mFaviconHelper,
+                        AuxiliarySearchHostType.CTA);
         mAuxiliarySearchControllerImpl.onResumeWithNative();
 
         verify(mAuxiliarySearchDonor).deleteAll(any(Callback.class));
@@ -573,6 +575,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                         mProfile,
                         mAuxiliarySearchProvider,
                         mAuxiliarySearchDonor,
-                        mFaviconHelper);
+                        mFaviconHelper,
+                        AuxiliarySearchHostType.CTA);
     }
 }

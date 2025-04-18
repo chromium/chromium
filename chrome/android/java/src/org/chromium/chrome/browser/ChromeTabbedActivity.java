@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
 import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModuleBuilder;
@@ -1828,7 +1829,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                                 .createAuxiliarySearchController(
                                                         this,
                                                         profileProvider.getOriginalProfile(),
-                                                        mTabModelSelector);
+                                                        mTabModelSelector,
+                                                        AuxiliarySearchHostType.CTA);
                                 if (mAuxiliarySearchController != null) {
                                     mAuxiliarySearchController.register(
                                             this.getLifecycleDispatcher());

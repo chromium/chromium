@@ -37,6 +37,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.MetaDataVersion;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,7 +88,8 @@ public class AuxiliarySearchProviderUnitTest {
 
         when(mContext.getResources()).thenReturn(mResources);
         mAuxiliarySearchProvider =
-                new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
+                new AuxiliarySearchProvider(
+                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
         mMockNormalTabModel = new MockTabModel(mProfile, null);
         doReturn(mMockNormalTabModel).when(mTabModelSelector).getModel(false);
 
@@ -161,7 +163,8 @@ public class AuxiliarySearchProviderUnitTest {
                 0);
         // Recreate provider to update the finch parameter.
         mAuxiliarySearchProvider =
-                new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
+                new AuxiliarySearchProvider(
+                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
 
         assertNotEquals(0L, mAuxiliarySearchProvider.getTabsMaxAgeMs());
         assertEquals(
@@ -178,7 +181,8 @@ public class AuxiliarySearchProviderUnitTest {
                 10);
         // Recreate provider to update the finch parameter.
         mAuxiliarySearchProvider =
-                new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
+                new AuxiliarySearchProvider(
+                        mContext, mProfile, mTabModelSelector, AuxiliarySearchHostType.CTA);
         assertEquals(10 * 60 * 60 * 1000, mAuxiliarySearchProvider.getTabsMaxAgeMs());
     }
 
@@ -285,6 +289,18 @@ public class AuxiliarySearchProviderUnitTest {
 
         verify(mMockAuxiliarySearchBridgeJni)
                 .setObserverAndTrigger(eq(FAKE_NATIVE_PROVIDER), any(AuxiliarySearchBridge.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testCreationViaCTABackgroundTask() {
+        mAuxiliarySearchProvider =
+                new AuxiliarySearchProvider(
+                        mContext,
+                        mProfile,
+                        mTabModelSelector,
+                        AuxiliarySearchHostType.CTA_BACKGROUND_TASK);
+        assertTrue(mAuxiliarySearchProvider.isAuxiliarySearchBridgeNullForTesting());
     }
 
     private <T> void testSaveAndReadDonationMetadataAsyncImpl(

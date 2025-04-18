@@ -48,6 +48,7 @@ public class AuxiliarySearchControllerImpl
     private final int mZeroStateFaviconNumber;
     private final int mDefaultFaviconSize;
     private final long mHistoryTtlMillis;
+    private final @AuxiliarySearchHostType int mHostType;
 
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
@@ -63,7 +64,8 @@ public class AuxiliarySearchControllerImpl
             Profile profile,
             AuxiliarySearchProvider auxiliarySearchProvider,
             AuxiliarySearchDonor auxiliarySearchDonor,
-            FaviconHelper faviconHelper) {
+            FaviconHelper faviconHelper,
+            @AuxiliarySearchHostType int hostType) {
         mContext = context;
         mProfile = profile;
         mAuxiliarySearchProvider = auxiliarySearchProvider;
@@ -72,6 +74,7 @@ public class AuxiliarySearchControllerImpl
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
         mSupportMultiDataSource =
                 AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice();
+        mHostType = hostType;
 
         mZeroStateFaviconNumber =
                 sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
@@ -87,15 +90,20 @@ public class AuxiliarySearchControllerImpl
      * @param context The application context.
      * @param profile The profile in use.
      * @param tabModelSelector The instance of {@link TabModelSelector}.
+     * @param hostType The type of host who creates and owns the controller instance.
      */
     public AuxiliarySearchControllerImpl(
-            Context context, Profile profile, @Nullable TabModelSelector tabModelSelector) {
+            Context context,
+            Profile profile,
+            @Nullable TabModelSelector tabModelSelector,
+            @AuxiliarySearchHostType int hostType) {
         this(
                 context,
                 profile,
-                new AuxiliarySearchProvider(context, profile, tabModelSelector),
+                new AuxiliarySearchProvider(context, profile, tabModelSelector, hostType),
                 AuxiliarySearchDonor.getInstance(),
-                new FaviconHelper());
+                new FaviconHelper(),
+                hostType);
     }
 
     // AuxiliarySearchController implementations.
@@ -158,7 +166,7 @@ public class AuxiliarySearchControllerImpl
 
     @Override
     public void onDeferredStartup() {
-        if (mSupportMultiDataSource && !mIsObserving) {
+        if (mSupportMultiDataSource && mHostType == AuxiliarySearchHostType.CTA && !mIsObserving) {
             mIsObserving = true;
             mAuxiliarySearchProvider.setObserver(this);
         }
