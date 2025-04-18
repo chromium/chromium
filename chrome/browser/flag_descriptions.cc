@@ -6761,6 +6761,12 @@ const char kExperimentalAccessibilityManifestV3Description[] =
     "Experimental migration of accessibility features from extension manifest "
     "v2 to v3. Likely to break accessibility access while experimental.";
 
+const char kAccessibilityManifestV3AccessibilityCommonName[] =
+    "Changes accessibility common extension manifest v2 to v3.";
+const char kAccessibilityManifestV3AccessibilityCommonDescription[] =
+    "Experimental migration of accessibility common extension from manifest v2 "
+    "to v3.";
+
 const char kAccessibilityManifestV3BrailleImeName[] =
     "Changes accessibility extension Braille IME manifest v2 to v3.";
 const char kAccessibilityManifestV3BrailleImeDescription[] =

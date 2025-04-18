@@ -300,6 +300,14 @@ bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
       ::features::kAccessibilityManifestV3EnhancedNetworkTts);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3AccessibilityCommon,
+             "AccessibilityManifestV3AccessibilityCommon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForAccessibilityCommon() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3AccessibilityCommon);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3SelectToSpeak,
              "AccessibilityManifestV3SelectToSpeak",
              base::FEATURE_DISABLED_BY_DEFAULT);

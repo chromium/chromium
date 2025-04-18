@@ -16436,6 +16436,8 @@ from previous Chrome versions.
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
   <int value="817080398" label="PreinstalledWebAppDuplicationFixer:disabled"/>
   <int value="817393533" label="GlobalMediaControlsModernUI:disabled"/>
+  <int value="819620541"
+      label="AccessibilityManifestV3AccessibilityCommon:enabled"/>
   <int value="820645399"
       label="ConsolidateMetricsServiceInitialLogLogic:enabled"/>
   <int value="820650704" label="disable-ntp-popular-sites"/>
@@ -17190,6 +17192,8 @@ from previous Chrome versions.
   <int value="1118339487" label="MemoriesDebug:disabled"/>
   <int value="1120074279" label="VCTrayTitleHeader:disabled"/>
   <int value="1120211655" label="(Obsolete) enable-simplified-fullscreen-ui"/>
+  <int value="1120301491"
+      label="AccessibilityManifestV3AccessibilityCommon:disabled"/>
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
   <int value="1121848336" label="UseNetworkFrameworkForLocalDiscovery:enabled"/>
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>

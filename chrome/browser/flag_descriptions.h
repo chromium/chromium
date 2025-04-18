@@ -3977,6 +3977,9 @@ extern const char
 extern const char kExperimentalAccessibilityManifestV3Name[];
 extern const char kExperimentalAccessibilityManifestV3Description[];
 
+extern const char kAccessibilityManifestV3AccessibilityCommonName[];
+extern const char kAccessibilityManifestV3AccessibilityCommonDescription[];
+
 extern const char kAccessibilityManifestV3BrailleImeName[];
 extern const char kAccessibilityManifestV3BrailleImeDescription[];
 

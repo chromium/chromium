@@ -207,6 +207,10 @@ AX_BASE_EXPORT bool IsAccessibilityBounceKeysEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySlowKeys);
 AX_BASE_EXPORT bool IsAccessibilitySlowKeysEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityManifestV3AccessibilityCommon);
+AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForAccessibilityCommon();
+
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3BrailleIme);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForBrailleIme();
 

@@ -532,12 +532,15 @@ AccessibilityManager::AccessibilityManager() {
   const bool enable_v3_manifest =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnableExperimentalAccessibilityManifestV3);
+
+  const bool enable_accessibility_common_v3_manifest =
+      ::features::IsAccessibilityManifestV3EnabledForAccessibilityCommon();
   const base::FilePath::CharType* accessibility_common_manifest_filename =
-      enable_v3_manifest
+      enable_v3_manifest || enable_accessibility_common_v3_manifest
           ? extension_misc::kAccessibilityCommonManifestV3Filename
           : extension_misc::kAccessibilityCommonManifestFilename;
   const base::FilePath::CharType* accessibility_common_guest_manifest_filename =
-      enable_v3_manifest
+      enable_v3_manifest || enable_accessibility_common_v3_manifest
           ? extension_misc::kAccessibilityCommonGuestManifestV3Filename
           : extension_misc::kAccessibilityCommonGuestManifestFilename;
 
