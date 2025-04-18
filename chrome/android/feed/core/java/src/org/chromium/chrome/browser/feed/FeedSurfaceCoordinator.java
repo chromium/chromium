@@ -473,6 +473,7 @@ public class FeedSurfaceCoordinator
             mHeaderView =
                     LayoutInflater.from(mActivity)
                             .inflate(R.layout.new_tab_page_feed_header, null, false);
+            mHeaderView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
             if (treatment.equals("none")) {
                 mHeaderView.setVisibility(View.GONE);
             }
