@@ -178,8 +178,7 @@ void WaitForEmpyOmnibox() {
 // Tests whether input mode in an omnibox can be canceled via tapping the typing
 // shield and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
-// TODO(crbug.com/392545268): Deflake test.
-- (void)FLAKY_testToolbarOmniboxTypingShield {
+- (void)testToolbarOmniboxTypingShield {
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"There is no typing shield on iPhone, skip.");
@@ -194,7 +193,10 @@ void WaitForEmpyOmnibox() {
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"foo"];
 
   id<GREYMatcher> typingShield = grey_accessibilityID(@"Typing Shield");
-  [[EarlGrey selectElementWithMatcher:typingShield] performAction:grey_tap()];
+  // Tap on the side to dismiss it. Tapping in the middle might tap on the
+  // suggestions.
+  [[EarlGrey selectElementWithMatcher:typingShield]
+      performAction:grey_tapAtPoint(CGPointMake(30, 200))];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
