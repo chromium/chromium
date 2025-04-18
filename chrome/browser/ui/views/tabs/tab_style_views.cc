@@ -259,11 +259,18 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       top_right_corner_radius = 0;
     }
 
-    // if the size of the space for the path is smaller than the size of a
-    // favicon or if we are building a path for the hit test, expand to take the
-    // entire width of the separator margins AND the separator.
-    if ((right - left) < (gfx::kFaviconSize * scale) ||
-        path_type == TabStyle::PathType::kHitTest) {
+    // If the size of the space for the path is smaller than the size of a
+    // favicon, if we are building a path for the hit test, or if we are
+    // building a path for a split tab, expand to take the entire width of the
+    // separator margins AND the separator.
+    const bool limited_tab_space = (right - left) < (gfx::kFaviconSize * scale);
+    const bool expand_into_previous_separator =
+        limited_tab_space || path_type == TabStyle::PathType::kHitTest ||
+        IsEndSplitTab(tab());
+    const bool expand_into_next_separator =
+        limited_tab_space || path_type == TabStyle::PathType::kHitTest ||
+        IsStartSplitTab(tab());
+    if (expand_into_previous_separator || expand_into_next_separator) {
       // Take the entire size of the separator. in odd separator size cases, the
       // right side will take the remaining space.
       const int left_separator_overlap =
@@ -274,7 +281,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       // If there is a tab before this one, then expand into its overlap.
       const Tab* const previous_tab =
           tab()->controller()->GetAdjacentTab(tab(), -1);
-      if (previous_tab) {
+      if (expand_into_previous_separator && previous_tab) {
         left -= (tab_style()->GetSeparatorMargins().right() +
                  left_separator_overlap) *
                 scale;
@@ -282,7 +289,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 
       // If there is a tab after this one, then expand into its overlap.
       const Tab* const next_tab = tab()->controller()->GetAdjacentTab(tab(), 1);
-      if (next_tab) {
+      if (expand_into_next_separator && next_tab) {
         right += (tab_style()->GetSeparatorMargins().left() +
                   right_separator_overlap) *
                  scale;
@@ -296,18 +303,6 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       } else if (IsEndSplitTab(tab())) {
         top_left_corner_radius = 0;
         bottom_left_corner_radius = 0;
-      }
-
-      const int separator_width = tab_style()->GetSeparatorMargins().left() +
-                                  tab_style()->GetSeparatorSize().width() +
-                                  tab_style()->GetSeparatorMargins().right();
-
-      if (!IsStartSplitTab(tab())) {
-        left -= separator_width * scale / 2;
-      }
-
-      if (!IsEndSplitTab(tab())) {
-        right += separator_width * scale / 2;
       }
     }
 
