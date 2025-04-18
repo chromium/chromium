@@ -19,10 +19,7 @@ rust_bindgen("cpp_lib_bindgen") {
 }
 
 rust_executable("bindgen_cpp_test") {
-  deps = [
-    ":cpp_lib",
-    ":cpp_lib_bindgen",
-  ]
+  deps = [ ":cpp_lib_bindgen" ]
   sources = [ "main.rs" ]
   crate_root = "main.rs"
 

@@ -23,15 +23,12 @@ component("c_lib") {
 
 rust_bindgen("c_lib_bindgen") {
   header = "lib.h"
-  deps = [ ":c_lib_headers" ]
+  deps = [ ":c_lib" ]
 }
 
 rust_static_library("bindgen_test_lib") {
   allow_unsafe = true
-  deps = [
-    ":c_lib",
-    ":c_lib_bindgen",
-  ]
+  deps = [ ":c_lib_bindgen" ]
   sources = [ "src/lib.rs" ]
   build_native_rust_unit_tests = true
   crate_root = "src/lib.rs"

@@ -100,11 +100,17 @@ template("rust_bindgen") {
     sources = [ crate_root ]
     bindgen_deps = [ ":$_rust_bindgen_generator_name" ]
     allow_unsafe = true
+
+    deps = []
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
     if (_wrap_static_fns) {
       # Add a dependency on the static_fns library for simplicity if
       # it's declared.
-      deps = [ ":${_rust_bindgen_generator_name}_static_fns" ]
+      deps += [ ":${_rust_bindgen_generator_name}_static_fns" ]
     }
+
     if (defined(cpp) && cpp) {
       # This cfg is used to control the bindings public export.
       rustflags = [

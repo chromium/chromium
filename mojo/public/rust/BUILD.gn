@@ -74,7 +74,6 @@ rust_static_library("mojo_system") {
 
   deps = [
     ":mojo_c_system_binding",
-    ":mojo_c_system_wrapper",
     "//mojo/public/c/system",
     "//third_party/rust/bitflags/v2:lib",
   ]
