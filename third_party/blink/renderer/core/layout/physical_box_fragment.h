@@ -118,25 +118,20 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
    protected:
     friend class OutOfFlowLayoutPart;
-    base::span<PhysicalFragmentLink> Children() const {
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      return UNSAFE_TODO(base::span(buffer_, num_children_));
-    }
+    base::span<PhysicalFragmentLink> Children() const { return span_; }
 
    private:
     friend class PhysicalBoxFragment;
-    MutableChildrenForOutOfFlow(const PhysicalFragmentLink* buffer,
-                                wtf_size_t num_children)
-        : buffer_(const_cast<PhysicalFragmentLink*>(buffer)),
-          num_children_(num_children) {}
+    explicit MutableChildrenForOutOfFlow(base::span<PhysicalFragmentLink> span)
+        : span_(span) {}
 
-    PhysicalFragmentLink* buffer_;
-    wtf_size_t num_children_;
+    base::span<PhysicalFragmentLink> span_;
   };
 
   MutableChildrenForOutOfFlow GetMutableChildrenForOutOfFlow() const {
     DCHECK(children_valid_);
-    return MutableChildrenForOutOfFlow(children_.data(), children_.size());
+    return MutableChildrenForOutOfFlow(
+        base::span(const_cast<PhysicalBoxFragment*>(this)->children_));
   }
 
   // Returns |FragmentItems| if this fragment has one.
