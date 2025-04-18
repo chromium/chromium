@@ -348,19 +348,23 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
 
 NoticeStorage::~NoticeStorage() = default;
 
-PrivacySandboxNoticeStorage::PrivacySandboxNoticeStorage() = default;
+PrivacySandboxNoticeStorage::PrivacySandboxNoticeStorage(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
+  CHECK(pref_service_);
+}
+
 PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
 
 void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
-    PrefService* pref_service,
     std::string_view notice) const {
   CheckNoticeNameEligibility(notice);
-  auto notice_data = ReadNoticeData(pref_service, notice);
+  auto notice_data = ReadNoticeData(notice);
 
   NoticeStartupState startup_state;
 
   // If the notice entry doesn't exist, we don't emit any histograms.
-  if (!pref_service->GetDict(kPrivacySandboxNoticeDataPath).contains(notice)) {
+  if (!pref_service_->GetDict(kPrivacySandboxNoticeDataPath).contains(notice)) {
     return;
   }
 
@@ -401,11 +405,10 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
 }
 
 std::optional<PrivacySandboxNoticeData>
-PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
-                                            std::string_view notice) const {
+PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
   CheckNoticeNameEligibility(notice);
   const base::Value::Dict& pref_data =
-      pref_service->GetDict(kPrivacySandboxNoticeDataPath);
+      pref_service_->GetDict(kPrivacySandboxNoticeDataPath);
   if (!pref_data.contains(notice)) {
     return std::nullopt;
   }
@@ -460,19 +463,17 @@ PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
 }
 
 void PrivacySandboxNoticeStorage::RecordEvent(
-    PrefService* pref_service,
     std::string_view notice,
     notice::mojom::PrivacySandboxNoticeEvent event,
     base::Time event_time) {
   if (event == PrivacySandboxNoticeEvent::kShown) {
-    SetNoticeShown(pref_service, notice, event_time);
+    SetNoticeShown(notice, event_time);
     return;
   }
-  SetNoticeActionTaken(pref_service, notice, event, event_time);
+  SetNoticeActionTaken(notice, event, event_time);
 }
 
 void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
-    PrefService* pref_service,
     std::string_view notice,
     PrivacySandboxNoticeEvent notice_action_taken,
     base::Time notice_action_taken_time) {
@@ -480,8 +481,8 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   CHECK(notice_action_taken != PrivacySandboxNoticeEvent::kShown)
       << "Use `SetNoticeShown` to set a kShown PrivacySandboxNoticeEvent "
          "instead.";
-  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
-  auto notice_data = ReadNoticeData(pref_service, notice);
+  ScopedDictPrefUpdate update(pref_service_, kPrivacySandboxNoticeDataPath);
+  auto notice_data = ReadNoticeData(notice);
 
   // The notice should be shown first before action can be taken on it.
   if (!notice_data.has_value() ||
@@ -552,13 +553,12 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     }
   }
 }
-void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
-                                                 std::string_view notice,
+void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
                                                  base::Time notice_shown_time) {
   CheckNoticeNameEligibility(notice);
-  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
-  SetSchemaVersion(pref_service, notice);
-  SetChromeVersion(pref_service, notice);
+  ScopedDictPrefUpdate update(pref_service_, kPrivacySandboxNoticeDataPath);
+  SetSchemaVersion(pref_service_, notice);
+  SetChromeVersion(pref_service_, notice);
 
   base::Value::Dict entry =
       BuildDictEntryEvent(PrivacySandboxNoticeEvent::kShown, notice_shown_time);
@@ -575,7 +575,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
       base::StrCat({"PrivacySandbox.Notice.NoticeEvent.", notice}),
       PrivacySandboxNoticeEvent::kShown);
 
-  auto notice_data = ReadNoticeData(pref_service, notice);
+  auto notice_data = ReadNoticeData(notice);
   if (*notice_data->GetNoticeFirstShownFromEvents() == notice_shown_time) {
     base::UmaHistogramBoolean(
         base::StrCat(

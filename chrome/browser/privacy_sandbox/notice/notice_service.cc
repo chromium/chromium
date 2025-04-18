@@ -53,8 +53,8 @@ void PrivacySandboxNoticeService::EventOccurred(
 
   Notice* notice = it->second.get();
 
-  GetNoticeStorage()->RecordEvent(GetPrefService(), notice->GetStorageName(),
-                                  event, base::Time::Now());
+  GetNoticeStorage()->RecordEvent(notice->GetStorageName(), event,
+                                  base::Time::Now());
 
   notice->UpdateTargetApiResults(event);
 }
@@ -80,8 +80,7 @@ NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
 
 void PrivacySandboxNoticeService::EmitStartupHistograms() {
   for (const auto& [notice_id, notice] : catalog_->GetNoticeMap()) {
-    GetNoticeStorage()->RecordHistogramsOnStartup(GetPrefService(),
-                                                  notice->GetStorageName());
+    GetNoticeStorage()->RecordHistogramsOnStartup(notice->GetStorageName());
   }
 }
 

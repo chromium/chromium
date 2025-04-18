@@ -151,36 +151,30 @@ class NoticeStorage {
   // missing, return base::Time(). If an event timestamp is tracked but the
   // event itself is missing, return PrivacySandboxNoticeEvent::kUnknownAction.
   virtual std::optional<PrivacySandboxNoticeData> ReadNoticeData(
-      PrefService* pref_service,
       std::string_view notice) const = 0;
 
   // Records histograms tracking the state of notice flow on startup.
-  virtual void RecordHistogramsOnStartup(PrefService* pref_service,
-                                         std::string_view notice) const = 0;
+  virtual void RecordHistogramsOnStartup(std::string_view notice) const = 0;
 
   // Records a Notice Event.
-  virtual void RecordEvent(PrefService* pref_service,
-                           std::string_view notice,
+  virtual void RecordEvent(std::string_view notice,
                            notice::mojom::PrivacySandboxNoticeEvent event,
                            base::Time event_time) = 0;
 };
 
 class PrivacySandboxNoticeStorage : public NoticeStorage {
  public:
-  PrivacySandboxNoticeStorage();
+  explicit PrivacySandboxNoticeStorage(PrefService* pref_service);
   ~PrivacySandboxNoticeStorage() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   std::optional<PrivacySandboxNoticeData> ReadNoticeData(
-      PrefService* pref_service,
       std::string_view notice) const override;
 
-  void RecordHistogramsOnStartup(PrefService* pref_service,
-                                 std::string_view notice) const override;
+  void RecordHistogramsOnStartup(std::string_view notice) const override;
 
-  void RecordEvent(PrefService* pref_service,
-                   std::string_view notice,
+  void RecordEvent(std::string_view notice,
                    notice::mojom::PrivacySandboxNoticeEvent event,
                    base::Time event_time) override;
 
@@ -211,16 +205,15 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
  private:
   // Sets the pref and histogram controlling the action taken on the notice.
   void SetNoticeActionTaken(
-      PrefService* pref_service,
       std::string_view notice,
       notice::mojom::PrivacySandboxNoticeEvent notice_action_taken,
       base::Time notice_action_taken_time);
 
   // Updates the pref and histogram controlling whether the notice has been
   // shown.
-  void SetNoticeShown(PrefService* pref_service,
-                      std::string_view notice,
-                      base::Time notice_shown_time);
+  void SetNoticeShown(std::string_view notice, base::Time notice_shown_time);
+
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace privacy_sandbox

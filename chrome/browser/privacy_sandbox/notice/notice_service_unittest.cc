@@ -20,7 +20,6 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,12 +112,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
 
   // 3. Set expectations on Storage: RecordHistogramsOnStartup called for each
   // notice.
-  PrefService* expected_prefs = profile()->GetPrefs();
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(Eq(expected_prefs),
-                                                         StrEq("TestFeatureA")))
+  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(StrEq("TestFeatureA")))
       .Times(1);
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(Eq(expected_prefs),
-                                                         StrEq("TestFeatureB")))
+  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(StrEq("TestFeatureB")))
       .Times(1);
 
   // 4. Execute: Create the service, which should trigger the histogram calls.
@@ -144,15 +140,13 @@ TEST_F(PrivacySandboxNoticeServiceTest,
       .WillRepeatedly(ReturnRef(test_notice_map));
 
   // Ignore constructor histogram calls
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(_, _))
+  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(_))
       .Times(testing::AnyNumber());
 
   // 4. Set expectations on the storage mock.
-  PrefService* expected_prefs = profile()->GetPrefs();
   base::Time expected_time = base::Time::Now();
-  EXPECT_CALL(*mock_storage(),
-              RecordEvent(Eq(expected_prefs), StrEq("TestFeatureA"),
-                          Eq(Event::kAck), Eq(expected_time)))
+  EXPECT_CALL(*mock_storage(), RecordEvent(StrEq("TestFeatureA"),
+                                           Eq(Event::kAck), Eq(expected_time)))
       .Times(1);
 
   // 5. Execute
@@ -175,7 +169,7 @@ TEST_F(PrivacySandboxNoticeServiceTest, EventOccurred_NoticeNotFound_Crashes) {
           ReturnRef(empty_notice_map));  // Called on construction and event
 
   // Ignore constructor histogram calls
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(_, _))
+  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(_))
       .Times(testing::AnyNumber());
 
   // Create the service
