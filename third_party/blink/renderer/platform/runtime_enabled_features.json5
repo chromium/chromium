@@ -1831,9 +1831,9 @@
       status: "stable",
     },
     {
-      //See: crbug.com/40771555
+      // See: crbug.com/40771555
       name: "EnterInOpenShadowRoots",
-      status: "test",
+      status: "stable",
     },
     {
       // Experiment with preventing some instances of mutation XSS
