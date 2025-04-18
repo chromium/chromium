@@ -89,8 +89,10 @@ class AILanguageModel : public AIContextBoundObject,
     SpaceReservationResult AddContextItem(ContextItem context_item);
 
     // Combines the initial prompts and all current items into a request.
-    // The type of request produced is a PromptApiRequest.
-    optimization_guide::MultimodalMessage MakeRequest();
+    // The type of request produced is a PromptApiRequest. `capabilities`
+    // contains the capabilities of the target model.
+    optimization_guide::MultimodalMessage MakeRequest(
+        const on_device_model::Capabilities& capabilities);
 
     // Returns true if the system prompt is set or there is at least one context
     // item.

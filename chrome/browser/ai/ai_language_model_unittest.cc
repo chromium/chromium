@@ -34,6 +34,7 @@
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +54,7 @@ using ::optimization_guide::proto::PromptApiRequest;
 using ::optimization_guide::proto::PromptApiRole;
 using ::optimization_guide::proto::ProtoField;
 using ::testing::_;
+using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::Test;
 using Role = ::blink::mojom::AILanguageModelPromptRole;
@@ -210,7 +212,7 @@ std::string ToString(const optimization_guide::MultimodalMessage& request) {
 
 // Convert a Context to string for expectation matching.
 std::string GetContextString(AILanguageModel::Context& ctx) {
-  return ToString(ctx.MakeRequest());
+  return ToString(ctx.MakeRequest(on_device_model::Capabilities()));
 }
 
 const optimization_guide::proto::Any& GetPromptApiMetadata() {
@@ -950,6 +952,10 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
         auto session = std::make_unique<
             testing::NiceMock<optimization_guide::MockSession>>();
         SetUpMockSession(*session);
+        EXPECT_CALL(*session, GetCapabilities())
+            .WillRepeatedly(Return(on_device_model::Capabilities{
+                on_device_model::CapabilityFlags::kImageInput,
+                on_device_model::CapabilityFlags::kAudioInput}));
         EXPECT_CALL(*session, SetInput(_))
             .WillOnce([&](MultimodalMessage request_metadata) {
               EXPECT_THAT(ToString(request_metadata),

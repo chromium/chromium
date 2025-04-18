@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
@@ -28,6 +29,7 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
@@ -68,7 +70,8 @@ MultimodalMessage EmptyMessage() {
 
 void AddPromptToField(
     const blink::mojom::AILanguageModelPrompt& prompt,
-    optimization_guide::RepeatedMultimodalMessageEditView view) {
+    optimization_guide::RepeatedMultimodalMessageEditView view,
+    const on_device_model::Capabilities& capabilities) {
   PromptApiPrompt prompt_proto;
   prompt_proto.set_role(ConvertRole(prompt.role));
   auto prompt_view = view.Add(prompt_proto);
@@ -76,9 +79,17 @@ void AddPromptToField(
     prompt_view.Set(PromptApiPrompt::kTextFieldNumber,
                     prompt.content->get_text());
   } else if (prompt.content->is_bitmap()) {
+    if (!capabilities.Has(on_device_model::CapabilityFlags::kImageInput)) {
+      mojo::ReportBadMessage("Image input is not supported.");
+      return;
+    }
     prompt_view.Set(PromptApiPrompt::kMediaFieldNumber,
                     prompt.content->get_bitmap());
   } else if (prompt.content->is_audio()) {
+    if (!capabilities.Has(on_device_model::CapabilityFlags::kAudioInput)) {
+      mojo::ReportBadMessage("Audio input is not supported.");
+      return;
+    }
     // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
     const on_device_model::mojom::AudioDataPtr& audio_data =
         prompt.content->get_audio();
@@ -96,28 +107,31 @@ void AddPromptToField(
 
 // Fill the 'view'ed Repeated<PromptApiPrompt> field with the prompts of 'item'.
 void AddPrompts(optimization_guide::RepeatedMultimodalMessageEditView view,
-                const AILanguageModel::Context::ContextItem& item) {
+                const AILanguageModel::Context::ContextItem& item,
+                const on_device_model::Capabilities& capabilities) {
   for (const auto& prompt : item.prompts) {
-    AddPromptToField(*prompt, view);
+    AddPromptToField(*prompt, view, capabilities);
   }
 }
 
 // Construct an multimodal PromptApiRequest with initial prompts from 'item'.
 MultimodalMessage MakeInitialPrompt(
-    const AILanguageModel::Context::ContextItem& item) {
+    const AILanguageModel::Context::ContextItem& item,
+    const on_device_model::Capabilities& capabilities) {
   MultimodalMessage request = EmptyMessage();
   AddPrompts(request.edit().MutableRepeatedField(
                  PromptApiRequest::kInitialPromptsFieldNumber),
-             item);
+             item, capabilities);
   return request;
 }
 
 // Add the prompts from 'item' to the current_prompts field of 'request'.
 void AddCurrentRequest(MultimodalMessage& request,
-                       const AILanguageModel::Context::ContextItem& item) {
+                       const AILanguageModel::Context::ContextItem& item,
+                       const on_device_model::Capabilities& capabilities) {
   AddPrompts(request.edit().MutableRepeatedField(
                  PromptApiRequest::kCurrentPromptsFieldNumber),
-             item);
+             item, capabilities);
 }
 
 }  // namespace
@@ -180,12 +194,13 @@ AILanguageModel::Context::AddContextItem(ContextItem context_item) {
   return result;
 }
 
-MultimodalMessage AILanguageModel::Context::MakeRequest() {
-  MultimodalMessage request = MakeInitialPrompt(initial_prompts_);
+MultimodalMessage AILanguageModel::Context::MakeRequest(
+    const on_device_model::Capabilities& capabilities) {
+  MultimodalMessage request = MakeInitialPrompt(initial_prompts_, capabilities);
   auto history_field = request.edit().MutableRepeatedField(
       PromptApiRequest::kPromptHistoryFieldNumber);
   for (auto& context_item : context_items_) {
-    AddPrompts(history_field, context_item);
+    AddPrompts(history_field, context_item, capabilities);
   }
   return request;
 }
@@ -249,7 +264,8 @@ void AILanguageModel::SetInitialPrompts(
   for (auto& prompt : initial_prompts) {
     item.prompts.emplace_back(std::move(prompt));
   }
-  MultimodalMessage request = MakeInitialPrompt(item);
+  MultimodalMessage request =
+      MakeInitialPrompt(item, session_->GetCapabilities());
   session_->GetContextSizeInTokens(
       request.read(),
       base::BindOnce(&AILanguageModel::InitializeContextWithInitialPrompts,
@@ -285,7 +301,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts));
 
   // Begin processing the initial prompts immediately.
-  session_->SetInput(context_->MakeRequest());
+  session_->SetInput(context_->MakeRequest(session_->GetCapabilities()));
 
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
@@ -376,8 +392,10 @@ void AILanguageModel::PromptGetInputSizeCompletion(
   }
   current_item.tokens = number_of_tokens;
 
-  MultimodalMessage request = context_->MakeRequest();
-  AddCurrentRequest(request, current_item);
+  const on_device_model::Capabilities& capabilities =
+      session_->GetCapabilities();
+  MultimodalMessage request = context_->MakeRequest(capabilities);
+  AddCurrentRequest(request, current_item, capabilities);
   session_->SetInput(std::move(request));
   session_->ExecuteModelWithResponseJsonSchema(
       PromptApiRequest(), response_json_schema,
@@ -408,7 +426,7 @@ void AILanguageModel::Prompt(
   item.prompts = std::move(prompts);
 
   MultimodalMessage request = EmptyMessage();
-  AddCurrentRequest(request, item);
+  AddCurrentRequest(request, item, session_->GetCapabilities());
   session_->GetExecutionInputSizeInTokens(
       request.read(),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
@@ -453,10 +471,26 @@ blink::mojom::AILanguageModelInstanceInfoPtr
 AILanguageModel::GetLanguageModelInstanceInfo() {
   const optimization_guide::SamplingParams session_sampling_params =
       session_->GetSamplingParams();
+  base::flat_set<blink::mojom::AILanguageModelPromptType> input_types = {
+      blink::mojom::AILanguageModelPromptType::kText  // Text is always
+                                                      // supported.
+  };
+  for (const auto capability : session_->GetCapabilities()) {
+    switch (capability) {
+      case on_device_model::CapabilityFlags::kImageInput:
+        input_types.insert(blink::mojom::AILanguageModelPromptType::kImage);
+        break;
+      case on_device_model::CapabilityFlags::kAudioInput:
+        input_types.insert(blink::mojom::AILanguageModelPromptType::kAudio);
+        break;
+    }
+  }
+
   return blink::mojom::AILanguageModelInstanceInfo::New(
       context_->max_tokens(), context_->current_tokens(),
       blink::mojom::AILanguageModelSamplingParams::New(
-          session_sampling_params.top_k, session_sampling_params.temperature));
+          session_sampling_params.top_k, session_sampling_params.temperature),
+      base::ToVector(input_types));
 }
 
 void AILanguageModel::MeasureInputUsage(
@@ -468,7 +502,7 @@ void AILanguageModel::MeasureInputUsage(
       MakeTextPrompt(blink::mojom::AILanguageModelPromptRole::kUser, input));
 
   MultimodalMessage request = EmptyMessage();
-  AddCurrentRequest(request, item);
+  AddCurrentRequest(request, item, session_->GetCapabilities());
 
   session_->GetExecutionInputSizeInTokens(
       request.read(),

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/modules/ai/language_model_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -96,6 +98,8 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   uint64_t input_quota_ = 0;
   uint32_t top_k_ = 0;
   float temperature_ = 0.0;
+  // Prompt types supported by the language model in this session.
+  WTF::HashSet<mojom::blink::AILanguageModelPromptType> input_types_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;
