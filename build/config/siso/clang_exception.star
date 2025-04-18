@@ -10,7 +10,7 @@ load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 
 def __step_config(ctx, step_config):
-    exceptions = [
+    cxx_exceptions = [
         {
             # TODO: crbug.com/380755128 - Make each compile unit smaller.
             "name": "fuzzer_large_compile",
@@ -47,33 +47,45 @@ def __step_config(ctx, step_config):
             "use_large": True,
         },
     ]
+    cc_exceptions = [
+        {
+            # TODO: crbug.com/411537162 - Make compile faster
+            "name": "xnnpack_slow_compile",
+            "action_outs": [
+                "./obj/third_party/xnnpack/qs8-packw_x64_standalone/qs8-packw-x128c4-gemm-goi-scalar.o",
+            ],
+            "timeout": "15m",
+        },
+    ]
     new_rules = []
     for rule in step_config["rules"]:
-        if not rule["name"].endswith("/cxx"):
-            new_rules.append(rule)
-            continue
-        if "action_outs" in rule:
-            fail("unexpeced \"action_outs\" in cxx rule %s" % rule["name"])
-        for ex in exceptions:
-            r = {}
-            r.update(rule)
-            r["name"] += "/exception/" + ex["name"]
-            outs = ex["action_outs"]
-            if runtime.os == "windows":
-                outs = [obj.removesuffix(".o") + ".obj" for obj in outs if obj.startswith("./obj/")]
-            r["action_outs"] = outs
-            if "timeout" in ex:
-                r["timeout"] = ex["timeout"]
-            if "use_large" in ex and ex["use_large"]:
-                # use `_large` variant of platform if it doesn't use default platform,
-                # i.e. mac/win case.
-                if "platform_ref" in r:
-                    r["platform_ref"] = r["platform_ref"] + "_large"
-                else:
-                    r["platform_ref"] = "large"
-            if r.get("handler") == "rewrite_rewrapper":
-                r["handler"] = "rewrite_rewrapper_large"
-            new_rules.append(r)
+        if rule["name"].endswith("/cxx") or rule["name"].endswith("/cc"):
+            if "action_outs" in rule:
+                fail("unexpeced \"action_outs\" in cxx rule %s" % rule["name"])
+            if rule["name"].endswith("/cxx"):
+                exceptions = cxx_exceptions
+            elif rule["name"].endswith("/cc"):
+                exceptions = cc_exceptions
+            for ex in exceptions:
+                r = {}
+                r.update(rule)
+                r["name"] += "/exception/" + ex["name"]
+                outs = ex["action_outs"]
+                if runtime.os == "windows":
+                    outs = [obj.removesuffix(".o") + ".obj" for obj in outs if obj.startswith("./obj/")]
+                r["action_outs"] = outs
+                if "timeout" in ex:
+                    r["timeout"] = ex["timeout"]
+                if "use_large" in ex and ex["use_large"]:
+                    # use `_large` variant of platform if it doesn't use default platform,
+                    # i.e. mac/win case.
+                    if "platform_ref" in r:
+                        r["platform_ref"] = r["platform_ref"] + "_large"
+                    else:
+                        r["platform_ref"] = "large"
+                if r.get("handler") == "rewrite_rewrapper":
+                    r["handler"] = "rewrite_rewrapper_large"
+                new_rules.append(r)
         new_rules.append(rule)
     step_config["rules"] = new_rules
     return step_config
