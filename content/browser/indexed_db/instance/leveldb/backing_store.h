@@ -112,6 +112,96 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Status CommitPhaseTwo() override;
     void Rollback() override;
     void Reset() override;
+    Status SetDatabaseVersion(
+        int64_t row_id,
+        int64_t version,
+        blink::IndexedDBDatabaseMetadata* metadata) override;
+    Status CreateObjectStore(
+        int64_t database_id,
+        int64_t object_store_id,
+        std::u16string name,
+        blink::IndexedDBKeyPath key_path,
+        bool auto_increment,
+        blink::IndexedDBObjectStoreMetadata* metadata) override;
+    Status DeleteObjectStore(
+        int64_t database_id,
+        const blink::IndexedDBObjectStoreMetadata& object_store) override;
+    Status RenameObjectStore(
+        int64_t database_id,
+        std::u16string new_name,
+        std::u16string* old_name,
+        blink::IndexedDBObjectStoreMetadata* metadata) override;
+
+    // Creates a new index metadata and writes it to the transaction.
+    Status CreateIndex(int64_t database_id,
+                       int64_t object_store_id,
+                       int64_t index_id,
+                       std::u16string name,
+                       blink::IndexedDBKeyPath key_path,
+                       bool is_unique,
+                       bool is_multi_entry,
+                       blink::IndexedDBIndexMetadata* metadata) override;
+    // Deletes the index metadata on the transaction (but not any index
+    // entries).
+    Status DeleteIndex(int64_t database_id,
+                       int64_t object_store_id,
+                       const blink::IndexedDBIndexMetadata& metadata) override;
+    // Renames the given index and writes it to the transaction.
+    Status RenameIndex(int64_t database_id,
+                       int64_t object_store_id,
+                       std::u16string new_name,
+                       std::u16string* old_name,
+                       blink::IndexedDBIndexMetadata* metadata) override;
+    Status GetRecord(int64_t database_id,
+                     int64_t object_store_id,
+                     const blink::IndexedDBKey& key,
+                     IndexedDBValue* record) override;
+    Status PutRecord(int64_t database_id,
+                     int64_t object_store_id,
+                     const blink::IndexedDBKey& key,
+                     IndexedDBValue* value,
+                     RecordIdentifier* record) override;
+    Status ClearObjectStore(int64_t database_id,
+                            int64_t object_store_id) override;
+    Status DeleteRecord(int64_t database_id,
+                        int64_t object_store_id,
+                        const RecordIdentifier& record) override;
+    Status DeleteRange(int64_t database_id,
+                       int64_t object_store_id,
+                       const blink::IndexedDBKeyRange&) override;
+    Status GetKeyGeneratorCurrentNumber(int64_t database_id,
+                                        int64_t object_store_id,
+                                        int64_t* current_number) override;
+    Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t database_id,
+                                                int64_t object_store_id,
+                                                int64_t new_state,
+                                                bool check_current) override;
+    Status KeyExistsInObjectStore(int64_t database_id,
+                                  int64_t object_store_id,
+                                  const blink::IndexedDBKey& key,
+                                  RecordIdentifier* found_record_identifier,
+                                  bool* found) override;
+    Status ClearIndex(int64_t database_id,
+                      int64_t object_store_id,
+                      int64_t index_id) override;
+    Status PutIndexDataForRecord(int64_t database_id,
+                                 int64_t object_store_id,
+                                 int64_t index_id,
+                                 const blink::IndexedDBKey& key,
+                                 const RecordIdentifier& record) override;
+    Status GetPrimaryKeyViaIndex(
+        int64_t database_id,
+        int64_t object_store_id,
+        int64_t index_id,
+        const blink::IndexedDBKey& key,
+        std::unique_ptr<blink::IndexedDBKey>* primary_key) override;
+    Status KeyExistsInIndex(
+        int64_t database_id,
+        int64_t object_store_id,
+        int64_t index_id,
+        const blink::IndexedDBKey& key,
+        std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
+        bool* exists) override;
     std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreKeyCursor(
         int64_t database_id,
         int64_t object_store_id,
@@ -166,6 +256,13 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
    private:
+    Status FindKeyInIndex(int64_t database_id,
+                          int64_t object_store_id,
+                          int64_t index_id,
+                          const blink::IndexedDBKey& key,
+                          std::string* found_encoded_primary_key,
+                          bool* found);
+
     // Called by CommitPhaseOne: Identifies the blob entries to write and adds
     // them to the recovery blob journal directly (i.e. not as part of the
     // transaction). Populates blobs_to_write_.
@@ -387,121 +484,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   Status DeleteDatabase(const std::u16string& name,
                         std::vector<PartitionedLock> locks,
                         base::OnceClosure on_complete) override;
-  // Changes the database version to |version|.
-  Status SetDatabaseVersion(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t row_id,
-      int64_t version,
-      blink::IndexedDBDatabaseMetadata* metadata) override;
-  Status CreateObjectStore(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      std::u16string name,
-      blink::IndexedDBKeyPath key_path,
-      bool auto_increment,
-      blink::IndexedDBObjectStoreMetadata* metadata) override;
-  Status DeleteObjectStore(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      const blink::IndexedDBObjectStoreMetadata& object_store) override;
-  Status RenameObjectStore(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      std::u16string new_name,
-      std::u16string* old_name,
-      blink::IndexedDBObjectStoreMetadata* metadata) override;
-
-  // Creates a new index metadata and writes it to the transaction.
-  Status CreateIndex(indexed_db::BackingStore::Transaction* transaction,
-                     int64_t database_id,
-                     int64_t object_store_id,
-                     int64_t index_id,
-                     std::u16string name,
-                     blink::IndexedDBKeyPath key_path,
-                     bool is_unique,
-                     bool is_multi_entry,
-                     blink::IndexedDBIndexMetadata* metadata) override;
-  // Deletes the index metadata on the transaction (but not any index entries).
-  Status DeleteIndex(indexed_db::BackingStore::Transaction* transaction,
-                     int64_t database_id,
-                     int64_t object_store_id,
-                     const blink::IndexedDBIndexMetadata& metadata) override;
-  // Renames the given index and writes it to the transaction.
-  Status RenameIndex(indexed_db::BackingStore::Transaction* transaction,
-                     int64_t database_id,
-                     int64_t object_store_id,
-                     std::u16string new_name,
-                     std::u16string* old_name,
-                     blink::IndexedDBIndexMetadata* metadata) override;
-
-  Status GetRecord(indexed_db::BackingStore::Transaction* transaction,
-                   int64_t database_id,
-                   int64_t object_store_id,
-                   const blink::IndexedDBKey& key,
-                   IndexedDBValue* record) override;
-  Status PutRecord(indexed_db::BackingStore::Transaction* transaction,
-                   int64_t database_id,
-                   int64_t object_store_id,
-                   const blink::IndexedDBKey& key,
-                   IndexedDBValue* value,
-                   RecordIdentifier* record) override;
-  Status ClearObjectStore(indexed_db::BackingStore::Transaction* transaction,
-                          int64_t database_id,
-                          int64_t object_store_id) override;
-  Status DeleteRecord(indexed_db::BackingStore::Transaction* transaction,
-                      int64_t database_id,
-                      int64_t object_store_id,
-                      const RecordIdentifier& record) override;
-  Status DeleteRange(indexed_db::BackingStore::Transaction* transaction,
-                     int64_t database_id,
-                     int64_t object_store_id,
-                     const blink::IndexedDBKeyRange&) override;
-  Status GetKeyGeneratorCurrentNumber(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t* current_number) override;
-  Status MaybeUpdateKeyGeneratorCurrentNumber(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t new_state,
-      bool check_current) override;
-  Status KeyExistsInObjectStore(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      const blink::IndexedDBKey& key,
-      RecordIdentifier* found_record_identifier,
-      bool* found) override;
-
-  Status ClearIndex(indexed_db::BackingStore::Transaction* transaction,
-                    int64_t database_id,
-                    int64_t object_store_id,
-                    int64_t index_id) override;
-  Status PutIndexDataForRecord(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKey& key,
-      const RecordIdentifier& record) override;
-  Status GetPrimaryKeyViaIndex(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKey& key,
-      std::unique_ptr<blink::IndexedDBKey>* primary_key) override;
-  Status KeyExistsInIndex(
-      indexed_db::BackingStore::Transaction* transaction,
-      int64_t database_id,
-      int64_t object_store_id,
-      int64_t index_id,
-      const blink::IndexedDBKey& key,
-      std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
-      bool* exists) override;
 
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
@@ -629,14 +611,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   Status MigrateToV4(LevelDBWriteBatch* write_batch);
   Status MigrateToV5(LevelDBWriteBatch* write_batch);
-
-  Status FindKeyInIndex(Transaction* transaction,
-                        int64_t database_id,
-                        int64_t object_store_id,
-                        int64_t index_id,
-                        const blink::IndexedDBKey& key,
-                        std::string* found_encoded_primary_key,
-                        bool* found);
 
   // Used by ActiveBlobRegistry::MarkBlobInactive.
   void ReportBlobUnused(int64_t database_id, int64_t blob_number);
