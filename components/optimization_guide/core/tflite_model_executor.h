@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/files/memory_mapped_file.h"
+#include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
@@ -311,14 +311,13 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // `ExecutionStatus` will never be `ExecutionStatus::kSuccess`.
   virtual base::expected<std::unique_ptr<ModelExecutionTaskType>,
                          ExecutionStatus>
-  BuildModelExecutionTask(base::MemoryMappedFile* model_file) = 0;
+  BuildModelExecutionTask(const base::File& model_file) = 0;
 
  private:
-  using MemoryMappedFileDeleteOnTaskRunner =
-      std::unique_ptr<base::MemoryMappedFile, base::OnTaskRunnerDeleter>;
+  using FileDeleteOnTaskRunner =
+      std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
 
-  static MemoryMappedFileDeleteOnTaskRunner
-  NullMemoryMappedFileDeleteOnTaskRunner() {
+  static FileDeleteOnTaskRunner NullFileDeleteOnTaskRunner() {
     return {nullptr, base::OnTaskRunnerDeleter(nullptr)};
   }
 
@@ -355,19 +354,19 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                proto::OptimizationTarget optimization_target,
                scoped_refptr<base::SequencedTaskRunner>
                    model_loading_task_runner)
-                -> base::expected<MemoryMappedFileDeleteOnTaskRunner,
-                                  ExecutionStatus> {
+                -> base::expected<FileDeleteOnTaskRunner, ExecutionStatus> {
               base::TimeTicks loading_start_time = base::TimeTicks::Now();
               if (!model_file_path) {
                 return base::unexpected(
                     ExecutionStatus::kErrorModelFileNotAvailable);
               }
 
-              MemoryMappedFileDeleteOnTaskRunner model_fb(
-                  new base::MemoryMappedFile(),
+              FileDeleteOnTaskRunner model_fb(
+                  new base::File(*model_file_path,
+                                 base::File::FLAG_OPEN | base::File::FLAG_READ),
                   base::OnTaskRunnerDeleter(
                       std::move(model_loading_task_runner)));
-              if (!model_fb->Initialize(*model_file_path)) {
+              if (!model_fb->IsValid()) {
                 return base::unexpected(
                     ExecutionStatus::kErrorModelFileNotValid);
               }
@@ -391,8 +390,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // the memory-mapped file, and calls `model_loaded_callback`.
   void OnModelFileLoadedInMemory(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback,
-      base::expected<MemoryMappedFileDeleteOnTaskRunner, ExecutionStatus>
-          model_fb) {
+      base::expected<FileDeleteOnTaskRunner, ExecutionStatus> model_fb) {
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -406,7 +404,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     }
     model_fb_ = std::move(*model_fb);
 
-    auto build_result = BuildModelExecutionTask(model_fb_.get());
+    auto build_result = BuildModelExecutionTask(*model_fb_);
     if (build_result.has_value()) {
       loaded_model_ = std::move(build_result.value());
     }
@@ -598,8 +596,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // model is loaded which is managed by a feature flag. `OnTaskRunnerDeleter`
   // is used to ensure that destruction occurs on a sequence that allows
   // blocking, since it involves closing a file handle.
-  MemoryMappedFileDeleteOnTaskRunner model_fb_ GUARDED_BY_CONTEXT(
-      sequence_checker_) = NullMemoryMappedFileDeleteOnTaskRunner();
+  FileDeleteOnTaskRunner model_fb_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      NullFileDeleteOnTaskRunner();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
