@@ -63,6 +63,7 @@ import org.chromium.components.browser_ui.settings.LearnMorePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
@@ -854,6 +855,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        getInfoForOrigins();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -861,8 +869,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             SearchUtils.clearSearch(mSearchItem, getActivity());
             mSearch = null;
         }
-
-        getInfoForOrigins();
     }
 
     // AddExceptionPreference.SiteAddedCallback:
@@ -1834,5 +1840,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
         };
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }
