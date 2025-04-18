@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,11 +44,11 @@ class GlicEnabling;
 class GlicWidget;
 class GlicKeyedService;
 class GlicView;
-class WebUIContentsContainer;
 class GlicWindowAnimator;
 class ScopedGlicButtonIndicator;
 class GlicFreController;
 class GlicButton;
+class Host;
 enum class AttachChangeReason;
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -229,9 +228,6 @@ class GlicWindowController : public views::WidgetObserver,
   // Returns the widget that backs the glic window.
   views::Widget* GetGlicWidget();
 
-  // Returns the WebContents hosted in the glic window, or nullptr if none.
-  content::WebContents* GetWebContents();
-
   // Returns the WebContents used for the first-run experience, or nullptr if
   // none.
   content::WebContents* GetFreWebContents();
@@ -279,6 +275,8 @@ class GlicWindowController : public views::WidgetObserver,
   FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerUiTest, TestInitialBounds);
   FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerWithPreviousPostionUiTest,
                            TestInitialBounds);
+
+  Host& host() const;
 
   // ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -404,9 +402,6 @@ class GlicWindowController : public views::WidgetObserver,
   // display workspace, but only if it's different than the current target size.
   void MaybeAdjustSizeForDisplay(bool animate);
 
-  // Warms the web client and sets `contents_`.
-  void CreateContents();
-
   // Modifies `state_` to the given new state.
   void SetWindowState(State new_state);
 
@@ -424,9 +419,6 @@ class GlicWindowController : public views::WidgetObserver,
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
   const raw_ptr<Profile> profile_;
-  // Keep profile alive as long as the glic web contents. This object should be
-  // destroyed when the profile needs to be destroyed.
-  std::unique_ptr<WebUIContentsContainer> contents_;
 
   // Contains the glic webview.
   std::unique_ptr<GlicWidget> glic_widget_;

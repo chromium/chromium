@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
@@ -595,6 +596,10 @@ void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
   }
 }
 
+Host& GlicWindowController::host() const {
+  return glic_service_->host();
+}
+
 bool GlicWindowController::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_ESCAPE) {
@@ -659,11 +664,8 @@ void GlicWindowController::Show(Browser* browser,
 
   glic_service_->metrics()->set_show_start_time(base::TimeTicks::Now());
 
-  if (!contents_) {
-    CreateContents();
-  }
-
-  glic_service_->NotifyWindowIntentToShow();
+  host().CreateContents();
+  host().NotifyWindowIntentToShow();
 
   SetupGlicWidget(browser);
 
@@ -725,7 +727,7 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
   }
 
   // Immediately hook up the WebView to the WebContents.
-  GetGlicView()->SetWebContents(contents_->web_contents());
+  GetGlicView()->SetWebContents(host().webui_contents());
 }
 
 void GlicWindowController::SetupGlicWidgetAccessibilityText() {
@@ -933,13 +935,6 @@ GlicView* GlicWindowController::GetGlicView() {
 
 views::Widget* GlicWindowController::GetGlicWidget() {
   return glic_widget_.get();
-}
-
-content::WebContents* GlicWindowController::GetWebContents() {
-  if (!contents_) {
-    return nullptr;
-  }
-  return contents_->web_contents();
 }
 
 content::WebContents* GlicWindowController::GetFreWebContents() {
@@ -1431,9 +1426,9 @@ GlicWindowController::AddWindowActivationChangedCallback(
 }
 
 void GlicWindowController::Preload() {
-  if (!contents_) {
-    CreateContents();
-    contents_->web_contents()->Resize(GetInitialBounds(nullptr));
+  if (!host().contents_container()) {
+    host().CreateContents();
+    host().webui_contents()->Resize(GetInitialBounds(nullptr));
   }
 }
 
@@ -1447,14 +1442,14 @@ void GlicWindowController::Reload() {
   if (GetFreWebContents()) {
     GetFreWebContents()->ReloadFocusedFrame();
   }
-  if (contents_) {
-    contents_->web_contents()->GetController().Reload(
-        content::ReloadType::BYPASSING_CACHE, /*check_for_repost=*/false);
+  if (auto* webui_contents = host().webui_contents()) {
+    webui_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                           /*check_for_repost=*/false);
   }
 }
 
 bool GlicWindowController::IsWarmed() const {
-  return !!contents_;
+  return !!host().contents_container();
 }
 
 base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
@@ -1464,7 +1459,6 @@ base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
 void GlicWindowController::Shutdown() {
   // Hide first, then clean up (but do not animate).
   ForceClose();
-  contents_.reset();
   fre_controller_->Shutdown();
   window_activation_callback_list_.Notify(false);
 }
@@ -1508,12 +1502,6 @@ void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
           base::DoNothing());
     }
   }
-}
-
-void GlicWindowController::CreateContents() {
-  contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
-  glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(
-      glic_service_);
 }
 
 void GlicWindowController::SetWindowState(State new_state) {

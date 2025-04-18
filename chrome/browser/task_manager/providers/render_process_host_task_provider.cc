@@ -42,18 +42,7 @@ bool IsHostForGlic(content::RenderProcessHost* host) {
 
   auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       host->GetBrowserContext());
-  if (!glic_service) {
-    return false;
-  }
-
-  auto& window_controller = glic_service->window_controller();
-  auto* wc = window_controller.GetWebContents();
-  if (wc && wc->GetPrimaryMainFrame()->GetProcess() == host) {
-    return true;
-  }
-
-  auto* fre_wc = window_controller.GetFreWebContents();
-  return fre_wc && fre_wc->GetPrimaryMainFrame()->GetProcess() == host;
+  return glic_service && glic_service->IsProcessHostForGlic(host);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

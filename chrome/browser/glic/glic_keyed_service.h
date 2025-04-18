@@ -14,8 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_page_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/web_contents.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -96,12 +96,6 @@ class GlicKeyedService : public KeyedService {
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
 
-  // Called when a `GlicPageHandler` is created.
-  void PageHandlerAdded(GlicPageHandler* page_handler);
-
-  // Called when a `GlicPageHandler` is about to be destroyed.
-  void PageHandlerRemoved(GlicPageHandler* page_handler);
-
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
 
@@ -124,7 +118,6 @@ class GlicKeyedService : public KeyedService {
                    base::OnceClosure callback);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
-  void NotifyWindowIntentToShow();
 
   // Callback for all changes to focused tab.
   using FocusedTabChangedCallback =
@@ -208,11 +201,6 @@ class GlicKeyedService : public KeyedService {
 
   AuthController& GetAuthController() { return *auth_controller_; }
 
-  void WebClientCreated();
-
-  base::CallbackListSubscription AddWebClientCreatedCallback(
-      base::OnceCallback<void()> callback);
-
   bool IsActiveWebContents(content::WebContents* contents);
 
   virtual void TryPreload();
@@ -223,11 +211,6 @@ class GlicKeyedService : public KeyedService {
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
-  const base::flat_set<raw_ptr<GlicPageHandler>>& GetPageHandlersForTesting()
-      const {
-    return page_handlers_;
-  }
-
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
@@ -235,8 +218,15 @@ class GlicKeyedService : public KeyedService {
   void SetPosition(const gfx::Point& position);
   std::optional<gfx::Point> GetPreviousPosition();
 
+  Host& host() { return *host_; }
+  // Returns whether this process host is either the Glic FRE WebUI or the Glic
+  // main WebUI.
+  bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
+  // Returns whether this web contents contains the Chrome glic WebUI,
+  // chrome://glic.
+  bool IsGlicWebUi(content::WebContents* web_contents);
+
  private:
-  GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.
   void OnZeroStateSuggestionsFetched(
@@ -259,15 +249,13 @@ class GlicKeyedService : public KeyedService {
 
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
+  std::unique_ptr<Host> host_;
   std::unique_ptr<GlicWindowController> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<GlicActorController> actor_controller_;
   std::optional<gfx::Point> previous_position_ = std::nullopt;
-  base::OnceCallbackList<void()> web_client_created_callbacks_;
-  // The set of live `GlicPageHandler`s.
-  base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   // Unowned

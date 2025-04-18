@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
@@ -349,7 +350,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->hotkey = GetHotkeyString();
 
     std::move(callback).Run(std::move(state));
-    glic_service_->WebClientCreated();
   }
 
   void WebClientInitializeFailed() override {
@@ -357,11 +357,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void WebClientInitialized() override {
-    glic_service_->window_controller().SetWebClient(this);
+    glic_service_->host().SetWebClient(page_handler_, this);
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
     if (page_handler_->webui_contents() !=
-        glic_service_->window_controller().GetWebContents()) {
+        glic_service_->host().webui_contents()) {
       mojom::PanelOpeningDataPtr panel_opening_data =
           mojom::PanelOpeningData::New();
       panel_opening_data->panel_state =
@@ -693,9 +693,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
  private:
   void Uninstall() {
     SetAudioDucking(false, base::DoNothing());
-    if (glic_service_->window_controller().web_client() == this) {
-      glic_service_->window_controller().SetWebClient(nullptr);
-    }
+    glic_service_->host().SetWebClient(page_handler_, nullptr);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
@@ -766,7 +764,7 @@ GlicPageHandler::GlicPageHandler(
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  GetGlicService()->PageHandlerAdded(this);
+  GetGlicService()->host().WebUIPageHandlerAdded(this);
   subscriptions_.push_back(
       GetGlicService()->enabling().RegisterAllowedChanged(base::BindRepeating(
           &GlicPageHandler::AllowedChanged, base::Unretained(this))));
@@ -777,7 +775,7 @@ GlicPageHandler::~GlicPageHandler() {
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
-  GetGlicService()->PageHandlerRemoved(this);
+  GetGlicService()->host().WebUIPageHandlerRemoved(this);
 }
 
 GlicKeyedService* GlicPageHandler::GetGlicService() {

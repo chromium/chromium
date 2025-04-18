@@ -26,6 +26,8 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -224,7 +226,7 @@ class GlicApiTest : public test::InteractiveGlicTest {
   content::RenderFrameHost* FindGlicGuestMainFrame() {
     GlicKeyedService* glic =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-    for (GlicPageHandler* handler : glic->GetPageHandlersForTesting()) {
+    for (GlicPageHandler* handler : glic->host().GetPageHandlersForTesting()) {
       if (handler->GetGuestMainFrame()) {
         return handler->GetGuestMainFrame();
       }

@@ -63,11 +63,7 @@ bool IsForGlic(content::WebContents* contents) {
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(
           outer->GetBrowserContext());
-  if (glic_service) {
-    auto& window_controller = glic_service->window_controller();
-    return window_controller.GetWebContents() == outer;
-  }
-  return false;
+  return glic_service && glic_service->IsGlicWebUi(contents);
 }
 
 // Combines IsForGlic with glic dev switch.

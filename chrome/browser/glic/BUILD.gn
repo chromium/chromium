@@ -119,6 +119,8 @@ source_set("impl") {
     "host/glic_synthetic_trial_manager.h",
     "host/glic_ui.cc",
     "host/guest_util.cc",
+    "host/host.cc",
+    "host/host.h",
     "host/webui_contents_container.cc",
     "host/webui_contents_container.h",
     "widget/browser_conditions.cc",

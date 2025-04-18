@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -150,7 +151,7 @@ class GlicProfileManagerUiTest
         if (!warmed) {
           return false;
         }
-        auto* contents = service->window_controller().GetWebContents();
+        auto* contents = service->host().webui_contents();
         if (!contents) {
           contents = service->window_controller().GetFreWebContents();
         }
@@ -172,24 +173,25 @@ class GlicProfileManagerUiTest
 
   auto CacheClientContents(bool primary_profile) {
     return Do([this, primary_profile]() {
-      auto& controller = GetService(primary_profile)->window_controller();
+      auto* service = GetService(primary_profile);
       if (ShouldWarmFRE()) {
-        web_client_contents_ = controller.GetFreWebContents();
+        web_client_contents_ = service->window_controller().GetFreWebContents();
       } else {
-        web_client_contents_ = controller.GetWebContents();
+        web_client_contents_ = service->host().webui_contents();
       }
     });
   }
 
   auto CheckCachedClientContents(bool primary_profile) {
     return Do([this, primary_profile]() {
+      auto* service = GetService(primary_profile);
       auto& controller = GetService(primary_profile)->window_controller();
       if (ShouldWarmFRE()) {
         EXPECT_EQ(web_client_contents_, controller.GetFreWebContents());
         EXPECT_NE(nullptr, controller.GetFreWebContents());
       } else {
-        EXPECT_EQ(web_client_contents_, controller.GetWebContents());
-        EXPECT_NE(nullptr, controller.GetWebContents());
+        EXPECT_EQ(web_client_contents_, service->host().webui_contents());
+        EXPECT_NE(nullptr, service->host().webui_contents());
       }
       web_client_contents_ = nullptr;
     });
