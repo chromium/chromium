@@ -263,7 +263,7 @@
   // IsActive() value rather than checking -IsVisibleURLNewTabPage.
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   BOOL isNTP = NTPHelper && NTPHelper->IsActive();
-  BOOL isOffTheRecord = self.profile->IsOffTheRecord();
+  BOOL isOffTheRecord = self.isOffTheRecord;
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.traitEnvironment);
 
   // Hide the toolbar when displaying content suggestions without the tab
@@ -611,8 +611,7 @@
 /// an incognito browser, the NTP is displayed, and whether the fakebox was
 /// pinned if it was selected.
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
-  if (self.profile->IsOffTheRecord() ||
-      !IsSplitToolbarMode(self.traitEnvironment)) {
+  if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
     return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
                                : OmniboxFocusTrigger::kOther;
   }

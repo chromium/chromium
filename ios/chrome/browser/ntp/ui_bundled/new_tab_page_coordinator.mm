@@ -310,7 +310,7 @@
   [sceneState addObserver:self];
 
   // Configures incognito NTP if user is in incognito mode.
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     DCHECK(!self.incognitoViewController);
     UrlLoadingBrowserAgent* URLLoader =
         UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -374,7 +374,7 @@
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
 
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     self.incognitoViewController = nil;
     self.started = NO;
     return;
@@ -483,7 +483,7 @@
 }
 
 - (void)reload {
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     return;
   }
   [self.contentSuggestionsCoordinator refresh];
@@ -508,7 +508,7 @@
 }
 
 - (void)constrainNamedGuideForFeedIPH {
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     return;
   }
   [LayoutGuideCenterForBrowser(self.browser)
@@ -551,7 +551,7 @@
 }
 
 - (BOOL)isFakeboxPinned {
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     return YES;
   }
   return self.NTPViewController.isFakeboxPinned;
@@ -827,7 +827,7 @@
 
 - (UIViewController*)viewController {
   DCHECK(self.started);
-  if (self.profile->IsOffTheRecord()) {
+  if (self.isOffTheRecord) {
     return self.incognitoViewController;
   } else {
     return self.containerViewController;
@@ -1680,7 +1680,7 @@
   self.visible = visible;
   self.NTPViewController.NTPVisible = visible;
 
-  if (!self.profile->IsOffTheRecord()) {
+  if (!self.isOffTheRecord) {
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
 
