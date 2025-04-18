@@ -169,7 +169,8 @@ struct UploadState {
   // identical and match the `UploadState` key. Logically the events form a
   // queue, but may need to be inserted in the middle, so we use a `flat_map`
   // which keeps records sorted by `sequence_id`.
-  base::flat_map<int64_t /*sequence_id*/, EncryptedRecord> cached_records;
+  base::flat_map<int64_t /*sequence_id*/, std::unique_ptr<EncryptedRecord>>
+      cached_records;
 
   // Total memory reservation for all cached records.
   ScopedReservation scoped_reservation;
@@ -255,7 +256,7 @@ void RemoveConfirmedEventsFromCache(UploadState* state) {
   // Reduce reserved memory.
   uint64_t records_memory = 0u;
   for (const auto& [_, record] : state->cached_records) {
-    records_memory += record.ByteSizeLong();
+    records_memory += record->ByteSizeLong();
   }
   state->scoped_reservation.Reduce(records_memory);
 }
@@ -280,23 +281,26 @@ void LogNumRecordsInUpload(uint64_t num_records) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-// Builds uploading payload.
-// Returns dictionary (null in case of failure), matching memory reservation
-// and last seq id included in request.
+// Builds uploading payload - prepare builder synchronously, then build payload
+// on a threadpool and then pass the result to `create_job_cb`, together with
+// matching memory reservation, last seq id included in request and number of
+// events to send.
 void BuildPayload(
     bool is_generation_guid_required,
     bool need_encryption_key,
     int config_file_version,
     int64_t last_sequence_id,
-    const base::flat_map<int64_t, EncryptedRecord>& records,
+    const base::flat_map<int64_t, std::unique_ptr<EncryptedRecord>>& records,
     ScopedReservation scoped_reservation,
     base::OnceCallback<void(std::optional<base::Value::Dict> /*payload_result*/,
                             ScopedReservation /*scoped_reservation*/,
                             int64_t /*last_sequence_id*/,
                             uint64_t /*events_to_send*/)> create_job_cb) {
   // Prepare request builder.
-  UploadEncryptedReportingRequestBuilder request_builder{
-      is_generation_guid_required, need_encryption_key, config_file_version};
+  auto request_builder =
+      std::make_unique<UploadEncryptedReportingRequestBuilder>(
+          is_generation_guid_required, need_encryption_key,
+          config_file_version);
   // Copy records to it, as long as memory reservation allows.
   uint64_t events_to_send = 0u;
   for (const auto& [seq_id, record] : records) {
@@ -309,7 +313,7 @@ void BuildPayload(
       break;
     }
     // Reserve memory for a copy of the record.
-    ScopedReservation record_reservation(record.ByteSizeLong(),
+    ScopedReservation record_reservation(record->ByteSizeLong(),
                                          scoped_reservation);
     if (!record_reservation.reserved()) {
       break;  // Out of memory.
@@ -317,22 +321,38 @@ void BuildPayload(
     // Bump up last seq id.
     last_sequence_id = seq_id;
     // Make a copy of the record and hand it over to the builder.
-    request_builder.AddRecord(EncryptedRecord(record), record_reservation);
+    request_builder->AddRecord(EncryptedRecord(*record), record_reservation);
     scoped_reservation.HandOver(record_reservation);
     ++events_to_send;
   }
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
-  request_builder.SetRequestId(request_id);
+  request_builder->SetRequestId(request_id);
   // Log size of non-empty upload. Key-request uploads have no records.
   if (events_to_send > 0u) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&LogNumRecordsInUpload, events_to_send));
   }
-  // Build payload and create job.
-  std::move(create_job_cb)
-      .Run(request_builder.Build(), std::move(scoped_reservation),
-           last_sequence_id, events_to_send);
+  // Build payload on a threadpool and then use the result to create upload job.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::unique_ptr<UploadEncryptedReportingRequestBuilder>
+                 request_builder,
+             ScopedReservation scoped_reservation, int64_t last_sequence_id,
+             uint64_t events_to_send,
+             base::OnceCallback<void(
+                 std::optional<base::Value::Dict> /*payload_result*/,
+                 ScopedReservation /*scoped_reservation*/,
+                 int64_t /*last_sequence_id*/, uint64_t /*events_to_send*/)>
+                 create_job_cb) {
+            auto payload_result = request_builder->Build();
+            std::move(create_job_cb)
+                .Run(std::move(payload_result), std::move(scoped_reservation),
+                     last_sequence_id, events_to_send);
+          },
+          std::move(request_builder), std::move(scoped_reservation),
+          last_sequence_id, events_to_send, std::move(create_job_cb)));
 }
 
 // Manages reporting payload sizes of single uploads via UMA.
@@ -520,8 +540,8 @@ void EncryptedReportingClient::UploadReport(
     // event with identical one, or with a gap record (in rare cases when the
     // record triggered a permanent error by server). Since the gap replacement
     // is rare, we do not account for the possible memory decrease.
-    const auto [it, success] =
-        state->cached_records.insert_or_assign(seq_id, std::move(record));
+    const auto [it, success] = state->cached_records.insert_or_assign(
+        seq_id, std::make_unique<EncryptedRecord>(std::move(record)));
     // Set or increment cached counter of the event.
     {
       const auto [counter_it, counter_inserted] =
@@ -535,7 +555,7 @@ void EncryptedReportingClient::UploadReport(
       continue;
     }
     // `record` is new, move it to cache.
-    total_added_memory += it->second.ByteSizeLong();
+    total_added_memory += it->second->ByteSizeLong();
   }
 
   // Reset memory usage to newly added records only.
@@ -591,13 +611,11 @@ void EncryptedReportingClient::MaybePerformUpload(bool need_encryption_key,
           std::move(callback),
           base::unexpected(
               Status(error::UNAVAILABLE, "Client has been destructed")))));
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(&BuildPayload, GenerationGuidIsRequired(),
-                     need_encryption_key, config_file_version,
-                     state->last_sequence_id, state->cached_records,
-                     ScopedReservation(0uL, state->scoped_reservation),
-                     std::move(create_job_cb)));
+  BuildPayload(GenerationGuidIsRequired(), need_encryption_key,
+               config_file_version, state->last_sequence_id,
+               state->cached_records,
+               ScopedReservation(0uL, state->scoped_reservation),
+               std::move(create_job_cb));
 }
 
 void EncryptedReportingClient::CreateUploadJob(
@@ -802,11 +820,12 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     if (auto it = state->cached_records.find(seq_id);
         it != state->cached_records.end()) {
       // Replace by gap.
-      it->second = std::move(failed_uploaded_record.value());
+      it->second = std::make_unique<EncryptedRecord>(
+          std::move(failed_uploaded_record.value()));
       // Reduce reserved memory.
       uint64_t records_memory = 0u;
       for (const auto& [_, record] : state->cached_records) {
-        records_memory += record.ByteSizeLong();
+        records_memory += record->ByteSizeLong();
       }
       state->scoped_reservation.Reduce(records_memory);
     }
