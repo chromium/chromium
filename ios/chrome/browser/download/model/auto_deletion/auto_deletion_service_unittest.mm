@@ -7,6 +7,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
+#import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
@@ -31,13 +32,15 @@ const base::FilePath::CharType kDownloadFileName[] =
 const std::string kDownloadFileData = "file_download_data";
 
 // Creates a FakeDownloadTask for testing.
-std::unique_ptr<web::DownloadTask> CreateTask(const base::FilePath& file_path) {
+std::unique_ptr<web::FakeDownloadTask> CreateTask(
+    const base::FilePath& file_path) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "test/test");
   NSData* data = [NSData dataWithBytes:kDownloadFileData.data()
                                 length:kDownloadFileData.size()];
   task->SetResponseData(data);
   task->SetGeneratedFileName(base::FilePath(kDownloadFileName));
   task->Start(file_path);
+  task->SetState(web::DownloadTask::State::kComplete);
   return task;
 }
 
@@ -181,6 +184,29 @@ TEST_F(AutoDeletionServiceTest, UntrackScheduledFileWhenServiceIsDisabled) {
   service()->Clear();
 
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
+}
+
+// Tests that the auto deletion service subscribes to the DownloadTask,
+// schedules the file for deletion once the task is finished downloading, and
+// remove itself from the task's observer list.
+TEST_F(AutoDeletionServiceTest,
+       DownloadTaskIsScheduledForDeletionOnceFinishedDownloading) {
+  // Create web::DownloadTask.
+  std::unique_ptr<web::FakeDownloadTask> task = CreateTask(directory());
+  task->SetState(web::DownloadTask::State::kInProgress);
+  web::DownloadTask* task_ptr = task.get();
+
+  service()->ScheduleFileForDeletion(std::move(task_ptr));
+  ASSERT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
+  task->SetState(web::DownloadTask::State::kComplete);
+  // Wait for the AutoDeletionService to be notified of the change in the
+  // DownloadTask's state and schedule the file for deletion.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kSpinDelaySeconds, ^{
+        return GetNumberOfFilesScheduledForDeletion() == 1u;
+      }));
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
 }
 
 }  // namespace auto_deletion

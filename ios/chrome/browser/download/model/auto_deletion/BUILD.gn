@@ -30,6 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":auto_deletion",
     "//base",
+    "//base/test:test_support",
     "//components/prefs:test_support",
     "//ios/chrome/browser/download/model/auto_deletion/proto",
     "//ios/chrome/browser/shared/model/paths",
