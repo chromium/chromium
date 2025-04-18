@@ -8,6 +8,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/visited_url_ranking/internal/url_grouping/mock_suggestions_delegate.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
@@ -150,6 +151,7 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
     ON_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _))
         .WillByDefault(MoveArg<1>(&fetch_callback));
 
+    task_environment_.AdvanceClock(base::Seconds(10));
     suggestions_service_->GetTabEventTracker()->DidAddTab(1, 0);
 
     SuggestionTriggerData data;
@@ -172,7 +174,8 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList features_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;

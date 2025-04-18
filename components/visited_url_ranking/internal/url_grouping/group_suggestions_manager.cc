@@ -7,6 +7,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
@@ -21,6 +23,9 @@
 namespace visited_url_ranking {
 
 namespace {
+
+const base::FeatureParam<int> kConsecutiveComputationDelaySec{
+    &features::kGroupSuggestionService, "consecutive_computation_delay_sec", 5};
 
 FetchOptions GetFetchOptionsForSuggestions() {
   std::vector<URLVisitAggregatesTransformType> transforms{
@@ -102,6 +107,8 @@ GroupSuggestionsManager::GroupSuggestionsManager(
     VisitedURLRankingService* visited_url_ranking_service,
     PrefService* pref_service)
     : visited_url_ranking_service_(visited_url_ranking_service),
+      consecutive_computation_delay_(
+          base::Seconds(kConsecutiveComputationDelaySec.Get())),
       suggestion_tracker_(
           std::make_unique<GroupSuggestionsTracker>(pref_service)) {}
 
@@ -109,6 +116,14 @@ GroupSuggestionsManager::~GroupSuggestionsManager() = default;
 
 void GroupSuggestionsManager::MaybeTriggerSuggestions(
     const GroupSuggestionsService::Scope& scope) {
+  // Skip computation if it ran recently to avoid overhead.
+  if (!last_computation_time_.is_null() &&
+      base::Time::Now() - last_computation_time_ <
+          consecutive_computation_delay_) {
+    return;
+  }
+  last_computation_time_ = base::Time::Now();
+
   VLOG(1)
       << "GroupSuggestionsManager::MaybeTriggerSuggestions. Ongoing compute: "
       << !!suggestion_computer_;
@@ -140,13 +155,12 @@ void GroupSuggestionsManager::UnregisterDelegate(
   registered_delegates_.erase(delegate);
 }
 
-bool GroupSuggestionsManager::GetCurrentComputationForTesting() const {
-  return !!suggestion_computer_;
-}
-
 void GroupSuggestionsManager::OnFinishComputeSuggestions(
     const GroupSuggestionsService::Scope& scope,
     std::optional<GroupSuggestions> suggestions) {
+  base::UmaHistogramCounts100(
+      "GroupSuggestionsService.SuggestionsCount",
+      suggestions ? suggestions->suggestions.size() : 0);
   if (!suggestions) {
     if (!suggestion_computed_callback_.is_null()) {
       suggestion_computed_callback_.Run();
@@ -156,12 +170,26 @@ void GroupSuggestionsManager::OnFinishComputeSuggestions(
   std::erase_if(suggestions->suggestions, [&](const auto& suggestion) {
     return !suggestion_tracker_->ShouldShowSuggestion(suggestion);
   });
+  base::UmaHistogramCounts100(
+      "GroupSuggestionsService.SuggestionsCountAfterThrottling",
+      suggestions->suggestions.size());
+
   if (suggestions->suggestions.empty()) {
     if (!suggestion_computed_callback_.is_null()) {
       suggestion_computed_callback_.Run();
     }
     return;
   }
+
+  base::UmaHistogramEnumeration("GroupSuggestionsService.TopSuggestionReason",
+                                suggestions->suggestions[0].suggestion_reason);
+  base::UmaHistogramCounts100("GroupSuggestionsService.TopSuggestionTabCount",
+                              suggestions->suggestions[0].tab_ids.size());
+  base::UmaHistogramCounts100(
+      base::StrCat({"GroupSuggestionsService.TopSuggestionTabCount.",
+                    GetSuggestionReasonString(
+                        suggestions->suggestions[0].suggestion_reason)}),
+      suggestions->suggestions[0].tab_ids.size());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,

@@ -37,11 +37,13 @@ class GroupSuggestionsManager {
                         const GroupSuggestionsService::Scope& scope);
   void UnregisterDelegate(GroupSuggestionsDelegate* delegate);
 
-  bool GetCurrentComputationForTesting() const;
-
   void set_suggestion_computed_callback_for_testing(
       base::RepeatingClosure callback) {
     suggestion_computed_callback_ = std::move(callback);
+  }
+
+  void set_consecutive_computation_delay_for_testing(base::TimeDelta delay) {
+    consecutive_computation_delay_ = delay;
   }
 
  private:
@@ -66,10 +68,14 @@ class GroupSuggestionsManager {
   base::flat_map<GroupSuggestionsDelegate*, DelegateMetadata>
       registered_delegates_;
 
+  base::TimeDelta consecutive_computation_delay_;
+
   base::RepeatingClosure suggestion_computed_callback_;
 
   std::unique_ptr<GroupSuggestionComputer> suggestion_computer_;
   std::unique_ptr<GroupSuggestionsTracker> suggestion_tracker_;
+
+  base::Time last_computation_time_;
 
   base::WeakPtrFactory<GroupSuggestionsManager> weak_ptr_factory_{this};
 };

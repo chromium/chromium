@@ -106,6 +106,7 @@ class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
 IN_PROC_BROWSER_TEST_F(GroupSuggestionsServiceFactoryTest, SuggestionsShown) {
   TestGroupSuggestionsDelegate delegate;
   GetService()->RegisterDelegate(&delegate, GroupSuggestionsService::Scope());
+  GetService()->SetConfigForTesting(base::TimeDelta());
   AddTab(GURL("https://1.com"));
   AddTab(GURL("https://2.com"));
   AddTab(GURL("https://3.com"));

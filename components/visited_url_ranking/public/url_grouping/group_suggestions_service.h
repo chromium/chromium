@@ -56,6 +56,10 @@ class GroupSuggestionsService : public KeyedService,
   // suggestions can be shown.
   virtual void RegisterDelegate(GroupSuggestionsDelegate*, const Scope&) = 0;
   virtual void UnregisterDelegate(GroupSuggestionsDelegate*) = 0;
+
+  // Set config for testing. `computation_delay` sets the delay to wait between
+  // 2 runs.
+  virtual void SetConfigForTesting(base::TimeDelta computation_delay) = 0;
 };
 
 }  // namespace visited_url_ranking

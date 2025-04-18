@@ -57,4 +57,10 @@ void GroupSuggestionsServiceImpl::OnNewSuggestionTabEvent() {
       GroupSuggestionsService::Scope());
 }
 
+void GroupSuggestionsServiceImpl::SetConfigForTesting(
+    base::TimeDelta computation_delay) {
+  group_suggestions_manager_->set_consecutive_computation_delay_for_testing(
+      computation_delay);
+}
+
 }  // namespace visited_url_ranking

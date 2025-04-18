@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -68,15 +69,19 @@ class RecentlyOpenedHeuristic : public GroupingHeuristics::Heuristic {
     std::vector<float> result(inputs.size(), 0.0f);
     const char* time_since_active_input = GetNameForInput(
         URLVisitAggregateRankingModelInputSignals::kTimeSinceLastActiveSec);
+    unsigned count = 0;
     for (unsigned i = 0; i < inputs.size(); ++i) {
       std::optional<ProcessedValue> duration_sec =
           inputs[i]->GetMetadataArgument(time_since_active_input);
       if (duration_sec &&
           duration_sec->float_val < kRecencyTabTimeLimit.InSecondsF()) {
         result[i] = 1;
+        ++count;
       }
     }
     CHECK_EQ(result.size(), inputs.size());
+    base::UmaHistogramCounts100(
+        "GroupSuggestionsService.OpenedTabCount.Last10Mins", count);
     return result;
   }
 };
@@ -233,7 +238,6 @@ void SetSuggestionText(GroupSuggestion& suggestion) {
   // TODO(ssid): Set better messages and tab group names.
   switch (suggestion.suggestion_reason) {
     case GroupSuggestion::SuggestionReason::kUnknown:
-    case GroupSuggestion::SuggestionReason::kNumReasons:
       NOTREACHED();
     case GroupSuggestion::SuggestionReason::kSwitchedBetween:
       suggestion.promo_header = "Group recently selected tabs?";

@@ -9,6 +9,7 @@
 
 #include "base/types/id_type.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
 namespace visited_url_ranking {
 
@@ -27,14 +28,18 @@ struct GroupSuggestion {
 
   GroupSuggestion DeepCopy() const;
 
+  // LINT.IfChange
+  // These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
   enum class SuggestionReason {
     kUnknown = 0,
     kRecentlyOpened = 1,
     kSwitchedBetween = 2,
     kSimilarSource = 3,
     kSameOrigin = 4,
-    kNumReasons
+    kMaxValue = kSameOrigin
   };
+  // LINT.ThenChange(/tools/metrics/histograms/visited_url_ranking/enums.xml:GroupSuggesionReason)
 
   // LINT.IfChange
 
@@ -68,6 +73,9 @@ struct GroupSuggestions {
   // Currently the service only supports one suggestion at a time.
   std::vector<GroupSuggestion> suggestions;
 };
+
+// Returns a string representation of the reason.
+const char* GetSuggestionReasonString(GroupSuggestion::SuggestionReason reason);
 
 }  // namespace visited_url_ranking
 

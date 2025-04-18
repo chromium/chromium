@@ -92,7 +92,8 @@ class GroupSuggestionsServiceAndroidTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TabEventsVisitTransformer> tab_events_visit_transformer_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;

@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 
+#include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_service_impl.h"
@@ -37,6 +38,8 @@ class GroupSuggestionsManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;
   std::unique_ptr<GroupSuggestionsManager> suggestions_manager_;
@@ -62,19 +65,19 @@ TEST_F(GroupSuggestionsManagerTest, TriggerSuggestions) {
   GroupSuggestionsService::Scope scope1{.tab_session_id =
                                             SessionID::NewUnique()};
 
-  EXPECT_FALSE(suggestions_manager_->GetCurrentComputationForTesting());
-
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _));
   suggestions_manager_->MaybeTriggerSuggestions(scope);
-  EXPECT_TRUE(suggestions_manager_->GetCurrentComputationForTesting());
 
+  task_env_.FastForwardBy(base::Seconds(5));
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _));
   suggestions_manager_->MaybeTriggerSuggestions(scope);
-  EXPECT_TRUE(suggestions_manager_->GetCurrentComputationForTesting());
 
+  task_env_.FastForwardBy(base::Seconds(5));
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _));
   suggestions_manager_->MaybeTriggerSuggestions(scope1);
-  EXPECT_TRUE(suggestions_manager_->GetCurrentComputationForTesting());
+
+  EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _)).Times(0);
+  suggestions_manager_->MaybeTriggerSuggestions(scope);
 }
 
 }  // namespace visited_url_ranking
