@@ -1326,7 +1326,6 @@ int HttpNetworkTransaction::BuildRequestHeaders(
 
   if (features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
       proxy_info_.is_for_ip_protection()) {
-    CHECK(!proxy_info_.is_direct() || features::kIpPrivacyDirectOnly.Get());
     if (!proxy_info_.is_direct()) {
       request_headers_.SetHeader("IP-Protection", "1");
     }
