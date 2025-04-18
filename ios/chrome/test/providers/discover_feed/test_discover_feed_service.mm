@@ -44,6 +44,14 @@ BOOL TestDiscoverFeedService::GetFollowingFeedHasUnseenContent() {
 
 void TestDiscoverFeedService::SetFollowingFeedContentSeen() {}
 
+void TestDiscoverFeedService::UpdateFeedViewVisibilityState(
+    UICollectionView* collection_view,
+    BrowserViewVisibilityState current_state,
+    BrowserViewVisibilityState previous_state) {
+  collection_view_ = collection_view;
+  visibility_state_ = current_state;
+}
+
 void TestDiscoverFeedService::RefreshFeed(FeedRefreshTrigger trigger) {}
 
 void TestDiscoverFeedService::PerformBackgroundRefreshes(
@@ -53,4 +61,12 @@ void TestDiscoverFeedService::HandleBackgroundRefreshTaskExpiration() {}
 
 NSDate* TestDiscoverFeedService::GetEarliestBackgroundRefreshBeginDate() {
   return nil;
+}
+
+UICollectionView* TestDiscoverFeedService::collection_view() {
+  return collection_view_;
+}
+
+BrowserViewVisibilityState TestDiscoverFeedService::visibility_state() {
+  return visibility_state_;
 }

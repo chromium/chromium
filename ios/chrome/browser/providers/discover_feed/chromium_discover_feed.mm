@@ -29,6 +29,10 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   void UpdateTheme() final {}
   BOOL GetFollowingFeedHasUnseenContent() final { return NO; }
   void SetFollowingFeedContentSeen() final {}
+  void UpdateFeedViewVisibilityState(
+      UICollectionView* collection_view,
+      BrowserViewVisibilityState current_state,
+      BrowserViewVisibilityState previous_state) final {}
 
   // DiscoverFeedRefresher implementation:
   void RefreshFeed(FeedRefreshTrigger trigger) final {}

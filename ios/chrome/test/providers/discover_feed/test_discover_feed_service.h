@@ -25,11 +25,24 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   void UpdateTheme() final;
   BOOL GetFollowingFeedHasUnseenContent() final;
   void SetFollowingFeedContentSeen() final;
+  void UpdateFeedViewVisibilityState(
+      UICollectionView* collection_view,
+      BrowserViewVisibilityState current_state,
+      BrowserViewVisibilityState previous_state) final;
+
   // DiscoverFeedRefresher implementation:
   void RefreshFeed(FeedRefreshTrigger trigger) final;
   void PerformBackgroundRefreshes(void (^completion)(BOOL)) final;
   void HandleBackgroundRefreshTaskExpiration() final;
   NSDate* GetEarliestBackgroundRefreshBeginDate() final;
+
+  // TestDiscoverFeedService methods
+  UICollectionView* collection_view();
+  BrowserViewVisibilityState visibility_state();
+
+ private:
+  UICollectionView* collection_view_;
+  BrowserViewVisibilityState visibility_state_;
 };
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_DISCOVER_FEED_TEST_DISCOVER_FEED_SERVICE_H_
