@@ -105,7 +105,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_FailureNullParams) {
   uint8_t dummy_packet[1000] = {};
 
   // Try out the actual conversion with NULL parameter.
-  EXPECT_FALSE(converter.ConvertPacket(NULL));
+  EXPECT_FALSE(converter.ConvertPacket(nullptr));
 
   // Create new packet to test actual conversion.
   auto test_packet = ScopedAVPacket::Allocate();

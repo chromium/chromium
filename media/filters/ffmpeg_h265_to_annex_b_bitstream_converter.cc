@@ -30,8 +30,9 @@ FFmpegH265ToAnnexBBitstreamConverter::~FFmpegH265ToAnnexBBitstreamConverter() {}
 
 bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   DVLOG(3) << __func__;
-  if (packet == NULL || !packet->data)
+  if (packet == nullptr || !packet->data) {
     return false;
+  }
 
   // Calculate the needed output buffer size.
   if (!hevc_config_) {

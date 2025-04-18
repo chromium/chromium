@@ -433,7 +433,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   glGenVertexArraysOES(1, &vao_id_);
   CHECK_GT(vao_id_, 0u);
   glBindVertexArrayOES(vao_id_);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glEnableVertexAttribArray(0);
 
   // Create a vertex shader program which will be used for both scaling and

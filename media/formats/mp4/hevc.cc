@@ -384,7 +384,7 @@ bool HEVC::InsertParamSetsAnnexB(
   // Clear |parser| and |start| since they aren't needed anymore and
   // will hold stale pointers once the insert happens.
   parser.reset();
-  start = NULL;
+  start = nullptr;
 
   std::vector<uint8_t> param_sets;
   HEVC::ConvertConfigToAnnexB(hevc_config, &param_sets);

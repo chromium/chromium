@@ -985,7 +985,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
   EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), std::size(kAuxInfo));
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
-  EXPECT_FALSE(iter_->CacheAuxInfo(NULL, 0));
+  EXPECT_FALSE(iter_->CacheAuxInfo(nullptr, 0));
   EXPECT_FALSE(iter_->CacheAuxInfo(kAuxInfo, 3));
   EXPECT_TRUE(iter_->AuxInfoNeedsToBeCached());
   EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));

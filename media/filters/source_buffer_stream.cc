@@ -582,7 +582,7 @@ void SourceBufferStream::RemoveInternal(base::TimeDelta start,
     }
 
     if (range == selected_range_ && !range->HasNextBufferPosition())
-      SetSelectedRange(NULL);
+      SetSelectedRange(nullptr);
 
     // If the current range now is completely covered by the removal
     // range then delete it and move on.
@@ -618,7 +618,7 @@ void SourceBufferStream::RemoveInternal(base::TimeDelta start,
 }
 
 void SourceBufferStream::ResetSeekState() {
-  SetSelectedRange(NULL);
+  SetSelectedRange(nullptr);
   track_buffer_.clear();
   config_change_pending_ = false;
   highest_output_buffer_timestamp_ = kNoTimestamp;
@@ -1003,7 +1003,7 @@ size_t SourceBufferStream::FreeBuffers(size_t total_bytes_to_free,
   std::unique_ptr<SourceBufferRange> new_range_for_append;
 
   while (!ranges_.empty() && bytes_freed < total_bytes_to_free) {
-    SourceBufferRange* current_range = NULL;
+    SourceBufferRange* current_range = nullptr;
     BufferQueue buffers;
     size_t bytes_deleted = 0;
 
@@ -1506,7 +1506,7 @@ void SourceBufferStream::OnSetDuration(base::TimeDelta duration) {
 
     if (!deleted_buffers.empty()) {
       // Truncation removed current position. Clear selected range.
-      SetSelectedRange(NULL);
+      SetSelectedRange(nullptr);
     }
   }
 }
@@ -2012,7 +2012,7 @@ void SourceBufferStream::DeleteAndRemoveRange(RangeList::iterator* itr) {
   DCHECK(*itr != ranges_.end());
   if ((*itr)->get() == selected_range_) {
     DVLOG(1) << __func__ << " deleting selected range.";
-    SetSelectedRange(NULL);
+    SetSelectedRange(nullptr);
   }
 
   if (*itr == range_for_next_append_) {

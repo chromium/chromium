@@ -762,7 +762,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     return;
   }
 
-  if (decoder_current_bitstream_buffer_ == NULL) {
+  if (decoder_current_bitstream_buffer_ == nullptr) {
     if (decoder_input_queue_.empty()) {
       // We're waiting for a new buffer -- exit without scheduling a new task.
       return;
@@ -800,7 +800,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
         current_input_buffer_->GetTimeStamp().tv_sec != kFlushBufferId)
       schedule_task = FlushInputFrame();
 
-    if (schedule_task && AppendToInputFrame(NULL, 0) && FlushInputFrame()) {
+    if (schedule_task && AppendToInputFrame(nullptr, 0) && FlushInputFrame()) {
       VLOGF(2) << "enqueued flush buffer";
       schedule_task = true;
     } else {
@@ -869,8 +869,9 @@ void V4L2VideoDecodeAccelerator::ScheduleDecodeBufferTaskIfNeeded() {
 
   // If we're behind on tasks, schedule another one.
   int buffers_to_decode = decoder_input_queue_.size();
-  if (decoder_current_bitstream_buffer_ != NULL)
+  if (decoder_current_bitstream_buffer_ != nullptr) {
     buffers_to_decode++;
+  }
   if (decoder_decode_buffer_tasks_scheduled_ < buffers_to_decode) {
     decoder_decode_buffer_tasks_scheduled_++;
     decoder_thread_.task_runner()->PostTask(
@@ -953,7 +954,7 @@ bool V4L2VideoDecodeAccelerator::AppendToInputFrame(const void* data,
 
   // Try to get an available input buffer.
   if (!current_input_buffer_) {
-    DCHECK(decoder_current_bitstream_buffer_ != NULL);
+    DCHECK(decoder_current_bitstream_buffer_ != nullptr);
     DCHECK(input_queue_);
 
     // See if we can get more free buffers from HW.
@@ -971,7 +972,7 @@ bool V4L2VideoDecodeAccelerator::AppendToInputFrame(const void* data,
     current_input_buffer_->SetTimeStamp(timestamp);
   }
 
-  DCHECK(data != NULL || size == 0);
+  DCHECK(data != nullptr || size == 0);
   if (size == 0) {
     // If we asked for an empty buffer, return now.  We return only after
     // getting the next input buffer, since we might actually want an empty

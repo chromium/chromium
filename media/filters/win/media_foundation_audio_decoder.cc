@@ -531,7 +531,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   DWORD current_length = 0;
   uint8_t* destination_ptr = nullptr;
   RETURN_ON_HR_FAILURE(
-      output_buffer->Lock(&destination_ptr, NULL, &current_length),
+      output_buffer->Lock(&destination_ptr, nullptr, &current_length),
       "Failed to lock output buffer", OutputStatus::kFailed);
   // SAFETY: IMFMediaBuffer::Lock returns a pointer that points to at least
   // `current_length` many bytes (and up to a larger max, which we discard).

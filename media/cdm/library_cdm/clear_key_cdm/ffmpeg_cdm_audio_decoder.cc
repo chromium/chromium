@@ -89,7 +89,7 @@ void CdmAudioDecoderConfigToAVCodecContext(
     memset(codec_context->extradata + config.extra_data_size, '\0',
            AV_INPUT_BUFFER_PADDING_SIZE);
   } else {
-    codec_context->extradata = NULL;
+    codec_context->extradata = nullptr;
     codec_context->extradata_size = 0;
   }
 }
@@ -164,7 +164,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
   }
 
   // Initialize AVCodecContext structure.
-  codec_context_.reset(avcodec_alloc_context3(NULL));
+  codec_context_.reset(avcodec_alloc_context3(nullptr));
   CdmAudioDecoderConfigToAVCodecContext(config, codec_context_.get());
 
   // MP3 decodes to S16P which we don't support, tell it to use S16 instead.
@@ -172,7 +172,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_S16;
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
-  if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
+  if (!codec || avcodec_open2(codec_context_.get(), codec, nullptr) < 0) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
     return false;

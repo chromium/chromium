@@ -588,7 +588,7 @@ static const ListElementInfo* FindListInfo(int id) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 static int FindListLevel(int id) {
@@ -683,7 +683,7 @@ static int ParseString(const uint8_t* buf,
                        int id,
                        WebMParserClient* client) {
   const uint8_t* end = static_cast<const uint8_t*>(memchr(buf, '\0', size));
-  int length = (end != NULL) ? static_cast<int>(end - buf) : size;
+  int length = (end != nullptr) ? static_cast<int>(end - buf) : size;
   std::string str(reinterpret_cast<const char*>(buf), length);
   return client->OnString(id, str) ? size : -1;
 }
@@ -731,7 +731,7 @@ WebMParserClient::~WebMParserClient() = default;
 
 WebMParserClient* WebMParserClient::OnListStart(int id) {
   DVLOG(1) << "Unexpected list element start with ID " << std::hex << id;
-  return NULL;
+  return nullptr;
 }
 
 bool WebMParserClient::OnListEnd(int id) {
@@ -969,7 +969,7 @@ bool WebMListParser::OnListStart(int id, int64_t size) {
     return false;
   }
 
-  WebMParserClient* current_list_client = NULL;
+  WebMParserClient* current_list_client = nullptr;
   if (!list_state_stack_.empty()) {
     // Make sure the new list doesn't go past the end of the current list.
     ListState current_list_state = list_state_stack_.back();
@@ -1010,7 +1010,7 @@ bool WebMListParser::OnListEnd() {
 
     list_state_stack_.pop_back();
 
-    WebMParserClient* client = NULL;
+    WebMParserClient* client = nullptr;
     if (!list_state_stack_.empty()) {
       // Update the bytes_parsed_ for the parent element.
       list_state_stack_.back().bytes_parsed_ += bytes_parsed;

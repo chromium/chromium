@@ -325,7 +325,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   }
 
   // Gets pointer to decoded data.
-  vpx_codec_iter_t iter = NULL;
+  vpx_codec_iter_t iter = nullptr;
   const vpx_image_t* vpx_image = vpx_codec_get_frame(vpx_codec_.get(), &iter);
   if (!vpx_image) {
     *video_frame = nullptr;
@@ -451,7 +451,7 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     }
   }
 
-  vpx_codec_iter_t iter_alpha = NULL;
+  vpx_codec_iter_t iter_alpha = nullptr;
   *vpx_image_alpha = vpx_codec_get_frame(vpx_codec_alpha_.get(), &iter_alpha);
   if (!(*vpx_image_alpha)) {
     return kNoAlphaPlaneData;

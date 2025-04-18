@@ -365,7 +365,7 @@ std::vector<uint8_t> CreateLicenseReleaseMessage(const KeyIdList& key_ids) {
 bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
                                          std::vector<uint8_t>* first_key) {
   const std::string license_as_str(
-      reinterpret_cast<const char*>(!license.empty() ? &license[0] : NULL),
+      reinterpret_cast<const char*>(!license.empty() ? &license[0] : nullptr),
       license.size());
   if (!base::IsStringASCII(license_as_str)) {
     DVLOG(1) << "Non ASCII license: " << license_as_str;

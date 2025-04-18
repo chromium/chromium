@@ -180,7 +180,7 @@ extern "C" GBM_EXPORT void* gbm_bo_map2(struct gbm_bo* bo,
   CHECK(static_cast<int>(plane) < gbm_bo_get_plane_count(bo));
 
   size_t size = ALIGN(get_plane_min_size(bo, plane), PAGE_SIZE);
-  void* addr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED,
+  void* addr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED,
                     bo->meta.fds[0], bo->meta.offsets[plane]);
   CHECK(addr);
   CHECK(addr != MAP_FAILED);

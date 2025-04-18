@@ -61,7 +61,7 @@ TEST_F(OffsetByteQueueTest, PeekAt) {
   EXPECT_EQ(400 - 256, buf[0]);
 
   queue_->PeekAt(512, &buf, &size);
-  EXPECT_EQ(NULL, buf);
+  EXPECT_EQ(nullptr, buf);
   EXPECT_EQ(0, size);
 }
 
@@ -86,7 +86,7 @@ TEST_F(OffsetByteQueueTest, Trim) {
   EXPECT_TRUE(queue_->Trim(512));
   EXPECT_EQ(512, queue_->head());
   queue_->Peek(&buf, &size);
-  EXPECT_EQ(NULL, buf);
+  EXPECT_EQ(nullptr, buf);
 
   // Trimming past the end of the buffer should return 'false'; we haven't seen
   // the preceding bytes.
