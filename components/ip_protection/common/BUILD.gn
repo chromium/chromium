@@ -320,7 +320,6 @@ source_set("ip_protection_proxy_delegate") {
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_telemetry",
     ":ip_protection_token_manager_impl",
-    ":probabilistic_reveal_token_registry",
   ]
 }
 
@@ -330,16 +329,11 @@ source_set("ip_protection_proxy_delegate_unittest") {
   deps = [
     ":ip_protection_core",
     ":ip_protection_data_types",
-    ":ip_protection_probabilistic_reveal_token_direct_fetcher",
-    ":ip_protection_probabilistic_reveal_token_manager",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_delegate",
     ":ip_protection_telemetry",
     ":ip_protection_token_manager",
     ":masked_domain_list_manager",
-    ":probabilistic_reveal_token_registry",
-    ":probabilistic_reveal_token_test_consumer",
-    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
@@ -347,7 +341,6 @@ source_set("ip_protection_proxy_delegate_unittest") {
     "//net:gtest_util",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
-    "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gmock",

@@ -27,7 +27,6 @@ void ProxyInfo::Use(const ProxyInfo& other) {
   proxy_list_ = other.proxy_list_;
   proxy_retry_info_ = other.proxy_retry_info_;
   did_bypass_proxy_ = other.did_bypass_proxy_;
-  prt_header_value_ = other.prt_header_value_;
 }
 
 void ProxyInfo::UseDirect() {
@@ -106,7 +105,6 @@ void ProxyInfo::Reset() {
   proxy_list_.Clear();
   proxy_retry_info_.clear();
   did_bypass_proxy_ = false;
-  prt_header_value_ = std::nullopt;
 }
 
 bool ProxyInfo::AllChainProxiesAreHttps() const {
@@ -114,14 +112,6 @@ bool ProxyInfo::AllChainProxiesAreHttps() const {
   return std::all_of(
       proxy_servers.begin(), proxy_servers.end(),
       [](const ProxyServer& proxy_server) { return proxy_server.is_https(); });
-}
-
-void ProxyInfo::SetPRTHeaderValue(std::optional<std::string> prt_header_value) {
-  prt_header_value_ = std::move(prt_header_value);
-}
-
-std::optional<std::string> ProxyInfo::PRTHeaderValue() const {
-  return prt_header_value_;
 }
 
 }  // namespace net

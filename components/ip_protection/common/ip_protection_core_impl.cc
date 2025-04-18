@@ -188,10 +188,6 @@ std::optional<std::string> IpProtectionCoreImpl::GetProbabilisticRevealToken(
   return ipp_prt_manager_->GetToken(top_level, third_party);
 }
 
-bool IpProtectionCoreImpl::IsProbabilisticRevealTokenAvailable() {
-  return ipp_prt_manager_->IsTokenAvailable();
-}
-
 IpProtectionTokenManager*
 IpProtectionCoreImpl::GetIpProtectionTokenManagerForTesting(
     ProxyLayer proxy_layer) {

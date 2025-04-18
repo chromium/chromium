@@ -134,7 +134,6 @@ class MockIpProtectionCore : public IpProtectionCore {
   }
   bool IsIpProtectionEnabled() override { return true; }
   bool AreAuthTokensAvailable() override { return false; }
-  bool IsProbabilisticRevealTokenAvailable() override { NOTREACHED(); }
   bool WereTokenCachesEverFilled() override { return false; }
   std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {

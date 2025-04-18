@@ -160,7 +160,7 @@ class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
       : IpProtectionProbabilisticRevealTokenManager(std::move(fetcher),
                                                     std::nullopt) {}
   ~FakePRTManager() override = default;
-  bool IsTokenAvailable() override { return response_.has_value(); }
+  bool IsTokenAvailable() override { NOTREACHED(); }
   std::optional<std::string> GetToken(
       const std::string& top_level,
       const std::string& third_party) override {
@@ -834,7 +834,6 @@ TEST_F(IpProtectionCoreImplTest, IncognitoCoreCallsPRTRequest) {
       /*probabilistic_reveal_token_registry=*/nullptr,
       std::move(ipp_prt_manager),
       /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  EXPECT_TRUE(core->IsProbabilisticRevealTokenAvailable());
   auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
   ASSERT_TRUE(maybe_token.has_value());
   EXPECT_EQ(maybe_token.value(), expected_token);
@@ -856,7 +855,6 @@ TEST_F(IpProtectionCoreImplTest, RegularCoreDoesNotCallPRTRequest) {
       /*probabilistic_reveal_token_registry=*/nullptr,
       std::move(ipp_prt_manager),
       /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/false);
-  EXPECT_FALSE(core->IsProbabilisticRevealTokenAvailable());
   auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
   EXPECT_FALSE(maybe_token.has_value());
 }

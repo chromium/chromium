@@ -87,11 +87,4 @@ TEST(ProxyInfoTest, UseProxyChain) {
   EXPECT_EQ("PROXY foo:80", info.proxy_list().ToDebugString());
 }
 
-TEST(ProxyInfoTest, SetAndGetHeaderValue) {
-  ProxyInfo info;
-  const std::string header_value = "some-arbitrary-string";
-  info.SetPRTHeaderValue(header_value);
-  EXPECT_EQ(info.PRTHeaderValue(), header_value);
-}
-
 }  // namespace net
