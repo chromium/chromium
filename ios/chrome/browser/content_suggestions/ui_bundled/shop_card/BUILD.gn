@@ -75,11 +75,14 @@ source_set("price_tracking_shop_card") {
     ":shop_card_data",
     "//base",
     "//components/url_formatter",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption:tab_resumption",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells:cells",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util:util",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/util:util",
+    "//ui/base",
     "//url:url",
   ]
 }
