@@ -1138,6 +1138,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // the element supports this attribute. For example, `interesttarget` is not
   // allowed on a `<div>`.
   virtual Element* InterestTargetElement() const { return nullptr; }
+  // Returns the active interest invoker for which this element is the target,
+  // or nullptr otherwise.
+  Element* GetInterestInvoker() const;
   enum class InterestState {
     kNoInterest,
     kPartialInterest,
@@ -2161,9 +2164,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // These schedule interest gained/lost events, for `interesttarget` invokers.
   void ScheduleInterestGainedTask(InterestState);
   void ScheduleInterestLostTask();
-  // This returns the active interest invoker for which this element is the
-  // target.
-  Element* GetInterestInvoker() const;
+  void ChangeInterestState(Element* target, InterestState new_state);
   static bool GainOrLoseInterest(Element* invoker,
                                  Element* target,
                                  InterestState new_state);

@@ -1858,6 +1858,28 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       return element.GetInterestState() != Element::InterestState::kNoInterest;
+    case CSSSelector::kPseudoHasPartialInterest:
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          element.GetDocument().GetExecutionContext()));
+      return element.GetInterestState() ==
+             Element::InterestState::kPartialInterest;
+    case CSSSelector::kPseudoTargetOfInterest: {
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          element.GetDocument().GetExecutionContext()));
+      Element* invoker = element.GetInterestInvoker();
+      DCHECK(!invoker || invoker->GetInterestState() !=
+                             Element::InterestState::kNoInterest);
+      return invoker;
+    }
+    case CSSSelector::kPseudoTargetOfPartialInterest: {
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          element.GetDocument().GetExecutionContext()));
+      Element* invoker = element.GetInterestInvoker();
+      DCHECK(!invoker || invoker->GetInterestState() !=
+                             Element::InterestState::kNoInterest);
+      return invoker && invoker->GetInterestState() ==
+                            Element::InterestState::kPartialInterest;
+    }
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());
       if (auto* slot = DynamicTo<HTMLSlotElement>(element)) {

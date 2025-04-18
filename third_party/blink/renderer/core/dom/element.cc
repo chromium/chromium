@@ -6540,21 +6540,22 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
       if (!params.old_value.IsNull() && params.old_value != params.new_value) {
         // We are changing the value of the `interesttarget` attribute, which
         // might "point" it at a different target element. So clear the
-        // InterestInvokerTargetData from the old target.
-        if (Element* old_target = InterestTargetElement()) {
+        // InterestInvokerTargetData from the old target, and invalidate the
+        // pseudo classes that might change.
+        Element* old_target = InterestTargetElement();
+        ChangeInterestState(old_target, InterestState::kNoInterest);
+        if (old_target) {
           old_target->RemoveInterestInvokerTargetData();
         }
-      }
-      if (params.new_value.IsNull()) {
-        // We are removing the attribute, so remove interest invoker data.
-        if (auto* invoker_data = GetInvokerData()) {
+        auto* invoker_data = GetInvokerData();
+        if (params.new_value.IsNull() && invoker_data) {
+          // Cancel any tasks that might be running.
+          DCHECK_EQ(invoker_data->GetInterestState(),
+                    InterestState::kNoInterest);
           invoker_data->CancelInterestLostTask();
-          invoker_data->SetInterestState(InterestState::kNoInterest);
+          invoker_data->CancelInterestGainedTask();
         }
       }
-      // Changing the `interesttarget` attribute could change the state of the
-      // `:has-interest` pseudo class, e.g. by pointing to a different target.
-      PseudoStateChanged(CSSSelector::kPseudoHasInterest);
     }
   }
 }
@@ -10632,6 +10633,16 @@ bool Element::ChildStyleRecalcBlockedByDisplayLock() const {
   return context && !context->ShouldStyleChildren();
 }
 
+void Element::ChangeInterestState(Element* target, InterestState new_state) {
+  EnsureElementRareData().EnsureInvokerData().SetInterestState(new_state);
+  PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+  PseudoStateChanged(CSSSelector::kPseudoHasPartialInterest);
+  if (target) {
+    target->PseudoStateChanged(CSSSelector::kPseudoTargetOfInterest);
+    target->PseudoStateChanged(CSSSelector::kPseudoTargetOfPartialInterest);
+  }
+}
+
 // static
 bool Element::GainOrLoseInterest(Element* invoker,
                                  Element* target,
@@ -10690,9 +10701,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
       target->EnsureElementRareData()
           .EnsureInterestInvokerTargetData()
           .setInterestInvoker(invoker);
-      invoker->EnsureElementRareData().EnsureInvokerData().SetInterestState(
-          new_state);
-      invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+      invoker->ChangeInterestState(target, new_state);
       DCHECK(!invoker->GetDocument().CurrentInterestTargetElements().Contains(
           invoker));
       invoker->GetDocument().CurrentInterestTargetElements().insert(invoker);
@@ -10706,8 +10715,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
       if (auto* targets_invoker = target->GetInterestInvoker();
           targets_invoker && targets_invoker == invoker) {
         target->EnsureElementRareData().RemoveInterestInvokerTargetData();
-        invoker->GetInvokerData()->SetInterestState(InterestState::kNoInterest);
-        invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+        invoker->ChangeInterestState(target, InterestState::kNoInterest);
         DCHECK(invoker->GetDocument().CurrentInterestTargetElements().Contains(
             invoker));
         invoker->GetDocument().CurrentInterestTargetElements().erase(invoker);
@@ -10787,12 +10795,9 @@ Element* Element::GetInterestInvoker() const {
   if (!invoker) {
     return nullptr;
   }
-  if (auto* invokers_target = invoker->InterestTargetElement();
-      invokers_target != this) {
-    // Don't return it if it doesn't still have the `interesttarget` attribute,
-    // or if the attribute no longer points back to this element.
-    return nullptr;
-  }
+  DCHECK_EQ(invoker->InterestTargetElement(), this);
+  DCHECK_NE(invoker->GetInterestState(), Element::InterestState::kNoInterest);
+  DCHECK_EQ(invoker->InterestTargetElement(), this);
   return invoker;
 }
 
@@ -10865,7 +10870,8 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
           InterestState::kPartialInterest) {
         // Hovering (or focusing, if the developer allowed that) triggers full
         // interest in the invoker.
-        upstream_data->SetInterestState(InterestState::kFullInterest);
+        upstream_invoker->ChangeInterestState(this,
+                                              InterestState::kFullInterest);
       }
     }
     if (InterestTargetElement()) [[unlikely]] {
@@ -10900,7 +10906,7 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
       //    SetFocused() will never be called on the actual invoker, we should
       //    be careful not to schedule the interestlost task.
       upstream_invoker->GetInvokerData()->CancelInterestGainedTask();
-      if (source != InterestTargetSource::kDeHover ||
+      if (source == InterestTargetSource::kBlurElementChain ||
           !upstream_invoker->IsHovered()) {
         upstream_invoker->ScheduleInterestLostTask();
       }

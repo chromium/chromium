@@ -260,6 +260,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoFocusWithin,
     kPseudoFullPageMedia,
     kPseudoHasInterest,
+    kPseudoHasPartialInterest,
     kPseudoHasSlotted,
     kPseudoHorizontal,
     kPseudoHover,
@@ -312,6 +313,8 @@ class CORE_EXPORT CSSSelector {
     kPseudoStart,
     kPseudoState,
     kPseudoTarget,
+    kPseudoTargetOfInterest,
+    kPseudoTargetOfPartialInterest,
     kPseudoUnknown,
     // Something that was unparsable, but contained either a nesting
     // selector (&), or a :scope pseudo-class, and must therefore be kept
