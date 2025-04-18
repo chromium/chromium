@@ -205,7 +205,7 @@ void TabGroupSyncMetricsLoggerImpl::LogEvent(const EventDetails& event_details,
 
 DeviceType TabGroupSyncMetricsLoggerImpl::GetDeviceTypeFromCacheGuid(
     const std::optional<std::string>& cache_guid) const {
-  if (!cache_guid.has_value()) {
+  if (!device_info_tracker_ || !cache_guid.has_value()) {
     return DeviceType::kUnknown;
   }
 

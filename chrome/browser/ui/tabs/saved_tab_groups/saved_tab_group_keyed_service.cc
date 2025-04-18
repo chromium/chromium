@@ -567,6 +567,8 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   // Clear restored groups to connect and save now that we have processed them.
   restored_groups_to_connect_on_load_.clear();
   restored_groups_to_save_on_load_.clear();
+
+  RecordStartupMetrics();
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupRemovedFromSync(
@@ -733,6 +735,29 @@ void SavedTabGroupKeyedService::UpdateGroupVisualData(
       saved_group->title(), saved_group->color(),
       /*is_collapsed=*/tab_group->visual_data()->is_collapsed());
   tab_group->SetVisualData(visual_data, /*is_customized=*/true);
+}
+
+bool SavedTabGroupKeyedService::IsRemoteDevice(
+    const std::optional<std::string>& cache_guid) const {
+  std::optional<std::string> local_cache_guid =
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge();
+  if (!local_cache_guid || !cache_guid) {
+    return false;
+  }
+
+  return local_cache_guid.value() != cache_guid.value();
+}
+
+void SavedTabGroupKeyedService::RecordStartupMetrics() {
+  auto saved_tab_groups = model_->saved_tab_groups();
+  std::vector<bool> is_remote(saved_tab_groups.size());
+
+  for (size_t i = 0; i < saved_tab_groups.size(); ++i) {
+    is_remote[i] = IsRemoteDevice(saved_tab_groups[i].creator_cache_guid());
+  }
+
+  TabGroupSyncMetricsLoggerImpl metrics_logger(nullptr);
+  metrics_logger.RecordMetricsOnStartup(saved_tab_groups, is_remote);
 }
 
 void SavedTabGroupKeyedService::RecordMetrics() {
