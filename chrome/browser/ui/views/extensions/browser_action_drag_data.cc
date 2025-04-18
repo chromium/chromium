@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
@@ -100,7 +96,7 @@ bool BrowserActionDragData::ReadFromPickle(base::Pickle* pickle) {
   if (!data_iterator.ReadBytes(&tmp, sizeof(profile_))) {
     return false;
   }
-  memcpy(&profile_, tmp, sizeof(profile_));
+  UNSAFE_TODO(memcpy(&profile_, tmp, sizeof(profile_)));
 
   if (!data_iterator.ReadString(&id_)) {
     return false;

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 
+#include "base/compiler_specific.h"
 #include "base/timer/timer.h"
 #include "cc/paint/render_surface_filters.h"
 #include "components/lens/lens_features.h"
@@ -27,7 +23,8 @@ bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
   // Compare pixel data
   SkPixmap pixmap1 = bitmap1.pixmap();
   SkPixmap pixmap2 = bitmap2.pixmap();
-  return memcmp(pixmap1.addr(), pixmap2.addr(), pixmap1.computeByteSize()) == 0;
+  return UNSAFE_TODO(memcmp(pixmap1.addr(), pixmap2.addr(),
+                            pixmap1.computeByteSize())) == 0;
 }
 }  // namespace
 
