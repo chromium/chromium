@@ -237,6 +237,7 @@ class ReadAnythingAppModel {
   void SetUrlInformationCallback(base::OnceCallback<void()> callback);
   bool IsDocs() const;
   bool IsReload() const;
+  void RemoveDisplayNode(ui::AXNodeID id);
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
 

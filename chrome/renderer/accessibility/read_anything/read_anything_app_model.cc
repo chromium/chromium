@@ -300,6 +300,10 @@ bool ReadAnythingAppModel::ContentNodesOnlyContainHeadings() {
   return true;
 }
 
+void ReadAnythingAppModel::RemoveDisplayNode(ui::AXNodeID id) {
+  display_node_ids_.erase(id);
+}
+
 void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
   DCHECK(!content_node_ids_.empty());
 
