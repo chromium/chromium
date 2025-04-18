@@ -7,6 +7,10 @@
 
 #include "ui/views/view.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 // A view that covers whatever is behind it with a scrim that darkens the
 // background.
 class ScrimView : public views::View {
@@ -22,6 +26,8 @@ class ScrimView : public views::View {
 
   // views::View:
   void AddedToWidget() override;
+
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SCRIM_VIEW_H_

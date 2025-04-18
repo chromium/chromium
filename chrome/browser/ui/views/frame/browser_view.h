@@ -302,7 +302,7 @@ class BrowserView : public BrowserWindow,
   glic::GlicBorderView* glic_border() const { return glic_border_; }
 #endif
 
-  ScrimView* window_scrim_view_for_testing() { return window_scrim_view_; }
+  ScrimView* window_scrim_view() { return window_scrim_view_; }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

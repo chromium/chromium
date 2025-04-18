@@ -8,6 +8,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 ScrimView::ScrimView() {
@@ -26,6 +27,11 @@ void ScrimView::AddedToWidget() {
   // pure black background. In contrast, macOS sheet uses a semi-transparent
   // grey scrim which lightens a dark background.
   layer()->SetColor(GetColorProvider()->GetColor(ui::kColorSysStateScrim));
+}
+
+void ScrimView::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+  layer()->SetRoundedCornerRadius(radii);
+  layer()->SetIsFastRoundedCorner(true);
 }
 
 BEGIN_METADATA(ScrimView)

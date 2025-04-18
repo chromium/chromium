@@ -480,15 +480,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
   child_widget->Init(std::move(params));
 
   child_widget->Show();
-  EXPECT_TRUE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  EXPECT_TRUE(browser_view()->window_scrim_view()->GetVisible());
   child_widget->Hide();
-  EXPECT_FALSE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  EXPECT_FALSE(browser_view()->window_scrim_view()->GetVisible());
   child_widget->Show();
-  EXPECT_TRUE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  EXPECT_TRUE(browser_view()->window_scrim_view()->GetVisible());
   // Destroy the child widget, the parent should be notified about child modal
   // visibility change.
   child_widget.reset();
-  EXPECT_FALSE(browser_view()->window_scrim_view_for_testing()->GetVisible());
+  EXPECT_FALSE(browser_view()->window_scrim_view()->GetVisible());
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
