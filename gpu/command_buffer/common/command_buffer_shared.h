@@ -29,11 +29,7 @@ class SharedState {
 
  public:
   void Initialize() {
-    for (int i = 0; i < 2; ++i) {
-      for (int j = 0; j < 2; ++j) {
-        states_[i][j] = T();
-      }
-    }
+    states_ = {};
     base::subtle::NoBarrier_Store(&reading_, 0);
     base::subtle::NoBarrier_Store(&latest_, 0);
     base::subtle::NoBarrier_Store(&slots_[0], 0);
