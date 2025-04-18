@@ -1393,11 +1393,11 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
     {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
-     "f6cd931b-d10e-475f-b424-6270982c15f6?q={searchTerms}"},
+     "8e21c7cd-cbfe-4162-baf4-3381fc43546e?q={searchTerms}"},
     {"suggest_url",
-     "https://discoveryengine.googleapis.com/v1alpha/projects/121968733869/"
+     "https://discoveryengine.googleapis.com/v1alpha/projects/977834784893/"
      "locations/global/collections/default_collection/engines/"
-     "neuravibeapp_1738849257936/completionConfig:completeQuery"}};
+     "neuravibeenterprisesearch_1732204320742/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"prod", kOmniboxSearchAggregatorProdParams,
      std::size(kOmniboxSearchAggregatorProdParams), nullptr},
