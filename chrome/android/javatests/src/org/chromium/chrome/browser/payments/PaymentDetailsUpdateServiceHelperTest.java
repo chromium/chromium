@@ -42,6 +42,7 @@ import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentCurrencyAmount;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentHandlerMethodData;
+import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentHandlerModifier;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentRequestDetailsUpdate;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentAddress;
@@ -146,6 +147,13 @@ public class PaymentDetailsUpdateServiceHelperTest {
                         new PaymentCurrencyAmount("CAD", "0.00"),
                         /* selected= */ true));
 
+        // Populate modifiers.
+        List<PaymentHandlerModifier> modifiers = new ArrayList<PaymentHandlerModifier>();
+        modifiers.add(
+                new PaymentHandlerModifier(
+                        new PaymentCurrencyAmount(/* currency= */ "CAD", /* value= */ "2.00"),
+                        new PaymentHandlerMethodData("method name", "stringified method data")));
+
         // Populate address errors.
         Bundle bundledShippingAddressErrors = new Bundle();
         bundledShippingAddressErrors.putString("addressLine", "invalid address line");
@@ -163,6 +171,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
                 new PaymentRequestDetailsUpdate(
                         total,
                         shippingOptions,
+                        modifiers,
                         /* error= */ "error message",
                         /* stringifiedPaymentMethodErrors= */ "stringified payment method",
                         bundledShippingAddressErrors);
@@ -202,6 +211,23 @@ public class PaymentDetailsUpdateServiceHelperTest {
         Assert.assertEquals("0.00", amount.getString(PaymentCurrencyAmount.EXTRA_VALUE));
         Assert.assertTrue(
                 shippingOption.getBoolean(PaymentShippingOption.EXTRA_SHIPPING_OPTION_SELECTED));
+
+        // Validate modifiers
+        Parcelable[] modifiers =
+                mUpdatedPaymentDetails.getParcelableArray(
+                        PaymentRequestDetailsUpdate.EXTRA_MODIFIERS);
+        Assert.assertEquals(1, modifiers.length);
+        Bundle modifier = (Bundle) modifiers[0];
+        Bundle modifierTotal = modifier.getBundle(PaymentHandlerModifier.EXTRA_TOTAL);
+        Assert.assertEquals("CAD", modifierTotal.getString(PaymentCurrencyAmount.EXTRA_CURRENCY));
+        Assert.assertEquals("2.00", modifierTotal.getString(PaymentCurrencyAmount.EXTRA_VALUE));
+        Bundle modifierMethodData = modifier.getBundle(PaymentHandlerModifier.EXTRA_METHOD_DATA);
+        Assert.assertEquals(
+                "method name",
+                modifierMethodData.getString(PaymentHandlerMethodData.EXTRA_METHOD_NAME));
+        Assert.assertEquals(
+                "stringified method data",
+                modifierMethodData.getString(PaymentHandlerMethodData.EXTRA_STRINGIFIED_DETAILS));
 
         Assert.assertEquals(
                 "error message",

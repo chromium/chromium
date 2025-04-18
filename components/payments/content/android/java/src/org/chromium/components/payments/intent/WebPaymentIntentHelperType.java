@@ -22,12 +22,8 @@ import java.util.List;
  * are the subset of those in the mojom types. The subset is minimally selected based on the need of
  * this package. This class should be independent of the org.chromium package.
  *
- * @see <a
- *         href="https://web.dev/android-payment-apps-overview/#parameters-2">Payment
- *         parameters</a>
- * @see <a
- *         href="https://web.dev/android-payment-apps-overview/#parameters">“Is
- *         ready to pay” parameters</a>
+ * @see <a href="https://web.dev/articles/android-payment-apps-developers-guide#parameters">Payment
+ *     parameters</a>
  */
 @NullMarked
 public final class WebPaymentIntentHelperType {
@@ -261,10 +257,11 @@ public final class WebPaymentIntentHelperType {
         public static final String EXTRA_METHOD_NAME = "methodName";
         public static final String EXTRA_STRINGIFIED_DETAILS = "details";
 
-        public final String methodName;
-        public final String stringifiedData;
+        public final @Nullable String methodName;
+        public final @Nullable String stringifiedData;
 
-        public PaymentHandlerMethodData(String methodName, String stringifiedData) {
+        public PaymentHandlerMethodData(
+                @Nullable String methodName, @Nullable String stringifiedData) {
             this.methodName = methodName;
             this.stringifiedData = stringifiedData;
         }
@@ -277,10 +274,54 @@ public final class WebPaymentIntentHelperType {
         }
     }
 
+    /** The class that mirrors mojom.PaymentHandlerModifier. */
+    public static final class PaymentHandlerModifier {
+        public static final String EXTRA_TOTAL = "total";
+        public static final String EXTRA_METHOD_DATA = "methodData";
+        public final @Nullable PaymentCurrencyAmount total;
+        public final @Nullable PaymentHandlerMethodData methodData;
+
+        public PaymentHandlerModifier(
+                @Nullable PaymentCurrencyAmount total,
+                @Nullable PaymentHandlerMethodData methodData) {
+            this.total = total;
+            this.methodData = methodData;
+        }
+
+        private Bundle asBundle() {
+            Bundle bundle = new Bundle();
+            if (total != null) {
+                bundle.putBundle(EXTRA_TOTAL, total.asBundle());
+            }
+            if (methodData != null) {
+                bundle.putBundle(EXTRA_METHOD_DATA, methodData.asBundle());
+            }
+            return bundle;
+        }
+
+        /**
+         * Create a parcelable array of payment handler modifiers.
+         *
+         * @param modifiers The list of available modifiers.
+         * @return The parcelable array of payment handler modifiers passed to the native payment
+         *     app.
+         */
+        /* package */ static Parcelable[] buildPaymentHandlerModifierArray(
+                List<PaymentHandlerModifier> modifiers) {
+            Parcelable[] result = new Parcelable[modifiers.size()];
+            int index = 0;
+            for (PaymentHandlerModifier modifier : modifiers) {
+                result[index++] = modifier.asBundle();
+            }
+            return result;
+        }
+    }
+
     /** The class that mirrors mojom.PaymentRequestDetailsUpdate. */
     public static final class PaymentRequestDetailsUpdate {
         public static final String EXTRA_TOTAL = "total";
         public static final String EXTRA_SHIPPING_OPTIONS = "shippingOptions";
+        public static final String EXTRA_MODIFIERS = "modifiers";
         public static final String EXTRA_ERROR_MESSAGE = "error";
         public static final String EXTRA_STRINGIFIED_PAYMENT_METHOD_ERRORS =
                 "stringifiedPaymentMethodErrors";
@@ -288,6 +329,7 @@ public final class WebPaymentIntentHelperType {
 
         public final @Nullable PaymentCurrencyAmount total;
         public final @Nullable List<PaymentShippingOption> shippingOptions;
+        public final @Nullable List<PaymentHandlerModifier> modifiers;
         public final @Nullable String error;
         public final @Nullable String stringifiedPaymentMethodErrors;
         public final @Nullable Bundle bundledShippingAddressErrors;
@@ -295,11 +337,13 @@ public final class WebPaymentIntentHelperType {
         public PaymentRequestDetailsUpdate(
                 @Nullable PaymentCurrencyAmount total,
                 @Nullable List<PaymentShippingOption> shippingOptions,
+                @Nullable List<PaymentHandlerModifier> modifiers,
                 @Nullable String error,
                 @Nullable String stringifiedPaymentMethodErrors,
                 @Nullable Bundle bundledShippingAddressErrors) {
             this.total = total;
             this.shippingOptions = shippingOptions;
+            this.modifiers = modifiers;
             this.error = error;
             this.stringifiedPaymentMethodErrors = stringifiedPaymentMethodErrors;
             this.bundledShippingAddressErrors = bundledShippingAddressErrors;
@@ -319,6 +363,11 @@ public final class WebPaymentIntentHelperType {
                 bundle.putParcelableArray(
                         EXTRA_SHIPPING_OPTIONS,
                         PaymentShippingOption.buildPaymentShippingOptionList(shippingOptions));
+            }
+            if (modifiers != null && !modifiers.isEmpty()) {
+                bundle.putParcelableArray(
+                        EXTRA_MODIFIERS,
+                        PaymentHandlerModifier.buildPaymentHandlerModifierArray(modifiers));
             }
             if (!TextUtils.isEmpty(error)) bundle.putString(EXTRA_ERROR_MESSAGE, error);
             if (!TextUtils.isEmpty(stringifiedPaymentMethodErrors)) {
