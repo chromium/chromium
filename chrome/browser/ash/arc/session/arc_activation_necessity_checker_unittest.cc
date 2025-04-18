@@ -14,10 +14,15 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
@@ -29,7 +34,12 @@
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +49,7 @@ namespace arc {
 namespace {
 
 constexpr char kPackageName[] = "com.example.third_party_app";
+constexpr char kUserEmail[] = "user@test";
 
 class FakeAdbSideloadingAvailabilityDelegate
     : public AdbSideloadingAvailabilityDelegate {
@@ -60,8 +71,7 @@ class FakeAdbSideloadingAvailabilityDelegate
 
 class ArcActivationNecessityCheckerTest : public testing::Test {
  public:
-  ArcActivationNecessityCheckerTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+  ArcActivationNecessityCheckerTest() = default;
   ~ArcActivationNecessityCheckerTest() override = default;
 
   void SetUp() override {
@@ -72,23 +82,29 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
     ash::ConciergeClient::InitializeFake();
 
-    TestingProfile::Builder profile_builder;
-    profile_ = profile_builder.Build();
-    profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
-
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), GaiaId("1234567890")));
-    auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
-
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_session_manager_ =
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
+
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        testing_local_state_.Get(), ash::CrosSettings::Get()));
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("1234567890"));
+    user_manager_->EnsureUser(account_id, user_manager::UserType::kRegular,
+                              /*is_ephemeral=*/false);
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
+    profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
+    profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+    profile_->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
+    profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
+
     app_instance_ = std::make_unique<arc::FakeAppInstance>(
         ArcAppListPrefs::Get(profile_.get()));
     arc_service_manager_->arc_bridge_service()->app()->SetInstance(
@@ -117,13 +133,17 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
   base::test::ScopedFeatureList feature_list_;
+  ScopedTestingLocalState testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+  ash::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedTestingCrosSettings testing_cros_settings_;
   session_manager::SessionManager session_manager_;
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
+  user_manager::ScopedUserManager user_manager_;
+
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeAdbSideloadingAvailabilityDelegate adb_sideloading_availability_delegate_;
   std::unique_ptr<ArcActivationNecessityChecker> checker_;
