@@ -37,6 +37,7 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
     case net::CookieChangeCause::EXPIRED:
     case net::CookieChangeCause::EVICTED:
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       break;
   };
 

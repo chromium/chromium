@@ -280,7 +280,10 @@ enum CookieChangeCause {
   // The cookie was automatically evicted during garbage collection.
   EVICTED,
   // The cookie was overwritten with an already-expired expiration date.
-  EXPIRED_OVERWRITE
+  EXPIRED_OVERWRITE,
+  // The cookie was inserted but resulted in an overwrite with no change
+  // that is observable to the site.
+  INSERTED_NO_CHANGE_OVERWRITE
 };
 
 struct CookieChangeInfo {

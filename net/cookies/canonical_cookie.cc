@@ -830,6 +830,13 @@ bool CanonicalCookie::HasEquivalentDataMembers(
   return IsProbablyEquivalentTo(other) && Value() == other.Value();
 }
 
+bool CanonicalCookie::IsWebEquivalentTo(const CanonicalCookie& other) const {
+  return IsEquivalent(other) && Value() == other.Value() &&
+         IsSecure() == other.IsSecure() && SameSite() == other.SameSite() &&
+         IsHttpOnly() == other.IsHttpOnly() &&
+         ExpiryDate() == other.ExpiryDate();
+}
+
 void CanonicalCookie::PostIncludeForRequestURL(
     const CookieAccessResult& access_result,
     const CookieOptions& options_used,

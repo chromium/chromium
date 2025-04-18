@@ -172,6 +172,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
     // only make sense for deletions.
     case net::CookieChangeCause::INSERTED:
     case net::CookieChangeCause::EXPLICIT:
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       cause_dict_entry = kExplicitChangeCause;
       break;
 

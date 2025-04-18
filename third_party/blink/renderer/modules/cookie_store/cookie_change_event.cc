@@ -147,8 +147,11 @@ void CookieChangeEvent::ToEventInfo(
     }
 
     case ::network::mojom::CookieChangeCause::OVERWRITE:
+    case ::network::mojom::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       // A cookie overwrite causes an OVERWRITE (meaning the old cookie was
-      // deleted) and an INSERTED.
+      // deleted) and an INSERTED, unless the insertion resulted in a cookie
+      // with no observable difference. In that case, we do not dispatch any
+      // change events.
       break;
   }
 }

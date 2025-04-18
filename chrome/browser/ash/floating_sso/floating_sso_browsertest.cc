@@ -331,8 +331,9 @@ class FloatingSsoTest : public policy::PolicyTest {
                 testing::ElementsAre(
                     testing::Field("cause", &net::CookieChangeInfo::cause,
                                    net::CookieChangeCause::OVERWRITE),
-                    testing::Field("cause", &net::CookieChangeInfo::cause,
-                                   net::CookieChangeCause::INSERTED)));
+                    testing::Field(
+                        "cause", &net::CookieChangeInfo::cause,
+                        net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE)));
     commit_future.Get();
   }
 

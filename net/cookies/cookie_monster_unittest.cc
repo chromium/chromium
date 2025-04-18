@@ -140,6 +140,7 @@ struct CookieMonsterTestTraits {
   static const int creation_time_granularity_in_ms = 0;
   static const bool supports_cookie_access_semantics = true;
   static const bool supports_partitioned_cookies = true;
+  static const bool dispatches_events_on_no_change_overwrite = true;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(CookieMonster,

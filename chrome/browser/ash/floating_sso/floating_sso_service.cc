@@ -218,7 +218,8 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
 
   const auto& in_store_specifics = bridge_->CookieSpecificsInStore();
   switch (change.cause) {
-    case net::CookieChangeCause::INSERTED: {
+    case net::CookieChangeCause::INSERTED:
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE: {
       // Check if an identical cookie already exists in the bridge's store,
       // to avoid sending no-op changes to sync.
       if (auto it = in_store_specifics.find(sync_specifics->unique_key());
