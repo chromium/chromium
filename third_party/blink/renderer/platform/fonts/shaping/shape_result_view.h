@@ -175,8 +175,8 @@ class PLATFORM_EXPORT ShapeResultView final
     PLATFORM_EXPORT void Trace(Visitor*) const;
 
     using const_iterator = const HarfBuzzRunGlyphData*;
-    const_iterator begin() const { return range_.begin; }
-    const_iterator end() const { return range_.end; }
+    const_iterator begin() const { return range_.begin(); }
+    const_iterator end() const { return range_.end(); }
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     const_reverse_iterator rbegin() const {
       return const_reverse_iterator(end());
@@ -185,14 +185,14 @@ class PLATFORM_EXPORT ShapeResultView final
       return const_reverse_iterator(begin());
     }
     const HarfBuzzRunGlyphData& GlyphAt(unsigned index) const {
-      return *(range_.begin + index);
+      return *(range_.begin() + index);
     }
     template <bool has_non_zero_glyph_offsets>
     GlyphOffsetArray::iterator<has_non_zero_glyph_offsets> GetGlyphOffsets()
         const {
       return GlyphOffsetArray::iterator<has_non_zero_glyph_offsets>(range_);
     }
-    bool HasGlyphOffsets() const { return range_.offsets; }
+    bool HasGlyphOffsets() const { return range_.HasOffsets(); }
     // The end character index of |this| without considering offsets in
     // |ShapeResultView|. This is analogous to:
     //   GlyphAt(IsRtl() ? -1 : NumGlyphs()).character_index

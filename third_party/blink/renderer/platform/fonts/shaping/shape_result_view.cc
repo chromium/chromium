@@ -255,7 +255,7 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
     } else {
       range = run->FindGlyphDataRange(range_start, range_end);
       part_width = std::accumulate(
-          range.begin, range.end, InlineLayoutUnit(),
+          range.begin(), range.end(), InlineLayoutUnit(),
           [](InlineLayoutUnit sum, const auto& glyph) {
             return sum + glyph.advance.template To<InlineLayoutUnit>();
           });
@@ -267,7 +267,7 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
     parts_.emplace_back(run->GetRunInfo(), range, part_start_index, part_offset,
                         part_characters, part_width);
 
-    num_glyphs_ += range.end - range.begin;
+    num_glyphs_ += range.size();
     width_ += part_width;
   }
 }

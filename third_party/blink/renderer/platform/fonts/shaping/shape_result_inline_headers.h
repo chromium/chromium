@@ -129,8 +129,7 @@ struct ShapeResult::RunInfo final
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
-    unsigned number_of_glyphs =
-        static_cast<unsigned>(std::distance(glyphs.begin, glyphs.end));
+    const unsigned number_of_glyphs = glyphs.size();
     if (!number_of_glyphs) [[unlikely]] {
       return nullptr;
     }
@@ -295,9 +294,9 @@ struct ShapeResult::RunInfo final
 
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFromRange(const GlyphDataRange& range) {
-      CHECK_EQ(static_cast<size_t>(range.end - range.begin), size());
+      CHECK_EQ(range.size(), size());
       static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::copy(range.begin, range.end, data_.get());
+      std::ranges::copy(range, data_.get());
       offsets_.CopyFromRange(range);
     }
 
