@@ -126,6 +126,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   [_trackPriceButton addTarget:self
                         action:@selector(trackItem)
               forControlEvents:UIControlEventTouchUpInside];
+
   [self populateTitleLabel];
   [self populateUrlLabel];
   [self populatePriceNotificationChip];
@@ -148,7 +149,36 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   [self addSubview:_contentStack];
   AddSameConstraints(_contentStack, self);
 
+  // Accessibility
+  _contentStack.accessibilityElements = @[ _textStack, _trackPriceButton ];
+  self.isAccessibilityElement = NO;
+  _textStack.accessibilityLabel = _item.shopCardData.accessibilityString;
+  _textStack.isAccessibilityElement = YES;
+  _textStack.accessibilityTraits = UIAccessibilityTraitButton;
+  _priceNotificationsChip.isAccessibilityElement = YES;
+  _trackPriceButton.isAccessibilityElement = YES;
+  _trackPriceButton.accessibilityTraits = UIAccessibilityTraitButton;
+  NSString* trackPriceButtonAccessibilityLabel = [NSString
+      stringWithFormat:
+          @"%@ %@",
+          l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_BUTTON),
+          _item.tabTitle];
+  _trackPriceButton.accessibilityLabel = trackPriceButtonAccessibilityLabel;
+  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
+  // For larger font size, domain
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(hideDomainOnTraitChange)];
+  }
   return self;
+}
+
+- (void)hideDomainOnTraitChange {
+  _urlLabel.hidden = self.traitCollection.preferredContentSizeCategory >
+                     UIContentSizeCategoryExtraExtraLarge;
 }
 
 - (UIImage*)makeDefaultFaviconUIImage {

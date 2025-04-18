@@ -249,6 +249,11 @@ void ConfigureTabResumptionItemForShopCard(
                                .current_price()
                                .amount_micros());
     }
+    item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(item.tabTitle),
+        base::SysNSStringToUTF16(item.shopCardData.currentPrice),
+        GetHostnameFromGURL(url));
   }
 }
 
