@@ -630,11 +630,12 @@ void WallpaperSearchHandler::OnDescriptorsRetrieved(
 
   std::string response;
   response.swap(*response_body);
+
   // The response may start with . Ignore this.
-  const char kXSSIResponsePreamble[] = ")]}'";
-  if (base::StartsWith(response, kXSSIResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kXSSIResponsePreamble));
+  constexpr char kXSSIResponsePreamble[] = ")]}'";
+  auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
   data_decoder_->ParseJson(
       response,
@@ -819,11 +820,12 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
 
   std::string response;
   response.swap(*response_body);
+
   // The response may start with . Ignore this.
   const char kXSSIResponsePreamble[] = ")]}'";
-  if (base::StartsWith(response, kXSSIResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kXSSIResponsePreamble));
+  auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
   data_decoder_->ParseJson(
       response,
