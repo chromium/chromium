@@ -436,6 +436,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       [_resultsPagePresenter
           showInfoMessage:LensOverlayBottomSheetInfoMessageType::
                               kImageTranslatedIndication];
+    } else if (lens::IsLVFEntrypoint(_entrypoint)) {
+      // As autoselection is enabled for LVF, pre-emptively start the results
+      // page for potential results.
+      [self startResultPage];
     } else {
       [self scheduleTooltipHintDisplayIfNecessary];
     }
