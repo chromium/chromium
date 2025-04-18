@@ -1425,10 +1425,10 @@ void PrefetchService::MayReleasePrefetch(
 
   if (!UsePrefetchScheduler()) {
     ResetPrefetchContainer(prefetch_container);
+    if (!active_prefetch_) {
+      Prefetch();
+    }
   } else {
-    // Note that this behavior is not the same to the old one. The new behavior
-    // is reset the prefetch container *and* start new prefetches.
-
     ResetPrefetchContainerAndProgress(std::move(prefetch_container));
   }
 }
