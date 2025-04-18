@@ -166,20 +166,508 @@ LayoutUnit ColumnGap(const ComputedStyle& style,
       .value_or(LayoutUnit());
 }
 
-// This adds a GapIntersection with the given main and cross offset to the
-// `destination_intersections` vector, which could be the vector for main gap
-// intersections or cross gap intersections.
-void AddGapIntersectionToResults(LayoutUnit main_offset,
-                                 LayoutUnit cross_offset,
-                                 Vector<GapIntersection>& intersection_results,
-                                 bool is_column,
-                                 bool is_at_edge_of_container = false) {
-  LayoutUnit inline_offset = is_column ? cross_offset : main_offset;
-  LayoutUnit block_offset = is_column ? main_offset : cross_offset;
+// We build and populate the gap intersections within the flex container in an
+// item by item basis. The intersections that correspond to each item are
+// defined as follows:
+// 1. For the first item in a line, the intersections corresponding to it will
+// be:
+//  - The main axis (or row) intersection (X1) of the main axis gap after the
+//  item's line, with the beginning of the flex line.
+// +---------------------------------------------------------------+
+// | +---------+        Gap        +---------+                     |
+// | |  Item   |                   |         |                     |
+// | +---------+                   +---------+                     |
+// |                                                               |
+// X1         Row Gap                                              |
+// |                                                               |
+// | +---------+        Gap        +---------+                     |
+// | |         |                   |         |                     |
+// | +---------+                   +---------+                     |
+// +---------------------------------------------------------------+
+// 2. For an item in the first line (and not the first item), the
+// intersections corresponding to it will be:
+//  - The cross axis intersection of the cross gap before the item, with the
+//  edge of the flex line (X1).
+//  - The main axis intersection of the cross gap with the main gap after the
+//  item's line (X2)
+//  - The cross axis intersection of the cross gap with the main gap after the
+//  item's line (X2).
+// +-----------------------X1--------------------------------------+
+// | +---------+        Gap        +---------+                     |
+// | |         |                   |  Item   |           ...       |
+// | +---------+                   +---------+                     |
+// |                                                               |
+// |         Row Gap      X2                                       |
+// |                                                               |
+// | +---------+        Gap        +---------+                     |
+// | |         |                   |         |                     |
+// | +---------+                   +---------+                     |
+// +---------------------------------------------------------------+
+// 3. For the last item in any line, the intersections corresponding to it
+// will be:
+//  - The main axis intersection of the main axis gap after the item with the
+//  edge of the flex line (X1).
+// +--------------------------------------------------+
+// | +---------+        Gap        +---------+        |
+// | |         |                   |  Item   |        |
+// | +---------+                   +---------+        |
+// |                                                  |
+// |         Row Gap                                  X1
+// |    ...                              ...          |
+// +---------------------------------------------------+
+// 4. For items that lie in "middle" flex lines such as
+//  `Item` in the example below, the intersections corresponding to it will
+//  be:
+//  - The main axis intersection of the cross gap before the item with the
+//  main gap before the item's line (X1).
+//  - The cross axis intersection of the cross gap before the item with the
+//  main gap before the item's line (X1).
+//  - The cross axis intersection of the cross gap before the item with the
+//  main gap after the item's line (X2).
+//  - The main axis intersection of the cross gap before the item with the
+//  main gap after the item's line (X2).
+// +----------------------------------------------------------------------+
+// |        +---------+        Gap        +---------+                     |
+// |   ...  |         |                   |         |          ...        |
+// |        +---------+                   +---------+                     |
+// |                                                                      |
+// |                Row Gap     X1                                        |
+// |                                                                      |
+// |        +---------+        Gap        +---------+                     |
+// |   ...  |         |                   |  Item   |          ...        |
+// |        +---------+                   +---------+                     |
+// |            .                             .                           |
+// |            .   Row Gap     X2            .                           |
+// |            .                             .                           |
+// |            .                             .                           |
+// +----------------------------------------------------------------------+
+// 2. For an item (not the first or last) in the last line, the intersections
+// corresponding to it will be:
+//  - The cross (or column) intersection of the cross axis gap before the
+//  item, with the main axis gap before the item's line (X1).
+//  - The main (or row) intersection of the cross axis gap before the item,
+//  with the main axis gap before the item's line (X1).
+//  - The cross axis intersection of the cross gap before the item, with the
+//  edge of the flex line (X2).
+// +---------------------------------------------------------------+
+// | +---------+        Gap        +---------+                     |
+// | |         |                   |         |                     |
+// | +---------+                   +---------+                     |
+// |                                                               |
+// |         Row Gap     X1                                        |
+// |                                                               |
+// | +---------+        Gap        +---------+                     |
+// | |         |                   |  Item   |                     |
+// | +---------+                   +---------+                     |
+// +---------------------X2----------------------------------------+
+// More information on gap intersections can be found in the spec:
+// https://drafts.csswg.org/css-gaps-1/#layout-painting
+// TODO(javiercon): Consider refactoring this code to be able to be reused for
+// masonry, by abstracting away the flex-specific logic.
+class GapAccumulator {
+  STACK_ALLOCATED();
 
-  intersection_results.emplace_back(inline_offset, block_offset,
-                                    is_at_edge_of_container);
-}
+ public:
+  explicit GapAccumulator(LayoutUnit gap_between_items,
+                          LayoutUnit gap_between_lines,
+                          wtf_size_t num_lines,
+                          wtf_size_t num_flex_items,
+                          const BoxFragmentBuilder* container_builder,
+                          bool is_column)
+      : gap_between_items_(gap_between_items),
+        gap_between_lines_(gap_between_lines),
+        container_builder_(container_builder),
+        is_column_(is_column) {
+    CHECK(container_builder_);
+
+    main_axis_gaps_.ReserveInitialCapacity(num_lines);
+    cross_axis_gaps_.ReserveInitialCapacity(num_flex_items);
+  }
+
+  const GapGeometry* BuildGapGeometry() {
+    GapGeometry* gap_geometry =
+        MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kFlex);
+
+    if (is_column_) {
+      // In a column flex container, the main axis gaps become the "columns" and
+      // the cross axis gaps become the "rows".
+      gap_geometry->SetBlockGapSize(gap_between_items_);
+      gap_geometry->SetInlineGapSize(gap_between_lines_);
+      gap_geometry->SetGapIntersections(kForRows, std::move(cross_axis_gaps_));
+      gap_geometry->SetGapIntersections(kForColumns,
+                                        std::move(main_axis_gaps_));
+    } else {
+      gap_geometry->SetBlockGapSize(gap_between_lines_);
+      gap_geometry->SetInlineGapSize(gap_between_items_);
+      gap_geometry->SetGapIntersections(kForColumns,
+                                        std::move(cross_axis_gaps_));
+      gap_geometry->SetGapIntersections(kForRows, std::move(main_axis_gaps_));
+    }
+
+    return gap_geometry;
+  }
+
+  // This adds a GapIntersection with the given main and cross offset to the
+  // `destination_intersections` vector, which could be the vector for main gap
+  // intersections or cross gap intersections.
+  void AddGapIntersectionToResults(
+      LayoutUnit main_offset,
+      LayoutUnit cross_offset,
+      Vector<GapIntersection>& intersection_results,
+      bool is_at_edge_of_container = false) {
+    LayoutUnit inline_offset = is_column_ ? cross_offset : main_offset;
+    LayoutUnit block_offset = is_column_ ? main_offset : cross_offset;
+
+    intersection_results.emplace_back(inline_offset, block_offset,
+                                      is_at_edge_of_container);
+  }
+
+  // For these functions, the out parameters are:
+  // - `item_cross_intersections_list` is the list of cross axis gap
+  //   intersection points for the cross gap before the item.
+  // - `main_intersection_offset` is the  main axis offset of cross axis gap
+  //    intersection point being computed for the current item. It will be the
+  //    same for all items in the line.
+  // - `cross_intersection_offset` is the cross axis offset of the main axis gap
+  //    intersection point being computed for the current item.
+  void BuildGapIntersectionPointsForCurrentItem(
+      const HeapVector<FlexLine>& flex_lines,
+      size_t flex_line_index,
+      wtf_size_t item_index_in_line,
+      LogicalOffset item_offset) {
+    const FlexLine& flex_line = flex_lines[flex_line_index];
+
+    main_intersections_after_current_line_.reserve(
+        flex_line.item_indices.size());
+    main_intersections_before_current_line_.reserve(
+        flex_line.item_indices.size());
+
+    // "last" here refers to last in the block direction.
+    bool is_last_edge_intersection = flex_line_index == flex_lines.size() - 1;
+
+    if (item_index_in_line == 0) {
+      // For the first item in each line, the intersection associated with
+      // them would be the intersection of the main gap after the item's line
+      // with the edge of the container associated with it.
+      if (!is_last_edge_intersection) {
+        PopulateMainAxisGapIntersectionsForFirstItem(flex_line,
+                                                     flex_lines.size());
+      }
+    } else {
+      Vector<GapIntersection> item_cross_intersections_list;
+      item_cross_intersections_list.ReserveInitialCapacity(2);
+
+      // Gap offsets for the gap before the current item.
+      LayoutUnit main_offset =
+          is_column_ ? item_offset.block_offset : item_offset.inline_offset;
+      LayoutUnit cross_axis_gap_start = main_offset - gap_between_items_;
+      LayoutUnit cross_axis_gap_end = main_offset;
+      LayoutUnit main_intersection_offset =
+          (cross_axis_gap_start + cross_axis_gap_end) / 2;
+
+      // "first" here refers to first in the block direction.
+      bool is_first_edge_intersection = flex_line_index == 0;
+      if (is_first_edge_intersection) {
+        PopulateGapIntersectionsForFirstLine(
+            flex_line, flex_lines.size(),
+            item_index_in_line == flex_line.item_indices.size() - 1,
+            main_intersection_offset, item_cross_intersections_list);
+      } else if (is_last_edge_intersection) {
+        PopulateGapIntersectionsForLastLine(flex_line, main_intersection_offset,
+                                            item_cross_intersections_list);
+      } else {
+        PopulateGapIntersectionsForMiddleItem(
+            flex_lines, item_index_in_line == flex_line.item_indices.size() - 1,
+            flex_line_index, main_intersection_offset,
+            item_cross_intersections_list);
+      }
+
+      cross_axis_gaps_.push_back(std::move(item_cross_intersections_list));
+    }
+  }
+
+  void PopulateGapIntersectionsForFirstLine(
+      const FlexLine& flex_line,
+      wtf_size_t num_lines,
+      bool is_last_item_in_line,
+      LayoutUnit main_intersection_offset,
+      Vector<GapIntersection>& item_cross_intersections_list) {
+    // This method assumes that the inline offset of the
+    // `item_cross_intersection` is already set. If we are in the first flex
+    // line, our items will be associated with two potential cross axis gap
+    // intersections:
+    // 1. The cross axis offset of the line.
+    LayoutUnit cross_intersection_offset = flex_line.cross_axis_offset;
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                item_cross_intersections_list,
+                                /*is_at_edge_of_container=*/true);
+
+    // 2. The main and cross intersections of the cross gap with the main
+    // gap after the current line.
+    LayoutUnit next_main_axis_gap_start = flex_line.LineCrossEnd();
+    LayoutUnit next_main_axis_gap_end =
+        flex_line.LineCrossEnd() + gap_between_lines_;
+    cross_intersection_offset =
+        num_lines > 1 ? (next_main_axis_gap_start + next_main_axis_gap_end) / 2
+                      : flex_line.LineCrossEnd();
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                item_cross_intersections_list);
+
+    if (num_lines > 1) {
+      AddGapIntersectionToResults(main_intersection_offset,
+                                  cross_intersection_offset,
+                                  main_intersections_after_current_line_);
+
+      if (is_last_item_in_line) {
+        PopulateMainAxisGapIntersectionsForLastItem(cross_intersection_offset);
+      }
+    }
+  }
+
+  void PopulateMainAxisGapIntersectionsForFirstItem(const FlexLine& flex_line,
+                                                    wtf_size_t num_lines) {
+    CHECK(container_builder_);
+    if (num_lines < 1) {
+      return;
+    }
+
+    LayoutUnit next_main_axis_gap_start = flex_line.LineCrossEnd();
+    LayoutUnit next_main_axis_gap_end =
+        next_main_axis_gap_start + gap_between_lines_;
+
+    LayoutUnit main_gap_main_intersection_offset =
+        is_column_ ? container_builder_->BorderScrollbarPadding().block_start
+                   : container_builder_->BorderScrollbarPadding().inline_start;
+    LayoutUnit main_gap_cross_intersection_offset =
+        (next_main_axis_gap_start + next_main_axis_gap_end) / 2;
+    CHECK(main_intersections_after_current_line_.empty());
+
+    GapIntersection main_gap_intersection(main_gap_main_intersection_offset,
+                                          main_gap_cross_intersection_offset);
+    AddGapIntersectionToResults(main_gap_main_intersection_offset,
+                                main_gap_cross_intersection_offset,
+                                main_intersections_after_current_line_,
+                                /*is_at_edge_of_container=*/true);
+  }
+
+  void FinishedProcessingLine(wtf_size_t flex_line_idx) {
+    // Because we add main axis gap intersections line by line and item by
+    // item, after we add the intersections for the main axis gap after line
+    // N, for the item's on line N + 1 we also have intersections for that
+    // same gap which we'll want in the same ordered list. We don't have a
+    // guarantee that when adding the intersections on line N+1 they will
+    // strictly be after the intersections we added for the previous line, so
+    // we keep a list of the intersections we added for the gap above the
+    // current line, and then we merge them, sort of like MergeSort.
+    // See the comment above the definition for `MergeGapIntersections` for an
+    // example of why this is needed.
+    if (flex_line_idx > 0) {
+      Vector<GapIntersection> merged_intersections;
+      MergeGapIntersections(
+          !is_column_, main_intersections_before_current_line_,
+          main_axis_gaps_[flex_line_idx - 1], merged_intersections);
+      if (!merged_intersections.empty()) {
+        main_axis_gaps_[flex_line_idx - 1] = std::move(merged_intersections);
+      }
+    }
+
+    if (!main_intersections_after_current_line_.empty()) {
+      main_axis_gaps_.push_back(
+          std::move(main_intersections_after_current_line_));
+    }
+
+    main_intersections_after_current_line_.clear();
+    main_intersections_before_current_line_.clear();
+  }
+
+  void PopulateMainAxisGapIntersectionsForLastItem(
+      LayoutUnit cross_intersection_offset) {
+    CHECK(container_builder_);
+    // If we are the last item on the line, we add the intersection
+    // of the next main gap with the edge of the container to the main axis
+    // gap intersections.
+    LayoutUnit border_scrollbar_padding =
+        is_column_ ? container_builder_->BorderScrollbarPadding().block_end
+                   : container_builder_->BorderScrollbarPadding().inline_end;
+    LayoutUnit main_offset =
+        is_column_
+            ? container_builder_->InitialBorderBoxSize().block_size -
+                  border_scrollbar_padding
+            : container_builder_->InlineSize() - border_scrollbar_padding;
+    AddGapIntersectionToResults(main_offset, cross_intersection_offset,
+                                main_intersections_after_current_line_,
+                                /*is_at_edge_of_container=*/true);
+  }
+
+  void PopulateGapIntersectionsForMiddleItem(
+      const HeapVector<FlexLine>& flex_lines,
+      bool is_last_item_in_line,
+      size_t flex_line_index,
+      LayoutUnit main_intersection_offset,
+      Vector<GapIntersection>& item_cross_intersections_list) {
+    const FlexLine& flex_line = flex_lines[flex_line_index];
+    // If we are in "middle" lines, our items will be associated with two
+    // potential cross gap intersections:
+    // 1. The main and cross intersections of the cross gap with the main
+    // gap before the current line.
+    LayoutUnit previous_main_gap_end = flex_line.cross_axis_offset;
+    LayoutUnit previous_main_gap_start =
+        previous_main_gap_end - gap_between_lines_;
+    LayoutUnit cross_intersection_offset =
+        (previous_main_gap_start + previous_main_gap_end) / 2;
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                item_cross_intersections_list);
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                main_intersections_before_current_line_);
+
+    // 2. The cross and main intersections of the cross gap with the main
+    // gap after the current line.
+    LayoutUnit next_main_axis_gap_start = flex_line.LineCrossEnd();
+    LayoutUnit next_main_axis_gap_end =
+        next_main_axis_gap_start + gap_between_lines_;
+    cross_intersection_offset =
+        (next_main_axis_gap_start + next_main_axis_gap_end) / 2;
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                main_intersections_after_current_line_);
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                item_cross_intersections_list);
+
+    if (is_last_item_in_line) {
+      PopulateMainAxisGapIntersectionsForLastItem(cross_intersection_offset);
+    }
+  }
+
+  void PopulateGapIntersectionsForLastLine(
+      const FlexLine& flex_line,
+      LayoutUnit main_intersection_offset,
+      Vector<GapIntersection>& item_cross_intersections_list) {
+    // If we are in the last line, our items will be associated with two
+    // potential cross gap intersections:
+    // 1. The cross and main intersections of the cross gap with the
+    // main gap before the current line.
+
+    LayoutUnit previous_main_gap_start =
+        flex_line.cross_axis_offset - gap_between_lines_;
+    LayoutUnit previous_main_gap_end = flex_line.cross_axis_offset;
+    LayoutUnit cross_intersection_offset =
+        (previous_main_gap_start + previous_main_gap_end) / 2;
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                main_intersections_before_current_line_);
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                item_cross_intersections_list);
+
+    // 2. The cross end of the line.
+    cross_intersection_offset = flex_line.LineCrossEnd();
+    AddGapIntersectionToResults(main_intersection_offset,
+                                cross_intersection_offset,
+                                item_cross_intersections_list,
+                                /*is_at_edge_of_container=*/true);
+  }
+
+  // Utility function to merge two sorted lists of GapIntersections,
+  // de-duplicating. Takes in two already sorted lists of GapIntersections, and
+  // writes out the sorted merged list to `merged_intersections`. The final
+  // GapIntersections list of a given gap is a combination of intersections of
+  // items at the flex line before and flex line after that gap.
+  // This is needed for a scenario such as the following:
+  // +---------------------------------------------------------------+
+  // | +---------+        Gap        +---------+                     |
+  // | |   One   |                   |    Two  |                     |
+  // | +---------+                   +---------+                     |
+  // |                                                               |
+  // |         Row Gap     X1   X3                                  X2
+  // |                                                               |
+  // | +---------------+                  +---------+                |
+  // | |         Three |       Gap        |  Four   |                |
+  // | +---------------+                  +---------+                |
+  // +---------------------------------------------------------------+
+  // If we are currently processing the main intersections for `Four`.
+  // So, currently the main intersections Vector already has [X1, X2].
+  // However, we also need to add X3 to the main intersections Vector,
+  // but since it needs to be sorted, we can't add it to the end.
+  // To solve this common issue, we merge the two already sorted lists of
+  // GapIntersections, and write out the merged list to `merged_intersections`.
+  // In this case this would mean merging [X1, X2] and [X3] to get [X1, X3, X2].
+  void MergeGapIntersections(bool is_inline,
+                             const Vector<GapIntersection>& first_list,
+                             const Vector<GapIntersection>& second_list,
+                             Vector<GapIntersection>& merged_intersections) {
+    merged_intersections.reserve(first_list.size() + second_list.size());
+    wtf_size_t first_index = 0;
+    wtf_size_t second_index = 0;
+
+    while (first_index < first_list.size() &&
+           second_index < second_list.size()) {
+      if (is_inline) {
+        if (first_list[first_index].inline_offset ==
+            second_list[second_index].inline_offset) {
+          merged_intersections.push_back(first_list[first_index]);
+          ++first_index;
+          ++second_index;
+        } else if (first_list[first_index].inline_offset <
+                   second_list[second_index].inline_offset) {
+          merged_intersections.push_back(first_list[first_index]);
+          ++first_index;
+        } else {
+          merged_intersections.push_back(second_list[second_index]);
+          ++second_index;
+        }
+      } else {
+        if (first_list[first_index].block_offset ==
+            second_list[second_index].block_offset) {
+          merged_intersections.push_back(first_list[first_index]);
+          ++first_index;
+          ++second_index;
+        } else if (first_list[first_index].block_offset <
+                   second_list[second_index].block_offset) {
+          merged_intersections.push_back(first_list[first_index]);
+          ++first_index;
+        } else {
+          merged_intersections.push_back(second_list[second_index]);
+          ++second_index;
+        }
+      }
+
+      if (first_index == first_list.size() &&
+          second_index < second_list.size()) {
+        while (second_index < second_list.size()) {
+          merged_intersections.push_back(second_list[second_index]);
+          ++second_index;
+        }
+      } else if (second_index == second_list.size() &&
+                 first_index < first_list.size()) {
+        while (first_index < first_list.size()) {
+          merged_intersections.push_back(first_list[first_index]);
+          ++first_index;
+        }
+      }
+    }
+  }
+
+ private:
+  LayoutUnit gap_between_items_;
+  LayoutUnit gap_between_lines_;
+  const BoxFragmentBuilder* container_builder_ = nullptr;
+  bool is_column_ = false;
+  Vector<GapIntersectionList> cross_axis_gaps_;
+  Vector<GapIntersectionList> main_axis_gaps_;
+
+  // These are intermediary vectors that should be reset after processing each
+  // line.
+  //
+  // The main axis gap intersection points for the main gap after the item.
+  Vector<GapIntersection> main_intersections_after_current_line_;
+  // The main axis gap intersection points for the main gap before the item.
+  Vector<GapIntersection> main_intersections_before_current_line_;
+};
 
 }  // anonymous namespace
 
@@ -1549,400 +2037,7 @@ LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
   }
 }
 
-// Utility function to merge two sorted lists of GapIntersections,
-// de-duplicating. Takes in two already sorted lists of GapIntersections, and
-// writes out the sorted merged list to `merged_intersections`. The final
-// GapIntersections list of a given gap is a combination of intersections of
-// items at the flex line before and flex line after that gap.
-// This is needed for a scenario such as the following:
-// +---------------------------------------------------------------+
-// | +---------+        Gap        +---------+                     |
-// | |   One   |                   |    Two  |                     |
-// | +---------+                   +---------+                     |
-// |                                                               |
-// |         Row Gap     X1   X3                                  X2
-// |                                                               |
-// | +---------------+                  +---------+                |
-// | |         Three |       Gap        |  Four   |                |
-// | +---------------+                  +---------+                |
-// +---------------------------------------------------------------+
-// If we are currently processing the main intersections for `Four`.
-// So, currently the main intersections Vector already has [X1, X2].
-// However, we also need to add X3 to the main intersections Vector,
-// but since it needs to be sorted, we can't add it to the end.
-// To solve this common issue, we merge the two already sorted lists of
-// GapIntersections, and write out the merged list to `merged_intersections`.
-// In this case this would mean merging [X1, X2] and [X3] to get [X1, X3, X2].
-void MergeGapIntersections(bool is_inline,
-                           const Vector<GapIntersection>& first_list,
-                           const Vector<GapIntersection>& second_list,
-                           Vector<GapIntersection>& merged_intersections) {
-  merged_intersections.reserve(first_list.size() + second_list.size());
-  wtf_size_t first_index = 0;
-  wtf_size_t second_index = 0;
-
-  while (first_index < first_list.size() && second_index < second_list.size()) {
-    if (is_inline) {
-      if (first_list[first_index].inline_offset ==
-          second_list[second_index].inline_offset) {
-        merged_intersections.push_back(first_list[first_index]);
-        ++first_index;
-        ++second_index;
-      } else if (first_list[first_index].inline_offset <
-                 second_list[second_index].inline_offset) {
-        merged_intersections.push_back(first_list[first_index]);
-        ++first_index;
-      } else {
-        merged_intersections.push_back(second_list[second_index]);
-        ++second_index;
-      }
-    } else {
-      if (first_list[first_index].block_offset ==
-          second_list[second_index].block_offset) {
-        merged_intersections.push_back(first_list[first_index]);
-        ++first_index;
-        ++second_index;
-      } else if (first_list[first_index].block_offset <
-                 second_list[second_index].block_offset) {
-        merged_intersections.push_back(first_list[first_index]);
-        ++first_index;
-      } else {
-        merged_intersections.push_back(second_list[second_index]);
-        ++second_index;
-      }
-    }
-
-    if (first_index == first_list.size() && second_index < second_list.size()) {
-      while (second_index < second_list.size()) {
-        merged_intersections.push_back(second_list[second_index]);
-        ++second_index;
-      }
-    } else if (second_index == second_list.size() &&
-               first_index < first_list.size()) {
-      while (first_index < first_list.size()) {
-        merged_intersections.push_back(first_list[first_index]);
-        ++first_index;
-      }
-    }
-  }
-}
-
 }  // namespace
-
-// We build and populate the gap intersections within the flex container in an
-// item by item basis. The intersections that correspond to each item are
-// defined as follows:
-// 1. For the first item in a line, the intersections corresponding to it will
-// be:
-//  - The main axis (or row) intersection (X1) of the main axis gap after the
-//  item's line, with the beginning of the flex line.
-// +---------------------------------------------------------------+
-// | +---------+        Gap        +---------+                     |
-// | |  Item   |                   |         |                     |
-// | +---------+                   +---------+                     |
-// |                                                               |
-// X1         Row Gap                                              |
-// |                                                               |
-// | +---------+        Gap        +---------+                     |
-// | |         |                   |         |                     |
-// | +---------+                   +---------+                     |
-// +---------------------------------------------------------------+
-// 2. For an item in the first line (and not the first item), the
-// intersections corresponding to it will be:
-//  - The cross axis intersection of the cross gap before the item, with the
-//  edge of the flex line (X1).
-//  - The main axis intersection of the cross gap with the main gap after the
-//  item's line (X2)
-//  - The cross axis intersection of the cross gap with the main gap after the
-//  item's line (X2).
-// +-----------------------X1--------------------------------------+
-// | +---------+        Gap        +---------+                     |
-// | |         |                   |  Item   |           ...       |
-// | +---------+                   +---------+                     |
-// |                                                               |
-// |         Row Gap      X2                                       |
-// |                                                               |
-// | +---------+        Gap        +---------+                     |
-// | |         |                   |         |                     |
-// | +---------+                   +---------+                     |
-// +---------------------------------------------------------------+
-// 3. For the last item in any line, the intersections corresponding to it
-// will be:
-//  - The main axis intersection of the main axis gap after the item with the
-//  edge of the flex line (X1).
-// +--------------------------------------------------+
-// | +---------+        Gap        +---------+        |
-// | |         |                   |  Item   |        |
-// | +---------+                   +---------+        |
-// |                                                  |
-// |         Row Gap                                  X1
-// |    ...                              ...          |
-// +---------------------------------------------------+
-// 4. For items that lie in "middle" flex lines such as
-//  `Item` in the example below, the intersections corresponding to it will
-//  be:
-//  - The main axis intersection of the cross gap before the item with the
-//  main gap before the item's line (X1).
-//  - The cross axis intersection of the cross gap before the item with the
-//  main gap before the item's line (X1).
-//  - The cross axis intersection of the cross gap before the item with the
-//  main gap after the item's line (X2).
-//  - The main axis intersection of the cross gap before the item with the
-//  main gap after the item's line (X2).
-// +----------------------------------------------------------------------+
-// |        +---------+        Gap        +---------+                     |
-// |   ...  |         |                   |         |          ...        |
-// |        +---------+                   +---------+                     |
-// |                                                                      |
-// |                Row Gap     X1                                        |
-// |                                                                      |
-// |        +---------+        Gap        +---------+                     |
-// |   ...  |         |                   |  Item   |          ...        |
-// |        +---------+                   +---------+                     |
-// |            .                             .                           |
-// |            .   Row Gap     X2            .                           |
-// |            .                             .                           |
-// |            .                             .                           |
-// +----------------------------------------------------------------------+
-// 2. For an item (not the first or last) in the last line, the intersections
-// corresponding to it will be:
-//  - The cross (or column) intersection of the cross axis gap before the
-//  item, with the main axis gap before the item's line (X1).
-//  - The main (or row) intersection of the cross axis gap before the item,
-//  with the main axis gap before the item's line (X1).
-//  - The cross axis intersection of the cross gap before the item, with the
-//  edge of the flex line (X2).
-// +---------------------------------------------------------------+
-// | +---------+        Gap        +---------+                     |
-// | |         |                   |         |                     |
-// | +---------+                   +---------+                     |
-// |                                                               |
-// |         Row Gap     X1                                        |
-// |                                                               |
-// | +---------+        Gap        +---------+                     |
-// | |         |                   |  Item   |                     |
-// | +---------+                   +---------+                     |
-// +---------------------X2----------------------------------------+
-// More information on gap intersections can be found in the spec:
-// https://drafts.csswg.org/css-gaps-1/#layout-painting
-void FlexLayoutAlgorithm::BuildGapIntersectionPointsForCurrentItem(
-    const HeapVector<FlexLine>& flex_lines,
-    size_t flex_line_index,
-    wtf_size_t item_index_in_line,
-    LogicalOffset item_offset,
-    Vector<GapIntersection>& main_intersections_before_current_line,
-    Vector<GapIntersection>& main_intersections_after_current_line,
-    Vector<GapIntersectionList>& cross_axis_gaps) {
-  const FlexLine& flex_line = flex_lines[flex_line_index];
-
-  // "last" here refers to last in the block direction.
-  bool is_last_edge_intersection = flex_line_index == flex_lines.size() - 1;
-
-  if (item_index_in_line == 0) {
-    // For the first item in each line, the intersection associated with
-    // them would be the intersection of the main gap after the item's line with
-    // the edge of the container associated with it.
-    if (!is_last_edge_intersection) {
-      PopulateMainAxisGapIntersectionsForFirstItem(
-          flex_line, flex_lines.size(), main_intersections_after_current_line);
-    }
-  } else {
-    Vector<GapIntersection> item_cross_intersections_list;
-    item_cross_intersections_list.ReserveInitialCapacity(2);
-
-    // Gap offsets for the gap before the current item.
-    LayoutUnit main_offset =
-        is_column_ ? item_offset.block_offset : item_offset.inline_offset;
-    LayoutUnit cross_axis_gap_start = main_offset - gap_between_items_;
-    LayoutUnit cross_axis_gap_end = main_offset;
-    LayoutUnit main_intersection_offset =
-        (cross_axis_gap_start + cross_axis_gap_end) / 2;
-
-    // "first" here refers to first in the block direction.
-    bool is_first_edge_intersection = flex_line_index == 0;
-    if (is_first_edge_intersection) {
-      PopulateGapIntersectionsForFirstLine(
-          flex_line, flex_lines.size(),
-          item_index_in_line == flex_line.item_indices.size() - 1,
-          main_intersection_offset, main_intersections_after_current_line,
-          item_cross_intersections_list);
-    } else if (is_last_edge_intersection) {
-      PopulateGapIntersectionsForLastLine(
-          flex_line, main_intersection_offset,
-          main_intersections_before_current_line,
-          item_cross_intersections_list);
-    } else {
-      PopulateGapIntersectionsForMiddleItem(
-          flex_lines, item_index_in_line == flex_line.item_indices.size() - 1,
-          flex_line_index, main_intersection_offset,
-          main_intersections_before_current_line,
-          main_intersections_after_current_line, item_cross_intersections_list);
-    }
-
-    cross_axis_gaps.push_back(std::move(item_cross_intersections_list));
-  }
-}
-
-void FlexLayoutAlgorithm::PopulateGapIntersectionsForFirstLine(
-    const FlexLine& flex_line,
-    wtf_size_t num_lines,
-    bool is_last_item_in_line,
-    LayoutUnit main_intersection_offset,
-    Vector<GapIntersection>& main_intersections_after_current_line,
-    Vector<GapIntersection>& item_cross_intersections_list) {
-  // This method assumes that the inline offset of the `item_cross_intersection`
-  // is already set. If we are in the first flex line, our items will be
-  // associated with two potential cross axis gap intersections:
-  // 1. The cross axis offset of the line.
-  LayoutUnit cross_intersection_offset = flex_line.cross_axis_offset;
-  AddGapIntersectionToResults(main_intersection_offset,
-                              cross_intersection_offset,
-                              item_cross_intersections_list, is_column_,
-                              /*is_at_edge_of_container=*/true);
-
-  // 2. The main and cross intersections of the cross gap with the main
-  // gap after the current line.
-  LayoutUnit next_main_axis_gap_start = flex_line.LineCrossEnd();
-  LayoutUnit next_main_axis_gap_end =
-      flex_line.LineCrossEnd() + gap_between_lines_;
-  cross_intersection_offset =
-      num_lines > 1 ? (next_main_axis_gap_start + next_main_axis_gap_end) / 2
-                    : flex_line.LineCrossEnd();
-  AddGapIntersectionToResults(main_intersection_offset,
-                              cross_intersection_offset,
-                              item_cross_intersections_list, is_column_);
-
-  if (num_lines > 1) {
-    AddGapIntersectionToResults(
-        main_intersection_offset, cross_intersection_offset,
-        main_intersections_after_current_line, is_column_);
-
-    if (is_last_item_in_line) {
-      PopulateMainAxisGapIntersectionsForLastItem(
-          cross_intersection_offset, main_intersections_after_current_line);
-    }
-  }
-}
-
-void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForFirstItem(
-    const FlexLine& flex_line,
-    wtf_size_t num_lines,
-    Vector<GapIntersection>& main_intersections_after_current_line) {
-  if (num_lines < 1) {
-    return;
-  }
-
-  LayoutUnit next_main_axis_gap_start = flex_line.LineCrossEnd();
-  LayoutUnit next_main_axis_gap_end =
-      next_main_axis_gap_start + gap_between_lines_;
-
-  LayoutUnit main_gap_main_intersection_offset =
-      is_column_ ? BorderScrollbarPadding().block_start
-                 : BorderScrollbarPadding().inline_start;
-  LayoutUnit main_gap_cross_intersection_offset =
-      (next_main_axis_gap_start + next_main_axis_gap_end) / 2;
-  CHECK(main_intersections_after_current_line.empty());
-
-  GapIntersection main_gap_intersection(main_gap_main_intersection_offset,
-                                        main_gap_cross_intersection_offset);
-  AddGapIntersectionToResults(main_gap_main_intersection_offset,
-                              main_gap_cross_intersection_offset,
-                              main_intersections_after_current_line, is_column_,
-                              /*is_at_edge_of_container=*/true);
-}
-
-void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForLastItem(
-    LayoutUnit cross_intersection_offset,
-    Vector<GapIntersection>& main_intersections_after_current_line) {
-  // If we are the last item on the line, we add the intersection
-  // of the next main gap with the edge of the container to the main axis
-  // gap intersections.
-  LayoutUnit border_scrollbar_padding =
-      is_column_ ? BorderScrollbarPadding().block_end
-                 : BorderScrollbarPadding().inline_end;
-  LayoutUnit main_offset =
-      is_column_ ? container_builder_.InitialBorderBoxSize().block_size -
-                       border_scrollbar_padding
-                 : container_builder_.InlineSize() - border_scrollbar_padding;
-  AddGapIntersectionToResults(main_offset, cross_intersection_offset,
-                              main_intersections_after_current_line, is_column_,
-                              /*is_at_edge_of_container=*/true);
-}
-
-void FlexLayoutAlgorithm::PopulateGapIntersectionsForMiddleItem(
-    const HeapVector<FlexLine>& flex_lines,
-    bool is_last_item_in_line,
-    size_t flex_line_index,
-    LayoutUnit main_intersection_offset,
-    Vector<GapIntersection>& main_intersections_before_current_line,
-    Vector<GapIntersection>& main_intersections_after_current_line,
-    Vector<GapIntersection>& item_cross_intersections_list) {
-  const FlexLine& flex_line = flex_lines[flex_line_index];
-  // If we are in "middle" lines, our items will be associated with two
-  // potential cross gap intersections:
-  // 1. The main and cross intersections of the cross gap with the main
-  // gap before the current line.
-  LayoutUnit previous_main_gap_end = flex_line.cross_axis_offset;
-  LayoutUnit previous_main_gap_start =
-      previous_main_gap_end - gap_between_lines_;
-  LayoutUnit cross_intersection_offset =
-      (previous_main_gap_start + previous_main_gap_end) / 2;
-  AddGapIntersectionToResults(main_intersection_offset,
-                              cross_intersection_offset,
-                              item_cross_intersections_list, is_column_);
-  AddGapIntersectionToResults(
-      main_intersection_offset, cross_intersection_offset,
-      main_intersections_before_current_line, is_column_);
-
-  // 2. The cross and main intersections of the cross gap with the main
-  // gap after the current line.
-  LayoutUnit next_main_axis_gap_start = flex_line.LineCrossEnd();
-  LayoutUnit next_main_axis_gap_end =
-      next_main_axis_gap_start + gap_between_lines_;
-  cross_intersection_offset =
-      (next_main_axis_gap_start + next_main_axis_gap_end) / 2;
-  AddGapIntersectionToResults(
-      main_intersection_offset, cross_intersection_offset,
-      main_intersections_after_current_line, is_column_);
-  AddGapIntersectionToResults(main_intersection_offset,
-                              cross_intersection_offset,
-                              item_cross_intersections_list, is_column_);
-
-  if (is_last_item_in_line) {
-    PopulateMainAxisGapIntersectionsForLastItem(
-        cross_intersection_offset, main_intersections_after_current_line);
-  }
-}
-
-void FlexLayoutAlgorithm::PopulateGapIntersectionsForLastLine(
-    const FlexLine& flex_line,
-    LayoutUnit main_intersection_offset,
-    Vector<GapIntersection>& main_intersections_before_current_line,
-    Vector<GapIntersection>& item_cross_intersections_list) {
-  // If we are in the last line, our items will be associated with two
-  // potential cross gap intersections:
-  // 1. The cross and main intersections of the cross gap with the
-  // main gap before the current line.
-
-  LayoutUnit previous_main_gap_start =
-      flex_line.cross_axis_offset - gap_between_lines_;
-  LayoutUnit previous_main_gap_end = flex_line.cross_axis_offset;
-  LayoutUnit cross_intersection_offset =
-      (previous_main_gap_start + previous_main_gap_end) / 2;
-  AddGapIntersectionToResults(
-      main_intersection_offset, cross_intersection_offset,
-      main_intersections_before_current_line, is_column_);
-  AddGapIntersectionToResults(main_intersection_offset,
-                              cross_intersection_offset,
-                              item_cross_intersections_list, is_column_);
-
-  // 2. The cross end of the line.
-  cross_intersection_offset = flex_line.LineCrossEnd();
-  AddGapIntersectionToResults(main_intersection_offset,
-                              cross_intersection_offset,
-                              item_cross_intersections_list, is_column_,
-                              /*is_at_edge_of_container=*/true);
-}
 
 LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     HeapVector<FlexLine>* flex_lines,
@@ -2021,11 +2116,12 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   BaselineAccumulator baseline_accumulator(style);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
-  Vector<Vector<GapIntersection>> cross_axis_gaps;
-  Vector<Vector<GapIntersection>> main_axis_gaps;
+  std::optional<GapAccumulator> gap_accumulator = std::nullopt;
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule()) {
-    main_axis_gaps.ReserveInitialCapacity(flex_lines->size());
+    gap_accumulator = GapAccumulator(gap_between_items_, gap_between_lines_,
+                                     flex_lines->size(), flex_items_.size(),
+                                     &container_builder_, is_column_);
   }
 
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_lines->size();
@@ -2066,18 +2162,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         InitialContentPositionOffset(justify_content, main_axis_free_space,
                                      line_items_size, is_reverse_direction_);
 
-    // TODO(javiercon): Refactor this to keep logic contained in an Accumulator,
-    // like `BaselineAccumulator`.
     wtf_size_t item_index_in_line = 0;
-    Vector<GapIntersection> main_intersections_after_current_line;
-    Vector<GapIntersection> main_intersections_before_current_line;
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-        Style().HasGapRule()) {
-      main_intersections_after_current_line.ReserveInitialCapacity(
-          flex_line.item_indices.size());
-      main_intersections_before_current_line.ReserveInitialCapacity(
-          flex_line.item_indices.size());
-    }
 
     for (wtf_size_t item_index : flex_line.item_indices) {
       const FlexItem& item = flex_items_[item_index];
@@ -2249,12 +2334,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
       }
 
-      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-          Style().HasGapRule()) {
-        BuildGapIntersectionPointsForCurrentItem(
-            *flex_lines, flex_line_idx, item_index_in_line, offset,
-            main_intersections_before_current_line,
-            main_intersections_after_current_line, cross_axis_gaps);
+      if (gap_accumulator) {
+        gap_accumulator->BuildGapIntersectionPointsForCurrentItem(
+            *flex_lines, flex_line_idx, item_index_in_line, offset);
       }
 
       item_index_in_line++;
@@ -2263,32 +2345,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     line_cross_axis_offset +=
         flex_line.line_cross_size + space_between_lines + gap_between_lines_;
 
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-        Style().HasGapRule()) {
-      // Because we add main axis gap intersections line by line and item by
-      // item, after we add the intersections for the main axis gap after line
-      // N, for the item's on line N + 1 we also have intersections for that
-      // same gap which we'll want in the same ordered list. We don't have a
-      // guarantee that when adding the intersections on line N+1 they will
-      // strictly be after the intersections we added for the previous line, so
-      // we keep a list of the intersections we added for the gap above the
-      // current line, and then we merge them, sort of like MergeSort.
-      // See the comment above the definition for `MergeGapIntersections` for an
-      // example of why this is needed.
-      if (flex_line_idx > 0) {
-        Vector<GapIntersection> merged_intersections;
-        MergeGapIntersections(
-            !is_column_, main_intersections_before_current_line,
-            main_axis_gaps[flex_line_idx - 1], merged_intersections);
-        if (!merged_intersections.empty()) {
-          main_axis_gaps[flex_line_idx - 1] = std::move(merged_intersections);
-        }
-      }
-
-      if (!main_intersections_after_current_line.empty()) {
-        main_axis_gaps.push_back(
-            std::move(main_intersections_after_current_line));
-      }
+    if (gap_accumulator) {
+      gap_accumulator->FinishedProcessingLine(flex_line_idx);
     }
   }
 
@@ -2303,25 +2361,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     container_builder_.ClearBaselines();
   }
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule()) {
-    GapGeometry* gap_geometry =
-        MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kFlex);
-    if (is_column_) {
-      // In a column flex container, the main axis gaps become the "columns" and
-      // the cross axis gaps become the "rows".
-      gap_geometry->SetGapIntersections(kForRows, std::move(cross_axis_gaps));
-      gap_geometry->SetGapIntersections(kForColumns, std::move(main_axis_gaps));
-      gap_geometry->SetBlockGapSize(gap_between_items_);
-      gap_geometry->SetInlineGapSize(gap_between_lines_);
-    } else {
-      gap_geometry->SetGapIntersections(kForColumns,
-                                        std::move(cross_axis_gaps));
-      gap_geometry->SetGapIntersections(kForRows, std::move(main_axis_gaps));
-      gap_geometry->SetBlockGapSize(gap_between_lines_);
-      gap_geometry->SetInlineGapSize(gap_between_items_);
-    }
-    container_builder_.SetGapGeometry(gap_geometry);
+  if (gap_accumulator) {
+    container_builder_.SetGapGeometry(gap_accumulator->BuildGapGeometry());
   }
 
   // Signal if we need to relayout with new child scrollbar information.
