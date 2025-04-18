@@ -230,8 +230,6 @@ std::string GetForceCloseReasonString(storage::mojom::ForceCloseReason reason) {
       return "Force close backing store failure";
     case storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE:
       return "Unknown";
-    case storage::mojom::ForceCloseReason::FORCE_CLOSE_COPY_ORIGIN:
-      return "Force close copy origin";
     default:
       NOTREACHED();
   }
