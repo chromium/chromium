@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -207,11 +208,18 @@ ScriptPromise<V8Availability> LanguageDetector::availability(
   ScriptPromiseResolver<V8Availability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
-
-  // TODO(402166942): Return unavailable if document is not allowed to use
-  // language detector permission policy.
-
   ExecutionContext* context = ExecutionContext::From(script_state);
+
+  // Return unavailable for cross-origin iframe access with no permission
+  // policy.
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->IsCrossSiteSubframeIncludingScheme() &&
+        !window->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kLanguageDetector)) {
+      resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+      return promise;
+    }
+  }
 
   AIInterfaceProxy::GetLanguageDetectionModelStatus(
       context, WTF::BindOnce(&OnGotStatus, WrapWeakPersistent(context),
@@ -239,12 +247,24 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
     return EmptyPromise();
   }
 
-  // TODO(402166942): Reject if document is not allowed to use language detector
-  // permission policy.
-
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
           script_state);
+
+  // Block cross-origin iframe access with no permission policy.
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (window->GetFrame() &&
+        window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
+        !window->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kLanguageDetector)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          kExceptionMessageCrossOriginAccess));
+      return EmptyPromise();
+    }
+  }
+
   MakeGarbageCollected<LanguageDetectorCreateTask>(script_state, resolver,
                                                    options);
 
