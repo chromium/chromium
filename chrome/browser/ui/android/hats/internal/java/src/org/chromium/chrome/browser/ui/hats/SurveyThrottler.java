@@ -10,6 +10,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
@@ -27,6 +29,7 @@ import java.util.Random;
  * throttling checks passed, the instance will perform a dice roll to decide if the survey can show
  * based on the probability.
  */
+@NullMarked
 public class SurveyThrottler {
     private static final int MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED = 180;
 
@@ -64,7 +67,7 @@ public class SurveyThrottler {
     }
 
     private final SurveyConfig mSurveyConfig;
-    private SurveyMetadata mMetadata;
+    private @MonotonicNonNull SurveyMetadata mMetadata;
 
     /**
      * @param config Survey config associated with the throttler.

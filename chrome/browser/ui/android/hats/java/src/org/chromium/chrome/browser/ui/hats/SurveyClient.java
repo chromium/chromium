@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.hats;
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.Map;
@@ -33,7 +34,7 @@ public interface SurveyClient {
      */
     void showSurvey(
             Activity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
             Map<String, Boolean> surveyPsdBitValues,
             Map<String, String> surveyPsdStringValues);
 }
