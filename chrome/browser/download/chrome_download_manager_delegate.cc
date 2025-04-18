@@ -67,6 +67,7 @@
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
+#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
@@ -1009,6 +1010,16 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     int64_t content_length,
     bool is_transient,
     content::WebContents* web_contents) {
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+  policy::URLBlocklist::URLBlocklistState blocklist_state =
+      service->GetURLBlocklistState(url);
+  if (blocklist_state ==
+      policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    LOG(WARNING) << "URL is blocked by a policy.";
+    return true;
+  }
+
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // For background service downloads we don't want offline pages backend to
