@@ -242,8 +242,6 @@ class WebTestControlHost : public WebContentsObserver,
   void SetTrustTokenKeyCommitments(const std::string& raw_commitments,
                                    base::OnceClosure callback) override;
   void ClearTrustTokenState(base::OnceClosure callback) override;
-  void SetDatabaseQuota(int32_t quota) override;
-  void ClearAllDatabases() override;
   void SimulateWebNotificationClick(
       const std::string& title,
       int32_t action_index,

@@ -2353,8 +2353,6 @@ source_set("browser") {
     "web_contents/web_contents_view_child_frame.h",
     "web_contents/web_contents_view_drag_security_info.cc",
     "web_contents/web_contents_view_drag_security_info.h",
-    "web_database/web_database_host_impl.cc",
-    "web_database/web_database_host_impl.h",
     "web_exposed_isolation_info.cc",
     "web_exposed_isolation_info.h",
     "web_package/prefetched_signed_exchange_cache.cc",

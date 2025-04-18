@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
@@ -15,7 +16,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
-#include "storage/browser/database/database_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -48,14 +48,7 @@ TEST(StoragePartitionImplMapTest, GarbageCollect) {
   EXPECT_FALSE(base::PathExists(inactive_path));
 }
 
-// TODO(crbug/333756088): Enable for Android when WebSQL has been removed from
-// Android WebView.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_WebSQLCleanup DISABLED_WebSQLCleanup
-#else
-#define MAYBE_WebSQLCleanup WebSQLCleanup
-#endif
-TEST(StoragePartitionImplMapTest, MAYBE_WebSQLCleanup) {
+TEST(StoragePartitionImplMapTest, WebSQLCleanup) {
   BrowserTaskEnvironment task_environment;
   TestBrowserContext browser_context;
   base::FilePath websql_path;
@@ -70,7 +63,7 @@ TEST(StoragePartitionImplMapTest, MAYBE_WebSQLCleanup) {
     StoragePartitionImplMap map(&browser_context);
 
     auto* partition = map.Get(kOnDiskConfig, true);
-    websql_path = partition->GetPath().Append(storage::kDatabaseDirectoryName);
+    websql_path = partition->GetPath().Append(FILE_PATH_LITERAL("databases"));
 
     task_environment.RunUntilIdle();
 
@@ -86,7 +79,7 @@ TEST(StoragePartitionImplMapTest, MAYBE_WebSQLCleanup) {
     auto* partition = map.Get(kOnDiskConfig, true);
 
     ASSERT_EQ(websql_path,
-              partition->GetPath().Append(storage::kDatabaseDirectoryName));
+              partition->GetPath().Append(FILE_PATH_LITERAL("databases")));
 
     task_environment.RunUntilIdle();
 

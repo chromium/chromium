@@ -115,11 +115,6 @@ class TestStoragePartition : public StoragePartition {
   }
   BackgroundSyncContext* GetBackgroundSyncContext() override;
 
-  void set_database_tracker(storage::DatabaseTracker* tracker) {
-    database_tracker_ = tracker;
-  }
-  storage::DatabaseTracker* GetDatabaseTracker() override;
-
   void set_dom_storage_context(DOMStorageContext* context) {
     dom_storage_context_ = context;
   }
@@ -278,7 +273,6 @@ class TestStoragePartition : public StoragePartition {
   raw_ptr<storage::QuotaManager> quota_manager_ = nullptr;
   raw_ptr<BackgroundSyncContext> background_sync_context_ = nullptr;
   raw_ptr<storage::FileSystemContext> file_system_context_ = nullptr;
-  raw_ptr<storage::DatabaseTracker> database_tracker_ = nullptr;
   raw_ptr<DOMStorageContext> dom_storage_context_ = nullptr;
   mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;

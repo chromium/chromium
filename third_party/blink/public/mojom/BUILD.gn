@@ -246,7 +246,6 @@ mojom("mojom_platform") {
     "web_install/web_install.mojom",
     "web_launch/web_launch.mojom",
     "webaudio/audio_context_manager.mojom",
-    "webdatabase/web_database.mojom",
     "webid/digital_identity_request.mojom",
     "webid/federated_auth_request.mojom",
     "webid/federated_auth_request_automation.mojom",
