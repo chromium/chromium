@@ -73,9 +73,8 @@ class CookieControlsBubbleViewController
   void FillDescriptionAndToggle(CookieControlsEnforcement enforcement,
                                 base::Time expiration);
 
-  void FillViewForThirdPartyCookies(
-      content_settings::TrackingProtectionFeature cookies_feature,
-      base::Time expiration);
+  void FillViewForThirdPartyCookies(CookieControlsEnforcement enforcement,
+                                    base::Time expiration);
 
   void FillViewForTrackingProtection(
       CookieControlsEnforcement enforcement,
