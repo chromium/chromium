@@ -7,8 +7,3 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
-
-UIViewController* ShareKitService::FacePile(
-    ShareKitFacePileConfiguration* config) {
-  return nil;
-}

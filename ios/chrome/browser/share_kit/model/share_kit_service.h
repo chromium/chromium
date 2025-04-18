@@ -52,10 +52,6 @@ class ShareKitService : public KeyedService {
   // sessionID.
   virtual NSString* JoinTabGroup(ShareKitJoinConfiguration* config) = 0;
 
-  // Deprecated.
-  // Returns a new FacePile view controller for the given `config`.
-  virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config);
-
   // Returns a new FacePile view for the given `config`.
   virtual UIView* FacePileView(ShareKitFacePileConfiguration* config) = 0;
 
