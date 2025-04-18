@@ -450,7 +450,7 @@
       [[OpenNewTabCommand alloc] initWithURL:filePathURL
                                   virtualURL:virtualFilePathURL
                                     referrer:web::Referrer()
-                                 inIncognito:self.profile->IsOffTheRecord()
+                                 inIncognito:self.isOffTheRecord
                                 inBackground:NO
                                     appendTo:OpenPosition::kCurrentTab];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
