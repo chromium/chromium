@@ -1833,7 +1833,9 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
   String host = origin->Host();
   auto scope_extension = mojom::blink::ManifestScopeExtension::New();
   // Check for wildcard *.
-  if (host.StartsWith(kOriginWildcardPrefix)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions) &&
+      host.StartsWith(kOriginWildcardPrefix)) {
     scope_extension->has_origin_wildcard = true;
     // Trim the wildcard prefix to get the effective host. Minus one to exclude
     // the length of the null terminator.

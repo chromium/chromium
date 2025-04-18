@@ -3599,6 +3599,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse origin with wildcard.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3617,6 +3619,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse invalid origin wildcard format.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3635,6 +3639,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse origin where the host is just the wildcard prefix.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3654,6 +3660,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse invalid origin where wildcard is used with a TLD.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3673,6 +3681,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse invalid origin where wildcard is used with an unknown TLD.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3692,6 +3702,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse invalid origin where wildcard is used with a multipart TLD.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
@@ -3711,6 +3723,8 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
 
   // Parse valid origin with private registry.
   {
+    base::test::ScopedFeatureList inner_feature_list(
+        blink::features::kWebAppEnableScopeExtensionsBySite);
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
