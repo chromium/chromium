@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_storage.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
@@ -144,9 +143,8 @@ TEST_F(PrivacySandboxNoticeServiceTest,
       .Times(testing::AnyNumber());
 
   // 4. Set expectations on the storage mock.
-  base::Time expected_time = base::Time::Now();
-  EXPECT_CALL(*mock_storage(), RecordEvent(StrEq("TestFeatureA"),
-                                           Eq(Event::kAck), Eq(expected_time)))
+  EXPECT_CALL(*mock_storage(),
+              RecordEvent(StrEq("TestFeatureA"), Eq(Event::kAck)))
       .Times(1);
 
   // 5. Execute

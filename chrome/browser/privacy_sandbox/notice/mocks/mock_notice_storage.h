@@ -19,8 +19,7 @@ class MockNoticeStorage : public NoticeStorage {
   MOCK_METHOD(void,
               RecordEvent,
               (std::string_view notice,
-               notice::mojom::PrivacySandboxNoticeEvent event,
-               base::Time event_time),
+               notice::mojom::PrivacySandboxNoticeEvent event),
               (override));
 
   MOCK_METHOD(std::optional<PrivacySandboxNoticeData>,

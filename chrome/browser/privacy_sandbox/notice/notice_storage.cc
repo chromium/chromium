@@ -464,13 +464,12 @@ PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
 
 void PrivacySandboxNoticeStorage::RecordEvent(
     std::string_view notice,
-    notice::mojom::PrivacySandboxNoticeEvent event,
-    base::Time event_time) {
+    notice::mojom::PrivacySandboxNoticeEvent event) {
   if (event == PrivacySandboxNoticeEvent::kShown) {
-    SetNoticeShown(notice, event_time);
+    SetNoticeShown(notice, base::Time::Now());
     return;
   }
-  SetNoticeActionTaken(notice, event, event_time);
+  SetNoticeActionTaken(notice, event, base::Time::Now());
 }
 
 void PrivacySandboxNoticeStorage::SetNoticeActionTaken(

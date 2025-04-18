@@ -158,8 +158,7 @@ class NoticeStorage {
 
   // Records a Notice Event.
   virtual void RecordEvent(std::string_view notice,
-                           notice::mojom::PrivacySandboxNoticeEvent event,
-                           base::Time event_time) = 0;
+                           notice::mojom::PrivacySandboxNoticeEvent event) = 0;
 };
 
 class PrivacySandboxNoticeStorage : public NoticeStorage {
@@ -175,8 +174,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   void RecordHistogramsOnStartup(std::string_view notice) const override;
 
   void RecordEvent(std::string_view notice,
-                   notice::mojom::PrivacySandboxNoticeEvent event,
-                   base::Time event_time) override;
+                   notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   // Migration functions.
 
