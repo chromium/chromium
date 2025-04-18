@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 
+#include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_history_item.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
@@ -16,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -30,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
@@ -158,6 +162,43 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
 
   EXPECT_EQ(get_launch_demo_app_count(), 1);
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+TEST_F(DemoModeIdleHandlerTest, ClearAndCloseClipboard) {
+  ash::ClipboardHistoryControllerImpl* clipboard_history_controller =
+      ash::Shell::Get()->clipboard_history_controller();
+  base::test::TestFuture<bool> operation_confirmed_future;
+  clipboard_history_controller->set_confirmed_operation_callback_for_test(
+      operation_confirmed_future.GetRepeatingCallback());
+
+  // Write text to the clipboard
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(u"test");
+  }
+  // Wait for the operation to be confirmed.
+  EXPECT_TRUE(operation_confirmed_future.Take());
+
+  // Make sure the clipboard is not empty.
+  const std::list<ClipboardHistoryItem>& items =
+      clipboard_history_controller->history()->GetItems();
+  EXPECT_TRUE(!items.empty());
+
+  // Show the clipboard menu.
+  PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(clipboard_history_controller->IsMenuShowing());
+
+  // Trigger clearing clipboard by being idle for `kReLuanchDemoAppIdleDuration`
+  // period of time.
+  SimulateUserActivity();
+  FastForwardBy(kReLuanchDemoAppIdleDuration);
+
+  // Expect the clipboard to be not showing.
+  EXPECT_FALSE(clipboard_history_controller->IsMenuShowing());
+  // And nothing in the clipboard.
+  const std::list<ClipboardHistoryItem>& no_items =
+      clipboard_history_controller->history()->GetItems();
+  EXPECT_TRUE(no_items.empty());
 }
 
 TEST_F(DemoModeIdleHandlerTest, ResetWallpaper) {
