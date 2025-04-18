@@ -42,7 +42,10 @@ ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
     content::BrowserContext* browser_context,
     const Extension* extension,
     base::OnceCallback<void(bool)> callback) const {
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/410932770): Show a permission dialog. For now, pretend that
+  // the user accepted it.
+  NOTIMPLEMENTED() << "Skipping enable extension dialog";
+  std::move(callback).Run(true);
   return nullptr;
 }
 
