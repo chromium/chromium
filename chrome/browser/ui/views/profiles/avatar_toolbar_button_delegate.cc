@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -506,10 +508,12 @@ class HistorySyncOptinStateProvider : public StateProvider,
                                       public StateManagerObserver {
  public:
   explicit HistorySyncOptinStateProvider(StateObserver& state_observer,
-                                         Profile& profile)
+                                         Browser& browser)
       : StateProvider(state_observer),
-        profile_(profile),
-        identity_manager_(*IdentityManagerFactory::GetForProfile(&profile)) {}
+        profile_(*browser.profile()),
+        identity_manager_(
+            *IdentityManagerFactory::GetForProfile(browser.profile())),
+        browser_(browser) {}
   ~HistorySyncOptinStateProvider() override = default;
 
   // StateProvider:
@@ -522,6 +526,13 @@ class HistorySyncOptinStateProvider : public StateProvider,
     // a change in state between the pill is triggered and it is shown, e.g. the
     // delay due to button states hierarchy).
     return IsAllowedToSync();
+  }
+
+  std::optional<base::RepeatingClosure> GetButtonAction() {
+    return base::BindRepeating(&HistorySyncOptinStateProvider::OnButtonClick,
+                               // This is safe because `AvatarToolbarButton`
+                               // owning all the providers owns the callback.
+                               base::Unretained(this));
   }
 
   // StateManagerObserver:
@@ -587,6 +598,30 @@ class HistorySyncOptinStateProvider : public StateProvider,
   // StateProvider:
   void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
+  void OnButtonClick() {
+    switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
+      case switches::HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices:
+      case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
+      case switches::HistorySyncOptinExpansionPillOption::
+          kSeeTabsFromOtherDevices:
+        signin_ui_util::EnableSyncFromSingleAccountPromo(
+            &profile_.get(),
+            identity_manager_->GetPrimaryAccountInfo(
+                signin::ConsentLevel::kSignin),
+            signin_metrics::AccessPoint::
+                kHistorySyncOptinExpansionPillOnStartup);
+        break;
+      case switches::HistorySyncOptinExpansionPillOption::
+          kSyncHistoryProfileMenu:
+        // TODO(crbug.com/410780322): Add opening the profile menu with the
+        // correct access point.
+        ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
+            ->Show(/*is_source_accelerator=*/false);
+        break;
+    }
+    Clear();
+  }
+
   bool IsAllowedToSync() const {
     return SyncServiceFactory::IsSyncAllowed(&profile_.get()) &&
            signin_util::GetSignedInState(&identity_manager_.get()) ==
@@ -622,6 +657,9 @@ class HistorySyncOptinStateProvider : public StateProvider,
 
   raw_ref<Profile> profile_;
   raw_ref<signin::IdentityManager> identity_manager_;
+
+  // This is needed to delay the creation of `ProfileMenuCoordinator`.
+  raw_ref<Browser> browser_;
 
   base::OneShotTimer clear_timer_;
 };
@@ -1135,7 +1173,7 @@ class StateManager : public StateObserver,
               switches::kEnableHistorySyncOptinExpansionPill)) {
         auto history_sync_optin_state_provider =
             std::make_unique<HistorySyncOptinStateProvider>(
-                /*state_observer=*/*this, *profile);
+                /*state_observer=*/*this, *browser);
         state_manager_observers_.emplace_back(
             *history_sync_optin_state_provider);
         states_[ButtonState::kHistorySyncOptin] =
@@ -1246,12 +1284,15 @@ class StateManager : public StateObserver,
 
   void UpdateButtonText() { avatar_toolbar_button_->UpdateText(); }
 
-  // This is mainly used `OnStateProviderUpdateRequest()` where currently only
-  // one state transition needs the icon update. Consider adding a filter if
-  // this impacting performance.
+  void UpdateButtonAction() { avatar_toolbar_button_->UpdateButtonAction(); }
+
+  // This is mainly used `OnStateProviderUpdateRequest()` where not all of the
+  // state transitions update all of the button properties. Consider adding a
+  // filter if this is impacting performance.
   void UpdateAvatarButton() {
     UpdateButtonText();
     UpdateButtonIcon();
+    UpdateButtonAction();
   }
 
   // signin::IdentityManager::Observer:
@@ -1830,6 +1871,34 @@ void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
         ->MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
   } else {
     gaia_id_for_signin_choice_remembered_ = account_info.gaia;
+  }
+}
+
+std::optional<base::RepeatingClosure>
+AvatarToolbarButtonDelegate::GetButtonAction() {
+  switch (state_manager_->GetButtonActiveState()) {
+    case ButtonState::kIncognitoProfile:
+    case ButtonState::kSyncError:
+    case ButtonState::kManagement:
+    case ButtonState::kSigninPending:
+    case ButtonState::kUpgradeClientError:
+    case ButtonState::kPassphraseError:
+    case ButtonState::kSyncPaused:
+    case ButtonState::kExplicitTextShowing:
+    case ButtonState::kGuestSession:
+    case ButtonState::kShowIdentityName:
+    case ButtonState::kNormal:
+      return std::nullopt;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case ButtonState::kHistorySyncOptin:
+      internal::HistorySyncOptinStateProvider* history_sync_optin_state =
+          const_cast<internal::HistorySyncOptinStateProvider*>(
+              internal::StateProviderGetter(
+                  *state_manager_->GetActiveStateProvider())
+                  .AsHistorySyncOptin());
+      CHECK(history_sync_optin_state);
+      return history_sync_optin_state->GetButtonAction();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 }
 

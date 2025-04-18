@@ -70,7 +70,7 @@ class AvatarToolbarButton : public ToolbarButton {
       const std::u16string& text,
       std::optional<std::u16string> accessibility_label);
 
-  // Changes the button pressed action.
+  // Changes the button pressed action externally.
   // Returns a callback to be used when the new action should stop being used.
   [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonAction(
       base::RepeatingClosure explicit_closure);
@@ -104,6 +104,9 @@ class AvatarToolbarButton : public ToolbarButton {
 
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
+
+  // Updates the action button based on the current state.
+  void UpdateButtonAction();
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -194,6 +197,11 @@ class AvatarToolbarButton : public ToolbarButton {
   // while an existing already exists. Priority to the last call.
   raw_ptr<base::ScopedClosureRunner> reset_button_action_button_closure_ptr_ =
       nullptr;
+
+  // Internal (owned by this class) closure to reset the button action.
+  // This is used to invalidate the button action whenever the button is updated
+  // by `AvatarToolbarButtonDelegate`.
+  base::ScopedClosureRunner internal_reset_button_action_closure_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

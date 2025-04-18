@@ -30,6 +30,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_delegate.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -70,6 +73,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -84,6 +88,7 @@
 using signin::constants::kNoHostedDomainFound;
 
 namespace {
+using ::testing::StrictMock;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
@@ -126,6 +131,35 @@ class ProfileLoader {
 
   raw_ptr<Profile> profile_ = nullptr;
   base::RunLoop profile_loading_run_loop_;
+};
+
+class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
+ public:
+  MOCK_METHOD(void,
+              ShowTurnSyncOnUI,
+              (Profile*,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction,
+               const CoreAccountId&,
+               TurnSyncOnHelper::SigninAbortedMode,
+               bool,
+               bool),
+              (override));
+  MOCK_METHOD(void,
+              ShowSigninUI,
+              (Profile*,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowReauthUI,
+              (Profile*,
+               const std::string&,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
 };
 
 }  // namespace
@@ -1181,10 +1215,162 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
+class AvatarToolbarButtonHistorySyncOptinClickBrowserTest
+    : public AvatarToolbarButtonHistorySyncOptinBrowserTest {
+ protected:
+  explicit AvatarToolbarButtonHistorySyncOptinClickBrowserTest(
+      base::FieldTrialParams feature_parameters = {})
+      : AvatarToolbarButtonHistorySyncOptinBrowserTest(feature_parameters),
+        delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
+            &mock_signin_ui_delegate_)) {}
+
+  void Click(views::View* clickable_view) {
+    clickable_view->OnMousePressed(
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    clickable_view->OnMouseReleased(ui::MouseEvent(
+        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  }
+
+  StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate_;
+
+ private:
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset_;
+};
+
 struct HistorySyncOptinExpansionPillOptionTestCase {
   std::string feature_param;
   int expected_message_id;
 };
+
+class AvatarToolbarButtonHistorySyncOptinClickSyncDialogBrowserTest
+    : public AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
+      public WithParamInterface<HistorySyncOptinExpansionPillOptionTestCase> {
+ protected:
+  AvatarToolbarButtonHistorySyncOptinClickSyncDialogBrowserTest()
+      : AvatarToolbarButtonHistorySyncOptinClickBrowserTest(/*feature_parameters=*/
+                                                            {{"history-sync-"
+                                                              "optin-"
+                                                              "expansion-pill-"
+                                                              "option",
+                                                              GetParam()
+                                                                  .feature_param}}) {
+  }
+};
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CollapsesOnClickAndTriggersSync \
+  DISABLED_CollapsesOnClickAndTriggersSync
+#else
+#define MAYBE_CollapsesOnClickAndTriggersSync CollapsesOnClickAndTriggersSync
+#endif
+IN_PROC_BROWSER_TEST_P(
+    AvatarToolbarButtonHistorySyncOptinClickSyncDialogBrowserTest,
+    MAYBE_CollapsesOnClickAndTriggersSync) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  ASSERT_FALSE(avatar->HasExplicitButtonAction());
+  const std::u16string account_name(u"Account name");
+  const AccountInfo account_info =
+      SigninWithImage(/*email=*/u"test@gmail.com", account_name);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(GetParam().expected_message_id));
+  // The button action should be overridden.
+  EXPECT_TRUE(avatar->HasExplicitButtonAction());
+  EXPECT_CALL(
+      mock_signin_ui_delegate_,
+      ShowTurnSyncOnUI(
+          browser()->profile(),
+          signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
+          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+          account_info.account_id,
+          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+          /*is_sync_promo=*/false,
+          /*turn_sync_on_signed_profile=*/true));
+  Click(avatar);
+  EXPECT_TRUE(avatar->GetText().empty());
+  // Once the history sync opt-in entry point collapses, the button action
+  // should be reset to the default behavior.
+  EXPECT_FALSE(avatar->HasExplicitButtonAction());
+}
+
+const HistorySyncOptinExpansionPillOptionTestCase
+    kHistorySyncOptinSyncDialogTestCases[] = {
+        {
+            "browse-across-devices",
+            IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES,
+        },
+        {
+            "sync-history",
+            IDS_AVATAR_BUTTON_SYNC_HISTORY,
+        },
+        {
+            "see-tabs-from-other-devices",
+            IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES,
+        },
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    HistorySyncOptinExpansionPillOptions,
+    AvatarToolbarButtonHistorySyncOptinClickSyncDialogBrowserTest,
+    ValuesIn(kHistorySyncOptinSyncDialogTestCases));
+
+class AvatarToolbarButtonHistorySyncOptinClickProfileMenuBrowserTest
+    : public AvatarToolbarButtonHistorySyncOptinClickBrowserTest {
+ protected:
+  AvatarToolbarButtonHistorySyncOptinClickProfileMenuBrowserTest()
+      : AvatarToolbarButtonHistorySyncOptinClickBrowserTest(/*feature_parameters=*/
+                                                            {{"history-sync-"
+                                                              "optin-"
+                                                              "expansion-pill-"
+                                                              "option",
+                                                              "sync-history-"
+                                                              "profile-"
+                                                              "menu"}}) {}
+};
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CollapsesOnClickAndTriggersProfileMenu \
+  DISABLED_CollapsesOnClickAndTriggersProfileMenu
+#else
+#define MAYBE_CollapsesOnClickAndTriggersProfileMenu \
+  CollapsesOnClickAndTriggersProfileMenu
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonHistorySyncOptinClickProfileMenuBrowserTest,
+    MAYBE_CollapsesOnClickAndTriggersProfileMenu) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  ASSERT_FALSE(avatar->HasExplicitButtonAction());
+  const std::u16string account_name(u"Account name");
+  const AccountInfo account_info =
+      SigninWithImage(/*email=*/u"test@gmail.com", account_name);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  // The button action should be overridden.
+  EXPECT_TRUE(avatar->HasExplicitButtonAction());
+  Click(avatar);
+  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  ASSERT_NE(coordinator, nullptr);
+  EXPECT_TRUE(coordinator->IsShowing());
+  EXPECT_TRUE(avatar->GetText().empty());
+  // Once the history sync opt-in entry point collapses, the button action
+  // should be reset to the default behavior.
+  EXPECT_FALSE(avatar->HasExplicitButtonAction());
+}
 
 class AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest
     : public AvatarToolbarButtonHistorySyncOptinBrowserTest,
@@ -1227,29 +1413,30 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-const HistorySyncOptinExpansionPillOptionTestCase kTestCases[] = {
+const HistorySyncOptinExpansionPillOptionTestCase kHistorySyncOptinTestCases[] =
     {
-        "browse-across-devices",
-        IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES,
-    },
-    {
-        "sync-history",
-        IDS_AVATAR_BUTTON_SYNC_HISTORY,
-    },
-    {
-        "see-tabs-from-other-devices",
-        IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES,
-    },
-    {
-        "sync-history-profile-menu",
-        IDS_AVATAR_BUTTON_SYNC_HISTORY,
-    },
+        {
+            "browse-across-devices",
+            IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES,
+        },
+        {
+            "sync-history",
+            IDS_AVATAR_BUTTON_SYNC_HISTORY,
+        },
+        {
+            "see-tabs-from-other-devices",
+            IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES,
+        },
+        {
+            "sync-history-profile-menu",
+            IDS_AVATAR_BUTTON_SYNC_HISTORY,
+        },
 };
 
 INSTANTIATE_TEST_SUITE_P(
     HistorySyncOptinExpansionPillOptions,
     AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-    ValuesIn(kTestCases));
+    ValuesIn(kHistorySyncOptinTestCases));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Test suite for testing `AvatarToolbarButton`'s responsibility of updating
