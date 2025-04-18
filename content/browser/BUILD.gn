@@ -3243,6 +3243,7 @@ source_set("browser") {
       "android/browser_context_handle.cc",
       "android/browser_startup_controller.cc",
       "android/browser_startup_controller.h",
+      "android/child_process_importance.cc",
       "android/client_data_json_android.cc",
       "android/content_feature_map.cc",
       "android/content_startup_flags.cc",

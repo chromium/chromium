@@ -323,6 +323,7 @@ message ChildProcessLauncherPriority {
     IMPORTANCE_NORMAL = 1;
     IMPORTANCE_MODERATE = 2;
     IMPORTANCE_IMPORTANT = 3;
+    IMPORTANCE_PERCEPTIBLE = 4;
   }
   optional Importance importance = 3;
 }

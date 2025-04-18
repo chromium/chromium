@@ -143,6 +143,8 @@ public class ChildProcessConnection {
 
     /** Run time check if not perceptible binding is supported. */
     public static boolean supportNotPerceptibleBinding() {
+        // Note that we need to keep this in sync with IsPerceptibleImportanceSupported() in
+        // content/browser/android/child_process_importance.cc
         return SUPPORT_NOT_PERCEPTIBLE_BINDING;
     }
 

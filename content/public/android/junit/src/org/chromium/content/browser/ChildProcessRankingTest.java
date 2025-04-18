@@ -173,8 +173,9 @@ public class ChildProcessRankingTest {
         ChildProcessConnection c2 = createConnection();
         ChildProcessConnection c3 = createConnection();
         ChildProcessConnection c4 = createConnection();
+        ChildProcessConnection c5 = createConnection();
 
-        ChildProcessRanking ranking = new ChildProcessRanking(4);
+        ChildProcessRanking ranking = new ChildProcessRanking(5);
         ranking.enableServiceGroupImportance();
 
         // Insert in lowest ranked to highest ranked order.
@@ -191,24 +192,31 @@ public class ChildProcessRankingTest {
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
-                ChildProcessImportance.MODERATE);
+                ChildProcessImportance.PERCEPTIBLE);
         ranking.addConnection(
                 c3,
+                /* visible= */ false,
+                /* frameDepth= */ 0,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.MODERATE);
+        ranking.addConnection(
+                c4,
                 /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
         ranking.addConnection(
-                c4,
+                c5,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
 
-        assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c4, c3, c2, c1});
-        assertNotInGroup(new ChildProcessConnection[] {c4, c3, c2});
+        assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c5, c4, c3, c2, c1});
+        assertNotInGroup(new ChildProcessConnection[] {c5, c4, c3, c2});
         assertInGroupOrderedByImportance(new ChildProcessConnection[] {c1});
     }
 

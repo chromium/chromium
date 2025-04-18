@@ -115,6 +115,7 @@ const base::FeatureParam<ChildProcessImportance>::Option
     child_process_importance_options[] = {
         {ChildProcessImportance::IMPORTANT, "IMPORTANT"},
         {ChildProcessImportance::MODERATE, "MODERATE"},
+        {ChildProcessImportance::PERCEPTIBLE, "PERCEPTIBLE"},
         {ChildProcessImportance::NORMAL, "NORMAL"}};
 
 // Defines the binding strength for a processes holding cached pages. The value

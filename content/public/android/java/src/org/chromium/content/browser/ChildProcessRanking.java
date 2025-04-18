@@ -93,6 +93,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             // Ranking order:
             // * (visible and main frame) or ChildProcessImportance.IMPORTANT
             // * (visible and subframe and intersect viewport) or ChildProcessImportance.MODERATE
+            // * ChildProcessImportance.PERCEPTIBLE
             // ---- cutoff for shouldBeInLowRankGroup ----
             // * visible subframe and not intersect viewport
             // * invisible main and sub frames (not ranked by frame depth)
@@ -127,6 +128,16 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                 return -1;
             } else if (!o1VisibleIntersectSubframeOrModerate
                     && o2VisibleIntersectSubframeOrModerate) {
+                return 1;
+            }
+
+            boolean o1Perceptible = o1.importance == ChildProcessImportance.PERCEPTIBLE;
+            boolean o2Perceptible = o2.importance == ChildProcessImportance.PERCEPTIBLE;
+            if (o1Perceptible && o2Perceptible) {
+                return compareByIntersectsViewportAndDepth(o1, o2);
+            } else if (o1Perceptible && !o2Perceptible) {
+                return -1;
+            } else if (!o1Perceptible && o2Perceptible) {
                 return 1;
             }
 

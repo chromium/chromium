@@ -818,6 +818,9 @@ public final class ChildProcessLauncherHelperImpl {
                 || hasForegroundServiceWorker
                 || boostForLoading) {
             newEffectiveImportance = ChildProcessImportance.MODERATE;
+        } else if (importance == ChildProcessImportance.PERCEPTIBLE
+                && ChildProcessConnection.supportNotPerceptibleBinding()) {
+            newEffectiveImportance = ChildProcessImportance.PERCEPTIBLE;
         } else {
             newEffectiveImportance = ChildProcessImportance.NORMAL;
         }
@@ -832,6 +835,20 @@ public final class ChildProcessLauncherHelperImpl {
             switch (newEffectiveImportance) {
                 case ChildProcessImportance.NORMAL:
                     // Nothing to add.
+                    break;
+                case ChildProcessImportance.PERCEPTIBLE:
+                    // Use not-perceptible binding for protected tabs. A service binding which leads
+                    // to PERCEPTIBLE_APP_ADJ (= 200) is ideal for protected tabs, but Android does
+                    // not provide the service binding yet.
+                    // TODO(crbug.com/400602112): Use Context.BIND_NOT_VISIBLE binding instead.
+                    //
+                    // This binding is out of control of BindingManager which always unbinds the
+                    // lowest ranked process from not-perceptible binding by
+                    // ensureLowestRankIsWaived().
+                    //
+                    // Note that ChildProcessConnection.supportNotPerceptibleBinding() is checked
+                    // above on setting ChildProcessImportance.PERCEPTIBLE.
+                    connection.addNotPerceptibleBinding();
                     break;
                 case ChildProcessImportance.MODERATE:
                     connection.addVisibleBinding();
@@ -874,6 +891,9 @@ public final class ChildProcessLauncherHelperImpl {
                         switch (existingEffectiveImportance) {
                             case ChildProcessImportance.NORMAL:
                                 // Nothing to remove.
+                                break;
+                            case ChildProcessImportance.PERCEPTIBLE:
+                                connection.removeNotPerceptibleBinding();
                                 break;
                             case ChildProcessImportance.MODERATE:
                                 connection.removeVisibleBinding();
