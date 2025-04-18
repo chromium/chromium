@@ -475,19 +475,17 @@ using collaboration::CollaborationControllerDelegate;
       [_mediator deleteGroup:tabGroupItem];
       break;
     case TabGroupActionType::kLeaveSharedTabGroup:
+      [self runLeaveOrDeleteCompletion];
+      break;
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       [_mediator leaveSharedGroup:tabGroupItem];
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
+      [self runLeaveOrDeleteCompletion];
+      break;
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       [_mediator deleteSharedGroup:tabGroupItem];
       break;
-  }
-
-  if (self.leaveOrDeleteCompletion) {
-    self.leaveOrDeleteCompletion(
-        CollaborationControllerDelegate::Outcome::kSuccess);
-    self.leaveOrDeleteCompletion = nil;
   }
 
   [_tabGroupConfirmationCoordinator stop];
@@ -533,6 +531,15 @@ using collaboration::CollaborationControllerDelegate;
   if (self.leaveOrDeleteCompletion) {
     self.leaveOrDeleteCompletion(
         CollaborationControllerDelegate::Outcome::kCancel);
+  }
+  self.leaveOrDeleteCompletion = nil;
+}
+
+// Runs `leaveOrDeleteCompletion`. If not nil, calls it with `kSuccess`.
+- (void)runLeaveOrDeleteCompletion {
+  if (self.leaveOrDeleteCompletion) {
+    self.leaveOrDeleteCompletion(
+        CollaborationControllerDelegate::Outcome::kSuccess);
   }
   self.leaveOrDeleteCompletion = nil;
 }
