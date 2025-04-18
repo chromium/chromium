@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,8 +18,8 @@
 #include "base/unguessable_token.h"
 #include "components/metrics/structured/lib/histogram_util.h"
 #include "components/metrics/structured/lib/key_util.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
-#include "crypto/sha2.h"
 
 namespace metrics::structured {
 namespace {
@@ -51,9 +52,8 @@ uint64_t KeyData::Id(const uint64_t project_name_hash,
   CHECK(key);
 
   // Compute and return the hash.
-  uint64_t hash;
-  crypto::SHA256HashString(key.value(), &hash, sizeof(uint64_t));
-  return hash;
+  auto hash = crypto::hash::Sha256(*key);
+  return base::U64FromNativeEndian(base::span<uint8_t>(hash).first<8>());
 }
 
 uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
@@ -69,17 +69,12 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   const std::optional<std::string_view> key = GetKeyBytes(project_name_hash);
   CHECK(key);
 
-  // Initialize the HMAC.
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  CHECK(hmac.Init(key.value()));
-
   // Compute and return the digest.
   const std::string salted_value =
       base::StrCat({HashToHex(metric_name_hash), value});
-  uint64_t digest;
-  CHECK(hmac.Sign(salted_value, reinterpret_cast<uint8_t*>(&digest),
-                  sizeof(digest)));
-  return digest;
+  auto hmac = crypto::hmac::SignSha256(base::as_byte_span(*key),
+                                       base::as_byte_span(salted_value));
+  return base::U64FromNativeEndian(base::span<uint8_t>(hmac).first<8>());
 }
 
 std::optional<base::TimeDelta> KeyData::LastKeyRotation(
