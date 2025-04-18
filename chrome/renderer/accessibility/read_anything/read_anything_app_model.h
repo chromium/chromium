@@ -239,6 +239,8 @@ class ReadAnythingAppModel {
   bool IsReload() const;
   void RemoveDisplayNode(ui::AXNodeID id);
 
+  const std::set<ui::AXNodeID>* GetCurrentlyVisibleNodes() const;
+
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
 
   // Inserts `id` into `non_ignored_ids` if it corresponds to a node that should

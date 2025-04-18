@@ -1227,9 +1227,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   std::vector<ui::AXNodeID> child_ids;
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
-                                               ? &model_.display_node_ids()
-                                               : &model_.selection_node_ids();
+  const std::set<ui::AXNodeID>* node_ids = model_.GetCurrentlyVisibleNodes();
   for (auto it = ax_node->UnignoredChildrenBegin();
        it != ax_node->UnignoredChildrenEnd(); ++it) {
     if (base::Contains(*node_ids, it->id())) {
@@ -1762,19 +1760,13 @@ void ReadAnythingAppController::InitAXPositionWithNode(
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
-  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
-                                               ? &model_.display_node_ids()
-                                               : &model_.selection_node_ids();
   return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
-                                          node_ids);
+                                          model_.GetCurrentlyVisibleNodes());
 }
 
 void ReadAnythingAppController::PreprocessTextForSpeech() {
-  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
-                                               ? &model_.display_node_ids()
-                                               : &model_.selection_node_ids();
   read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
-                                            node_ids);
+                                            model_.GetCurrentlyVisibleNodes());
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {

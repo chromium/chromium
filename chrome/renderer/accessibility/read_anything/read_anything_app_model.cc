@@ -1119,3 +1119,9 @@ void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
 void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
   font_size_ = AdjustFontScale(font_size, increment);
 }
+
+const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
+    const {
+  return selection_node_ids_.empty() ? &display_node_ids()
+                                     : &selection_node_ids_;
+}
