@@ -455,24 +455,13 @@ export class AppElement extends AppElementBase {
             anchorNodeId, anchorOffset, focusNodeId, focusOffset);
       }
 
-      // If there's been a selection, clear the current
-      // Read Aloud highlight.
-      const elements =
-          this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
-      if (elements && anchorNodeId && focusNodeId) {
-        elements.forEach(el => el.classList.remove(currentReadHighlightClass));
+      // If there's been a selection, clear the current Read Aloud highlight.
+      if (anchorNodeId && focusNodeId) {
+        // If speech is resumed, this won't be restored.
+        // TODO: crbug.com/40927698 - Restore the previous highlight after
+        // speech is resumed after a selection.
+        this.clearHighlightFormatting_();
       }
-
-      // Clear the previously read highlight if there's been a selection.
-      // If speech is resumed, this won't be restored.
-      // TODO: crbug.com/40927698 - Restore the previous highlight after speech
-      // is resumed after a selection.
-      this.previousHighlights_.forEach((element) => {
-        if (element) {
-          element.classList.remove(previousReadHighlightClass);
-        }
-      });
-      this.previousHighlights_ = [];
     };
 
     this.$.containerParent.onscroll = () => {
@@ -550,6 +539,21 @@ export class AppElement extends AppElementBase {
     chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
       this.onNodeWillBeDeleted(nodeId);
     };
+  }
+
+  private clearHighlightFormatting_() {
+    const elements =
+        this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
+    if (elements) {
+      elements.forEach(el => el.classList.remove(currentReadHighlightClass));
+    }
+
+    this.previousHighlights_.forEach((element) => {
+      if (element) {
+        element.classList.remove(previousReadHighlightClass);
+      }
+    });
+    this.previousHighlights_ = [];
   }
 
   private getOffsetInAncestor(node: Node): number {
@@ -2445,8 +2449,6 @@ export class AppElement extends AppElementBase {
     if (chrome.readingMode.linksEnabled) {
       this.updateLinks_();
     }
-    // Clear the formatting we added for highlighting.
-    this.updateContent();
     this.logSpeechPlaySession_();
   }
 
@@ -2460,7 +2462,7 @@ export class AppElement extends AppElementBase {
       isSpeechBeingRepositioned: false,
     };
 
-    this.previousHighlights_ = [];
+    this.clearHighlightFormatting_();
     this.resetToDefaultWordBoundaryState();
   }
 
