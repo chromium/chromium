@@ -6,7 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "chrome/browser/extensions/extension_platform_browsertest.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -14,7 +14,7 @@
 namespace extensions {
 
 ExtensionBrowserTestPlatformDelegate::ExtensionBrowserTestPlatformDelegate(
-    ExtensionPlatformBrowserTest& parent)
+    ExtensionBrowserTest& parent)
     : parent_(parent) {}
 
 Profile* ExtensionBrowserTestPlatformDelegate::GetProfile() {

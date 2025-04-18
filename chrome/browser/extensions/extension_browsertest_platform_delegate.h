@@ -17,7 +17,7 @@ class FilePath;
 
 namespace extensions {
 class Extension;
-class ExtensionPlatformBrowserTest;
+class ExtensionBrowserTest;
 
 // A delegate to handle platform-specific logic needed by ExtensionBrowserTest
 // (and friends).
@@ -26,8 +26,7 @@ class ExtensionPlatformBrowserTest;
 // split.
 class ExtensionBrowserTestPlatformDelegate {
  public:
-  explicit ExtensionBrowserTestPlatformDelegate(
-      ExtensionPlatformBrowserTest& parent);
+  explicit ExtensionBrowserTestPlatformDelegate(ExtensionBrowserTest& parent);
   ExtensionBrowserTestPlatformDelegate(
       const ExtensionBrowserTestPlatformDelegate&) = delete;
   ExtensionBrowserTestPlatformDelegate& operator=(
@@ -60,7 +59,7 @@ class ExtensionBrowserTestPlatformDelegate {
 
  private:
   // The parent test. Owns `this`.
-  raw_ref<ExtensionPlatformBrowserTest> parent_;
+  raw_ref<ExtensionBrowserTest> parent_;
 
   // The default profile to be used.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;

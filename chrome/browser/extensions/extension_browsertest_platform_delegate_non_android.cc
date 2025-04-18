@@ -20,7 +20,7 @@
 namespace extensions {
 
 ExtensionBrowserTestPlatformDelegate::ExtensionBrowserTestPlatformDelegate(
-    ExtensionPlatformBrowserTest& parent)
+    ExtensionBrowserTest& parent)
     : parent_(parent) {}
 
 Profile* ExtensionBrowserTestPlatformDelegate::GetProfile() {

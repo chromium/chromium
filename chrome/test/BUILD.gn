@@ -331,8 +331,6 @@ static_library("test_support") {
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_browsertest.h",
       "../browser/extensions/extension_browsertest_platform_delegate.h",
-      "../browser/extensions/extension_platform_browsertest.cc",
-      "../browser/extensions/extension_platform_browsertest.h",
     ]
 
     if (is_android) {
@@ -1518,7 +1516,6 @@ source_set("platform_browser_tests") {
       "../browser/extensions/extension_install_prompt_test_helper.cc",
       "../browser/extensions/extension_install_prompt_test_helper.h",
       "../browser/extensions/extension_override_apitest.cc",
-      "../browser/extensions/extension_platform_browsertest_browsertest.cc",
       "../browser/extensions/permissions/permissions_updater_browsertest.cc",
       "../browser/extensions/sandboxed_pages_apitest.cc",
       "../browser/extensions/shared_module_apitest.cc",
