@@ -372,12 +372,28 @@ class NET_EXPORT HttpUtil {
     // is a next value.  Use value* methods to access the resultant value.
     bool GetNext();
 
-    std::string_view value() const { return value_; }
+    std::string_view value() const {
+      return values_.substr(value_begin_, value_end_ - value_begin_);
+    }
+
+    // The begin/end offsets of the current value, relative to the start of
+    // `values`.
+    size_t value_begin() const { return value_begin_; }
+    size_t value_end() const { return value_end_; }
 
    private:
-    base::StringViewTokenizer values_;
-    std::string_view value_;
+    // The original input value.
+    std::string_view values_;
+
     bool ignore_empty_values_;
+
+    base::StringViewTokenizer tokenizer_;
+
+    // These internally track the range of the current value withint `values_`,
+    // to can provide begin/end indices for the current value for
+    // HttpResponseHeaders, the only consumer that needs them.
+    size_t value_begin_ = 0u;
+    size_t value_end_ = 0u;
   };
 
   // Iterates over a delimited sequence of name-value pairs in an HTTP header.

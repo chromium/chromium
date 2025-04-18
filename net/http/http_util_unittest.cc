@@ -223,12 +223,18 @@ TEST(HttpUtilTest, ValuesIterator) {
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("must-revalidate", it.value());
+  EXPECT_EQ(1, it.value_begin());
+  EXPECT_EQ(16, it.value_end());
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("no-cache=\"foo, bar\"", it.value());
+  EXPECT_EQ(20, it.value_begin());
+  EXPECT_EQ(39, it.value_end());
 
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("private", it.value());
+  EXPECT_EQ(42, it.value_begin());
+  EXPECT_EQ(49, it.value_end());
 
   EXPECT_FALSE(it.GetNext());
 }
@@ -239,27 +245,41 @@ TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
   HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);
   ASSERT_TRUE(it.GetNext());
   EXPECT_EQ("foopy", it.value());
+  EXPECT_EQ(2, it.value_begin());
+  EXPECT_EQ(7, it.value_end());
   EXPECT_FALSE(it.GetNext());
 
   HttpUtil::ValuesIterator it_with_empty_values(values, ',',
                                                 /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(0, it_with_empty_values.value_begin());
+  EXPECT_EQ(0, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("foopy", it_with_empty_values.value());
+  EXPECT_EQ(2, it_with_empty_values.value_begin());
+  EXPECT_EQ(7, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(12, it_with_empty_values.value_begin());
+  EXPECT_EQ(12, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(13, it_with_empty_values.value_begin());
+  EXPECT_EQ(13, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(14, it_with_empty_values.value_begin());
+  EXPECT_EQ(14, it_with_empty_values.value_end());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(15, it_with_empty_values.value_begin());
+  EXPECT_EQ(15, it_with_empty_values.value_end());
 
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
@@ -274,6 +294,8 @@ TEST(HttpUtilTest, ValuesIterator_Blanks) {
                                                 /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
   EXPECT_EQ("", it_with_empty_values.value());
+  EXPECT_EQ(3, it_with_empty_values.value_begin());
+  EXPECT_EQ(3, it_with_empty_values.value_end());
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
 

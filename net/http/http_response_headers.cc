@@ -956,18 +956,12 @@ void HttpResponseHeaders::AddHeader(size_t name_begin,
     std::string_view values = subrange(values_begin, values_end);
     HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/false);
     while (it.GetNext()) {
-      // Convert from a string_view back to a string iterator. To do this,
-      // find the offset of the start of `it.value()` relative to to the start
-      // of `values`, and add it to to the start of values.
-      //
-      // TODO(crbug.com/369533090): Converting from a string_view back to a
-      // size_t offset is awkward, and relies on banned pointer arithmetic.
-      // Make ValuesIterator expose offsets.
-      size_t sub_value_begin =
-          values_begin + (it.value().data() - values.data());
-      size_t sub_value_end = sub_value_begin + it.value().length();
+      // Calculate offsets of each value in [values_begin, values_end], relative
+      // to the start of `raw_headers_`.
+      size_t value_begin = values_begin + it.value_begin();
+      size_t value_end = values_begin + it.value_end();
 
-      AddToParsed(name_begin, name_end, sub_value_begin, sub_value_end);
+      AddToParsed(name_begin, name_end, value_begin, value_end);
       // clobber these so that subsequent values are treated as continuations
       name_begin = name_end = values_end;
     }

@@ -955,14 +955,16 @@ bool HttpUtil::HeadersIterator::GetNext() {
 HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
                                          char delimiter,
                                          bool ignore_empty_values)
-    : values_(values, std::string(1, delimiter)),
-      ignore_empty_values_(ignore_empty_values) {
-  values_.set_quote_chars("\"");
+    : values_(values),
+      ignore_empty_values_(ignore_empty_values),
+      tokenizer_(values, std::string(1, delimiter)) {
+  tokenizer_.set_quote_chars("\"");
   // Could set this unconditionally, since code below has to check for empty
   // values after trimming, anyways, but may provide a minor performance
   // improvement.
-  if (!ignore_empty_values_)
-    values_.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
+  if (!ignore_empty_values_) {
+    tokenizer_.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
+  }
 }
 
 HttpUtil::ValuesIterator::ValuesIterator(const ValuesIterator& other) = default;
@@ -970,10 +972,12 @@ HttpUtil::ValuesIterator::ValuesIterator(const ValuesIterator& other) = default;
 HttpUtil::ValuesIterator::~ValuesIterator() = default;
 
 bool HttpUtil::ValuesIterator::GetNext() {
-  while (values_.GetNext()) {
-    value_ = TrimLWS(values_.token());
+  while (tokenizer_.GetNext()) {
+    value_begin_ = tokenizer_.token_begin() - values_.begin();
+    value_end_ = tokenizer_.token_end() - values_.begin();
+    TrimLWS(values_, value_begin_, value_end_);
 
-    if (!ignore_empty_values_ || !value_.empty()) {
+    if (!ignore_empty_values_ || value_begin_ != value_end_) {
       return true;
     }
   }
