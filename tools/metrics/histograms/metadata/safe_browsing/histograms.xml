@@ -3642,6 +3642,16 @@ and applied correctly. -->
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.V4ProcessUpdate.UpdateType"
+    enum="SafeBrowsingV4UpdateType" expires_after="2025-10-15">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the type of V4 update being processed. Logged each time an update is
+    attempted on a store.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.V4ReadFromDisk.ApplyUpdate.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4ApplyUpdateResult" expires_after="never">

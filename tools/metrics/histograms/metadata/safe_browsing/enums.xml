@@ -587,6 +587,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UNABLE_TO_RENAME_FAILURE"/>
 </enum>
 
+<!-- LINT.IfChange(SafeBrowsingV4UpdateType) -->
+
+<enum name="SafeBrowsingV4UpdateType">
+  <int value="0" label="Invalid update"/>
+  <int value="1" label="Full update"/>
+  <int value="2" label="Partial update"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v4_store.h:ApplyUpdateType) -->
+
 <enum name="SafetyCheckWarningReason">
   <int value="1" label="Unpublished"/>
   <int value="2" label="Policy"/>

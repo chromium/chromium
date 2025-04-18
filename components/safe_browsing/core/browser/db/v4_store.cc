@@ -469,7 +469,7 @@ ApplyUpdateResult V4Store::ProcessUpdate(
       }
       raw_removals = &rice_removals;
     } else {
-      NOTREACHED() << "Unexpected compression_type type: " << compression_type;
+      return UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE;
     }
   }
   if (raw_removals) {
@@ -523,18 +523,21 @@ void V4Store::ApplyUpdate(
   V4StorePtr new_store(new V4Store(task_runner_, store_path_, file_size_),
                        V4StoreDeleter(task_runner_));
   ApplyUpdateResult apply_update_result;
-  std::string metric;
+  std::optional<std::string> metric;
+  ApplyUpdateType apply_update_type;
   if (response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {
     metric = kProcessPartialUpdate;
+    apply_update_type = ApplyUpdateType::kPartial;
     apply_update_result = new_store->ProcessPartialUpdateAndWriteToDisk(
-        metric, hash_prefix_map_->view(), std::move(response));
+        metric.value(), hash_prefix_map_->view(), std::move(response));
   } else if (response->response_type() == ListUpdateResponse::FULL_UPDATE) {
+    apply_update_type = ApplyUpdateType::kFull;
     metric = kProcessFullUpdate;
-    apply_update_result =
-        new_store->ProcessFullUpdateAndWriteToDisk(metric, std::move(response));
+    apply_update_result = new_store->ProcessFullUpdateAndWriteToDisk(
+        metric.value(), std::move(response));
   } else {
-    NOTREACHED() << "Failure: Unexpected response type: "
-                 << response->response_type();
+    apply_update_type = ApplyUpdateType::kInvalid;
+    apply_update_result = UNEXPECTED_RESPONSE_TYPE_FAILURE;
   }
 
   if (apply_update_result == APPLY_UPDATE_SUCCESS) {
@@ -551,8 +554,13 @@ void V4Store::ApplyUpdate(
   // Record the state of the update to be shown in the Safe Browsing page.
   last_apply_update_result_ = apply_update_result;
 
-  RecordApplyUpdateResult(metric, apply_update_result, store_path_);
-  RecordApplyUpdateDuration(metric, thread_timer.Elapsed(), store_path_);
+  base::UmaHistogramEnumeration("SafeBrowsing.V4ProcessUpdate.UpdateType",
+                                apply_update_type);
+  if (metric.has_value()) {
+    RecordApplyUpdateResult(metric.value(), apply_update_result, store_path_);
+    RecordApplyUpdateDuration(metric.value(), thread_timer.Elapsed(),
+                              store_path_);
+  }
 
   // Posting the task should be the last thing to do in this function.
   // Otherwise, the posted task can end up running in parallel. If that
@@ -601,7 +609,7 @@ ApplyUpdateResult V4Store::UpdateHashPrefixMapFromAdditions(
                                                 raw_hashes_size, additions_map);
       }
     } else {
-      NOTREACHED() << "Unexpected compression_type type: " << compression_type;
+      return UNEXPECTED_COMPRESSION_TYPE_ADDITIONS_FAILURE;
     }
 
     if (apply_update_result != APPLY_UPDATE_SUCCESS) {
@@ -629,10 +637,10 @@ ApplyUpdateResult V4Store::AddUnlumpedHashes(
     const size_t raw_hashes_length,
     std::unordered_map<PrefixSize, HashPrefixes>* additions_map) {
   if (prefix_size < kMinHashPrefixLength) {
-    NOTREACHED();
+    return PREFIX_SIZE_TOO_SMALL_FAILURE;
   }
   if (prefix_size > kMaxHashPrefixLength) {
-    NOTREACHED();
+    return PREFIX_SIZE_TOO_LARGE_FAILURE;
   }
   if (raw_hashes_length % prefix_size != 0) {
     return ADDITIONS_SIZE_UNEXPECTED_FAILURE;
