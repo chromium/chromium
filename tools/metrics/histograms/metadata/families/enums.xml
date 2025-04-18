@@ -89,6 +89,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleStatus) -->
 
+<!-- LINT.IfChange(ClassifyUrlThrottleUseCase) -->
+
+<enum name="ClassifyUrlThrottleUseCase">
+  <int value="0" label="Not allowed">
+    Throttling that classifies URLs was not applicable to the navigation
+    request.
+  </int>
+  <int value="1" label="Family Link supervised user">
+    Throttling was requested because the profile was Family Link supervised.
+    Includes Safe Sites requests.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleUseCase) -->
+
 <!-- LINT.IfChange(FamilyInfoLogSourceFetchStatus) -->
 
 <enum name="FamilyInfoLogSourceFetchStatus">

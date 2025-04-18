@@ -78,7 +78,6 @@ bool ShouldShowReAuthInterstitial(
   return SupervisedUserVerificationPage::ShouldShowPage(*child_account_service);
 }
 #endif
-
 }  // namespace
 
 ClassifyUrlNavigationThrottle::ThrottleCheckResult
@@ -270,18 +269,25 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
   CHECK(profile);
 
   if (!IsSubjectToParentalControls(*profile->GetPrefs())) {
+    base::UmaHistogramEnumeration(kClassifyUrlThrottleUseCaseHistogramName,
+                                  ClassifyUrlThrottleUseCase::kNotAllowed);
     return nullptr;
   }
 
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   if (!supervised_user_service) {
+    base::UmaHistogramEnumeration(kClassifyUrlThrottleUseCaseHistogramName,
+                                  ClassifyUrlThrottleUseCase::kNotAllowed);
     return nullptr;
   }
 
   SupervisedUserURLFilter* filter = supervised_user_service->GetURLFilter();
   CHECK(filter) << "Supervised user service for child users is expected to "
                    "have the URL filter present";
+  base::UmaHistogramEnumeration(
+      kClassifyUrlThrottleUseCaseHistogramName,
+      ClassifyUrlThrottleUseCase::kFamilyLinkSupervisedUser);
   return ClassifyUrlNavigationThrottle::MakeUnique(navigation_handle, filter);
 }
 

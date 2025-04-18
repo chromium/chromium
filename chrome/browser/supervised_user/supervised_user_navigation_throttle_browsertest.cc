@@ -31,6 +31,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
+#include "classify_url_navigation_throttle.h"
 #include "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -346,6 +347,20 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
   ASSERT_TRUE(entry);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, entry->GetPageType());
   EXPECT_FALSE(observer.last_navigation_succeeded());
+}
+
+// Tests if the reason for throttling was recorded.
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest, RecordsUseCase) {
+  base::HistogramTester histogram_tester;
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     kExampleHost, "/supervised_user/simple.html")));
+
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kClassifyUrlThrottleUseCaseHistogramName,
+      supervised_user::ClassifyUrlThrottleUseCase::kFamilyLinkSupervisedUser,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
