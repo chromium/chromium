@@ -1248,14 +1248,14 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
       GetCacheSize(), BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
 }
 
-void BackForwardCacheImpl::Prune(size_t limit) {
-  EnforceCacheSizeLimitInternal(
-      limit, BackForwardCacheMetrics::NotRestoredReason::kCacheLimitPruned);
+void BackForwardCacheImpl::Prune(size_t limit, NotRestoredReason reason) {
+  EnforceCacheSizeLimitInternal(limit, reason);
 }
 
 size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
     BackForwardCacheMetrics::NotRestoredReason reason) {
+  using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
   size_t count = 0;
   for (auto stored_entry_iter = entries_.begin();
        stored_entry_iter != entries_.end(); stored_entry_iter++) {
@@ -1267,8 +1267,7 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     }
     // Skip the entry if it doesn't have foregrounded progress and the eviction
     // is against foreground limit.
-    if (reason ==
-            BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit &&
+    if (reason == NotRestoredReason::kForegroundCacheLimit &&
         !HasForegroundedProcess(*stored_entry)) {
       continue;
     }
@@ -1279,7 +1278,9 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     // cache limit, for the pruning case, the entry will be counted and might be
     // evicted.
     if (reason !=
-            BackForwardCacheMetrics::NotRestoredReason::kCacheLimitPruned &&
+            NotRestoredReason::kCacheLimitPrunedOnModerateMemoryPressure &&
+        reason !=
+            NotRestoredReason::kCacheLimitPrunedOnCriticalMemoryPressure &&
         !AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
       continue;
     }
