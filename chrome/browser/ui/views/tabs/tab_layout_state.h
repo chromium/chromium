@@ -8,8 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_types.h"
 
 // Contains the data necessary to determine the bounds of a tab even while
-// it's in the middle of animating between states.  Immutable (except for
-// replacement via assignment).
+// it's in the middle of animating between states.
 class TabLayoutState {
  public:
   TabLayoutState() = default;
@@ -21,9 +20,9 @@ class TabLayoutState {
   TabPinned pinned() const { return pinnedness_; }
   TabActive active() const { return activeness_; }
 
-  TabLayoutState WithOpen(TabOpen open) const;
-  TabLayoutState WithPinned(TabPinned pinned) const;
-  TabLayoutState WithActive(TabActive active) const;
+  void set_open(TabOpen open) { this->openness_ = open; }
+  void set_pinned(TabPinned pinned) { this->pinnedness_ = pinned; }
+  void set_active(TabActive active) { this->activeness_ = active; }
 
   bool IsClosed() const;
 

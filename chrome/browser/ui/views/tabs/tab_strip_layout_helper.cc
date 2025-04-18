@@ -24,39 +24,17 @@
 #include "ui/gfx/range/range.h"
 #include "ui/views/view_model.h"
 
-namespace {
-
-// The types of TabSlotView that can be referenced by TabSlot.
-enum class ViewType {
-  kTab,
-  kGroupHeader,
-};
-
-}  // namespace
-
 struct TabStripLayoutHelper::TabSlot {
-  static TabStripLayoutHelper::TabSlot CreateForTab(Tab* tab,
-                                                    TabOpen open,
-                                                    TabPinned pinned) {
+  static TabStripLayoutHelper::TabSlot CreateForTabSlotView(TabSlotView* view,
+                                                            TabPinned pinned) {
     TabStripLayoutHelper::TabSlot slot;
-    slot.type = ViewType::kTab;
-    slot.view = tab;
-    slot.state = TabLayoutState(open, pinned, TabActive::kInactive);
-    return slot;
-  }
-
-  static TabStripLayoutHelper::TabSlot CreateForGroupHeader(
-      tab_groups::TabGroupId group,
-      TabGroupHeader* header,
-      TabPinned pinned) {
-    TabStripLayoutHelper::TabSlot slot;
-    slot.type = ViewType::kGroupHeader;
-    slot.view = header;
+    slot.type = view->GetTabSlotViewType();
+    slot.view = view;
     slot.state = TabLayoutState(TabOpen::kOpen, pinned, TabActive::kInactive);
     return slot;
   }
 
-  ViewType type;
+  TabSlotView::ViewType type;
   raw_ptr<TabSlotView, DanglingUntriaged> view;
   TabLayoutState state;
 };
@@ -74,7 +52,7 @@ TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 std::vector<Tab*> TabStripLayoutHelper::GetTabs() const {
   std::vector<Tab*> tabs;
   for (const TabSlot& slot : slots_) {
-    if (slot.type == ViewType::kTab) {
+    if (slot.type == TabSlotView::ViewType::kTab) {
       tabs.push_back(static_cast<Tab*>(slot.view));
     }
   }
@@ -106,18 +84,17 @@ void TabStripLayoutHelper::InsertTabAt(int model_index,
   const int slot_index =
       GetSlotInsertionIndexForNewTab(model_index, tab->group());
   slots_.insert(slots_.begin() + slot_index,
-                TabSlot::CreateForTab(tab, TabOpen::kOpen, pinned));
+                TabSlot::CreateForTabSlotView(tab, pinned));
 }
 
 void TabStripLayoutHelper::MarkTabAsClosing(int model_index, Tab* tab) {
   const int slot_index = GetSlotIndexForExistingTab(model_index);
-  slots_[slot_index].state =
-      slots_[slot_index].state.WithOpen(TabOpen::kClosed);
+  slots_[slot_index].state.set_open(TabOpen::kClosed);
 }
 
 void TabStripLayoutHelper::RemoveTab(Tab* tab) {
   auto it = std::ranges::find_if(slots_, [tab](const TabSlot& slot) {
-    return slot.type == ViewType::kTab && slot.view == tab;
+    return slot.type == TabSlotView::ViewType::kTab && slot.view == tab;
   });
   if (it != slots_.end()) {
     slots_.erase(it);
@@ -143,7 +120,7 @@ void TabStripLayoutHelper::MoveTab(
 
 void TabStripLayoutHelper::SetTabPinned(int model_index, TabPinned pinned) {
   const int slot_index = GetSlotIndexForExistingTab(model_index);
-  slots_[slot_index].state = slots_[slot_index].state.WithPinned(pinned);
+  slots_[slot_index].state.set_pinned(pinned);
 }
 
 void TabStripLayoutHelper::InsertGroupHeader(tab_groups::TabGroupId group,
@@ -151,9 +128,8 @@ void TabStripLayoutHelper::InsertGroupHeader(tab_groups::TabGroupId group,
   gfx::Range tabs_in_group = controller_->ListTabsInGroup(group);
   const int header_slot_index =
       GetSlotInsertionIndexForNewTab(tabs_in_group.start(), group);
-  slots_.insert(
-      slots_.begin() + header_slot_index,
-      TabSlot::CreateForGroupHeader(group, header, TabPinned::kUnpinned));
+  slots_.insert(slots_.begin() + header_slot_index,
+                TabSlot::CreateForTabSlotView(header, TabPinned::kUnpinned));
 
   // Set the starting location of the header to something reasonable for the
   // animation.
@@ -190,14 +166,12 @@ void TabStripLayoutHelper::SetActiveTab(
   if (prev_active_index.has_value()) {
     const int prev_slot_index =
         GetSlotIndexForExistingTab(prev_active_index.value());
-    slots_[prev_slot_index].state =
-        slots_[prev_slot_index].state.WithActive(TabActive::kInactive);
+    slots_[prev_slot_index].state.set_active(TabActive::kInactive);
   }
   if (new_active_index.has_value()) {
     const int new_slot_index =
         GetSlotIndexForExistingTab(new_active_index.value());
-    slots_[new_slot_index].state =
-        slots_[new_slot_index].state.WithActive(TabActive::kActive);
+    slots_[new_slot_index].state.set_active(TabActive::kActive);
   }
 }
 
@@ -230,7 +204,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
   for (int i = 0; i < static_cast<int>(bounds.size()); ++i) {
     const TabSlot& slot = slots_[i];
     switch (slot.type) {
-      case ViewType::kTab:
+      case TabSlotView::ViewType::kTab:
         if (!slot.state.IsClosed()) {
           tabs->set_ideal_bounds(current_tab_model_index, bounds[i]);
           UpdateCachedTabWidth(i, bounds[i].width(),
@@ -238,7 +212,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
           ++current_tab_model_index;
         }
         break;
-      case ViewType::kGroupHeader:
+      case TabSlotView::ViewType::kTabGroupHeader:
         group_header_ideal_bounds_[slot.view->group().value()] = bounds[i];
         break;
     }
@@ -249,8 +223,6 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
 
 std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     std::optional<int> available_width) {
-  std::optional<int> tabstrip_width = available_width;
-
   const std::optional<int> active_tab_model_index =
       controller_->GetActiveIndex();
   const std::optional<int> active_tab_slot_index =
@@ -285,7 +257,7 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     tab_widths.emplace_back(state, layout_constants, size_info);
   }
 
-  return CalculateTabBounds(layout_constants, tab_widths, tabstrip_width);
+  return CalculateTabBounds(layout_constants, tab_widths, available_width);
 }
 
 int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {
@@ -297,14 +269,14 @@ int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {
 
   int slot_index = original_slot_index;
 
-  if (slots_[slot_index].type == ViewType::kTab) {
+  if (slots_[slot_index].type == TabSlotView::ViewType::kTab) {
     CHECK(!slots_[slot_index].state.IsClosed());
     return slot_index;
   }
 
   // If `slot_index` is a group header we must return the next slot that
   // is not animating closed.
-  if (slots_[slot_index].type == ViewType::kGroupHeader) {
+  if (slots_[slot_index].type == TabSlotView::ViewType::kTabGroupHeader) {
     // Skip all slots animating closed.
     do {
       slot_index += 1;
@@ -315,7 +287,7 @@ int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {
     CHECK_LT(slot_index, static_cast<int>(slots_.size()))
         << "group header at " << original_slot_index
         << " not followed by an open tab";
-    CHECK_EQ(slots_[slot_index].type, ViewType::kTab);
+    CHECK_EQ(slots_[slot_index].type, TabSlotView::ViewType::kTab);
   }
 
   return slot_index;
@@ -333,7 +305,7 @@ int TabStripLayoutHelper::GetSlotInsertionIndexForNewTab(
   // If `slot_index` points to a group header and the new tab's `group`
   // matches, the tab goes to the right of the header to keep it
   // contiguous.
-  if (slots_[slot_index].type == ViewType::kGroupHeader &&
+  if (slots_[slot_index].type == TabSlotView::ViewType::kTabGroupHeader &&
       static_cast<const TabGroupHeader*>(slots_[slot_index].view)->group() ==
           group) {
     return slot_index + 1;
@@ -350,7 +322,7 @@ std::optional<int> TabStripLayoutHelper::GetFirstTabSlotForGroup(
       continue;
     }
 
-    if (slots_[slot_index].type == ViewType::kTab &&
+    if (slots_[slot_index].type == TabSlotView::ViewType::kTab &&
         slots_[slot_index].view->group().has_value() &&
         slots_[slot_index].view->group().value() == group) {
       return slot_index;
@@ -381,7 +353,7 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
       return slot_index;
     }
 
-    if (slots_[slot_index].type == ViewType::kTab) {
+    if (slots_[slot_index].type == TabSlotView::ViewType::kTab) {
       current_model_index += 1;
     }
   }
@@ -397,7 +369,7 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
 int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
     tab_groups::TabGroupId group) const {
   const auto it = std::ranges::find_if(slots_, [group](const auto& slot) {
-    return slot.type == ViewType::kGroupHeader &&
+    return slot.type == TabSlotView::ViewType::kTabGroupHeader &&
            static_cast<TabGroupHeader*>(slot.view)->group() == group;
   });
   CHECK(it != slots_.end());
@@ -424,6 +396,6 @@ bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {
   // If the slot is indeed a tab and in a group, check the collapsed state of
   // the group to determine if it is collapsed.
   const std::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
-  return slots_[i].type == ViewType::kTab && id.has_value() &&
+  return slots_[i].type == TabSlotView::ViewType::kTab && id.has_value() &&
          controller_->IsGroupCollapsed(id.value());
 }

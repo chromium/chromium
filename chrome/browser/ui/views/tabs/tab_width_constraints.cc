@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 
+#include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -32,9 +33,11 @@ float TabWidthConstraints::GetPreferredWidth() const {
 
 float TabWidthConstraints::TransformForPinnednessAndOpenness(
     float width) const {
-  const float pinned_width = state_.pinned() == TabPinned::kPinned
-                                 ? size_info_.pinned_tab_width
-                                 : width;
-  return state_.open() == TabOpen::kOpen ? pinned_width
-                                         : layout_constants_.tab_overlap;
+  if (state_.IsClosed()) {
+    return layout_constants_.tab_overlap;
+  } else if (state_.pinned() == TabPinned::kPinned) {
+    return size_info_.pinned_tab_width;
+  } else {
+    return width;
+  }
 }
