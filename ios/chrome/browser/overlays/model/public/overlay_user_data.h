@@ -53,13 +53,13 @@ class OverlayUserData : public base::SupportsUserData::Data {
     return static_cast<const DataType*>(user_data->GetUserData(UserDataKey()));
   }
 
+ private:
   // The key under which to store the user data.
   static inline const void* UserDataKey() {
     static const int kId = 0;
     return &kId;
   }
 
- protected:
   // Adds auxilliary OverlayUserData to `data`.  Used to allow multiple
   // OverlayUserData templates to share common functionality in a separate data
   // stored in `user_data`.
