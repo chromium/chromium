@@ -1539,6 +1539,46 @@ TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
   SetBrowserClientForTesting(old_browser_client);
 }
 
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithoutSendBeforeUnload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithoutSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_send_beforeunload_stack=*/std::nullopt,
+      /*expect_to_run_send_beforeunload=*/false);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithoutSendBeforeUnloadButBrowserClientProhibits) {
+  ForcePostTaskContentBrowserClient force_post_task_content_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&force_post_task_content_browser_client);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithoutSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes precedence over
+  // enabling the kAvoidUnnecessaryBeforeUnloadCheckSync feature.
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_send_beforeunload_stack=*/false,
+      /*expect_to_run_send_beforeunload=*/true);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,
       public testing::WithParamInterface<bool> {
