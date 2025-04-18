@@ -330,17 +330,19 @@ const std::string kNonDictJsonResponse =
     base::StringPrintf(R"(["test","result1","result2"])");
 
 // Helper methods to dynamically generate valid responses.
-std::string CreateQueryResult(const std::string& query) {
+std::string CreateQueryResult(const std::string& query,
+                              const float score = 0.0) {
   return base::StringPrintf(
       R"(
-        {"suggestion": "%s"}
+        {"suggestion": "%s", "score": %0.1f}
         )",
-      query);
+      query, score);
 }
 std::string CreatePeopleResult(const std::string& displayName,
                                const std::string& userName,
                                const std::string& givenName,
-                               const std::string& familyName) {
+                               const std::string& familyName,
+                               const float score = 0.0) {
   return base::StringPrintf(
       R"(
         {
@@ -353,14 +355,16 @@ std::string CreatePeopleResult(const std::string& displayName,
                 "familyName": "%s"
               }
             }
-          }
+          },
+          "score": %0.1f
         }
-            )",
-      userName, displayName, givenName, familyName);
+        )",
+      userName, displayName, givenName, familyName, score);
 }
 std::string CreateContentResult(const std::string& title,
                                 const std::string& owner_email,
-                                const std::string& url) {
+                                const std::string& url,
+                                const float score = 0.0) {
   return base::StringPrintf(
       R"(
         {
@@ -370,10 +374,11 @@ std::string CreateContentResult(const std::string& title,
               "owner_email": "%s"
             }
           },
-          "destinationUri": "%s"
+          "destinationUri": "%s",
+          "score": %0.1f
         }
         )",
-      title, owner_email, url);
+      title, owner_email, url, score);
 }
 std::string CreateResponse(std::vector<std::string> queries,
                            std::vector<std::string> peoples,
@@ -431,7 +436,7 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
 
   void InitFeature() {
     scoped_config_.Get().enabled = true;
-    scoped_config_.Get().use_server_relevance_scores = false;
+    scoped_config_.Get().relevance_scoring_mode = "client";
   }
 
   void InitTemplateUrlService() {
@@ -711,7 +716,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
 // Test response is parsed accurately.
 TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
-  scoped_config_.Get().use_server_relevance_scores = true;
+  scoped_config_.Get().relevance_scoring_mode = "server";
 
   provider_->adjusted_input_ = CreateInput(u"john d", true);
   ParseResponse(kGoodJsonResponse);
@@ -1279,6 +1284,84 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           ScoredMatch{u"https://url-mango-3/", 215},
           ScoredMatch{u"https://www.google.com/?q=mango-1-query", 207},
           ScoredMatch{u"https://www.google.com/?q=mango-2-query", 206}));
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest, ServerRelevanceScoring) {
+  scoped_config_.Get().relevance_scoring_mode = "server";
+
+  provider_->adjusted_input_ = CreateInput(u"match m", true);
+  ParseResponse(CreateResponse(
+      {
+          CreateQueryResult("matchQuery", 1.0),
+          // Results that don't match the input should still be scored and
+          // returned.
+          CreateQueryResult("query", 1.0),
+          CreateQueryResult("query2", 1.0),
+          CreateQueryResult("query3", 0.8),
+      },
+      {
+          CreatePeopleResult("displayName", "matchUserName", "givenName",
+                             "familyName", 0.7),
+          // A result with a score of 0 should not be returned.
+          CreatePeopleResult("displayName", "userName", "givenName",
+                             "familyName", 0.0),
+      },
+      {
+          CreateContentResult("matchTitle", "xmime_type", "https://url/", 0.7),
+          CreateContentResult("title", "xmime_type", "https://url2/", 0.7),
+          CreateContentResult("title2", "xmime_type", "https://url3/", 0.3),
+      }));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      testing::ElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=matchQuery", 1010},
+          ScoredMatch{u"https://www.google.com/?q=query", 1009},
+          ScoredMatch{u"https://www.google.com/?q=query2", 1008},
+          ScoredMatch{u"https://www.google.com/?q=query3", 807},
+          ScoredMatch{u"https://www.google.com/?q=matchUserName", 710},
+          ScoredMatch{u"https://url/", 710}, ScoredMatch{u"https://url2/", 709},
+          ScoredMatch{u"https://url3/", 308}));
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest, MixedRelevanceScoring) {
+  scoped_config_.Get().relevance_scoring_mode = "mixed";
+
+  std::string response = CreateResponse(
+      {
+          CreateQueryResult("matchQuery", 1.0),
+          CreateQueryResult("query", 1.0),
+      },
+      {
+          CreatePeopleResult("displayName", "matchUserName", "givenName",
+                             "familyName", 0.7),
+          CreatePeopleResult("displayName", "userName", "givenName",
+                             "familyName", 0.6),
+      },
+      {
+          CreateContentResult("matchTitle", "xmime_type", "https://url/", 0.7),
+          CreateContentResult("title2", "xmime_type", "https://url2/", 0.3),
+      });
+
+  // Scoped mode should use server-provided relevance scores.
+  provider_->adjusted_input_ = CreateInput(u"match m", true);
+  ParseResponse(response);
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(
+                  ScoredMatch{u"https://www.google.com/?q=matchQuery", 1010},
+                  ScoredMatch{u"https://www.google.com/?q=query", 1009},
+                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 710},
+                  ScoredMatch{u"https://url/", 710},
+                  ScoredMatch{u"https://www.google.com/?q=userName", 609},
+                  ScoredMatch{u"https://url2/", 309}));
+
+  // Unscoped mode should use client-calculated relevance scores.
+  provider_->adjusted_input_ = CreateInput(u"match m", false);
+  ParseResponse(response);
+  EXPECT_THAT(GetScoredMatches(),
+              testing::ElementsAre(
+                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 610},
+                  ScoredMatch{u"https://url/", 520},
+                  ScoredMatch{u"https://www.google.com/?q=matchQuery", 510}));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {

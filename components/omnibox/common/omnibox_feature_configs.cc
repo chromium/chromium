@@ -180,9 +180,9 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
                                                "multiple_requests", false)
                           .Get();
 
-  use_server_relevance_scores =
-      base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "use_server_relevance_scores", true)
+  relevance_scoring_mode =
+      base::FeatureParam<std::string>(&kSearchAggregatorProvider,
+                                      "relevance_scoring_mode", "mixed")
           .Get();
 
   scoring_max_matches_created_per_type =

@@ -229,9 +229,14 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // If true, the `EnterpriseSearchAggregatorSuggestionsService` will make
   // parallel requests for each type of suggestion.
   bool multiple_requests;
-  // If true, the `EnterpriseSearchAggregatorProvider` will use server-provided
-  // relevance scores instead of client-side scoring.
-  bool use_server_relevance_scores;
+  // The specified value controls how `EnterpriseSearchAggregatorProvider` will
+  // score suggestions. The following values are supported:
+  //   "mixed": Use server-provided scores in scoped mode and client-calculated
+  //     scores in unscoped mode. This is the default behavior and is also used
+  //     if the supplied value is not one of the other options.
+  //   "server": Use server-provided scores in both scoped and unscoped mode.
+  //   "client": Use client-calculated scores in both scoped and unscoped mode.
+  std::string relevance_scoring_mode;
 
   // See comments in enterprise_search_aggregator_provider.cc
   size_t scoring_max_matches_created_per_type;

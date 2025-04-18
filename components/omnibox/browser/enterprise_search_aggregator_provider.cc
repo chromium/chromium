@@ -251,6 +251,12 @@ const TemplateURL* AdjustTemplateURL(AutocompleteInput* input,
              : turl_service->GetEnterpriseSearchAggregatorEngine();
 }
 
+EnterpriseSearchAggregatorProvider::RelevanceData GetServerRelevanceData(
+    const base::Value::Dict& result) {
+  return {static_cast<int>(result.FindDouble("score").value_or(0) * 1000), 0, 0,
+          "server"};
+}
+
 // Helpers to convert vector of strings to sets of words.
 std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
   std::set<std::u16string> words = {};
@@ -723,16 +729,15 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     }
 
     EnterpriseSearchAggregatorProvider::RelevanceData relevance_data;
-    // If server relevance scoring is enabled, return a simple mapping to the
-    // appropriate scoring range.
-    if (omnibox_feature_configs::SearchAggregatorProvider::Get()
-            .use_server_relevance_scores) {
-      relevance_data = {0, 0, 0, "server"};
-      std::optional<double> server_score = result.FindDouble("score");
-      if (server_score.has_value()) {
-        relevance_data.relevance =
-            static_cast<int>(server_score.value() * 1000);
-      }
+    std::string relevance_scoring_mode =
+        omnibox_feature_configs::SearchAggregatorProvider::Get()
+            .relevance_scoring_mode;
+    // If mode is `server|client`, always use server|client scoring; otherwise,
+    // use server scoring in scoped mode, and client scoring in unscoped mode.
+    if (relevance_scoring_mode == "server" ||
+        (relevance_scoring_mode != "client" &&
+         adjusted_input_.InKeywordMode())) {
+      relevance_data = GetServerRelevanceData(result);
     } else {
       auto additional_scoring_fields =
           GetAdditionalScoringFields(result, suggestion_type);
