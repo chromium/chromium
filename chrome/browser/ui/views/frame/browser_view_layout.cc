@@ -294,10 +294,6 @@ void BrowserViewLayout::SetContentBorderBounds(
   LayoutContentBorder();
 }
 
-gfx::NativeView BrowserViewLayout::GetHostView() {
-  return delegate_->GetHostView();
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // BrowserViewLayout, views::LayoutManager implementation:
 

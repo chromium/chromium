@@ -100,9 +100,6 @@ class BrowserViewLayout : public views::LayoutManager {
 
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost();
 
-  // Returns the view against which the dialog is positioned and parented.
-  gfx::NativeView GetHostView();
-
   // views::LayoutManager overrides:
   void Layout(views::View* host) override;
   gfx::Size GetMinimumSize(const views::View* host) const override;

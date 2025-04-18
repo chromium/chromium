@@ -843,10 +843,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return browser_view_->browser()->SupportsWindowFeature(feature);
   }
 
-  gfx::NativeView GetHostView() const override {
-    return browser_view_->GetWidget()->GetNativeView();
-  }
-
   gfx::NativeView GetHostViewForAnchoring() const override {
     return browser_view_->GetWidgetForAnchoring()->GetNativeView();
   }

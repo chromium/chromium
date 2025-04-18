@@ -35,7 +35,6 @@ class BrowserViewLayoutDelegate {
   virtual bool IsTopControlsSlideBehaviorEnabled() const = 0;
   virtual float GetTopControlsSlideBehaviorShownRatio() const = 0;
   virtual bool SupportsWindowFeature(Browser::WindowFeature feature) const = 0;
-  virtual gfx::NativeView GetHostView() const = 0;
   virtual gfx::NativeView GetHostViewForAnchoring() const = 0;
   virtual bool BrowserIsSystemWebApp() const = 0;
   virtual bool BrowserIsWebApp() const = 0;
