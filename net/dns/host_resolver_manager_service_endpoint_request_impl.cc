@@ -154,6 +154,8 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (finalized_result_.has_value()) {
+    // TODO(bashi): When the corresponding Job was cancelled we should return
+    // false.
     return true;
   }
 
@@ -161,7 +163,9 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
     return job_.value()->dns_task_results_manager()->IsMetadataReady();
   }
 
-  return true;
+  // If there is no running DnsTask, `this` is not ready for cryptographic
+  // handshakes until receiving the final results.
+  return false;
 }
 
 ResolveErrorInfo

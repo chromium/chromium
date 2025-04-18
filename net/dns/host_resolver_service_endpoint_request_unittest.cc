@@ -404,9 +404,17 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
   requester.WaitForOnUpdated();
 
   // Simulate the case when the preference or policy has disabled the insecure
-  // DNS client causing AbortInsecureDnsTasks.
+  // DNS client causing AbortInsecureDnsTasks. The request falls back to
+  // SystemTask, which doesn't resolve the destination.
   resolver_->SetInsecureDnsClientEnabled(
       /*enabled=*/false, /*additional_dns_types_enabled=*/false);
+  ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
+  ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
+  ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
+
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
   ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
   ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
   ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
