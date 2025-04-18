@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/view_model.h"
@@ -200,6 +202,14 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
                 GetSlotIndexForExistingTab(active_tab_model_index.value()))
           : std::nullopt;
 
+  // Store the active split (if applicable) for determining whether other tabs
+  // in the split should be active.
+  std::optional<split_tabs::SplitTabId> active_split_id = std::nullopt;
+  if (active_tab_slot_index.has_value()) {
+    const TabSlot& active_slot = slots_[active_tab_slot_index.value()];
+    active_split_id = active_slot.view->split();
+  }
+
   int current_tab_model_index = 0;
   for (int i = 0; i < static_cast<int>(bounds.size()); ++i) {
     const TabSlot& slot = slots_[i];
@@ -207,8 +217,14 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
       case TabSlotView::ViewType::kTab:
         if (!slot.state.IsClosed()) {
           tabs->set_ideal_bounds(current_tab_model_index, bounds[i]);
-          UpdateCachedTabWidth(i, bounds[i].width(),
-                               i == active_tab_slot_index);
+          bool is_active = i == active_tab_slot_index;
+
+          if (active_split_id.has_value() &&
+              slot.view->split() == active_split_id) {
+            is_active = true;
+          }
+
+          UpdateCachedTabWidth(i, bounds[i].width(), is_active);
           ++current_tab_model_index;
         }
         break;
