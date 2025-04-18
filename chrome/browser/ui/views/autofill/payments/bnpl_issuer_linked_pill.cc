@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
@@ -23,7 +24,7 @@ BnplLinkedIssuerPill::BnplLinkedIssuerPill()
     : views::Label(l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL),
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
-                   views::style::STYLE_BODY_5) {
+                   views::style::STYLE_PRIMARY) {
   SetEnabledColor(kColorBnplIssuerLinkedPillForeground);
 }
 
@@ -34,13 +35,14 @@ void BnplLinkedIssuerPill::AddedToWidget() {
   // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
   gfx::Size size = GetPreferredSize(views::SizeBounds());
   size.Enlarge(0, 4);
-  SetBackground(views::CreateRoundedRectBackground(
-      kColorBnplIssuerLinkedPillBackground,
-      gfx::RoundedCornersF(size.height() / 2)));
+  SetBackground(
+      views::CreateSolidBackground(kColorBnplIssuerLinkedPillBackground));
   SetBorder(views::CreateRoundedRectBorder(
       0, size.height() / 2,
       gfx::Insets::TLBR(2, size.height() / 2, 2, size.height() / 2),
       kColorBnplIssuerLinkedPillBackground));
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(size.height() / 2));
 }
 
 BEGIN_METADATA(BnplLinkedIssuerPill)

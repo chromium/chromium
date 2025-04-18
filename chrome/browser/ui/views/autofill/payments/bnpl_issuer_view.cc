@@ -40,6 +40,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -53,6 +54,8 @@ BnplIssuerView::BnplIssuerView(
     : issuer_dialog_(issuer_dialog), controller_(controller) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   auto* layout_provider = ChromeLayoutProvider::Get();
+  SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL));
   int corner_radius =
       layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
   auto issuer_contexts = controller_->GetIssuerContexts();
