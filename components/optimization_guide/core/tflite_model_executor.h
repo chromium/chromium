@@ -355,13 +355,12 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                proto::OptimizationTarget optimization_target,
                scoped_refptr<base::SequencedTaskRunner>
                    model_loading_task_runner)
-                -> std::pair<ExecutionStatus,
-                             MemoryMappedFileDeleteOnTaskRunner> {
+                -> base::expected<MemoryMappedFileDeleteOnTaskRunner,
+                                  ExecutionStatus> {
               base::TimeTicks loading_start_time = base::TimeTicks::Now();
               if (!model_file_path) {
-                return std::make_pair(
-                    ExecutionStatus::kErrorModelFileNotAvailable,
-                    NullMemoryMappedFileDeleteOnTaskRunner());
+                return base::unexpected(
+                    ExecutionStatus::kErrorModelFileNotAvailable);
               }
 
               MemoryMappedFileDeleteOnTaskRunner model_fb(
@@ -369,8 +368,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                   base::OnTaskRunnerDeleter(
                       std::move(model_loading_task_runner)));
               if (!model_fb->Initialize(*model_file_path)) {
-                return std::make_pair(ExecutionStatus::kErrorModelFileNotValid,
-                                      NullMemoryMappedFileDeleteOnTaskRunner());
+                return base::unexpected(
+                    ExecutionStatus::kErrorModelFileNotValid);
               }
 
               // We only want to record successful loading times.
@@ -380,8 +379,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                           optimization_target),
                   base::TimeTicks::Now() - loading_start_time);
 
-              return std::make_pair(ExecutionStatus::kSuccess,
-                                    std::move(model_fb));
+              return std::move(model_fb);
             },
             model_file_path_, optimization_target_, model_loading_task_runner_),
         base::BindOnce(&TFLiteModelExecutor::OnModelFileLoadedInMemory,
@@ -393,8 +391,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // the memory-mapped file, and calls `model_loaded_callback`.
   void OnModelFileLoadedInMemory(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback,
-      std::pair<ExecutionStatus, MemoryMappedFileDeleteOnTaskRunner>
-          status_and_model_fb) {
+      base::expected<MemoryMappedFileDeleteOnTaskRunner, ExecutionStatus>
+          model_fb) {
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -402,12 +400,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     // blockable thread.
     UnloadModel();
 
-    ExecutionStatus file_load_status = status_and_model_fb.first;
-    model_fb_ = std::move(status_and_model_fb.second);
-    if (!model_fb_) {
-      std::move(model_loaded_callback).Run(file_load_status);
+    if (!model_fb.has_value()) {
+      std::move(model_loaded_callback).Run(model_fb.error());
       return;
     }
+    model_fb_ = std::move(*model_fb);
 
     auto build_result = BuildModelExecutionTask(model_fb_.get());
     if (build_result.has_value()) {
