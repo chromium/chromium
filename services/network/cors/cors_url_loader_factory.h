@@ -16,7 +16,6 @@
 #include "base/rand_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
@@ -63,7 +62,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       NetworkContext* context,
       mojom::URLLoaderFactoryParamsPtr params,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
-      mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
       const OriginAccessList* origin_access_list,
       PrefetchMatchingURLLoaderFactory* owner);
 
@@ -97,10 +95,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   void OnCorsURLLoaderCreated(std::unique_ptr<CorsURLLoader> loader);
   void DestroyURLLoader(URLLoader* loader);
 
-  // Clears the bindings for this factory, but does not touch any in-progress
-  // URLLoaders. Calling this may delete this factory and remove it from the
-  // network context.
-  void ClearBindings();
+  // If there are no active loaders and the `owner_` has no remaining external
+  // references (Mojo bindings), requests the owner to destroy this factory
+  // instance.
+  void DeleteIfNeeded();
 
   // Exposed for use by PrefetchMatchingURLLoaderFactory.
   int32_t process_id() const { return process_id_; }
@@ -156,8 +154,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   void DestroyCorsURLLoader(CorsURLLoader* loader);
 
-  void DeleteIfNeeded();
-
   bool IsValidRequest(const ResourceRequest& request, uint32_t options);
 
   bool GetAllowAnyCorsExemptHeaderForBrowser() const;
@@ -184,8 +180,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
     DeleteIfNeeded();
   }
-
-  mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 
   // The NetworkContext owns `this`. Initialized in the construct and must be
   // non-null.

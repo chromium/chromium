@@ -28,7 +28,6 @@ PrefetchMatchingURLLoaderFactory::PrefetchMatchingURLLoaderFactory(
           context,
           std::move(params),
           std::move(resource_scheduler_client),
-          mojo::PendingReceiver<mojom::URLLoaderFactory>(),
           origin_access_list,
           this)),
       context_(context),
@@ -113,7 +112,7 @@ void PrefetchMatchingURLLoaderFactory::Clone(
 
 void PrefetchMatchingURLLoaderFactory::ClearBindings() {
   receivers_.Clear();
-  next_->ClearBindings();
+  next_->DeleteIfNeeded();
 }
 
 net::handles::NetworkHandle
@@ -145,7 +144,7 @@ PrefetchMatchingURLLoaderFactory::GetCorsURLLoaderFactoryForTesting() {
 
 void PrefetchMatchingURLLoaderFactory::OnDisconnect() {
   if (receivers_.empty()) {
-    next_->ClearBindings();
+    next_->DeleteIfNeeded();
     // `this` may be deleted here.
   }
 }
