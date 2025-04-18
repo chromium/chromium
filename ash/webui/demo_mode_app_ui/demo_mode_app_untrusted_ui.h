@@ -53,8 +53,6 @@ class DemoModeAppUntrustedUI
       const std::string& resource_path,
       content::WebUIDataSource::GotDataCallback callback);
 
-  DemoModeAppDelegate& delegate() { return *delegate_; }
-
  private:
   // mojom::DemoModePageHandlerFactory
   void CreatePageHandler(

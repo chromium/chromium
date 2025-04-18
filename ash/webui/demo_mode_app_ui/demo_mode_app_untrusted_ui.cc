@@ -138,7 +138,7 @@ void DemoModeAppUntrustedUI::CreatePageHandler(
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   demo_mode_page_handler_ = std::make_unique<DemoModeUntrustedPageHandler>(
-      std::move(handler), widget, this);
+      std::move(handler), widget, delegate_.get());
 
   if (ash::features::IsDemoModeAppLandscapeLockedEnabled()) {
     // kLandscapePrimary is 0 degree, and kLandscapeSecondary is 180 degrees
