@@ -3853,6 +3853,11 @@ const char kTabGroupSyncServiceDesktopMigrationName[] =
 const char kTabGroupSyncServiceDesktopMigrationDescription[] =
     "Enables use of the TabGroupSyncService. This is a backend only change.";
 
+const char kTabGroupShorcutsId[] = "tab-group-shortcuts";
+const char kTabGroupShorcutsName[] = "Tab Group Keyboard Shortcuts";
+const char kTabGroupShorcutsDescription[] =
+    "Adds a few keyboard shortcuts for some tab group interactions.";
+
 const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";

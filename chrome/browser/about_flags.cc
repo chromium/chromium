@@ -12191,6 +12191,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherSurfaceColorUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {flag_descriptions::kTabGroupShorcutsId,
+     flag_descriptions::kTabGroupShorcutsName,
+     flag_descriptions::kTabGroupShorcutsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kTabGroupShortcuts)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

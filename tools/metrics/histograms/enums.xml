@@ -10258,6 +10258,7 @@ from previous Chrome versions.
   <int value="-1558082361" label="ContinuousOverviewScrollAnimation:enabled"/>
   <int value="-1557747651" label="FractionalScrollOffsets:disabled"/>
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
+  <int value="-1557048150" label="TabGroupShortcuts:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
   <int value="-1556654570" label="tab-groups-save-v2:enabled"/>
   <int value="-1555616901" label="ShoppingListTrackByDefault:disabled"/>
@@ -16912,6 +16913,7 @@ from previous Chrome versions.
   <int value="1016132283" label="SeparateLocalAndAccountSearchEngines:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
   <int value="1017523412" label="ExtensionsMenuAccessControl:disabled"/>
+  <int value="1018101051" label="TabGroupShortcuts:enabled"/>
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>
   <int value="1018998019" label="memlog"/>
   <int value="1019321025" label="FeatureManagement16Desks:disabled"/>

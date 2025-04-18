@@ -2217,6 +2217,10 @@ extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];
 extern const char kTabGroupSyncServiceDesktopMigrationDescription[];
 
+extern const char kTabGroupShorcutsId[];
+extern const char kTabGroupShorcutsName[];
+extern const char kTabGroupShorcutsDescription[];
+
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 
