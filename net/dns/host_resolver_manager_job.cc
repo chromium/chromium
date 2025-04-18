@@ -499,6 +499,11 @@ base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
     query_types_list.Append(kDnsQueryTypes.at(query_type));
   }
   dict.Set("dns_query_types", std::move(query_types_list));
+  base::Value::List tasks_list;
+  for (TaskType task : tasks_) {
+    tasks_list.Append(static_cast<int>(task));
+  }
+  dict.Set("tasks", std::move(tasks_list));
   dict.Set("secure_dns_mode", base::strict_cast<int>(key_.secure_dns_mode));
   dict.Set("network_anonymization_key",
            key_.network_anonymization_key.ToDebugString());

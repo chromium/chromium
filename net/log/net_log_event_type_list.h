@@ -104,8 +104,9 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_CREATE_JOB)
 // The BEGIN phase contains the following parameters:
 //
 //   {
-//     "dns_query_type": <DnsQueryType of the job>,
+//     "dns_query_types": <DnsQueryTypes of the job>,
 //     "host": <Serialized scheme/host/port associated with the job>,
+//     "tasks": <TaskTypes of the job>,
 //     "network_anonymization_key": <NetworkAnonymizationKey associated with the
 //                                   job>,
 //     "secure_dns_mode": <SecureDnsMode of the job>,
