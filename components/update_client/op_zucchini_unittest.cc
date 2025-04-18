@@ -23,8 +23,10 @@
 #include "components/services/patch/in_process_file_patcher.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/patch/patch_impl.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/zucchini/zucchini.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {
@@ -72,7 +74,7 @@ TEST_F(ZucchiniOperationTest, Success) {
   base::FilePath old_file = CopyToTemp("zucchini_patch_test/app1.zip");
 
   cache->Put(
-      old_file, "appid", "hash1", "prev_hash",
+      old_file, "appid", "hash1", {},
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
@@ -81,7 +83,9 @@ TEST_F(ZucchiniOperationTest, Success) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            MakePingCallback(), "appid", "hash1", patch_file,
+            MakePingCallback(), "hash1",
+            "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
+            patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -95,8 +99,9 @@ TEST_F(ZucchiniOperationTest, Success) {
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
   ASSERT_EQ(pings_.size(), 1u);
-  EXPECT_EQ(pings_[0].FindInt("eventtype"), 61);
-  EXPECT_EQ(pings_[0].FindInt("eventresult"), 1);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), protocol_request::kEventZucchini);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"),
+            protocol_request::kEventResultSuccess);
   EXPECT_EQ(pings_[0].Find("errorcat"), nullptr);
   EXPECT_EQ(pings_[0].Find("errorcode"), nullptr);
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
@@ -114,7 +119,7 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
   base::FilePath old_file = CopyToTemp("zucchini_patch_test/app1.zip");
 
   cache->Put(
-      old_file, "appid", "hash1", "prev_hash",
+      old_file, "appid", "hash1", {},
       base::BindLambdaForTesting([&](base::expected<base::FilePath,
                                                     UnpackerError> r) {
         ASSERT_TRUE(r.has_value());
@@ -123,7 +128,9 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            MakePingCallback(), "appid", "hash1", patch_file,
+            MakePingCallback(), "hash1",
+            "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
+            patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -137,11 +144,15 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
   ASSERT_EQ(pings_.size(), 1u);
-  EXPECT_EQ(pings_[0].FindInt("eventtype"), 61);
-  EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
-  EXPECT_EQ(pings_[0].FindInt("errorcat"), 2);
-  EXPECT_EQ(pings_[0].FindInt("errorcode"), 14);
-  EXPECT_EQ(pings_[0].FindInt("extracode1"), 4);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), protocol_request::kEventZucchini);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"),
+            protocol_request::kEventResultError);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"),
+            static_cast<int>(ErrorCategory::kUnpack));
+  EXPECT_EQ(pings_[0].FindInt("errorcode"),
+            static_cast<int>(UnpackerError::kDeltaOperationFailure));
+  EXPECT_EQ(pings_[0].FindInt("extracode1"),
+            static_cast<int>(zucchini::status::kStatusPatchReadError));
 }
 
 TEST_F(ZucchiniOperationTest, NotInCache) {
@@ -156,7 +167,9 @@ TEST_F(ZucchiniOperationTest, NotInCache) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),
-      MakePingCallback(), "appid", "prev_hash", patch_file,
+      MakePingCallback(), {},
+      "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
+      patch_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -168,10 +181,13 @@ TEST_F(ZucchiniOperationTest, NotInCache) {
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
   ASSERT_EQ(pings_.size(), 1u);
-  EXPECT_EQ(pings_[0].FindInt("eventtype"), 61);
-  EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
-  EXPECT_EQ(pings_[0].FindInt("errorcat"), 2);
-  EXPECT_EQ(pings_[0].FindInt("errorcode"), 23);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), protocol_request::kEventZucchini);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"),
+            protocol_request::kEventResultError);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"),
+            static_cast<int>(ErrorCategory::kUnpack));
+  EXPECT_EQ(pings_[0].FindInt("errorcode"),
+            static_cast<int>(UnpackerError::kCrxCacheFileNotCached));
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
@@ -185,7 +201,9 @@ TEST_F(ZucchiniOperationTest, NoCache) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),
-      MakePingCallback(), "appid", "prev_hash", patch_file,
+      MakePingCallback(), {},
+      "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
+      patch_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -197,10 +215,58 @@ TEST_F(ZucchiniOperationTest, NoCache) {
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
   ASSERT_EQ(pings_.size(), 1u);
-  EXPECT_EQ(pings_[0].FindInt("eventtype"), 61);
-  EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
-  EXPECT_EQ(pings_[0].FindInt("errorcat"), 2);
-  EXPECT_EQ(pings_[0].FindInt("errorcode"), 21);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), protocol_request::kEventZucchini);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"),
+            protocol_request::kEventResultError);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"),
+            static_cast<int>(ErrorCategory::kUnpack));
+  EXPECT_EQ(pings_[0].FindInt("errorcode"),
+            static_cast<int>(UnpackerError::kCrxCacheNotProvided));
+  EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
+}
+
+TEST_F(ZucchiniOperationTest, OutHashMismatch) {
+  auto cache = base::MakeRefCounted<CrxCache>(TempPath("cache"));
+
+  // `ZucchiniOperation` deletes the patch file, so copy it to the temp dir.
+  base::FilePath patch_file =
+      CopyToTemp("zucchini_patch_test/app1_to_app2.zucchini");
+
+  // `CrxCache::Put` will move the v1 file, so copy it into the temp dir.
+  base::FilePath old_file = CopyToTemp("zucchini_patch_test/app1.zip");
+
+  cache->Put(
+      old_file, "appid", "hash1", {},
+      base::BindLambdaForTesting([&](base::expected<base::FilePath,
+                                                    UnpackerError> r) {
+        ASSERT_TRUE(r.has_value());
+        ZucchiniOperation(
+            cache,
+            base::MakeRefCounted<PatchChromiumFactory>(
+                base::BindRepeating(&patch::LaunchInProcessFilePatcher))
+                ->Create(),
+            MakePingCallback(), "hash1", "incorrecthash", patch_file,
+            base::BindLambdaForTesting(
+                [&](base::expected<base::FilePath, CategorizedError> result) {
+                  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+                  loop_.Quit();
+                  ASSERT_FALSE(result.has_value());
+                  EXPECT_EQ(
+                      result.error().code,
+                      static_cast<int>(UnpackerError::kPatchOutHashMismatch));
+                }));
+      }));
+  loop_.Run();
+  EXPECT_FALSE(base::PathExists(patch_file));
+  ASSERT_EQ(pings_.size(), 1u);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), protocol_request::kEventZucchini);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"),
+            protocol_request::kEventResultError);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"),
+            static_cast<int>(ErrorCategory::kUnpack));
+  EXPECT_EQ(pings_[0].FindInt("errorcode"),
+            static_cast<int>(UnpackerError::kPatchOutHashMismatch));
+  EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
 }  // namespace update_client

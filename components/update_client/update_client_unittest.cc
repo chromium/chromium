@@ -1721,6 +1721,9 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
                   "type": "puff",
                   "previous": {
                     "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "out": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
                   }
                 },
                 {
@@ -2312,6 +2315,9 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
                   "type": "puff",
                   "previous": {
                     "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "out": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
                   }
                 },
                 {
@@ -3369,6 +3375,9 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
                   "type": "puff",
                   "previous": {
                     "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "out": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
                   }
                 },
                 {
@@ -6432,7 +6441,10 @@ TEST_F(UpdateClientTest,
               "pipeline_id": "puff_missing_prev",
               "operations": [
                 {
-                  "type": "puff"
+                  "type": "puff",
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
                 }
               ]
             },
@@ -6440,7 +6452,10 @@ TEST_F(UpdateClientTest,
               "pipeline_id": "zucc_missing_prev",
               "operations": [
                 {
-                  "type": "zucc"
+                  "type": "zucc",
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
                 }
               ]
             },
