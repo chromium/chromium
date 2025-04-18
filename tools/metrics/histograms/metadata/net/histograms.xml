@@ -838,26 +838,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CachingCertVerifier.CacheHit" enum="Boolean"
+<histogram name="Net.CachingCertVerifier.CacheHit{HostType}" enum="Boolean"
     expires_after="2025-07-14">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
     Records if a certificate verification result was provided from the cache or
-    not. Recorded after checking the certificate verification cache when
-    CachingCertVerifier::Verify() is called.
+    not for connections to {HostType}. Recorded after checking the certificate
+    verification cache when CachingCertVerifier::Verify() is called.
   </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Net.CachingCertVerifier.{VerificationCompletionType}.UncachedVerifyTime"
+    name="Net.CachingCertVerifier.{VerificationCompletionType}.UncachedVerifyTime{HostType}"
     units="ms" expires_after="2025-07-14">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
     Records the time taken to {VerificationCompletionType} verify a certificate
-    if not found in the certificate verification cache. Recorded after a
-    certificate is verified in the CachingCertVerifier.
+    if not found in the certificate verification cache for connections to
+    {HostType}. Recorded after a certificate is verified in the
+    CachingCertVerifier.
 
     Note: This is similar to Net.CertVerifier_Job_Latency which is recorded in
     CoalescingCertVerifier. CachingCertVerifier wraps the
@@ -870,6 +877,12 @@ chromium-metrics-reviews@google.com.
   <token key="VerificationCompletionType">
     <variant name="Async" summary="asynchronously"/>
     <variant name="Sync" summary="synchronously"/>
+  </token>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
   </token>
 </histogram>
 
@@ -976,6 +989,24 @@ chromium-metrics-reviews@google.com.
     Time needed to initialize the Android platform Trust store when using the
     builtin certificate verifier on Android.
   </summary>
+</histogram>
+
+<histogram name="Net.CertVerifier.DoVerifyOnWorkerThreadTime{HostType}"
+    units="ms" expires_after="2025-07-17">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Records the time taken to verify the certificate on a worker thread for
+    connections to {HostType}. This is recorded after a certificate is verified
+    in the MultithreadedCertVerifier, and does not include the thread hop from
+    the network service.
+  </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime"

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 
 namespace net {
 
@@ -47,6 +48,14 @@ int CachingCertVerifier::Verify(const CertVerifier::RequestParams& params,
       cache_.Get(params, CacheValidityPeriod(base::Time::Now()));
   UMA_HISTOGRAM_BOOLEAN("Net.CachingCertVerifier.CacheHit",
                         cached_entry != nullptr);
+  if (IsGoogleHost(params.hostname())) {
+    if (IsGoogleHostWithAlpnH3(params.hostname())) {
+      UMA_HISTOGRAM_BOOLEAN("Net.CachingCertVerifier.CacheHit.GoogleWithAlpnH3",
+                            cached_entry != nullptr);
+    }
+    UMA_HISTOGRAM_BOOLEAN("Net.CachingCertVerifier.CacheHit.Google",
+                          cached_entry != nullptr);
+  }
   if (cached_entry) {
     ++cache_hits_;
     *verify_result = cached_entry->result;
@@ -69,10 +78,20 @@ int CachingCertVerifier::Verify(const CertVerifier::RequestParams& params,
                                  std::move(caching_callback), out_req, net_log);
   if (result != ERR_IO_PENDING) {
     // Synchronous completion; add directly to cache.
+    base::TimeDelta verify_time = base::TimeTicks::Now() - start_time_ticks;
     UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Net.CachingCertVerifier.Sync.UncachedVerifyTime",
-        base::TimeTicks::Now() - start_time_ticks, base::Milliseconds(1),
-        base::Minutes(10), 100);
+        "Net.CachingCertVerifier.Sync.UncachedVerifyTime", verify_time,
+        base::Milliseconds(1), base::Minutes(10), 100);
+    if (IsGoogleHost(params.hostname())) {
+      if (IsGoogleHostWithAlpnH3(params.hostname())) {
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            "Net.CachingCertVerifier.Sync.UncachedVerifyTime.GoogleWithAlpnH3",
+            verify_time, base::Milliseconds(1), base::Minutes(10), 100);
+      }
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Net.CachingCertVerifier.Sync.UncachedVerifyTime.Google", verify_time,
+          base::Milliseconds(1), base::Minutes(10), 100);
+    }
     AddResultToCache(config_id_, params, start_time, *verify_result, result);
   }
 
@@ -147,9 +166,20 @@ void CachingCertVerifier::OnRequestFinished(uint32_t config_id,
                                             CompletionOnceCallback callback,
                                             CertVerifyResult* verify_result,
                                             int error) {
+  base::TimeDelta verify_time = base::TimeTicks::Now() - start_time_ticks;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.CachingCertVerifier.Async.UncachedVerifyTime",
-                             base::TimeTicks::Now() - start_time_ticks,
-                             base::Milliseconds(1), base::Minutes(10), 100);
+                             verify_time, base::Milliseconds(1),
+                             base::Minutes(10), 100);
+  if (IsGoogleHost(params.hostname())) {
+    if (IsGoogleHostWithAlpnH3(params.hostname())) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Net.CachingCertVerifier.Async.UncachedVerifyTime.GoogleWithAlpnH3",
+          verify_time, base::Milliseconds(1), base::Minutes(10), 100);
+    }
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Net.CachingCertVerifier.Async.UncachedVerifyTime.Google", verify_time,
+        base::Milliseconds(1), base::Minutes(10), 100);
+  }
   AddResultToCache(config_id, params, start_time, *verify_result, error);
 
   // Now chain to the user's callback, which may delete |this|.
