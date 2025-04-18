@@ -1555,7 +1555,8 @@ export class AppElement extends AppElementBase {
     this.resetToDefaultWordBoundaryState();
     chrome.readingMode.movePositionToPreviousGranularity();
 
-    if (!this.highlightAndPlayMessage()) {
+    if (!this.highlightAndPlayMessage(/*isInterrupted=*/ false,
+                                      /*isMovingBackward=*/ true)) {
       this.onSpeechFinished();
     }
   }
@@ -1793,7 +1794,9 @@ export class AppElement extends AppElementBase {
   // following text.
   // TODO: crbug.com/1474951 - Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  highlightAndPlayMessage(isInterrupted: boolean = false): boolean {
+  highlightAndPlayMessage(
+      isInterrupted: boolean = false,
+      isMovingBackward: boolean = false): boolean {
     // getCurrentText gets the AX Node IDs of text that should be spoken and
     // highlighted.
     const axNodeIds: number[] = chrome.readingMode.getCurrentText();
@@ -1805,27 +1808,19 @@ export class AppElement extends AppElementBase {
     }
 
     if (axNodeIds.every(id => this.hiddenImageNodesIds_.has(id))) {
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage(isInterrupted);
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
     const utteranceText = this.extractTextOf(axNodeIds);
     // If node ids were returned but they don't exist in the Reading Mode panel,
     // there's been a mismatch between Reading Mode and Read Aloud. In this
     // case, we should move to the next Read Aloud node and attempt to continue
-    // playing.
-    if (!utteranceText) {
-      // TODO: crbug.com/332694565 - This fallback should never be needed, but
-      // it is. Investigate root cause of Read Aloud / Reading Mode mismatch.
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage(isInterrupted);
-    }
-
-    // The TTS engine may not like attempts to speak whitespace, so move to the
-    // next utterance.
-    if (utteranceText.trim().length === 0) {
-      chrome.readingMode.movePositionToNextGranularity();
-      return this.highlightAndPlayMessage(isInterrupted);
+    // playing. TODO: crbug.com/332694565 - This fallback should never be
+    // needed, but it is. Investigate root cause of Read Aloud / Reading Mode
+    // mismatch. Additionally, the TTS engine may not like attempts to speak
+    // whitespace, so move to the next utterance in that case.
+    if (!utteranceText || utteranceText.trim().length === 0) {
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
     // If we're resuming a previously interrupted message, use word
@@ -1844,7 +1839,7 @@ export class AppElement extends AppElementBase {
       if (isInvalidHighlightForWordHighlighting(
               utteranceTextForWordBoundary.trim())) {
         chrome.readingMode.movePositionToNextGranularity();
-        return this.highlightAndPlayMessage(isInterrupted);
+        return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
       } else {
         this.playText(utteranceTextForWordBoundary);
       }
@@ -1854,6 +1849,16 @@ export class AppElement extends AppElementBase {
 
     this.highlightCurrentGranularity(axNodeIds);
     return true;
+  }
+
+  private skipCurrentPosition_(
+      isInterrupted: boolean, isMovingBackward: boolean): boolean {
+    if (isMovingBackward) {
+      chrome.readingMode.movePositionToPreviousGranularity();
+    } else {
+      chrome.readingMode.movePositionToNextGranularity();
+    }
+    return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
   }
 
   // Highlights or rehighlights the current granularity, sentence or word.
