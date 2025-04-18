@@ -21,9 +21,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
-#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_visibility_consumer.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
@@ -240,6 +240,9 @@ enum HeaderBehaviour {
 // not active, the UI will not react to changes in the active web state, so
 // generally an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
+// Consumer that gets notified of the visibility of the browser view.
+@property(nonatomic, weak) id<BrowserViewVisibilityAudience>
+    browserViewVisibilityAudience;
 // Browser container view controller.
 @property(nonatomic, strong)
     BrowserContainerViewController* browserContainerViewController;
@@ -443,8 +446,9 @@ enum HeaderBehaviour {
   }
   BrowserViewVisibilityState previousState = _visibilityState;
   _visibilityState = state;
-  [self.browserViewVisibilityConsumer
-      browserViewDidTransitionFromVisibilityState:previousState];
+  [self.browserViewVisibilityAudience
+      browserViewDidTransitionToVisibilityState:state
+                                      fromState:previousState];
   [self updateBroadcastState];
   self.contentArea.accessibilityElementsHidden =
       state == BrowserViewVisibilityState::kCoveredByOmniboxPopup ||
@@ -1166,7 +1170,11 @@ enum HeaderBehaviour {
   }
 
   [_sideSwipeCoordinator stopActiveSideSwipeAnimation];
-  self.visibilityState = BrowserViewVisibilityState::kCoveredByModal;
+  // TODO(crbug.com/406544789): Currently, some of the views are presented with
+  // `browserViewController` but not dismissed with this, therefore we cannot
+  // update the visibility state to `kCoveredByModal` without being sure that it
+  // would be changed back to `kVisible` afterwards. Fix the bug and update the
+  // visibility state.
 
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent

@@ -60,16 +60,15 @@
 #import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
-#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_visibility_consumer.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_events_mediator.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
-#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
@@ -328,7 +327,6 @@ enum class ToolbarKind {
     AutoDeletionCommands,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
-    BrowserViewVisibilityConsumer,
     BubblePresenterDelegate,
     ContextualPanelEntrypointIPHCommands,
     ContextualSheetCommands,
@@ -1003,7 +1001,11 @@ enum class ToolbarKind {
                                                  .viewController
                          keyCommandsProvider:_keyCommandsProvider
                                 dependencies:_viewControllerDependencies];
-  _viewController.browserViewVisibilityConsumer = self;
+
+  id<BrowserViewVisibilityAudience> visibilityAudience =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(self.browser)
+          ->GetBrowserViewVisibilityAudience();
+  _viewController.browserViewVisibilityAudience = visibilityAudience;
   self.tabLifecycleMediator.baseViewController = self.viewController;
   self.tabLifecycleMediator.passwordControllerDelegate = self;
 
@@ -1018,16 +1020,10 @@ enum class ToolbarKind {
 - (void)destroyViewController {
   self.viewController.active = NO;
   self.viewController.webUsageEnabled = NO;
-  self.viewController.browserViewVisibilityConsumer = nil;
+  self.viewController.browserViewVisibilityAudience = nil;
 
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
-
-  raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
-      TabBasedIPHBrowserAgent::FromBrowser(self.browser);
-  if (tabBasedIPHBrowserAgent) {
-    tabBasedIPHBrowserAgent->RootViewForInProductHelpWillDisappear();
-  }
 
   // TODO(crbug.com/40256480): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:self.viewController];
@@ -2363,25 +2359,6 @@ enum class ToolbarKind {
   GlicService* glicService =
       GlicServiceFactory::GetForProfile(self.browser->GetProfile());
   glicService->PresentOverlayOnViewController(self.viewController);
-}
-
-#pragma mark - BrowserViewVisibilityConsumer
-
-- (void)browserViewDidTransitionFromVisibilityState:
-    (BrowserViewVisibilityState)previousState {
-  CHECK(self.browser);
-  raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
-      TabBasedIPHBrowserAgent::FromBrowser(self.browser);
-  if (!tabBasedIPHBrowserAgent) {
-    return;
-  }
-
-  if (self.viewController.visibilityState ==
-      BrowserViewVisibilityState::kVisible) {
-    tabBasedIPHBrowserAgent->RootViewForInProductHelpDidAppear();
-  } else if (previousState == BrowserViewVisibilityState::kVisible) {
-    tabBasedIPHBrowserAgent->RootViewForInProductHelpWillDisappear();
-  }
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

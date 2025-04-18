@@ -13,6 +13,7 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -38,6 +39,8 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
           ReadingListModelFactory::GetForProfile(browser->GetProfile())),
       url_loading_notifier_(
           UrlLoadingNotifierBrowserAgent::FromBrowser(browser)),
+      browser_view_visibility_notifier_(
+          BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser)),
       command_dispatcher_(browser->GetCommandDispatcher()),
       engagement_tracker_(feature_engagement::TrackerFactory::GetForProfile(
           browser->GetProfile())) {
@@ -49,23 +52,10 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
     reading_list_model_observation_.Observe(reading_list_model_.get());
   }
   url_loading_notifier_->AddObserver(this);
+  browser_view_visibility_notifier_->AddObserver(this);
 }
 
 TabBasedIPHBrowserAgent::~TabBasedIPHBrowserAgent() = default;
-
-void TabBasedIPHBrowserAgent::RootViewForInProductHelpDidAppear() {
-  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
-  if (tapped_adjacent_tab_ && current_web_state &&
-      !current_web_state->IsLoading()) {
-    [HelpHandler()
-        presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
-    tapped_adjacent_tab_ = false;
-  }
-}
-
-void TabBasedIPHBrowserAgent::RootViewForInProductHelpWillDisappear() {
-  ResetFeatureStatesAndRemoveIPHViews();
-}
 
 void TabBasedIPHBrowserAgent::NotifyMultiGestureRefreshEvent() {
   engagement_tracker_->NotifyEvent(
@@ -133,6 +123,7 @@ void TabBasedIPHBrowserAgent::BookmarkNodeAdded(
 void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   active_web_state_observer_.reset();
   url_loading_notifier_->RemoveObserver(this);
+  browser_view_visibility_notifier_->RemoveObserver(this);
   browser->RemoveObserver(this);
 
   if (send_tab_to_self::
@@ -145,6 +136,24 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   url_loading_notifier_ = nil;
   command_dispatcher_ = nil;
   engagement_tracker_ = nil;
+}
+
+#pragma mark - BrowserViewVisibilityObserver
+
+void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
+    BrowserViewVisibilityState current_state,
+    BrowserViewVisibilityState previous_state) {
+  if (current_state == BrowserViewVisibilityState::kVisible) {
+    web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+    if (tapped_adjacent_tab_ && current_web_state &&
+        !current_web_state->IsLoading()) {
+      [HelpHandler()
+          presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
+      tapped_adjacent_tab_ = false;
+    }
+  } else if (previous_state == BrowserViewVisibilityState::kVisible) {
+    ResetFeatureStatesAndRemoveIPHViews();
+  }
 }
 
 #pragma mark - ReadingListModelObserver

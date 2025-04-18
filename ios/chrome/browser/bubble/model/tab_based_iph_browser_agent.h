@@ -9,6 +9,7 @@
 #import "base/scoped_observation.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -24,6 +25,8 @@ enum EntrySource;
 }  // namespace reading_list
 
 class Browser;
+class BrowserViewVisibilityNotifierBrowserAgent;
+enum class BrowserViewVisibilityState;
 @class CommandDispatcher;
 @protocol HelpCommands;
 @protocol PopupMenuCommands;
@@ -40,6 +43,7 @@ class Tracker;
 class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
                                 public BrowserUserData<TabBasedIPHBrowserAgent>,
                                 public BrowserObserver,
+                                public BrowserViewVisibilityObserver,
                                 public ReadingListModelObserver,
                                 public UrlLoadingObserver,
                                 public web::WebStateObserver {
@@ -50,19 +54,6 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   ~TabBasedIPHBrowserAgent() override;
 
 #pragma mark - Public methods
-
-  // Notifies that the view that a tab-based IPH is based on has appeared.
-  // Should be invoked when tab is fully expanded from tab grid, or when the tab
-  // view regains first responder status after dismissing infobars or bottom
-  // sheets.
-  // TODO(crbug.com/40276959): Invoke when tab becomes first responder.
-  void RootViewForInProductHelpDidAppear();
-
-  // Notifies that the view that a tab-based IPH is based on will disappear.
-  // Should be invoked when entering tab grid, or when the tab view stops being
-  // first responder because of infobars or bottom sheets.
-  // TODO(crbug.com/40276959): Invoke when tab resigns first responder.
-  void RootViewForInProductHelpWillDisappear();
 
   // Notifies the browser agent that the user has performed a multi-gesture tab
   // refresh. If the page happened to be scrolled to the top when it happened, a
@@ -88,6 +79,11 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
+
+  // BrowserViewVisibilityObserver
+  void BrowserViewVisibilityStateDidChange(
+      BrowserViewVisibilityState current_state,
+      BrowserViewVisibilityState previous_state) override;
 
   // ReadingListModelObserver
   void ReadingListModelLoaded(const ReadingListModel* model) override;
@@ -164,6 +160,9 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
       reading_list_model_observation_{this};
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
+  // Observer for browser view visibility.
+  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
+      browser_view_visibility_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.
   CommandDispatcher* command_dispatcher_;
   // Records events for the use of in-product help.

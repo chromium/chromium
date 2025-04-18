@@ -8,11 +8,16 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 
+@protocol BrowserViewVisibilityAudience;
 enum class BrowserViewVisibilityState;
 
 // This is a private category that is intended to only be imported in
 // browser_coordinator.mm.
 @interface BrowserViewController (Private)
+
+// Audience that gets notified of the visibility of the browser view.
+@property(nonatomic, weak) id<BrowserViewVisibilityAudience>
+    browserViewVisibilityAudience;
 
 // Activates/deactivates the object. This will enable/disable the ability for
 // this object to browse, and to have live UIWebViews associated with it. While
