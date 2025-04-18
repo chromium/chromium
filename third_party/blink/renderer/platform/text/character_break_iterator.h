@@ -61,6 +61,13 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
   bool operator!() const { return !is_8bit_ && !iterator_; }
 
  private:
+  struct PLATFORM_EXPORT ReturnToPool {
+    void operator()(void* ptr) const;
+  };
+  using PooledIterator = std::unique_ptr<icu::BreakIterator, ReturnToPool>;
+  class Pool;
+  FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, PooledCharacterBreakIterator);
+
   void CreateIteratorForBuffer(base::span<const UChar>);
 
   unsigned ClusterLengthStartingAt(unsigned offset) const {
@@ -91,7 +98,7 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
   unsigned length_ = 0;
 
   // For 16 bit strings, we use a TextBreakIterator.
-  TextBreakIterator* iterator_ = nullptr;
+  PooledIterator iterator_;
 };
 
 // Counts the number of grapheme clusters. A surrogate pair or a sequence

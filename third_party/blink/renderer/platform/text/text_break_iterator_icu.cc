@@ -648,25 +648,6 @@ void SetText16(TextBreakIterator* iter, base::span<const UChar> string) {
   iter->setText(&u_text, error_code);
 }
 
-TextBreakIterator* GetCharacterBreakIterator() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<std::unique_ptr<TextBreakIterator>>, thread_specific, ());
-
-  std::unique_ptr<TextBreakIterator>& iterator = *thread_specific;
-
-  if (!iterator) {
-    ICUError error_code;
-    iterator = base::WrapUnique(icu::BreakIterator::createCharacterInstance(
-        icu::Locale(CurrentTextBreakLocaleID()), error_code));
-    DCHECK(U_SUCCESS(error_code) && iterator)
-        << "ICU could not open a break iterator: " << u_errorName(error_code)
-        << " (" << error_code << ")";
-  }
-
-  DCHECK(iterator);
-  return iterator.get();
-}
-
 }  // namespace
 
 TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
@@ -781,6 +762,46 @@ void ReturnBreakIteratorToPool::operator()(void* ptr) const {
   LineBreakIteratorPool::SharedPool().Put(iterator);
 }
 
+//
+// A simple pool of `icu::BreakIterator` without any keys, as
+// `CharacterBreakIterator` is locale-independent.
+//
+class CharacterBreakIterator::Pool {
+ public:
+  static Pool& Get() {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Pool>, pool, ());
+    return *pool;
+  }
+
+  PooledIterator TakeOrCreate() {
+    if (!pool_.empty()) {
+      PooledIterator iterator(pool_.back().release());
+      pool_.pop_back();
+      return iterator;
+    }
+
+    ICUError error_code;
+    PooledIterator iterator(icu::BreakIterator::createCharacterInstance(
+        icu::Locale(CurrentTextBreakLocaleID()), error_code));
+    DCHECK(U_SUCCESS(error_code) && iterator)
+        << "ICU could not open a break iterator: " << u_errorName(error_code)
+        << " (" << error_code << ")";
+    return iterator;
+  }
+
+  void Put(icu::BreakIterator* iterator) { pool_.push_back(iterator); }
+
+ private:
+  static constexpr size_t kCapacity = 4;
+  Vector<std::unique_ptr<icu::BreakIterator>, kCapacity> pool_;
+};
+
+void CharacterBreakIterator::ReturnToPool::operator()(void* ptr) const {
+  icu::BreakIterator* iterator = static_cast<icu::BreakIterator*>(ptr);
+  DCHECK(iterator);
+  Pool::Get().Put(iterator);
+}
+
 CharacterBreakIterator::CharacterBreakIterator(const StringView& string) {
   if (string.empty()) {
     is_8bit_ = true;
@@ -807,8 +828,8 @@ CharacterBreakIterator::CharacterBreakIterator(base::span<const UChar> buffer) {
 
 void CharacterBreakIterator::CreateIteratorForBuffer(
     base::span<const UChar> buffer) {
-  iterator_ = GetCharacterBreakIterator();
-  SetText16(iterator_, buffer);
+  iterator_ = Pool::Get().TakeOrCreate();
+  SetText16(iterator_.get(), buffer);
 }
 
 int CharacterBreakIterator::Next() {
