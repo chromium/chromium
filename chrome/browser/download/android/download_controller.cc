@@ -47,6 +47,7 @@
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -65,6 +66,10 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
 #include "url/android/gurl_android.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
@@ -424,6 +429,14 @@ void DownloadController::StartAndroidDownloadInternal(
                                 std::string(),  // referrer_charset
                                 std::string(),  // suggested_name
                                 info.original_mime_type, default_file_name_);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // Log the SBClientDownloadExtensions enum value for the Android download.
+  int64_t uma_value = safe_browsing::FileTypePolicies::GetInstance()
+                          ->UmaValueForUTF16FilenameUnsafe(file_name);
+  base::UmaHistogramSparse("Download.AndroidDownload.FileExtension", uma_value);
+#endif
+
   ScopedJavaLocalRef<jobject> jurl =
       url::GURLAndroid::FromNativeGURL(env, info.url);
   ScopedJavaLocalRef<jobject> jreferer =

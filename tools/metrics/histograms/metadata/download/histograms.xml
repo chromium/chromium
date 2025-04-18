@@ -133,6 +133,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.AndroidDownload.FileExtension"
+    enum="SBClientDownloadExtensions" expires_after="2025-10-17">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the file extension of the suggested download filename, for downloads
+    sent to the Android download manager. This is logged once per download made
+    through the Android system download manager.
+  </summary>
+</histogram>
+
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
     expires_after="2025-08-24">
   <owner>dtrainor@chromium.org</owner>
