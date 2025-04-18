@@ -630,7 +630,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         mIsUndoing = isChangingGroups;
 
         // Notify that the tab will be removed from its current group.
-        if (isTabInTabGroup(tab)) {
+        if (isTabInTabGroup(tab) && isChangingGroups) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMoveTabOutOfGroup(
                         tab, /* destinationTabGroupId= */ originalTabGroupId);
@@ -647,6 +647,16 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // Else we can ignore tabs that remain at the same index if they are not changing root IDs.
 
         mIsUndoing = false;
+
+        // When moving a tab `resetWithListOfTabs` is invoked. This iterates over all tabs and sets
+        // resets all the maps. One side effect of this is that there is a period where some tabs
+        // are finished undoing and others are not. This means there is transiently a one to many
+        // relationship between group id and root ids. Ensure the entry in the map is for the
+        // original group id and root id of the most recently undone tab so that listeners of
+        // `didMergeTabToGroup` can look up information about the tab group correctly.
+        if (originalTabGroupId != null) {
+            mGroupIdToRootIdMap.put(originalTabGroupId, originalRootId);
+        }
 
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
@@ -756,7 +766,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (mRootIdToGroupMap.containsKey(rootId)) {
             mRootIdToGroupMap.get(rootId).addTab(tab.getId(), getTabModel());
 
-            if (willMergingCreateNewGroup) {
+            if (!mIsResetting && willMergingCreateNewGroup) {
                 // TODO(crbug.com/40173284): Update UMA for Context menu creation.
                 if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
                     if (mShouldRecordUma) {
