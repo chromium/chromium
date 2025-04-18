@@ -144,6 +144,24 @@ class LensOverlaySidePanelCoordinator
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // Internal state machine. States are mutually exclusive. Exposed for testing.
+  enum class State {
+    // This is the default state. This is the state when the side panel is not
+    // registered or shown. Currently, the only way to get back to the kOff
+    // state is to destroy this class.
+    kOff,
+
+    // Opening the side panel.
+    kOpeningSidePanel,
+
+    // The side panel is open and the WebUI has been bound.
+    kOpen,
+
+    // TODO(crbug.com/335516480): Implement suspended state.
+    kSuspended,
+  };
+  State state() { return state_; }
+
   /////////////////////////////////////////////////////////////////////////////
   // Test only methods.
   /////////////////////////////////////////////////////////////////////////////
@@ -300,6 +318,9 @@ class LensOverlaySidePanelCoordinator
 
   // The assembly data needed for the side panel entry to be created and shown.
   std::unique_ptr<SidePanelInitializationData> initialization_data_;
+
+  // Tracks the internal state machine.
+  State state_ = State::kOff;
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not yet bound at the time of a request.

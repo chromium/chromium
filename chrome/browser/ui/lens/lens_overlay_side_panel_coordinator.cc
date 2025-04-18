@@ -160,6 +160,13 @@ LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
+  // Exit early if the side panel is already registered or is in the process of
+  // being registered.
+  if(state_ != State::kOff) {
+    return;
+  }
+
+  state_ = State::kOpeningSidePanel;
   RegisterEntry();
   GetSidePanelUI(lens_overlay_controller_)
       ->Show(SidePanelEntry::Id::kLensOverlayResults);
@@ -446,14 +453,12 @@ void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
 void LensOverlaySidePanelCoordinator::BindSidePanel(
     mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
-  // If a side panel was already bound to this instance, then reset the old
-  // instance. This can occur if the side panel is closed and then reopened
-  // without the search controller destroying this instance.
-  side_panel_receiver_.reset();
-  side_panel_page_.reset();
+  CHECK(state_ == State::kOpeningSidePanel);
 
   side_panel_receiver_.Bind(std::move(receiver));
   side_panel_page_.Bind(std::move(page));
+  state_ = State::kOpen;
+
   if (pending_side_panel_url_.has_value()) {
     side_panel_page_->LoadResultsInFrame(*pending_side_panel_url_);
     pending_side_panel_url_.reset();
