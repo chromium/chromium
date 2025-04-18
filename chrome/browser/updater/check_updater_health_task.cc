@@ -40,8 +40,6 @@ CheckUpdaterHealthTask::~CheckUpdaterHealthTask() = default;
 
 void CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth(
     const base::Version& version) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   base::UmaHistogramBoolean("GoogleUpdate.UpdaterHealth.UpdaterValid",
                             version.IsValid());
   if (!version.IsValid()) {
