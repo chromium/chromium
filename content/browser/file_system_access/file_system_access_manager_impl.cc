@@ -49,6 +49,7 @@
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -581,6 +582,18 @@ void FileSystemAccessManagerImpl::ChooseEntries(
             "User activation is required to show a file picker."),
         std::vector<blink::mojom::FileSystemAccessEntryPtr>());
     return;
+  }
+
+  // Consume user activation to address this issue: crbug.com/40059071
+  // TODO(crbug.com/411125804): Consider moving this user activation check to
+  // the renderer process or informing the renderer that it lost user
+  // activation.
+  if (content_browser_client
+          ->IsTransientActivationRequiredForShowFileOrDirectoryPicker(
+              web_contents)) {
+    FrameTreeNode::From(rfh)->UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+        blink::mojom::UserActivationNotificationType::kNone);
   }
 
   // Don't show the file picker if there is an already active file picker for
