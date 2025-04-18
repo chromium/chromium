@@ -974,9 +974,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Opens a given URL in a new tab.
 - (void)openURLInNewTab:(GURL)URL {
-  OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:URL
-                   inIncognito:self.profile->IsOffTheRecord()];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL
+                                      inIncognito:self.isOffTheRecord];
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];

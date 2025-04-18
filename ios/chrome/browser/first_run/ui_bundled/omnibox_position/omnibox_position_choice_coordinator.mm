@@ -43,7 +43,7 @@
   [super start];
 
   _mediator = [[OmniboxPositionChoiceMediator alloc] init];
-  if (!self.profile->IsOffTheRecord()) {
+  if (!self.isOffTheRecord) {
     _mediator.deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForProfile(self.profile);
