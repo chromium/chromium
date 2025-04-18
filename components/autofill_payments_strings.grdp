@@ -137,8 +137,8 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to November 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
     Save card to Google Account?
   </message>
-  <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
+  <if expr="not is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android in H1 2025.">
       Save card securely?
     </message>
   </if>
@@ -183,8 +183,8 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to the server. The prompt will be shown on both the Desktop bubble and the Android bottom sheet.">
     To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
   </message>
-  <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
+  <if expr="not is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android in H1 2025.">
       Pay faster when your card is saved. Card details are encrypted in your Google Account.
     </message>
   </if>

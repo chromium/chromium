@@ -183,7 +183,12 @@ class AutofillSaveCardUiInfoTestForUploadSave
     : public testing::Test,
       public testing::WithParamInterface<bool> {
  public:
-  AutofillSaveCardUiInfoTestForUploadSave() = default;
+  AutofillSaveCardUiInfoTestForUploadSave() {
+#if BUILDFLAG(IS_ANDROID)
+    features_.InitAndEnableFeature(
+        features::kAutofillEnableShowSaveCardSecurelyMessage);
+#endif  // #BUILDFLAG(IS_ANDROID)
+  }
 
   ~AutofillSaveCardUiInfoTestForUploadSave() override = default;
 
@@ -301,9 +306,12 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
 // upload-card-save-with-CVC bottom sheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCardSaveWithCvcBottomSheet) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+       VerifyAttributesForCardSaveWithCvcBottomSheet_FlagOff) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{
+          features::kAutofillEnableShowSaveCardSecurelyMessage});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
@@ -320,6 +328,33 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
             is_gpay_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD)
+                : u"");
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-card-save-with-CVC bottom sheet.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCardSaveWithCvcBottomSheet) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
+      is_gpay_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
+                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_gpay_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            is_gpay_branded()
+                ? l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
                 : u"");
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
