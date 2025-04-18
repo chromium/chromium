@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
@@ -34,6 +33,7 @@
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -245,8 +245,8 @@ using base::UserMetricsAction;
     // Show url favicon when it's valid.
     [self loadFaviconByPageURL:suggestion.destinationUrl.gurl
                     completion:^(UIImage* image) {
-                      NSString* webPageUrl = base::SysUTF8ToNSString(
-                          suggestion.destinationUrl.gurl.spec());
+                      NSString* webPageUrl = [NSString
+                          cr_fromString:suggestion.destinationUrl.gurl.spec()];
                       [weakSelf.consumer updateAutocompleteIcon:image
                                     withAccessibilityIdentifier:webPageUrl];
                     }];
@@ -497,7 +497,7 @@ using base::UserMetricsAction;
         if (!optionalURL) {
           return;
         }
-        NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
+        NSString* url = [NSString cr_fromString:optionalURL.value().spec()];
         dispatch_async(dispatch_get_main_queue(), ^{
           [weakSelf.loadQueryCommandsHandler loadQuery:url immediately:YES];
           [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
@@ -513,7 +513,7 @@ using base::UserMetricsAction;
         if (!optionalText) {
           return;
         }
-        NSString* query = base::SysUTF16ToNSString(optionalText.value());
+        NSString* query = [NSString cr_fromString16:optionalText.value()];
         dispatch_async(dispatch_get_main_queue(), ^{
           [weakSelf.loadQueryCommandsHandler loadQuery:query immediately:YES];
           [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];

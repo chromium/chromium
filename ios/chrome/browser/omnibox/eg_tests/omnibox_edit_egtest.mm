@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -103,8 +104,8 @@
 
   // Type the shortcut input in the omnibox.
   [ChromeEarlGreyUI
-      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
-                                     omnibox::PageTitle(shortcutPage))];
+      focusOmniboxAndReplaceText:[NSString cr_fromString:omnibox::PageTitle(
+                                                             shortcutPage)]];
 
   // The shortcut suggestion should be default match. Press enter to navigate to
   // it.

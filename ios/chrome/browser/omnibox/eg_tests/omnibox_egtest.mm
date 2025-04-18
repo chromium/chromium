@@ -9,7 +9,6 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -348,10 +348,10 @@ void FocusFakebox() {
   GURL::Replacements httpsReplacements;
   httpsReplacements.SetSchemeStr(url::kHttpsScheme);
 
-  NSString* URL = base::SysUTF8ToNSString(
-      self.testServer->GetURL("www.google.com", kHeaderPageURL)
-          .ReplaceComponents(httpsReplacements)
-          .spec());
+  NSString* URL = [NSString
+      cr_fromString:self.testServer->GetURL("www.google.com", kHeaderPageURL)
+                        .ReplaceComponents(httpsReplacements)
+                        .spec()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(URL)];
@@ -414,7 +414,7 @@ void FocusFakebox() {
   // Check that the omnibox contains the copied text.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            base::SysNSStringToUTF8(textToSearch))];
+                            textToSearch.cr_UTF8String)];
 }
 
 // Tests that Visit Copied Link menu button is shown with a link in the
@@ -422,7 +422,7 @@ void FocusFakebox() {
 - (void)testOmniboxMenuPasteURLToSearch {
   FocusFakebox();
   // Copy URL into clipboard.
-  [ChromeEarlGrey copyTextToPasteboard:base::SysUTF8ToNSString(_URL1.spec())];
+  [ChromeEarlGrey copyTextToPasteboard:[NSString cr_fromString:_URL1.spec()]];
   // Tap Visit Copied Link menu button.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_longPress()];
@@ -594,7 +594,7 @@ void FocusFakebox() {
   // Tapping it should copy the URL.
   [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
       performAction:grey_tap()];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+  [ChromeEarlGrey verifyStringCopied:[NSString cr_fromString:_URL1.spec()]];
 
   // Go to another web page.
   [self openPage2];
@@ -1263,7 +1263,7 @@ void FocusFakebox() {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"C"
                                           flags:UIKeyModifierCommand];
 
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+  [ChromeEarlGrey verifyStringCopied:[NSString cr_fromString:_URL1.spec()]];
 
   // Defocus the omnibox.
   DefocusOmnibox();
@@ -1308,7 +1308,7 @@ void FocusFakebox() {
 
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"X"
                                           flags:UIKeyModifierCommand];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+  [ChromeEarlGrey verifyStringCopied:[NSString cr_fromString:_URL1.spec()]];
 
   // Verify that the omnibox is empty.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]

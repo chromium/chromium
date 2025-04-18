@@ -219,6 +219,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_conversions",
     "//ios/chrome/test:block_cleanup_test",
     "//ios/testing:nserror_support",
     "//ios/web/common:uikit",

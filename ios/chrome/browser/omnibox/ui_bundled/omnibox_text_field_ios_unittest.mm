@@ -9,10 +9,10 @@
 #import "base/files/file_util.h"
 #import "base/path_service.h"
 #import "base/strings/string_split.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "testing/gtest_mac.h"
@@ -134,7 +134,7 @@ TEST_F(OmniboxTextFieldIOSTest, MAYBE_SelectedRanges) {
 
   for (size_t i = 0; i < test_strings.size(); ++i) {
     if (test_strings[i].size() > 0) {
-      VerifySelectedNSRanges(base::SysUTF8ToNSString(test_strings[i]));
+      VerifySelectedNSRanges([NSString cr_fromString:test_strings[i]]);
     }
   }
 }
