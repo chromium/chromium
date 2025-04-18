@@ -460,7 +460,6 @@ public abstract class ChromeFeatureList {
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRICE_ANNOTATIONS = "PriceAnnotations";
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
-    public static final String PRICE_INSIGHTS = "PriceInsights";
     public static final String PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE =
             "PrivacySandboxActivityTypeStorage";
     public static final String PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS =
@@ -794,9 +793,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPrefetchBrowserInitiatedTriggers =
             newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
-    public static final CachedFlag sPriceInsights =
-            newCachedFlag(
-                    PRICE_INSIGHTS, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sRightEdgeGoesForwardGestureNav =
             newCachedFlag(RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV, false);
     public static final CachedFlag sSafetyHubMagicStack =
@@ -932,7 +928,6 @@ public abstract class ChromeFeatureList {
                     sPowerSavingModeBroadcastReceiverInBackground,
                     sPrefetchBrowserInitiatedTriggers,
                     sPriceChangeModule,
-                    sPriceInsights,
                     sRightEdgeGoesForwardGestureNav,
                     sSafetyHubMagicStack,
                     sSafetyHubWeakAndReusedPasswords,
