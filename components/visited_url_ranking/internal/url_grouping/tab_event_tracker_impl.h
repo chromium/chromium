@@ -15,6 +15,8 @@ namespace visited_url_ranking {
 // suggestion computation.
 class TabEventTrackerImpl : public TabEventTracker {
  public:
+  static const char kAndroidNativeNewTabPageURL[];
+
   using OnNewEventCallback = base::RepeatingClosure;
   explicit TabEventTrackerImpl(OnNewEventCallback on_new_event_callback);
   ~TabEventTrackerImpl() override;
@@ -25,6 +27,7 @@ class TabEventTrackerImpl : public TabEventTracker {
   // TabEventTracker impl:
   void DidAddTab(int tab_id, int tab_launch_type) override;
   void DidSelectTab(int tab_id,
+                    const GURL& url,
                     TabSelectionType tab_selection_type,
                     int last_tab_id) override;
   void WillCloseTab(int tab_id) override;

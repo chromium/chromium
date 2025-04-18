@@ -68,12 +68,12 @@ class TabEventsVisitTransformerTest : public URLVisitAggregatesTransformerTest {
 
     tab_tracker_->DidAddTab(1, 1);
     tab_tracker_->DidAddTab(2, 1);
-    tab_tracker_->DidSelectTab(1, TabEventTracker::TabSelectionType::kFromUser,
-                               2);
-    tab_tracker_->DidSelectTab(2, TabEventTracker::TabSelectionType::kFromUser,
-                               1);
-    tab_tracker_->DidSelectTab(1, TabEventTracker::TabSelectionType::kFromUser,
-                               2);
+    tab_tracker_->DidSelectTab(1, GURL(kTestUrl1),
+                               TabEventTracker::TabSelectionType::kFromUser, 2);
+    tab_tracker_->DidSelectTab(2, GURL(kTestUrl1),
+                               TabEventTracker::TabSelectionType::kFromUser, 1);
+    tab_tracker_->DidSelectTab(1, GURL(kTestUrl1),
+                               TabEventTracker::TabSelectionType::kFromUser, 2);
 
     return candidates;
   }

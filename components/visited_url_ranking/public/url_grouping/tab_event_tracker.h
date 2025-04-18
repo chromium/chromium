@@ -16,6 +16,9 @@ class TabEventTracker {
   TabEventTracker(const TabEventTracker&) = delete;
   TabEventTracker& operator=(const TabEventTracker&) = delete;
 
+  // The action taken by the user in response to the suggestion.
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.components.visited_url_ranking.url_grouping)
   // The reason for a tab to be selected. This value is platform specific. Extra
   // enums to be added for each platform.
   enum class TabSelectionType {
@@ -41,6 +44,7 @@ class TabEventTracker {
   // Called when a tab is selected. Should be called at initialization time with
   // the active tab at startup.
   virtual void DidSelectTab(int tab_id,
+                            const GURL& url,
                             TabSelectionType tab_selection_type,
                             int last_tab_id) = 0;
 

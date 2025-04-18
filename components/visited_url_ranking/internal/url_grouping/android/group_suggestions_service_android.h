@@ -31,6 +31,7 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
 
   void DidSelectTab(JNIEnv* env,
                     int tab_id,
+                    const jni_zero::JavaParamRef<jobject>& url,
                     int tab_selection_type,
                     int last_id);
 

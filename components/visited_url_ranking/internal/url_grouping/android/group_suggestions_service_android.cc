@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
 #include "components/visited_url_ranking/public/url_grouping/tab_event_tracker.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/visited_url_ranking/internal/jni_headers/DelegateBridge_jni.h"
@@ -220,12 +221,15 @@ void GroupSuggestionsServiceAndroid::DidAddTab(JNIEnv* env,
                                                               tab_launch_type);
 }
 
-void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
-                                                  int tab_id,
-                                                  int tab_selection_type,
-                                                  int last_id) {
+void GroupSuggestionsServiceAndroid::DidSelectTab(
+    JNIEnv* env,
+    int tab_id,
+    const JavaParamRef<jobject>& url,
+    int tab_selection_type,
+    int last_id) {
   group_suggestions_service_->GetTabEventTracker()->DidSelectTab(
-      tab_id, ConvertIntToTabSelectionType(tab_selection_type), last_id);
+      tab_id, url::GURLAndroid::ToNativeGURL(env, url),
+      ConvertIntToTabSelectionType(tab_selection_type), last_id);
 }
 
 void GroupSuggestionsServiceAndroid::WillCloseTab(JNIEnv* env, int tab_id) {

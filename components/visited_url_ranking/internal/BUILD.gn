@@ -95,6 +95,7 @@ static_library("internal_url_grouping") {
     deps += [
       ":jni_headers",
       "//components/visited_url_ranking/public:jni_headers",
+      "//url:url",
     ]
   }
 }
@@ -196,6 +197,7 @@ if (is_android) {
       "//build/android:build_java",
       "//components/visited_url_ranking/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
   }
 

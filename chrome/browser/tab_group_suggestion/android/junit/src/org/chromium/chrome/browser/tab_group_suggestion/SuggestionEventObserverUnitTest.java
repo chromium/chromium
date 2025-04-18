@@ -41,15 +41,16 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionEventObserverUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int TAB_ID = 123;
+    private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     @Mock Profile mProfile;
     @Mock TabModel mTabModel;
@@ -72,7 +73,7 @@ public class SuggestionEventObserverUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         when(mTab.getId()).thenReturn(TAB_ID);
-        when(mTab.getUrl()).thenReturn(new GURL("https://foo.com"));
+        when(mTab.getUrl()).thenReturn(TEST_URL);
         mHubVisibilitySupplier = new ObservableSupplierImpl<>();
         when(mHubManager.getHubVisibilitySupplier()).thenReturn(mHubVisibilitySupplier);
         when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
@@ -93,24 +94,7 @@ public class SuggestionEventObserverUnitTest {
         mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, 0);
 
         verify(mGroupSuggestionsService)
-                .didSelectTab(eq(TAB_ID), eq(TabSelectionType.FROM_USER), eq(0));
-    }
-
-    @Test
-    public void testDidSelectTab_IgnoreTypes() {
-        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_CLOSE, 0);
-        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_EXIT, 0);
-        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_UNDO, 0);
-
-        verify(mGroupSuggestionsService, never()).didSelectTab(anyInt(), anyInt(), anyInt());
-    }
-
-    @Test
-    public void testDidSelectTab_IgnoreNTP() {
-        when(mTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, 0);
-
-        verify(mGroupSuggestionsService, never()).didSelectTab(anyInt(), anyInt(), anyInt());
+                .didSelectTab(eq(TAB_ID), eq(TEST_URL), eq(TabSelectionType.FROM_USER), eq(0));
     }
 
     @Test

@@ -107,6 +107,7 @@ if (is_android) {
       "//base:callback_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
   }
 
@@ -119,6 +120,9 @@ if (is_android) {
   }
 
   java_cpp_enum("group_suggestions_generated_enums") {
-    sources = [ "url_grouping/group_suggestions_delegate.h" ]
+    sources = [
+      "url_grouping/group_suggestions_delegate.h",
+      "url_grouping/tab_event_tracker.h",
+    ]
   }
 }

@@ -12,6 +12,9 @@ const base::TimeDelta kSelectionTimeWindow = base::Minutes(10);
 
 }  // namespace
 
+const char TabEventTrackerImpl::kAndroidNativeNewTabPageURL[] =
+    "chrome-native://newtab/";
+
 TabEventTrackerImpl::TabEventTrackerImpl(
     OnNewEventCallback on_new_event_callback)
     : on_new_event_callback_(on_new_event_callback) {}
@@ -29,10 +32,12 @@ void TabEventTrackerImpl::DidAddTab(int tab_id, int tab_launch_type) {
 }
 
 void TabEventTrackerImpl::DidSelectTab(int tab_id,
+                                       const GURL& url,
                                        TabSelectionType tab_selection_type,
                                        int last_tab_id) {
-  if (tab_selection_type != TabSelectionType::kFromUser ||
-      last_tab_id == tab_id) {
+  if ((tab_selection_type != TabSelectionType::kFromUser &&
+       tab_selection_type != TabSelectionType::kFromOmnibox) ||
+      last_tab_id == tab_id || url.spec() == kAndroidNativeNewTabPageURL) {
     return;
   }
   tab_id_selection_map_[tab_id].emplace_back(tab_id, tab_selection_type,

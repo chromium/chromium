@@ -10,6 +10,11 @@
 
 namespace visited_url_ranking {
 
+namespace {
+
+constexpr char kTestUrl[] = "https://www.example1.com/";
+}  // namespace
+
 class TabEventTrackerImplTest : public testing::Test {
  public:
   TabEventTrackerImplTest() = default;
@@ -39,7 +44,7 @@ TEST_F(TabEventTrackerImplTest, CallbackCalled) {
 
   EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->DidSelectTab(
-      1, TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
 }
 
 TEST_F(TabEventTrackerImplTest, SwitchedCount) {
@@ -61,12 +66,12 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount) {
 
   // Selection with no current tab change does not change counts.
   tab_event_tracker_->DidSelectTab(
-      1, TabEventTracker::TabSelectionType::kFromUser, 1);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      2, TabEventTracker::TabSelectionType::kFromUser, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
@@ -75,7 +80,7 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount) {
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      1, TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 }
@@ -88,14 +93,14 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreOldSwitch) {
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   tab_event_tracker_->DidSelectTab(
-      1, TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
   task_environment_.FastForwardBy(base::Minutes(6));
 
   tab_event_tracker_->DidSelectTab(
-      2, TabEventTracker::TabSelectionType::kFromUser, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
@@ -115,9 +120,9 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_CloseTab) {
   const int kTabId2 = 2;
 
   tab_event_tracker_->DidSelectTab(
-      2, TabEventTracker::TabSelectionType::kFromUser, 1);
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 1);
   tab_event_tracker_->DidSelectTab(
-      1, TabEventTracker::TabSelectionType::kFromUser, 2);
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
 
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
@@ -135,6 +140,24 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_CloseTab) {
   tab_event_tracker_->TabClosureUndone(1);
 
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
+}
+
+TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreNTP) {
+  const int kTabId1 = 1;
+  const int kTabId2 = 2;
+
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
+
+  tab_event_tracker_->DidSelectTab(
+      1, GURL(TabEventTrackerImpl::kAndroidNativeNewTabPageURL),
+      TabEventTracker::TabSelectionType::kFromUser, 2);
+  tab_event_tracker_->DidSelectTab(
+      2, GURL(TabEventTrackerImpl::kAndroidNativeNewTabPageURL),
+      TabEventTracker::TabSelectionType::kFromUser, 1);
+
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 }
 
