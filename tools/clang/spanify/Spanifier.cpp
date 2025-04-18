@@ -1520,6 +1520,13 @@ static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   return false;
 }
 
+static bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
+  if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
+    return var_decl->isInlineSpecified();
+  }
+  return false;
+}
+
 static bool IsStaticLocalOrStaticStorageClass(
     const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
@@ -1594,6 +1601,9 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   const clang::QualType& original_element_type = array_type->getElementType();
 
   std::stringstream qualifier_string;
+  if (IsInlineVarDecl(array_decl)) {
+    qualifier_string << "inline ";
+  }
   if (IsMutable(array_decl)) {
     // While 'mutable' is a storage class specifier, include it with other
     // declaration specifiers that precede the type in source code.
