@@ -386,64 +386,6 @@ void AILanguageModel::PromptGetInputSizeCompletion(
                           std::move(current_item), responder_id));
 }
 
-AILanguageModel::MultimodalResponder::MultimodalResponder(
-    AILanguageModel* model,
-    mojo::PendingReceiver<on_device_model::mojom::StreamingResponder>
-        response_receiver,
-    mojo::PendingReceiver<on_device_model::mojom::ContextClient>
-        context_receiver,
-    mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder)
-    : model_(model),
-      response_receiver_(this, std::move(response_receiver)),
-      context_receiver_(this, std::move(context_receiver)),
-      responder_(std::move(responder)) {
-  responder_.set_disconnect_handler(base::BindOnce(
-      &MultimodalResponder::OnDisconnect, base::Unretained(this)));
-  response_receiver_.set_disconnect_handler(base::BindOnce(
-      &MultimodalResponder::OnDisconnect, base::Unretained(this)));
-}
-
-AILanguageModel::MultimodalResponder::~MultimodalResponder() {
-  if (responder_) {
-    responder_->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorCancelled);
-  }
-}
-
-void AILanguageModel::MultimodalResponder::OnResponse(
-    on_device_model::mojom::ResponseChunkPtr chunk) {
-  current_response_ += chunk->text;
-  responder_->OnStreaming(chunk->text);
-}
-
-void AILanguageModel::MultimodalResponder::OnComplete(
-    on_device_model::mojom::ResponseSummaryPtr summary) {
-  if (model_->session_) {
-    auto append_options = on_device_model::mojom::AppendOptions::New();
-    append_options->input = on_device_model::mojom::Input::New();
-    append_options->input->pieces.push_back(current_response_);
-    append_options->input->pieces.push_back(ml::Token::kEnd);
-    append_options->max_tokens = model_->context_->max_tokens();
-    model_->session_->GetSession().Append(std::move(append_options), {});
-  }
-  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  // Add one extra for the end token after model output.
-  responder_->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-      tokens_processed_ + summary->output_token_count + 1));
-  responder_.reset();
-}
-
-void AILanguageModel::MultimodalResponder::OnComplete(
-    uint32_t tokens_processed) {
-  tokens_processed_ = tokens_processed;
-  context_receiver_.reset();
-}
-
-void AILanguageModel::MultimodalResponder::OnDisconnect() {
-  // Deletes `this`.
-  model_->multimodal_responder_ = nullptr;
-}
-
 void AILanguageModel::Prompt(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     const std::optional<std::string>& response_json_schema,
@@ -490,33 +432,21 @@ void AILanguageModel::Fork(
   const optimization_guide::SamplingParams sampling_param =
       session_->GetSamplingParams();
 
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      override_session;
-  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAIPromptAPIMultimodalInput)) {
-    override_session = session_->Clone();
-  }
   ai_manager_->CreateLanguageModelForCloning(
       base::PassKey<AILanguageModel>(),
       blink::mojom::AILanguageModelSamplingParams::New(
           sampling_param.top_k, sampling_param.temperature),
       session_->GetCapabilities(), context_bound_object_set_.get(), *context_,
-      std::move(client_remote), std::move(override_session));
+      std::move(client_remote));
 }
 
 void AILanguageModel::Destroy() {
-  if (session_) {
-    session_.reset();
-  }
-
+  session_.reset();
   for (auto& responder : responder_set_) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
-
   responder_set_.Clear();
-  multimodal_responder_ = nullptr;
 }
 
 blink::mojom::AILanguageModelInstanceInfoPtr

@@ -55,7 +55,6 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
   // This should be called *before* other ON_CALL statements.
   void Delegate(OptimizationGuideModelExecutor::Session* impl);
 
-  MOCK_METHOD(on_device_model::mojom::Session&, GetSession, (), (override));
   MOCK_METHOD(const optimization_guide::TokenLimits&,
               GetTokenLimits,
               (),

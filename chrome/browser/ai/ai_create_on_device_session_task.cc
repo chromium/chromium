@@ -61,11 +61,6 @@ void CreateOnDeviceSessionTask::Start() {
     return;
   }
 
-  if (override_session_) {
-    Finish(std::move(override_session_));
-    return;
-  }
-
   if (auto session = StartSession()) {
     Finish(std::move(session));
     return;

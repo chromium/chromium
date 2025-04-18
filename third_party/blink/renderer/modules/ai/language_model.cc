@@ -473,7 +473,7 @@ ScriptPromise<IDLString> LanguageModel::prompt(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPrompt);
 
-  // TODO(crbug.com/385173789): Aggregate other input type sizes for UMA.
+  // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
   if (input->IsString()) {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(
@@ -549,7 +549,7 @@ ReadableStream* LanguageModel::promptStreaming(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPromptStreaming);
 
-  // TODO(crbug.com/385173789): Aggregate other input type sizes for UMA.
+  // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
   if (input->IsString()) {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(

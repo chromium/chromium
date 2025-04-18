@@ -369,9 +369,7 @@ AIManager::CreateLanguageModelInternal(
     on_device_model::Capabilities capabilities,
     AIContextBoundObjectSet& context_bound_object_set,
     base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
-    const std::optional<const AILanguageModel::Context>& context,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        override_session) {
+    const std::optional<const AILanguageModel::Context>& context) {
   blink::mojom::AILanguageModelParamsPtr language_model_params =
       GetLanguageModelParams();
 
@@ -419,7 +417,6 @@ AIManager::CreateLanguageModelInternal(
           },
           browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
           context, std::ref(*this), std::move(callback)));
-  task->set_override_session(std::move(override_session));
   task->Start();
   return task;
 }
@@ -772,9 +769,7 @@ void AIManager::CreateLanguageModelForCloning(
     AIContextBoundObjectSet& context_bound_object_set,
     const AILanguageModel::Context& context,
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        override_session) {
+        client_remote) {
   auto create_language_model_callback = base::BindOnce(
       [](AIContextBoundObjectSet& context_bound_object_set,
          mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
@@ -798,8 +793,7 @@ void AIManager::CreateLanguageModelForCloning(
   // clone should be provided.
   auto task = CreateLanguageModelInternal(
       std::move(sampling_params), capabilities, context_bound_object_set,
-      std::move(create_language_model_callback), context,
-      std::move(override_session));
+      std::move(create_language_model_callback), context);
   // The on-device model must be available before the existing language model
   // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
   // complete without waiting for the on-device model availability changes.

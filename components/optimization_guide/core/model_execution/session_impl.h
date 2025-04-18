@@ -61,7 +61,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
-  on_device_model::mojom::Session& GetSession() override;
   const TokenLimits& GetTokenLimits() const override;
   const proto::Any& GetOnDeviceFeatureMetadata() const override;
   void SetInput(MultimodalMessage request) override;

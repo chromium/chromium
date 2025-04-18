@@ -242,9 +242,6 @@ class OptimizationGuideModelExecutor {
    public:
     virtual ~Session() = default;
 
-    // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-    virtual on_device_model::mojom::Session& GetSession() = 0;
-
     virtual const TokenLimits& GetTokenLimits() const = 0;
 
     // Sets the input context for this session, replacing any previous context.
