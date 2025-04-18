@@ -34,12 +34,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/guest_view/app_view/chrome_app_view_guest_delegate.h"
-#include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"
-#include "chrome/browser/guest_view/extension_options/chrome_extension_options_guest_delegate.h"
-#include "chrome/browser/guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h"
-#include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
-#include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -78,16 +72,22 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "chrome/browser/guest_view/app_view/chrome_app_view_guest_delegate.h"
+#include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"
+#include "chrome/browser/guest_view/extension_options/chrome_extension_options_guest_delegate.h"
+#include "chrome/browser/guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h"
+#include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
+#include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -128,10 +128,9 @@ bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(
     const std::string& header_name) const {
   // Gaia may send a OAUth2 authorization code in the Dice response header,
   // which could allow an extension to generate a refresh token for the account.
-  return (
-      (url.host_piece() == GaiaUrls::GetInstance()->gaia_url().host_piece()) &&
-      (base::CompareCaseInsensitiveASCII(header_name,
-                                         signin::kDiceResponseHeader) == 0));
+  return url.host_piece() == GaiaUrls::GetInstance()->gaia_url().host_piece() &&
+         base::CompareCaseInsensitiveASCII(header_name,
+                                           signin::kDiceResponseHeader) == 0;
 }
 
 bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
@@ -153,15 +152,15 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
 
   // Hide requests made by the browser on behalf of the NTP.
   is_sensitive_request |=
-      (is_browser_request &&
-       request.initiator ==
-           url::Origin::Create(GURL(chrome::kChromeUINewTabURL)));
+      is_browser_request &&
+      request.initiator ==
+          url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
 
   // Hide requests made by the browser on behalf of the 1P WebUI NTP.
   is_sensitive_request |=
-      (is_browser_request &&
-       request.initiator ==
-           url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL)));
+      is_browser_request &&
+      request.initiator ==
+          url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL));
 
   // Hide requests made by the NTP Instant renderer.
   auto* instant_service =
@@ -197,19 +196,22 @@ void ChromeExtensionsAPIClient::NotifyWebRequestWithheld(
   }
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   extensions::ExtensionActionRunner* runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!runner)
+  if (!runner) {
     return;
+  }
 
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(web_contents->GetBrowserContext())
           ->enabled_extensions()
           .GetByID(extension_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   // If the extension doesn't request access to the tab, return. The user
   // invoking the extension on a site grants access to the tab's origin if
@@ -249,12 +251,13 @@ void ChromeExtensionsAPIClient::UpdateActionCount(
   // The badge text should be cleared if |action| contains explicitly set badge
   // text for the |tab_id| when the preference is then toggled on. In this case,
   // the matched action count should take precedence over the badge text.
-  if (clear_badge_text)
+  if (clear_badge_text) {
     action->ClearBadgeText(tab_id);
+  }
 
   content::WebContents* tab_contents = nullptr;
-  if (ExtensionTabUtil::GetTabById(
-          tab_id, context, true /* include_incognito */, &tab_contents) &&
+  if (ExtensionTabUtil::GetTabById(tab_id, context, /*include_incognito=*/true,
+                                   &tab_contents) &&
       tab_contents) {
     ExtensionActionDispatcher::Get(context)->NotifyChange(action, tab_contents,
                                                           context);
@@ -272,7 +275,7 @@ void ChromeExtensionsAPIClient::ClearActionCount(
 
   std::vector<content::WebContents*> contents_to_notify =
       ExtensionTabUtil::GetAllActiveWebContentsForContext(
-          context, true /* include_incognito */);
+          context, /*include_incognito=*/true);
 
   for (auto* active_contents : contents_to_notify) {
     ExtensionActionDispatcher::Get(context)->NotifyChange(
@@ -297,7 +300,7 @@ void ChromeExtensionsAPIClient::OpenFileUrl(
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 AppViewGuestDelegate* ChromeExtensionsAPIClient::CreateAppViewGuestDelegate()
     const {
-  return new ChromeAppViewGuestDelegate();
+  return new ChromeAppViewGuestDelegate;
 }
 
 ExtensionOptionsGuestDelegate*
@@ -405,26 +408,28 @@ ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
 }
 
 MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
-  if (!metrics_private_delegate_)
+  if (!metrics_private_delegate_) {
     metrics_private_delegate_ =
         std::make_unique<ChromeMetricsPrivateDelegate>();
+  }
   return metrics_private_delegate_.get();
 }
 
 FileSystemDelegate* ChromeExtensionsAPIClient::GetFileSystemDelegate() {
+  if (!file_system_delegate_) {
 #if BUILDFLAG(IS_CHROMEOS)
-  using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegateAsh;
+    file_system_delegate_ = std::make_unique<ChromeFileSystemDelegateAsh>();
 #else
-  using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegate;
+    file_system_delegate_ = std::make_unique<ChromeFileSystemDelegate>();
 #endif
-  if (!file_system_delegate_)
-    file_system_delegate_ = std::make_unique<ChromeFileSystemDelegate_Use>();
+  }
   return file_system_delegate_.get();
 }
 
 MessagingDelegate* ChromeExtensionsAPIClient::GetMessagingDelegate() {
-  if (!messaging_delegate_)
+  if (!messaging_delegate_) {
     messaging_delegate_ = std::make_unique<ChromeMessagingDelegate>();
+  }
   return messaging_delegate_.get();
 }
 
@@ -462,8 +467,9 @@ void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
     AdditionalDataItemList additional_items,
     base::OnceClosure success_callback,
     base::OnceCallback<void(const std::string&)> error_callback) {
-  if (!clipboard_extension_helper_)
+  if (!clipboard_extension_helper_) {
     clipboard_extension_helper_ = std::make_unique<ClipboardExtensionHelper>();
+  }
   clipboard_extension_helper_->DecodeAndSaveImageData(
       std::move(image_data), type, std::move(additional_items),
       std::move(success_callback), std::move(error_callback));
