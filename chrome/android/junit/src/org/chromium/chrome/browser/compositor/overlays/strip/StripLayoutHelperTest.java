@@ -5840,6 +5840,69 @@ public class StripLayoutHelperTest {
                 0f);
     }
 
+    @Test
+    public void testScroll_verticalAxis() {
+        initializeTest(false, false, 2, 22);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.setScrollOffsetForTesting(-1000);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        float originalOffset = mStripLayoutHelper.getScrollOffset();
+
+        mStripLayoutHelper.onScroll(0.0f, 2.4f);
+        mStripLayoutHelper.finishScrollForTesting();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Assert scroll offset position.
+        assertEquals(
+                "StripLayoutHelper scrolled to the wrong offset.",
+                originalOffset + 40.0,
+                mStripLayoutHelper.getScrollOffset(),
+                0.0);
+    }
+
+    @Test
+    public void testScroll_horizontalAxis() {
+        initializeTest(false, false, 11, 11);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.setScrollOffsetForTesting(500);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        float originalOffset = mStripLayoutHelper.getScrollOffset();
+
+        mStripLayoutHelper.onScroll(-4.0f, 0.0f);
+        mStripLayoutHelper.finishScrollForTesting();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Assert scroll offset position.
+        assertEquals(
+                "StripLayoutHelper scrolled to the wrong offset.",
+                originalOffset - 40.0,
+                mStripLayoutHelper.getScrollOffset(),
+                0.0);
+    }
+
+    @Test
+    public void testScroll_bothVerticalAndHorizontalAxes() {
+        initializeTest(false, false, 11, 11);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.setScrollOffsetForTesting(500);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        float originalOffset = mStripLayoutHelper.getScrollOffset();
+
+        mStripLayoutHelper.onScroll(-2.4f, 2.0f);
+        mStripLayoutHelper.finishScrollForTesting();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Assert scroll offset position.
+        assertEquals(
+                "StripLayoutHelper scrolled to the wrong offset.",
+                originalOffset - 40.0,
+                mStripLayoutHelper.getScrollOffset(),
+                0.0);
+    }
+
     private void setupDragDropState() {
         ChromeDropDataAndroid dropData =
                 new ChromeTabDropDataAndroid.Builder().withTab(mTab).build();

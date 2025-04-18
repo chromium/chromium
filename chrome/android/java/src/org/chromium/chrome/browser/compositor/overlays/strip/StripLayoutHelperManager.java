@@ -360,6 +360,11 @@ public class StripLayoutHelperManager
             getActiveStripLayoutHelper().onHoverExit();
         }
 
+        @Override
+        public void onScroll(float horizontalAxisScroll, float verticalAxisScroll) {
+            getActiveStripLayoutHelper().onScroll(horizontalAxisScroll, verticalAxisScroll);
+        }
+
         private long time() {
             return LayoutManagerImpl.time();
         }

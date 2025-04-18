@@ -30,6 +30,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -187,6 +188,9 @@ public class StripLayoutHelper
     // Reorder Drag Threshold Constants
     // TODO(crbug.com/382122020): Revisit and update if needed.
     private static final float INITIATE_REORDER_DRAG_THRESHOLD = 30.f;
+
+    // Scrolling constants.
+    private static final int SCROLL_SPEED_FACTOR = 40;
 
     // Histogram Constants
     private static final String PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME =
@@ -2365,6 +2369,32 @@ public class StripLayoutHelper
         // Clear tab strip button (NTB and MSB) hover state.
         clearCompositorButtonHoverStateIfNotClicked();
 
+        mUpdateHost.requestUpdate();
+    }
+
+    /**
+     * Called when the user performs a scrolling action by a peripheral such as a mouse or trackpad.
+     *
+     * @param horizontalAxisScroll The horizontal/x value of the scroll, higher means harder scroll.
+     * @param verticalAxisScroll The vertical/y value of the scroll, higher means harder scroll.
+     */
+    public void onScroll(float horizontalAxisScroll, float verticalAxisScroll) {
+        // We want mouse scrolls and trackpad scrolls, both vertical and horizontal, to map to
+        // scrolling the tab strip. If the user scrolls diagonally, presenting both a
+        // horizontal and vertical scroll component, we will defer to the horizontal value. We will
+        // scroll by an set amount of dp, regardless of how much 'force' the user scrolls with such
+        // as flinging a mouse wheel, i.e. all that matters is the sign of the scroll value.
+        float scrollAmount =
+                Math.abs(horizontalAxisScroll) > MathUtils.EPSILON
+                        ? horizontalAxisScroll
+                        : verticalAxisScroll;
+        float scrollOffsetDelta =
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        Math.signum(scrollAmount) * SCROLL_SPEED_FACTOR,
+                        mContext.getResources().getDisplayMetrics());
+
+        setScrollForScrollingTabStacker(scrollOffsetDelta, true, LayoutManagerImpl.time());
         mUpdateHost.requestUpdate();
     }
 
