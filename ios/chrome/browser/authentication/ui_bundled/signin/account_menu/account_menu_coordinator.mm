@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
@@ -95,7 +96,7 @@
   base::ScopedClosureRunner _activityOverlayCallback;
   // The child signin coordinator if it’s open. It may be presented by the
   // Manage Account’s coordinator view controller.
-  SigninCoordinator<InterruptibleChromeCoordinator>* _signinCoordinator;
+  SigninCoordinator* _signinCoordinator;
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;
@@ -431,8 +432,13 @@
 
 #pragma mark - Private
 
-- (void)stopSigninCoordinator {
-  [_signinCoordinator stop];
+- (void)stopSigninCoordinatorAnimated:(BOOL)animated {
+  if ([_signinCoordinator
+          conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]) {
+    [_signinCoordinator stopAnimated:animated];
+  } else {
+    [_signinCoordinator stop];
+  }
   _signinCoordinator = nil;
 }
 
@@ -475,7 +481,7 @@
                                      completion:
                                          (SigninCoordinatorCompletionCallback)
                                              completion {
-  [self stopSigninCoordinator];
+  [self stopSigninCoordinatorAnimated:NO];
   if (completion) {
     completion(signinResult, completionIdentity);
   }
@@ -514,7 +520,18 @@
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
   [self stopSignoutActionSheetCoordinator];
-  [_signinCoordinator interruptAnimated:NO];
+  if ([_signinCoordinator
+          conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
+    [base::apple::ObjCCastStrict<
+        SigninCoordinator<InterruptibleChromeCoordinator>>(_signinCoordinator)
+        interruptAnimated:NO];
+  } else {
+    CHECK(!_signinCoordinator ||
+              [_signinCoordinator
+                  conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)],
+          base::NotFatalUntil::M142);
+    [self stopSigninCoordinatorAnimated:NO];
+  }
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
   [self stopManageAccountsCoordinator];

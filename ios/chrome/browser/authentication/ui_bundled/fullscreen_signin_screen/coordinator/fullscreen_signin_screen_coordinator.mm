@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
@@ -61,7 +62,7 @@
 @property(nonatomic, strong)
     IdentityChooserCoordinator* identityChooserCoordinator;
 // Coordinator to add an identity.
-@property(nonatomic, strong) SigninCoordinator<InterruptibleChromeCoordinator>*
+@property(nonatomic, strong) SigninCoordinator<StopAnimatedChromeCoordinator>*
     addAccountSigninCoordinator;
 @property(nonatomic, assign) BOOL UMAReportingUserChoice;
 

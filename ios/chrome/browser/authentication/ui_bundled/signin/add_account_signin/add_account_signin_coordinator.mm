@@ -92,26 +92,8 @@ using signin_metrics::PromoAction;
   return self;
 }
 
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  // When interrupting `self.postSigninManagerCoordinator` or
-  // `self.historySyncPopupCoordinator` below, the signinCompletion is called.
-  // This callback is in charge to call `[self
-  // runCompletionWithSigninResult: completionIdentity:]`.
-  if (self.postSigninManagerCoordinator) {
-    DCHECK(!self.addAccountSigninManager);
-    [self.postSigninManagerCoordinator interruptAnimated:animated];
-    return;
-  }
-
-  if (self.historySyncPopupCoordinator) {
-    DCHECK(!self.addAccountSigninManager);
-    return;
-  }
-
-  DCHECK(self.addAccountSigninManager);
-  [self.addAccountSigninManager interruptAnimated:animated];
+- (void)dealloc {
+  CHECK(!_accountManagerService, base::NotFatalUntil::M145);
 }
 
 #pragma mark - ChromeCoordinator
@@ -137,8 +119,18 @@ using signin_metrics::PromoAction;
   [self.addAccountSigninManager showSigninWithIntent:self.signinIntent];
 }
 
-- (void)stop {
-  [super stop];
+#pragma mark - StopAnimatedChromeCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
+  [super stopAnimated:animated];
+  // When interrupting `self.postSigninManagerCoordinator` or
+  // `self.historySyncPopupCoordinator` below, the signinCompletion is called.
+  // This callback is in charge to call `[self
+  // runCompletionWithSigninResult: completionIdentity:]`.
+
+  [self stopPostSigninManagerCoordinator];
+  [self interruptAddAccountSigninManager:animated];
+
   _accountManagerService = nullptr;
   _identityManager = nullptr;
   _authenticationService = nil;
@@ -165,6 +157,7 @@ using signin_metrics::PromoAction;
   }
   // Add account is done, we don't need `self.AddAccountSigninManager`
   // anymore.
+  self.addAccountSigninManager.delegate = nil;
   self.addAccountSigninManager = nil;
 
   switch (result) {
@@ -223,6 +216,12 @@ using signin_metrics::PromoAction;
 }
 
 #pragma mark - Private
+
+- (void)interruptAddAccountSigninManager:(BOOL)animated {
+  [self.addAccountSigninManager interruptAnimated:animated];
+  self.addAccountSigninManager.delegate = nil;
+  self.addAccountSigninManager = nil;
+}
 
 - (void)stopHistorySyncPopupCoordinator {
   [self.historySyncPopupCoordinator stop];

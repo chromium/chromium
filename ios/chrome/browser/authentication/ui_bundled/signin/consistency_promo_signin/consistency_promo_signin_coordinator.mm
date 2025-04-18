@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -68,7 +69,7 @@
 @property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong)
-    SigninCoordinator<InterruptibleChromeCoordinator>* addAccountCoordinator;
+    SigninCoordinator<StopAnimatedChromeCoordinator>* addAccountCoordinator;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -137,8 +138,7 @@
 
 - (void)interruptAnimated:(BOOL)animated {
   [self stopAlertCoordinator];
-  [self.addAccountCoordinator interruptAnimated:animated];
-  DCHECK(!self.addAccountCoordinator);
+  [self stopAddAccountCoordinatorAnimated:animated];
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:nil];
@@ -269,8 +269,8 @@
   self.defaultAccountCoordinator = nil;
 }
 
-- (void)stopAddAccountCoordinator {
-  [self.addAccountCoordinator stop];
+- (void)stopAddAccountCoordinatorAnimated:(BOOL)animated {
+  [self.addAccountCoordinator stopAnimated:animated];
   self.addAccountCoordinator = nil;
 }
 
@@ -293,7 +293,7 @@
         self.accessPoint);
   }
 
-  [self stopAddAccountCoordinator];
+  [self stopAddAccountCoordinatorAnimated:NO];
 
   if (signinResult != SigninCoordinatorResultSuccess) {
     return;

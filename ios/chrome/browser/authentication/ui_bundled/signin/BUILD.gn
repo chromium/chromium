@@ -24,6 +24,7 @@ source_set("signin_headers") {
     "//components/sync/base",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:stop_animated_chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model:capabilities_types",

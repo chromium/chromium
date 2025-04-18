@@ -169,9 +169,13 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
   }
 
   LogAddAccountToDeviceHistograms(result, addAccountDuration);
-  [self.delegate addAccountSigninManagerFinishedWithResult:result
-                                                  identity:resultIdentity
-                                                     error:resultError];
+  if (!self.signinInterrupted) {
+    // If the coordinator interrupted the manager, it is in charge of doing
+    // the cleanup.
+    [self.delegate addAccountSigninManagerFinishedWithResult:result
+                                                    identity:resultIdentity
+                                                       error:resultError];
+  }
 }
 
 @end
