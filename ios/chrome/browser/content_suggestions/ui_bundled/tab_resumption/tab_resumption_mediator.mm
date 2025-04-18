@@ -177,6 +177,16 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(url);
 }
 
+void AddProductImageIfApplicable(
+    const commerce::PriceTrackingData& price_tracking_data,
+    TabResumptionItem* item) {
+  if (price_tracking_data.has_buyable_product() &&
+      price_tracking_data.buyable_product().has_image_url()) {
+    item.shopCardData.productImageURL =
+        price_tracking_data.buyable_product().image_url();
+  }
+}
+
 void ConfigureTabResumptionItemForShopCard(
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
@@ -211,11 +221,7 @@ void ConfigureTabResumptionItemForShopCard(
         formatter.get(),
         price_tracking_data->product_update().new_price().amount_micros(),
         price_tracking_data->product_update().old_price().amount_micros());
-    if (price_tracking_data->has_buyable_product() &&
-        price_tracking_data->buyable_product().has_image_url()) {
-      item.shopCardData.productImageURL =
-          price_tracking_data->buyable_product().image_url();
-    }
+    AddProductImageIfApplicable(price_tracking_data.value(), item);
     item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL,
         base::SysNSStringToUTF16(item.shopCardData.priceDrop->previous_price),
@@ -254,6 +260,7 @@ void ConfigureTabResumptionItemForShopCard(
         base::SysNSStringToUTF16(item.tabTitle),
         base::SysNSStringToUTF16(item.shopCardData.currentPrice),
         GetHostnameFromGURL(url));
+    AddProductImageIfApplicable(price_tracking_data.value(), item);
   }
 }
 

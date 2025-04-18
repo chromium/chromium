@@ -60,7 +60,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   }
   [self addTapGestureRecognizer];
 
-  if (_item.shopCardData.productImage) {
+  if (_item.contentImage) {
     // Case 1: Product image present.
     // Initialize + Styling
     [self addProductImage];
@@ -72,11 +72,11 @@ const CGFloat kVerticalStackSpacing = 6.0f;
     [self addWidthConstraintsForProductImage:kShopCardProductImageWidthHeight];
     AddSameConstraints(_productImage, _productAndFaviconContainer);
 
-  } else if (_item.shopCardData.faviconImage) {
+  } else if (_item.faviconImage) {
     // Case 2: Only favicon image present.
     // Init and style the container and favicon
     [self addProductImageEmptyGray];
-    [self addFaviconImageAndContainer:_item.shopCardData.faviconImage];
+    [self addFaviconImageAndContainer:_item.faviconImage];
     _faviconImageContainer.backgroundColor = UIColor.whiteColor;
 
     // Hierarchy
@@ -229,10 +229,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   _productAndFaviconContainer = [[UIView alloc] init];
   _productImage = [[UIImageView alloc] init];
 
-  UIImage* retrievedProductImage =
-      [UIImage imageWithData:_item.shopCardData.productImage
-                       scale:[UIScreen mainScreen].scale];
-  _productImage.image = retrievedProductImage;
+  _productImage.image = _item.contentImage;
   _productImage.backgroundColor = UIColor.whiteColor;
 
   _productImage.contentMode = UIViewContentModeScaleAspectFill;
