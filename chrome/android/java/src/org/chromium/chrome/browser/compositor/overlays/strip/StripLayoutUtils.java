@@ -37,7 +37,7 @@ public class StripLayoutUtils {
     //         - overlap(28-16) =
     public static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
     static final float MIN_TAB_WIDTH_DP = 108.f;
-    static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+    public static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     static final float TAB_OVERLAP_WIDTH_DP = 28.f;
 
     // Animation Constants.

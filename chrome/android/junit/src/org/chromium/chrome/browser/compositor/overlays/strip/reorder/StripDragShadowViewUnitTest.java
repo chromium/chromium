@@ -40,12 +40,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -74,6 +76,7 @@ public class StripDragShadowViewUnitTest {
     @Captor private ArgumentCaptor<FaviconImageCallback> mGetFaviconCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mGetThumbnailCallbackCaptor;
 
+    @Mock private BrowserControlsStateProvider mMockBrowserControlsStateProvider;
     @Mock private MultiThumbnailCardProvider mMockMultiThumbnailCardProvider;
     @Mock private Supplier<TabContentManager> mMockTabContentManagerSupplier;
     @Mock private Supplier<LayerTitleCache> mMockLayerTitleCacheSupplier;
@@ -126,7 +129,7 @@ public class StripDragShadowViewUnitTest {
                                 .getLayoutInflater()
                                 .inflate(R.layout.strip_drag_shadow_view, null);
         mStripDragShadowView.initialize(
-                /* browserControlsStateProvider= */ null,
+                mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManagerSupplier,
                 mMockLayerTitleCacheSupplier,
@@ -165,13 +168,28 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testUpdate_LayoutSize() {
+    @Config(qualifiers = "w640dp-h360dp")
+    public void testUpdate_LayoutSize_Landscape() {
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
 
         int expectedWidth = StripDragShadowView.WIDTH_DP;
         int expectedHeight =
                 TabUtils.deriveGridCardHeight(
-                        expectedWidth, mActivity, /* browserControlsStateProvider= */ null);
+                        expectedWidth, mActivity, mMockBrowserControlsStateProvider);
+        LayoutParams layoutParams = mStripDragShadowView.getLayoutParams();
+        assertEquals("Unexpected view width.", expectedWidth, layoutParams.width);
+        assertEquals("Unexpected view height.", expectedHeight, layoutParams.height);
+    }
+
+    @Test
+    @Config(qualifiers = "w360dp-h640dp")
+    public void testUpdate_LayoutSize_Portrait() {
+        mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
+
+        int expectedHeight = StripDragShadowView.HEIGHT_DP;
+        int expectedWidth =
+                TabUtils.deriveGridCardWidth(
+                        expectedHeight, mActivity, mMockBrowserControlsStateProvider);
         LayoutParams layoutParams = mStripDragShadowView.getLayoutParams();
         assertEquals("Unexpected view width.", expectedWidth, layoutParams.width);
         assertEquals("Unexpected view height.", expectedHeight, layoutParams.height);
