@@ -2,17 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "mojo/core/ipcz_driver/ring_buffer.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -31,9 +25,9 @@ size_t RingBuffer::Write(base::span<const uint8_t> source) {
   const size_t first_chunk_size = std::min(source.size(), bytes.first.size());
   const size_t second_chunk_size =
       std::min(source.size() - first_chunk_size, bytes.second.size());
-  std::ranges::copy(source.first(first_chunk_size), bytes.first.data());
-  std::ranges::copy(source.subspan(first_chunk_size, second_chunk_size),
-                    bytes.second.data());
+  bytes.first.copy_prefix_from(source.first(first_chunk_size));
+  bytes.second.copy_prefix_from(
+      source.subspan(first_chunk_size, second_chunk_size));
 
   const size_t write_size = first_chunk_size + second_chunk_size;
   bool ok = ExtendDataRange(write_size);
@@ -73,9 +67,9 @@ size_t RingBuffer::Peek(base::span<uint8_t> target) {
   const size_t first_chunk_size = std::min(target.size(), bytes.first.size());
   const size_t second_chunk_size =
       std::min(target.size() - first_chunk_size, bytes.second.size());
-  memcpy(target.data(), bytes.first.data(), first_chunk_size);
-  memcpy(target.subspan(first_chunk_size).data(), bytes.second.data(),
-         second_chunk_size);
+  target.copy_prefix_from(bytes.first.first(first_chunk_size));
+  target.subspan(first_chunk_size)
+      .copy_prefix_from(bytes.second.first(second_chunk_size));
   return first_chunk_size + second_chunk_size;
 }
 
