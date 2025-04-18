@@ -30,7 +30,6 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
 
     private static final Rect EMPTY_NON_DRAGGABLE_AREA = new Rect(0, 0, 0, 0);
 
-    private final Rect mCachedPaddings;
     private final PropertyModel mModel;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<Tab> mTabSupplier;
@@ -67,9 +66,6 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
         mOnWidthChangedCallback = (width) -> updateNonDraggableAreas();
         mWidthSupplier.addObserver(mOnWidthChangedCallback);
 
-        final var modelPaddings = model.get(WebAppHeaderLayoutProperties.PADDINGS);
-        mCachedPaddings = modelPaddings != null ? modelPaddings : new Rect(0, 0, 0, 0);
-
         mModel = model;
         // View should notify us about initial width.
         mModel.set(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK, mWidthSupplier::set);
@@ -103,12 +99,13 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
         final int topPadding =
                 Math.max(0, mCurrentHeaderState.getAppHeaderHeight() - getDefaultMinHeight());
 
-        mCachedPaddings.set(
-                mCurrentHeaderState.getLeftPadding(),
-                topPadding,
-                mCurrentHeaderState.getRightPadding(),
-                mCachedPaddings.bottom);
-        mModel.set(WebAppHeaderLayoutProperties.PADDINGS, mCachedPaddings);
+        final var paddings =
+                new Rect(
+                        mCurrentHeaderState.getLeftPadding(),
+                        topPadding,
+                        mCurrentHeaderState.getRightPadding(),
+                        0);
+        mModel.set(WebAppHeaderLayoutProperties.PADDINGS, paddings);
     }
 
     private void updateNonDraggableAreas() {

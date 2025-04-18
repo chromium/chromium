@@ -137,6 +137,34 @@ public class WebAppHeaderLayoutMediatorTest {
     }
 
     @Test
+    public void testAppHeaderStateUpdated_setNewPaddingsMatchingInsets() {
+        // initial state with empty paddings
+        setupDesktopWindowing(
+                /* isInDesktopWindow= */ true, new Rect(0, 0, SCREEN_WIDTH, SYS_APP_HEADER_HEIGHT));
+        mMediator =
+                new WebAppHeaderLayoutMediator(
+                        mModel,
+                        mDesktopWindowStateManager,
+                        mTabSupplier,
+                        mNonDraggableAreasSupplier,
+                        mIsInLayoutSupplier,
+                        SYS_APP_HEADER_HEIGHT);
+        assertEquals(
+                "Header paddings should match updated system insets",
+                new Rect(0, 0, 0, 0),
+                mModel.get(WebAppHeaderLayoutProperties.PADDINGS));
+
+        // second update with updated caption paddings
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
+        assertEquals(
+                "Header paddings should match updated system insets",
+                new Rect(LEFT_INSET, 0, RIGHT_INSET, 0),
+                mModel.get(WebAppHeaderLayoutProperties.PADDINGS));
+    }
+
+    @Test
     public void testNotInDesktopWindow_hideHeader() {
         setupDesktopWindowing(/* isInDesktopWindow= */ false, new Rect());
         WebAppHeaderLayoutMediator.setMinHeightForTesting(SYS_APP_HEADER_HEIGHT);
