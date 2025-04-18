@@ -469,7 +469,7 @@ void ShortcutsBackend::OnTemplateURLServiceChanged() {
   if (!initialized()) {
     return;
   }
-  DeleteShortcutsWithInvalidKeywords();
+  DeleteShortcutsWithDeletedOrInactiveKeywords();
   return;
 }
 
@@ -626,21 +626,24 @@ bool ShortcutsBackend::DeleteShortcutsWithURL(const GURL& url,
                  db_.get(), url_spec));
 }
 
-void ShortcutsBackend::DeleteShortcutsWithInvalidKeywords() {
+void ShortcutsBackend::DeleteShortcutsWithDeletedOrInactiveKeywords() {
   ShortcutsDatabase::ShortcutIDs shortcut_ids =
-      GetShortcutsWithInvalidKeywords();
+      GetShortcutsWithDeletedOrInactiveKeywords();
   UMA_HISTOGRAM_COUNTS_10000(
-      "ShortcutsProvider.InvalidKeywordEntryDeletions.OnKeywordChange",
+      "ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions."
+      "OnKeywordChange",
       shortcut_ids.size());
   DeleteShortcutsWithIDs(shortcut_ids);
 }
 
 ShortcutsDatabase::ShortcutIDs
-ShortcutsBackend::GetShortcutsWithInvalidKeywords() const {
+ShortcutsBackend::GetShortcutsWithDeletedOrInactiveKeywords() const {
   ShortcutsDatabase::ShortcutIDs shortcut_ids;
   for (const auto& pair : guid_map_) {
     // Check if the keyword is invalid: not present in the `TemplateURLService`
-    // or inactive.
+    // or inactive. Prepopulated engines have an active status of
+    // `ActiveStatus::kUnspecified` by default and should be considered active
+    // at all times because they cannot be deactivated by the user.
     if (pair.second->second.match_core.keyword.empty()) {
       continue;
     }
@@ -648,7 +651,8 @@ ShortcutsBackend::GetShortcutsWithInvalidKeywords() const {
         template_url_service_->GetTemplateURLForKeyword(
             pair.second->second.match_core.keyword);
     if (!template_url ||
-        template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
+        (template_url->prepopulate_id() == 0 &&
+         template_url->is_active() != TemplateURLData::ActiveStatus::kTrue)) {
       shortcut_ids.push_back(pair.first);
     }
   }
@@ -675,9 +679,9 @@ bool ShortcutsBackend::DeleteOldShortcuts() {
   UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.OldEntryDeletions.OnInit",
                              shortcut_ids.size());
   ShortcutsDatabase::ShortcutIDs shortcut_ids_invalid_keywords =
-      GetShortcutsWithInvalidKeywords();
+      GetShortcutsWithDeletedOrInactiveKeywords();
   UMA_HISTOGRAM_COUNTS_10000(
-      "ShortcutsProvider.InvalidKeywordEntryDeletions.OnInit",
+      "ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions.OnInit",
       shortcut_ids_invalid_keywords.size());
   shortcut_ids.insert(shortcut_ids.end(), shortcut_ids_invalid_keywords.begin(),
                       shortcut_ids_invalid_keywords.end());

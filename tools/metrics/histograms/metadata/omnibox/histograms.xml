@@ -3597,7 +3597,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="ShortcutsProvider.InvalidKeywordEntryDeletions.OnInit"
+<histogram
+    name="ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions.OnInit"
     units="units" expires_after="2026-04-04">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -3606,12 +3607,13 @@ Keep consistent with active providers. Doesn't need to include every provider in
     to the associated keyword being deleted from the `TemplateURLService` or
     inactive. Recorded once on profile load.
 
-    See also ShortcutsProvider.OldKeywordEntryDeletions.OnKeywordChange.
+    See also
+    ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions.OnKeywordChange.
   </summary>
 </histogram>
 
 <histogram
-    name="ShortcutsProvider.InvalidKeywordEntryDeletions.OnKeywordChange"
+    name="ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions.OnKeywordChange"
     units="units" expires_after="2026-04-04">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -3621,7 +3623,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     inactive. Recorded each time an `OnTemplateURLServiceChanged` notification
     from `TemplateURLService` is received by `ShortcutsBackend`.
 
-    See also ShortcutsProvider.OldKeywordEntryDeletions.OnInit.
+    See also ShortcutsProvider.DeletedOrInactiveKeywordEntryDeletions.OnInit.
   </summary>
 </histogram>
 

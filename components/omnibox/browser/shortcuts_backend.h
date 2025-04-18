@@ -177,8 +177,9 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // `template_url_service_` or whose `keyword` is inactive.
   // This is called once on initialization by `DeleteOldShortcuts()` and
   // whenever the `template_url_service_` is updated.
-  void DeleteShortcutsWithInvalidKeywords();
-  ShortcutsDatabase::ShortcutIDs GetShortcutsWithInvalidKeywords() const;
+  void DeleteShortcutsWithDeletedOrInactiveKeywords();
+  ShortcutsDatabase::ShortcutIDs GetShortcutsWithDeletedOrInactiveKeywords()
+      const;
 
   // Deletes all of the shortcuts.
   bool DeleteAllShortcuts();

@@ -47,8 +47,8 @@ class FakeShortcutsBackend : public ShortcutsBackend {
 
   using ShortcutsBackend::AddShortcut;
   using ShortcutsBackend::DeleteOldShortcuts;
+  using ShortcutsBackend::DeleteShortcutsWithDeletedOrInactiveKeywords;
   using ShortcutsBackend::DeleteShortcutsWithIDs;
-  using ShortcutsBackend::DeleteShortcutsWithInvalidKeywords;
   using ShortcutsBackend::DeleteShortcutsWithURL;
   using ShortcutsBackend::MatchToMatchCore;
   using ShortcutsBackend::shortcuts_map_;
@@ -481,15 +481,25 @@ TEST_F(ShortcutsBackendTest, DeleteOldShortcuts) {
   EXPECT_FALSE(ShortcutExists(shortcut6.text));
 }
 
-TEST_F(ShortcutsBackendTest, DeleteShortcutsWithInvalidKeywords) {
+TEST_F(ShortcutsBackendTest, DeleteShortcutsWithDeletedOrInactiveKeywords) {
   InitBackend();
 
-  // Add an inactive keyword.
+  // Add a keyword with `is_active` set to `kUnspecified` (default).
   TemplateURLData data;
   data.SetShortName(u"inactive");
   data.SetKeyword(u"inactive");
   data.SetURL("http://www.inactive.com/{searchTerms}");
   template_url_service()->Add(std::make_unique<TemplateURL>(data));
+
+  // Add a prepopulated keyword with `is_active` set to `kUnspecified`
+  // (default).
+  TemplateURLData data_prepopulated;
+  data_prepopulated.SetShortName(u"prepopulated");
+  data_prepopulated.SetKeyword(u"prepopulated");
+  data_prepopulated.SetURL("http://www.prepopulated.com/{searchTerms}");
+  data_prepopulated.prepopulate_id = 1;
+  template_url_service()->Add(std::make_unique<TemplateURL>(data_prepopulated));
+  template_url_service()->GetTemplateURLForKeyword(u"inactive_prepopulated");
 
   ShortcutsDatabase::Shortcut shortcut1(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
@@ -513,20 +523,29 @@ TEST_F(ShortcutsBackendTest, DeleteShortcutsWithInvalidKeywords) {
       MatchCoreForTesting("http://www.sport.com"), base::Time::Now(), 10);
   EXPECT_TRUE(backend()->AddShortcut(shortcut4));
 
-  ASSERT_EQ(shortcuts_map().size(), 4U);
+  ShortcutsDatabase::Shortcut shortcut5(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E3", u"prepopulated query",
+      MatchCoreForTesting("http://www.inactive_prepopulated.com"),
+      base::Time::Now(), 100);
+  shortcut5.match_core.keyword = u"prepopulated";
+  EXPECT_TRUE(backend()->AddShortcut(shortcut5));
+
+  ASSERT_EQ(shortcuts_map().size(), 5U);
   EXPECT_EQ(shortcuts_map().find(shortcut1.text)->second.id, shortcut1.id);
   EXPECT_EQ(shortcuts_map().find(shortcut2.text)->second.id, shortcut2.id);
   EXPECT_EQ(shortcuts_map().find(shortcut3.text)->second.id, shortcut3.id);
   EXPECT_EQ(shortcuts_map().find(shortcut4.text)->second.id, shortcut4.id);
+  EXPECT_EQ(shortcuts_map().find(shortcut5.text)->second.id, shortcut5.id);
 
-  // Delete shortcuts with invalid keywords.
-  backend()->DeleteShortcutsWithInvalidKeywords();
+  // Delete shortcuts with deleted or inactive keywords.
+  backend()->DeleteShortcutsWithDeletedOrInactiveKeywords();
 
-  ASSERT_EQ(shortcuts_map().size(), 2U);
+  ASSERT_EQ(shortcuts_map().size(), 3U);
   EXPECT_TRUE(ShortcutExists(shortcut1.text));
   EXPECT_FALSE(ShortcutExists(shortcut2.text));
   EXPECT_FALSE(ShortcutExists(shortcut3.text));
   EXPECT_TRUE(ShortcutExists(shortcut4.text));
+  EXPECT_TRUE(ShortcutExists(shortcut5.text));
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
