@@ -671,7 +671,6 @@ QuicSessionPool::QuicSessionPool(
       ssl_config_service_(ssl_config_service),
       use_network_anonymization_key_for_crypto_configs_(
           NetworkAnonymizationKey::IsPartitioningEnabled()),
-      report_ecn_(quic_context->params()->report_ecn),
       skip_dns_with_origin_frame_(
           quic_context->params()->skip_dns_with_origin_frame),
       ignore_ip_matching_when_finding_existing_sessions_(
@@ -1088,13 +1087,11 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     return;
   }
 
-  if (report_ecn_) {
-    rv = socket->SetRecvTos();
-    if (rv != OK) {
-      OnFinishConnectAndConfigureSocketError(
-          std::move(callback), CREATION_ERROR_SETTING_RECEIVE_ECN, rv);
-      return;
-    }
+  rv = socket->SetRecvTos();
+  if (rv != OK) {
+    OnFinishConnectAndConfigureSocketError(
+        std::move(callback), CREATION_ERROR_SETTING_RECEIVE_ECN, rv);
+    return;
   }
 
   // Set a buffer large enough to contain the initial CWND's worth of packet
@@ -1204,12 +1201,10 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
     return rv;
   }
 
-  if (report_ecn_) {
-    rv = socket->SetRecvTos();
-    if (rv != OK) {
-      HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
-      return rv;
-    }
+  rv = socket->SetRecvTos();
+  if (rv != OK) {
+    HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
+    return rv;
   }
 
   // Set a buffer large enough to contain the initial CWND's worth of packet
@@ -1935,7 +1930,7 @@ QuicSessionPool::CreateSessionHelper(
       std::move(crypto_config_handle),
       network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
-      std::move(socket_performance_watcher), metadata, params_.report_ecn,
+      std::move(socket_performance_watcher), metadata,
       params_.enable_origin_frame, params_.allow_server_migration,
       session_creation_initiator, net_log);
   QuicChromiumClientSession* session = new_session.get();

@@ -229,10 +229,6 @@ struct NET_EXPORT QuicParams {
   // If true, ALPS uses new codepoint to negotiates application settings.
   bool use_new_alps_codepoint = false;
 
-  // If true, read Explicit Congestion Notification (ECN) marks from QUIC
-  // sockets and report them to the peer.
-  bool report_ecn = false;
-
   // If true, parse received ORIGIN frame.
   bool enable_origin_frame = true;
 

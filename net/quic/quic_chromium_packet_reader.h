@@ -40,17 +40,11 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
                           const quic::QuicSocketAddress& peer_address) = 0;
   };
 
-  // If |report_ecn| is true, then the reader will call GetLastTos() on the
-  // socket after each read and report the ECN codepoint in the
-  // QuicReceivedPacket.
-  // TODO(crbug.com/332924003): When the relevant config flags are deprecated,
-  // this argument can be removed.
   QuicChromiumPacketReader(std::unique_ptr<DatagramClientSocket> socket,
                            const quic::QuicClock* clock,
                            Visitor* visitor,
                            int yield_after_packets,
                            quic::QuicTime::Delta yield_after_duration,
-                           bool report_ecn,
                            const NetLogWithSource& net_log);
 
   QuicChromiumPacketReader(const QuicChromiumPacketReader&) = delete;
@@ -83,9 +77,6 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   quic::QuicTime yield_after_;
   scoped_refptr<IOBufferWithSize> read_buffer_;
   NetLogWithSource net_log_;
-  // Stores whether receiving ECN is in the feature list to avoid accessing
-  // the feature list for every packet.
-  bool report_ecn_;
 
   base::WeakPtrFactory<QuicChromiumPacketReader> weak_factory_{this};
 };

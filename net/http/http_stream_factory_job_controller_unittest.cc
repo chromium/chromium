@@ -719,7 +719,6 @@ class JobControllerReconsiderProxyAfterErrorTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*report_ecn=*/true,
         /*enable_origin_frame=*/true,
         /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,

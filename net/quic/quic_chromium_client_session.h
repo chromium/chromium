@@ -620,8 +620,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // connection), the `dns_resolution_*_time` arguments should be equal and
   // the current time, and `endpoint_result` should be an empty value, with an
   // empty address list.
-  // TODO(crbug.com/332924003): Delete the |report_ecn| argument when the
-  // feature is deprecated.
   QuicChromiumClientSession(
       quic::QuicConnection* connection,
       std::unique_ptr<DatagramClientSocket> socket,
@@ -656,7 +654,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       const ConnectionEndpointMetadata& metadata,
-      bool report_ecn,
       bool enable_origin_frame,
       bool allow_server_preferred_address,
       MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -1179,7 +1176,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::unique_ptr<CertVerifyResult> cert_verify_result_;
   bool pkp_bypassed_ = false;
   bool is_fatal_cert_error_ = false;
-  bool report_ecn_;
   const bool enable_origin_frame_;
   HandleSet handles_;
   StreamRequestQueue stream_requests_;
@@ -1243,19 +1239,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::set<url::SchemeHostPort> received_origins_;
 
   std::vector<uint8_t> ech_config_list_;
-
-  // Bitmap of incoming IP ECN marks observed on this session. Bit 0 = Not-ECT,
-  // Bit 1 = ECT(1), Bit 2 = ECT(0), Bit 3 = CE. Reported to metrics at the
-  // end of the session.
-  uint8_t observed_incoming_ecn_ = 0;
-
-  // The number of incoming packets in this session before it observes a change
-  // in the incoming packet ECN marking.
-  uint64_t incoming_packets_before_ecn_transition_ = 0;
-
-  // When true, the session has observed a transition and can stop incrementing
-  // incoming_packets_before_ecn_transition_.
-  bool observed_ecn_transition_ = false;
 
   const bool allow_server_preferred_address_;
 

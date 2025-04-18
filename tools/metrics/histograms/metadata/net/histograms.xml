@@ -4380,16 +4380,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.EcnMarksObserved" enum="EcnPermutations"
-    expires_after="2025-02-23">
-  <owner>martinduke@google.com</owner>
-  <owner>rch@chromium.org</owner>
-  <summary>
-    The combination of ECN marks observed on a single QuicSession. Recorded when
-    the session is closed.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.EcnMarksSent" enum="EcnPermutations"
     expires_after="2025-09-05">
   <owner>martinduke@google.com</owner>
@@ -5032,18 +5022,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of packets retransmitted per 1000. Only sessions with
     packets_sent &gt;= 100 are included. Recorded in session destructor.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.PacketsBeforeEcnTransition" units="packets"
-    expires_after="2025-06-29">
-  <owner>martinduke@google.com</owner>
-  <owner>rch@chromium.org</owner>
-  <summary>
-    The number of packets received before the session observes an Explicit
-    Congestion Notification (ECN) marking different from the first one in the
-    session. Reported when the session occurs. A value of zero means no
-    transition occurred.
   </summary>
 </histogram>
 

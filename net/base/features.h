@@ -562,10 +562,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 // Enables a more efficient implementation of SpdyHeadersToHttpResponse().
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 
-// Enables receiving ECN bit by UDP sockets in Chrome, and reporting the counts
-// to QUIC servers via ACK frames.
-NET_EXPORT BASE_DECLARE_FEATURE(kReportEcn);
-
 // Enables using the new ALPS codepoint to negotiate application settings for
 // HTTP2.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointHttp2);

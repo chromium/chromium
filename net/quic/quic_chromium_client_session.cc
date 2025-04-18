@@ -976,7 +976,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     const ConnectionEndpointMetadata& metadata,
-    bool report_ecn,
     bool enable_origin_frame,
     bool allow_server_preferred_address,
     MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -1012,7 +1011,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       transport_security_state_(transport_security_state),
       ssl_config_service_(ssl_config_service),
       server_info_(std::move(server_info)),
-      report_ecn_(report_ecn),
       enable_origin_frame_(enable_origin_frame),
       task_runner_(task_runner),
       net_log_(NetLogWithSource::Make(net_log.net_log(),
@@ -1031,7 +1029,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(
       std::move(socket), clock, this, yield_after_packets, yield_after_duration,
-      report_ecn, net_log_));
+      net_log_));
   crypto_stream_ = crypto_client_stream_factory->CreateQuicCryptoClientStream(
       session_key_.server_id(), this,
       std::make_unique<ProofVerifyContextChromium>(cert_verify_flags, net_log_),
@@ -1102,12 +1100,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
     RecordHandshakeState(STATE_FAILED);
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Net.QuicSession.EcnMarksObserved",
-      static_cast<EcnPermutations>(observed_incoming_ecn_));
-  UMA_HISTOGRAM_COUNTS_10M(
-      "Net.QuicSession.PacketsBeforeEcnTransition",
-      observed_ecn_transition_ ? incoming_packets_before_ecn_transition_ : 0);
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
 
@@ -3244,7 +3236,7 @@ void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
       probing_socket.get(), task_runner_);
   auto probing_reader = std::make_unique<QuicChromiumPacketReader>(
       std::move(probing_socket), clock_, this, yield_after_packets_,
-      yield_after_duration_, session_pool_->report_ecn(), net_log_);
+      yield_after_duration_, net_log_);
 
   probing_reader->StartReading();
   path_validation_writer_delegate_.set_network(default_network_);
@@ -3340,7 +3332,7 @@ void QuicChromiumClientSession::FinishStartProbing(
       probing_socket.get(), task_runner_);
   auto probing_reader = std::make_unique<QuicChromiumPacketReader>(
       std::move(probing_socket), clock_, this, yield_after_packets_,
-      yield_after_duration_, session_pool_->report_ecn(), net_log_);
+      yield_after_duration_, net_log_);
 
   probing_reader->StartReading();
   path_validation_writer_delegate_.set_network(network);
@@ -3740,16 +3732,6 @@ bool QuicChromiumClientSession::OnPacket(
     const quic::QuicSocketAddress& local_address,
     const quic::QuicSocketAddress& peer_address) {
   ProcessUdpPacket(local_address, peer_address, packet);
-  uint8_t new_incoming_ecn =
-      (0x1 << static_cast<uint8_t>(packet.ecn_codepoint()));
-  if (new_incoming_ecn != observed_incoming_ecn_ &&
-      incoming_packets_before_ecn_transition_ > 0) {
-    observed_ecn_transition_ = true;
-  }
-  if (!observed_ecn_transition_) {
-    ++incoming_packets_before_ecn_transition_;
-  }
-  observed_incoming_ecn_ |= new_incoming_ecn;
   if (!connection()->connected()) {
     NotifyFactoryOfSessionClosedLater();
     return false;
@@ -3923,7 +3905,7 @@ void QuicChromiumClientSession::FinishMigrate(
   // Create new packet reader and writer on the new socket.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
       std::move(socket), clock_, this, yield_after_packets_,
-      yield_after_duration_, session_pool_->report_ecn(), net_log_);
+      yield_after_duration_, net_log_);
   new_reader->StartReading();
   auto new_writer = std::make_unique<QuicChromiumPacketWriter>(
       new_reader->socket(), task_runner_);

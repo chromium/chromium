@@ -110,7 +110,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(
       base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC),
       quic_params_.use_new_alps_codepoint);
-  EXPECT_TRUE(quic_params_.report_ecn);
   EXPECT_TRUE(quic_params_.enable_origin_frame);
   EXPECT_TRUE(quic_params_.skip_dns_with_origin_frame);
   EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
@@ -959,26 +958,6 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_EQ(base::Milliseconds(500), quic_params_.initial_rtt_for_handshake);
-}
-
-TEST_F(NetworkSessionConfiguratorTest,
-       ReportReceivedEcnFromFieldTrailParams) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["report_ecn"] = "true";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(quic_params_.report_ecn);
-}
-
-TEST_F(NetworkSessionConfiguratorTest,
-       ReportReceivedEcnFromFeature) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(net::features::kReportEcn);
-  ParseFieldTrials();
-  EXPECT_TRUE(quic_params_.report_ecn);
 }
 
 class NetworkSessionConfiguratorWithQuicVersionTest
