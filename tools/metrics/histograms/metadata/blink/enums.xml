@@ -6119,6 +6119,57 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5492" label="SVGImage"/>
   <int value="5493" label="DeviceBoundSessionRequestInScope"/>
   <int value="5494" label="DeviceBoundSessionRequestDeferral"/>
+  <int value="5495" label="RoleAttributeMenu"/>
+  <int value="5496" label="RoleAttributeMenubar"/>
+  <int value="5497" label="RoleAttributeMenuitem"/>
+  <int value="5498" label="RoleAttributeMenuitemcheckbox"/>
+  <int value="5499" label="RoleAttributeMenuitemradio"/>
+  <int value="5500" label="RoleAttributeButton"/>
+  <int value="5501" label="RoleAttributeCell"/>
+  <int value="5502" label="RoleAttributeCheckbox"/>
+  <int value="5503" label="RoleAttributeColumnheader"/>
+  <int value="5504" label="RoleAttributeCombobox"/>
+  <int value="5505" label="RoleAttributeDialog"/>
+  <int value="5506" label="RoleAttributeGrid"/>
+  <int value="5507" label="RoleAttributeGridcell"/>
+  <int value="5508" label="RoleAttributeHeading"/>
+  <int value="5509" label="RoleAttributeImg"/>
+  <int value="5510" label="RoleAttributeInput"/>
+  <int value="5511" label="RoleAttributeLink"/>
+  <int value="5512" label="RoleAttributeList"/>
+  <int value="5513" label="RoleAttributeListbox"/>
+  <int value="5514" label="RoleAttributeListitem"/>
+  <int value="5515" label="RoleAttributeMain"/>
+  <int value="5516" label="RoleAttributeMarquee"/>
+  <int value="5517" label="RoleAttributeMath"/>
+  <int value="5518" label="RoleAttributeMeter"/>
+  <int value="5519" label="RoleAttributeNavigation"/>
+  <int value="5520" label="RoleAttributeOption"/>
+  <int value="5521" label="RoleAttributeProgressbar"/>
+  <int value="5522" label="RoleAttributeRadio"/>
+  <int value="5523" label="RoleAttributeRadiogroup"/>
+  <int value="5524" label="RoleAttributeRange"/>
+  <int value="5525" label="RoleAttributeRow"/>
+  <int value="5526" label="RoleAttributeRowgroup"/>
+  <int value="5527" label="RoleAttributeRowheader"/>
+  <int value="5528" label="RoleAttributeScrollbar"/>
+  <int value="5529" label="RoleAttributeSearch"/>
+  <int value="5530" label="RoleAttributeSearchbox"/>
+  <int value="5531" label="RoleAttributeSelect"/>
+  <int value="5532" label="RoleAttributeSeparator"/>
+  <int value="5533" label="RoleAttributeSlider"/>
+  <int value="5534" label="RoleAttributeSpinbutton"/>
+  <int value="5535" label="RoleAttributeSwitch"/>
+  <int value="5536" label="RoleAttributeTab"/>
+  <int value="5537" label="RoleAttributeTable"/>
+  <int value="5538" label="RoleAttributeTablist"/>
+  <int value="5539" label="RoleAttributeTabpanel"/>
+  <int value="5540" label="RoleAttributeTextbox"/>
+  <int value="5541" label="RoleAttributeToolbar"/>
+  <int value="5542" label="RoleAttributeTooltip"/>
+  <int value="5543" label="RoleAttributeTree"/>
+  <int value="5544" label="RoleAttributeTreegrid"/>
+  <int value="5545" label="RoleAttributeTreeitem"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
