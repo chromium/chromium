@@ -808,7 +808,7 @@ TEST_F(MostVisitedSitesProviderTest,
 
   std::move(callback).Run(std::move(result));
 
-  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(provider_->done());
   // `Start()` when prefetch is enabled should update the list of cached sites,
   // but not update the actual provider's matches if the cache is empty.
   ASSERT_EQ(5u, provider_->GetCachedSitesForTesting().size());
@@ -928,6 +928,43 @@ TEST_F(MostVisitedSitesProviderTest, DuplicateSuggestions) {
             provider_->matches().at(1).destination_url.spec());
   ASSERT_EQ("http://www.samesites.com/differentpath/#ref",
             provider_->matches().at(2).destination_url.spec());
+}
+
+TEST_F(MostVisitedSitesProviderTest, TestProviderDoneWithEmptyCachedSites) {
+  // Set a MockHistoryService.
+  auto history_service = std::make_unique<MockHistoryService>();
+  auto& history_service_ref = *history_service;
+  client_.set_history_service(std::move(history_service));
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().prefetch_most_visited_sites = true;
+
+  history::HistoryService::QueryMostVisitedURLsCallback callback;
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
+      .WillRepeatedly(
+          [&](int result_count,
+              history::HistoryService::QueryMostVisitedURLsCallback cb,
+              base::CancelableTaskTracker* tracker,
+              std::optional<std::string> recency_factor_name,
+              std::optional<size_t> recency_window_days)
+              -> base::CancelableTaskTracker::TaskId {
+            callback = std::move(cb);
+            return {};
+          });
+
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  // Simulate a prefetch that returns no results.
+  provider_->StartPrefetch(input);
+  history::MostVisitedURLList result;
+  std::move(callback).Run(std::move(result));
+  ASSERT_EQ(0u, provider_->GetCachedSitesForTesting().size());
+
+  // Provider should still be set to done immediately after calling `Start()`
+  // even if cached sites is empty.
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->done());
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
