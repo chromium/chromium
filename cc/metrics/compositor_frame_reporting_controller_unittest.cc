@@ -17,8 +17,6 @@
 #include "base/time/time.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/metrics/frame_sequence_metrics.h"
-#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -118,14 +116,10 @@ class TestCompositorFrameReportingController
 
 class CompositorFrameReportingControllerTest : public testing::Test {
  public:
-  CompositorFrameReportingControllerTest()
-      : current_id_(1, 1), tracker_collection_(false, &dropped_counter_) {
+  CompositorFrameReportingControllerTest() : current_id_(1, 1) {
     test_tick_clock_.SetNowTicks(base::TimeTicks::Now());
     reporting_controller_.set_tick_clock(&test_tick_clock_);
     args_ = SimulateBeginFrameArgs(current_id_);
-    reporting_controller_.SetFrameSorter(&frame_sorter_);
-    reporting_controller_.SetFrameSequenceTrackerCollection(
-        &tracker_collection_);
     reporting_controller_.SetDroppedFrameCounter(&dropped_counter_);
     dropped_counter_.set_total_counter(&total_frame_counter_);
   }
@@ -342,8 +336,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   base::TimeTicks end_activation_time_;
   base::TimeTicks submit_time_;
   viz::FrameTokenGenerator current_token_;
-  FrameSorter frame_sorter_;
-  FrameSequenceTrackerCollection tracker_collection_;
   DroppedFrameCounter dropped_counter_;
   TotalFrameCounter total_frame_counter_;
   TestCompositorFrameReportingController reporting_controller_;
@@ -1200,17 +1192,17 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingLatencyType) {
   base::HistogramTester histogram_tester;
 
   SimulatePresentCompositorFrame();
-  tracker_collection_.StartSequence(
+  reporting_controller_.AddActiveTracker(
       FrameSequenceTrackerType::kCompositorAnimation);
   SimulatePresentCompositorFrame();
-  tracker_collection_.StartScrollSequence(
-      FrameSequenceTrackerType::kWheelScroll,
-      SmoothEffectDrivingThread::kCompositor);
+  reporting_controller_.AddActiveTracker(
+      FrameSequenceTrackerType::kWheelScroll);
   SimulatePresentCompositorFrame();
-  tracker_collection_.StopSequence(
+  reporting_controller_.RemoveActiveTracker(
       FrameSequenceTrackerType::kCompositorAnimation);
   SimulatePresentCompositorFrame();
-  tracker_collection_.StopSequence(FrameSequenceTrackerType::kWheelScroll);
+  reporting_controller_.RemoveActiveTracker(
+      FrameSequenceTrackerType::kWheelScroll);
   SimulatePresentCompositorFrame();
 
   // All frames are presented so only test on-dropped cases.
@@ -1677,9 +1669,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(1u, reporting_controller_.GetBlockedReportersCount());
 
   reporting_controller_.ResetReporters();
-  reporting_controller_.ClearFrameSequenceTrackerCollection();
-  reporting_controller_.ClearDroppedFrameCounter();
-  reporting_controller_.SetFrameSorter(nullptr);
+  reporting_controller_.SetDroppedFrameCounter(nullptr);
 }
 
 // Verifies that when a dependent frame is submitted to Viz, but not presented
@@ -1739,9 +1729,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(1u, dropped_counter_.total_dropped());
 
   reporting_controller_.ResetReporters();
-  reporting_controller_.ClearFrameSequenceTrackerCollection();
-  reporting_controller_.ClearDroppedFrameCounter();
-  reporting_controller_.SetFrameSorter(nullptr);
+  reporting_controller_.SetDroppedFrameCounter(nullptr);
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -1778,9 +1766,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, dropped_counter_.total_dropped());
 
   reporting_controller_.ResetReporters();
-  reporting_controller_.ClearFrameSequenceTrackerCollection();
-  reporting_controller_.ClearDroppedFrameCounter();
-  reporting_controller_.SetFrameSorter(nullptr);
+  reporting_controller_.SetDroppedFrameCounter(nullptr);
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -1864,10 +1850,9 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromDisplayCompositorHaveSmoothThread) {
-  auto thread_type_compositor = FrameInfo::SmoothThread::kSmoothCompositor;
-  tracker_collection_.StartSequence(
-      FrameSequenceTrackerType::kCompositorAnimation);
-  EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_compositor);
+  auto thread_type_compositor = SmoothEffectDrivingThread::kCompositor;
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
+                                                   true);
   dropped_counter_.OnFirstContentfulPaintReceived();
 
   // Submit and present two compositor frames.
@@ -1892,10 +1877,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_smoothness_dropped());
 
   // Now skip over a few frames which are not affecting smoothness.
-  tracker_collection_.StopSequence(
-      FrameSequenceTrackerType::kCompositorAnimation);
-  EXPECT_EQ(tracker_collection_.GetSmoothThread(),
-            FrameInfo::SmoothThread::kSmoothNone);
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
+                                                   false);
   const uint32_t kSkipFrames_2 = 7;
   for (uint32_t i = 0; i < kSkipFrames_2; ++i)
     IncrementCurrentId();
@@ -1907,9 +1890,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_smoothness_dropped());
 
   // Now skip over a few frames more frames which are affecting smoothness.
-  tracker_collection_.StartSequence(
-      FrameSequenceTrackerType::kCompositorAnimation);
-  EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_compositor);
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
+                                                   true);
   const uint32_t kSkipFrames_3 = 10;
   for (uint32_t i = 0; i < kSkipFrames_3; ++i)
     IncrementCurrentId();
@@ -2008,11 +1990,9 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        NewMainThreadUpdateNotReportedAsDropped) {
-  auto thread_type_main = FrameInfo::SmoothThread::kSmoothMain;
-  tracker_collection_.StartSequence(
-      FrameSequenceTrackerType::kMainThreadAnimation);
-  EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_main);
-
+  auto thread_type_main = SmoothEffectDrivingThread::kMain;
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_main,
+                                                   /*affects_smoothness=*/true);
   dropped_counter_.OnFirstContentfulPaintReceived();
   dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
       args_.frame_time);
@@ -2057,6 +2037,11 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        NoUpdateCompositorWithJankyMain) {
+  reporting_controller_.SetThreadAffectsSmoothness(
+      SmoothEffectDrivingThread::kCompositor, /*affects_smoothness=*/true);
+  reporting_controller_.SetThreadAffectsSmoothness(
+      SmoothEffectDrivingThread::kMain, /*affects_smoothness=*/false);
+
   dropped_counter_.OnFirstContentfulPaintReceived();
   dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
       args_.frame_time);

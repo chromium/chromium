@@ -9718,7 +9718,6 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
       host_impl->dropped_frame_counter()->OnFirstContentfulPaintReceived();
       fcp_sent_ = true;
     }
-    host_impl->frame_sorter_for_testing()->AddNewFrame(last_args_);
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
@@ -9731,8 +9730,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     }
 
     // Mark every frame as a dropped frame affecting smoothness.
-    // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
-    host_impl->frame_sorter_for_testing()->AddFrameResult(
+    host_impl->dropped_frame_counter()->OnEndFrame(
         last_args_, CreateFakeImplDroppedFrameInfo());
     host_impl->SetNeedsRedraw();
     --frames_counter_;
@@ -9789,8 +9787,7 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
     // Mark every frame as a dropped frame affecting smoothness. This happens
     // entirely on the compositor thread, so mark it as not including
     // main-thread update.
-    // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
-    host_impl->frame_sorter_for_testing()->AddFrameResult(
+    host_impl->dropped_frame_counter()->OnEndFrame(
         last_args_, CreateFakeImplDroppedFrameInfo());
     host_impl->SetNeedsRedraw();
     --frames_counter_;

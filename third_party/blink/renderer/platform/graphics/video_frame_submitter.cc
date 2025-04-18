@@ -189,8 +189,10 @@ VideoFrameSubmitter::VideoFrameSubmitter(
       resource_provider_(std::move(resource_provider)),
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
-      frame_trackers_(false, nullptr) {
-  frame_sorter_.AddObserver(&frame_trackers_);
+      frame_trackers_(false, nullptr),
+      frame_sorter_(base::BindRepeating(
+          &cc::FrameSequenceTrackerCollection::AddSortedFrame,
+          base::Unretained(&frame_trackers_))) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 

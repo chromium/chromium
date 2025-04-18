@@ -4,7 +4,6 @@
 
 #include "cc/metrics/frame_sorter.h"
 
-#include <cstddef>
 #include <utility>
 
 #include "cc/metrics/frame_info.h"
@@ -30,18 +29,11 @@ bool FrameState::IsComplete() const {
   return (on_begin_counter == ack_counter);
 }
 
-FrameSorter::FrameSorter() = default;
-FrameSorter::~FrameSorter() {
-  observers_.Clear();
+FrameSorter::FrameSorter(InOrderBeginFramesCallback callback)
+    : flush_callback_(std::move(callback)) {
+  DCHECK(!flush_callback_.is_null());
 }
-
-void FrameSorter::AddObserver(FrameSorterObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void FrameSorter::RemoveObserver(FrameSorterObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
+FrameSorter::~FrameSorter() = default;
 
 void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   if (current_source_id_.has_value() &&
@@ -140,9 +132,7 @@ void FrameSorter::Reset() {
     const auto& frame_id = pending_frame.frame_id;
     auto& frame_state = frame_states_[frame_id];
     if (frame_state.IsComplete() && !frame_state.should_ignore()) {
-      for (auto& observer : observers_) {
-        observer.AddSortedFrame(pending_frame, frame_infos_[frame_id]);
-      }
+      flush_callback_.Run(pending_frame, frame_infos_[frame_id]);
       frame_states_.erase(frame_id);
       frame_infos_.erase(frame_id);
       continue;
@@ -162,9 +152,7 @@ void FrameSorter::FlushFrames() {
     if (!frame_state.IsComplete())
       break;
     ++flushed_count;
-    for (auto& observer : observers_) {
-      observer.AddSortedFrame(first, frame_infos_[frame_id]);
-    }
+    flush_callback_.Run(first, frame_infos_[frame_id]);
     frame_states_.erase(frame_id);
     frame_infos_.erase(frame_id);
     pending_frames_.pop_front();

@@ -25,7 +25,6 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
-#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/scheduler/scheduler.h"
@@ -39,7 +38,7 @@ struct FrameTimingDetails;
 namespace cc {
 class DroppedFrameCounter;
 class EventLatencyTracker;
-class FrameSorter;
+class FrameSequenceTrackerCollection;
 class LatencyUkmReporter;
 
 struct GlobalMetricsTrackers {
@@ -54,7 +53,6 @@ struct GlobalMetricsTrackers {
   RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*
       scroll_jank_dropped_frame_tracker = nullptr;
   RAW_PTR_EXCLUSION ScrollJankUkmReporter* scroll_jank_ukm_reporter = nullptr;
-  RAW_PTR_EXCLUSION FrameSorter* frame_sorter = nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within
