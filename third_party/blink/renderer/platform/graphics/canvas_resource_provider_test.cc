@@ -147,12 +147,12 @@ TEST_F(CanvasResourceProviderTest,
   auto client_si_with_webgpu_usage_required =
       provider->GetBackingClientSharedImageForExternalWrite(
           /*internal_access_sync_token=*/nullptr,
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   EXPECT_NE(client_si_with_webgpu_usage_required, client_si);
   EXPECT_TRUE(client_si_with_webgpu_usage_required->usage().HasAll(
       shared_image_usage_flags));
   EXPECT_TRUE(client_si_with_webgpu_usage_required->usage().Has(
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ));
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
 
   // That new backing SI should then be returned on subsequent calls with
   // already-supported usages.
