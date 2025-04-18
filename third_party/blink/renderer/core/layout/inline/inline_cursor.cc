@@ -257,10 +257,9 @@ InlineCursor InlineCursor::CursorForDescendants() const {
     if (descendants_count > 1) {
       DCHECK(root_box_fragment_);
       DCHECK(fragment_items_);
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       return InlineCursor(*root_box_fragment_, *fragment_items_,
-                          UNSAFE_TODO(ItemsSpan(&*(current_.item_iter_ + 1),
-                                                descendants_count - 1)));
+                          items_.subspan(ToSpanIndex(current_.item_iter_) + 1,
+                                         descendants_count - 1));
     }
     return InlineCursor();
   }
@@ -284,8 +283,7 @@ void InlineCursor::ExpandRootToContainingBlock() {
     const unsigned index_diff = base::checked_cast<unsigned>(
         items_.data() - fragment_items_->Items().data());
     DCHECK_LT(index_diff, fragment_items_->Items().size());
-    const unsigned item_index =
-        base::checked_cast<unsigned>(current_.item_iter_ - items_.begin());
+    const unsigned item_index = ToSpanIndex(current_.item_iter_);
     items_ = fragment_items_->Items();
     // Update the iterator to the one for the new span.
     MoveToItem(items_.begin() + item_index + index_diff);
@@ -1830,8 +1828,7 @@ void InlineCursor::CheckValid(const InlineCursorPosition& position) const {
   if (position.Item()) {
     DCHECK(HasRoot());
     DCHECK_EQ(position.item_, &*position.item_iter_);
-    const unsigned index =
-        base::checked_cast<unsigned>(position.item_iter_ - items_.begin());
+    const unsigned index = ToSpanIndex(position.item_iter_);
     DCHECK_LT(index, items_.size());
   }
 }
