@@ -137,15 +137,15 @@
           </localized-link>
         </div>
       </div>
-      <div class="settings-box two-line"
-           hidden="[[pendingPrinter_.isManaged]]">
+      <div class="settings-box two-line">
         <cr-input class="browse-file-input" readonly input-tabindex="-1"
             value="[[userPPD_]]" aria-labelledby="ppdLabel"
             error-message="$i18n{selectDriverErrorMessage}"
-            invalid="[[invalidPPD_]]">
+            invalid="[[invalidPPD_]]" hidden="[[shouldHidePpdTextbox(
+                pendingPrinter_.isManaged, userPPD_.length)]]">
         </cr-input>
         <cr-button class="browse-button" on-click="onBrowseFile_"
-            disabled="[[!isOnline_]]"
+            disabled="[[!isOnline_]]" hidden="[[pendingPrinter_.isManaged]]"
             aria-label="$i18n{selectDriverButtonAriaLabel}">
           $i18n{selectDriverButtonText}
         </cr-button>
