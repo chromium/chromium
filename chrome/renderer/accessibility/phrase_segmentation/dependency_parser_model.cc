@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_op_resolver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h"
@@ -57,21 +58,21 @@ void DependencyParserModel::UpdateWithFile(base::File model_file) {
   ScopedDependencyParserModelStateRecorder recorder(
       DependencyParserModelState::kModelFileInvalid);
 
-  if (!model_file.IsValid()) {
+  model_file_ = std::move(model_file);
+  if (!model_file_.IsValid()) {
     return;
   }
 
   base::ElapsedTimer timer;
-  std::string file_content(model_file.GetLength(), '\0');
-  if (!model_file.ReadAndCheck(0, base::as_writable_byte_span(file_content))) {
-    return;
-  }
-
   auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
       std::make_unique<DependencyParserOpResolver>());
-  absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
-      reinterpret_cast<const char*>(std::data(file_content)),
-      model_file.GetLength());
+#if BUILDFLAG(IS_WIN)
+  absl::Status model_load_status =
+      tflite_engine->BuildModelFromFileHandle(model_file_.GetPlatformFile());
+#else
+  absl::Status model_load_status = tflite_engine->BuildModelFromFileDescriptor(
+      model_file_.GetPlatformFile());
+#endif
   if (!model_load_status.ok()) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "Accessibility.DependencyParserModel.InvalidModelFile", true);

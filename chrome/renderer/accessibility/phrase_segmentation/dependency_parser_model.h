@@ -70,6 +70,9 @@ class DependencyParserModel {
   std::vector<size_t> SolveDependencies(
       base::span<const std::vector<float>> input);
 
+  // The file containing the model.
+  base::File model_file_;
+
   // The tflite model for dependency parsing.
   std::unique_ptr<tflite::task::core::TfLiteEngine> dependency_parser_model_;
 
