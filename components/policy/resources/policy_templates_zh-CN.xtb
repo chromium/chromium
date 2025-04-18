@@ -723,7 +723,7 @@
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
 <translation id="1509839615768187049">一律使用内置 DNS 客户端</translation>
 <translation id="1514888685242892912">启用 <ph name="PRODUCT_NAME" /></translation>
-<translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
+<translation id="1515230621229117540">启用悬浮无障碍菜单</translation>
 <translation id="1515824657887788963">允许页面在关闭过程中执行同步 XHR 请求。</translation>
 <translation id="1516486219683984217">不允许使用系统通知</translation>
 <translation id="1519092983270375506">默认第三方存储分区设置</translation>
@@ -7610,9 +7610,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
        从版本 M106 开始，系统会自动在自助服务终端会话中启用允许的输入法。
 
       注意：如果当前输入法不受支持，它会切换为硬件键盘布局（如果允许）或此列表中的第一个有效条目。无效输入法或不受支持的输入法将被忽略。</translation>
-<translation id="6483115462650732746">在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
+<translation id="6483115462650732746">在自助服务终端模式下显示悬浮式无障碍菜单</translation>
 <translation id="6491139795995924304">允许在设备上使用蓝牙功能</translation>
-<translation id="6491305972928809525">不在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
+<translation id="6491305972928809525">不在自助服务终端模式下显示悬浮式无障碍菜单</translation>
 <translation id="6491872498385040936">此政策已被弃用。请考虑使用替换此政策的 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />；借助该政策，您可以进行更加精确的微调。
 
       强制启用 YouTube“适中”受限模式，并禁止用户更改此设置。
