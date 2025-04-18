@@ -43,6 +43,11 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
       GetKAnonymityServiceDelegateCallback k_anonymity_service_callback);
   ~InterestGroupKAnonymityManager();
 
+  // Requests k-anonymity updates for all interest groups owned by `owners` that
+  // haven't been updated in 24 hours or more. Results are passed to
+  // interest_group_manager_->UpdateKAnonymity.
+  void QueryKAnonymityOfOwners(base::span<const url::Origin> owners);
+
   // Requests the k-anonymity status of elements of `k_anon_data` that
   // haven't been updated in 24 hours or more. Results are passed to
   // interest_group_manager_->UpdateKAnonymity.
@@ -66,6 +71,9 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
     size_t remaining_responses{0};
     std::vector<std::string> positive_hashed_keys_from_received_responses;
   };
+
+  // Callback from QueryKAnonymityOfOwners
+  void OnGotInterestGroupsOfOwner(scoped_refptr<StorageInterestGroups> groups);
 
   // Callback from LoadPositiveHashedKAnonymityKeysFromCache
   void FetchUncachedKAnonymityData(

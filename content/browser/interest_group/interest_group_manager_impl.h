@@ -220,18 +220,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner,
       std::set<std::string> interest_groups_to_keep,
       url::Origin main_frame_origin);
-  // Loads all interest groups owned by `owner`, then updates their
+  // Loads all interest groups owned by `owners`, then updates their
   // definitions by fetching their `updateURL`. Interest group updates
   // that fail to load or validate are skipped, but other updates will
   // proceed.
-  void UpdateInterestGroupsOfOwner(
-      const url::Origin& owner,
-      network::mojom::ClientSecurityStatePtr client_security_state,
-      std::optional<std::string> user_agent_override,
-      AreReportingOriginsAttestedCallback callback);
-  // Like UpdateInterestGroupsOfOwner(), but handles multiple interest group
-  // owners.
-  //
   // The list is shuffled in-place to ensure fairness.
   void UpdateInterestGroupsOfOwners(
       std::vector<url::Origin> owners,
@@ -581,6 +573,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // features have not been enabled.
   TrustedSignalsCacheImpl* trusted_signals_cache() {
     return trusted_signals_cache_.get();
+  }
+
+  InterestGroupCachingStorage* GetCachingStorageForTesting() {
+    return &caching_storage_;
   }
 
  private:

@@ -557,6 +557,54 @@ size_t InterestGroup::EstimateSize() const {
   return size;
 }
 
+std::vector<std::string> InterestGroup::GetAllKAnonKeys() const {
+  std::vector<std::string> hashed_keys;
+
+  std::optional<int> max_selectable_kanon_keys;
+  if (base::FeatureList::IsEnabled(
+          features::
+              kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon)) {
+    max_selectable_kanon_keys =
+        features::
+            kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                .Get();
+    if (*max_selectable_kanon_keys < 0) {
+      max_selectable_kanon_keys.reset();
+    }
+  }
+  if (ads.has_value() && bidding_url.has_value()) {
+    for (const auto& ad : *ads) {
+      hashed_keys.emplace_back(HashedKAnonKeyForAdNameReporting(
+          *this, ad,
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
+      if (base::FeatureList::IsEnabled(features::kFledgeAuctionDealSupport) &&
+          ad.selectable_buyer_and_seller_reporting_ids) {
+        size_t num_selectable_kanon_keys =
+            ad.selectable_buyer_and_seller_reporting_ids->size();
+        if (max_selectable_kanon_keys) {
+          num_selectable_kanon_keys =
+              std::min(num_selectable_kanon_keys,
+                       static_cast<size_t>(*max_selectable_kanon_keys));
+        }
+        for (size_t selectable_idx = 0;
+             selectable_idx < num_selectable_kanon_keys; ++selectable_idx) {
+          hashed_keys.emplace_back(HashedKAnonKeyForAdNameReporting(
+              *this, ad,
+              (*ad.selectable_buyer_and_seller_reporting_ids)[selectable_idx]));
+        }
+      }
+      hashed_keys.emplace_back(HashedKAnonKeyForAdBid(*this, ad.render_url()));
+    }
+  }
+  if (ad_components.has_value()) {
+    for (const auto& ad : *ad_components) {
+      hashed_keys.emplace_back(
+          HashedKAnonKeyForAdComponentBid(ad.render_url()));
+    }
+  }
+  return hashed_keys;
+}
+
 std::string_view InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
     TrustedBiddingSignalsSlotSizeMode slot_size_mode) {
   switch (slot_size_mode) {

@@ -50,7 +50,7 @@ TestInterestGroupManagerImpl::TestInterestGroupManagerImpl(
   set_k_anonymity_manager_for_testing(
       std::make_unique<InterestGroupKAnonymityManager>(
           /*interest_group_manager=*/this,
-          /*caching_storage=*/nullptr,
+          /*caching_storage=*/GetCachingStorageForTesting(),
           /*k_anonymity_service_callback=*/
           base::BindLambdaForTesting(
               [&]() -> KAnonymityServiceDelegate* { return this; })));

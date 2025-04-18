@@ -395,8 +395,8 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
 
   // `base::Unretained` is safe here since the `BrowserContext` owns the
   // `StoragePartition` that owns the interest group manager.
-  GetInterestGroupManager().UpdateInterestGroupsOfOwner(
-      origin(), GetClientSecurityState(), user_agent_override,
+  GetInterestGroupManager().UpdateInterestGroupsOfOwners(
+      {origin()}, GetClientSecurityState(), user_agent_override,
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
           base::Unretained(render_frame_host().GetBrowserContext())));

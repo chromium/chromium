@@ -479,16 +479,6 @@ void InterestGroupManagerImpl::OnClearOriginJoinedInterestGroupsComplete(
   }
 }
 
-void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
-    const url::Origin& owner,
-    network::mojom::ClientSecurityStatePtr client_security_state,
-    std::optional<std::string> user_agent_override,
-    AreReportingOriginsAttestedCallback callback) {
-  update_manager_.UpdateInterestGroupsOfOwner(
-      owner, std::move(client_security_state), std::move(user_agent_override),
-      std::move(callback));
-}
-
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
     std::vector<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
@@ -497,6 +487,10 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
   update_manager_.UpdateInterestGroupsOfOwners(
       owners, std::move(client_security_state), std::move(user_agent_override),
       std::move(callback));
+  if (k_anonymity_manager_ &&
+      base::FeatureList::IsEnabled(features::kAlwaysUpdateKAnon)) {
+    k_anonymity_manager_->QueryKAnonymityOfOwners(owners);
+  }
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(

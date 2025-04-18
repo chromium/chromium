@@ -864,53 +864,6 @@ KAnonKeyType GetKAnonType(std::string_view unhashed_key) {
   return KAnonKeyType::kAdNameReporting;
 }
 
-std::set<std::string> GetAllKanonKeys(
-    const blink::InterestGroup& interest_group) {
-  std::set<std::string> hashed_keys;
-  if (interest_group.ads.has_value() &&
-      interest_group.bidding_url.has_value()) {
-    for (auto& ad : *interest_group.ads) {
-      hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
-          interest_group, ad,
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
-      if (base::FeatureList::IsEnabled(
-              blink::features::kFledgeAuctionDealSupport) &&
-          ad.selectable_buyer_and_seller_reporting_ids) {
-        size_t num_selectable_kanon_keys =
-            ad.selectable_buyer_and_seller_reporting_ids->size();
-        if (base::FeatureList::IsEnabled(
-                blink::features::
-                    kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon) &&
-            blink::features::
-                    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
-                        .Get() >= 0) {
-          num_selectable_kanon_keys = std::min(
-              num_selectable_kanon_keys,
-              static_cast<size_t>(
-                  blink::features::
-                      kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
-                          .Get()));
-        }
-        for (size_t selectable_idx = 0;
-             selectable_idx < num_selectable_kanon_keys; ++selectable_idx) {
-          hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
-              interest_group, ad,
-              (*ad.selectable_buyer_and_seller_reporting_ids)[selectable_idx]));
-        }
-      }
-      hashed_keys.emplace(
-          blink::HashedKAnonKeyForAdBid(interest_group, ad.render_url()));
-    }
-  }
-  if (interest_group.ad_components.has_value()) {
-    for (auto& ad : *interest_group.ad_components) {
-      hashed_keys.emplace(
-          blink::HashedKAnonKeyForAdComponentBid(ad.render_url()));
-    }
-  }
-  return hashed_keys;
-}
-
 // Adds indices to the `interest_group` table.
 // Call this function after the table has been created,
 // both when creating a new database in CreateCurrentSchema
@@ -3787,7 +3740,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
   StorageInterestGroup old_group;
   base::Time last_k_anon_updated = base::Time::Min();
   base::flat_set<std::string> positive_kanon_keys;
-  std::set<std::string> all_old_kanon_keys;
+  base::flat_set<std::string> all_old_kanon_keys;
   blink::InterestGroupKey interest_group_key(data.owner, data.name);
   if (DoLoadInterestGroup(db, passkey, interest_group_key, old_group)) {
     if (old_group.interest_group.expiry <= base::Time::Now()) {
@@ -3810,12 +3763,12 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
     } else {
       last_k_anon_updated = old_group.last_k_anon_updated;
       positive_kanon_keys = std::move(old_group.hashed_kanon_keys);
-      all_old_kanon_keys = GetAllKanonKeys(old_group.interest_group);
+      all_old_kanon_keys = old_group.interest_group.GetAllKAnonKeys();
     }
   }
 
   InterestGroupKanonUpdateParameter kanon_update(last_k_anon_updated);
-  std::set<std::string> all_new_kanon_keys = GetAllKanonKeys(data);
+  base::flat_set<std::string> all_new_kanon_keys = data.GetAllKAnonKeys();
   std::set_difference(all_new_kanon_keys.begin(), all_new_kanon_keys.end(),
                       all_old_kanon_keys.begin(), all_old_kanon_keys.end(),
                       std::back_inserter(kanon_update.newly_added_hashed_keys));
@@ -4121,8 +4074,8 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
   }
 
   blink::InterestGroup& updated_group = storage_interest_group.interest_group;
-  std::set<std::string> pre_existing_k_anon_keys =
-      GetAllKanonKeys(updated_group);
+  base::flat_set<std::string> pre_existing_k_anon_keys =
+      updated_group.GetAllKAnonKeys();
   base::flat_set<std::string> positive_kanon_keys =
       std::move(storage_interest_group.hashed_kanon_keys);
   bool updated_kanon_keys = false;
@@ -4225,7 +4178,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
   InterestGroupKanonUpdateParameter kanon_update(
       storage_interest_group.last_k_anon_updated);
   if (updated_kanon_keys) {
-    std::set<std::string> new_keys = GetAllKanonKeys(updated_group);
+    base::flat_set<std::string> new_keys = updated_group.GetAllKAnonKeys();
     positive_kanon_keys.erase(
         std::remove_if(positive_kanon_keys.begin(), positive_kanon_keys.end(),
                        [&](const std::string& key) -> bool {

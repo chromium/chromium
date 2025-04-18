@@ -11,6 +11,11 @@ namespace features {
 
 // Please keep features in alphabetical order.
 
+// Always check for k-anonymity updates whenever we do interest group updates.
+BASE_FEATURE(kAlwaysUpdateKAnon,
+             "AlwaysUpdateKAnon",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
 // the auction when detected.
 BASE_FEATURE(kDetectInconsistentPageImpl,

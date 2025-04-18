@@ -751,6 +751,7 @@ class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
       std::vector<std::string> ids,
       base::OnceCallback<void(std::vector<bool>)> callback) override {
     // Return that nothing is k-anonymous.
+    query_count_++;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<bool>(ids.size(), false)));
@@ -761,8 +762,10 @@ class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
   base::TimeDelta GetQueryInterval() override { return base::Seconds(1); }
 
   const std::vector<std::string>& join_ids() const { return join_ids_; }
+  size_t query_count() const { return query_count_; }
 
  private:
+  size_t query_count_ = 0;
   std::vector<std::string> join_ids_;
 };
 
@@ -877,8 +880,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         std::make_unique<TestSameProcessAuctionProcessManager>());
     manager_->set_k_anonymity_manager_for_testing(
         std::make_unique<InterestGroupKAnonymityManager>(
-            manager_.get(),
-            /*caching_storage=*/nullptr,
+            manager_.get(), manager_->GetCachingStorageForTesting(),
             base::BindLambdaForTesting([&]() -> KAnonymityServiceDelegate* {
               return &k_anon_delegate_;
             })));
@@ -1237,6 +1239,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const std::vector<std::string>& GetKAnonJoinedIds() const {
     return k_anon_delegate_.join_ids();
   }
+
+  size_t GetKAnonQueriedCount() const { return k_anon_delegate_.query_count(); }
 
   void OverridePrivateAggregationManagerForTesting() {
     auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
@@ -2491,6 +2495,40 @@ TEST_F(AdAuctionServiceImplTest,
                 ->interest_group.trusted_bidding_signals_slot_size_mode,
             blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
                 kAllSlotsRequestedSizes);
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdateAlwaysTriggersKAnonFetch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAlwaysUpdateKAnon);
+
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.expiry = base::Time::Now() + base::Days(3);
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt,
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/"bsid",
+      /*selectable_buyer_and_seller_reporting_ids*/ std::nullopt);
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(std::move(ad));
+
+  ASSERT_FALSE(JoinInterestGroupAndFlush(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+  EXPECT_EQ(1u, GetKAnonQueriedCount());
+
+  task_environment()->FastForwardBy(base::Days(2));
+
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
+  UpdateInterestGroupNoFlush();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return 2u == GetKAnonQueriedCount(); }));
+
+  // Don't leave the network hanging at the end of the test.
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath, "{}");
 }
 
 class AdAuctionServiceImplTestDisabledDealSupport
