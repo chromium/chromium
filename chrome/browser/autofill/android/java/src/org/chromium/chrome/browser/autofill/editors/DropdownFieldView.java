@@ -169,6 +169,10 @@ class DropdownFieldView implements FieldView {
         // Invalid value in the mFieldModel
         if (mSelectedIndex < 0) mSelectedIndex = 0;
         mDropdown.setSelection(mSelectedIndex);
+
+        // Set up accessibility content description dynamically.
+        mDropdown.setContentDescription(
+                mLabel.getText() + "/" + mAdapter.getItem(mSelectedIndex).toString());
     }
 
     void setErrorMessage(@Nullable String errorMessage) {
