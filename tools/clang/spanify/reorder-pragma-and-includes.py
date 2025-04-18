@@ -12,7 +12,7 @@
 import sys
 import os
 
-INCLUDE_ARRAY = "#include <array>"
+INCLUDE_ARRAY = '#include <array>'
 INCLUDE_SPAN = '#include "base/containers/span.h"'
 INCLUDE_RAW_SPAN = '#include "base/memory/raw_span.h"'
 
@@ -21,6 +21,7 @@ class ReorderTarget:
 
     def __find_line_numbers(self):
         # Do we have any `#include`s above `#pragma allow_unsafe_buffers`?
+        in_opt_out = False
         for i, unstripped_line in enumerate(self.lines):
             line = unstripped_line.strip()
             if line == INCLUDE_ARRAY:
@@ -29,15 +30,31 @@ class ReorderTarget:
                 self.span_include_line = i
             elif line == INCLUDE_RAW_SPAN:
                 self.raw_span_include_line = i
-            elif "#pragma allow_unsafe_buffers" in line:
-                self.pragma_line = i
+            if '#ifdef UNSAFE_BUFFERS_BUILD' in line:
+                in_opt_out = True
+            elif in_opt_out and '#endif' in line:
+                self.pragma_end = i
+                in_opt_out = False
+            elif line == self.guard_format:
+                self.guard_line = i
+        # If we have both a pragma and a guard, we want to insert _after_ both.
+        # However if we only have either pragma or guard we insert after
+        # whichever is present.
+        try:
+            self.insertion_point = max(self.pragma_end, self.guard_line)
+        except TypeError:
+            self.insertion_point = self.pragma_end or self.guard_line
 
     def __init__(self, path):
         self.lines = None
         self.array_include_line = None
         self.span_include_line = None
         self.raw_span_include_line = None
-        self.pragma_line = None
+        self.pragma_end = None
+        self.guard_line = None
+        self.insertion_point = None
+        self.guard_format = self._compute_guard_format(path)
+
         try:
             with open(path, 'r') as f:
                 self.lines = f.readlines()
@@ -45,9 +62,15 @@ class ReorderTarget:
             return  # Skip files that were deleted.
         self.__find_line_numbers()
 
+    def _compute_guard_format(self, path):
+        # The guard format is the path to the file with underscores instead of
+        # slashes and in uppercase with a trailing underscore.
+        guard_format = path.upper().replace('/', '_').replace('.', '_') + '_'
+        return f'#define {guard_format}'
+
     def _should_reorder_impl(self, member):
         try:
-            return member < self.pragma_line
+            return member < self.insertion_point
         except TypeError:
             # One or both are `None`.
             return False
@@ -65,8 +88,9 @@ class ReorderTarget:
         # Deleted file.
         if self.lines is None:
             return False
-        # No pragma? Then `git cl format` shouldn't be confused.
-        if self.pragma_line is None:
+        # No pragma? Then `git cl format` shouldn't be confused (apply_edits.py,
+        # knows how to handle header guards without pragmas).
+        if self.pragma_end is None:
             return False
         return (self.should_reorder_array_include()
                 or self.should_reorder_span_include()
@@ -83,37 +107,29 @@ def reorder_pragma_and_includes(path):
     #     we traverse the file.
     # 2.  Either `span.h` or `<array>` is included - possibly both.
     with open(path, 'w') as f:
-        in_opt_out = False
         for (line_number, line) in enumerate(target.lines):
             # Write out all lines except for the overly-high-up `#include`s
-            # until we step inside the `UNSAFE_BUFFERS_BUILD` macro. Set
-            # `in_opt_out` at the point when this occurs.
-            if not in_opt_out and line_number < target.pragma_line:
+            # until we pass the the `UNSAFE_BUFFERS_BUILD` macro and the HEADER
+            # guards (if present).
+            if line_number < target.insertion_point:
                 if line.strip() not in (INCLUDE_ARRAY, INCLUDE_SPAN,
                                         INCLUDE_RAW_SPAN):
                     f.write(line)
-                if "#ifdef UNSAFE_BUFFERS_BUILD" in line:
-                    in_opt_out = True
                 continue
 
-            # Write out each line until we hit the end of the
-            # `UNSAFE_BUFFERS_BUILD` and afterwards write out the
-            # necessary `#include`s.
-            if in_opt_out:
+            if line_number == target.insertion_point:
                 f.write(line)
-                if "#endif" in line:
-                    if target.should_reorder_array_include():
-                        f.write(f"\n{INCLUDE_ARRAY}\n")
-                    if target.should_reorder_span_include():
-                        f.write(f"\n{INCLUDE_SPAN}\n")
-                    if target.should_reorder_raw_span_include():
-                        f.write(f"\n{INCLUDE_RAW_SPAN}\n")
-                    in_opt_out = False
+                if target.should_reorder_array_include():
+                    f.write(f"\n{INCLUDE_ARRAY}\n")
+                if target.should_reorder_span_include():
+                    f.write(f"\n{INCLUDE_SPAN}\n")
+                if target.should_reorder_raw_span_include():
+                    f.write(f"\n{INCLUDE_RAW_SPAN}\n")
                 continue
 
-            # We have passed the `#pragma` and can mindlessly spit out
-            # every subsequent line.
-            assert not in_opt_out and line_number > target.pragma_line
+            # We have passed the `#pragma` and any header guards (if present)
+            # and can mindlessly spit out every subsequent line.
+            assert line_number > target.insertion_point
             f.write(line)
 
 
