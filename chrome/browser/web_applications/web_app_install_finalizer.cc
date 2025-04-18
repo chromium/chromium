@@ -124,8 +124,6 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::PRELOADED_DEFAULT:
     case InstallSource::MICROSOFT_365_SETUP:
       return false;
-    case InstallSource::COUNT:
-      NOTREACHED();
   }
 }
 
@@ -364,6 +362,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyUserDisplayModeSyncMitigations(options, *web_app);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  CHECK(HasCurrentPlatformUserDisplayMode(web_app->sync_proto()));
 
 #if BUILDFLAG(IS_MAC)
   // Only set this flag for newly installed DIY apps on Mac

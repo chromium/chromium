@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -1121,6 +1122,38 @@ TEST_F(WebAppSyncBridgeTest, MigratePartiallyInstalledToCorrectStatus) {
     EXPECT_EQ(registrar().GetAppById(app_id)->install_state(),
               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
   }
+}
+
+TEST_F(WebAppSyncBridgeTest, SyncOsIntegrationOnStartup) {
+  base::HistogramTester histogram_tester;
+  proto::WebApp web_app_proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  web_app_proto.set_install_state(
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  // Ensure OS integration state is missing.
+  web_app_proto.clear_current_os_integration_states();
+  webapps::AppId app_id = GetAppIdFromWebAppProto(web_app_proto);
+
+  // Ensure the version is set so the install state doesn't get corrected.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion());
+  database_factory().WriteMetadata(metadata);
+  database_factory().WriteProtos({web_app_proto});
+
+  StartWebAppProvider();
+
+  // Wait for the SynchronizeOsIntegration command triggered on startup to
+  // complete.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // Verify that the OS integration state is now populated in the registrar.
+  const WebApp* app = registrar().GetAppById(app_id);
+  ASSERT_TRUE(app);
+  EXPECT_TRUE(app->current_os_integration_states().has_shortcut());
+
+  // Verify the histogram was recorded.
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Install.CompletedOsIntegrationOnStartup", true, 1);
 }
 
 namespace {

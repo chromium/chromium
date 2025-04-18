@@ -187,8 +187,8 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
     auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
     SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
   }
-
   app->SetSyncProto(std::move(modified_sync_proto));
+  CHECK(HasCurrentPlatformUserDisplayMode(app->sync_proto()));
 }
 
 WebAppSyncBridge::WebAppSyncBridge(WebAppRegistrarMutable* registrar)
@@ -583,11 +583,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   registrar_->InitRegistry(std::move(registry));
 
-  // Do database migrations to ensure apps are valid before notifying anything
-  // else that the sync bridge is ready.
-  EnsureShortcutAppToDiyAppMigration();
-  EnsureAppsHaveUserDisplayModeForCurrentPlatform();
-  EnsurePartiallyInstalledAppsHaveCorrectStatus();
+  // Database migrations happen inside WebAppDatabase::MigrateDatabase.
 
   std::move(initialized_callback).Run();
 
@@ -599,65 +595,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
   }
 
   MaybeUninstallAppsPendingUninstall();
-  MaybeInstallAppsFromSyncAndPendingInstallation();
-}
-
-void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
-  web_app::ScopedRegistryUpdate update = BeginUpdate();
-  for (const WebApp& app : registrar().GetAppsIncludingStubs()) {
-    if (!HasCurrentPlatformUserDisplayMode(app.sync_proto())) {
-      // On CrOS, populate the UDM-CrOS value by copying from the default value
-      // (falling back to Standalone). On non-CrOS, populate the UDM-Default
-      // value with Standalone.
-      sync_pb::WebAppSpecifics_UserDisplayMode udm =
-          ResolvePlatformSpecificUserDisplayMode(app.sync_proto());
-      update->UpdateApp(app.app_id())
-          ->SetUserDisplayMode(ToMojomUserDisplayMode(udm));
-    }
-  }
-}
-
-void WebAppSyncBridge::EnsureShortcutAppToDiyAppMigration() {
-  web_app::ScopedRegistryUpdate update = BeginUpdate();
-  int shortcut_to_diy_apps = 0;
-  for (const webapps::AppId& app_id : registrar().GetAppIds()) {
-    WebApp* app_to_update = update->UpdateApp(app_id);
-    bool is_shortcut = app_to_update->scope().is_empty() ||
-                       (app_to_update->latest_install_source().has_value() &&
-                        app_to_update->latest_install_source() ==
-                            webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
-    if (is_shortcut) {
-      app_to_update->SetIsDiyApp(true);
-      // Shortcut apps are separated from other web apps based on the fact that
-      // they have an empty scope. DIY apps do not have that distinction, so
-      // populate the scope from the start_url of the web app.
-      if (!app_to_update->scope().is_valid()) {
-        CHECK(app_to_update->start_url().is_valid());
-        GURL scope(app_to_update->start_url().GetWithoutFilename());
-        app_to_update->SetScope(scope);
-      }
-      app_to_update->SetWasShortcutApp(true);
-      shortcut_to_diy_apps++;
-    }
-  }
-  base::UmaHistogramCounts1000("WebApp.Migrations.ShortcutAppsToDiy",
-                               shortcut_to_diy_apps);
-}
-
-void WebAppSyncBridge::EnsurePartiallyInstalledAppsHaveCorrectStatus() {
-  web_app::ScopedRegistryUpdate update = BeginUpdate();
-  for (const WebApp& app : registrar().GetApps()) {
-    if (app.install_state() !=
-        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
-      continue;
-    }
-    if (app.current_os_integration_states().has_shortcut()) {
-      continue;
-    }
-    update->UpdateApp(app.app_id())
-        ->SetInstallState(
-            proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  }
+  MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration();
 }
 
 void WebAppSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
@@ -807,9 +745,10 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
     registrar_->NotifyWebAppsWillBeUpdatedFromSync(new_apps_state);
   }
 
-  std::vector<WebApp*> apps_to_install;
-  for (const auto& web_app : update_local_data->apps_to_create)
-    apps_to_install.push_back(web_app.get());
+  for (const auto& web_app : update_local_data->apps_to_create) {
+    // Commands cannot start synchronously, so this is safe.
+    command_scheduler_->InstallFromSync(*web_app, base::DoNothing());
+  }
 
   UpdateRegistrar(std::move(update_local_data));
 
@@ -836,12 +775,6 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
           webapps::WebappUninstallSource::kSync,
           base::BindOnce(callback, app_id));
     }
-  }
-
-  // Do a full follow up install for all remote entities that don’t exist
-  // locally.
-  if (!apps_to_install.empty()) {
-    InstallWebAppsAfterSync(std::move(apps_to_install));
   }
 }
 
@@ -1044,22 +977,26 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   }
 }
 
-void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {
-  std::vector<WebApp*> apps_in_sync_install;
-
+void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration() {
   for (WebApp& app : registrar_->GetAppsIncludingStubs()) {
-    if (app.is_from_sync_and_pending_installation())
-      apps_in_sync_install.push_back(&app);
-  }
-
-  if (!apps_in_sync_install.empty()) {
-    InstallWebAppsAfterSync(std::move(apps_in_sync_install));
-  }
-}
-
-void WebAppSyncBridge::InstallWebAppsAfterSync(std::vector<WebApp*> web_apps) {
-  for (WebApp* web_app : web_apps) {
-    command_scheduler_->InstallFromSync(*web_app, base::DoNothing());
+    if (app.is_from_sync_and_pending_installation()) {
+      command_scheduler_->InstallFromSync(app, base::DoNothing());
+    } else if (app.install_state() ==
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION &&
+               !app.current_os_integration_states().has_shortcut()) {
+      // Web app installs save the app data to the database before synchronizing
+      // the OS integration. Only after the OS integration is complete do we
+      // save the current_os_integration_states. Since the system can shut down
+      // in between these two steps, we need to synchronize the OS integration
+      // for all apps that are installed with OS integration but don't have
+      // shortcut fields set to complete this operation.
+      command_scheduler_->SynchronizeOsIntegration(
+          app.app_id(),
+          base::BindOnce([]() {
+            base::UmaHistogramBoolean(
+                "WebApp.Install.CompletedOsIntegrationOnStartup", true);
+          }));
+      }
   }
 }
 

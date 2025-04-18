@@ -94,7 +94,7 @@ void MlInstallResultReporter::ReportResultInternal(
   reported_ = true;
   if (source) {
     base::UmaHistogramEnumeration("WebApp.MlInstall.InstallSource",
-                                  source.value(), WebappInstallSource::COUNT);
+                                  source.value());
   }
 
   base::UmaHistogramEnumeration("WebApp.MlInstall.DialogResponse", response);

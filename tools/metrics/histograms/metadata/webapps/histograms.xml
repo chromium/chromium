@@ -367,6 +367,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Database.VersionUpgradedTo" units="version"
+    expires_after="2025-12-19">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the target version number each time the Web App database schema is
+    upgraded. If a database starts at version 0 and the current version is 2,
+    this will record '1' and then '2'. Recorded during profile initialization if
+    a migration occurs.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Database.WriteResult" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: The dPWA team uses this from time to time to look into success rates for database writes for web apps. pwa-team@ -->
@@ -945,6 +957,18 @@ chromium-metrics-reviews@google.com.
     any type of web app install (user/sync/preinstall/policy/etc), manifest
     update checking which can occur on page loads under an installed app scope,
     or other users of WebAppIconDownloader in the WebAppProvider system.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Install.CompletedOsIntegrationOnStartup"
+    enum="BooleanSuccess" expires_after="2026-04-17">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the OS integration synchronization command, triggered during
+    startup for apps that were installed with OS integration but lacked OS state
+    in the database, completed successfully. Recorded once per app requiring
+    this synchronization during startup.
   </summary>
 </histogram>
 
@@ -1544,15 +1568,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Migrations.ShortcutAppsToDiy" units="count"
+<histogram name="WebApp.Migrations.DefaultDisplayModeToPlatform" units="apps"
+    expires_after="2025-12-19">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps whose user display mode for the current
+    platform was missing and was populated during the version 1 to 2 database
+    migration. The value is derived from the other platform's setting or
+    defaults to STANDALONE. Recorded on profile initialization if the migration
+    runs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Migrations.InstallSourceAddUserInstalled" units="apps"
+    expires_after="2025-12-19">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps whose install source was migrated during the
+    version 0 to 1 database migration. This migration ensures apps previously
+    marked only as kSync are also marked as kUserInstalled, and removes the
+    kSync source if sync is disabled. Recorded on profile initialization if the
+    migration runs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Migrations.PartiallyInstalledAppsToCorrectState"
+    units="apps" expires_after="2025-12-19">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps whose install_state was corrected during the
+    version 1 to 2 database migration. This migration changes the state from
+    INSTALLED_WITH_OS_INTEGRATION to INSTALLED_WITHOUT_OS_INTEGRATION if the app
+    lacked necessary OS integration state data (like shortcuts). Recorded on
+    profile initialization if the migration runs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Migrations.ShortcutAppsToDiy2" units="count"
     expires_after="2025-12-19">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records the number of installed shortcuts that have been migrated to DIY
-    apps. This is recorded on the initialization of the Profile object when the
-    web application system starts, which can happen either at chrome startup or
-    when the user switches profiles.
+    apps. This is recorded on when the migration occurs, which happens when
+    migrating from database version 1 to 2. Migration occurs during
+    initialization of the Profile object when the web application system starts,
+    which can happen either at chrome startup or when the user switches
+    profiles. After migration, this does not happen again.
   </summary>
 </histogram>
 

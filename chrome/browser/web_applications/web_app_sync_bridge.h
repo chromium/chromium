@@ -277,9 +277,7 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
       const std::vector<webapps::AppId>& apps_display_mode_changed);
 
   void MaybeUninstallAppsPendingUninstall();
-  void MaybeInstallAppsFromSyncAndPendingInstallation();
-
-  void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps);
+  void MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration();
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -140,9 +141,15 @@ class RandomHelper {
 
   // Return an unsigned int between 0 (inclusive) and bound (exclusive).
   uint32_t next_uint(uint32_t bound) {
-    return bound <= 1 ? 0
-                      : std::max(next_uint() % bound,
-                                 static_cast<uint32_t>(non_zero_));
+    if (bound <= 1) {
+      return 0;
+    }
+    uint32_t value = next_uint() % bound;
+    if (value == 0 && non_zero_) {
+      value = 1;
+    }
+    CHECK_LT(value, bound);
+    return value;
   }
 
   bool next_bool() { return non_zero_ || next_uint() & 1u; }
@@ -153,12 +160,14 @@ class RandomHelper {
 
   int64_t next_proto_time() { return syncer::TimeToProtoTime(next_time()); }
 
+  // max is inclusive.
   template <typename T, auto min = T::kMinValue, auto max = T::kMaxValue>
   T next_enum() {
     constexpr uint32_t min_u32 = static_cast<uint32_t>(min);
-    constexpr uint32_t max_u32 = static_cast<uint32_t>(max);
-    static_assert(min_u32 <= max_u32, "min cannot be greater than max");
-    return static_cast<T>(min_u32 + next_uint(max_u32 - min_u32));
+    constexpr uint32_t max_u32_exclusive = static_cast<uint32_t>(max) + 1;
+    static_assert(min_u32 < max_u32_exclusive,
+                  "min cannot be greater than max");
+    return static_cast<T>(min_u32 + next_uint(max_u32_exclusive - min_u32));
   }
 
  private:
@@ -721,8 +730,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   // Must always be at least one source.
   if (!app->HasAnySources()) {
-      app->AddSource(WebAppManagement::kUserInstalled);
-      management_types.push_back(WebAppManagement::kUserInstalled);
+    app->AddSource(WebAppManagement::kUserInstalled);
+    management_types.push_back(WebAppManagement::kUserInstalled);
   }
 
   if (random.next_bool()) {
@@ -746,6 +755,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetDarkModeThemeColor(dark_mode_theme_color);
   app->SetBackgroundColor(background_color);
   app->SetDarkModeBackgroundColor(dark_mode_background_color);
+
   app->SetInstallState(random.next_enum<proto::InstallState,
                                         /*min=*/proto::InstallState_MIN,
                                         /*max=*/
@@ -759,20 +769,17 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
           sync_pb::WebAppSpecifics_UserDisplayMode_TABBED,
       };
   // Explicitly set a UserDisplayMode for each platform (instead of calling
-  // `SetUserDisplayMode` which sets the current platform's value only) so the
-  // test expectations are consistent across platforms.
+  // `SetUserDisplayMode/SetPlatformSpecificUserDisplayMode` which sets the
+  // current platform's value only) so the test expectations are consistent
+  // across platforms.
   {
     // Copy proto, retaining existing fields (including unknown fields).
     sync_pb::WebAppSpecifics sync_proto = app->sync_proto();
-    if (random.next_bool()) {
-      sync_proto.set_user_display_mode_default(
-          user_display_modes[random.next_uint(3)]);
-    }
-    // Must have at least one platform's UserDisplayMode set.
-    if (!sync_proto.has_user_display_mode_default() || random.next_bool()) {
-      sync_proto.set_user_display_mode_cros(
-          user_display_modes[random.next_uint(3)]);
-    }
+    sync_proto.set_user_display_mode_default(
+        user_display_modes[random.next_uint(3)]);
+    sync_proto.set_user_display_mode_cros(
+        user_display_modes[random.next_uint(3)]);
+    CHECK(HasCurrentPlatformUserDisplayMode(sync_proto));
 
     if (random.next_bool()) {
       sync_proto.set_user_launch_ordinal(
@@ -857,6 +864,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   if (random.next_bool()) {
     app->SetShareTarget(CreateRandomShareTarget(random.next_uint()));
   }
+
+  webapps::WebappInstallSource install_source =
+      random.next_enum<webapps::WebappInstallSource, 0>();
+  app->SetLatestInstallSource(install_source);
+
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
   app->SetScopeExtensions(
       CreateRandomScopeExtensions(random.next_uint(), random));
@@ -869,6 +881,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
                          return random.next_bool();
                        });
   app->SetValidatedScopeExtensions(validated_scope_extensions);
+
+  app->SetIsDiyApp(random.next_bool());
+  app->SetWasShortcutApp(random.next_bool());
 
   if (random.next_bool()) {
     app->SetLockScreenStartUrl(scope.Resolve(
@@ -952,11 +967,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
   }
 
-  uint32_t install_source =
-      random.next_uint(static_cast<int>(webapps::WebappInstallSource::COUNT));
-  app->SetLatestInstallSource(
-      static_cast<webapps::WebappInstallSource>(install_source));
-
   if (IsChromeOsDataMandatory()) {
     // Use a separate random generator for CrOS so the result is deterministic
     // across cros and non-cros builds.
@@ -1039,12 +1049,17 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
 
+  // Note: Even though OS integration sometimes should be guaranteed to be not
+  // there or there based on the install state or
+  // is_from_sync_and_pending_installation, Because
+  // current_os_integration_states is set in a two-phase-commit style, it is
+  // possible & normal for it to be out of sync with what is desired. So allow
+  // it to be set to any value.
   app->SetCurrentOsIntegrationStates(
       GenerateRandomWebAppOsIntegration(random, *app));
 
   if (random.next_bool()) {
     bool dev_mode = random.next_bool();
-
     auto get_location_type = [&seed_str, &random,
                               &dev_mode]() -> IsolatedWebAppStorageLocation {
       if (!dev_mode) {
@@ -1118,7 +1133,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       random, proto::LinkCapturingUserPreference, /*skip_zero=*/false));
 
   app->SetLatestInstallTime(random.next_time());
-
   if (random.next_bool()) {
     proto::GeneratedIconFix generated_icon_fix;
     generated_icon_fix.set_source(NEXT_PROTO_ENUM(
@@ -1133,13 +1147,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetSupportedLinksOfferIgnoreCount(random.next_uint());
   app->SetSupportedLinksOfferDismissCount(random.next_uint());
-
-  app->SetIsDiyApp(random.next_bool());
-
-  app->SetWasShortcutApp(random.next_bool());
-
   app->SetRelatedApplications(CreateRandomRelatedApplications(random));
-
   app->SetDiyAppIconsMaskedOnMac(random.next_bool());
 
   if (random.next_bool()) {
@@ -1147,25 +1155,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   }
 
   return app;
-}
-
-void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
-  bool is_shortcut = app.scope().is_empty() ||
-                     (app.latest_install_source().has_value() &&
-                      app.latest_install_source() ==
-                          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
-  if (is_shortcut) {
-    app.SetIsDiyApp(true);
-    // Shortcut apps are separated from other web apps based on the fact that
-    // they have an empty scope. DIY apps do not have that distinction, so
-    // populate the scope from the start_url of the web app.
-    if (!app.scope().is_valid() || app.scope().is_empty()) {
-      CHECK(app.start_url().is_valid());
-      GURL scope(app.start_url().GetWithoutFilename());
-      app.SetScope(scope);
-    }
-    app.SetWasShortcutApp(true);
-  }
 }
 
 void TestAcceptDialogCallback(

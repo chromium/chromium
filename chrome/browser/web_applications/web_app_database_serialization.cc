@@ -478,6 +478,12 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     return nullptr;
   }
 
+  // Post-migration check: Scope should not be empty.
+  if (!proto.has_scope() || proto.scope().empty()) {
+    DLOG(ERROR) << "WebApp proto parse error: scope is empty";
+    return nullptr;
+  }
+
   webapps::ManifestId manifest_id;
   if (sync_data.has_relative_manifest_id()) {
     manifest_id =
@@ -495,6 +501,13 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   if (!sync_data.has_user_display_mode_cros() &&
       !sync_data.has_user_display_mode_default()) {
     DLOG(ERROR) << "WebApp proto parse error: no user_display_mode field";
+    return nullptr;
+  }
+
+  // Post-migration check: Ensure current platform UDM is set.
+  if (!HasCurrentPlatformUserDisplayMode(sync_data)) {
+    DLOG(ERROR) << "WebApp proto parse error: missing user display mode for "
+                   "current platform";
     return nullptr;
   }
 
@@ -571,6 +584,15 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     return nullptr;
   }
   web_app->SetInstallState(proto.install_state());
+
+  // Because the OS integration current state is saved in a two-phase-commit
+  // flow, where the app is saved to the database first without os integration,
+  // and then after the desired integration is complete the current os
+  // integration state is saved, we don't reject parsing apps where the
+  // install_state is INSTALLED_WITH_OS_INTEGRATION but the current os
+  // integration state is not set.
+  // This is handled in
+  // MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration.
 
   auto& chromeos_data_proto = proto.chromeos_data();
 
@@ -680,8 +702,8 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   if (proto.has_latest_install_source()) {
     int install_source = proto.latest_install_source();
     if (install_source >= 0 &&
-        install_source <
-            static_cast<int>(webapps::WebappInstallSource::COUNT)) {
+        install_source <=
+            static_cast<int>(webapps::WebappInstallSource::kMaxValue)) {
       web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(install_source));
     }

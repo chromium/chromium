@@ -119,8 +119,7 @@ void RecordWebAppUninstallation(PrefService* pref_service,
   if (GetTime() - metrics->timestamp > kMaxInstallBounceDuration)
     return;
 
-  UMA_HISTOGRAM_ENUMERATION("Webapp.Install.InstallBounce", metrics->source,
-                            webapps::WebappInstallSource::COUNT);
+  UMA_HISTOGRAM_ENUMERATION("Webapp.Install.InstallBounce", metrics->source);
 }
 
 }  // namespace web_app
