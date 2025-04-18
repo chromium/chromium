@@ -26,11 +26,13 @@ using NoticeEvent = privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 
 class PrivacySandboxNoticeServiceBrowserTest : public PlatformBrowserTest {
  public:
-  void SetUpOnMainThread() override {
+  void SetUpInProcessBrowserTestFixture() override {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  void TearDownOnMainThread() override { histogram_tester_.reset(); }
+  void TearDownInProcessBrowserTestFixture() override {
+    histogram_tester_.reset();
+  }
 
  protected:
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
