@@ -203,7 +203,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     return;
   }
 
-  const bool isIncognito = self.profile->IsOffTheRecord();
+  const bool isIncognito = self.isOffTheRecord;
   __weak LensCoordinator* weakSelf = self;
 
   LensQuery* lensQuery = [LensQuery alloc];
@@ -520,7 +520,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     loadParams.append_to = OpenPosition::kCurrentTab;
     loadParams.SetInBackground(NO);
   }
-  loadParams.in_incognito = self.profile->IsOffTheRecord();
+  loadParams.in_incognito = self.isOffTheRecord;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
 }
 
