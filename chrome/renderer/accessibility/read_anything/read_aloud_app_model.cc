@@ -714,8 +714,10 @@ bool ReadAloudAppModel::IsValidAXPosition(
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = a11y::IsTextForReadAnything(anchor_node, is_pdf, is_docs);
   bool contains_node = base::Contains(*current_nodes, anchor_node->id());
+  bool is_ignored = anchor_node->IsIgnored();
 
-  return !was_previously_spoken && is_text_node && contains_node;
+  return !is_ignored && !was_previously_spoken && is_text_node &&
+         contains_node;
 }
 
 std::vector<ReadAloudTextSegment>
