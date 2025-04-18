@@ -11,13 +11,13 @@ source_set("lens") {
   # The public interface is intentionally minimal. There should be a small
   # number of entry points and publicly used headers.
   public = [
-    "lens_search_controller.h",
     "lens_overlay_controller.h",
     "lens_overlay_entry_point_controller.h",
     "lens_overlay_gen204_controller.h",
     "lens_overlay_image_helper.h",
     "lens_overlay_side_panel_navigation_throttle.h",
     "lens_overlay_untrusted_ui.h",
+    "lens_search_controller.h",
     "lens_side_panel_untrusted_ui.h",
   ]
   friend = [
@@ -39,9 +39,11 @@ source_set("lens") {
     "lens_overlay_side_panel_coordinator.h",
     "lens_overlay_side_panel_web_view.h",
     "lens_overlay_theme_utils.h",
+    "lens_overlay_translate_options.h",
     "lens_overlay_url_builder.h",
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.h",
+    "page_content_type_conversions.h",
     "ref_counted_lens_overlay_client_logs.h",
   ]
 
@@ -77,7 +79,6 @@ source_set("impl") {
   public = []
   sources = [
     "lens_overlay_blur_layer_delegate.cc",
-    "lens_search_controller.cc",
     "lens_overlay_controller.cc",
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_event_handler.cc",
@@ -95,7 +96,9 @@ source_set("impl") {
     "lens_overlay_url_builder.cc",
     "lens_permission_bubble_controller.cc",
     "lens_preselection_bubble.cc",
+    "lens_search_controller.cc",
     "lens_side_panel_untrusted_ui.cc",
+    "page_content_type_conversions.cc",
   ]
 
   public_deps = []
@@ -194,6 +197,15 @@ source_set("test_query_controller") {
   ]
 }
 
+source_set("test_side_panel_coordinator") {
+  sources = [
+    "test_lens_overlay_side_panel_coordinator.cc",
+    "test_lens_overlay_side_panel_coordinator.h",
+  ]
+
+  deps = [ ":lens" ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -204,6 +216,7 @@ source_set("browser_tests") {
   deps = [
     ":lens",
     ":test_query_controller",
+    ":test_side_panel_coordinator",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",

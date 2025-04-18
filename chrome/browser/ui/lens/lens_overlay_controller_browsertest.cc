@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/test_lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -564,6 +565,11 @@ class LensOverlayControllerFake : public LensOverlayController {
     return fake_query_controller;
   }
 
+  std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
+  CreateLensOverlaySidePanelCoordinator() override {
+    return std::make_unique<lens::TestLensOverlaySidePanelCoordinator>(this);
+  }
+
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
     // Reset the receiver to close any existing connection.
@@ -577,15 +583,6 @@ class LensOverlayControllerFake : public LensOverlayController {
         fake_overlay_page_receiver_.BindNewPipeAndPassRemote());
   }
 
-  void SetSidePanelIsLoadingResults(bool is_loading) override {
-    if (is_loading) {
-      is_side_panel_loading_set_to_true_++;
-      return;
-    }
-
-    is_side_panel_loading_set_to_false_++;
-  }
-
   bool IsScreenshotPossible(content::RenderWidgetHostView*) override {
     return is_screenshot_possible_;
   }
@@ -594,11 +591,6 @@ class LensOverlayControllerFake : public LensOverlayController {
   // responses to full image requests. This should be called before ShowUI.
   void SetFullImageRequestShouldReturnError() {
     full_image_request_should_return_error_ = true;
-  }
-
-  void ResetSidePanelTracking() {
-    is_side_panel_loading_set_to_true_ = 0;
-    is_side_panel_loading_set_to_false_ = 0;
   }
 
   // A url response callback that records the url sent to the callback.
@@ -611,8 +603,6 @@ class LensOverlayControllerFake : public LensOverlayController {
 
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
-  int is_side_panel_loading_set_to_true_ = 0;
-  int is_side_panel_loading_set_to_false_ = 0;
   std::string last_search_url_;
   std::vector<std::string> ocr_response_words_;
   LensOverlayPageFake fake_overlay_page_;
@@ -742,6 +732,18 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetOverlayWebContents() {
     auto* controller = GetLensOverlayController();
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
+  }
+
+  const std::optional<lens::SearchQuery> GetLoadedSearchQuery() {
+    auto* controller = GetLensOverlayController();
+    return controller->results_side_panel_coordinator()
+        ->get_loaded_search_query_for_testing();
+  }
+
+  const std::vector<lens::SearchQuery>& GetSearchQueryHistory() {
+    auto* controller = GetLensOverlayController();
+    return controller->results_side_panel_coordinator()
+        ->get_search_query_history_for_testing();
   }
 
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
@@ -1510,7 +1512,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
-  auto search_query = controller->get_loaded_search_query_for_testing();
+  auto search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(search_query);
   EXPECT_EQ(search_query->search_query_text_, text_query);
   EXPECT_EQ(search_query->lens_selection_type_, lens::SELECT_TEXT_HIGHLIGHT);
@@ -1561,7 +1563,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
-  auto search_query = controller->get_loaded_search_query_for_testing();
+  auto search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(search_query);
   EXPECT_EQ(search_query->search_query_text_, text_query);
   EXPECT_EQ(search_query->lens_selection_type_, lens::SELECT_TRANSLATED_TEXT);
@@ -1616,7 +1618,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
-  auto search_query = controller->get_loaded_search_query_for_testing();
+  auto search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(search_query);
   EXPECT_EQ(search_query->search_query_text_, text_query);
   EXPECT_EQ(search_query->lens_selection_type_, lens::TRANSLATE_CHIP);
@@ -1679,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
-  auto search_query = controller->get_loaded_search_query_for_testing();
+  auto search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(search_query);
   EXPECT_EQ(search_query->search_query_text_, query);
   EXPECT_EQ(search_query->lens_selection_type_, lens::SYMBOLIC_MATH_OBJECT);
@@ -1917,7 +1919,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the side panel even if we
   // expect the navigation to fail.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -1981,7 +1984,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the side panel even if we
   // expect the navigation to fail.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -2118,7 +2122,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       LoadURLInResultsFrame) {
+                       LoadURLInResultsFrameForTesting) {
   WaitForPaint();
 
   // State should start in off.
@@ -2139,7 +2143,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a url in the side panel should show the results page.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   ASSERT_TRUE(coordinator->IsSidePanelShowing());
@@ -2176,7 +2181,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the side panel even if we
   // expect the navigation to fail.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -2228,7 +2234,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the side panel even if we
   // expect the navigation to fail.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -2252,7 +2259,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page.
   content::TestNavigationObserver observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
   observer.WaitForNavigationFinished();
 
   // Verify the error page was set correctly. It should be hidden after a
@@ -2262,21 +2270,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectBucketCount("Lens.Overlay.SidePanelResultStatus",
                                      lens::SidePanelResultStatus::kResultShown,
                                      /*expected_count=*/1);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       LoadURLInResultsFrameOverlayNotShowing) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-  const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
-
-  // Controller should not open and load URLs when overlay is not showing.
-  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-  EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2298,7 +2291,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -2311,9 +2305,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // The results frame should be the only child frame of the side panel web
   // contents.
@@ -2342,8 +2338,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the loading state was set correctly.
   // Loading is set to true twice because the URL is originally malformed.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 2);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 1);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 2);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 1);
 
   // We should find that the input text on the searchbox is the same as the text
   // query of the nav_url.
@@ -2375,7 +2371,8 @@ IN_PROC_BROWSER_TEST_F(
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -2388,9 +2385,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // The results frame should be the only child frame of the side panel web
   // contents.
@@ -2416,8 +2415,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
 
   // Verify the loading state was not set.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2439,7 +2438,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -2458,9 +2458,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   const GURL nav_url("https://new.domain.com/");
@@ -2475,8 +2477,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
 
   // Verify the loading state was never set.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2525,9 +2527,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // Simulate a same-origin navigation on the results frame.
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
@@ -2542,8 +2546,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
 
   // Verify the loading state was never set.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2593,9 +2597,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   std::string relative_url =
       std::string(kDocumentWithNamedElement) + "#:~:text=select&text=element";
@@ -2693,9 +2699,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   std::string relative_url =
       std::string(kDocumentWithNamedElement) + "#:~:text=javascript";
@@ -2783,9 +2791,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   std::string relative_url = std::string(kDocumentWithNamedElement) +
                              "#:~:text=select&text=element&text=javascript";
@@ -2836,7 +2846,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -2859,9 +2870,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // Simulate a top level same-origin navigation on the results frame.
   content::TestNavigationObserver observer(
@@ -2878,8 +2891,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifyTextQueriesAreEqual(observer.last_navigation_url(), nav_url);
 
   // Verify the loading state was set correctly.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 1);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 1);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 
   // We should find that the input text on the searchbox is the same as the text
   // query of the nav_url.
@@ -2910,7 +2923,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -2932,9 +2946,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // Simulate a cross-origin navigation on the results frame.
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
@@ -2947,8 +2963,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::WaitForLoadStop(new_tab);
   EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
   // Verify the loading state was never set.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2969,7 +2985,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -2992,9 +3009,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // Simulate a cross-origin navigation on the results frame.
   EXPECT_TRUE(content::ExecJs(
@@ -3005,8 +3024,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // considered "trusted".
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
   // Verify the loading state was never set.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -3061,7 +3080,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page. This needs to
   // be done to set up the WebContentsObserver.
   const GURL search_url("https://www.google.com/search?gsc=2&vsrid=12345");
-  controller->LoadURLInResultsFrame(search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      search_url);
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -3073,9 +3093,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
@@ -3104,8 +3126,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                    "SidePanel.LensOverlayResults.NewTabButtonClicked"));
 
   // Verify the loading state was never set.
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
-  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -3142,9 +3164,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  test_side_panel_coordinator->ResetSidePanelTracking();
 
   // Should do nothing.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
@@ -3185,7 +3209,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting()));
 
   // Verify the query and params are set.
-  auto first_search_query = controller->get_loaded_search_query_for_testing();
+  auto first_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(first_search_query);
   EXPECT_EQ(first_search_query->search_query_text_, "green");
 
@@ -3203,7 +3227,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   second_searchbox_query_observer.WaitForNavigationFinished();
 
   // Verify the query and params are set.
-  auto second_search_query = controller->get_loaded_search_query_for_testing();
+  auto second_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(second_search_query);
   EXPECT_EQ(second_search_query->search_query_text_, "red");
 
@@ -3221,7 +3245,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   third_searchbox_query_observer.WaitForNavigationFinished();
 
   // Verify the query and params are set.
-  auto third_search_query = controller->get_loaded_search_query_for_testing();
+  auto third_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(third_search_query);
   EXPECT_EQ(third_search_query->search_query_text_, "blue");
 
@@ -3249,14 +3273,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
       "&gsc=2&hl=en-US&cs=0");
-  controller->LoadURLInResultsFrame(first_search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  auto loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3278,13 +3303,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // successful.
   content::TestNavigationObserver observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(second_search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      second_search_url);
   observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3301,13 +3327,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
   pop_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the previous query.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3356,9 +3382,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  const auto first_search_query =
-      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  const auto first_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(first_search_query);
   EXPECT_TRUE(first_search_query->search_query_text_.empty());
   VerifySearchQueryParameters(first_search_query->search_query_url_);
@@ -3387,9 +3412,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   second_observer.Wait();
 
   // The search query history stack should be size 1.
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
-  const auto second_search_query =
-      controller->get_loaded_search_query_for_testing();
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
+  const auto second_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(second_search_query);
   EXPECT_EQ(second_search_query->search_query_text_, "oranges");
   VerifySearchQueryParameters(second_search_query->search_query_url_);
@@ -3422,14 +3446,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver third_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueEndTranslateModeRequestForTesting();
-  controller->LoadURLInResultsFrame(third_search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      third_search_url);
   third_observer.Wait();
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 2UL);
-  const auto third_search_query =
-      controller->get_loaded_search_query_for_testing();
+  EXPECT_EQ(GetSearchQueryHistory().size(), 2UL);
+  const auto third_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(third_search_query);
   EXPECT_EQ(third_search_query->search_query_text_, "kiwi");
   VerifySearchQueryParameters(third_search_query->search_query_url_);
@@ -3448,14 +3472,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver fourth_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
   fourth_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the previous query.
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
-  const auto first_popped_query =
-      controller->get_loaded_search_query_for_testing();
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
+  const auto first_popped_query = GetLoadedSearchQuery();
   EXPECT_TRUE(first_popped_query);
   EXPECT_EQ(first_popped_query->search_query_text_, "oranges");
   VerifySearchQueryParameters(first_popped_query->search_query_url_);
@@ -3484,14 +3507,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver fifth_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
   fifth_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  const auto second_popped_query =
-      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  const auto second_popped_query = GetLoadedSearchQuery();
   EXPECT_TRUE(second_popped_query);
   EXPECT_TRUE(second_popped_query->search_query_text_.empty());
   VerifySearchQueryParameters(second_popped_query->search_query_url_);
@@ -3536,8 +3558,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  auto loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   GURL url_without_start_time_or_size =
@@ -3566,9 +3588,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should have 1 entry and the currently loaded
   // region should be set.
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
   EXPECT_FALSE(loaded_search_query->selected_text_);
@@ -3588,9 +3610,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 2UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 2UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   url_without_start_time_or_size =
@@ -3614,7 +3636,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
   fake_query_controller->ResetTestingState();
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
 
   // Verify the new interaction request was sent.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
@@ -3628,9 +3650,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should have 1 entry and the previously
   // loaded region should be present.
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, std::string());
   EXPECT_FALSE(loaded_search_query->selected_text_);
@@ -3642,14 +3664,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // frame.
   content::TestNavigationObserver second_pop_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
   second_pop_observer.Wait();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the original query.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
   url_without_start_time_or_size =
@@ -3709,8 +3731,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  auto loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_TRUE(loaded_search_query->search_query_text_.empty());
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3736,9 +3758,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3759,7 +3781,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   content::TestNavigationObserver third_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
   third_observer.Wait();
 
   // Verify the new interaction request was sent.
@@ -3774,9 +3796,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the original query.
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 0UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 0UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_TRUE(loaded_search_query->search_query_text_.empty());
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3816,9 +3838,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return controller->get_loaded_search_query_for_testing().has_value();
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetLoadedSearchQuery().has_value(); }));
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
@@ -3828,8 +3849,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
+  auto loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_TRUE(loaded_search_query->search_query_text_.empty());
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3860,9 +3881,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 1UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "green");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3889,9 +3910,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The search query history stack should have 2 entries and the currently
   // loaded query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 2UL);
+  EXPECT_EQ(GetSearchQueryHistory().size(), 2UL);
   loaded_search_query.reset();
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "red");
   VerifySearchQueryParameters(loaded_search_query->search_query_url_);
@@ -3911,7 +3932,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::TestNavigationObserver pop_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
 
   // Verify the new interaction request was sent.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
@@ -3932,7 +3953,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Popping the query stack again should show the initial query.
   fake_query_controller->ResetTestingState();
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
 
   // Verify that the last queried data did not contain any query text.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
@@ -3968,7 +3989,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
       "https://www.google.com/search?q=oranges&gsc=2&hl=en-US");
-  controller->LoadURLInResultsFrame(first_search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -3979,7 +4001,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // successful.
   content::TestNavigationObserver observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(second_search_url);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrameForTesting(
+      second_search_url);
   observer.WaitForNavigationFinished();
 
   // Make the side panel larger.
@@ -3990,11 +4013,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
   pop_observer.WaitForNavigationFinished();
   // The search query history stack should be empty and the currently loaded
   // query should be set to the previous query.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  EXPECT_TRUE(GetSearchQueryHistory().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -7063,9 +7086,11 @@ IN_PROC_BROWSER_TEST_F(
       [&]() { return controller->state() == State::kLivePageAndResults; }));
 
   // Issue a follow up after ZPS is shown.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
   int follow_up_query_issued_count =
-      fake_controller->is_side_panel_loading_set_to_true_;
+      test_side_panel_coordinator->side_panel_loading_set_to_true_;
 
   controller->OnZeroSuggestShownForTesting();
   controller->IssueSearchBoxRequestForTesting(
@@ -7075,7 +7100,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Run until the follow up query is issued.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_controller->is_side_panel_loading_set_to_true_ ==
+    return test_side_panel_coordinator->side_panel_loading_set_to_true_ ==
            follow_up_query_issued_count + 1;
   }));
 
@@ -7123,7 +7148,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Issue a follow up before ZPS is shown.
   follow_up_query_issued_count =
-      fake_controller->is_side_panel_loading_set_to_true_;
+      test_side_panel_coordinator->side_panel_loading_set_to_true_;
   controller->IssueSearchBoxRequestForTesting(
       "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
@@ -7131,7 +7156,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Run until the follow up query is issued.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_controller->is_side_panel_loading_set_to_true_ ==
+    return test_side_panel_coordinator->side_panel_loading_set_to_true_ ==
            follow_up_query_issued_count + 1;
   }));
 
@@ -7200,7 +7225,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   fake_query_controller->ResetTestingState();
 
   // Issue a new searchbox query.
-  controller->PopAndLoadQueryFromHistory();
+  controller->results_side_panel_coordinator()->PopAndLoadQueryFromHistory();
 
   // Verify we entered the contextual searchbox flow.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -8243,7 +8268,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
       controller->GetSidePanelWebContentsForTesting()));
 
   // Verify the query and params are set.
-  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  auto loaded_search_query = GetLoadedSearchQuery();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "hello");
   VerifyContextualSearchQueryParameters(loaded_search_query->search_query_url_);

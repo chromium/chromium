@@ -81,7 +81,8 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // the side panel.
   GURL redirect_url = lens::GetSearchResultsUrlFromRedirectUrl(url);
   if (!redirect_url.is_empty()) {
-    controller->LoadURLInResultsFrame(redirect_url);
+    controller->results_side_panel_coordinator()->LoadURLInResultsFrame(
+        redirect_url);
     return content::NavigationThrottle::CANCEL;
   }
 
@@ -107,13 +108,12 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // has the parameters needed to preserve lens overlay features (e.g. framing).
   // If no such parameters were needed, we can just proceed.
   if (lens::HasCommonSearchQueryParameters(url)) {
-    // This is the only time we should add to the search query history stack for
-    // a user navigating to a SRP. If the SRP url did not have the common search
-    // query parameters, it will reload the frame and go through this flow
-    // anyway.
+    // This is the only time a query is guaranteed to end up in the side panel
+    // for a user navigation.If the SRP url did not have the common search query
+    // parameters, it will reload the frame and go through this flow anyway.
     const std::string text_query = GetTextQueryParameterValue(url);
-    controller->AddQueryToHistory(std::move(text_query),
-                                  navigation_handle()->GetURL());
+    controller->results_side_panel_coordinator()->NotifyNewQueryLoaded(
+        std::move(text_query), navigation_handle()->GetURL());
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -122,7 +122,8 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // manually into the side panel frame.
   auto url_with_params = lens::AppendCommonSearchParametersToURL(
       url, lens::LensOverlayShouldUseDarkMode(theme_service_));
-  controller->LoadURLInResultsFrame(url_with_params);
+  controller->results_side_panel_coordinator()->LoadURLInResultsFrame(
+      url_with_params);
   return content::NavigationThrottle::CANCEL;
 }
 }  // namespace lens

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 
+#include <string>
+
 #include "base/base64url.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -11,6 +13,7 @@
 #include "components/language/core/common/language_util.h"
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_intent_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_query.pb.h"
@@ -35,6 +38,9 @@ inline constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
 
 // Query parameter for the request id.
 inline constexpr char kRequestIdParameterKey[] = "vsrid";
+
+// The url query param key for visual input type, used for contextual queries.
+inline constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 
 // Query parameter for the mode.
 inline constexpr char kModeParameterKey[] = "udm";
@@ -374,6 +380,32 @@ const std::string GetLensModeParameterValue(const GURL& url) {
   return param_value;
 }
 
+bool AreSearchUrlsEquivalent(const GURL& a, const GURL& b) {
+  // Check urls without query and reference (fragment) for equality first.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
+    return false;
+  }
+
+  // Now, compare each query param individually to ensure equivalence. Remove
+  // params that should not contribute to differing search results.
+  net::UrlSearchParams a_search_params(
+      lens::RemoveIgnoredSearchURLParameters(a));
+  net::UrlSearchParams b_search_params(
+      lens::RemoveIgnoredSearchURLParameters(b));
+
+  // Sort params so they are in the same order during comparison.
+  a_search_params.Sort();
+  b_search_params.Sort();
+
+  // Check Search Params for equality
+  // All search params, in order, need to have the same keys and the same
+  // values.
+  return a_search_params.params() == b_search_params.params();
+}
+
 bool HasCommonSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;
@@ -448,6 +480,23 @@ GURL RemoveSidePanelURLParameters(const GURL& url) {
   processed_url = net::AppendOrReplaceQueryParameter(
       processed_url, kChromeSidePanelParameterKey, std::nullopt);
   return processed_url;
+}
+
+GURL GetSidePanelNewTabUrl(const GURL& side_panel_url, std::string vsrid) {
+  if (side_panel_url.is_empty()) {
+    return GURL();
+  }
+  // Disable open in new tab for contextual queries.
+  std::string param_value;
+  net::GetValueForKeyInQuery(side_panel_url, kVisualInputTypeQueryParameterKey,
+                             &param_value);
+  if (!param_value.empty()) {
+    return GURL();
+  }
+
+  // Each new tab needs its own unique vsrid.
+  return net::AppendOrReplaceQueryParameter(side_panel_url,
+                                            kRequestIdParameterKey, vsrid);
 }
 
 GURL BuildTranslateLanguagesURL(std::string country, std::string language) {

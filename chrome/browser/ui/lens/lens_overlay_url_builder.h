@@ -64,6 +64,12 @@ const std::string GetTextQueryParameterValue(const GURL& url);
 // URL if any. Empty string otherwise.
 const std::string GetLensModeParameterValue(const GURL& url);
 
+// Returns true if the two URLs have the same base url, and the same query
+// parameters. This differs from comparing two GURLs using == since this method
+// will ensure equivalence even if there are empty query params, viewport
+// params, or different query param ordering.
+bool AreSearchUrlsEquivalent(const GURL& a, const GURL& b);
+
 // Returns whether the given |url| contains all the common search query
 // parameters required to properly enable the lens overlay results in the side
 // panel. This does not check the value of these query parameters.
@@ -94,6 +100,11 @@ GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 // Remove parameters that cause the SRP to be rendered for the side panel. Used
 // when opening the SRP in a new tab.
 GURL RemoveSidePanelURLParameters(const GURL& url);
+
+// Returns the URL to open in a new tab by adding a unique vsrid to the side
+// panel new tab URL. If the given URL is empty, or is a URL for a contextual
+// query, returns an empty URL since they cannot be opened in a new tab.
+GURL GetSidePanelNewTabUrl(const GURL& side_panel_url, std::string vsrid);
 
 // Builds the appropriate translate service URL for fetching supported
 // languages.
