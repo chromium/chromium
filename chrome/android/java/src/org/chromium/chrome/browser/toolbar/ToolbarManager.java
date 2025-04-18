@@ -350,6 +350,7 @@ public class ToolbarManager
     private Tab mLastTab;
 
     private @Nullable StripLayoutHelperManager mStripLayoutHelperManager;
+    private @Nullable MiniOriginBarController mMiniOriginBarController;
     private @Nullable UndoBarThrottle mUndoBarThrottle;
 
     private float mNtpSearchBoxScrollPercentage;
@@ -1549,6 +1550,15 @@ public class ToolbarManager
                 mBottomToolbarControlsOffsetSupplier,
                 mProgressBarContainer,
                 mActivity);
+        if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
+            mMiniOriginBarController =
+                    new MiniOriginBarController(
+                            mLocationBar,
+                            mFormFieldFocusedSupplier,
+                            mWindowAndroid.getKeyboardDelegate(),
+                            mActivity,
+                            mControlContainer);
+        }
     }
 
     // TODO(b/315204103): add tests
@@ -2221,6 +2231,11 @@ public class ToolbarManager
 
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(mControlContainer);
+        }
+
+        if (mMiniOriginBarController != null) {
+            mMiniOriginBarController.destroy();
+            mMiniOriginBarController = null;
         }
 
         mTabObscuringHandler.removeObserver(this);

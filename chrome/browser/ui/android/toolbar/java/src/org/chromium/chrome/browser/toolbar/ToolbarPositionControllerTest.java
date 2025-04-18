@@ -242,7 +242,7 @@ public class ToolbarPositionControllerTest {
     private HistogramWatcher mStartupExpectation;
     private WindowAndroid mWindowAndroid;
 
-    static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
+    public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
 
         public void setVisibilityForTests(boolean isShowing) {
