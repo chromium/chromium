@@ -249,7 +249,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
     probe_url_ = GURL(probe_url_string);
     return true;
   } else if (key == shill::kUplinkSpeedPropertyKbps) {
-    uint32_t max_uplink_speed_kbps;
+    uint32_t max_uplink_speed_kbps = 0;
     if (!GetUInt32Value(key, value, &max_uplink_speed_kbps)) {
       return false;
     }
@@ -260,7 +260,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
     max_uplink_speed_kbps_ = max_uplink_speed_kbps;
     return true;
   } else if (key == shill::kDownlinkSpeedPropertyKbps) {
-    uint32_t max_downlink_speed_kbps;
+    uint32_t max_downlink_speed_kbps = 0;
     if (!GetUInt32Value(key, value, &max_downlink_speed_kbps)) {
       return false;
     }
