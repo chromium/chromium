@@ -273,12 +273,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   if (!tabGroup) {
     return;
   }
-
   if (confirmation) {
-    [_delegate
-        showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
-                                                       kDeleteSharedTabGroup
-                                             group:tabGroup->GetWeakPtr()];
+    [_delegate startLeaveOrDeleteSharedGroup:tabGroup->GetWeakPtr()
+                                   forAction:TabGroupActionType::
+                                                 kDeleteSharedTabGroup];
     return;
   }
   [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
@@ -286,16 +284,14 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 }
 
 - (void)leaveSharedGroupWithConfirmation:(BOOL)confirmation {
-  DCHECK(IsTabGroupSyncEnabled());
   const TabGroup* tabGroup = [self currentTabGroup];
   if (!tabGroup) {
     return;
   }
   if (confirmation) {
     [_delegate
-        showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
-                                                       kLeaveSharedTabGroup
-                                             group:tabGroup->GetWeakPtr()];
+        startLeaveOrDeleteSharedGroup:tabGroup->GetWeakPtr()
+                            forAction:TabGroupActionType::kLeaveSharedTabGroup];
     return;
   }
   [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup

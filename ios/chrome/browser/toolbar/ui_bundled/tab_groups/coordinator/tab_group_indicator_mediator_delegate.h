@@ -32,6 +32,10 @@ enum class CollaborationServiceShareOrManageEntryPoint;
                                          group:(base::WeakPtr<const TabGroup>)
                                                    tabGroup;
 
+// Starts the leave or delete shared group flow.
+- (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)tabGroup
+                            forAction:(TabGroupActionType)actionType;
+
 // Displays a snackbar after closing a tab group locally.
 - (void)showTabGroupIndicatorSnackbarAfterClosingGroup;
 
