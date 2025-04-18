@@ -154,7 +154,7 @@ BASE_FEATURE(kGroupSuggestionService,
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableRecentlyOpened{
     &kGroupSuggestionService,
     /*name=*/"group_suggestion_enable_recently_opened",
-    /*default_value=*/true};
+    /*default_value=*/false};
 
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableSwitchBetween{
     &kGroupSuggestionService,
@@ -169,6 +169,6 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableSimilarSource{
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin{
     &kGroupSuggestionService,
     /*name=*/"group_suggestion_enable_same_origin",
-    /*default_value=*/true};
+    /*default_value=*/false};
 
 }  // namespace visited_url_ranking::features

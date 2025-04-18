@@ -6,10 +6,12 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/visited_url_ranking/internal/url_grouping/mock_suggestions_delegate.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/tab_metadata.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
@@ -74,6 +76,9 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    features_.InitAndEnableFeatureWithParameters(
+        features::kGroupSuggestionService,
+        {{"group_suggestion_enable_recently_opened", "true"}});
     auto* registry = pref_service_.registry();
     GroupSuggestionsServiceImpl::RegisterProfilePrefs(registry);
     mock_ranking_service_ = std::make_unique<MockVisitedURLRankingService>();
@@ -168,6 +173,7 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList features_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;
   std::unique_ptr<MockTabEventsVisitTransformer> mock_transformer_;

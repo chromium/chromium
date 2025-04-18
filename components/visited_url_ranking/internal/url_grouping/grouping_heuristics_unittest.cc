@@ -120,6 +120,13 @@ TEST_F(GroupingHeuristicsTest, HeuristicsEmptyAggregates) {
 }
 
 TEST_F(GroupingHeuristicsTest, RecentlyOpenedHeuristic) {
+  // Reset heuristics so that Recently Opened heuristics is enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
   std::vector<URLVisitAggregate> candidates = {};
 
   // 4 tabs are below 600 seconds time limit to be considered recent and should
@@ -320,6 +327,13 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_RecentTabs) {
 }
 
 TEST_F(GroupingHeuristicsTest, SameOrigin) {
+  // Reset heuristics so that Same Origin heuristics is enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_same_origin", "true"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
   std::vector<URLVisitAggregate> candidates = {};
 
   // 4 tabs with 3 of them from the same origin.
@@ -345,13 +359,7 @@ TEST_F(GroupingHeuristicsTest, SameOrigin) {
 }
 
 TEST_F(GroupingHeuristicsTest, DisableRecentlyOpen) {
-  // Reset heuristics so that Recently Open heuristics is not enabled.
-  features_.InitAndEnableFeatureWithParameters(
-      features::kGroupSuggestionService,
-      {{"group_suggestion_enable_recently_opened", "false"}});
-  heuristics_.reset();
-  heuristics_ = std::make_unique<GroupingHeuristics>();
-
+  // Recently Open heuristics is disabled by default.
   std::vector<URLVisitAggregate> candidates = {};
 
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
@@ -417,13 +425,7 @@ TEST_F(GroupingHeuristicsTest, DisableSimilarSource) {
 }
 
 TEST_F(GroupingHeuristicsTest, DisableSameOrigin) {
-  // Reset heuristics so that Same Origin heuristics is not enabled.
-  features_.InitAndEnableFeatureWithParameters(
-      features::kGroupSuggestionService,
-      {{"group_suggestion_enable_same_origin", "false"}});
-  heuristics_.reset();
-  heuristics_ = std::make_unique<GroupingHeuristics>();
-
+  // Same Origin heuristics is disabled by default.
   std::vector<URLVisitAggregate> candidates = {};
 
   candidates.push_back(
