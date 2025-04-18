@@ -103,10 +103,11 @@ void ContextualSearchProvider::Start(
       autocomplete_input, client()->GetTemplateURLService());
   if (!starter_pack_engine) {
     // Only surface the action matches that help the user find their way into
-    // the '@page' scope. Requirements: non-SRP, non-NTP, with empty input.
+    // the '@page' scope. Requirements: web, non-SRP, non-NTP, with empty input.
     // TODO(crbug.com/406276335): Move and condition on zero suggest response to
     //  the ZeroSuggestProvider so it can inhibit the ad actions for some pages.
     if (omnibox::IsOtherWebPage(input.current_page_classification()) &&
+        input.current_url().SchemeIsHTTPOrHTTPS() &&
         (input.IsZeroSuggest() ||
          input.type() == metrics::OmniboxInputType::EMPTY)) {
       AddPageSearchActionMatches();

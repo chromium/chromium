@@ -826,6 +826,7 @@ source_set("unit_tests") {
     "builtin_provider_unittest.cc",
     "calculator_provider_unittest.cc",
     "clipboard_provider_unittest.cc",
+    "contextual_search_provider_unittest.cc",
     "document_provider_unittest.cc",
     "document_suggestions_service_unittest.cc",
     "enterprise_search_aggregator_provider_unittest.cc",
