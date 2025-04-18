@@ -277,6 +277,12 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessaryImpl(
     }
   }
 
+  for (const auto& pattern : patterns) {
+    pref_provider->SetWebsiteSetting(
+        pattern.first, pattern.second, ContentSettingsType::NOTIFICATIONS,
+        base::Value(), {}, content_settings::PartitionKey::WipGetDefault());
+  }
+
   pref_service_->SetBoolean(prefs::kMigratedToSiteNotificationChannels, true);
 }
 
