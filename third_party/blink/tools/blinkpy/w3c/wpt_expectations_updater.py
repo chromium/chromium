@@ -231,9 +231,14 @@ class WPTExpectationsUpdater:
                 else:
                     completed_results.append(suite_results)
 
-        final_results.extend(
-            self.fill_missing_results(results, completed_results)
-            for results in missing_results)
+        for results in missing_results:
+            # Missing results should only get failed test results from
+            # the SAME step in its counter part.
+            final_results.append(
+                self.fill_missing_results(results, [
+                    r for r in completed_results
+                    if r.step_name() == results.step_name()
+                ]))
         final_results.extend(completed_results)
         return tests_to_rebaseline, final_results
 
