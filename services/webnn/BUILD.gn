@@ -15,6 +15,7 @@ buildflag_header("buildflags") {
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
     "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
+    "WEBNN_USE_ORT=$webnn_use_ort",
   ]
 }
 
@@ -154,6 +155,14 @@ component("webnn_service") {
     }
   }
 
+  if (webnn_use_ort) {
+    sources += [
+      "ort/platform_functions_ort.cc",
+      "ort/platform_functions_ort.h",
+    ]
+    deps += [ "//third_party/onnxruntime_headers" ]
+  }
+
   if (is_mac || webnn_use_tflite) {
     sources += [
       "queueable_resource_state.h",
@@ -194,6 +203,13 @@ source_set("tests") {
     sources += [
       "webnn_graph_impl_backend_test.cc",
       "webnn_tensor_impl_backend_test.cc",
+    ]
+  }
+
+  if (webnn_use_ort) {
+    sources += [
+      "ort/platform_functions_ort_test.cc",
+      "ort/test_base_ort.h",
     ]
   }
 
