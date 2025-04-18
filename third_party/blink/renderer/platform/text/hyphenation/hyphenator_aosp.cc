@@ -16,11 +16,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <algorithm>
 #include <unicode/uchar.h>
@@ -28,6 +23,7 @@
 // HACK: for reading pattern file
 #include <fcntl.h>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenator_aosp.h"
 
 namespace android {
@@ -74,8 +70,8 @@ struct Pattern {
   static uint32_t len(uint32_t entry) { return entry >> 26; }
   static uint32_t shift(uint32_t entry) { return (entry >> 20) & 0x3f; }
   const uint8_t* buf(uint32_t entry) const {
-    return reinterpret_cast<const uint8_t*>(this) + pattern_offset +
-           (entry & 0xfffff);
+    return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this) + pattern_offset +
+                       (entry & 0xfffff));
   }
 };
 
@@ -92,19 +88,23 @@ struct Header {
     return reinterpret_cast<const uint8_t*>(this);
   }
   uint32_t alphabetVersion() const {
-    return *reinterpret_cast<const uint32_t*>(bytes() + alphabet_offset);
+    return *reinterpret_cast<const uint32_t*>(
+        UNSAFE_TODO(bytes() + alphabet_offset));
   }
   const AlphabetTable0* alphabetTable0() const {
-    return reinterpret_cast<const AlphabetTable0*>(bytes() + alphabet_offset);
+    return reinterpret_cast<const AlphabetTable0*>(
+        UNSAFE_TODO(bytes() + alphabet_offset));
   }
   const AlphabetTable1* alphabetTable1() const {
-    return reinterpret_cast<const AlphabetTable1*>(bytes() + alphabet_offset);
+    return reinterpret_cast<const AlphabetTable1*>(
+        UNSAFE_TODO(bytes() + alphabet_offset));
   }
   const Trie* trieTable() const {
-    return reinterpret_cast<const Trie*>(bytes() + trie_offset);
+    return reinterpret_cast<const Trie*>(UNSAFE_TODO(bytes() + trie_offset));
   }
   const Pattern* patternTable() const {
-    return reinterpret_cast<const Pattern*>(bytes() + pattern_offset);
+    return reinterpret_cast<const Pattern*>(
+        UNSAFE_TODO(bytes() + pattern_offset));
   }
 };
 
@@ -140,7 +140,7 @@ void Hyphenator::hyphenateSoft(uint8_t* result,
                                wtf_size_t len) {
   result[0] = 0;
   for (wtf_size_t i = 1; i < len; i++) {
-    result[i] = word[i - 1] == CHAR_SOFT_HYPHEN;
+    UNSAFE_TODO(result[i] = word[i - 1] == CHAR_SOFT_HYPHEN);
   }
 }
 
@@ -156,26 +156,26 @@ bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
     uint32_t max_codepoint = alphabet->max_codepoint;
     alpha_codes[0] = 0;  // word start
     for (wtf_size_t i = 0; i < len; i++) {
-      uint16_t c = word[i];
+      uint16_t c = UNSAFE_TODO(word[i]);
       if (c < min_codepoint || c >= max_codepoint) {
         return false;
       }
-      uint8_t code = alphabet->data[c - min_codepoint];
+      uint8_t code = UNSAFE_TODO(alphabet->data[c - min_codepoint]);
       if (code == 0) {
         return false;
       }
-      alpha_codes[i + 1] = code;
+      UNSAFE_TODO(alpha_codes[i + 1]) = code;
     }
-    alpha_codes[len + 1] = 0;  // word termination
+    UNSAFE_TODO(alpha_codes[len + 1]) = 0;  // word termination
     return true;
   } else if (alphabetVersion == 1) {
     const AlphabetTable1* alphabet = header->alphabetTable1();
     size_t n_entries = alphabet->n_entries;
     const uint32_t* begin = alphabet->data;
-    const uint32_t* end = begin + n_entries;
+    const uint32_t* end = UNSAFE_TODO(begin + n_entries);
     alpha_codes[0] = 0;
     for (wtf_size_t i = 0; i < len; i++) {
-      uint16_t c = word[i];
+      uint16_t c = UNSAFE_TODO(word[i]);
       auto* p = std::lower_bound(begin, end, c << 11);
       if (p == end) {
         return false;
@@ -184,9 +184,9 @@ bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
       if (AlphabetTable1::codepoint(entry) != c) {
         return false;
       }
-      alpha_codes[i + 1] = AlphabetTable1::value(entry);
+      UNSAFE_TODO(alpha_codes[i + 1]) = AlphabetTable1::value(entry);
     }
-    alpha_codes[len + 1] = 0;
+    UNSAFE_TODO(alpha_codes[len + 1]) = 0;
     return true;
   }
   return false;
@@ -212,20 +212,20 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
   for (wtf_size_t i = 0; i < len - 1; i++) {
     uint32_t node = 0;  // index into Trie table
     for (wtf_size_t j = i; j < len; j++) {
-      uint16_t c = codes[j];
-      uint32_t entry = trie->data[node + c];
+      uint16_t c = UNSAFE_TODO(codes[j]);
+      uint32_t entry = UNSAFE_TODO(trie->data[node + c]);
       if ((entry & char_mask) == c) {
         node = (entry & link_mask) >> link_shift;
       } else {
         break;
       }
-      uint32_t pat_ix = trie->data[node] >> pattern_shift;
+      uint32_t pat_ix = UNSAFE_TODO(trie->data[node]) >> pattern_shift;
       // pat_ix contains a 3-tuple of length, shift (number of trailing zeros),
       // and an offset into the buf pool. This is the pattern for the substring
       // (i..j) we just matched,
       // which we combine (via point-wise max) into the result vector.
       if (pat_ix != 0) {
-        uint32_t pat_entry = pattern->data[pat_ix];
+        uint32_t pat_entry = UNSAFE_TODO(pattern->data[pat_ix]);
         int pat_len = Pattern::len(pat_entry);
         int pat_shift = Pattern::shift(pat_entry);
         const uint8_t* pat_buf = pattern->buf(pat_entry);
@@ -235,7 +235,8 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
         int start = std::max(MIN_PREFIX - offset, 0);
         int end = std::min(pat_len, (int)maxOffset - offset);
         for (int k = start; k < end; k++) {
-          result[offset + k] = std::max(result[offset + k], pat_buf[k]);
+          UNSAFE_TODO(result[offset + k] =
+                          std::max(result[offset + k], pat_buf[k]));
         }
       }
     }
@@ -243,7 +244,7 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
   // Since the above calculation does not modify values outside
   // [MIN_PREFIX, len - MIN_SUFFIX], they are left as 0.
   for (wtf_size_t i = MIN_PREFIX; i < maxOffset; i++) {
-    result[i] &= 1;
+    UNSAFE_TODO(result[i]) &= 1;
   }
 }
 

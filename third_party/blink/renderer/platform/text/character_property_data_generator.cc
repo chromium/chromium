@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 
 #include <stdio.h>
@@ -90,7 +85,7 @@ class CharacterPropertyValues {
 
  private:
   void Initialize() {
-    memset(values_.get(), 0, sizeof(CharacterProperty) * kSize);
+    UNSAFE_TODO(memset(values_.get(), 0, sizeof(CharacterProperty) * kSize));
 
     SetIsCJKIdeographOrSymbolForEmoji();
 
@@ -182,11 +177,11 @@ class CharacterPropertyValues {
                     size_t length,
                     CharacterProperty value) {
     CHECK_EQ(length % 2, 0u);
-    const UChar32* end = ranges + length;
-    for (; ranges != end; ranges += 2) {
-      CHECK_LE(ranges[0], ranges[1]);
-      CHECK_LE(ranges[1], kMaxCodepoint);
-      for (UChar32 c = ranges[0]; c <= ranges[1]; c++) {
+    const UChar32* end = UNSAFE_TODO(ranges + length);
+    for (; ranges != end; UNSAFE_TODO(ranges += 2)) {
+      CHECK_LE(ranges[0], UNSAFE_TODO(ranges[1]));
+      CHECK_LE(UNSAFE_TODO(ranges[1]), kMaxCodepoint);
+      for (UChar32 c = ranges[0]; c <= UNSAFE_TODO(ranges[1]); c++) {
         values_[c] |= value;
       }
     }
@@ -195,8 +190,8 @@ class CharacterPropertyValues {
   void SetForValues(const UChar32* begin,
                     size_t length,
                     CharacterProperty value) {
-    const UChar32* end = begin + length;
-    for (; begin != end; begin++) {
+    const UChar32* end = UNSAFE_TODO(begin + length);
+    for (; begin != end; UNSAFE_TODO(begin++)) {
       CHECK_LE(*begin, kMaxCodepoint);
       values_[*begin] |= value;
     }
@@ -400,7 +395,7 @@ class LineBreakData {
       if (ch != kMinChar && (ch - kMinChar) % 8 == 0) {
         fprintf(fp, "   ");
       }
-      fprintf(fp, ch < 0x7F ? " %c" : "%02X", ch);
+      UNSAFE_TODO(fprintf(fp, ch < 0x7F ? " %c" : "%02X", ch));
     }
     fprintf(fp, " */\n");
 
@@ -410,7 +405,7 @@ class LineBreakData {
       fprintf(fp, "/* %02X %c */ {B(", ch, ch < 0x7F ? ch : ' ');
       const char* prefix = "";
       for (int x = 0; x < kNumCharsRoundUp8; ++x) {
-        fprintf(fp, "%s%d", prefix, pair_[y][x]);
+        UNSAFE_TODO(fprintf(fp, "%s%d", prefix, pair_[y][x]));
         prefix = (x % 8 == 7) ? "),B(" : ",";
       }
       fprintf(fp, ")},\n");
@@ -445,7 +440,7 @@ class LineBreakData {
     CHECK_LE(ch1, kMaxChar);
     CHECK_GE(ch2, kMinChar);
     CHECK_LE(ch2, kMaxChar);
-    pair_[ch1 - kMinChar][ch2 - kMinChar] = value;
+    UNSAFE_TODO(pair_[ch1 - kMinChar][ch2 - kMinChar]) = value;
   }
 
   constexpr static UChar kMinChar = '!';
@@ -462,12 +457,12 @@ void InvokeGenerator(int index,
   if (index >= argc) {
     return;
   }
-  const char* path = argv[index];
+  const char* path = UNSAFE_TODO(argv[index]);
   if (!*path) {
     return;
   }
 
-  if (strcmp(path, "-") == 0) {
+  if (UNSAFE_TODO(strcmp(path, "-")) == 0) {
     (*generator)(stdout);
     return;
   }

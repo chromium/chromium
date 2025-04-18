@@ -23,11 +23,6 @@
  * SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 
 #include "base/notreached.h"
@@ -96,10 +91,10 @@ static const DateTimeFormat::FieldType kUpperCaseToFieldTypeMap[26] = {
 
 static DateTimeFormat::FieldType MapCharacterToFieldType(const UChar ch) {
   if (IsASCIIUpper(ch))
-    return kUpperCaseToFieldTypeMap[ch - 'A'];
+    return UNSAFE_TODO(kUpperCaseToFieldTypeMap[ch - 'A']);
 
   if (IsASCIILower(ch))
-    return kLowerCaseToFieldTypeMap[ch - 'a'];
+    return UNSAFE_TODO(kLowerCaseToFieldTypeMap[ch - 'a']);
 
   return DateTimeFormat::kFieldTypeLiteral;
 }

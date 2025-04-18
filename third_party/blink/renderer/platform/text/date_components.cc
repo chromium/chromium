@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/date_components.h"
 
 #include <limits.h>
@@ -61,7 +56,7 @@ static const int kDaysInMonth[12] = {31, 28, 31, 30, 31, 30,
 // 'month' is 0-based.
 static int MaxDayOfMonth(int year, int month) {
   if (month != 1)  // February?
-    return kDaysInMonth[month];
+    return UNSAFE_TODO(kDaysInMonth[month]);
   return IsLeapYear(year) ? 29 : 28;
 }
 

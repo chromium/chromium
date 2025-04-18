@@ -19,11 +19,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 #include <unicode/rbbi.h>
@@ -149,18 +144,19 @@ void TextFixPointer(const UText* source,
                     UText* destination,
                     const void*& pointer) {
   if (pointer >= source->pExtra &&
-      pointer < static_cast<char*>(source->pExtra) + source->extraSize) {
+      pointer <
+          UNSAFE_TODO(static_cast<char*>(source->pExtra) + source->extraSize)) {
     // Pointer references source extra buffer.
-    pointer = static_cast<char*>(destination->pExtra) +
-              (static_cast<const char*>(pointer) -
-               static_cast<const char*>(source->pExtra));
+    pointer = UNSAFE_TODO(static_cast<char*>(destination->pExtra) +
+                          (static_cast<const char*>(pointer) -
+                           static_cast<const char*>(source->pExtra)));
   } else if (pointer >= source &&
-             pointer <
-                 reinterpret_cast<const char*>(source) + source->sizeOfStruct) {
+             pointer < UNSAFE_TODO(reinterpret_cast<const char*>(source) +
+                                   source->sizeOfStruct)) {
     // Pointer references source text structure, but not source extra buffer.
-    pointer = reinterpret_cast<char*>(destination) +
-              (static_cast<const char*>(pointer) -
-               reinterpret_cast<const char*>(source));
+    pointer = UNSAFE_TODO(reinterpret_cast<char*>(destination) +
+                          (static_cast<const char*>(pointer) -
+                           reinterpret_cast<const char*>(source)));
   }
 }
 
@@ -180,11 +176,11 @@ UText* TextClone(UText* destination,
   void* extra_new = destination->pExtra;
   int32_t flags = destination->flags;
   int size_to_copy = std::min(source->sizeOfStruct, destination->sizeOfStruct);
-  memcpy(destination, source, size_to_copy);
+  UNSAFE_TODO(memcpy(destination, source, size_to_copy));
   destination->pExtra = extra_new;
   destination->flags = flags;
   if (extra_size > 0) {
-    memcpy(destination->pExtra, source->pExtra, extra_size);
+    UNSAFE_TODO(memcpy(destination->pExtra, source->pExtra, extra_size));
   }
   TextFixPointer(source, destination, destination->context);
   TextFixPointer(source, destination, destination->p);
@@ -262,11 +258,11 @@ void TextLatin1MoveInPrimaryContext(UText* text,
                           : 0;
   text->nativeIndexingLimit = text->chunkLength;
   text->chunkOffset = forward ? 0 : text->chunkLength;
-  auto source = base::span(
+  auto source = UNSAFE_TODO(base::span(
       static_cast<const LChar*>(text->p) + (text->chunkNativeStart - text->b),
-      static_cast<unsigned>(text->chunkLength));
-  auto dest = base::span(const_cast<UChar*>(text->chunkContents),
-                         static_cast<unsigned>(text->chunkLength));
+      static_cast<unsigned>(text->chunkLength)));
+  auto dest = UNSAFE_TODO(base::span(const_cast<UChar*>(text->chunkContents),
+                                     static_cast<unsigned>(text->chunkLength)));
   StringImpl::CopyChars(dest, source);
 }
 
