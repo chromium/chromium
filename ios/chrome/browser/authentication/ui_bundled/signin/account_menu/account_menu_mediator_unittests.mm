@@ -12,6 +12,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
@@ -121,7 +122,7 @@ class AccountMenuMediatorTest
                   authService:authentication_service_
               identityManager:identity_manager_
                         prefs:profile_->GetPrefs()
-                      fromWeb:NO];
+                  accessPoint:AccountMenuAccessPoint::kNewTabPage];
     mediator_.delegate = delegate_mock_;
     mediator_.consumer = consumer_mock_;
     authentication_flow_mock_ = OCMStrictClassMock([AuthenticationFlow class]);

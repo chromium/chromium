@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+enum class AccountMenuAccessPoint;
 class Browser;
 @protocol SystemIdentity;
 namespace syncer {
@@ -250,7 +251,8 @@ class PrefRegistrySyncable;
                                     contextStyle:
                                         (SigninContextStyle)contextStyle
                                       anchorView:(UIView*)anchorView
-                                         fromWeb:(BOOL)fromWeb;
+                                     accessPoint:
+                                         (AccountMenuAccessPoint)accessPoint;
 
 // Returns a coordinator to show the history sync.
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)

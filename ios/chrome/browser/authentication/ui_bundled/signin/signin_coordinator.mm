@@ -280,13 +280,14 @@ using signin_metrics::PromoAction;
                                     contextStyle:
                                         (SigninContextStyle)contextStyle
                                       anchorView:(UIView*)anchorView
-                                         fromWeb:(BOOL)fromWeb {
+                                     accessPoint:
+                                         (AccountMenuAccessPoint)accessPoint {
   return
       [[AccountMenuCoordinator alloc] initWithBaseViewController:viewController
                                                          browser:browser
                                                     contextStyle:contextStyle
                                                       anchorView:anchorView
-                                                         fromWeb:fromWeb];
+                                                     accessPoint:accessPoint];
 }
 
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)

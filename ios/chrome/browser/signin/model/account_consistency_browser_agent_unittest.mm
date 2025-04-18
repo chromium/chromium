@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -188,7 +189,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   OCMExpect([application_commands_mock_
       showAccountMenuWithAnchorView:[OCMArg any]
                skipIfUINotAvailable:YES
-                            fromWeb:YES
+                        accessPoint:AccountMenuAccessPoint::kWeb
                          completion:[OCMArg any]]);
   agent_->OnAddAccount();
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
@@ -236,7 +237,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   OCMExpect([application_commands_mock_
       showAccountMenuWithAnchorView:[OCMArg any]
                skipIfUINotAvailable:YES
-                            fromWeb:YES
+                        accessPoint:AccountMenuAccessPoint::kWeb
                          completion:[OCMArg any]]);
   agent_->OnManageAccounts();
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not

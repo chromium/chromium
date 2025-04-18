@@ -7,6 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+// Possible "access points" from where the account menu can be triggered.
+enum class AccountMenuAccessPoint {
+  // The most common one: The account particle disc on the NTP.
+  kNewTabPage,
+  // The "Use another account" button in Chrome settings.
+  kSettings,
+  // A button on a Gaia web page, called something like "Use another account" or
+  // "Manage accounts".
+  kWeb,
+};
+
 // The accessibility identifier of the view controller's view.
 extern NSString* const kAccountMenuTableViewId;
 // The accessibility identifier of the view controlle's close button.

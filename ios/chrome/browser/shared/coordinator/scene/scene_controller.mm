@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -2225,7 +2226,7 @@ using UserFeedbackDataCallback =
 
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView
                  skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
-                              fromWeb:(BOOL)fromWeb
+                          accessPoint:(AccountMenuAccessPoint)accessPoint
                            completion:(void (^)())completion {
   if (skipIfUINotAvailable && ![self isTabAvailableToPresentViewController]) {
     return;
@@ -2242,7 +2243,7 @@ using UserFeedbackDataCallback =
                                           contextStyle:SigninContextStyle::
                                                            kDefault
                                             anchorView:anchorView
-                                               fromWeb:fromWeb];
+                                           accessPoint:accessPoint];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.

@@ -105,6 +105,7 @@ source_set("scene") {
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin:features",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin/promo",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/blocking_overlay/ui_bundled",

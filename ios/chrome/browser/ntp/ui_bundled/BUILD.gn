@@ -110,6 +110,7 @@ source_set("coordinator") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled:public",

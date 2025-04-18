@@ -18,6 +18,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
@@ -495,7 +496,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                            browser:self.browser
                                       contextStyle:SigninContextStyle::kDefault
                                         anchorView:_viewController.view
-                                           fromWeb:NO];
+                                       accessPoint:AccountMenuAccessPoint::
+                                                       kSettings];
 
   __weak __typeof(self) weakself = self;
   _accountMenuCoordinator.signinCompletion =

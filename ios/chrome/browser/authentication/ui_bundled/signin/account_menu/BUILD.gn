@@ -115,6 +115,7 @@ source_set("unit_tests") {
   deps = [
     ":account_menu",
     ":account_menu_ui",
+    ":constants",
     "//base",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",

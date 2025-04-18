@@ -8,6 +8,7 @@
 
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -161,8 +162,9 @@ void AccountConsistencyBrowserAgent::ShowAccountMenu() {
   // TODO(crbug.com/375605412): Adjust the account menu shown here so that it
   // has "Manage accounts on this device" as a top-level button, and no overflow
   // menu.
-  [application_handler_ showAccountMenuWithAnchorView:nil
-                                 skipIfUINotAvailable:YES
-                                              fromWeb:YES
-                                           completion:nil];
+  [application_handler_
+      showAccountMenuWithAnchorView:nil
+               skipIfUINotAvailable:YES
+                        accessPoint:AccountMenuAccessPoint::kWeb
+                         completion:nil];
 }

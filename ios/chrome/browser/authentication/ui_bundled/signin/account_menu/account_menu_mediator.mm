@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
@@ -52,8 +53,8 @@
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   raw_ptr<PrefService> _prefs;
-  // Whether this account menu was triggered from the web.
-  BOOL _fromWeb;
+  // The access point from which this account menu was triggered.
+  AccountMenuAccessPoint _accessPoint;
   raw_ptr<syncer::SyncService> _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   // The primary identity. During an authentication flow, it contains the
@@ -86,7 +87,7 @@
                         authService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
                               prefs:(PrefService*)prefs
-                            fromWeb:(BOOL)fromWeb {
+                        accessPoint:(AccountMenuAccessPoint)accessPoint {
   self = [super init];
   if (self) {
     CHECK(syncService);
@@ -103,7 +104,7 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
     _prefs = prefs;
-    _fromWeb = fromWeb;
+    _accessPoint = accessPoint;
     _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
@@ -401,7 +402,8 @@
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
-  if (_fromWeb && result == SigninCoordinatorResultSuccess) {
+  if (_accessPoint == AccountMenuAccessPoint::kWeb &&
+      result == SigninCoordinatorResultSuccess) {
     GetApplicationContext()->GetLocalState()->SetBoolean(
         prefs::kHasSwitchedAccountsViaWebFlow, true);
   }

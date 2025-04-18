@@ -30,6 +30,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
@@ -873,7 +874,7 @@
       __weak __typeof(self) weakSelf = self;
       [handler showAccountMenuWithAnchorView:identityDisc
                         skipIfUINotAvailable:NO
-                                     fromWeb:NO
+                                 accessPoint:AccountMenuAccessPoint::kNewTabPage
                                   completion:^{
                                     [weakSelf showAccountMenuDidFinish];
                                   }];

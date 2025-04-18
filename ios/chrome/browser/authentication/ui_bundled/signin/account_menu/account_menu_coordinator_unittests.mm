@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
@@ -133,7 +134,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                       contextStyle:SigninContextStyle::kDefault
                         anchorView:nil
-                           fromWeb:NO];
+                       accessPoint:AccountMenuAccessPoint::kNewTabPage];
     coordinator_.signinCompletion =
         ^(SigninCoordinatorResult, id<SystemIdentity>) {
           signinCompletion();

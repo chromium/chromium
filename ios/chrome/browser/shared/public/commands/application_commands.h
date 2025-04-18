@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
+enum class AccountMenuAccessPoint;
 class GURL;
 @class OpenNewTabCommand;
 @class ShowSigninCommand;
@@ -173,7 +174,7 @@ enum class TabGridOpeningMode {
 // already a UI being presented.
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView
                  skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
-                              fromWeb:(BOOL)fromWeb
+                          accessPoint:(AccountMenuAccessPoint)accessPoint
                            completion:(void (^)())completion;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
