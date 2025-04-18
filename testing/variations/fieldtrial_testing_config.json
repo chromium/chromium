@@ -3959,6 +3959,38 @@
             ]
         }
     ],
+    "CacheStorageAblation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "delete_factor": "0",
+                        "delete_offset": "1ms",
+                        "has_factor": "0",
+                        "has_offset": "1ms",
+                        "keys_factor": "0",
+                        "keys_offset": "1ms",
+                        "match_factor": "0",
+                        "match_offset": "1ms",
+                        "open_factor": "0",
+                        "open_offset": "1ms"
+                    },
+                    "enable_features": [
+                        "CacheStorageAblation"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheStorageTaskPriority": [
         {
             "platforms": [
