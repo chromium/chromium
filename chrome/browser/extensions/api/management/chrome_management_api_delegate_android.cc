@@ -21,8 +21,9 @@ ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
 bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const Extension* extension,
     content::BrowserContext* context) const {
-  NOTIMPLEMENTED();
-  return true;
+  // Return false to to cause the chrome.management API call to return an error.
+  // This is similar to how we behave with Chrome Apps on Win/Mac/Linux.
+  return false;
 }
 
 GURL ChromeManagementAPIDelegate::GetFullLaunchURL(
