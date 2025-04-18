@@ -4417,9 +4417,6 @@ extern const char kWifiConnectMacAddressRandomizationDescription[];
 extern const char kWifiConcurrencyName[];
 extern const char kWifiConcurrencyDescription[];
 
-extern const char kWifiDirectName[];
-extern const char kWifiDirectDescription[];
-
 extern const char kWindowSplittingName[];
 extern const char kWindowSplittingDescription[];
 

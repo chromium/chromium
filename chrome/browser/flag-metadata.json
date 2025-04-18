@@ -9957,11 +9957,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "wifi-direct",
-    "owners": [ "jiajunz@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "windows-system-tracing",
     "owners": [ "etiennep@chromium.org", "grt@chromium.org" ],
     // This flag allows QA, developers, and users to easily capture Chrometto

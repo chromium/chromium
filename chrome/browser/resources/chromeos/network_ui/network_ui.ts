@@ -57,7 +57,7 @@ class NetworkUiElement extends NetworkUiElementBase {
        */
       tabNames_: {
         type: Array,
-        computed: 'computeTabNames_(isWifiDirectEnabled_)',
+        computed: 'computeTabNames_()',
       },
 
       /**
@@ -86,14 +86,6 @@ class NetworkUiElement extends NetworkUiElementBase {
         },
       },
 
-      isWifiDirectEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isWifiDirectEnabled') &&
-              loadTimeData.getBoolean('isWifiDirectEnabled');
-        },
-      },
-
       invalidJSON_: {
         type: Boolean,
         value: false,
@@ -111,7 +103,6 @@ class NetworkUiElement extends NetworkUiElementBase {
   private hostname_: string;
   private tetheringConfigToSet_: string;
   private isGuestModeActive_: boolean;
-  private isWifiDirectEnabled_: boolean;
   private invalidJSON_: boolean;
   private showNetworkSelect_: boolean;
   private onHashChange_: () => void = () => {
@@ -134,11 +125,10 @@ class NetworkUiElement extends NetworkUiElementBase {
     this.getTetheringConfig_();
     this.getTetheringStatus_();
 
-    if (this.isWifiDirectEnabled_) {
-      this.getWifiDirectCapabilities_();
-      this.getWifiDirectClientInfo_();
-      this.getWifiDirectOwnerInfo_();
-    }
+    this.getWifiDirectCapabilities_();
+    this.getWifiDirectClientInfo_();
+    this.getWifiDirectOwnerInfo_();
+
     this.getHostname_();
     this.selectTabFromHash_();
     window.addEventListener('hashchange', this.onHashChange_);
@@ -150,7 +140,7 @@ class NetworkUiElement extends NetworkUiElementBase {
   }
 
   private computeTabNames_(): string[] {
-    const values: string[] = [
+    return [
       this.i18n('generalTab'),
       this.i18n('networkHealthTab'),
       this.i18n('networkLogsTab'),
@@ -159,11 +149,8 @@ class NetworkUiElement extends NetworkUiElementBase {
       this.i18n('TrafficCountersTrafficCounters'),
       this.i18n('networkMetricsTab'),
       this.i18n('networkHotspotTab'),
+      this.i18n('networkWifiDirectTab'),
     ];
-    if (this.isWifiDirectEnabled_) {
-      values.push(this.i18n('networkWifiDirectTab'));
-    }
-    return values;
   }
 
   private selectTabFromHash_() {

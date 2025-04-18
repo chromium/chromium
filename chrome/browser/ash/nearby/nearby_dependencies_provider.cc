@@ -309,10 +309,6 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
 
 sharing::mojom::WifiDirectDependenciesPtr
 NearbyDependenciesProvider::GetWifiDirectDependencies() {
-  if (!ash::features::IsWifiDirectEnabled()) {
-    return nullptr;
-  }
-
   MojoPipe<sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NearbyConnectionsFirewallHoleFactory>(),
