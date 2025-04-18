@@ -3788,6 +3788,9 @@ const FeatureEntry::FeatureParam kGroupSuggestionEnableSameOriginOnly[] = {
     {"group_suggestion_enable_similar_source", "false"},
     {"group_suggestion_enable_same_origin", "true"},
 };
+const FeatureEntry::FeatureParam kGroupSuggestionEnableTabSwitcherOnly[] = {
+    {"group_suggestion_enable_tab_switcher_only", "true"},
+};
 const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
     {"Recently Opened Only", kGroupSuggestionEnableRecentlyOpenedOnly,
      std::size(kGroupSuggestionEnableRecentlyOpenedOnly), nullptr},
@@ -3797,6 +3800,8 @@ const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
      std::size(kGroupSuggestionEnableSimilarSourceOnly), nullptr},
     {"Same Origin Only", kGroupSuggestionEnableSameOriginOnly,
      std::size(kGroupSuggestionEnableSameOriginOnly), nullptr},
+    {"Tab Switcher Only", kGroupSuggestionEnableTabSwitcherOnly,
+     std::size(kGroupSuggestionEnableTabSwitcherOnly), nullptr},
 };
 
 #if BUILDFLAG(ENABLE_COMPOSE)

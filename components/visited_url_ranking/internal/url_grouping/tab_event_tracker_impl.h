@@ -54,6 +54,7 @@ class TabEventTrackerImpl : public TabEventTracker {
   std::map<int, std::vector<TabSelection>> tab_id_selection_map_;
   std::set<int> closing_tabs_;
   OnNewEventCallback on_new_event_callback_;
+  bool tab_switcher_trigger_only_;
 };
 
 }  // namespace visited_url_ranking

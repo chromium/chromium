@@ -171,4 +171,9 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin{
     /*name=*/"group_suggestion_enable_same_origin",
     /*default_value=*/false};
 
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_tab_switcher_only",
+    /*default_value=*/false};
+
 }  // namespace visited_url_ranking::features

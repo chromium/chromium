@@ -5,7 +5,9 @@
 #include "components/visited_url_ranking/internal/url_grouping/tab_event_tracker_impl.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace visited_url_ranking {
@@ -34,6 +36,7 @@ class TabEventTrackerImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList features_;
   base::MockCallback<TabEventTrackerImpl::OnNewEventCallback> mock_callback_;
   std::unique_ptr<TabEventTrackerImpl> tab_event_tracker_;
 };
@@ -159,6 +162,21 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreNTP) {
 
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
+}
+
+TEST_F(TabEventTrackerImplTest, DidEnterTabSwitcher) {
+  EXPECT_CALL(mock_callback_, Run()).Times(0);
+  tab_event_tracker_->DidEnterTabSwitcher();
+
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_tab_switcher_only", "true"}});
+  tab_event_tracker_.reset();
+  tab_event_tracker_ =
+      std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+
+  EXPECT_CALL(mock_callback_, Run()).Times(1);
+  tab_event_tracker_->DidEnterTabSwitcher();
 }
 
 }  // namespace visited_url_ranking
