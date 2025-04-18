@@ -349,6 +349,9 @@ TEST_F(UnzipTest, DecodeXz_Success) {
   base::FilePath out = unzip_dir_.AppendASCII("out");
   ASSERT_TRUE(DoDecodeXz(GetArchivePath("file1.xz"), out));
   EXPECT_EQ(ReadFileToBytes(out), ReadFileToBytes(GetArchivePath("file1")));
+  ASSERT_TRUE(base::DeleteFile(out));
+  ASSERT_TRUE(DoDecodeXz(GetArchivePath("bd646.xz"), out));
+  EXPECT_EQ(ReadFileToBytes(out), ReadFileToBytes(GetArchivePath("bd646")));
 }
 
 TEST_F(UnzipTest, DecodeXz_DontReplaceExistingOutfile) {
