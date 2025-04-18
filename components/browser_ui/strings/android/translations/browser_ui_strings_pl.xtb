@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
+<translation id="4578289292431526768">Rozpocznij</translation>
 <translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="461356340001513807">Umożliwia logowanie się w witrynach za pomocą Twojego konta w usłudze tożsamości</translation>
 <translation id="4635969503923889910">Nie zezwalaj stronom na używanie urządzeń NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Witryny mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6320088164292336938">Wibracje</translation>
-<translation id="6344622098450209924">Ochrona przed śledzeniem</translation>
 <translation id="6367753977865761591">Blokowanie logowania przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
 <translation id="640163077447496506">Wygasa dzisiaj</translation>

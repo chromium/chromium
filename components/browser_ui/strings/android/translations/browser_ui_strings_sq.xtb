@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te mikrofoni yt, aktivizo gjithashtu mikrofonin në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
 <translation id="4570913071927164677">Detajet</translation>
+<translation id="4578289292431526768">Fillojmë</translation>
 <translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="461356340001513807">Të lejon që të identifikohesh në uebsajte duke përdorur llogarinë që ke me një shërbim identiteti</translation>
 <translation id="4635969503923889910">Mos lejo që sajtet të përdorin pajisjet me NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6320088164292336938">Dridhja</translation>
-<translation id="6344622098450209924">Mbrojtja nga gjurmimi</translation>
 <translation id="6367753977865761591">Blloko identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="640163077447496506">Skadon sot</translation>

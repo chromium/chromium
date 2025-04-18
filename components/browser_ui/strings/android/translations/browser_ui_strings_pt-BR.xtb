@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Para permitir que o app <ph name="APP_NAME" /> acesse seu microfone, também é preciso ativá-lo nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
+<translation id="4578289292431526768">Vamos lá</translation>
 <translation id="4598549027014564149">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação, mesmo sites relacionados. Sua atividade de navegação não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="461356340001513807">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
 <translation id="4635969503923889910">Não permitir que os sites usem dispositivos NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6320088164292336938">Vibrar</translation>
-<translation id="6344622098450209924">Proteção antirrastreamento</translation>
 <translation id="6367753977865761591">Bloqueie o login de terceiros em um site específico.</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="640163077447496506">Expira hoje</translation>

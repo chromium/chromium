@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
+<translation id="4578289292431526768">Continuar</translation>
 <translation id="4598549027014564149">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="461356340001513807">Te permite acceder a sitios web a través de una cuenta con un servicio de identidad</translation>
 <translation id="4635969503923889910">No permitir que los sitios usen dispositivos NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres recibir notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
-<translation id="6344622098450209924">Protección contra seguimiento</translation>
 <translation id="6367753977865761591">Bloquea el acceso de terceros a un sitio específico.</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="640163077447496506">Vence hoy</translation>

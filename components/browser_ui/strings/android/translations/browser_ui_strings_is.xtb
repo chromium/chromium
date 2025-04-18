@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
 <translation id="4570913071927164677">Nánar</translation>
+<translation id="4578289292431526768">Hefjumst handa</translation>
 <translation id="4598549027014564149">Þegar þú ert í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, jafnvel tengdum vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="461356340001513807">Gerir þér kleift að skrá þig inn á vefsvæði með reikningi hjá auðkenningarþjónustu</translation>
 <translation id="4635969503923889910">Ekki leyfa vefsvæðum að nota NFC-tæki</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6320088164292336938">Titringur</translation>
-<translation id="6344622098450209924">Rakningarvörn</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
 <translation id="640163077447496506">Rennur út í dag</translation>

@@ -767,7 +767,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4595805675102978678">Greška u vezi s Google računom</translation>
 <translation id="4601095002996233687">Detaljna skeniranja radi provjere sumnjivih preuzimanja.</translation>
 <translation id="4606559747793337066">Kada web lokacija ili aplikacija zatraži da privatno predučita linkove na svojim stranicama, Chrome će šifrirati i predučitati stranice putem Googleovih servera bez kolačića. Ovim se sakriva vaš identitet na predučitanoj web lokaciji.</translation>
-<translation id="4609429330876432068">Liste sačuvanih lozinki za Chrome i kanal <ph name="CHROME_CHANNEL" /> su spojene. I dalje možete automatski popunjavati sve sačuvane lozinke u obje aplikacije.</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4624065194742029982">Anonimni način rada u Chromeu</translation>
@@ -903,6 +902,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5161262286013276579">Tabela za potvrdu pristupnog ključa je otvorena</translation>
 <translation id="5163361352003913350">Trenutno je odabrano: <ph name="NAME" />. Odabir računa.</translation>
 <translation id="5167637873777016814">Izlazak iz anonimnog načina rada dvostrukim dodirom i zadržavanjem</translation>
+<translation id="5169102789680486565">Grupa kartica <ph name="TAB_GROUP_TITLE" /> ima novu aktivnost</translation>
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
 <translation id="5174700554036517242">Izvorna visina kartice je vraćena</translation>
@@ -1561,7 +1561,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8014210850410408071">Zatim uvezite lozinke</translation>
 <translation id="8015452622527143194">Sve što je na stranici vratiti na zadanu veličinu</translation>
-<translation id="8026238112629815203">Promijenili smo način na koji se lozinke pohranjuju na uređaju</translation>
 <translation id="8027395186860110042">Lozinke će možda uskoro prestati funkcionirati</translation>
 <translation id="8027863900915310177">Odaberite gdje će se preuzeti</translation>
 <translation id="8030852056903932865">Odobri</translation>

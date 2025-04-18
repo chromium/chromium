@@ -1191,7 +1191,6 @@
 <translation id="3102312643185441063">حساب التوفير</translation>
 <translation id="3103188521861412364">أسهم وسندات</translation>
 <translation id="3103535543639438037">مقارنة المنتجات المشابهة جنبًا إلى جنب</translation>
-<translation id="3103993932858740905">عند الدفع على أقساط، يتم ملء رقم بطاقة افتراضية لمرة واحدة. وهذا الرقم مخصّص لعملية الشراء هذه فقط.</translation>
 <translation id="3105172416063519923">رقم تعريف الأصل:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />التحقّق من إعدادات نظام أسماء النطاقات الآمن<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">الدُرج الأوسط</translation>
@@ -1404,7 +1403,6 @@
 <translation id="3440783957068352691">صفحة مربّعة</translation>
 <translation id="3441653493275994384">الشاشة</translation>
 <translation id="3443504041532578451">قرص ضوئي (برّاق)</translation>
-<translation id="344449859752187052">ملفات تعريف الارتباط الخارجية محظورة</translation>
 <translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3447661539832366887">أوقف مالك هذا الجهاز تشغيل لعبة الديناصور.</translation>
 <translation id="3447884698081792621">عرض الشهادة (من إصدار <ph name="ISSUER" />)</translation>
@@ -2715,7 +2713,6 @@
 <translation id="5691848789297492617">تم فتح نافذة بطول الشاشة لحفظ البطاقة</translation>
 <translation id="5695542892312572833">‏هل تريد استخدام Windows Hello لإثبات صحة عملية الشراء وإكمالها؟</translation>
 <translation id="5699628521141772782">منتجات ألبان وبيض</translation>
-<translation id="5700761515355162635">ملفات تعريف الارتباط الخارجية مسموح بها</translation>
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="5707154300732650394">استئناف سجلّ أنشطة البحث والتصفُّح</translation>
 <translation id="57094364128775171">اقتراح كلمة مرور قوية…</translation>
@@ -2988,7 +2985,6 @@
 <translation id="6184868291074982484">‏يقيّد متصفّح Chrome تلقائيًا ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6190518157737269631">‏يمكنك تجاوُز بعض المفاتيح على لوحة مفاتيحك، مثل Esc</translation>
 <translation id="6194209731893739467">الاطّلاع هنا على جميع المنتجات التي يتمّ تتبّع أسعارها</translation>
-<translation id="6195163219142236913">ملفات تعريف الارتباط الخارجية محدودة</translation>
 <translation id="6195371403461054755">جيولوجيا</translation>
 <translation id="6195418151868446719">أجهزة إلكترونية استهلاكية</translation>
 <translation id="6196640612572343990">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>

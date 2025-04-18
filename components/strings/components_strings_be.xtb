@@ -1191,7 +1191,6 @@
 <translation id="3102312643185441063">Ашчадны рахунак</translation>
 <translation id="3103188521861412364">Акцыі і аблігацыі</translation>
 <translation id="3103535543639438037">Наглядна параўноўвайце падобныя тавары ў таблічнай форме</translation>
-<translation id="3103993932858740905">Калі вы робіце куплю ў растэрміноўку, ствараецца аднаразовы нумар віртуальнай карткі. Ён дзейнічае толькі для гэтай куплі.</translation>
 <translation id="3105172416063519923">Ідэнтыфікатар аб’екта ўласнасці:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Праверыць канфігурацыю абароненай DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Сярэдні латок</translation>
@@ -1404,7 +1403,6 @@
 <translation id="3440783957068352691">квадратная</translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Сацініраваны аптычны дыск</translation>
-<translation id="344449859752187052">Староннія файлы cookie заблакіраваны</translation>
 <translation id="3447644283769633681">Блакіроўка ўсіх старонніх файлаў cookie</translation>
 <translation id="3447661539832366887">Уладальнік прылады выключыў гульню з дыназаўрам.</translation>
 <translation id="3447884698081792621">Паказаць сертыфікат (выдавец: <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@
 <translation id="4901778704868714008">Захаваць...</translation>
 <translation id="4901952598169637881">Паўсядзённы абутак</translation>
 <translation id="4905659621780993806">Адміністратар аўтаматычна перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" />. Захавайце перад перазапускам прылады ўсё, што вы адкрылі.</translation>
+<translation id="4913083239887436582">усталяванні вэб-праграм</translation>
 <translation id="4913987521957242411">Дзірка зверху злева</translation>
 <translation id="4914727764832832057">Сіні 1</translation>
 <translation id="4916389289686916969">Тэлевізійныя рэаліці-шоу</translation>
@@ -2585,6 +2584,7 @@
 <translation id="5483838506518938965">Усё гатова</translation>
 <translation id="5485100387355669506">Вельмі тоўстыя рысы</translation>
 <translation id="5485973315555778056">Машына воблака</translation>
+<translation id="5488367146069768854">Усталяванні вэб-праграм</translation>
 <translation id="5488590678320979185">Кнопка "Стварыць нататку". Каб хутка стварыць новую нататку ў Google Keep, націсніце яе.</translation>
 <translation id="5490432419156082418">Адрасы і іншае</translation>
 <translation id="5492298309214877701">У інтранэце кампаніі, арганізацыі або школы гэты сайт мае той жа URL-адрас, што і знешні вэб-сайт.
@@ -2712,7 +2712,6 @@
 <translation id="5691848789297492617">Захаванне карткі, адкрыта на ўвесь экран.</translation>
 <translation id="5695542892312572833">Пацвердзіць і завяршыць куплю з дапамогай Windows Hello?</translation>
 <translation id="5699628521141772782">Малочныя прадукты і яйкі</translation>
-<translation id="5700761515355162635">Староннія файлы cookie дазволены</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="5707154300732650394">Працягнуць пошук</translation>
 <translation id="57094364128775171">Прапанаваць надзейны пароль…</translation>
@@ -2985,7 +2984,6 @@
 <translation id="6184868291074982484">Chrome аўтаматычна абмяжоўвае выкарыстанне старонніх файлаў cookie</translation>
 <translation id="6190518157737269631">Перавызначаць некаторыя клавішы на клавіятуры, напрыклад Esc</translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
-<translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
 <translation id="6195371403461054755">Геалогія</translation>
 <translation id="6195418151868446719">Бытавая электронная тэхніка</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>

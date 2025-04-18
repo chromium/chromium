@@ -767,7 +767,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4595805675102978678">Error del Compte de Google</translation>
 <translation id="4601095002996233687">Anàlisis detallades per comprovar si hi ha baixades sospitoses.</translation>
 <translation id="4606559747793337066">Quan un lloc web o una aplicació demana precarregar enllaços de la seva pàgina de manera privada, Chrome encripta i precarrega les pàgines mitjançant servidors de Google sense galetes. D'aquesta manera, el lloc web precarregat no pot veure la teva identitat.</translation>
-<translation id="4609429330876432068">Les teves llistes de contrasenyes desades per a Chrome i <ph name="CHROME_CHANNEL" /> s'han combinat. Pots continuar emplenant automàticament les contrasenyes desades en totes dues aplicacions.</translation>
 <translation id="4616150815774728855">Obre <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4624065194742029982">Mode d'incògnit a Chrome</translation>
@@ -1561,7 +1560,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8014210850410408071">A continuació, importa les contrasenyes</translation>
 <translation id="8015452622527143194">Restableix la mida de tots els elements de la pàgina</translation>
-<translation id="8026238112629815203">Hem canviat la manera com es desen les contrasenyes en aquest dispositiu</translation>
 <translation id="8027395186860110042">És possible que les contrasenyes deixin de funcionar aviat</translation>
 <translation id="8027863900915310177">Tria on vols fer la baixada</translation>
 <translation id="8030852056903932865">Aprova</translation>

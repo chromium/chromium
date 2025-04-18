@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">Хадгаламж</translation>
 <translation id="3103188521861412364">Хувьцаа, бондууд</translation>
 <translation id="3103535543639438037">Төстэй бүтээгдэхүүнүүдийг зэрэгцүүлэн харьцуулах</translation>
-<translation id="3103993932858740905">Таныг цаг хугацааны явцад төлөхөд нэг удаагийн виртуал картын дугаарыг бөглөдөг. Энэ дугаар нь зөвхөн уг худалдан авалтад зориулагдсан.</translation>
 <translation id="3105172416063519923">Хөрөнгийн ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Аюулгүй DNS тохируулгыг шалгах<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Дунд талын тавиур</translation>
@@ -1404,7 +1403,6 @@
 <translation id="3440783957068352691">дөрвөлжин</translation>
 <translation id="3441653493275994384">Дэлгэц</translation>
 <translation id="3443504041532578451">Оптик диск (сатин)</translation>
-<translation id="344449859752187052">Гуравдагч талын күүкинүүдийг блоклосон</translation>
 <translation id="3447644283769633681">Гуравдагч талын бүх күүкиг блоклох</translation>
 <translation id="3447661539832366887">Энэ төхөөрөмжийг эзэмшигч нь үлэг гүрвэлтэй тоглоомыг унтраасан байна.</translation>
 <translation id="3447884698081792621">Гэрчилгээ харуулах (<ph name="ISSUER" />-с олгосон)</translation>
@@ -2714,7 +2712,6 @@
 <translation id="5691848789297492617">Бүтэн өндрөөр нь нээсэн картыг хадгална уу.</translation>
 <translation id="5695542892312572833">Та худалдан авалтаа бататгах болон дуусгахын тулд Windows Hello-г ашиглах уу?</translation>
 <translation id="5699628521141772782">Сүүн бүтээгдэхүүн болон өндөгнүүд</translation>
-<translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="5701381305118179107">Төв</translation>
 <translation id="5707154300732650394">Аяллаа үргэлжлүүлэх</translation>
 <translation id="57094364128775171">Хүчтэй нууц үг санал болгох...</translation>
@@ -2986,7 +2983,6 @@
 <translation id="6184868291074982484">Chrome гуравдагч талын күүкинүүдийг автоматаар хязгаарлана</translation>
 <translation id="6190518157737269631">Esc зэрэг таны гарын зарим товчийг дарах</translation>
 <translation id="6194209731893739467">Хянаж буй бүх бүтээгдэхүүнээ эндээс харна уу</translation>
-<translation id="6195163219142236913">Гуравдагч талын күүкинүүдийг хязгаарласан</translation>
 <translation id="6195371403461054755">Геологи</translation>
 <translation id="6195418151868446719">Гэр ахуйн цахилгаан бараанууд</translation>
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>

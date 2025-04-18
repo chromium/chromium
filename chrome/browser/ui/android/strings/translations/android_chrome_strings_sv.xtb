@@ -768,7 +768,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4595805675102978678">Fel i Google-kontot</translation>
 <translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4606559747793337066">När en webbplats eller app frågar om dess länkar ska läsas in privat i förväg krypterar Chrome sidorna och läser in dem i förväg via Googles servrar utan cookies. Det innebär att din identitet döljs från den förinlästa webbplatsen.</translation>
-<translation id="4609429330876432068">Listorna över sparade lösenord för Chrome och <ph name="CHROME_CHANNEL" /> har sammanfogats. Du kan fortfarande fylla i alla sparade lösenord automatiskt i båda apparna.</translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4624065194742029982">Inkognitoläget i Chrome</translation>
@@ -1562,7 +1561,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8014210850410408071">Dags att importera lösenorden</translation>
 <translation id="8015452622527143194">Återställ allt på sidan till standardstorlek</translation>
-<translation id="8026238112629815203">Vi har ändrat hur lösenord sparas på den här enheten</translation>
 <translation id="8027395186860110042">Lösenorden kan snart sluta att fungera</translation>
 <translation id="8027863900915310177">Välj plats för nedladdningen</translation>
 <translation id="8030852056903932865">Godkänn</translation>

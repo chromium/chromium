@@ -285,6 +285,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
+<translation id="4578289292431526768">始める</translation>
 <translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="461356340001513807">アカウント管理サービスのアカウントを使用してウェブサイトにログインできます</translation>
 <translation id="4635969503923889910">サイトに NFC デバイスの使用を許可しない</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6320088164292336938">バイブレーション</translation>
-<translation id="6344622098450209924">トラッキング防止</translation>
 <translation id="6367753977865761591">特定のサイトのサードパーティのログインをブロックします。</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="640163077447496506">今日で期限切れ</translation>

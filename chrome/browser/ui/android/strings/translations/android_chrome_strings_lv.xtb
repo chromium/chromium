@@ -767,7 +767,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4595805675102978678">Google konta kļūda</translation>
 <translation id="4601095002996233687">Detalizēta aizdomīgu lejupielāžu pārbaude.</translation>
 <translation id="4606559747793337066">Kad vietnē vai lietotnē tiek piedāvāts privāti iepriekš ielādēt saites tās lapā, Chrome bez sīkfailiem šifrē un iepriekš ielādē lapas, izmantojot Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem.</translation>
-<translation id="4609429330876432068">Jūsu Chrome un <ph name="CHROME_CHANNEL" /> saglabāto paroļu saraksti tika sapludināti. Arī turpmāk varēsiet automātiski aizpildīt visas saglabātās paroles abās lietotnēs.</translation>
 <translation id="4616150815774728855">Atvērt <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4624065194742029982">Chrome inkognito režīms</translation>
@@ -1561,7 +1560,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8014210850410408071">Tagad importējiet paroles</translation>
 <translation id="8015452622527143194">Atjaunot visam lapas saturam noklusējuma lielumu</translation>
-<translation id="8026238112629815203">Mēs mainījām veidu, kā paroles tiek saglabātas šajā ierīcē</translation>
 <translation id="8027395186860110042">Drīz var tikt pārtraukta paroļu darbība</translation>
 <translation id="8027863900915310177">Izvēlieties lejupielādes vietu</translation>
 <translation id="8030852056903932865">Apstiprināt</translation>

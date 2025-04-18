@@ -767,7 +767,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4595805675102978678">Produciuse un erro na Conta de Google</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606559747793337066">Cando un sitio ou aplicación solicita precargar ligazóns da súa páxina de forma privada, Chrome encripta e precarga as páxinas correspondentes a través dos servidores de Google sen cookies. Deste xeito, ocúltaselle a túa identidade ao sitio precargado.</translation>
-<translation id="4609429330876432068">Combináronse as túas listas de contrasinais gardados de Chrome e <ph name="CHROME_CHANNEL" />. Podes seguir autocompletando os contrasinais gardados en ambas as dúas aplicacións.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
@@ -1561,7 +1560,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8014210850410408071">Agora importa os contrasinais</translation>
 <translation id="8015452622527143194">Recuperar o tamaño predeterminado da páxina</translation>
-<translation id="8026238112629815203">Cambiamos o modo no que se gardan os contrasinais neste dispositivo</translation>
 <translation id="8027395186860110042">Os contrasinais poden deixar de funcionar en breve</translation>
 <translation id="8027863900915310177">Escolle onde queres gardar o ficheiro</translation>
 <translation id="8030852056903932865">Aprobar</translation>

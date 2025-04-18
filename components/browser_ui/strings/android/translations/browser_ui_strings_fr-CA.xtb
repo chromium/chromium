@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder à votre microphone, vous devez aussi activer le microphone dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Désactiver le microphone</translation>
 <translation id="4570913071927164677">Détails</translation>
+<translation id="4578289292431526768">Allons-y</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser de témoins pour suivre votre activité de navigation sur les sites ni même sur les sites connexes. Votre activité de navigation n'utilise pas les options telles que la personnalisation des publicités. Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="461356340001513807">Vous permet de vous connecter à des sites Web en utilisant le compte que vous détenez auprès d'un service de vérification de l'identité</translation>
 <translation id="4635969503923889910">Ne pas autoriser les sites à utiliser des appareils CCP</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6320088164292336938">Vibrer</translation>
-<translation id="6344622098450209924">Protection contre le suivi</translation>
 <translation id="6367753977865761591">Bloquez la connexion de tiers pour un site particulier.</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="640163077447496506">Expire aujourd'hui</translation>

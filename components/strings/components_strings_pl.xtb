@@ -1190,7 +1190,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3102312643185441063">Konto oszczędnościowe</translation>
 <translation id="3103188521861412364">Akcje i obligacje</translation>
 <translation id="3103535543639438037">Porównuj podobne produkty obok siebie</translation>
-<translation id="3103993932858740905">Gdy płacisz w ratach, wypełniany jest jednorazowy numer karty wirtualnej. Służy on tylko do tego zakupu.</translation>
 <translation id="3105172416063519923">Identyfikator zasobu:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />sprawdzić konfigurację bezpiecznego DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Taca środkowa</translation>
@@ -1403,7 +1402,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3440783957068352691">kwadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Dysk optyczny (satyna)</translation>
-<translation id="344449859752187052">Pliki cookie innych firm zostały zablokowane</translation>
 <translation id="3447644283769633681">Blokuj wszystkie pliki cookie innych firm</translation>
 <translation id="3447661539832366887">Właściciel tego urządzenia wyłączył grę z dinozaurem.</translation>
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4901952598169637881">Obuwie codzienne</translation>
 <translation id="4905659621780993806">Administrator automatycznie uruchomi Twoje urządzenie ponownie <ph name="DATE" /> o <ph name="TIME" />. Zanim to się stanie, zapisz wszystkie otwarte elementy.</translation>
+<translation id="4913083239887436582">instalacje aplikacji internetowych</translation>
 <translation id="4913987521957242411">Otwór w lewym górnym rogu</translation>
 <translation id="4914727764832832057">Niebieski 1</translation>
 <translation id="4916389289686916969">Programy telewizyjne typu reality show</translation>
@@ -2586,6 +2585,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
 <translation id="5485100387355669506">Bardzo gruba</translation>
 <translation id="5485973315555778056">Chmura – urządzenie</translation>
+<translation id="5488367146069768854">Instalacje aplikacji internetowych</translation>
 <translation id="5488590678320979185">Przycisk Utwórz notatkę; aktywuj, aby szybko utworzyć nową notatkę w Google Keep</translation>
 <translation id="5490432419156082418">Adresy i ustawienia</translation>
 <translation id="5492298309214877701">Ta witryna w intranecie firmy, organizacji czy szkoły ma ten sam URL co zewnętrzna strona internetowa.
@@ -2713,7 +2713,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5691848789297492617">Zapisywanie karty jest otwarte na całą wysokość.</translation>
 <translation id="5695542892312572833">Czy do zweryfikowania i dokończenia zakupu użyć Windows Hello?</translation>
 <translation id="5699628521141772782">Nabiał i jajka</translation>
-<translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="5707154300732650394">Wznów swoją serię czynności</translation>
 <translation id="57094364128775171">Zaproponuj silne hasło…</translation>
@@ -2986,7 +2985,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6184868291074982484">Chrome automatycznie ogranicza pliki cookie innych firm</translation>
 <translation id="6190518157737269631">Zastąpić funkcje niektórych klawiszy na klawiaturze, np. Esc</translation>
 <translation id="6194209731893739467">Tu zobaczysz wszystkie obserwowane produkty</translation>
-<translation id="6195163219142236913">Używanie plików cookie innych firm jest ograniczone</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elektronika użytkowa</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>

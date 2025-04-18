@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">Штедни рачун</translation>
 <translation id="3103188521861412364">Акције и обвезнице</translation>
 <translation id="3103535543639438037">Упоредите сличне производе један поред другог</translation>
-<translation id="3103993932858740905">Када плаћате на рате, попуњава се једнократни број виртуелне картице. Овај број је само за ову куповину.</translation>
 <translation id="3105172416063519923">ИД елемента:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да проверите конфигурацију безбедног DNS-а<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средња фиока</translation>
@@ -1403,7 +1402,6 @@
 <translation id="3440783957068352691">квадратна</translation>
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптички диск (сатен)</translation>
-<translation id="344449859752187052">Колачићи треће стране су блокирани</translation>
 <translation id="3447644283769633681">Блокирај све колачиће трећих страна</translation>
 <translation id="3447661539832366887">Власник овог уређаја је искључио ову застарелу игру.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаје <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4901952598169637881">Свакодневна обућа</translation>
 <translation id="4905659621780993806">Администратор ће аутоматски рестартовати уређај у <ph name="TIME" />, <ph name="DATE" />. Сачувајте отворене ставке пре него што се уређај рестартује.</translation>
+<translation id="4913083239887436582">инсталирања веб-апликација</translation>
 <translation id="4913987521957242411">Бушење у горњем левом углу</translation>
 <translation id="4914727764832832057">Плава 1</translation>
 <translation id="4916389289686916969">ТВ ријалити емисије</translation>
@@ -2586,6 +2585,7 @@
 <translation id="5483838506518938965">Спремни сте</translation>
 <translation id="5485100387355669506">Врло дебела</translation>
 <translation id="5485973315555778056">Машина у клауду</translation>
+<translation id="5488367146069768854">Инсталирања веб-апликација</translation>
 <translation id="5488590678320979185">Дугме Направите белешку, активирајте га да бисте брзо направили нову белешку у Google Keep-у</translation>
 <translation id="5490432419156082418">Адресе и друго</translation>
 <translation id="5492298309214877701">Овај сајт на интранету компаније, организације или школе има исти URL као и један спољни веб-сајт.
@@ -2713,7 +2713,6 @@
 <translation id="5691848789297492617">Упит за чување картице је отворен у пуној висини.</translation>
 <translation id="5695542892312572833">Желите да користите Windows Hello да бисте потврдили и завршили куповину?</translation>
 <translation id="5699628521141772782">Млечни производи и јаја</translation>
-<translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
 <translation id="5701381305118179107">Центрирај</translation>
 <translation id="5707154300732650394">Наставите пут</translation>
 <translation id="57094364128775171">Предложи јаку лозинку…</translation>
@@ -2985,7 +2984,6 @@
 <translation id="6184868291074982484">Chrome аутоматски ограничава колачиће треће стране</translation>
 <translation id="6190518157737269631">Замена уноса неких тастера на тастатури, као што је Esc</translation>
 <translation id="6194209731893739467">Погледајте све производе које пратите овде</translation>
-<translation id="6195163219142236913">Колачићи треће стране су ограничени</translation>
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6195418151868446719">Апарати за домаћинство</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>

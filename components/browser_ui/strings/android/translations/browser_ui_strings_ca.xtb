@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
+<translation id="4578289292431526768">Som-hi</translation>
 <translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="461356340001513807">Et permet iniciar la sessió en llocs web amb un servei d'identitat utilitzant el compte que ja tens</translation>
 <translation id="4635969503923889910">No permetis que els llocs web utilitzin dispositius amb NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6320088164292336938">Vibració</translation>
-<translation id="6344622098450209924">Protecció antiseguiment</translation>
 <translation id="6367753977865761591">Bloqueja l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="640163077447496506">Caduca avui</translation>

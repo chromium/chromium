@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">開始新任務，或在工作過程中取得協助。</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
+<translation id="1054187194995068149">你好，這是預覽畫面</translation>
 <translation id="1054502481659725522">應用程式、網站和系統服務可以使用你的位置資訊</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 週內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 週內更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="1055606969515662982">使用遙控器停止投放</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可以編輯下列檔案</translation>
 <translation id="130174306655812048">試著詢問「Ok Google，這是什麼歌？」</translation>
 <translation id="1302227299132585524">允許 Apple 事件的 JavaScript</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> 群組 - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML 格式的書籤檔案</translation>
 <translation id="1303671224831497365">找不到藍牙裝置</translation>
 <translation id="130491383855577612">已成功取代 Linux 應用程式和檔案</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">你可以繼續執行前一個工作階段，並持續運作目前的工作階段。</translation>
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
-<translation id="1363772878823415675">授權 <ph name="SPECIFIC_NAME" /> 存取 USB 裝置。</translation>
 <translation id="136378536198524553">節能模式已開啟</translation>
 <translation id="136522805455656552">為了維護裝置安全，建議你只執行及安裝來自可信任來源和開發人員的軟體。<ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">挑眉</translation>
@@ -2558,6 +2557,7 @@
 <translation id="2743301740238894839">開始</translation>
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請關閉<ph name="DEVICE_NAME" />隱私權切換鈕。</translation>
+<translation id="2744221223678373668">共用</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
@@ -5840,9 +5840,7 @@
 <translation id="5087864757604726239">返回</translation>
 <translation id="5088427648965532275">Passpoint 供應商</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
-<translation id="5089763948477033443">側邊面板大小調整控點</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
-<translation id="5090981554736747495">授權 Linux 應用程式存取 USB 裝置。</translation>
 <translation id="5091636240353511739">顯示 PIN 碼</translation>
 <translation id="5093477827231450397">這份網站封鎖清單列出了你不希望向其他網站提供廣告建議的網站</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6553,7 +6551,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖這些擴充功能}}</translation>
 <translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
-<translation id="560919433407466404">授權 Parallels Desktop 存取 USB 裝置。</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
 <translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
@@ -8625,7 +8622,6 @@
 <translation id="7109543803214225826">已移除捷徑</translation>
 <translation id="7110388475787189534">瞭解如何自動整理分頁</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
-<translation id="7110684627876015299">未命名的群組 - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">為這個視窗命名</translation>
 <translation id="7113502843173351041">存取你的電子郵件地址</translation>
 <translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
@@ -8996,7 +8992,6 @@
 <translation id="7387107590792462040">正在安裝，請稍候</translation>
 <translation id="7387273928653486359">可以接受</translation>
 <translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
-<translation id="7388209873137778229">只顯示支援的裝置。</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="738903649531469042">將分頁新增至閱讀清單</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
@@ -10678,7 +10673,6 @@
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
 <translation id="8555444629041783356">自動更新日落時刻表</translation>
-<translation id="855604308879080518">允許 Android 應用程式在這台 Chromebook 上存取 USB 裝置。每次你插入 USB 裝置時，系統皆會要求權限。個別 Android 應用程式會要求額外權限。</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
 <translation id="8557100046150195444">使用 Touch ID 以繼續操作</translation>
 <translation id="8557856025359704738">下次下載日期為 <ph name="NEXT_DATE_DOWNLOAD" />。</translation>
@@ -11389,7 +11383,6 @@
 <translation id="9036484080057916082">憑證簽署的時間戳記清單</translation>
 <translation id="9037054491984310631">已連線至名為「<ph name="DEVICE" />」的藍牙裝置</translation>
 <translation id="9037640663275993951">不允許使用裝置</translation>
-<translation id="9037706442425692248">允許 Android 應用程式在這台 Chromebook 上存取 USB 裝置</translation>
 <translation id="9037818663270399707">你的連線有部分網路流量不屬於私人連線</translation>
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9038489124413477075">未命名的資料夾</translation>

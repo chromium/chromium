@@ -767,7 +767,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4595805675102978678">Erreur de compte Google</translation>
 <translation id="4601095002996233687">Analyses approfondies des téléchargements suspects.</translation>
 <translation id="4606559747793337066">Lorsqu'un site ou une appli demande de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par le biais de serveurs Google sans témoins. Cela permet de masquer votre identité auprès du site préchargé.</translation>
-<translation id="4609429330876432068">Vos listes de mots de passe enregistrés pour Chrome et <ph name="CHROME_CHANNEL" /> ont été fusionnées. Vous pouvez toujours remplir automatiquement tous vos mots de passe enregistrés sur les deux applications.</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4624065194742029982">Navigation privée de Chrome</translation>
@@ -1561,7 +1560,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8014210850410408071">Ensuite, importez les mots de passe</translation>
 <translation id="8015452622527143194">Afficher cette page dans sa taille par défaut</translation>
-<translation id="8026238112629815203">Nous avons modifié la façon dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="8027395186860110042">Les mots de passe pourraient bientôt cesser de fonctionner</translation>
 <translation id="8027863900915310177">Choisissez l'endroit où enregistrer le téléchargement</translation>
 <translation id="8030852056903932865">Approuver</translation>

@@ -767,7 +767,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4595805675102978678">Error en la Cuenta de Google</translation>
 <translation id="4601095002996233687">Análisis detallados de descargas sospechosas.</translation>
 <translation id="4606559747793337066">Cuando un sitio o app te pregunta si quieres precargar de forma privada los vínculos de su página, Chrome encripta y precarga las páginas por medio de los servidores de Google sin cookies. De esta forma, se oculta tu identidad del sitio precargado.</translation>
-<translation id="4609429330876432068">Se combinaron tus listas de contraseñas guardadas para Chrome y <ph name="CHROME_CHANNEL" />. Aún puedes autocompletar todas tus contraseñas guardadas en ambas apps.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
@@ -1561,7 +1560,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8014210850410408071">A continuación, importa las contraseñas</translation>
 <translation id="8015452622527143194">Restablecer tamaño de los elementos de la página</translation>
-<translation id="8026238112629815203">Cambiamos la forma en que se guardan las contraseñas en este dispositivo</translation>
 <translation id="8027395186860110042">Es posible que las contraseñas dejen de funcionar pronto</translation>
 <translation id="8027863900915310177">Elige dónde descargarlo</translation>
 <translation id="8030852056903932865">Aprobar</translation>

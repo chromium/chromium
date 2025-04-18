@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Започнете нешто ново или добијте помош во текот на работата.</translation>
 <translation id="1054048317165655285">Завршето го поставувањето на телефонот</translation>
 <translation id="1054153489933238809">Отвори оригинална &amp;слика во нова картичка</translation>
+<translation id="1054187194995068149">Здраво. Ова е преглед</translation>
 <translation id="1054502481659725522">Апликациите, веб-сајтовите системските услуги може да ја користат локацијата</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од 1 седмица}one{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмица}other{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмици}}</translation>
 <translation id="1055606969515662982">Користете далечинско за да сопрете со емитување</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> може да ги изменува следниве датотеки</translation>
 <translation id="130174306655812048">Обидете се со „Ok Google, what song is this?“ (Ok Google, која песна е ова?)</translation>
 <translation id="1302227299132585524">Дозволи JavaScript од настани на Apple</translation>
-<translation id="1302654693270046655">Група <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Обележува ХТМЛ-датотека</translation>
 <translation id="1303671224831497365">Не се пронајдени уреди со Bluetooth</translation>
 <translation id="130491383855577612">Апликациите и датотеките на Linux се успешно заменети</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">Може да ја продолжите вашата претходна сесија и притоа вашата тековна сесија да остане активна.</translation>
 <translation id="1362865166188278099">Механички проблем. Проверете го печатачот</translation>
 <translation id="1363585519747660921">Потребно е конфигурирање на USB-печатачот</translation>
-<translation id="1363772878823415675">Дозволете <ph name="SPECIFIC_NAME" /> да пристапува до USB-уреди.</translation>
 <translation id="136378536198524553">„Штедачот на енергија“ е вклучен</translation>
 <translation id="136522805455656552">За да го заштитите уредот, треба да извршувате и да инсталирате само софтвер од доверливи извори и програмери. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Кренете ги веѓите</translation>
@@ -2572,6 +2571,7 @@
 <translation id="2743301740238894839">Започни</translation>
 <translation id="2743387203779672305">Копирај на клип-табла</translation>
 <translation id="274362947316498129">Апликација се обидува да пристапи до <ph name="DEVICE_NAME" />. Исклучете го прекинувачот за приватност на <ph name="DEVICE_NAME" /> за да дозволите пристап.</translation>
+<translation id="2744221223678373668">Споделени</translation>
 <translation id="2745080116229976798">Квалификувана подреденост на Microsoft</translation>
 <translation id="2749756011735116528">Најави се на <ph name="PRODUCT_NAME" />…</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5859,9 +5859,7 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088427648965532275">Оператор на Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 со RSA шифрирање</translation>
-<translation id="5089763948477033443">Рачка за менување големина на странична табла</translation>
 <translation id="5090637338841444533">Не им е дозволено да ја следат позицијата на камерата</translation>
-<translation id="5090981554736747495">Дајте им дозвола на апликациите за Linux да пристапуваат до USB-уреди.</translation>
 <translation id="5091636240353511739">Прикажи го PIN-кодот</translation>
 <translation id="5093477827231450397">Список со сајтови што сте ги блокирале и кои не сакате да предлагаат реклами на други сајтови</translation>
 <translation id="5093569275467863761">Подрамка за инкогнито за кеш за движење наназад/нанапред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6573,7 +6571,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Екстензијава е блокирана}one{Екстензииве се блокирани}other{Екстензииве се блокирани}}</translation>
 <translation id="560834977503641186">Синхронизирање на Wi-Fi, дознајте повеќе</translation>
 <translation id="5608580678041221894">Допрете ги следниве копчиња за да го приспособите или преместите подрачјето за сечење</translation>
-<translation id="560919433407466404">Дозволете Parallels Desktop да пристапува до USB-уредите.</translation>
 <translation id="5609231933459083978">Апликацијата изгледа дека е неважечка.</translation>
 <translation id="5610867721023328944">Обидете се повторно или изберете една од достапните теми подолу.</translation>
 <translation id="5611398002774823980">Зачувај на сметката</translation>
@@ -8650,7 +8647,6 @@
 <translation id="7109543803214225826">Кратенката е отстранета</translation>
 <translation id="7110388475787189534">Дознајте како може да се организираат вашите картички автоматски</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Додајте картичка во групата}one{Додајте картички во групата}other{Додајте картички во групата}}</translation>
-<translation id="7110684627876015299">Неименувана група - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Именувајте го прозорецов</translation>
 <translation id="7113502843173351041">Знајте си ја адресата на е-пошта</translation>
 <translation id="7113974454301513811">Сега додајте ја тековната картичка во списокот</translation>
@@ -9022,7 +9018,6 @@
 <translation id="7387107590792462040">Почекајте да заврши инсталирањето во тек</translation>
 <translation id="7387273928653486359">Прифатлив</translation>
 <translation id="7387951778417998929">За да користите некој друг пребарувач, а не стандардниот, напишете ја неговата кратенка во лентата за адреси заедно со вашата претпочитана кратенка од тастатура. Стандардниот пребарувач може да го промените и тука.</translation>
-<translation id="7388209873137778229">Прикажани се само поддржаните уреди.</translation>
 <translation id="7388615499319468910">Сајтовите и огласувачите може да ја разберат изведбата на рекламите. Оваа поставка е исклучена.</translation>
 <translation id="738903649531469042">Додај ја картичката во списокот за читање</translation>
 <translation id="7392118418926456391">Скенирањето за вируси не успеа</translation>
@@ -10706,7 +10701,6 @@
 <translation id="8553342806078037065">Управувај со другите луѓе</translation>
 <translation id="8554899698005018844">Нема јазик</translation>
 <translation id="8555444629041783356">Автоматски распоред на зајдисонце</translation>
-<translation id="855604308879080518">Дозволете им на апликациите на Android да пристапат до USB-уредите на овој Chromebook. Дозвола ќе се бара секојпат кога ќе приклучите USB-уред. Поединечни апликации на Android ќе побараат дополнителни дозволи.</translation>
 <translation id="8557022314818157177">Допирајте го безбедносниот клуч додека не се сними вашиот отпечаток</translation>
 <translation id="8557100046150195444">Користете ID на допир за да продолжите</translation>
 <translation id="8557856025359704738">Следното преземање е на <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11418,7 +11412,6 @@
 <translation id="9036484080057916082">Список со временски печати на потпишан сертификат</translation>
 <translation id="9037054491984310631">Поврзани со уред со Bluetooth именуван <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Уредот не е дозволен</translation>
-<translation id="9037706442425692248">Дозволете апликациите за Android да пристапат до USB-уредите на овој Chromebook</translation>
 <translation id="9037818663270399707">Вашата врска не е приватна за целиот мрежен сообраќај</translation>
 <translation id="9037965129289936994">Прикажи го оригиналот</translation>
 <translation id="9038489124413477075">Неименувана папка</translation>

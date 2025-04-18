@@ -119,6 +119,7 @@
 <translation id="2490684707762498678">Gestite da <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Guida e feedback</translation>
 <translation id="2501278716633472235">Indietro</translation>
+<translation id="2536741675336254102">Non consentire ai siti di utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2570922361219980984">L'accesso alla posizione è disattivato anche per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
@@ -285,6 +286,7 @@
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Disattiva microfono</translation>
 <translation id="4570913071927164677">Dettagli</translation>
+<translation id="4578289292431526768">Inizia</translation>
 <translation id="4598549027014564149">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione sui siti, inclusi quelli correlati. La tua attività di navigazione non viene usata, ad esempio, per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="461356340001513807">Ti consente di accedere ai siti web utilizzando l'account che hai creato con un servizio di identità</translation>
 <translation id="4635969503923889910">Non consentire ai siti di utilizzare i dispositivi NFC</translation>
@@ -423,7 +425,6 @@
 <translation id="6270391203985052864">I siti possono chiedere di inviare notifiche</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6320088164292336938">Vibrazione</translation>
-<translation id="6344622098450209924">Protezione antitracciamento</translation>
 <translation id="6367753977865761591">Blocca l'accesso di terze parti per un sito specifico.</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="640163077447496506">Scade oggi</translation>

@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">स्टॉक आणि बाँड</translation>
 <translation id="3103535543639438037">समान उत्पादनांची बाजूबाजूला तुलना करा</translation>
-<translation id="3103993932858740905">तुम्ही कालांतराने पेमेंट करता, तेव्हा एकदाच व्हर्चुअल कार्ड नंबर भरला जातो. हा नंबर फक्त या खरेदीसाठी आहे.</translation>
 <translation id="3105172416063519923">मालमत्ता आयडी:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">मधला ट्रे</translation>
@@ -1403,7 +1402,6 @@
 <translation id="3440783957068352691">चौरस</translation>
 <translation id="3441653493275994384">तपासा</translation>
 <translation id="3443504041532578451">ऑप्टिकल डिस्क (सॅटिन)</translation>
-<translation id="344449859752187052">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="3447644283769633681">सर्व तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
 <translation id="3447661539832366887">या डिव्हाइसच्या मालकाने डायनासोर गेम बंद केला आहे.</translation>
 <translation id="3447884698081792621">सर्टिफिकेट दाखवा (<ph name="ISSUER" /> ने जारी केलेले)</translation>
@@ -2255,6 +2253,7 @@
 <translation id="4901778704868714008">सेव्ह करा…</translation>
 <translation id="4901952598169637881">साधे शूज</translation>
 <translation id="4905659621780993806">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमचे डिव्हाइस <ph name="DATE" /> रोजी <ph name="TIME" /> वाजता आपोआप रीस्टार्ट करेल. तुमचे डिव्हाइस रीस्टार्ट होण्यापूर्वी कोणतेही खुले आयटम सेव्ह करा.</translation>
+<translation id="4913083239887436582">वेब अ‍ॅप इंस्टॉलेशन</translation>
 <translation id="4913987521957242411">पंच टॉप लेफ्ट</translation>
 <translation id="4914727764832832057">निळा १</translation>
 <translation id="4916389289686916969">टीव्‍हीवरील रीअ‍ॅलिटी शो</translation>
@@ -2585,6 +2584,7 @@
 <translation id="5483838506518938965">तुम्ही पूर्णपणे तयार आहात</translation>
 <translation id="5485100387355669506">जास्त जाड</translation>
 <translation id="5485973315555778056">क्लाउड मशीन</translation>
+<translation id="5488367146069768854">वेब अ‍ॅप इंस्टॉलेशन</translation>
 <translation id="5488590678320979185">टीप तयार करा बटण, Google Keep मध्ये नवीन टीप झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="5490432419156082418">पत्ते आणि बरेच काही</translation>
 <translation id="5492298309214877701">कंपनी, संस्था किंवा शाळा इंट्रानेट वरील या साइटची URL बाह्य वेबसाइटसारखीच आहे.
@@ -2712,7 +2712,6 @@
 <translation id="5691848789297492617">सेव्ह कार्ड पूर्ण उंचीवर उघडले.</translation>
 <translation id="5695542892312572833">तुमच्या खरेदीची पडताळणी करण्यासाठी आणि ती पूर्ण करण्यासाठी Windows Hello वापरायचे आहे का?</translation>
 <translation id="5699628521141772782">डेअरी आणि अंडी</translation>
-<translation id="5700761515355162635">तृतीय पक्ष कुकीना अनुमती दिली</translation>
 <translation id="5701381305118179107">मध्यभागी</translation>
 <translation id="5707154300732650394">तुमचा प्रवास पुन्हा सुरू करा</translation>
 <translation id="57094364128775171">क्लिष्ट पासवर्ड सुचवा…</translation>
@@ -2986,7 +2985,6 @@
 <translation id="6184868291074982484">Chrome हे तृतीय पक्ष कुकीना आपोआप मर्यादित करते</translation>
 <translation id="6190518157737269631">तुमच्या कीबोर्डवरील Esc सारख्या काही की ओव्हरराइड करा</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
-<translation id="6195163219142236913">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
 <translation id="6195418151868446719">ग्राहकांशी संबंधित इलेक्‍ट्रॉनिक उपकरणे</translation>
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>

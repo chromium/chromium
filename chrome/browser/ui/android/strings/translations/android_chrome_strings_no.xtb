@@ -767,7 +767,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4595805675102978678">Feil med Google-kontoen</translation>
 <translation id="4601095002996233687">Dybdeskanninger av mistenkelige nedlastinger.</translation>
 <translation id="4606559747793337066">Når nettsteder eller apper ber om privat forhåndslasting av linker på sidene sine, medfører det at Chrome krypterer og forhåndslaster sider gjennom Googles tjenere uten informasjonskapsler. Dermed skjules identiteten din for det forhåndslastede nettstedet.</translation>
-<translation id="4609429330876432068">Listene dine over lagrede passord for Chrome og <ph name="CHROME_CHANNEL" /> er slått sammen. Du kan fortsatt autofylle alle de lagrede passordene dine i begge appene.</translation>
 <translation id="4616150815774728855">Åpne <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4624065194742029982">Chrome Inkognito</translation>
@@ -1561,7 +1560,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8014210850410408071">Deretter importerer du passordene</translation>
 <translation id="8015452622527143194">Tilbakestill alt på siden til standardstørrelsen</translation>
-<translation id="8026238112629815203">Vi har endret hvordan passord lagres på denne enheten</translation>
 <translation id="8027395186860110042">Det kan hende at passord snart slutter å fungere</translation>
 <translation id="8027863900915310177">Velg hvor du vil laste ned til</translation>
 <translation id="8030852056903932865">Godkjenn</translation>

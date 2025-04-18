@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Anza kitu kipya au upate msaada ukiwa unaendelea.</translation>
 <translation id="1054048317165655285">Maliza kuweka mipangilio kwenye simu yako</translation>
 <translation id="1054153489933238809">Fungua Picha Asili katika Kichupo Kipya</translation>
+<translation id="1054187194995068149">Hujambo. Hili ni toleo la kukagua</translation>
 <translation id="1054502481659725522">Programu, tovuti na huduma za mfumo zinaweza kutumia data ya mahali ulipo</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Sasisha <ph name="DEVICE_TYPE" /> ndani ya wiki moja}other{Sasisha <ph name="DEVICE_TYPE" /> ndani ya wiki {NUM_WEEKS}}}</translation>
 <translation id="1055606969515662982">Tumia kidhibiti cha mbali ili uache kutuma maudhui</translation>
@@ -456,7 +457,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1301135395320604080"><ph name="ORIGIN" /> inaweza kubadilisha faili zifuatazo</translation>
 <translation id="130174306655812048">Jaribu kusema "Ok Google, huu ni wimbo gani?"</translation>
 <translation id="1302227299132585524">Ruhusu JavaScript kutoka Apple Events</translation>
-<translation id="1302654693270046655">Kikundi cha <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Alamisho za Faili ya HTML</translation>
 <translation id="1303671224831497365">Hakuna vifaa vya Bluetooth vilivyopatikana</translation>
 <translation id="130491383855577612">Umebadilisha programu na faili za Linux</translation>
@@ -538,7 +538,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1362829980946830670">Unaweza kuendelea na kipindi chako kilichotangulia wakati kipindi chako cha sasa kikiendelea kutumika.</translation>
 <translation id="1362865166188278099">Tatizo la kiufundi. Angalia printa</translation>
 <translation id="1363585519747660921">Printa ya USB inahitaji kuwekewa mipangilio</translation>
-<translation id="1363772878823415675">Ruhusu <ph name="SPECIFIC_NAME" /> ifikie vifaa vya USB.</translation>
 <translation id="136378536198524553">Kiokoa Nishati kimewashwa</translation>
 <translation id="136522805455656552">Ili uimarishe usalama wa kifaa chako, unapaswa kutekeleza na kusakinisha programu kutoka kwa wasanidi programu na vyanzo vinavyoaminika pekee. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Inua nyusi</translation>
@@ -2568,6 +2567,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2743301740238894839">Anza</translation>
 <translation id="2743387203779672305">Nakili kwenye ubao wa kunakili</translation>
 <translation id="274362947316498129">Programu inajaribu kufikia <ph name="DEVICE_NAME" />. Zima swichi ya faragha ya <ph name="DEVICE_NAME" /> ili uruhusu ufikiaji.</translation>
+<translation id="2744221223678373668">Inayoshirikiwa</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Ingia kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5853,9 +5853,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5087864757604726239">nyuma</translation>
 <translation id="5088427648965532275">Mtoa huduma wa Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Na Usimbaji wa RSA</translation>
-<translation id="5089763948477033443">Badilisha Ukubwa wa Ncha ya Kidirisha cha Pembeni</translation>
 <translation id="5090637338841444533">Zisizoruhusiwa kufuatilia mkao wa kamera yako</translation>
-<translation id="5090981554736747495">Ruhusu programu za Linux zifikie vifaa vya USB.</translation>
 <translation id="5091636240353511739">Onyesha PIN</translation>
 <translation id="5093477827231450397">Orodha za tovuti ulizozuia ambazo usingependa zipendekeze matangazo kwenye tovuti zingine</translation>
 <translation id="5093569275467863761">Fremu ndogo fiche Iliyohifadhiwa kwenye Kipengele cha Kuakibisha Ukurasa Kamili: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6567,7 +6565,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Kiendelezi hiki kimezuiwa}other{Viendelezi hivi vimezuiwa}}</translation>
 <translation id="560834977503641186">Usawazishaji Wi-Fi, Pata Maelezo Zaidi</translation>
 <translation id="5608580678041221894">Gusa vitufe vinavyofuata ili urekebishe au usogeze eneo la kupunguzia</translation>
-<translation id="560919433407466404">Ruhusu Parallels Desktop ifikie vifaa vya USB.</translation>
 <translation id="5609231933459083978">Programu inaonekana kuwa batili.</translation>
 <translation id="5610867721023328944">Jaribu tena au uchague kwenye mojawapo ya mandhari yanayopatikana hapo chini.</translation>
 <translation id="5611398002774823980">Hifadhi kwenye akaunti</translation>
@@ -8643,7 +8640,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7109543803214225826">Umeondoa njia ya mkato</translation>
 <translation id="7110388475787189534">Pata maelezo kuhusu jinsi ya kupanga vichupo vyako kiotomatiki</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Weka Kichupo kwenye Kikundi}other{Weka Vichupo kwenye Kikundi}}</translation>
-<translation id="7110684627876015299">Kikundi kisicho na jina - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Lipe dirisha jina</translation>
 <translation id="7113502843173351041">Kujua anwani yako ya barua pepe</translation>
 <translation id="7113974454301513811">Sasa weka kichupo unachotumia kwenye orodha yako</translation>
@@ -9015,7 +9011,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7387107590792462040">Tafadhali subiri wakati inasakinisha</translation>
 <translation id="7387273928653486359">Inakubalika</translation>
 <translation id="7387951778417998929">Ili uweze kutumia mtambo mwingine wa kutafuta isipokuwa mtambo chaguomsingi, andika njia ya mkato ya mtambo huo katika sehemu ya anwani ikifuatiwa na mikato ya kibodi unayopendelea. Unaweza pia kubadilisha mtambo wako chaguomsingi wa kutafuta hapa.</translation>
-<translation id="7388209873137778229">Huonyesha tu vifaa vinavyoweza kutumika.</translation>
 <translation id="7388615499319468910">Tovuti na watangazaji wanaweza kuelewa utendaji wa matangazo. Mipangilio hii imezimwa.</translation>
 <translation id="738903649531469042">Weka Kichupo kwenye Orodha ya Kusoma</translation>
 <translation id="7392118418926456391">Utambazaji wa Virusi Umeshindwa</translation>
@@ -10698,7 +10693,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8553342806078037065">Dhibiti watumiaji wengine</translation>
 <translation id="8554899698005018844">Hakuna lugha</translation>
 <translation id="8555444629041783356">Ratiba ya kiotomatiki ya kuzama kwa jua</translation>
-<translation id="855604308879080518">Ruhusu programu za Android zifikie vifaa vya USB kwenye Chromebook hii. Utaombwa ruhusa kila wakati unapochomeka kifaa cha USB. Programu mahususi za Android zitaomba ruhusa za ziada.</translation>
 <translation id="8557022314818157177">Endelea kugusa ufunguo wako wa usalama hadi alama yako ya kidole inaswe</translation>
 <translation id="8557100046150195444">Tumia Touch ID ili uendelee</translation>
 <translation id="8557856025359704738">Upakuaji unaofuata utafanyika <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11409,7 +11403,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9036484080057916082">Orodha ya Mihuri ya wakati wa kuambatisha Cheti</translation>
 <translation id="9037054491984310631">Imeunganishwa kwenye kifaa chenye Bluetooth kiitwacho <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Kifaa hiki hakiruhusiwi</translation>
-<translation id="9037706442425692248">Ruhusu programu za Android zifikie vifaa vya USB kwenye Chromebook hii</translation>
 <translation id="9037818663270399707">Muunganisho wako si wa faragha kwenye trafiki yote ya mtandao</translation>
 <translation id="9037965129289936994">Onyesha Asili</translation>
 <translation id="9038489124413477075">Folda isiyo na jina</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">ცადეთ სიახლე ან მიიღეთ დახმარება პროცესში.</translation>
 <translation id="1054048317165655285">დაასრულეთ დაყენება თქვენს ტელეფონზე</translation>
 <translation id="1054153489933238809">ორიგინალი &amp;გამოსახულების გახსნა ახალ ჩანართში</translation>
+<translation id="1054187194995068149">მოგესალმებით. ეს წინასწარი გადახედვის რეჟიმია</translation>
 <translation id="1054502481659725522">აპები, ვებსაიტები და სისტემის სერვისები, რომლებსაც თქვენი მდებარეობის გამოყენება შეუძლია</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{განაახლეთ <ph name="DEVICE_TYPE" /> 1 კვირის განმავლობაში}other{განაახლეთ <ph name="DEVICE_TYPE" /> {NUM_WEEKS} კვირის განმავლობაში}}</translation>
 <translation id="1055606969515662982">ტრანსლირების შესაწყვეტად გამოიყენეთ დისტანციური მართვის პულტი</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილების რედაქტირება</translation>
 <translation id="130174306655812048">ცადეთ, იკითხოთ: „Ok Google, რა სიმღერაა?“</translation>
 <translation id="1302227299132585524">Apple-ის მოვლენებიდან JavaScript-ის დაშვება</translation>
-<translation id="1302654693270046655">ჯგუფი „<ph name="GROUP_NAME" />“ — <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">სანიშნეების HTML ფაილი</translation>
 <translation id="1303671224831497365">Bluetooth მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="130491383855577612">Linux აპები და ფაილები წარმატებით ჩანაცვლდა</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">სურვილისამებრ, შეგიძლიათ გააგრძელოთ თქვენი წინა სესია, სანამ ამჟამინდელი სესია აქტიურია.</translation>
 <translation id="1362865166188278099">მექანიკური პრობლემაა. შეამოწმეთ პრინტერი</translation>
 <translation id="1363585519747660921">USB პრინტერი საჭიროებს კონფიგურაციას</translation>
-<translation id="1363772878823415675">მიეცით <ph name="SPECIFIC_NAME" />-ს თქვენს USB-მოწყობილობებზე წვდომის ნებართვა.</translation>
 <translation id="136378536198524553">ენერგიის დამზოგი ჩართულია</translation>
 <translation id="136522805455656552">თქვენი მოწყობილობა უსაფრთხოდ რომ შეინარჩუნოთ, მხოლოდ სანდო წყაროებისა და დეველოპერების პროგრამული უზრუნველყოფა უნდა გაუშვათ და დააინსტალიროთ. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">აწიეთ წარბები</translation>
@@ -2558,6 +2557,7 @@
 <translation id="2743301740238894839">დაწყება</translation>
 <translation id="2743387203779672305">კოპირება გაცვლის ბუფერში</translation>
 <translation id="274362947316498129">აპი ცდილობს წვდომას <ph name="DEVICE_NAME" />-ზე. წვდომის დასაშვებად გამორთეთ <ph name="DEVICE_NAME" />-ის კონფიდენციალურობის გადამრთველი.</translation>
+<translation id="2744221223678373668">გაზიარებული</translation>
 <translation id="2745080116229976798">Microsoft-ის კვალიფიცირებული სუბორდინაცია</translation>
 <translation id="2749756011735116528">შედით <ph name="PRODUCT_NAME" />-ში</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5845,9 +5845,7 @@
 <translation id="5087864757604726239">უკან</translation>
 <translation id="5088427648965532275">Passpoint მომწოდებელი</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512-ით RSA დაშიფვრა</translation>
-<translation id="5089763948477033443">გვერდითი პანელის ზომის შეცვლის სახელური</translation>
 <translation id="5090637338841444533">თქვენი კამერის პოზიციისთვის თვალის მიდევნება დაუშვებელია</translation>
-<translation id="5090981554736747495">Linux აპებისთვის USB მოწყობილობებზე წვდომის დაშვება.</translation>
 <translation id="5091636240353511739">PIN-კოდის ჩვენება</translation>
 <translation id="5093477827231450397">თქვენ მიერ დაბლოკილი იმ საიტების სია, რომლებმაც არ გსურთ, სხვა საიტებს უკარნახოს რეკლამა</translation>
 <translation id="5093569275467863761">ქეშირებული ქვეფრეიმი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6559,7 +6557,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ეს გაფართოება დაბლოკილია}other{ეს გაფართოებები დაბლოკილია}}</translation>
 <translation id="560834977503641186">Wi-Fi სინქრონიზაცია, შეიტყვეთ მეტი</translation>
 <translation id="5608580678041221894">ჩამოჭრის არის დასარეგულირებლად ან გადასაადგილებლად დააჭირეთ მითითებულ კლავიშებს</translation>
-<translation id="560919433407466404">მიეცით Parallels Desktop-ს თქვენს USB მოწყობილობებზე წვდომის ნებართვა.</translation>
 <translation id="5609231933459083978">ჩანს აპლიკაცია არ არის მოქმედი.</translation>
 <translation id="5610867721023328944">სცადეთ ხელახლა, ან ქვემოთ აირჩიეთ ერთ-ერთი ხელმისაწვდომი თემა.</translation>
 <translation id="5611398002774823980">ანგარიშში შენახვა</translation>
@@ -8634,7 +8631,6 @@
 <translation id="7109543803214225826">მალსახმობი ამოშლილია</translation>
 <translation id="7110388475787189534">შეიტყვეთ, ავტომატურად როგორ მოაწესრიგოთ თქვენი ჩანართები</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართების დამატება ჯგუფში}}</translation>
-<translation id="7110684627876015299">უსახელო ჯგუფი — <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">დაარქვით სახელი ამ ფანჯარას</translation>
 <translation id="7113502843173351041">ეცოდინება თქვენი ელფოსტის მისამართი</translation>
 <translation id="7113974454301513811">ახლა დაამატეთ ამჟამინდელი ჩანართი თქვენს სიას</translation>
@@ -9006,7 +9002,6 @@
 <translation id="7387107590792462040">მოითმინეთ, სანამ მიმდინარეობს ინსტალაცია</translation>
 <translation id="7387273928653486359">დამაკმაყოფილებელი</translation>
 <translation id="7387951778417998929">ნაგულისხმევისგან განსხვავებული საძიებო სისტემა რომ გამოიყენოთ, მისამართთა ზოლში აკრიფეთ ჯერ მისი მალსახმობი, შემდეგ კი კლავიატურის სასურველი მალსახმობი. აქვე შეგიძლიათ ნაგულისხმევი საძიებო სისტემის შეცვლაც.</translation>
-<translation id="7388209873137778229">ნაჩვენებია მხოლოდ მხარდაჭერილი მოწყობილობები.</translation>
 <translation id="7388615499319468910">საიტებსა და რეკლამის განმთავსებლებს შეუძლიათ რეკლამის ეფექტურობის გარკვევა. ეს პარამეტრი გამორთულია.</translation>
 <translation id="738903649531469042">ჩანართის დამატება საკითხავ სიაში</translation>
 <translation id="7392118418926456391">ვირუსის სკანირება ვერ მოხერხდა</translation>
@@ -10686,7 +10681,6 @@
 <translation id="8553342806078037065">სხვა ადამიანების მართვა</translation>
 <translation id="8554899698005018844">ენის გარეშე</translation>
 <translation id="8555444629041783356">მზის ჩასვლის ავტომატური განრიგი</translation>
-<translation id="855604308879080518">მიეცით Android აპებს ამ Chromebook-ზე USB მოწყობილობებზე წვდომის უფლება. ნებართვა მოთხოვნილი იქნება USB მოწყობილობის ყოველი მიერთებისას. ცალკეული Android აპები დამატებით ნებართვებს მოითხოვს.</translation>
 <translation id="8557022314818157177">გეჭიროთ თითი უსაფრთხოების გასაღებზე თითის ანაბეჭდის აღბეჭდვამდე</translation>
 <translation id="8557100046150195444">გასაგრძელებლად გამოიყენეთ Touch ID</translation>
 <translation id="8557856025359704738">ჩამოტვირთვის მომდევნო თარიღია <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11397,7 +11391,6 @@
 <translation id="9036484080057916082">ხელმოწერილი სერტიფიკატების დროის ანაბეჭდების სია</translation>
 <translation id="9037054491984310631">დაკავშირებულია Bluetooth მოწყობილობასთან, სახელად <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">მოწყობილობა აკრძალულია</translation>
-<translation id="9037706442425692248">მიეცით Android აპებს ამ Chromebook-ზე USB მოწყობილობებზე წვდომის უფლება</translation>
 <translation id="9037818663270399707">თქვენი კავშირი არ არის კონფიდენციალური ქსელის მთელი ტრაფიკისთვის</translation>
 <translation id="9037965129289936994">ორიგინალის ჩვენება</translation>
 <translation id="9038489124413477075">უსახელო საქაღალდე</translation>

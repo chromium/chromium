@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Start et nyt projekt, eller få hjælp undervejs.</translation>
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
+<translation id="1054187194995068149">Hej! Dette er et preview</translation>
 <translation id="1054502481659725522">Apps, websites og systemtjenester kan bruge din lokation</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Opdater <ph name="DEVICE_TYPE" /> inden for 1 uge}one{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}other{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uger}}</translation>
 <translation id="1055606969515662982">Brug fjernbetjeningen til at stoppe med at caste</translation>
@@ -457,7 +458,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan redigere følgende filer</translation>
 <translation id="130174306655812048">Prøv at sige "Hey Google, hvad hedder den her sang?"</translation>
 <translation id="1302227299132585524">Tillad JavaScript via Apple Events</translation>
-<translation id="1302654693270046655">Gruppen <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Tilføjer HTML-fil som bogmærke</translation>
 <translation id="1303671224831497365">Der blev ikke fundet nogen Bluetooth-enheder</translation>
 <translation id="130491383855577612">Linux-applikationerne og -filerne blev erstattet</translation>
@@ -539,7 +539,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1362829980946830670">Du kan genoptage din forrige session, mens den aktuelle session forbliver aktiv.</translation>
 <translation id="1362865166188278099">Der er et teknisk problem med printeren. Tjek printeren</translation>
 <translation id="1363585519747660921">USB-printeren skal konfigureres</translation>
-<translation id="1363772878823415675">Giv <ph name="SPECIFIC_NAME" /> adgang til USB-enheder.</translation>
 <translation id="136378536198524553">Energisparefunktion er aktiveret</translation>
 <translation id="136522805455656552">For at beskytte din enhed skal du kun køre og installere software fra pålidelige kilder og udviklere. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Løft øjenbrynene</translation>
@@ -2573,6 +2572,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Kopiér til udklipsholderen</translation>
 <translation id="274362947316498129">En app forsøger at få adgang til <ph name="DEVICE_NAME" />. Slå privatlivskontakten for <ph name="DEVICE_NAME" /> fra for at give adgang.</translation>
+<translation id="2744221223678373668">Delte</translation>
 <translation id="2745080116229976798">Microsoft-kvalificeret delegering</translation>
 <translation id="2749756011735116528">Log ind på <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4559,6 +4559,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4139326893730851150">Firmwareopdateringer</translation>
 <translation id="4142052906269098341">Lås din <ph name="DEVICE_TYPE" /> op med din telefon. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Se, hvordan AI former din oplevelse, og træf velinformerede valg vedrørende dit privatliv</translation>
+<translation id="4143754025452944766">Du kan også vælge at fjerne kontoudvidelser fra denne enhed.</translation>
 <translation id="4146026355784316281">Åbn altid med systemets visningsprogram</translation>
 <translation id="4146785383423576110">Nulstil og ryd op</translation>
 <translation id="4147099377280085053">Vælg en brailletabel</translation>
@@ -5860,9 +5861,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5087864757604726239">tilbage</translation>
 <translation id="5088427648965532275">Passpoint-udbyder</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
-<translation id="5089763948477033443">Sidepanelets tilpasningshåndtag</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
-<translation id="5090981554736747495">Giv Linux-apps adgang til USB-enheder.</translation>
 <translation id="5091636240353511739">Vis pinkode</translation>
 <translation id="5093477827231450397">Liste over websites, du har blokeret, som du ikke vil have skal foreslå annoncer på andre websites</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6574,7 +6573,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er blokeret}one{Denne udvidelse er blokeret}other{Disse udvidelser er blokeret}}</translation>
 <translation id="560834977503641186">Wi-Fi-synkronisering, Få flere oplysninger</translation>
 <translation id="5608580678041221894">Tryk på følgende taster for at tilpasse eller flytte beskæringsområdet</translation>
-<translation id="560919433407466404">Giv Parallels Desktop adgang til USB-enheder.</translation>
 <translation id="5609231933459083978">Applikationen ser ud til at være ugyldig.</translation>
 <translation id="5610867721023328944">Prøv igen, eller vælg ét af de tilgængelige temaer nedenfor.</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
@@ -8652,7 +8650,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7109543803214225826">Genvejen blev fjernet</translation>
 <translation id="7110388475787189534">Få flere oplysninger om, hvordan du automatisk organiserer dine faner</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
-<translation id="7110684627876015299">Unavngiven gruppe – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Navngiv dette vindue</translation>
 <translation id="7113502843173351041">Kende din mailadresse</translation>
 <translation id="7113974454301513811">Føj nu den aktuelle fane til din liste</translation>
@@ -9024,7 +9021,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7387107590792462040">Vent, mens installationen udføres</translation>
 <translation id="7387273928653486359">Acceptabel</translation>
 <translation id="7387951778417998929">Hvis du vil bruge en søgemaskine, der ikke er din standardsøgemaskine, skal du angive genvejen til den i adresselinjen efterfulgt af din foretrukne tastaturgenvej. Du kan også ændre din standardsøgemaskine her.</translation>
-<translation id="7388209873137778229">Der vises kun understøttede enheder.</translation>
 <translation id="7388615499319468910">Websites og annoncører kan få indblik i, hvordan annoncer klarer sig. Denne indstilling er deaktiveret.</translation>
 <translation id="738903649531469042">Føj fane til Læseliste</translation>
 <translation id="7392118418926456391">Virusscanningen mislykkedes</translation>
@@ -10705,7 +10701,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8553342806078037065">Administrer andre personer</translation>
 <translation id="8554899698005018844">Intet sprog</translation>
 <translation id="8555444629041783356">Automatisk tidsplan for solnedgang</translation>
-<translation id="855604308879080518">Giv Android-apps adgangstilladelse til USB-enheder på denne Chromebook. Der anmodes om tilladelsen, hver gang du tilslutter en USB-enhed. Individuelle Android-apps anmoder om yderligere tilladelser.</translation>
 <translation id="8557022314818157177">Bliv ved med at røre din sikkerhedsnøgle, indtil dit fingeraftryk er registreret</translation>
 <translation id="8557100046150195444">Brug Touch ID for at fortsætte</translation>
 <translation id="8557856025359704738">Næste download finder sted <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11418,7 +11413,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9036484080057916082">Liste over tidsstempler for signeret certifikat</translation>
 <translation id="9037054491984310631">Der er oprettet forbindelse til Bluetooth-enheden <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Enheden er ikke tilladt</translation>
-<translation id="9037706442425692248">Giv Android-apps adgangstilladelse til USB-enheder på denne Chromebook</translation>
 <translation id="9037818663270399707">Din forbindelse er ikke privat for al netværkstrafik</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9038489124413477075">Unavngiven mappe</translation>

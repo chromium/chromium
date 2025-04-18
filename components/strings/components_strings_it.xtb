@@ -498,6 +498,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1839331950812095887">poche parole che riassumono i tuoi pensieri</translation>
 <translation id="1839551713262164453">Convalida dei valori della norma non riuscita con errori</translation>
 <translation id="1840009953725035797">Sistemi home theater</translation>
+<translation id="184153295865602321">Per una maggiore protezione, usa sempre l'impronta, il volto o un altro metodo di blocco schermo quando paghi tramite la compilazione automatica</translation>
 <translation id="1842969606798536927">Paga</translation>
 <translation id="184517536440397176">Un genitore o tutore deve autorizzarti a visitare questo sito web. Prima che tu glielo chieda, dobbiamo verificare la tua identità.</translation>
 <translation id="1846432862466000825">Plastica (archivio)</translation>
@@ -1190,7 +1191,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3102312643185441063">Conto di risparmio</translation>
 <translation id="3103188521861412364">Azioni e obbligazioni</translation>
 <translation id="3103535543639438037">Confronta prodotti simili uno di fianco all'altro</translation>
-<translation id="3103993932858740905">Quando paghi a rate, viene inserito un numero di carta virtuale temporaneo. Questo numero è valido solo per questo acquisto.</translation>
 <translation id="3105172416063519923">ID asset:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Controllare la configurazione del sistema DNS sicuro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Vassoio centrale</translation>
@@ -1400,7 +1400,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3440783957068352691">Quadrata</translation>
 <translation id="3441653493275994384">Schermo</translation>
 <translation id="3443504041532578451">Disco ottico (satinato)</translation>
-<translation id="344449859752187052">Cookie di terze parti bloccati</translation>
 <translation id="3447644283769633681">Blocca tutti i cookie di terze parti</translation>
 <translation id="3447661539832366887">Il proprietario del dispositivo ha disattivato il gioco dei dinosauri.</translation>
 <translation id="3447884698081792621">Mostra certificato (rilasciato da <ph name="ISSUER" />)</translation>
@@ -1928,6 +1927,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> aggiornato</translation>
 <translation id="4298000214066716287">Investimenti</translation>
 <translation id="42981349822642051">Espandi</translation>
+<translation id="4298925811540301889">I cookie di questo sito sono sincronizzati su tutti i tuoi dispositivi ChromeOS. Per gestire i dati da sincronizzare, vai a <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300675098767811073">Perforatura multipla a destra</translation>
 <translation id="4302514097724775343">Tocca il dinosauro per giocare</translation>
 <translation id="4304049446746819918">{0,plural, =1{La policy dell'amministratore sconsiglia di spostare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di spostare questi file su <ph name="DESTINATION_NAME" />}}</translation>
@@ -2027,6 +2027,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4477350412780666475">Traccia successiva</translation>
 <translation id="448363931695049633">Pizzerie</translation>
 <translation id="4489023393592172404">Busta Kaku 4</translation>
+<translation id="4489977488133295402">Verifica la tua identità per la compilazione automatica dei metodi di pagamento</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
 <translation id="4493480324863638523">URL non valido. Deve essere un URL con schema standard, ad esempio http://example.com o https://example.com.</translation>
@@ -2253,6 +2254,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4901778704868714008">Salva…</translation>
 <translation id="4901952598169637881">Scarpe casual</translation>
 <translation id="4905659621780993806">L'amministratore riavvierà il tuo dispositivo automaticamente alle ore <ph name="TIME" /> del giorno <ph name="DATE" />. Salva gli eventuali elementi aperti prima che il dispositivo si riavvii.</translation>
+<translation id="4913083239887436582">installazioni di app web</translation>
 <translation id="4913987521957242411">Perforatura in alto a sinistra</translation>
 <translation id="4914727764832832057">Blu 1</translation>
 <translation id="4916389289686916969">Reality show televisivi</translation>
@@ -2583,6 +2585,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5483838506518938965">Ecco fatto</translation>
 <translation id="5485100387355669506">Molto spesso</translation>
 <translation id="5485973315555778056">Macchina Cloud</translation>
+<translation id="5488367146069768854">Installazioni di app web</translation>
 <translation id="5488590678320979185">Pulsante Crea nota, attiva per creare rapidamente una nuova nota in Google Keep</translation>
 <translation id="5490432419156082418">Indirizzi e altro</translation>
 <translation id="5492298309214877701">Il sito nell'Intranet dell'azienda, dell'organizzazione o della scuola ha lo stesso URL del sito web esterno.
@@ -2710,7 +2713,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5691848789297492617">Salva carta aperta a schermo intero.</translation>
 <translation id="5695542892312572833">Vuoi usare Windows Hello per verificare e completare l'acquisto?</translation>
 <translation id="5699628521141772782">Latticini e uova</translation>
-<translation id="5700761515355162635">Cookie di terze parti consentiti</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5707154300732650394">Riprendi il percorso</translation>
 <translation id="57094364128775171">Suggerisci password efficace…</translation>
@@ -2982,7 +2984,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6184868291074982484">Chrome limita automaticamente i cookie di terze parti</translation>
 <translation id="6190518157737269631">Esegui l'override di alcuni tasti della tastiera, ad esempio Esc</translation>
 <translation id="6194209731893739467">Visualizza tutti i tuoi prodotti monitorati qui</translation>
-<translation id="6195163219142236913">Cookie di terze parti limitati</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elettronica di consumo</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
@@ -3247,6 +3248,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Istruzione informatica</translation>
 <translation id="6633476656216409494">Software per attività commerciali e produttività</translation>
+<translation id="6641852376826221947">Conferma l'acquisto</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6645291930348198241">Accedere a cookie e dati del sito.</translation>
 <translation id="6645478838938543427">Gli avvisi relativi ai cali di prezzo verranno inviati a <ph name="EMAIL_ADDRESS" /></translation>
@@ -4546,6 +4548,7 @@ Ulteriori dettagli:
 <translation id="8918062451146297192">CVC della carta virtuale</translation>
 <translation id="8919740778133505789">Auto sportive</translation>
 <translation id="8919895429178014996">Nascondi tutti gli elementi</translation>
+<translation id="8919989290032064330">Verificare la tua identità per la compilazione automatica dei metodi di pagamento?</translation>
 <translation id="8922013791253848639">Consenti sempre gli annunci su questo sito</translation>
 <translation id="8922734931659847428">Un elenco limitato di URL di pagine visitate in cui si verificano <ph name="BEGIN_LINK" />eventi tecnologici legacy<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforatura in alto a destra</translation>

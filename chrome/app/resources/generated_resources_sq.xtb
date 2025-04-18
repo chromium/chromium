@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Nis diçka të re ose merr ndihmë gjatë rrjedhës.</translation>
 <translation id="1054048317165655285">Përfundo konfigurimin në telefon</translation>
 <translation id="1054153489933238809">Hap imazhin &amp;origjinal në skedë të re</translation>
+<translation id="1054187194995068149">Përshëndetje. Kjo është një pamje paraprake</translation>
 <translation id="1054502481659725522">Aplikacionet, uebsajtet dhe shërbimet e sistemit mund të përdorin vendndodhjen tënde</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Pëditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda 1 jave}other{Përditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_WEEKS} javësh}}</translation>
 <translation id="1055606969515662982">Përdor telekomandën për të ndaluar transmetimin</translation>
@@ -456,7 +457,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1301135395320604080"><ph name="ORIGIN" /> mund të modifikojë skedarët e mëposhtëm</translation>
 <translation id="130174306655812048">Provo "Ok Google, çfarë kënge është kjo?"</translation>
 <translation id="1302227299132585524">Lejo JavaScript nga Apple Events</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> grup - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Shënon skedarin HTML si faqeshënues</translation>
 <translation id="1303671224831497365">Nuk u gjet asnjë pajisje me Bluetooth</translation>
 <translation id="130491383855577612">Aplikacionet dhe skedarët Linux janë zëvendësuar me sukses</translation>
@@ -538,7 +538,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1362829980946830670">Mund ta vazhdosh seancën e mëparshme ndërkohë që seanca jote aktuale mbetet aktive.</translation>
 <translation id="1362865166188278099">Problem mekanik. Kontrollo printerin</translation>
 <translation id="1363585519747660921">Printeri USB ka nevojë për printim</translation>
-<translation id="1363772878823415675">Jep lejen për <ph name="SPECIFIC_NAME" /> që të qaset te pajisjet USB.</translation>
 <translation id="136378536198524553">"Kursyesi i energjisë" është aktiv</translation>
 <translation id="136522805455656552">Për ta mbajtur të sigurt pajisjen tënde, duhet të ekzekutosh dhe të instalosh vetëm softuerë nga burime dhe zhvillues të besuar. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Ngri vetullat</translation>
@@ -2556,6 +2555,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2743301740238894839">Nis</translation>
 <translation id="2743387203779672305">Kopjo te kujtesa e fragmenteve</translation>
 <translation id="274362947316498129">Një aplikacion po përpiqet të ketë qasje te <ph name="DEVICE_NAME" />. Çaktivizo çelësin e privatësisë të <ph name="DEVICE_NAME" /> për të lejuar qasjen.</translation>
+<translation id="2744221223678373668">Të ndara</translation>
 <translation id="2745080116229976798">Varësia e kualifikuar e Microsoft</translation>
 <translation id="2749756011735116528">Identifikohu në <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5840,9 +5840,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5087864757604726239">prapa</translation>
 <translation id="5088427648965532275">Ofruesi i Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 me enkriptim RSA</translation>
-<translation id="5089763948477033443">Doreza e ndryshimit të përmasave për panelin anësor</translation>
 <translation id="5090637338841444533">Nuk lejohen të monitorojnë pozicionin e kamerës</translation>
-<translation id="5090981554736747495">Jepu leje aplikacioneve të Linux që të kenë qasje në pajisjet USB.</translation>
 <translation id="5091636240353511739">Shfaq kodin PIN</translation>
 <translation id="5093477827231450397">Lista e sajteve që ke bllokuar që nuk dëshiron që të sugjerojnë reklama për sajtet e tjera</translation>
 <translation id="5093569275467863761">Nënkorniza e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6553,7 +6551,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Kjo shtesë është bllokuar}other{Këto shtesa janë bllokuar}}</translation>
 <translation id="560834977503641186">"Sinkronizimi i Wi-Fi", Mëso më shumë</translation>
 <translation id="5608580678041221894">Trokit te tastet e mëposhtme për të rregulluar ose zhvendosur zonën e prerjes</translation>
-<translation id="560919433407466404">Jepi leje Parallels Desktop që të ketë qasje në pajisjet USB.</translation>
 <translation id="5609231933459083978">Aplikacioni duket se është i pavlefshëm.</translation>
 <translation id="5610867721023328944">Provo përsëri ose zgjidh nga një prej temave që ofrohen më poshtë.</translation>
 <translation id="5611398002774823980">Ruaje te llogaria</translation>
@@ -8628,7 +8625,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7109543803214225826">Shkurtorja u hoq</translation>
 <translation id="7110388475787189534">Mëso se si të organizosh automatikisht skedat e tua</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
-<translation id="7110684627876015299">Grup pa emër - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Emërtoje këtë dritare</translation>
 <translation id="7113502843173351041">Njihu me adresën tënde të mail-it</translation>
 <translation id="7113974454301513811">Tani shto skedën aktuale në listën tënde</translation>
@@ -9000,7 +8996,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7387107590792462040">Prit ndërkohë që instalimi është në vazhdim</translation>
 <translation id="7387273928653486359">E pranueshme</translation>
 <translation id="7387951778417998929">Për të përdorur një motor kërkimi të ndryshëm nga ai i parazgjedhur, shkruaj shkurtoren e tij në shiritin e adresave, të ndjekur nga shkurtorja jote e preferuar e tastierës. Mund ta ndryshosh po ashtu motorin tënd të parazgjedhur të kërkimit këtu.</translation>
-<translation id="7388209873137778229">Shfaqen vetëm pajisjet e mbështetura.</translation>
 <translation id="7388615499319468910">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është joaktiv.</translation>
 <translation id="738903649531469042">Shtoje skedën te lista e leximit</translation>
 <translation id="7392118418926456391">Skanimi për viruse dështoi</translation>
@@ -10680,7 +10675,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>
 <translation id="8555444629041783356">Programi automatik i perëndimit të diellit</translation>
-<translation id="855604308879080518">Lejo që aplikacionet për Android të kenë qasje në pajisjet USB në këtë Chromebook. Do të kërkohet leje sa herë që lidh një pajisje USB. Aplikacionet individuale për Android do të kërkojnë leje shtesë.</translation>
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
 <translation id="8557100046150195444">Përdor Touch ID për të vazhduar</translation>
 <translation id="8557856025359704738">Shkarkimi tjetër është më <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11391,7 +11385,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9036484080057916082">Lista e vulave kohore të certifikatave të nënshkruara</translation>
 <translation id="9037054491984310631">Lidhur me pajisjen me Bluetooth të emërtuar <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Pajisja nuk lejohet</translation>
-<translation id="9037706442425692248">Lejo që aplikacionet për Android të kenë qasje në pajisjet USB në këtë Chromebook</translation>
 <translation id="9037818663270399707">Lidhja jote nuk është private për të gjithë trafikun e rrjetit</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>
 <translation id="9038489124413477075">Dosje pa emër</translation>

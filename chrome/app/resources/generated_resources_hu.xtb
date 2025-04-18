@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Kezdjen el valami újat, vagy kérjen segítséget, miközben dolgozik valamin.</translation>
 <translation id="1054048317165655285">Fejezze be a beállítást a telefonon</translation>
 <translation id="1054153489933238809">Az eredeti &amp;kép megnyitása új lapon</translation>
+<translation id="1054187194995068149">Üdvözöljük! Ez egy előnézet.</translation>
 <translation id="1054502481659725522">Az alkalmazások, a webhelyek és a rendszerszolgáltatások használhatják a helyadatokat.</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{A(z) <ph name="DEVICE_TYPE" /> frissítését 1 héten belül el kell végezni}other{A(z) <ph name="DEVICE_TYPE" /> frissítését {NUM_WEEKS} héten belül el kell végezni}}</translation>
 <translation id="1055606969515662982">Az átküldés leállításához használja a távirányítót</translation>
@@ -456,7 +457,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1301135395320604080">A(z) <ph name="ORIGIN" /> szerkesztheti a következő fájlokat:</translation>
 <translation id="130174306655812048">Próbálja ki a következőt: „Ok Google, what song is this?” (Ok Google, mi ez a szám?)</translation>
 <translation id="1302227299132585524">A JavaScript engedélyezése Apple-eseményekből</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> csoport – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Könyvjelzők HTML-fájlja</translation>
 <translation id="1303671224831497365">Nem található Bluetooth-eszköz</translation>
 <translation id="130491383855577612">A rendszer sikeresen lecserélte a Linux-alkalmazásokat és -fájlokat.</translation>
@@ -538,7 +538,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1362829980946830670">Folytathatja az előző munkamenetet, amíg az aktuális munkamenet aktív marad.</translation>
 <translation id="1362865166188278099">Mechanikai probléma. Ellenőrizze a nyomtatót.</translation>
 <translation id="1363585519747660921">Be kell állítani az USB-nyomtatót</translation>
-<translation id="1363772878823415675">Engedély megadása a következőnek az USB-eszközökhöz való hozzáférésre: <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="136378536198524553">Az energiatakarékos mód be van kapcsolva</translation>
 <translation id="136522805455656552">Az eszköz biztonságának megőrzése érdekében kizárólag megbízható forrásokból és fejlesztőktől származó szoftvereket futtasson és telepítsen. <ph name="LEARN_MORE" />.</translation>
 <translation id="1365650529628379165">Szemöldök felhúzása</translation>
@@ -2570,6 +2569,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2743301740238894839">Kezdés</translation>
 <translation id="2743387203779672305">Másolás a vágólapra</translation>
 <translation id="274362947316498129">Az egyik alkalmazás hozzá szeretne férni a következőhöz: <ph name="DEVICE_NAME" />. A hozzáférés engedélyezéséhez kapcsolja ki a(z) <ph name="DEVICE_NAME" /> adatvédelmi kapcsolóját.</translation>
+<translation id="2744221223678373668">Megosztott</translation>
 <translation id="2745080116229976798">Microsoft minősített altanúsítvány-kibocsátók</translation>
 <translation id="2749756011735116528">Bejelentkezés a <ph name="PRODUCT_NAME" />-ba</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4555,6 +4555,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4139326893730851150">Firmware-frissítések</translation>
 <translation id="4142052906269098341">Feloldhatja <ph name="DEVICE_TYPE" /> eszközét telefonjával. <ph name="LINK_BEGIN" />További információ.<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Felfedezheti, hogy hogyan alakítja az AI a felhasználói élményt, és megalapozott döntéseket hozhat az adatvédelemről.</translation>
+<translation id="4143754025452944766">Azt is megteheti, hogy eltávolítja a fiókbővítményeket erről az eszközről.</translation>
 <translation id="4146026355784316281">Megnyitás mindig a rendszer megtekintőjével</translation>
 <translation id="4146785383423576110">Visszaállítás és megtisztítás</translation>
 <translation id="4147099377280085053">Braille-táblázat kiválasztása</translation>
@@ -5856,9 +5857,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5087864757604726239">vissza</translation>
 <translation id="5088427648965532275">Passpoint-szolgáltató</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA titkosítással</translation>
-<translation id="5089763948477033443">Oldalsó panelt átméretező fogópont</translation>
 <translation id="5090637338841444533">Nem követhetik nyomon a kamera pozícióját</translation>
-<translation id="5090981554736747495">Engedély megadása a Linux-alkalmazásoknak az USB-eszközökhöz való hozzáférésre.</translation>
 <translation id="5091636240353511739">PIN-kód megjelenítése</translation>
 <translation id="5093477827231450397">Azoknak az Ön által letiltott témaköröknek a listája, amelyeknél nem szeretne, hogy hirdetéseket javasoljanak más webhelyek számára.</translation>
 <translation id="5093569275467863761">Előre-vissza gyorsítótárazott inkognitó-alkeret: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6570,7 +6569,6 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ez a bővítmény le van tiltva}other{Ezek a bővítmények le vannak tiltva}}</translation>
 <translation id="560834977503641186">Wi-Fi szinkronizálása, további információ</translation>
 <translation id="5608580678041221894">Az alábbi kulcsokra koppintva módosítható vagy mozgatható a körbevágás területe</translation>
-<translation id="560919433407466404">Engedély megadása a következőnek az USB-eszközökhöz való hozzáférésre: Parallels Desktop.</translation>
 <translation id="5609231933459083978">Úgy tűnik, hogy az alkalmazás érvénytelen.</translation>
 <translation id="5610867721023328944">Próbálkozzon újra, vagy válasszon egyet az alábbi rendelkezésre álló témák közül.</translation>
 <translation id="5611398002774823980">Mentés a fiókba</translation>
@@ -8647,7 +8645,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7109543803214225826">Billentyűparancs eltávolítva</translation>
 <translation id="7110388475787189534">További információ a lapok automatikus rendszerezéséről</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
-<translation id="7110684627876015299">Név nélküli csoport – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Nevezze el ezt az ablakot</translation>
 <translation id="7113502843173351041">Megismerheti az Ön e-mail-címét</translation>
 <translation id="7113974454301513811">Most pedig adja hozzá a jelenlegi lapot a listájához.</translation>
@@ -9019,7 +9016,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7387107590792462040">Kérjük, várjon, amíg tart a telepítés</translation>
 <translation id="7387273928653486359">Elfogadható</translation>
 <translation id="7387951778417998929">Ha az alapértelmezettől eltérő keresőmotort szeretne használni, gépelje be a hozzá tartozó gyorsparancsot a címsávba, majd nyomja le a preferált billentyűparancsot. Itt módosíthatja az alapértelmezett keresőmotort is.</translation>
-<translation id="7388209873137778229">Csak a támogatott eszközök jelennek meg.</translation>
 <translation id="7388615499319468910">A webhelyek és a hirdetők megismerhetik a hirdetések teljesítményét. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="738903649531469042">Lap hozzáadása az olvasólistához</translation>
 <translation id="7392118418926456391">A víruskeresés nem sikerült</translation>
@@ -10700,7 +10696,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8553342806078037065">Más személyek kezelése</translation>
 <translation id="8554899698005018844">Nincs nyelv</translation>
 <translation id="8555444629041783356">Automatikus naplemente-ütemezés</translation>
-<translation id="855604308879080518">Az Android-alkalmazások USB-eszközökhöz való hozzáférésének engedélyezése ezen a Chromebookon. A rendszer minden alkalommal engedélyt kér, amikor USB-eszközt csatlakozhat. Az egyes Android-alkalmazások további engedélyeket kérnek.</translation>
 <translation id="8557022314818157177">Érintse meg többször a biztonsági kulcsot, amíg meg nem történik az ujjlenyomat rögzítése.</translation>
 <translation id="8557100046150195444">Használja a Touch ID-t a folytatáshoz</translation>
 <translation id="8557856025359704738">A következő letöltés ideje: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11411,7 +11406,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9036484080057916082">Az aláírt tanúsítvány időbélyeglistája</translation>
 <translation id="9037054491984310631">Csatlakoztatva van a(z) <ph name="DEVICE" /> nevű Bluetooth-eszközhöz</translation>
 <translation id="9037640663275993951">Nem engedélyezett eszköz</translation>
-<translation id="9037706442425692248">Az Android-alkalmazások USB-eszközökhöz való hozzáférésének engedélyezése ezen a Chromebookon.</translation>
 <translation id="9037818663270399707">Az Ön kapcsolata nem privát az összes hálózati forgalomnál</translation>
 <translation id="9037965129289936994">Eredeti megjelenítése</translation>
 <translation id="9038489124413477075">Név nélküli mappa</translation>

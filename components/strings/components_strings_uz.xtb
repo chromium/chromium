@@ -1189,7 +1189,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3102312643185441063">Jamgʻarma</translation>
 <translation id="3103188521861412364">Qimmatli qogʻozlar va obligatsiyalar</translation>
 <translation id="3103535543639438037">Oʻxshash mahsulotlarni yonma-yon taqqoslash</translation>
-<translation id="3103993932858740905">Vaqt oʻtishi bilan bir martalik virtual karta raqami kiritiladi. Bu raqam faqat mazkur xaridga talluqli.</translation>
 <translation id="3105172416063519923">Obyekt identifikatori:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS sozlamalar himoyasini tekshirish<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Oʻrta tarnov</translation>
@@ -1400,7 +1399,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3440783957068352691">kvadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optik disk (satin)</translation>
-<translation id="344449859752187052">Tashqi cookie fayl bloklandi</translation>
 <translation id="3447644283769633681">Barcha tashqi cookie fayllarni bloklash</translation>
 <translation id="3447661539832366887">Bu qurilmaning egasi dinozavr o‘yinini o‘chirib qo‘ygan.</translation>
 <translation id="3447884698081792621">Sertifikatni ko‘rsatish (noshir: <ph name="ISSUER" />)</translation>
@@ -2251,6 +2249,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4901778704868714008">Saqlash...</translation>
 <translation id="4901952598169637881">Kazual poyabzal</translation>
 <translation id="4905659621780993806">Administrator qurilmani <ph name="DATE" /> kuni <ph name="TIME" /> da avtomatik qayta ishga tushiradi Qurilma qayta ishga tushishidan oldin ochiq qolgan maʼlumotlarni saqlang.</translation>
+<translation id="4913083239887436582">veb-ilovalar oʻrnatish</translation>
 <translation id="4913987521957242411">Yuqori chapdan teshik ochish</translation>
 <translation id="4914727764832832057">Koʻk 1</translation>
 <translation id="4916389289686916969">TV realiti-shoular</translation>
@@ -2581,6 +2580,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5483838506518938965">Hammasi tayyor</translation>
 <translation id="5485100387355669506">Juda qalin</translation>
 <translation id="5485973315555778056">Cloud kompyuteri</translation>
+<translation id="5488367146069768854">Veb-ilovalar oʻrnatish</translation>
 <translation id="5488590678320979185">Qayd yaratish tugmasi, Google Keep yangi qaydini tez ochish uchun faollashtiring</translation>
 <translation id="5490432419156082418">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="5492298309214877701">Ushbu kompaniya, tashkilot yoki o‘quv yurti intranetidagi URL manzil Internetdagi veb-sayt manzili bilan bir xil ekan.
@@ -2708,7 +2708,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5691848789297492617">Karta maʼlumotlarini saqlash oynasi toʻliq hajmda ochildi.</translation>
 <translation id="5695542892312572833">Xaridingiz Windows Hello orqali tasdiqlansin va bajarilsinmi?</translation>
 <translation id="5699628521141772782">Sut mahsulotlari va tuxumlar</translation>
-<translation id="5700761515355162635">Tashqi cookie fayllarga ruxsat berilgan</translation>
 <translation id="5701381305118179107">Markaz bo‘yicha tartiblash</translation>
 <translation id="5707154300732650394">Tarixni qaytarish</translation>
 <translation id="57094364128775171">Ishonchli parol yaratish…</translation>
@@ -2980,7 +2979,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6184868291074982484">Chrome avtomatik tarzda tashqi cookie fayllarni cheklaydi</translation>
 <translation id="6190518157737269631">Esc kabi klaviaturadagi ayrim tugmalarni almashtirish</translation>
 <translation id="6194209731893739467">Barcha kuzatadigan mahsulotlaringiz shu yerda chiqadi</translation>
-<translation id="6195163219142236913">Tashqi cookie fayllar cheklangan</translation>
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6195418151868446719">Maishiy elektronika</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>

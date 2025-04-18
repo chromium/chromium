@@ -767,7 +767,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4595805675102978678">Google 계정 오류</translation>
 <translation id="4601095002996233687">의심스러운 다운로드 항목을 심층 스캔합니다.</translation>
 <translation id="4606559747793337066">사이트 또는 앱에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 페이지를 암호화한 다음 쿠키를 사용하지 않고 Google 서버를 통해 미리 로드합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있습니다.</translation>
-<translation id="4609429330876432068">Chrome 및 <ph name="CHROME_CHANNEL" />에 저장된 비밀번호 목록이 병합되었습니다. 두 앱 모두에 저장된 비밀번호를 계속 자동 완성할 수 있습니다.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4624065194742029982">Chrome 시크릿 모드</translation>
@@ -1561,7 +1560,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8014210850410408071">그런 다음, 비밀번호를 가져옵니다</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
-<translation id="8026238112629815203">이 기기에 비밀번호가 저장되는 방식이 변경되었습니다.</translation>
 <translation id="8027395186860110042">비밀번호가 곧 작동하지 않을 수 있습니다</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>
 <translation id="8030852056903932865">승인</translation>

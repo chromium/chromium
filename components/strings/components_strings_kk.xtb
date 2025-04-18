@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">Жинақ шоты</translation>
 <translation id="3103188521861412364">Акциялар мен облигациялар</translation>
 <translation id="3103535543639438037">Ұқсас өнімдерді қатар салыстыру</translation>
-<translation id="3103993932858740905">Белгілі бір уақыттан кейін төлесеңіз, бір реттік виртуалдық карта нөмірі толтырылады. Бұл нөмір тек осы сатып алу тапсырысына арналған.</translation>
 <translation id="3105172416063519923">Актив идентификаторы:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS конфигурациясын тексеріп көріңіз.<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Ортаңғы науа</translation>
@@ -1402,7 +1401,6 @@
 <translation id="3440783957068352691">шаршы</translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Оптикалық диск (сәтен)</translation>
-<translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
 <translation id="3447644283769633681">Барлық үшінші тарап cookie файлын бөгеу</translation>
 <translation id="3447661539832366887">Бұл құрылғының иесі динозаврлар ойынын өшірді.</translation>
 <translation id="3447884698081792621">Сертификатты көрсету (шығарушы: <ph name="ISSUER" />)</translation>
@@ -2255,6 +2253,7 @@
 <translation id="4901778704868714008">Сақтау...</translation>
 <translation id="4901952598169637881">Күнделікті аяқ киім</translation>
 <translation id="4905659621780993806">Әкімші құрылғыңызды автоматты түрде қайта қосатын уақыт: <ph name="DATE" /> <ph name="TIME" />. Құрылғыны қайта қоспас бұрын, барлық ашық элементті сақтаңыз.</translation>
+<translation id="4913083239887436582">веб-қолданба орнату</translation>
 <translation id="4913987521957242411">Жоғарғы сол жақты тесу</translation>
 <translation id="4914727764832832057">Көк 1</translation>
 <translation id="4916389289686916969">Теледидардағы реалити шоулар</translation>
@@ -2585,6 +2584,7 @@
 <translation id="5483838506518938965">Барлығы дайын</translation>
 <translation id="5485100387355669506">Аса жуан</translation>
 <translation id="5485973315555778056">Бұлт компьютері</translation>
+<translation id="5488367146069768854">Веб-қолданба орнату</translation>
 <translation id="5488590678320979185">"Ескертпе жасау" түймесі, Google Keep-те жылдам жаңа ескертпе жасау үшін белсендіріңіз</translation>
 <translation id="5490432419156082418">Мекенжайлар және басқа ақпарат</translation>
 <translation id="5492298309214877701">Компания, ұйым не мектеп интранет желісінің бұл торабы сыртқы сайтпен бірдей URL мекенжайына ие.
@@ -2712,7 +2712,6 @@
 <translation id="5691848789297492617">Толығымен ашылған картаны сақтау.</translation>
 <translation id="5695542892312572833">Сатып алуды растау және аяқтау үшін Windows Hello пайдаланылсын ба?</translation>
 <translation id="5699628521141772782">Сүт өнімдері және жұмыртқа</translation>
-<translation id="5700761515355162635">Үшінші тарап cookie файлдары рұқсат етілген</translation>
 <translation id="5701381305118179107">Ортаға</translation>
 <translation id="5707154300732650394">Шарлауды жалғастыру</translation>
 <translation id="57094364128775171">Күрделі құпия сөз жасау…</translation>
@@ -2985,7 +2984,6 @@
 <translation id="6184868291074982484">Chrome үшінші тарап cookie файлдарына автоматты түрде шектеу қояды.</translation>
 <translation id="6190518157737269631">Пернетақтадағы Esc сияқты кейбір пернелерді қайта анықтау</translation>
 <translation id="6194209731893739467">Бақылайтын барлық өнімді осы жерден көре аласыз.</translation>
-<translation id="6195163219142236913">Үшінші тарап cookie файлдарына шектеу қойылды.</translation>
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6195418151868446719">Тұрмыстық электроника</translation>
 <translation id="6196640612572343990">Үшінші тарап cookie файлдарын бөгеу</translation>

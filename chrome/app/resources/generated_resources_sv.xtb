@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Börja med något nytt eller få hjälp under vägen.</translation>
 <translation id="1054048317165655285">Slutför konfigurationen på telefonen</translation>
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
+<translation id="1054187194995068149">Hej! Det här är en förhandsgranskning</translation>
 <translation id="1054502481659725522">Appar, webbplatser och systemtjänster kan använda din plats</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppdatera <ph name="DEVICE_TYPE" /> inom 1 vecka}other{Uppdatera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} veckor}}</translation>
 <translation id="1055606969515662982">Använd fjärrkontrollen för att sluta casta</translation>
@@ -456,7 +457,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1301135395320604080"><ph name="ORIGIN" /> har redigeringsbehörighet till följande filer</translation>
 <translation id="130174306655812048">Testa att säga ”Hey Google, vad är det här för låt?”</translation>
 <translation id="1302227299132585524">Tillåt JavaScript från Apple Events</translation>
-<translation id="1302654693270046655">Gruppen <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML-fil med bokmärken</translation>
 <translation id="1303671224831497365">Inga Bluetooth-enheter hittades</translation>
 <translation id="130491383855577612">Appar och filer för Linux har ersatts</translation>
@@ -538,7 +538,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1362829980946830670">Du kan återuppta en tidigare session medan den nuvarande sessionen är aktiv.</translation>
 <translation id="1362865166188278099">Mekaniskt fel. Kontrollera skrivaren</translation>
 <translation id="1363585519747660921">USB-skrivaren behöver konfigureras</translation>
-<translation id="1363772878823415675">Ge <ph name="SPECIFIC_NAME" /> åtkomstbehörighet till USB-enheter.</translation>
 <translation id="136378536198524553">Energisparläget är på</translation>
 <translation id="136522805455656552">Skydda enheten genom att bara köra och installera mjukvara från betrodda källor och utvecklare. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Höj ögonbrynen</translation>
@@ -2571,6 +2570,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2743301740238894839">Börja</translation>
 <translation id="2743387203779672305">Kopiera till Urklipp</translation>
 <translation id="274362947316498129">En app försöker få åtkomst till <ph name="DEVICE_NAME" />. Inaktivera integritetsinställningen för <ph name="DEVICE_NAME" /> för att tillåta åtkomst.</translation>
+<translation id="2744221223678373668">Delade</translation>
 <translation id="2745080116229976798">Microsofts kvalificerade underordning</translation>
 <translation id="2749756011735116528">Logga in på <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4557,6 +4557,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4139326893730851150">Firmware-uppdateringar</translation>
 <translation id="4142052906269098341">Lås upp <ph name="DEVICE_TYPE" /> med mobilen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Utforska hur AI påverkar din upplevelse och fatta välgrundade beslut om din integritet</translation>
+<translation id="4143754025452944766">Du kan också välja att ta bort kontotillägg från den här enheten.</translation>
 <translation id="4146026355784316281">Öppna alltid med systemets visningsprogram</translation>
 <translation id="4146785383423576110">Återställ och rensa</translation>
 <translation id="4147099377280085053">Välj punktskrift</translation>
@@ -5858,9 +5859,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5087864757604726239">tillbaka</translation>
 <translation id="5088427648965532275">Passpoint-leverantör</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
-<translation id="5089763948477033443">Storlekshandtag för sidopanel</translation>
 <translation id="5090637338841444533">Får inte registrera kamerans position</translation>
-<translation id="5090981554736747495">Ge Linux-appar åtkomstbehörighet till USB-enheter.</translation>
 <translation id="5091636240353511739">Visa pinkod</translation>
 <translation id="5093477827231450397">En lista över webbplatser som du har blockerat som du inte vill ska föreslå annonser till andra webbplatser</translation>
 <translation id="5093569275467863761">Inkognitounderram i vilocacheminne: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6572,7 +6571,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Detta tillägg har blockerats}other{Dessa tillägg har blockerats}}</translation>
 <translation id="560834977503641186">wifi-synkronisering, läs mer</translation>
 <translation id="5608580678041221894">Tryck på följande knappar för att justera eller flytta beskärningsområdet</translation>
-<translation id="560919433407466404">Ge Parallels Desktop behörighet att komma åt USB-enheter.</translation>
 <translation id="5609231933459083978">Appen ser ut att vara ogiltig.</translation>
 <translation id="5610867721023328944">Försök igen eller välj något av de tillgängliga temana nedan.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
@@ -8648,7 +8646,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7109543803214225826">Genvägen har tagits bort</translation>
 <translation id="7110388475787189534">Läs mer om hur du ordnar dina flikar automatiskt</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
-<translation id="7110684627876015299">Namnlös grupp – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Namnge fönstret</translation>
 <translation id="7113502843173351041">Känna till din e-postadress</translation>
 <translation id="7113974454301513811">Lägg till den aktuella fliken i listan</translation>
@@ -9020,7 +9017,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7387107590792462040">Vänta medan installering pågår</translation>
 <translation id="7387273928653486359">Acceptabel</translation>
 <translation id="7387951778417998929">Om du vill använda en annan sökmotor än standardinställningen skriver du genvägen i adressfältet följt av önskat kortkommando. Du kan även ändra standardsökmotorn här.</translation>
-<translation id="7388209873137778229">Endast enheter som stöds visas.</translation>
 <translation id="7388615499319468910">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är inaktiverad.</translation>
 <translation id="738903649531469042">Lägg till fliken i läslistan</translation>
 <translation id="7392118418926456391">Virussökningen misslyckades</translation>
@@ -10702,7 +10698,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8553342806078037065">Hantera andra personer</translation>
 <translation id="8554899698005018844">Inget språk</translation>
 <translation id="8555444629041783356">Automatiskt solnedgångsschema</translation>
-<translation id="855604308879080518">Ge Android-appar åtkomst till USB-enheter på denna Chromebook. Du blir ombedd att ge behörighet varje gång du kopplar in en USB-enhet. Enskilda Android-appar kan begära ytterligare behörighet.</translation>
 <translation id="8557022314818157177">Fortsätt att trycka på säkerhetsnyckeln tills fingeravtrycket registreras</translation>
 <translation id="8557100046150195444">Använd Touch ID för att fortsätta</translation>
 <translation id="8557856025359704738">Nästa nedladdning: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11413,7 +11408,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9036484080057916082">Lista med tidsstämplar för signerade certifikat</translation>
 <translation id="9037054491984310631">Ansluten till Bluetooth-enheten <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Otillåten enhet</translation>
-<translation id="9037706442425692248">Ge Android-appar åtkomst till USB-enheter på denna Chromebook</translation>
 <translation id="9037818663270399707">Anslutningen är inte privat för all nätverkstrafik</translation>
 <translation id="9037965129289936994">Visa original</translation>
 <translation id="9038489124413477075">Namnlös mapp</translation>

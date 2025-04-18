@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">אפשר להתחיל משהו חדש או לקבל עזרה במהלך העבודה.</translation>
 <translation id="1054048317165655285">יש להשלים את ההגדרה בטלפון</translation>
 <translation id="1054153489933238809">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
+<translation id="1054187194995068149">שלום. זו תצוגה מקדימה</translation>
 <translation id="1054502481659725522">אפליקציות, אתרים ושירותי מערכת יכולים להשתמש במיקום שלך</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך שבוע}one{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_WEEKS} שבועות}two{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך שבועיים ({NUM_WEEKS})}other{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_WEEKS} שבועות}}</translation>
 <translation id="1055606969515662982">אפשר להפסיק את ההעברה באמצעות השלט הרחוק</translation>
@@ -458,7 +459,6 @@
 <translation id="1301135395320604080">ל-<ph name="ORIGIN" /> יש הרשאה לערוך את הקבצים הבאים</translation>
 <translation id="130174306655812048">‏אפשר לנסות לומר "Ok Google, what song is this?‎"</translation>
 <translation id="1302227299132585524">‏התרת JavaScript מאירועי Apple</translation>
-<translation id="1302654693270046655">הקבוצה '<ph name="GROUP_NAME" />' – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">‏קובץ HTML לסימניות</translation>
 <translation id="1303671224831497365">‏לא נמצאו התקני Bluetooth</translation>
 <translation id="130491383855577612">‏החלפת הקבצים והאפליקציות של Linux הושלמה בהצלחה</translation>
@@ -540,7 +540,6 @@
 <translation id="1362829980946830670">ניתן לחזור לסשן הקודם בזמן שהסשן הנוכחי פעיל.</translation>
 <translation id="1362865166188278099">בעייה מכנית. יש לבדוק את המדפסת.</translation>
 <translation id="1363585519747660921">‏יש להגדיר מדפסת USB</translation>
-<translation id="1363772878823415675">‏מתן הרשאה ל-<ph name="SPECIFIC_NAME" /> לגשת להתקני USB.</translation>
 <translation id="136378536198524553">מצב החיסכון באנרגיה פועל</translation>
 <translation id="136522805455656552">כדי להגן על המכשיר, מומלץ להפעיל ולהתקין תוכנות ממקורות וממפתחים מהימנים בלבד. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">מרימים את הגבות</translation>
@@ -2570,6 +2569,7 @@
 <translation id="2743301740238894839">התחלה</translation>
 <translation id="2743387203779672305">העתקה ללוח</translation>
 <translation id="274362947316498129">אפליקציה כלשהי מנסה לגשת אל <ph name="DEVICE_NAME" />. כדי לאפשר גישה, צריך להשבית את מתג הפרטיות של <ph name="DEVICE_NAME" />.</translation>
+<translation id="2744221223678373668">משותף</translation>
 <translation id="2745080116229976798">‏שעבוד מוגדר של Microsoft</translation>
 <translation id="2749756011735116528">כניסה אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5858,9 +5858,7 @@
 <translation id="5087864757604726239">הקודם</translation>
 <translation id="5088427648965532275">‏הספק של Passpoint</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 עם הצפנת RSA</translation>
-<translation id="5089763948477033443">נקודת אחיזה לשינוי הגודל של החלונית הצדדית</translation>
 <translation id="5090637338841444533">לא מורשים לעקוב אחר מיקום המצלמה</translation>
-<translation id="5090981554736747495">‏מתן הרשאה לאפליקציות Linux לגשת להתקני USB.</translation>
 <translation id="5091636240353511739">הצגת קוד האימות</translation>
 <translation id="5093477827231450397">רשימת האתרים החסומים שאינך רוצה שיציעו מודעות לאתרים אחרים</translation>
 <translation id="5093569275467863761">תת-המסגרת האנונימית השמורה במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6572,7 +6570,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{התוסף הזה נחסם}one{התוספים האלה נחסמו}two{התוספים האלה נחסמו}other{התוספים האלה נחסמו}}</translation>
 <translation id="560834977503641186">‏מידע נוסף על סנכרון Wi-Fi</translation>
 <translation id="5608580678041221894">יש ללחוץ על המקשים הבאים כדי לשנות או להזיז את אזור החיתוך</translation>
-<translation id="560919433407466404">‏מתן הרשאה למכשירי USB באמצעות Parallels Desktop.</translation>
 <translation id="5609231933459083978">נראה שהיישום אינו חוקי.</translation>
 <translation id="5610867721023328944">אפשר לנסות שוב או לבחור מתוך העיצובים שמוצגים למטה.</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
@@ -8652,7 +8649,6 @@
 <translation id="7109543803214225826">קיצור הדרך הוסר</translation>
 <translation id="7110388475787189534">כך מארגנים את הכרטיסיות באופן אוטומטי</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
-<translation id="7110684627876015299">קבוצה ללא שם – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">יש לתת שם לחלון</translation>
 <translation id="7113502843173351041">לדעת את כתובת האימייל שלך</translation>
 <translation id="7113974454301513811">עכשיו צריך להוסיף את הכרטיסייה הנוכחית לרשימה</translation>
@@ -9024,7 +9020,6 @@
 <translation id="7387107590792462040">עליך להמתין בזמן שההתקנה מתבצעת</translation>
 <translation id="7387273928653486359">סביר</translation>
 <translation id="7387951778417998929">כדי להשתמש במנוע חיפוש שלא מוגדר כברירת מחדל, מקלידים את קיצור הדרך שלו בסרגל הכתובות ולאחר מכן מקישים על מקש הקיצור המועדף. בנוסף, אפשר לשנות כאן את מנוע החיפוש המוגדר כברירת מחדל.</translation>
-<translation id="7388209873137778229">רק מכשירים נתמכים מוצגים.</translation>
 <translation id="7388615499319468910">האתרים והמפרסמים יכולים להבין את רמת הביצועים של המודעות. ההגדרה הזו מושבתת.</translation>
 <translation id="738903649531469042">הוספת הכרטיסייה לרשימת הקריאה</translation>
 <translation id="7392118418926456391">סריקת וירוסים נכשלה</translation>
@@ -10707,7 +10702,6 @@
 <translation id="8553342806078037065">ניהול משתמשים אחרים</translation>
 <translation id="8554899698005018844">לא הוגדרה שפה</translation>
 <translation id="8555444629041783356">שינוי אוטומטי של המראה לפי זמני זריחה ושקיעה</translation>
-<translation id="855604308879080518">‏אפליקציות ל-Android יוכלו לקבל גישה להתקני USB ב-Chromebook הזה. בכל פעם שיחובר התקן USB, תישלח בקשה להרשאה. אפליקציות נפרדות ל-Android ישלחו בקשות להרשאות נוספות.</translation>
 <translation id="8557022314818157177">צריך להמשיך לגעת במפתח האבטחה עד לתיעוד טביעת האצבע</translation>
 <translation id="8557100046150195444">‏צריך לגעת בחיישן Touch ID כדי להמשיך</translation>
 <translation id="8557856025359704738">ההורדה הבאה תהיה בשעה <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11420,7 +11414,6 @@
 <translation id="9036484080057916082">רשימת חותמות הזמן של אישורים חתומים</translation>
 <translation id="9037054491984310631">‏יש חיבור אל מכשיר Bluetooth בשם <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">המכשיר לא מורשה</translation>
-<translation id="9037706442425692248">‏אפליקציות ל-Android יוכלו לקבל גישה להתקני USB ב-Chromebook הזה</translation>
 <translation id="9037818663270399707">החיבור שלך אינו פרטי בכל התנועה ברשת</translation>
 <translation id="9037965129289936994">הצגת מקור</translation>
 <translation id="9038489124413477075">תיקייה ללא שם</translation>

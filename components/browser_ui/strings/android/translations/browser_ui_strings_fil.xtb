@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong mikropono, i-on din ang mikropono sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
+<translation id="4578289292431526768">Tara na</translation>
 <translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="461356340001513807">Pinapayagan kang mag-sign in sa mga website gamit ang account na mayroon ka gamit ang serbisyo para sa pagkakakilanlan</translation>
 <translation id="4635969503923889910">Huwag payagan ang mga site na gumamit ng mga NFC device</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6320088164292336938">Mag-vibrate</translation>
-<translation id="6344622098450209924">Proteksyon sa Pag-track</translation>
 <translation id="6367753977865761591">I-block ang third-party na pag-sign in para sa partikular na site.</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
 <translation id="640163077447496506">Mag-e-expire ngayong araw</translation>

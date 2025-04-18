@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4578289292431526768">Let’s go</translation>
 <translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="461356340001513807">Lets you sign in to websites using the account that you have with an identity service</translation>
 <translation id="4635969503923889910">Don't allow sites to use NFC devices</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6320088164292336938">Vibrate</translation>
-<translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="640163077447496506">Expires today</translation>

@@ -767,7 +767,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4595805675102978678">„Google“ paskyros klaida</translation>
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606559747793337066">Kai svetainė ar programa paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ šifruoja ir iš anksto įkelia puslapius per „Google“ serverius be slapukų. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės.</translation>
-<translation id="4609429330876432068">Išsaugotų „Chrome“ ir „<ph name="CHROME_CHANNEL" />“ slaptažodžių sąrašai buvo sujungti. Vis tiek galite automatiškai užpildyti visus išsaugotus slaptažodžius abiejose programose.</translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
@@ -1561,7 +1560,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8004582292198964060">Naršyklė</translation>
 <translation id="8014210850410408071">Paskui importuokite slaptažodžius</translation>
 <translation id="8015452622527143194">Grąžinti numatytąjį puslapio turinio dydį</translation>
-<translation id="8026238112629815203">Pakeitėme slaptažodžių išsaugojimo šiame įrenginyje būdą</translation>
 <translation id="8027395186860110042">Slaptažodžiai netrukus gali nebeveikti</translation>
 <translation id="8027863900915310177">Pasirinkite, kur atsisiųsti</translation>
 <translation id="8030852056903932865">Patvirtinti</translation>

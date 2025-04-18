@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu mikrofonam, ieslēdziet mikrofonu arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Izslēgt mikrofonu</translation>
 <translation id="4570913071927164677">Detalizēta informācija</translation>
+<translation id="4578289292431526768">Sākt</translation>
 <translation id="4598549027014564149">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības vietnēs, pat saistītajās vietnēs. Jūsu pārlūkošanas darbības netiek izmantotas, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="461356340001513807">Ļauj jums pierakstīties vietnēs, izmantojot kontu, kuram darbojas identitātes pakalpojums.</translation>
 <translation id="4635969503923889910">Neļaut vietnēm izmantot NFC ierīces</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Vietnēs var lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
 <translation id="6320088164292336938">Vibrācija</translation>
-<translation id="6344622098450209924">Izsekošanas aizsardzība</translation>
 <translation id="6367753977865761591">Trešās puses pierakstīšanās bloķēšana konkrētā vietnē</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
 <translation id="640163077447496506">Derīguma termiņš beidzas šodien</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Commencez quelque chose de nouveau ou obtenez de l'aide tout en restant concentré.</translation>
 <translation id="1054048317165655285">Terminer la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
+<translation id="1054187194995068149">Bonjour. Ceci est un aperçu</translation>
 <translation id="1054502481659725522">Les applis, les sites Web et les services système peuvent utiliser votre position</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici 1 semaine}one{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}other{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaines}}</translation>
 <translation id="1055606969515662982">Utilisez la télécommande pour arrêter la diffusion</translation>
@@ -457,7 +458,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1301135395320604080"><ph name="ORIGIN" /> peut modifier les fichiers suivants</translation>
 <translation id="130174306655812048">Dis par exemple : « Ok Google, quelle est cette chanson? »</translation>
 <translation id="1302227299132585524">Autoriser JavaScript à partir des Événements Apple</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> groupe - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Fichier HTML de favoris</translation>
 <translation id="1303671224831497365">Aucun appareil Bluetooth trouvé</translation>
 <translation id="130491383855577612">Les applications et les fichiers Linux ont été remplacés</translation>
@@ -539,7 +539,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1362829980946830670">Vous pouvez reprendre votre session précédente pendant que votre session actuelle est toujours active.</translation>
 <translation id="1362865166188278099">Problème mécanique. Vérifiez l'imprimante</translation>
 <translation id="1363585519747660921">L'imprimante USB doit être configurée</translation>
-<translation id="1363772878823415675">Accorder à <ph name="SPECIFIC_NAME" /> l'autorisation d'accéder aux appareils USB.</translation>
 <translation id="136378536198524553">L'économiseur d'énergie est activé</translation>
 <translation id="136522805455656552">Pour assurer la sécurité de votre appareil, vous ne devez exécuter et installer que des logiciels provenant de sources et de développeurs fiables. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Levez les sourcils</translation>
@@ -2560,6 +2559,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2743301740238894839">Démarrer</translation>
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="274362947316498129">Une application tente d'accéder à <ph name="DEVICE_NAME" />. Désactivez le commutateur de confidentialité de <ph name="DEVICE_NAME" /> pour autoriser l'accès.</translation>
+<translation id="2744221223678373668">Partagé</translation>
 <translation id="2745080116229976798">Subordination qualifiée de Microsoft</translation>
 <translation id="2749756011735116528">Se connecter à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Carte SIM</translation>
@@ -4547,6 +4547,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4139326893730851150">Mises à jour du micrologiciel</translation>
 <translation id="4142052906269098341">Déverrouillez votre <ph name="DEVICE_TYPE" /> avec votre téléphone. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Découvrez comment l'IA façonne votre expérience et faites des choix éclairés concernant votre vie privée.</translation>
+<translation id="4143754025452944766">Vous pouvez également choisir de retirer les extensions de compte de cet appareil.</translation>
 <translation id="4146026355784316281">Toujours ouvrir avec System Viewer</translation>
 <translation id="4146785383423576110">Réinitialiser et nettoyer</translation>
 <translation id="4147099377280085053">Sélectionnez un tableau Braille</translation>
@@ -5847,9 +5848,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5087864757604726239">précédent</translation>
 <translation id="5088427648965532275">Fournisseur Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 avec chiffrement RSA</translation>
-<translation id="5089763948477033443">Poignée de redimensionnement du panneau latéral</translation>
 <translation id="5090637338841444533">Non autorisés à suivre la position de votre caméra</translation>
-<translation id="5090981554736747495">Accorder aux applis Linux l'autorisation d'accéder à des appareils USB.</translation>
 <translation id="5091636240353511739">Afficher le NIP</translation>
 <translation id="5093477827231450397">Liste des sites bloqués pour ne pas qu'ils suggèrent des annonces à d'autres sites</translation>
 <translation id="5093569275467863761">Sous-cadre de navigation privée de la mise en cache complète bidirectionnelle : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6560,7 +6559,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
 <translation id="560834977503641186">Synchronisation Wi-Fi, en savoir plus</translation>
 <translation id="5608580678041221894">Touchez les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
-<translation id="560919433407466404">Accorder à Parallels Desktop l'autorisation d'accéder aux appareils USB.</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
 <translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes proposés ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
@@ -8637,7 +8635,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7109543803214225826">Raccourci supprimé</translation>
 <translation id="7110388475787189534">Découvrez comment organiser automatiquement vos onglets</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Ajouter un onglet au groupe}one{Ajouter un onglet au groupe}other{Ajouter des onglets au groupe}}</translation>
-<translation id="7110684627876015299">Groupe sans nom - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Nommer cette fenêtre</translation>
 <translation id="7113502843173351041">Afficher l'adresse de courriel</translation>
 <translation id="7113974454301513811">Maintenant, ajoutez l'onglet actuel à votre liste</translation>
@@ -9009,7 +9006,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7387107590792462040">Veuillez patienter pendant que l'installation est en cours</translation>
 <translation id="7387273928653486359">Acceptable</translation>
 <translation id="7387951778417998929">Pour utiliser un moteur de recherche autre que celui par défaut, entrez son raccourci dans la barre d'adresse suivi de votre raccourci-clavier favori. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
-<translation id="7388209873137778229">Seuls les appareils pris en charge sont affichés.</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est désactivé.</translation>
 <translation id="738903649531469042">Ajouter l'onglet à la liste de lecture</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus</translation>
@@ -10690,7 +10686,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8553342806078037065">Gérer d'autres personnes</translation>
 <translation id="8554899698005018844">Aucune langue</translation>
 <translation id="8555444629041783356">Horaire de coucher du soleil automatique</translation>
-<translation id="855604308879080518">Laissez les applications Android accéder aux appareils USB sur ce Chromebook. Une autorisation sera demandée chaque fois que vous brancherez un appareil USB. Des autorisations supplémentaires seront demandées pour chaque application Android.</translation>
 <translation id="8557022314818157177">Continuez à toucher votre clé de sécurité jusqu'à ce que votre empreinte digitale soit capturée</translation>
 <translation id="8557100046150195444">Utilisez Touch ID pour continuer</translation>
 <translation id="8557856025359704738">Le prochain téléchargement est prévu à <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11401,7 +11396,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9036484080057916082">Liste d'estampille temporelle des certificats signés</translation>
 <translation id="9037054491984310631">Connecté à l'appareil Bluetooth <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">L'appareil n'est pas autorisé</translation>
-<translation id="9037706442425692248">Laissez les applications Android accéder aux appareils USB sur ce Chromebook</translation>
 <translation id="9037818663270399707">Votre connexion n'est pas privée pour tout le trafic réseau</translation>
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
 <translation id="9038489124413477075">Dossier sans nom</translation>

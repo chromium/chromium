@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Start something new or get help in the flow.</translation>
 <translation id="1054048317165655285">Complete setup on your phone</translation>
 <translation id="1054153489933238809">Open Original &amp;Image in New Tab</translation>
+<translation id="1054187194995068149">Hi. This is a preview</translation>
 <translation id="1054502481659725522">Apps, websites and system services can use your location</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
 <translation id="1055606969515662982">Use remote to stop casting</translation>
@@ -456,7 +457,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1301135395320604080"><ph name="ORIGIN" /> can edit the following files</translation>
 <translation id="130174306655812048">Try “Hey Google, what song is this?”</translation>
 <translation id="1302227299132585524">Allow JavaScript from Apple Events</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> group - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Bookmarks HTML File</translation>
 <translation id="1303671224831497365">No Bluetooth devices found</translation>
 <translation id="130491383855577612">Linux apps &amp; files have been successfully replaced</translation>
@@ -538,7 +538,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1362829980946830670">You can resume your previous session while your current session remains active.</translation>
 <translation id="1362865166188278099">Mechanical issue. Check printer</translation>
 <translation id="1363585519747660921">USB printer needs configuration</translation>
-<translation id="1363772878823415675">Give <ph name="SPECIFIC_NAME" /> permission to access USB devices.</translation>
 <translation id="136378536198524553">Energy saver is on</translation>
 <translation id="136522805455656552">To keep your device secure, you should only run and install software from trusted sources and developers. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Raise eyebrows</translation>
@@ -2571,6 +2570,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="274362947316498129">An app is trying to access <ph name="DEVICE_NAME" />. Turn off <ph name="DEVICE_NAME" /> privacy switch to allow access.</translation>
+<translation id="2744221223678373668">Shared</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Sign in to <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5858,9 +5858,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5087864757604726239">back</translation>
 <translation id="5088427648965532275">Passpoint provider</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
-<translation id="5089763948477033443">Side panel resize handle</translation>
 <translation id="5090637338841444533">Not allowed to track your camera position</translation>
-<translation id="5090981554736747495">Give Linux apps permission to access USB devices.</translation>
 <translation id="5091636240353511739">Show PIN</translation>
 <translation id="5093477827231450397">List of sites that you blocked that you don't want suggesting ads to other sites</translation>
 <translation id="5093569275467863761">Incognito back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6572,7 +6570,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
-<translation id="560919433407466404">Give Parallels Desktop permission to access USB devices.</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
@@ -8648,7 +8645,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7109543803214225826">Shortcut removed</translation>
 <translation id="7110388475787189534">Learn how to automatically organise your tabs</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
-<translation id="7110684627876015299">Unnamed group – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Name this window</translation>
 <translation id="7113502843173351041">Know your email address</translation>
 <translation id="7113974454301513811">Now add the current tab to your list</translation>
@@ -9020,7 +9016,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7387107590792462040">Please wait while verification is in progress</translation>
 <translation id="7387273928653486359">Acceptable</translation>
 <translation id="7387951778417998929">To use a search engine other than the default, type its shortcut in the address bar followed by your preferred keyboard shortcut. You can also change your default search engine here.</translation>
-<translation id="7388209873137778229">Only supported devices are shown.</translation>
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
 <translation id="738903649531469042">Add tab to reading list</translation>
 <translation id="7392118418926456391">Virus scan failed</translation>
@@ -10702,7 +10697,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8553342806078037065">Manage other people</translation>
 <translation id="8554899698005018844">No language</translation>
 <translation id="8555444629041783356">Automatic sunset schedule</translation>
-<translation id="855604308879080518">Let Android apps access USB devices on this Chromebook. Permission will be requested each time that you plug in a USB device. Individual Android apps will ask for additional permissions.</translation>
 <translation id="8557022314818157177">Keep touching your security key until your fingerprint is captured</translation>
 <translation id="8557100046150195444">Touch ID to continue</translation>
 <translation id="8557856025359704738">Next download is at <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11413,7 +11407,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9036484080057916082">Signed Certificate Timestamp List</translation>
 <translation id="9037054491984310631">Connected to Bluetooth device named <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Device is not allowed</translation>
-<translation id="9037706442425692248">Let Android apps access USB devices on this Chromebook.</translation>
 <translation id="9037818663270399707">Your connection is not private for all network traffic</translation>
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9038489124413477075">Unnamed Folder</translation>

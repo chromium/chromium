@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspjelo</translation>
 <translation id="1061864016440983342">Koristi bez lokacije</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> od <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">prekrasna svemirska maglica galaksije s brzim futurističkim svemirskim brodom, plavim, ružičastim i ljubičastim nijansama</translation>
 <translation id="1069150558259542054">Brzo umetanje ne može se upotrebljavati za prilagođene prečace.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Preuzimanje čuvara zaslona</translation>
 <translation id="1094693127011229778">IP adresa nije dostupna</translation>
 <translation id="1100902271996134409">Izrada slika...</translation>
+<translation id="1102946598597843031">fotografija mjeseca iznad jezera s padajućim listovima trešnje u cvatu, 4k</translation>
 <translation id="1107856713690040084">Zvuk na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">O opcijama</translation>
 <translation id="1118572504348554005">Povratne informacije poslane putem ovog obrasca možemo podijeliti s našim partnerima radi rješavanja programskih pogrešaka i drugih problema koje nam prijavite. Ne navodite osjetljive podatke kao što su zaporke.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Poništite postavke da biste drugim korisnicima spriječili pristup podacima. Koristite samo načine unosa koje smatrate pouzdanima.</translation>
 <translation id="1238612778414822719">Latencija HTTPS-a</translation>
 <translation id="1252766349417594414">Igraća palica</translation>
+<translation id="1261045951892393759">mačka s gitarom u obliku slova v jaše jednoroga, a u pozadini je munja</translation>
 <translation id="1270369111467284986">Moguć zaštitni portal</translation>
 <translation id="1274654146705270731">naranče</translation>
 <translation id="1275718070701477396">Odabrano</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">pribor za jelo</translation>
 <translation id="2047316797244836561">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali čuvar zaslona.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">3D renderiranje kromiranih sfera i oblika sfera na pozadini kromiranih arhitektonskih elemenata. Kompozicija je moderan minimalistički koncept za oglašavanje, brendiranje ili prezentaciju s prostorom za tekst. Veliki luk postavljen ispred apstraktne pozadine u stilu minimalizma. Studijsko osvjetljenje. Krupni plan.</translation>
 <translation id="2073232437457681324">nepregledna oceana</translation>
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2082932131694554252">Dodijeljena tipka tipkovnice</translation>
@@ -430,6 +434,7 @@
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Povezivanje s internetom nije uspjelo. Kliknite da biste pokušali ponovo.</translation>
 <translation id="2855718259207180827">vune</translation>
+<translation id="2856429654176718363">Veliki svemirski brod lebdi iznad grada koji osvjetljavaju mnogobrojna svjetla. Cijeli je prizor u stilu slike uljanim bojama u tamnim tonovima. Stvara tajanstvenu atmosferu s futurističkim elementima znanstvene fantastike. Ovaj je plakat izrađen pomoću softvera C4D i OC renderera kako bi se istaknula visoka razlučivost i sitni detalji. U blizini su se nalazile i neke urbane zgrade, što je dodalo dubinu efekta polja. Prizor je renderiran u stilu slike uljanim bojama, s tamnim tonovima i misterioznom atmosferom s futurističkim elementima znanstvene fantastike.</translation>
 <translation id="2859243502336719778">Kritično ažuriranje</translation>
 <translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
 <translation id="286265581261662583">Kliknite desnom tipkom ili pritisnite i zadržite da biste dobili definicije, prijevode ili pretvorbe jedinica</translation>
@@ -446,9 +451,11 @@
 <translation id="2895772081848316509">tamno</translation>
 <translation id="2915996080311180594">Ponovo pokreni kasnije</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
+<translation id="2927007463545347013">anime staza s pogledom na ocean i padajućim cvjetovima trešnje</translation>
 <translation id="2940811910881150316">Testiranje uređaja nije uspjelo. Ponovo otvorite poklopac da biste testirali.</translation>
 <translation id="2941112035454246133">Nizak</translation>
 <translation id="2956070106555335453">Sažetak</translation>
+<translation id="2968959705684615497">nadrealni bijeli tigar sa zlatnim očima i zlatnim prugama koji sjedi na bijeloj pješčanoj dini</translation>
 <translation id="299385721391037602">ružičaste i žute</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
@@ -518,6 +525,7 @@
 <translation id="3321030238473337787">Brzina reprodukcije</translation>
 <translation id="3327613592010997943">Ovaj uređaj moći ćete ponovo upotrebljavati <ph name="DAY" /> u <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test se izvodi</translation>
+<translation id="3332683265015995419">steampunk svemirski brod koji leti kroz pješčanu oluju</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za desnu slušalicu.</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3347558044552027859">moderno</translation>
@@ -529,6 +537,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Pozadina sa Zemljom</translation>
 <translation id="33736539805963175">Pozadina: <ph name="LETTERS_COLOR" /> sa slovom <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> pregledava vaš zaslon</translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogućivanje čuvara zaslona</translation>
 <translation id="3413935475507503304">Da biste nastavili s ažuriranjem, kliknite Dalje.</translation>
@@ -561,6 +570,7 @@
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3533790840489634638">bazen</translation>
 <translation id="3547264467365135390">Formula</translation>
+<translation id="3552832331940389362">japanska animacija ilustracije mačke koja sjedi na prozorskoj dasci i promatra kišu poslijepodne</translation>
 <translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dopušteni IP-jevi</translation>
 <translation id="3569407787324516067">Čuvar zaslona</translation>
@@ -636,6 +646,7 @@
 <translation id="38811596981744338">Pravni problem</translation>
 <translation id="3885327323343477505">Promijeni čuvar zaslona</translation>
 <translation id="3889914174935857450">Poništi datum</translation>
+<translation id="3889954687526985291">futuristički motocikl izrađen od crnog papira s neonskim svjetlima na tamnoj pozadini</translation>
 <translation id="3897092660631435901">Izbornik</translation>
 <translation id="3902271751020176019">Jezik prijepisa</translation>
 <translation id="390890062090528082">nebo puno zvijezda</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4594021849294327751">Izradi prijepis</translation>
 <translation id="4594541568452132351">Odaberite jezik prijepisa i preuzmite model</translation>
+<translation id="4600301862817165514">Delorean s neonskim svjetlima vozi kroz galaksiju u kojoj se zvijezde brzo kreću</translation>
 <translation id="4609350030397390689">Smanjivanje svjetline tipkovnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="463791356324567266">Otkazivanje skeniranja...</translation>
@@ -982,6 +994,7 @@
 <translation id="5335373365677455232">ružičasta</translation>
 <translation id="5344619683981067131">Zamjena odabranog teksta prijedlogom</translation>
 <translation id="5346687412805619883">Lokalna mreža</translation>
+<translation id="5352672374624748928">krupni plan nekoliko bijelih i žutih cvjetova na ljubičastoj pozadini, nepomična slika iz animiranog filma, nježan blijedoružičasti cvijet s dugim laticama i zelena stabljika postavljena između dvaju velikih žutih tulipana na plavoj pozadini bez lišća ili krošnje u pastelnim bojama, filmski nepomični kadar s visokom razlučivošću i vrlo detaljnim složenim detaljima, octane renderiranje s prekrasnim osvjetljenjem, volumetrijsko svjetlo i sumorno svjetlo.</translation>
 <translation id="5358174242040570474">Nešto nije u redu. Ponovno odaberite pozadinu ili ponovno otvorite aplikaciju.</translation>
 <translation id="5368228070728130240">Preuzimanje modela za izradu sažetaka i naslova nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Wi-Fi mreža nije sigurna</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Boja tipkovnice temelji se na pozadini</translation>
 <translation id="5502931783115429516">Android se ne pokreće</translation>
 <translation id="550600468576850160">livade</translation>
+<translation id="5507504956167780539">minimalistička profesionalna fotografija sjajnih pješčanih dina s dramatičnim sjenama</translation>
 <translation id="551689408806449779">Uređaj nije povezan. Pokušajte se povezati ponovo da biste testirali</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Saznajte više o izradi sažetaka i naslova</translation>
@@ -1125,6 +1139,7 @@
 <translation id="6075872808778243331">(Android) Latencija HTTP-a</translation>
 <translation id="6078323886959318429">Dodajte prečac</translation>
 <translation id="6079693086494835199">Poništite postavke kako biste provjerili da zadana početna stranica nije web-lokacija za krađu identiteta. Upotrijebite samo web-lokacije koje smatrate pouzdanima.</translation>
+<translation id="6090672065638047175">fotografija sjajnog stabla sačinjenog od zvijezda s prekrasnim noćnim nebom i galaksijom u pozadini</translation>
 <translation id="6091080061796993741">žute boje</translation>
 <translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Za dovršetak unesite staru zaporku</translation>
@@ -1310,6 +1325,7 @@
 <translation id="6900701049656042631">Ovaj album ne sadrži nijednu fotografiju. Da biste dodali fotografije, posjetite <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Izrada pozadine pomoću AI-ja</translation>
 <translation id="6905163627763043954">Isprobaj</translation>
+<translation id="6905275015682612674">fotografija bioluminiscentne plaže u sumrak sa zvijezdama na nebu duge ekspozicije, lijepe pastelne boje, 4K</translation>
 <translation id="6905724422583748843">Natrag na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
 <translation id="6910845598686542904">izračunao modele glasova otkrivenih na snimci</translation>
@@ -1319,6 +1335,7 @@
 <translation id="6930597342185648547">O pozadini</translation>
 <translation id="6931666215260956151">galaksija</translation>
 <translation id="6939766318048400022">Kafić</translation>
+<translation id="6940212863873359282">komad bijele organze koji lebdi u sredini, iznad bijelog mramornog luka s krem pozadinom</translation>
 <translation id="6942253772720771875">Podijelite povratne informacije ili opišite svoj problem</translation>
 <translation id="6943893908656559156">Udaljeni identitet (nije obavezno)</translation>
 <translation id="694981048020558038">Pretražite naslov snimke</translation>
@@ -1405,6 +1422,7 @@
 <translation id="7271040990581020067">Skener se trenutačno upotrebljava. Pokušajte ponovo kasnije.</translation>
 <translation id="7271932918253517778">Prečac s tipkama iz gornjeg reda treba sadržavati tipku <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">dalmatiner ispred ružičaste pozadine u dinamičnoj pozi cijelog tijela, snimljen s pozadinom hiperrealistične fotografije visoke razlučivosti s obradom boja</translation>
 <translation id="7281657306185710294">Osjetite povjetarac</translation>
 <translation id="7287310195820267359">Zbirke pozadina</translation>
 <translation id="7293429513719260019">Odaberite jezik</translation>
@@ -1414,6 +1432,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pitajte stručnjake na Chromebookovom forumu za pomoć</translation>
+<translation id="7309823890857024809">minimalistička mrtva priroda s nekoliko stabljika maka u staklenoj vazi na crnoj pozadini</translation>
 <translation id="7311368985037279727">boja tipkovnice</translation>
 <translation id="7317831949569936035">Upis u školu</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1450,7 @@
 <translation id="7353413232959255829">Rezultat pretraživanja <ph name="LIST_POSITION" /> od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter da biste otvorili prečac.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="73631062356239394">Dijeljenje dijagnostičkih podataka</translation>
+<translation id="7369648056634183167">krupni plan isprepletenih lopoča prekrivenih rosom na kiši. Fokus je na nježnim laticama i kapljicama vode koje reflektiraju svjetlost, čime se ističu njihove nježne pastelne boje na plavoj pozadini. Snimljeno u razini očiju uz prirodno svjetlo</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Snimač može izrađivati prijepise za snimke s govorom.
 Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translation>
@@ -1681,6 +1701,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
 <translation id="8505011850330200833">Geminijev model zahtijeva 2 GB pohrane za obradu prijepisa i izradu sažetaka</translation>
+<translation id="8506063704538210734">fotografija noćnog neba s meteorskim pljuskom i nekoliko stabala u prednjem planu, s ljubičastim i ružičastim nijansama</translation>
 <translation id="8506394543220680287">prekriveno snijegom</translation>
 <translation id="8508640263392900755">Pojedinosti o APN-u</translation>
 <translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru zaslona<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

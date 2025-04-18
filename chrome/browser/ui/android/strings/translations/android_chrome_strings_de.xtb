@@ -767,7 +767,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4595805675102978678">Google-Kontofehler</translation>
 <translation id="4601095002996233687">Umfangreiche Scans nach verdächtigen Downloads.</translation>
 <translation id="4606559747793337066">Wenn eine Website oder App anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die Seiten und lädt sie ohne Cookies über Google-Server vorab. Dadurch wird deine Identität vor der vorab geladenen Website oder App verborgen.</translation>
-<translation id="4609429330876432068">Deine Listen mit gespeicherten Passwörtern für Chrome und <ph name="CHROME_CHANNEL" /> wurden zusammengeführt. Du kannst weiterhin alle deine gespeicherten Passwörter in beiden Apps automatisch ausfüllen lassen.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
@@ -1561,7 +1560,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Als Nächstes die Passwörter importieren</translation>
 <translation id="8015452622527143194">Gesamten Seiteninhalt auf Standardgröße zurücksetzen</translation>
-<translation id="8026238112629815203">Die Passwortspeicherung auf diesem Gerät wurde geändert</translation>
 <translation id="8027395186860110042">Deine Passwörter funktionieren möglicherweise bald nicht mehr</translation>
 <translation id="8027863900915310177">Speicherort auswählen</translation>
 <translation id="8030852056903932865">Genehmigen</translation>

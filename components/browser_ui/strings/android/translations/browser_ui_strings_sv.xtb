@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Om du vill ge <ph name="APP_NAME" /> åtkomst till mikrofonen måste du även aktivera mikrofonen i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
 <translation id="4570913071927164677">Information</translation>
+<translation id="4578289292431526768">Kom igång</translation>
 <translation id="4598549027014564149">I inkognitoläget kan webbplatser inte använda cookies för att se din webbaktivitet på olika webbplatser – inte ens relaterade webbplatser. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="461356340001513807">Låter dig logga in på webbplatser med kontot du har hos en identitetstjänst</translation>
 <translation id="4635969503923889910">Tillåt inte att webbplatser använder NFC-enheter</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6320088164292336938">Vibration</translation>
-<translation id="6344622098450209924">Spårningsskydd</translation>
 <translation id="6367753977865761591">Blockera tredjepartsinloggning på en viss webbplats.</translation>
 <translation id="6398765197997659313">Avsluta helskärmsläge</translation>
 <translation id="640163077447496506">Löper ut i dag</translation>

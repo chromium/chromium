@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">کچھ نیا شروع کریں یا فلو میں مدد حاصل کریں۔</translation>
 <translation id="1054048317165655285">اپنے فون پر سیٹ اپ مکمل کریں</translation>
 <translation id="1054153489933238809">اصل &amp;تصویر نئے ٹیب میں کھولیں</translation>
+<translation id="1054187194995068149">آداب. یہ ایک پیش منظر ہے</translation>
 <translation id="1054502481659725522">ایپس، ویب سائٹس اور سسٹم سروسز آپ کا مقام استعمال کر سکتی ہیں</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> 1 ہفتہ کے اندر اپ ڈیٹ کریں}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر اپ ڈیٹ کریں}}</translation>
 <translation id="1055606969515662982">کاسٹنگ روکنے کیلئے ریموٹ کا استعمال کریں</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> مندرجہ ذیل فائلز میں ترمیم کر سکتا ہے</translation>
 <translation id="130174306655812048">‏"Ok Google، یہ کون سا گانا ہے؟" آزمائیں</translation>
 <translation id="1302227299132585524">‏Apple ایونٹس سے JavaScript کی اجازت دیں</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> گروپ - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">‏بُک مارکس HTML فائل</translation>
 <translation id="1303671224831497365">کوئی بلوٹوتھ آلہ نہیں ملا</translation>
 <translation id="130491383855577612">‏Linux کی ایپس اور فائلز کامیابی کے ساتھ بحال ہو گئیں</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">جب آپ کا موجودہ سیشن فعال رہتا ہے تو آپ اپنا گزشتہ سیشن دوبارہ شروع کر سکتے ہیں۔</translation>
 <translation id="1362865166188278099">مکینیکل مسئلہ۔ پرنٹر چیک کریں</translation>
 <translation id="1363585519747660921">‏USB پرنٹر کو کنفیگریشن کی ضرورت ہے</translation>
-<translation id="1363772878823415675">‏<ph name="SPECIFIC_NAME" /> کو USB آلات تک رسائی کی اجازت دیں۔</translation>
 <translation id="136378536198524553">انرجی سیور آن ہے</translation>
 <translation id="136522805455656552">اپنے آلے کو محفوظ رکھنے کے لیے، آپ کو صرف قابل اعتماد ذرائع اور ڈویلپرز سے سافٹ ویئر چلانا اور انسٹال کرنا چاہیے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ابرو اٹھائیں</translation>
@@ -2560,6 +2559,7 @@
 <translation id="2743301740238894839">شروع کریں</translation>
 <translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="274362947316498129">ایک ایپ <ph name="DEVICE_NAME" /> تک رسائی حاصل کرنے کی کوشش کر رہی ہے۔ رسائی کی اجازت دینے کے لیے <ph name="DEVICE_NAME" /> رازداری کا سوئچ آف کریں۔</translation>
+<translation id="2744221223678373668">اشتراک کردہ</translation>
 <translation id="2745080116229976798">‏Microsoft کوالیفائڈ سب آرڈینیشن</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> میں سائن ان کریں</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5844,9 +5844,7 @@
 <translation id="5087864757604726239">پیچھے</translation>
 <translation id="5088427648965532275">پاس پوائنٹ فراہم کنندہ</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع RSA مرموز کاری</translation>
-<translation id="5089763948477033443">سائیڈ پینل کا سائز تبدیل کرنے کا ہینڈل</translation>
 <translation id="5090637338841444533">آپ کے کیمرا کی پوزیشن کو ٹریک کرنے کی اجازت نہیں ہے</translation>
-<translation id="5090981554736747495">‏‫Linux ایپس کو USB آلات تک رسائی کی اجازت دیں۔</translation>
 <translation id="5091636240353511739">‏‫PIN دکھائیں</translation>
 <translation id="5093477827231450397">آپ کی مسدود کردہ سائٹس کی فہرست جن سے آپ نہیں چاہتے ہیں کہ وہ دوسری سائٹس پر اشتہارات تجویز کرے</translation>
 <translation id="5093569275467863761">بیک/فارورڈ کیش کردہ پوشیدگی کا سب فریم: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6556,7 +6554,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن مسدود ہے}other{یہ ایکسٹینشنز مسدود ہیں}}</translation>
 <translation id="560834977503641186">‏Wi-Fi سِنک، مزید جانیں</translation>
 <translation id="5608580678041221894">تراشنے کے علاقہ کو ایڈجسٹ یا منتقل کرنے کیلئے درج ذیل کلیدوں کو تھپتھپائیں</translation>
-<translation id="560919433407466404">‏‫Parallels ڈیسک ٹاپ کو USB آلات تک رسائی کی اجازت دیں۔</translation>
 <translation id="5609231933459083978">ایپلیکیشن غلط معلوم پڑتی ہے۔</translation>
 <translation id="5610867721023328944">دوبارہ کوشش کریں یا ذیل میں دستیاب تھیمز میں سے کسی ایک کو منتخب کریں۔</translation>
 <translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
@@ -8631,7 +8628,6 @@
 <translation id="7109543803214225826">شارٹ کٹ ہٹا دیا گیا</translation>
 <translation id="7110388475787189534">اپنے ٹیز کو خودکار طور پر منظم کرنے کا طریقہ جانیں</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
-<translation id="7110684627876015299">بغیر نام کے گروپ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">اس ونڈو کو نام دیں</translation>
 <translation id="7113502843173351041">اپنا ای میل پتہ جانیں</translation>
 <translation id="7113974454301513811">اب موجودہ ٹیب کو اپنی فہرست میں شامل کریں</translation>
@@ -9003,7 +8999,6 @@
 <translation id="7387107590792462040">انسٹالیشن کے پیش رفت میں ہونے کے دوران براہ کرم انتظار کریں</translation>
 <translation id="7387273928653486359">قابل قبول</translation>
 <translation id="7387951778417998929">ڈیفالٹ کے علاوہ سرچ انجن کا استعمال کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں اس کے بعد اپنا پسندیدہ کی بورڈ شارٹ کٹ۔ آپ اپنے ڈیفالٹ سرچ انجن کو یہاں تبدیل بھی کر سکتے ہیں۔</translation>
-<translation id="7388209873137778229">صرف تعاون یافتہ آلات دکھائے جاتے ہیں۔</translation>
 <translation id="7388615499319468910">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آف ہے۔</translation>
 <translation id="738903649531469042">پڑھنے کی فہرست میں ٹیب شامل کریں</translation>
 <translation id="7392118418926456391">وائرس اسکین کرنا ناکام ہوگیا</translation>
@@ -10684,7 +10679,6 @@
 <translation id="8553342806078037065">دوسرے لوگوں کا نظم کریں</translation>
 <translation id="8554899698005018844">کوئی زبان نہیں</translation>
 <translation id="8555444629041783356">غروب آفتاب کا خودکار شیڈول</translation>
-<translation id="855604308879080518">‏Android ایپس کو اس Chromebook پر USB آلات تک رسائی دینے دیں۔ ہر بار جب آپ USB آلہ کو پلگ ان کریں گے تو اجازت کی درخواست کی جائے گی۔ انفرادی Android ایپس اضافی اجازتیں طلب کریں گی۔</translation>
 <translation id="8557022314818157177">آپ کے فنگر پرنٹ کیپچر ہو جانے تک اپنی سیکیورٹی کلید کو ٹچ کرتے رہیں</translation>
 <translation id="8557100046150195444">‏جاری رکھنے کے لیے ٹچ ID</translation>
 <translation id="8557856025359704738">اگلا ڈاؤن لوڈ <ph name="NEXT_DATE_DOWNLOAD" /> کو ہے۔</translation>
@@ -11395,7 +11389,6 @@
 <translation id="9036484080057916082">سائن کردہ سرٹیفیکیٹ کی ٹائم سٹیمپ کی فہرست</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> نام والے بلوٹوتھ آلے سے منسلک کیا گیا</translation>
 <translation id="9037640663275993951">‏اس آلے پر VM چلانے کی اجازت نہیں ہے</translation>
-<translation id="9037706442425692248">‏Android ایپس کو اس Chromebook پر USB آلات تک رسائی دینے کی اجازت دیں</translation>
 <translation id="9037818663270399707">آپ کا کنکشن تمام نیٹ ورک ٹریفک کیلئے نجی نہیں ہے</translation>
 <translation id="9037965129289936994">اصل دکھائیں</translation>
 <translation id="9038489124413477075">بغیر نام والا فولڈر</translation>

@@ -285,6 +285,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> uygulamasının mikrofonunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da mikrofonu açın.</translation>
 <translation id="4566417217121906555">Mikrofonun sesini kapat</translation>
 <translation id="4570913071927164677">Ayrıntılar</translation>
+<translation id="4578289292431526768">Başlayalım</translation>
 <translation id="4598549027014564149">Gizli moddayken siteler, alakalı siteler de dahil olmak üzere farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="461356340001513807">Bir kimlik hizmetindeki hesabınızı kullanarak web sitelerinde oturum açmanızı sağlar</translation>
 <translation id="4635969503923889910">Sitelerin, NFC cihazlarını kullanmasına izin verme</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Siteler bildirim gönderme izni isteyebilir</translation>
 <translation id="6295158916970320988">Tüm siteler</translation>
 <translation id="6320088164292336938">Titreşim</translation>
-<translation id="6344622098450209924">İzlemeye Karşı Koruma</translation>
 <translation id="6367753977865761591">Belirli bir sitede üçüncü taraf oturum açmayı engelleyin.</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="640163077447496506">Süresi bugün dolacak</translation>

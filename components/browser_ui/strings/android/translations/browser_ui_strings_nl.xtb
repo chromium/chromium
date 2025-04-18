@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4578289292431526768">Aan de slag</translation>
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="461356340001513807">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
 <translation id="4635969503923889910">Niet toestaan dat sites NFC-apparaten gebruiken</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Sites kunnen vragen of ze je meldingen mogen sturen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6320088164292336938">Trillen</translation>
-<translation id="6344622098450209924">Trackingbeveiliging</translation>
 <translation id="6367753977865761591">Externe login blokkeren voor een specifieke site.</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
 <translation id="640163077447496506">Verloopt vandaag</translation>

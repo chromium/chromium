@@ -767,7 +767,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4595805675102978678">Chyba účtu Google</translation>
 <translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4606559747793337066">Když web nebo aplikace požádá o soukromé předběžné načtení odkazů na stránce, Chrome stránky zašifruje a předběžně načte prostřednictvím serverů Google bez souborů cookie. To před předběžně načítaným webem skryje vaši identitu.</translation>
-<translation id="4609429330876432068">Vaše seznamy uložených hesel pro Chrome a <ph name="CHROME_CHANNEL" /> byly sloučeny. V obou aplikacích můžete stále automaticky vyplňovat všechna uložená hesla.</translation>
 <translation id="4616150815774728855">Do aplikace <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Ověřte svoji totožnost</translation>
 <translation id="4624065194742029982">Anonymní režim prohlížeče Chrome</translation>
@@ -1561,7 +1560,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8014210850410408071">V dalším kroku hesla importujte</translation>
 <translation id="8015452622527143194">Vrátit veškerý obsah stránky na původní velikost</translation>
-<translation id="8026238112629815203">Změnili jsme způsob ukládání hesel na tomto zařízení</translation>
 <translation id="8027395186860110042">Hesla mohou brzy přestat fungovat</translation>
 <translation id="8027863900915310177">Vyberte cíl stahování</translation>
 <translation id="8030852056903932865">Schválit</translation>

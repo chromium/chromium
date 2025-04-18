@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Copia immagine</translation>
 <translation id="1612754831519568745">Navigazione sicura è attualmente disattivata. Ricevi protezione da estensioni, download e siti pericolosi.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
-<translation id="1622195983844804153">I dati di navigazione esistenti non verranno spostati nel tuo account aziendale. Puoi comunque accedervi disconnettendoti o aggiungendo un account personale.</translation>
 <translation id="1622717322707146952">Seleziona l'opzione "Aggiungi a Google Calendar" o "Aggiungi a Calendario Apple".</translation>
 <translation id="1629162218487290695">Verifica la tua identità…</translation>
 <translation id="1636234353664774105">Usa la funzionalità di navigazione per ricevere indicazioni stradali passo passo per raggiungere la tua destinazione</translation>
@@ -665,6 +664,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostra URL completo</translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
+<translation id="3878657761594430423">Pinza per fogli</translation>
 <translation id="3885587018298784481">Unisciti a un gruppo Famiglia</translation>
 <translation id="3888863481921783344">Ti verranno mostrati i possibili invitati al tuo evento.</translation>
 <translation id="3891414008432200754">Prezzo</translation>
@@ -705,6 +705,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4004204301268239848">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo.</translation>
 <translation id="4011489366247192265">Da</translation>
+<translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Compilazione automatica delle password salvate</translation>
 <translation id="4021447724486050609">Aggiorna il browser</translation>
 <translation id="4021931095789478915">Aggiungi ${url} all'elenco di lettura</translation>
@@ -743,6 +744,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4164514562270305824">Eliminazione automatica dei download</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> che termina con <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Non consentire</translation>
+<translation id="417138788035229076">Gestisci gruppo</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="417273154673973994">{count,plural, =1{1 gruppo di schede chiuso e salvato}other{{count} gruppi di schede chiusi e salvati}}</translation>
 <translation id="417612446554534067">Invia ai tuoi dispositivi</translation>
@@ -910,6 +912,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4860895144060829044">Chiama</translation>
 <translation id="4861953997778766866">Tutti possono apportare modifiche ai tuoi gruppi di schede condivisi</translation>
 <translation id="4865063548323785458">Salva e compila automaticamente le password per accedere facilmente a siti e app</translation>
+<translation id="4867608294647017606">Rimuovi immagine dalla ricerca</translation>
 <translation id="4869146460927742717">Posizione barra degli indirizzi</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
 <translation id="4872664437015695612">Apri in Download</translation>
@@ -1202,6 +1205,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6074656473835429958">Ricevi notifiche</translation>
 <translation id="607620096698446287">Impossibile caricare <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Accesso alla fotocamera consentito</translation>
+<translation id="6078236141387574983">Modifica l'altezza del foglio</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
 <translation id="6089212833343035912">PIN del Gestore delle password di Google</translation>
 <translation id="6090760257419195752">Avvisi ignorati</translation>
@@ -1218,6 +1222,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6140600850356225166">Chiedi di aprire link da altre app in incognito</translation>
 <translation id="6140948187512243695">Mostra dettagli</translation>
 <translation id="6144589619057374135">Apri ${url} in incognito</translation>
+<translation id="6145820728009071857">Mostra modalità Reader</translation>
 <translation id="6147279996212084542">Spiega</translation>
 <translation id="6151006591088192882">Sblocca le schede di navigazione in incognito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inattive</translation>
@@ -1315,7 +1320,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="647867789226964031">Cambia le password</translation>
 <translation id="6494931198667773526">Fine</translation>
-<translation id="6495521251906266731">Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo, ad esempio password, cronologia e altro ancora.</translation>
 <translation id="6503077044568424649">Più visitati</translation>
 <translation id="6503763061813913607">Notifiche del controllo di sicurezza</translation>
 <translation id="6505334220040167806">Comprimi il gruppo di schede.</translation>
@@ -1598,6 +1602,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7669493687462784703">Vuoi continuare a scaricare un profilo di configurazione da <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Puoi scorrere verso sinistra per navigare in incognito.</translation>
 <translation id="7679915578945954324">Indirizzi dei siti copiati</translation>
+<translation id="7695953765525234038">Barra di ricerca</translation>
 <translation id="7696316012653762532">Opzioni per tradurre la pagina</translation>
 <translation id="7700527812567437847">Cerca sullo schermo con Google Lens</translation>
 <translation id="7701040980221191251">Nessun dato</translation>

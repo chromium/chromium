@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Comença alguna cosa nova o obtén ajuda durant el procés.</translation>
 <translation id="1054048317165655285">Completa la configuració al telèfon</translation>
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
+<translation id="1054187194995068149">Hola, això és una mostra</translation>
 <translation id="1054502481659725522">Les aplicacions, els llocs web i els serveis del sistema poden utilitzar la teva ubicació</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini d'1 setmana}other{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_WEEKS} setmanes}}</translation>
 <translation id="1055606969515662982">Utilitza el comandament per aturar l'emissió</translation>
@@ -456,7 +457,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pot editar els fitxers següents</translation>
 <translation id="130174306655812048">Prova de dir "Hey Google, quina és aquesta cançó?"</translation>
 <translation id="1302227299132585524">Permet JavaScript des d'Apple Events</translation>
-<translation id="1302654693270046655">Grup <ph name="GROUP_NAME" /> (<ph name="OPENED_STATE" />)</translation>
 <translation id="1303101771013849280">Fitxer HTML d'adreces d'interès</translation>
 <translation id="1303671224831497365">No s'ha trobat cap dispositiu Bluetooth</translation>
 <translation id="130491383855577612">Els fitxers i les aplicacions de Linux s'han substituït correctament</translation>
@@ -538,7 +538,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1362829980946830670">Pots reprendre la teva sessió anterior mentre l'actual continua activa.</translation>
 <translation id="1362865166188278099">Problema mecànic. Comprova la impressora.</translation>
 <translation id="1363585519747660921">La impressora USB s'ha de configurar</translation>
-<translation id="1363772878823415675">Dona permís a <ph name="SPECIFIC_NAME" /> per accedir als dispositius USB.</translation>
 <translation id="136378536198524553">L'estalvi d'energia està activat</translation>
 <translation id="136522805455656552">Per protegir el dispositiu, et recomanem que només executis i instal·lis programari de fonts i desenvolupadors de confiança. <ph name="LEARN_MORE" />.</translation>
 <translation id="1365650529628379165">Aixecar les celles</translation>
@@ -2558,6 +2557,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2743301740238894839">Inicia</translation>
 <translation id="2743387203779672305">Copia al porta-retalls</translation>
 <translation id="274362947316498129">Una aplicació està provant d'accedir a <ph name="DEVICE_NAME" />. Desactiva l'interruptor de privadesa de <ph name="DEVICE_NAME" /> per permetre l'accés.</translation>
+<translation id="2744221223678373668">Compartides</translation>
 <translation id="2745080116229976798">Subordinació qualificada de Microsoft</translation>
 <translation id="2749756011735116528">Inicia la sessió a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5841,9 +5841,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5087864757604726239">enrere</translation>
 <translation id="5088427648965532275">Proveïdor de Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 amb encriptació RSA</translation>
-<translation id="5089763948477033443">Ansa de canvi de mida del tauler lateral</translation>
 <translation id="5090637338841444533">Sense permís per fer un seguiment de la posició de la càmera</translation>
-<translation id="5090981554736747495">Dona permís a les aplicacions de Linux per accedir als dispositius USB.</translation>
 <translation id="5091636240353511739">Mostra el PIN</translation>
 <translation id="5093477827231450397">Llista de llocs web que has bloquejat i que no vols que suggereixin anuncis a altres llocs web</translation>
 <translation id="5093569275467863761">Submarc d'incògnit desat a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6555,7 +6553,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Aquesta extensió està bloquejada}other{Aquestes extensions estan bloquejades}}</translation>
 <translation id="560834977503641186">Sincronització Wi‑Fi, més informació</translation>
 <translation id="5608580678041221894">Toca aquestes tecles per ajustar o moure l'àrea que vols retallar</translation>
-<translation id="560919433407466404">Dona permís a Parallels Desktop per accedir als dispositius USB.</translation>
 <translation id="5609231933459083978">Sembla que l'aplicació no és vàlida.</translation>
 <translation id="5610867721023328944">Torna-ho a provar o selecciona un dels temes disponibles més avall.</translation>
 <translation id="5611398002774823980">Desa al compte</translation>
@@ -8629,7 +8626,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7109543803214225826">S'ha suprimit la drecera</translation>
 <translation id="7110388475787189534">Informació sobre com pots fer que les pestanyes s'organitzin automàticament</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
-<translation id="7110684627876015299">Grup sense nom (<ph name="OPENED_STATE" />)</translation>
 <translation id="7111822978084196600">Anomena aquesta finestra</translation>
 <translation id="7113502843173351041">Saber l'adreça electrònica</translation>
 <translation id="7113974454301513811">Ara afegeix la pestanya actual a la llista</translation>
@@ -9001,7 +8997,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7387107590792462040">Espera mentre la instal·lació està en curs</translation>
 <translation id="7387273928653486359">Acceptable</translation>
 <translation id="7387951778417998929">Per utilitzar un motor de cerca diferent del predeterminat, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis. També pots canviar el motor de cerca predeterminat aquí.</translation>
-<translation id="7388209873137778229">Només es mostren els dispositius compatibles.</translation>
 <translation id="7388615499319468910">Els llocs web i els anunciants poden entendre el rendiment dels anuncis. Aquesta opció de configuració està desactivada.</translation>
 <translation id="738903649531469042">Afegeix una pestanya a la llista de lectura</translation>
 <translation id="7392118418926456391">Hi ha hagut un error en l'anàlisi antivirus</translation>
@@ -10684,7 +10679,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8553342806078037065">Gestiona altres usuaris</translation>
 <translation id="8554899698005018844">Cap idioma</translation>
 <translation id="8555444629041783356">Programació automàtica per a la posta de sol</translation>
-<translation id="855604308879080518">Permet que les aplicacions d'Android accedeixin als dispositius USB en aquest Chromebook. El permís se sol·licitarà cada cop que endollis un dispositiu USB. Cada aplicació d'Android demanarà permisos addicionals.</translation>
 <translation id="8557022314818157177">Continua tocant la clau de seguretat fins que es capturi l'empremta digital</translation>
 <translation id="8557100046150195444">Utilitza Touch ID per continuar</translation>
 <translation id="8557856025359704738">La baixada següent serà a les <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11395,7 +11389,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="9036484080057916082">Llista de marques de temps de certificats signats</translation>
 <translation id="9037054491984310631">Connectat a un dispositiu Bluetooth anomenat <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">El dispositiu no està permès</translation>
-<translation id="9037706442425692248">Permet que les aplicacions d'Android accedeixin als dispositius USB en aquest Chromebook</translation>
 <translation id="9037818663270399707">La teva connexió no és privada per a tot el trànsit de xarxa</translation>
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9038489124413477075">Carpeta sense nom</translation>

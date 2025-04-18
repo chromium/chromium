@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">ເງິນຝາກປະຢັດ</translation>
 <translation id="3103188521861412364">ຮຸ້ນ ແລະ ພັນທະບັດ</translation>
 <translation id="3103535543639438037">ປຽບທຽບຜະລິດຕະພັນທີ່ຄ້າຍຄືກັນຂ້າງກັນ</translation>
-<translation id="3103993932858740905">ເມື່ອທ່ານຈ່າຍເງິນແບບຜ່ອນຈ່າຍ, ລະບົບຈະຕື່ມໝາຍເລກບັດສະເໝືອນແບບໃຊ້ເທື່ອດຽວ. ເຊິ່ງໝາຍເລກນີ້ໃຊ້ສຳລັບການຊື້ເທື່ອນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="3105172416063519923">ລະ​ຫັດຊັບ​ສິນ​:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າ DNS ທີ່ປອດໄພ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ຖາດກາງ</translation>
@@ -1403,7 +1402,6 @@
 <translation id="3440783957068352691">ສີ່ຫຼ່ຽມ</translation>
 <translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3443504041532578451">ອັອບຕິຄອລດິສ (ຊາຕິນ)</translation>
-<translation id="344449859752187052">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
 <translation id="3447644283769633681">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມທັງໝົດ</translation>
 <translation id="3447661539832366887">ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​ນີ້​ປິດ​ເກມ​ໄດ​ໂນ​ເສົາ​ໄວ້.</translation>
 <translation id="3447884698081792621">ສະແດງໃບຮັບຮອງ (ທີ່ອອກໃຫ້ໂດຍ <ph name="ISSUER" />)</translation>
@@ -2713,7 +2711,6 @@
 <translation id="5691848789297492617">ເປີດບັດທີ່ບັນທຶກໄວ້ແບບເຕັມຄວາມສູງແລ້ວ.</translation>
 <translation id="5695542892312572833">ໃຊ້ Windows Hello ເພື່ອຢັ້ງຢືນ ແລະ ເຮັດສຳເລັດການຊື້ຂອງທ່ານບໍ?</translation>
 <translation id="5699628521141772782">ນົມ ແລະ ໄຂ່</translation>
-<translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
 <translation id="5701381305118179107">ໃຈກາງ</translation>
 <translation id="5707154300732650394">ສືບຕໍ່ບັນທຶກຂອງທ່ານ</translation>
 <translation id="57094364128775171">ແນະນຳລະຫັດຜ່ານທີ່ເດົາຍາກ…</translation>
@@ -2986,7 +2983,6 @@
 <translation id="6184868291074982484">Chrome ຈະຈຳກັດຄຸກກີ້ພາກສ່ວນທີສາມໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6190518157737269631">ຍົກເລີກບາງປຸ່ມຢູ່ແປ້ນພິມຂອງທ່ານ, ເຊັ່ນ: Esc</translation>
 <translation id="6194209731893739467">ເບິ່ງສິນຄ້າທີ່ທ່ານຕິດຕາມທັງໝົດຢູ່ບ່ອນນີ້</translation>
-<translation id="6195163219142236913">ຈຳກັດຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="6195371403461054755">ທໍ​ລະ​ນີ​ສາດ</translation>
 <translation id="6195418151868446719">ເຄື່ອງໃຊ້ໄຟຟ້າທົ່ວໄປ</translation>
 <translation id="6196640612572343990">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>

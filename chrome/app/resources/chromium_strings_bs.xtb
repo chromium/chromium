@@ -31,6 +31,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1356661055722410047">Novo! Možete prevesti i tekst i slike s ekrana</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1414495520565016063">Prijavili ste se u Chromium!</translation>
+<translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da podijelite prozor, dozvolite snimanje ekrana za Chromium u Postavkama sistema.</translation>
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
 <translation id="1497802159252041924">Greška prilikom instaliranja: <ph name="INSTALL_ERROR" /></translation>
@@ -165,6 +166,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB uređaju je pristupala jedna ili više ekstenzija za Chromium}=1{1 USB uređaju pristupa jedna ili više ekstenzija za Chromium}one{# USB uređaju pristupa jedna ili više ekstenzija za Chromium}few{# USB uređajima pristupa jedna ili više ekstenzija za Chromium}other{# USB uređaja pristupa jedna ili više ekstenzija za Chromium}}</translation>
 <translation id="3101560983689755071">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chromium automatski briše interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="3103660991484857065">Aplikacija za instaliranje nije uspjela dekompresirati arhivu. Ponovo preuzmite Chromium.</translation>
+<translation id="310459126943037700">Završavanje zadataka nije uspjelo.</translation>
 <translation id="3130323860337406239">Chromium koristi vaš mikrofon</translation>
 <translation id="3137969841538672700">Prevucite da pretražite</translation>
 <translation id="3144188012276422546">Kartica koristi dodatne resurse. Da poboljšate performanse, dozvolite Chromiumu da je deaktivira.</translation>
@@ -492,6 +494,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7686590090926151193">Chromium nije vaš zadani preglednik</translation>
 <translation id="7689606757190482937">Sinhronizirajte i personalizirajte Chromium na svim uređajima</translation>
 <translation id="7699779824407626136">Ažuriranje Chromiuma</translation>
+<translation id="7716950018788545737">Zadaci su dovršeni.</translation>
 <translation id="77283119132245232">Pruža usluge praćenja sistema za preglednik <ph name="BROWSER_NAME" />. Ako se ta usluga onemogući, praćenja performansi koje je kreirao preglednik neće uključivati događaje na nivou sistema kao što je promjena konteksta i događaji spremnosti Threada.</translation>
 <translation id="7745317241717453663">Na ovaj način će se podaci o pregledanju izbrisati s ovog uređaja. Za preuzimanje podataka kasnije prijavite se u Chromium kao korisnik <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Aplikacija za instaliranje nije uspjela kreirati privremeni direktorij. Provjerite imate li slobodnog prostora na disku kao i odobrenje da instalirate softver.</translation>

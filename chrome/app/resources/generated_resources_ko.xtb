@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">새로운 활동을 시작하거나 작업에서 도움을 받으세요</translation>
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
 <translation id="1054153489933238809">새 탭에서 원본 이미지 열기</translation>
+<translation id="1054187194995068149">안녕하세요. 미리보기입니다</translation>
 <translation id="1054502481659725522">앱, 웹사이트, 시스템 서비스에서 내 위치 정보를 사용할 수 있습니다.</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}other{{NUM_WEEKS}주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}}</translation>
 <translation id="1055606969515662982">전송을 중지하려면 리모컨을 사용합니다</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" />에서 다음 파일을 수정할 수 있습니다.</translation>
 <translation id="130174306655812048">“Hey Google, 이거 무슨 노래야?”라고 말해 보세요.</translation>
 <translation id="1302227299132585524">Apple Events의 자바스크립트 허용</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> 그룹 - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML 파일 북마크하기</translation>
 <translation id="1303671224831497365">블루투스 기기를 찾을 수 없습니다.</translation>
 <translation id="130491383855577612">Linux 앱 및 파일이 성공적으로 대체되었습니다.</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">현재 세션을 유지하면서 이전 세션을 재개할 수 있습니다.</translation>
 <translation id="1362865166188278099">기술 문제입니다. 프린터를 확인하세요.</translation>
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />에 USB 기기 액세스 권한을 부여합니다.</translation>
 <translation id="136378536198524553">에너지 절약 모드 사용 중</translation>
 <translation id="136522805455656552">기기를 안전하게 보호하려면 신뢰할 수 있는 출처 및 개발자의 소프트웨어만 실행하고 설치해야 합니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">눈썹 올리기</translation>
@@ -2573,6 +2572,7 @@
 <translation id="2743301740238894839">시작</translation>
 <translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="274362947316498129">앱에서 <ph name="DEVICE_NAME" /> 액세스를 시도합니다. 액세스를 허용하려면 <ph name="DEVICE_NAME" /> 개인 정보 보호 스위치를 끄세요.</translation>
+<translation id="2744221223678373668">공유</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />에 로그인</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5859,9 +5859,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5087864757604726239">뒤로</translation>
 <translation id="5088427648965532275">Passpoint 제공업체</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512(RSA 암호화 사용)</translation>
-<translation id="5089763948477033443">측면 패널 크기 조절 핸들</translation>
 <translation id="5090637338841444533">카메라 위치 추적이 허용되지 않음</translation>
-<translation id="5090981554736747495">Linux 앱에 USB 기기 액세스 권한을 부여합니다.</translation>
 <translation id="5091636240353511739">PIN 표시</translation>
 <translation id="5093477827231450397">다른 사이트 광고를 추천하지 않도록 차단한 사이트 목록</translation>
 <translation id="5093569275467863761">시크릿 모드 뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6573,7 +6571,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 차단됨}other{확장 프로그램이 차단됨}}</translation>
 <translation id="560834977503641186">Wi-Fi 동기화, 자세히 알아보기</translation>
 <translation id="5608580678041221894">다음 키를 탭하여 자르기 영역을 조정하거나 이동하세요.</translation>
-<translation id="560919433407466404">Parallels Desktop에 USB 기기 액세스 권한을 부여하세요.</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
 <translation id="5610867721023328944">다시 시도하거나 아래에서 사용 가능한 테마 중 하나를 선택하세요.</translation>
 <translation id="5611398002774823980">계정에 저장</translation>
@@ -8649,7 +8646,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7109543803214225826">바로가기 삭제됨</translation>
 <translation id="7110388475787189534">탭을 자동으로 정리하는 방법 알아보기</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
-<translation id="7110684627876015299">이름이 지정되지 않은 그룹 - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">창 이름 지정</translation>
 <translation id="7113502843173351041">이메일 주소 조회</translation>
 <translation id="7113974454301513811">이제 목록에 현재 탭을 추가합니다.</translation>
@@ -9021,7 +9017,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7387107590792462040">설치가 진행되는 동안 잠시 기다려 주세요</translation>
 <translation id="7387273928653486359">양호함</translation>
 <translation id="7387951778417998929">기본 검색엔진이 아닌 다른 검색엔진을 사용하려면 주소 표시줄에 사용할 검색엔진의 바로가기를 입력한 다음 원하는 단축키를 누르세요. 여기에서 기본 검색엔진을 변경할 수도 있습니다.</translation>
-<translation id="7388209873137778229">지원되는 기기만 표시됩니다.</translation>
 <translation id="7388615499319468910">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="738903649531469042">읽기 목록에 탭 추가</translation>
 <translation id="7392118418926456391">바이러스 검사 실패</translation>
@@ -10703,7 +10698,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
 <translation id="8554899698005018844">언어가 없음</translation>
 <translation id="8555444629041783356">자동 지원 종료 일정</translation>
-<translation id="855604308879080518">Android 앱이 Chromebook에 연결된 USB 기기에 액세스하도록 허용합니다. USB 기기를 삽입할 때마다 권한 요청이 표시됩니다. 추가 권한은 각 Android 앱에서 개별적으로 요청합니다.</translation>
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
 <translation id="8557100046150195444">Touch ID로 인증하여 계속</translation>
 <translation id="8557856025359704738">다음 다운로드 날짜는 <ph name="NEXT_DATE_DOWNLOAD" />입니다.</translation>
@@ -11414,7 +11408,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9036484080057916082">서명된 인증서 타임스탬프 목록</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> 블루투스 기기에 연결되었습니다</translation>
 <translation id="9037640663275993951">허용되지 않는 기기입니다.</translation>
-<translation id="9037706442425692248">Android 앱이 Chromebook에 연결된 USB 기기에 액세스하도록 허용합니다.</translation>
 <translation id="9037818663270399707">연결이 일부 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="9037965129289936994">원본 보기</translation>
 <translation id="9038489124413477075">이름이 없는 폴더</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Comece algo novo ou obtenha ajuda no processo.</translation>
 <translation id="1054048317165655285">Conclua a configuração no telemóvel</translation>
 <translation id="1054153489933238809">Abrir &amp;imagem original num Novo separador</translation>
+<translation id="1054187194995068149">Olá. Isto é uma pré-visualização</translation>
 <translation id="1054502481659725522">As apps, os Websites e os serviços do sistema podem usar a sua localização</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> dentro de 1 semana}other{Atualize o <ph name="DEVICE_TYPE" /> dentro de {NUM_WEEKS} semanas}}</translation>
 <translation id="1055606969515662982">Use o comando para parar de transmitir</translation>
@@ -456,7 +457,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pode editar os seguintes ficheiros</translation>
 <translation id="130174306655812048">Experimente "OK Google, que música é esta?"</translation>
 <translation id="1302227299132585524">Permitir JavaScript de eventos Apple</translation>
-<translation id="1302654693270046655">Grupo <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Ficheiro HTML de marcadores</translation>
 <translation id="1303671224831497365">Não foram encontrados dispositivos Bluetooth</translation>
 <translation id="130491383855577612">As aplicações e os ficheiros do Linux foram substituídos com êxito.</translation>
@@ -538,7 +538,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1362829980946830670">Pode retomar a sessão anterior enquanto a sessão atual permanece ativa.</translation>
 <translation id="1362865166188278099">Ocorreu um problema mecânico. Verifique a impressora.</translation>
 <translation id="1363585519747660921">É necessário configurar a impressora USB</translation>
-<translation id="1363772878823415675">Dê autorização ao <ph name="SPECIFIC_NAME" /> para aceder a dispositivos USB.</translation>
 <translation id="136378536198524553">A Poupança de energia está ativada</translation>
 <translation id="136522805455656552">Para manter o seu dispositivo seguro, só deve executar e instalar software de origens e programadores fidedignos. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Levantar as sobrancelhas</translation>
@@ -2558,6 +2557,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2743301740238894839">Iniciar</translation>
 <translation id="2743387203779672305">Copiar para a área de transferência</translation>
 <translation id="274362947316498129">Uma app está a tentar aceder à <ph name="DEVICE_NAME" />. Desative o interruptor de privacidade da <ph name="DEVICE_NAME" /> para permitir o acesso.</translation>
+<translation id="2744221223678373668">Partilhadas</translation>
 <translation id="2745080116229976798">Subordinação qualificada Microsoft</translation>
 <translation id="2749756011735116528">Iniciar sessão no <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4545,6 +4545,7 @@ Quer pará-lo?</translation>
 <translation id="4139326893730851150">Atualizações do firmware</translation>
 <translation id="4142052906269098341">Desbloqueie o dispositivo <ph name="DEVICE_TYPE" /> com o seu telemóvel. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Explore como a IA molda a sua experiência e tome decisões informadas sobre a sua privacidade</translation>
+<translation id="4143754025452944766">Também pode optar por remover as extensões da conta deste dispositivo.</translation>
 <translation id="4146026355784316281">Abrir sempre com o visualizador do sistema</translation>
 <translation id="4146785383423576110">Repor e limpar</translation>
 <translation id="4147099377280085053">Selecionar uma tabela de braille</translation>
@@ -5846,9 +5847,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5087864757604726239">anterior</translation>
 <translation id="5088427648965532275">Fornecedor do Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Com encriptação RSA</translation>
-<translation id="5089763948477033443">Indicador de redimensionamento do painel lateral</translation>
 <translation id="5090637338841444533">Sem autorização para monitorizar a posição da câmara</translation>
-<translation id="5090981554736747495">Dê às apps Linux autorização de acesso a dispositivos USB.</translation>
 <translation id="5091636240353511739">Mostrar PIN</translation>
 <translation id="5093477827231450397">Lista de sites bloqueados que não quer que sugiram anúncios para outros sites</translation>
 <translation id="5093569275467863761">Subframe de Navegação anónima na cache para a frente/para trás: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6560,7 +6559,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensão está bloqueada}other{Estas extensões estão bloqueadas}}</translation>
 <translation id="560834977503641186">Sync Wi-Fi, saiba mais</translation>
 <translation id="5608580678041221894">Toque nas teclas seguintes para ajustar ou mover a área de recorte</translation>
-<translation id="560919433407466404">Dê autorização ao Parallels Desktop para aceder a dispositivos USB.</translation>
 <translation id="5609231933459083978">A aplicação parece ser inválida.</translation>
 <translation id="5610867721023328944">Tente novamente ou selecione um dos temas disponíveis abaixo.</translation>
 <translation id="5611398002774823980">Guardar na conta</translation>
@@ -8637,7 +8635,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7109543803214225826">Atalho removido</translation>
 <translation id="7110388475787189534">Saiba como organizar automaticamente os seus separadores</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
-<translation id="7110684627876015299">Grupo sem nome – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Dê um nome a esta janela</translation>
 <translation id="7113502843173351041">Saber o seu endereço de email</translation>
 <translation id="7113974454301513811">Agora, adicione o separador atual à sua lista</translation>
@@ -9009,7 +9006,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7387107590792462040">Aguarde enquanto a instalação está em curso</translation>
 <translation id="7387273928653486359">Aceitável</translation>
 <translation id="7387951778417998929">Para utilizar outro motor de pesquisa que não seja o predefinido, introduza o respetivo atalho na barra de endereço, seguido do seu atalho de teclado favorito. Também pode alterar o seu motor de pesquisa predefinido aqui.</translation>
-<translation id="7388209873137778229">São apresentados apenas os dispositivos compatíveis.</translation>
 <translation id="7388615499319468910">Os sites e os anunciantes podem compreender o desempenho dos anúncios. Esta definição está desativada.</translation>
 <translation id="738903649531469042">Adicionar separador à Lista de leitura</translation>
 <translation id="7392118418926456391">Falha ao analisar vírus</translation>
@@ -10691,7 +10687,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8553342806078037065">Gerir outras pessoas</translation>
 <translation id="8554899698005018844">Nenhum idioma</translation>
 <translation id="8555444629041783356">Programação da descontinuação automática</translation>
-<translation id="855604308879080518">Permita que as apps Android acedam a dispositivos USB neste Chromebook. A autorização será pedida sempre que ligar um dispositivo USB. As apps Android individuais irão pedir autorizações adicionais.</translation>
 <translation id="8557022314818157177">Continue a tocar na chave de segurança até que a sua impressão digital seja capturada.</translation>
 <translation id="8557100046150195444">Touch ID para continuar</translation>
 <translation id="8557856025359704738">A próxima transferência é a <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11402,7 +11397,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9036484080057916082">Lista de data/hora do certificado assinado</translation>
 <translation id="9037054491984310631">Ligado a dispositivo Bluetooth denominado <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">O dispositivo não é permitido</translation>
-<translation id="9037706442425692248">Permita que as apps Android acedam a dispositivos USB neste Chromebook</translation>
 <translation id="9037818663270399707">A sua ligação não é privada para todo o tráfego de rede.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9038489124413477075">Pasta sem nome</translation>

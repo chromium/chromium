@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Begin met iets nieuws of krijg hulp bij het proces.</translation>
 <translation id="1054048317165655285">Voltooi het instellen op je telefoon</translation>
 <translation id="1054153489933238809">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
+<translation id="1054187194995068149">Hallo. Dit is een voorbeeld.</translation>
 <translation id="1054502481659725522">Apps, websites en systeemservices kunnen je locatie gebruiken</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> binnen 1 week}other{Update <ph name="DEVICE_TYPE" /> binnen {NUM_WEEKS} weken}}</translation>
 <translation id="1055606969515662982">Gebruik de afstandsbediening om het casten te stoppen</translation>
@@ -456,7 +457,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan de volgende bestanden bewerken</translation>
 <translation id="130174306655812048">Zeg 'Hey Google, welk nummer is dit?'</translation>
 <translation id="1302227299132585524">JavaScript vanuit Apple Events toestaan</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> groep - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML-bestand met bookmarks</translation>
 <translation id="1303671224831497365">Geen Bluetooth-apparaten gevonden</translation>
 <translation id="130491383855577612">Vervangen van Linux-apps en -bestanden is geslaagd</translation>
@@ -538,7 +538,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1362829980946830670">Je kunt je vorige sessie hervatten terwijl je huidige sessie actief blijft.</translation>
 <translation id="1362865166188278099">Mechanisch probleem. Controleer de printer.</translation>
 <translation id="1363585519747660921">USB-printer moet worden geconfigureerd</translation>
-<translation id="1363772878823415675">Geef <ph name="SPECIFIC_NAME" /> toegang tot USB-apparaten.</translation>
 <translation id="136378536198524553">Energiebesparing staat aan</translation>
 <translation id="136522805455656552">Ter beveiliging van je apparaat raden we je aan alleen software van vertrouwde bronnen en ontwikkelaars uit te voeren en te installeren. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Je wenkbrauwen optrekken</translation>
@@ -2558,6 +2557,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2743301740238894839">Starten</translation>
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="274362947316498129">Een app probeert toegang te krijgen tot <ph name="DEVICE_NAME" />. Zet de privacyschakelaar voor <ph name="DEVICE_NAME" /> uit om toegang te geven.</translation>
+<translation id="2744221223678373668">Gedeeld</translation>
 <translation id="2745080116229976798">Gekwalificeerde ondergeschiktheid van Microsoft</translation>
 <translation id="2749756011735116528">Inloggen op <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Simkaart</translation>
@@ -4541,6 +4541,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4139326893730851150">Firmware-updates</translation>
 <translation id="4142052906269098341">Ontgrendel je <ph name="DEVICE_TYPE" /> met je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Ontdek hoe AI van invloed is op de functionaliteit en maak weloverwogen keuzes over je privacy</translation>
+<translation id="4143754025452944766">Je kunt er ook voor kiezen om accountextensies te verwijderen van dit apparaat.</translation>
 <translation id="4146026355784316281">Altijd openen met systeemviewer</translation>
 <translation id="4146785383423576110">Resetten en opruimen</translation>
 <translation id="4147099377280085053">Brailletabel selecteren</translation>
@@ -5841,9 +5842,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5087864757604726239">terug</translation>
 <translation id="5088427648965532275">Passpoint-provider</translation>
 <translation id="5088534251099454936">PKCS nr. 1 SHA-512 met RSA-versleuteling</translation>
-<translation id="5089763948477033443">Handgreep voor wijziging van het formaat van het zijvenster</translation>
 <translation id="5090637338841444533">Geen toestemming om je camerapositie bij te houden</translation>
-<translation id="5090981554736747495">Geef Linux-apps toegang tot USB-apparaten.</translation>
 <translation id="5091636240353511739">Pincode tonen</translation>
 <translation id="5093477827231450397">Lijst met geblokkeerde sites die geen advertenties op andere sites mogen voorstellen</translation>
 <translation id="5093569275467863761">Incognitosubframe in Back-Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6554,7 +6553,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Deze extensie is geblokkeerd}other{Deze extensies zijn geblokkeerd}}</translation>
 <translation id="560834977503641186">Wifi-synchronisatie, meer informatie</translation>
 <translation id="5608580678041221894">Tik op de volgende toetsen om het bijsnijdgebied aan te passen of te verplaatsen</translation>
-<translation id="560919433407466404">Geef Parallels Desktop toegang tot USB-apparaten.</translation>
 <translation id="5609231933459083978">De app blijkt ongeldig te zijn.</translation>
 <translation id="5610867721023328944">Probeer het opnieuw of selecteer een van de beschikbare thema's hieronder.</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
@@ -8627,7 +8625,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7109543803214225826">Snelkoppeling verwijderd</translation>
 <translation id="7110388475787189534">Meer informatie over hoe je je tabbladen automatisch ordent</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
-<translation id="7110684627876015299">Naamloze groep - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Dit venster een naam geven</translation>
 <translation id="7113502843173351041">Toegang krijgen tot je e-mailadres</translation>
 <translation id="7113974454301513811">Voeg nu het huidige tabblad aan je lijst toe</translation>
@@ -8999,7 +8996,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7387107590792462040">Een ogenblik geduld terwijl de installatie wordt uitgevoerd</translation>
 <translation id="7387273928653486359">Acceptabel</translation>
 <translation id="7387951778417998929">Als je een andere zoekmachine dan de standaard zoekmachine wilt gebruiken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de gewenste sneltoets. Je kunt ook hier je standaard zoekmachine wijzigen.</translation>
-<translation id="7388209873137778229">Alleen ondersteunde apparaten worden getoond.</translation>
 <translation id="7388615499319468910">Sites en adverteerders krijgen inzicht in de prestaties van advertenties. Deze instelling staat uit.</translation>
 <translation id="738903649531469042">Tabblad toevoegen aan leeslijst</translation>
 <translation id="7392118418926456391">Virusscan is mislukt</translation>
@@ -10679,7 +10675,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8553342806078037065">Andere mensen beheren</translation>
 <translation id="8554899698005018844">Geen taal</translation>
 <translation id="8555444629041783356">Automatische planning voor beëindiging</translation>
-<translation id="855604308879080518">Geef Android-apps toegang tot USB-apparaten op deze Chromebook. Telkens als je een USB-apparaat aansluit, wordt er toestemming gevraagd. Afzonderlijke Android-apps vragen om aanvullende rechten.</translation>
 <translation id="8557022314818157177">Blijf je beveiligingssleutel aanraken totdat je vingerafdruk is geregistreerd</translation>
 <translation id="8557100046150195444">Gebruik Touch ID om door te gaan</translation>
 <translation id="8557856025359704738">De volgende download is op <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11391,7 +11386,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="9036484080057916082">Lijst met tijdstempels voor ondertekend certificaat</translation>
 <translation id="9037054491984310631">Verbonden met het bluetooth-apparaat <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Apparaat is niet toegestaan</translation>
-<translation id="9037706442425692248">Geef Android-apps toegang tot USB-apparaten op deze Chromebook</translation>
 <translation id="9037818663270399707">Je verbinding is niet privé voor alle netwerkverkeer</translation>
 <translation id="9037965129289936994">Origineel bekijken</translation>
 <translation id="9038489124413477075">Naamloze map</translation>

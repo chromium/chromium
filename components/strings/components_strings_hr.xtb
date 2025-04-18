@@ -498,6 +498,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1839331950812095887">nekoliko riječi koje sažimaju vaše misli</translation>
 <translation id="1839551713262164453">Potvrđivanje vrijednosti pravila nije uspjelo zbog pogrešaka</translation>
 <translation id="1840009953725035797">Sustavi kućnog kina</translation>
+<translation id="184153295865602321">Radi dodatne zaštite uvijek upotrebljavajte otisak prsta, lice ili drugo zaključavanje zaslona kad plaćate pomoću automatskog popunjavanja</translation>
 <translation id="1842969606798536927">Plaćanje</translation>
 <translation id="184517536440397176">Roditelj ili skrbnik mora ti dopustiti da posjetiš ovu web-lokaciju. Prije nego što to zatražiš od njih, moramo se uvjeriti da si to ti.</translation>
 <translation id="1846432862466000825">Plastika (arhivska)</translation>
@@ -1190,7 +1191,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3102312643185441063">Štedni račun</translation>
 <translation id="3103188521861412364">Dionice i obveznice</translation>
 <translation id="3103535543639438037">Paralelna usporedba sličnih proizvoda</translation>
-<translation id="3103993932858740905">Kad plaćate obročno, ispunjava se jednokratni broj virtualne kartice. Taj je broj namijenjen samo za ovu kupnju.</translation>
 <translation id="3105172416063519923">ID uređaja:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />provjeriti konfiguraciju sigurnog DNS-a<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Srednja ladica</translation>
@@ -1403,7 +1403,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3440783957068352691">kvadratno</translation>
 <translation id="3441653493275994384">Zaslon</translation>
 <translation id="3443504041532578451">Optički disk (saten)</translation>
-<translation id="344449859752187052">Blokirani su kolačići trećih strana</translation>
 <translation id="3447644283769633681">Blokiraj sve kolačiće trećih strana</translation>
 <translation id="3447661539832366887">Vlasnik tog uređaja isključio je igru s dinosaurima.</translation>
 <translation id="3447884698081792621">Prikaz certifikata (izdavač: <ph name="ISSUER" />)</translation>
@@ -1930,6 +1929,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4297937944457164390">Ažurirano: <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">Investicije</translation>
 <translation id="42981349822642051">Proširi</translation>
+<translation id="4298925811540301889">Kolačići za ovu web-lokaciju sinkroniziraju se na svim vašim ChromeOS uređajima. Da biste upravljali sadržajem koji se sinkronizira, otvorite <ph name="SYNC_SETTINGS" />.</translation>
 <translation id="4300675098767811073">Višestruko bušenje s desne strane</translation>
 <translation id="4302514097724775343">Dodirnite dinosaura da biste počeli igrati</translation>
 <translation id="4304049446746819918">{0,plural, =1{Prema pravilima administratora ne preporučuje se premještanje te datoteke u <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se premještanje tih datoteka u <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se premještanje tih datoteka u <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se premještanje tih datoteka u <ph name="DESTINATION_NAME" />}}</translation>
@@ -2029,6 +2029,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4477350412780666475">Sljedeća pjesma</translation>
 <translation id="448363931695049633">Pizzerije</translation>
 <translation id="4489023393592172404">Omotnica Kaku 4</translation>
+<translation id="4489977488133295402">Potvrdite svoj identitet da biste mogli automatski popunjavati načine plaćanja</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifriranje sinkroniziranih zaporki s Google računom</translation>
 <translation id="4493480324863638523">URL nije važeći. URL mora imati standardnu shemu, na primjer http://example.com ili https://example.com.</translation>
@@ -2255,6 +2256,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4901778704868714008">Spremi...</translation>
 <translation id="4901952598169637881">Cipele za svaki dan</translation>
 <translation id="4905659621780993806">Administrator će automatski ponovo pokrenuti vaš uređaj u <ph name="TIME" /> <ph name="DATE" />. Spremite sve otvorene stavke prije nego što se uređaj ponovno pokrene.</translation>
+<translation id="4913083239887436582">instalacije web-aplikacije</translation>
 <translation id="4913987521957242411">Bušenje pri vrhu lijevo</translation>
 <translation id="4914727764832832057">plava 1</translation>
 <translation id="4916389289686916969">TV reality emisije</translation>
@@ -2585,6 +2587,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5483838506518938965">Spremni ste za rad</translation>
 <translation id="5485100387355669506">Iznimno debeo</translation>
 <translation id="5485973315555778056">Stroj u oblaku</translation>
+<translation id="5488367146069768854">Instalacije web-aplikacije</translation>
 <translation id="5488590678320979185">Gumb Izradi bilješku, aktivirajte ga za brzu izradu nove bilješke u Google Keepu</translation>
 <translation id="5490432419156082418">Adrese i više</translation>
 <translation id="5492298309214877701">Web-lokacija na intranetu tvrtke, organizacije ili škole ima isti URL kao i vanjska web-lokacija.
@@ -2712,7 +2715,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5691848789297492617">Upit za spremanje kartice otvoren je u punoj visini.</translation>
 <translation id="5695542892312572833">Upotrijebiti značajku Windows Hello za potvrdu i dovršetak kupnje?</translation>
 <translation id="5699628521141772782">Mliječni proizvodi i jaja</translation>
-<translation id="5700761515355162635">Dopušteni su kolačići trećih strana</translation>
 <translation id="5701381305118179107">Centriraj</translation>
 <translation id="5707154300732650394">Nastavite putovanje</translation>
 <translation id="57094364128775171">Predloži snažnu zaporku…</translation>
@@ -2985,7 +2987,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće trećih strana</translation>
 <translation id="6190518157737269631">Nadjačavanje nekih tipki na tipkovnici, kao što je Esc</translation>
 <translation id="6194209731893739467">Ovdje pogledajte sve svoje praćene proizvode</translation>
-<translation id="6195163219142236913">Ograničeni su kolačići trećih strana</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Potrošačka elektronika</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
@@ -3250,6 +3251,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Obrazovanje iz računalstva</translation>
 <translation id="6633476656216409494">Softver za posao i produktivnost</translation>
+<translation id="6641852376826221947">Potvrdite kupnju</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645291930348198241">pristupiti kolačićima i podacima web-lokacije.</translation>
 <translation id="6645478838938543427">Upozorenja o padu cijena poslat će se na e-adresu <ph name="EMAIL_ADDRESS" /></translation>
@@ -4550,6 +4552,7 @@ Dodatne pojedinosti:
 <translation id="8918062451146297192">CVC za virtualnu karticu</translation>
 <translation id="8919740778133505789">Sportski automobili</translation>
 <translation id="8919895429178014996">Sakrij sve stavke</translation>
+<translation id="8919989290032064330">Želite li potvrditi da ste to vi da biste automatski popunili načine plaćanja?</translation>
 <translation id="8922013791253848639">Uvijek dopusti oglase na ovoj web-lokaciji</translation>
 <translation id="8922734931659847428">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Bušenje pri vrhu desno</translation>

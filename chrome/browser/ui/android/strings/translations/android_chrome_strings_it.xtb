@@ -767,7 +767,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4595805675102978678">Errore dell'Account Google</translation>
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4606559747793337066">Quando un sito o un'app richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
-<translation id="4609429330876432068">Gli elenchi di password salvate per Chrome e <ph name="CHROME_CHANNEL" /> sono stati uniti. Puoi comunque compilare automaticamente tutte le password salvate in entrambe le app.</translation>
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4624065194742029982">Navigazione in incognito di Chrome</translation>
@@ -903,6 +902,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5161262286013276579">Foglio di conferma della passkey aperto</translation>
 <translation id="5163361352003913350">Selezione attuale: <ph name="NAME" />. Scegli un account.</translation>
 <translation id="5167637873777016814">Tocca due volte e tieni premuto per uscire dalla modalità di navigazione in incognito</translation>
+<translation id="5169102789680486565">Il gruppo di schede "<ph name="TAB_GROUP_TITLE" />" ha una nuova attività</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5171045022955879922">Cerca o digita un URL</translation>
 <translation id="5174700554036517242">La scheda è tornata alla sua altezza iniziale</translation>
@@ -1561,7 +1561,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Ora importa le password</translation>
 <translation id="8015452622527143194">Ripristina le dimensioni predefinite della pagina</translation>
-<translation id="8026238112629815203">Abbiamo cambiato la modalità di salvataggio delle password su questo dispositivo</translation>
 <translation id="8027395186860110042">A breve le password potrebbero smettere di funzionare</translation>
 <translation id="8027863900915310177">Scegli dove effettuare il download</translation>
 <translation id="8030852056903932865">Approva</translation>

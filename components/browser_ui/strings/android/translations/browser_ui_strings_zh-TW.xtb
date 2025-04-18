@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">如要允許 <ph name="APP_NAME" /> 存取裝置的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
+<translation id="4578289292431526768">開始設定</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="461356340001513807">讓你透過身分識別服務，使用自己的帳戶登入網站</translation>
 <translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">網站可以要求傳送通知給你</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6320088164292336938">震動</translation>
-<translation id="6344622098450209924">追蹤防護</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="640163077447496506">今天到期</translation>

@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">Ощадний рахунок</translation>
 <translation id="3103188521861412364">Акції і облігації</translation>
 <translation id="3103535543639438037">Порівнюйте схожі товари поруч один з одним</translation>
-<translation id="3103993932858740905">Якщо ви розраховуєтеся частинами, заповнюється одноразовий номер віртуальної картки. Він використовується лише для цієї покупки.</translation>
 <translation id="3105172416063519923">Ідентифікатор об’єкта:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />перевірити конфігурацію безпеки DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Середній лоток</translation>
@@ -1403,7 +1402,6 @@
 <translation id="3440783957068352691">квадрат</translation>
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптичний диск (сатиновий)</translation>
-<translation id="344449859752187052">Сторонні файли cookie заблоковано</translation>
 <translation id="3447644283769633681">Заблокувати всі сторонні файли cookie</translation>
 <translation id="3447661539832366887">Власник цього пристрою вимкнув гру з динозавром.</translation>
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4901952598169637881">Повсякденне взуття</translation>
 <translation id="4905659621780993806">Адміністратор автоматично перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" />. Збережіть усі відкриті файли до цього часу.</translation>
+<translation id="4913083239887436582">встановлення вебдодатків</translation>
 <translation id="4913987521957242411">Пробити отвір угорі ліворуч</translation>
 <translation id="4914727764832832057">Синій 1</translation>
 <translation id="4916389289686916969">Телевізійні реаліті-шоу</translation>
@@ -2586,6 +2585,7 @@
 <translation id="5483838506518938965">Готово</translation>
 <translation id="5485100387355669506">Дуже товстий</translation>
 <translation id="5485973315555778056">Машина хмари</translation>
+<translation id="5488367146069768854">Встановлення вебдодатків</translation>
 <translation id="5488590678320979185">Кнопка "Створити нотатку"; активуйте, щоб швидко створити нову нотатку в Google Keep</translation>
 <translation id="5490432419156082418">Адреси й інше</translation>
 <translation id="5492298309214877701">URL-адреса цього сайту в інтранеті компанії, організації чи закладу освіти збігається з адресою зовнішнього веб-сайту.
@@ -2713,7 +2713,6 @@
 <translation id="5691848789297492617">Зберегти картку у відкритому вигляді на всю висоту.</translation>
 <translation id="5695542892312572833">Підтвердити й завершити покупку за допомогою Windows Hello?</translation>
 <translation id="5699628521141772782">Молоко і яйця</translation>
-<translation id="5700761515355162635">Сторонні файли cookie дозволено</translation>
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5707154300732650394">Відновити сеанс</translation>
 <translation id="57094364128775171">Запропонувати надійний пароль…</translation>
@@ -2986,7 +2985,6 @@
 <translation id="6184868291074982484">Chrome автоматично обмежує сторонні файли cookie</translation>
 <translation id="6190518157737269631">перевизначити деякі клавіші на клавіатурі, наприклад Esc</translation>
 <translation id="6194209731893739467">Тут можна переглянути всі відстежувані товари</translation>
-<translation id="6195163219142236913">Сторонні файли cookie обмежено</translation>
 <translation id="6195371403461054755">Геологія</translation>
 <translation id="6195418151868446719">Побутова електроніка</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>

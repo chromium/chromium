@@ -1196,7 +1196,6 @@
 <translation id="3102312643185441063">Խնայողական</translation>
 <translation id="3103188521861412364">Բաժնետոմսեր և պարտատոմսեր</translation>
 <translation id="3103535543639438037">Նմանատիպ ապրանքների կողք կողքի համեմատություն</translation>
-<translation id="3103993932858740905">Ժամանակի ընթացքում վճարելու դեպքում լրացվում է մեկանգամյա վիրտուալ քարտի համարը։ Այս համարը միայն այս գնման համար է։</translation>
 <translation id="3105172416063519923">Ակտիվների ID՝</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Ստուգել ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Մեջտեղի դարակ</translation>
@@ -1409,7 +1408,6 @@
 <translation id="3440783957068352691">քառակուսի</translation>
 <translation id="3441653493275994384">Էկրան</translation>
 <translation id="3443504041532578451">Օպտիկական սկավառակ (ատլաս)</translation>
-<translation id="344449859752187052">Երրորդ կողմի քուքիներն արգելափակված են</translation>
 <translation id="3447644283769633681">Բոլոր կողմնակի քուքիների արգելափակում</translation>
 <translation id="3447661539832366887">Սարքի սեփականատերն անջատել է Dinosaur խաղը:</translation>
 <translation id="3447884698081792621">Ցուցադրել հավաստագիրը (թողարկող՝ <ph name="ISSUER" />)</translation>
@@ -2722,7 +2720,6 @@
 <translation id="5691848789297492617">Քարտի տվյալների պահման պատուհանը բացված է ամբողջությամբ։</translation>
 <translation id="5695542892312572833">Հաստատե՞լ և ավարտել ձեր գնումը Windows Hello-ի միջոցով</translation>
 <translation id="5699628521141772782">Կաթնամթերք և ձու</translation>
-<translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="5707154300732650394">Շարունակել որոնումը</translation>
 <translation id="57094364128775171">Ստեղծել հուսալի գաղտնաբառ…</translation>
@@ -2995,7 +2992,6 @@
 <translation id="6184868291074982484">Chrome-ն ավտոմատ սահմանափակում է երրորդ կողմի քուքիները</translation>
 <translation id="6190518157737269631">Ստեղնաշարի կամ որոշ ստեղների, օրինակ՝ Esc-ի, փոխարինում</translation>
 <translation id="6194209731893739467">Տեսեք բոլոր ապրանքները, որոնք հետագծում եք, այստեղ</translation>
-<translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="6195371403461054755">Երկրաբանություն</translation>
 <translation id="6195418151868446719">Կենցաղային էլեկտրոնիկա</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>

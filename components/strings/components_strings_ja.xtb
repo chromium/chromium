@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">普通預金</translation>
 <translation id="3103188521861412364">株式、債券</translation>
 <translation id="3103535543639438037">類似の商品を並べて比較</translation>
-<translation id="3103993932858740905">後払いする場合は、1 回限りの仮想カード番号が入力されます。この番号は、今回の購入にのみ使用されます。</translation>
 <translation id="3105172416063519923">アセット ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中央トレイ</translation>
@@ -1403,7 +1402,6 @@
 <translation id="3440783957068352691">スクエア</translation>
 <translation id="3441653493275994384">画面</translation>
 <translation id="3443504041532578451">光ディスク（サテン）</translation>
-<translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
 <translation id="3447644283769633681">すべてのサードパーティの Cookie をブロック</translation>
 <translation id="3447661539832366887">このデバイスの所有者が恐竜ゲームを無効にしています。</translation>
 <translation id="3447884698081792621">証明書（発行元: <ph name="ISSUER" />）を表示</translation>
@@ -2713,7 +2711,6 @@
 <translation id="5691848789297492617">カード保存のメッセージが画面全体に表示されています。</translation>
 <translation id="5695542892312572833">Windows Hello を使用して本人確認し、購入手続きを完了しますか？</translation>
 <translation id="5699628521141772782">乳製品、卵</translation>
-<translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
 <translation id="5701381305118179107">中央揃え</translation>
 <translation id="5707154300732650394">ジャーニーを再開</translation>
 <translation id="57094364128775171">安全なパスワードを自動生成…</translation>
@@ -2986,7 +2983,6 @@
 <translation id="6184868291074982484">Chrome でサードパーティ Cookie を自動的に制限します</translation>
 <translation id="6190518157737269631">キーボードの一部のキー（Esc キーなど）のオーバーライド</translation>
 <translation id="6194209731893739467">トラッキングしている商品がすべてここに表示されます</translation>
-<translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
 <translation id="6195371403461054755">地質学</translation>
 <translation id="6195418151868446719">家電</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>

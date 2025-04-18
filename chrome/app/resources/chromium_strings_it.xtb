@@ -28,6 +28,7 @@
 <translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
+<translation id="141901961143729572">Condividi le tue opinioni</translation>
 <translation id="1465192221147974788">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
 <translation id="1497802159252041924">Errore di installazione: <ph name="INSTALL_ERROR" /></translation>
@@ -162,6 +163,7 @@
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo USB}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo USB}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi USB}}</translation>
 <translation id="3101560983689755071">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="3103660991484857065">Il programma di installazione non è riuscito a decomprimere l'archivio. Scarica di nuovo Chromium.</translation>
+<translation id="310459126943037700">Impossibile terminare le attività.</translation>
 <translation id="3130323860337406239">Chromium sta utilizzando il microfono.</translation>
 <translation id="3137969841538672700">Trascina per cercare</translation>
 <translation id="3144188012276422546">Questa scheda utilizza risorse aggiuntive. Per migliorare le prestazioni, consenti a Chromium di renderla inattiva.</translation>
@@ -489,6 +491,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7686590090926151193">Chromium non è il browser predefinito</translation>
 <translation id="7689606757190482937">Sincronizza e personalizza Chromium sui tuoi dispositivi</translation>
 <translation id="7699779824407626136">Aggiornamento di Chromium</translation>
+<translation id="7716950018788545737">Attività terminate.</translation>
 <translation id="77283119132245232">Fornisce servizi di tracciamento del sistema per <ph name="BROWSER_NAME" />. Se questo servizio viene disattivato, le tracce delle prestazioni create dal browser non includeranno eventi a livello di sistema, ad esempio eventi di commutazione di contesto e di thread pronti.</translation>
 <translation id="7745317241717453663">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>

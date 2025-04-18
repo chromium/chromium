@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
+<translation id="4578289292431526768">Pa začnimo</translation>
 <translation id="4598549027014564149">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na spletnih mestih, tudi na sorodnih spletnih mestih. Dejavnost brskanja se ne uporablja za stvari, kot je osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="461356340001513807">Omogoča prijavo na spletnih mestih z računom, ki ga imate pri storitvi potrjevanja identitete</translation>
 <translation id="4635969503923889910">Spletnim mestom ni dovoljena uporaba naprav s tehnologijo NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Spletna mesta vas lahko vprašajo, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
 <translation id="6320088164292336938">Vibriranje</translation>
-<translation id="6344622098450209924">Zaščita pred sledenjem</translation>
 <translation id="6367753977865761591">Blokiranje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="640163077447496506">Poteče danes</translation>

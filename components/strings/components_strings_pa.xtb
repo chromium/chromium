@@ -1190,7 +1190,6 @@
 <translation id="3102312643185441063">ਬਚਤਾਂ</translation>
 <translation id="3103188521861412364">ਸਟਾਕ ਅਤੇ ਬਾਂਡ</translation>
 <translation id="3103535543639438037">ਨਾਲ-ਨਾਲ ਮਿਲਦੇ-ਜੁਲਦੇ ਉਤਪਾਦਾਂ ਦੀ ਤੁਲਨਾ</translation>
-<translation id="3103993932858740905">ਜਦੋਂ ਤੁਸੀਂ ਸਮੇਂ-ਸਿਰ ਭੁਗਤਾਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਇੱਕ ਵਾਰ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਜਾਂਦਾ ਹੈ। ਇਹ ਨੰਬਰ ਸਿਰਫ਼ ਇਸ ਖਰੀਦ ਲਈ ਹੈ।</translation>
 <translation id="3105172416063519923">ਸੰਪਤੀ ਆਈ.ਡੀ.:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ਸੁਰੱਖਿਅਤ DNS ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਨਾ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ਵਿਚਕਾਰਲੀ ਟ੍ਰੇਅ</translation>
@@ -1401,7 +1400,6 @@
 <translation id="3440783957068352691">ਵਰਗ</translation>
 <translation id="3441653493275994384">ਸਕ੍ਰੀਨ</translation>
 <translation id="3443504041532578451">ਔਪਟੀਕਲ ਡਿਸਕ (ਸਾਟਿਨ)</translation>
-<translation id="344449859752187052">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3447644283769633681">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="3447661539832366887">ਇਸ ਡੀਵਾਈਸ ਦੇ ਮਾਲਕ ਨੇ ਡਾਇਨਾਸੌਰ ਗੇਮ ਬੰਦ ਕੀਤੀ।</translation>
 <translation id="3447884698081792621">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦਿਖਾਓ (<ph name="ISSUER" /> ਵੱਲੋਂ ਜਾਰੀ ਕੀਤਾ ਗਿਆ)</translation>
@@ -2710,7 +2708,6 @@
 <translation id="5691848789297492617">"ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ" ਉਤਪ੍ਰੇਰਕ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਿਆ ਹੈ।</translation>
 <translation id="5695542892312572833">ਕੀ ਤੁਸੀਂ ਆਪਣੀਆਂ ਖਰੀਦਾਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Windows Hello ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5699628521141772782">ਡੇਅਰੀ ਅਤੇ ਆਂਡੇ</translation>
-<translation id="5700761515355162635">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="5701381305118179107">ਕੇਂਦਰ</translation>
 <translation id="5707154300732650394">ਆਪਣਾ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="57094364128775171">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਸੁਝਾਓ…</translation>
@@ -2982,7 +2979,6 @@
 <translation id="6184868291074982484">Chrome ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸੀਮਤ ਕਰਦਾ ਹੈ</translation>
 <translation id="6190518157737269631">ਆਪਣੇ ਕੀ-ਬੋਰਡ 'ਤੇ ਕੁਝ ਕੁੰਜੀਆਂ ਨੂੰ ਓਵਰਰਾਈਡ ਕਰੋ, ਜਿਵੇਂ ਕਿ Esc</translation>
 <translation id="6194209731893739467">ਆਪਣੇ ਸਾਰੇ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦ ਇੱਥੇ ਦੇਖੋ</translation>
-<translation id="6195163219142236913">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸੀਮਤ ਹਨ</translation>
 <translation id="6195371403461054755">ਭੂ-ਵਿਗਿਆਨ</translation>
 <translation id="6195418151868446719">ਖਪਤਕਾਰ ਇਲੈਕਟ੍ਰਾਨਿਕਸ</translation>
 <translation id="6196640612572343990">ਤੀਜੀ-ਧਿਰ ਵਾਲੀਆਂ ਕੁੱਕੀਜ਼ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>

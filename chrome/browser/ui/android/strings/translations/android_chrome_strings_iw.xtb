@@ -767,7 +767,6 @@
 <translation id="4595805675102978678">‏שגיאה בחשבון Google</translation>
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606559747793337066">‏כשאתר או אפליקציה מבקשים לטעון מראש קישורים בדף שלהם באופן פרטי, דפדפן Chrome מצפין וטוען מראש את הדפים באמצעות השרתים של Google ללא קובצי Cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
-<translation id="4609429330876432068">‏הרשימות של הסיסמאות השמורות שלך ב-Chrome וב-<ph name="CHROME_CHANNEL" /> מוזגו. עדיין אפשר למלא באופן אוטומטי את כל הסיסמאות השמורות בשתי האפליקציות האלו.</translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4624065194742029982">‏מצב פרטי ב-Chrome</translation>
@@ -1561,7 +1560,6 @@
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8014210850410408071">בשלב הבא, יש לייבא את הסיסמאות</translation>
 <translation id="8015452622527143194">כל מה שמופיע בדף ישתנה לגודל ברירת המחדל</translation>
-<translation id="8026238112629815203">שינינו את האופן שבו סיסמאות נשמרות במכשיר הזה</translation>
 <translation id="8027395186860110042">יכול להיות שהסיסמאות יפסיקו לפעול בקרוב</translation>
 <translation id="8027863900915310177">בחירת המיקום להורדה</translation>
 <translation id="8030852056903932865">אישור</translation>

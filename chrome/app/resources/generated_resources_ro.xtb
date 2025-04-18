@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Începe ceva nou sau primește ajutor în flux.</translation>
 <translation id="1054048317165655285">Finalizează configurarea pe telefon</translation>
 <translation id="1054153489933238809">Deschide &amp;imaginea originală într-o filă nouă</translation>
+<translation id="1054187194995068149">Bună! Aceasta este o previzualizare</translation>
 <translation id="1054502481659725522">Aplicațiile, site-urile și serviciile de sistem pot folosi locația ta</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult o săptămână}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} săptămâni}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} de săptămâni}}</translation>
 <translation id="1055606969515662982">Folosește telecomanda pentru a opri proiectarea</translation>
@@ -457,7 +458,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1301135395320604080"><ph name="ORIGIN" /> poate să editeze următoarele fișiere</translation>
 <translation id="130174306655812048">Întreabă „Ok Google, ce melodie este aceasta?”</translation>
 <translation id="1302227299132585524">Permite JavaScript de la Apple Events</translation>
-<translation id="1302654693270046655">Grupul <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Fișier HTML cu marcaje</translation>
 <translation id="1303671224831497365">Nu s-a găsit niciun dispozitiv Bluetooth</translation>
 <translation id="130491383855577612">Aplicațiile și fișierele Linux au fost înlocuite</translation>
@@ -539,7 +539,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1362829980946830670">Poți să reiei sesiunea anterioară, iar sesiunea actuală să rămână activă.</translation>
 <translation id="1362865166188278099">Defecțiune mecanică. Verifică imprimanta.</translation>
 <translation id="1363585519747660921">Imprimanta USB necesită configurare</translation>
-<translation id="1363772878823415675">Permite ca <ph name="SPECIFIC_NAME" /> să acceseze dispozitivele USB.</translation>
 <translation id="136378536198524553">Economisirea energiei este activată</translation>
 <translation id="136522805455656552">Pentru a păstra dispozitivul securizat, trebuie să rulezi și să instalezi software numai de la surse și dezvoltatori de încredere. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Ridică sprâncenele</translation>
@@ -2559,6 +2558,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2743301740238894839">Începe</translation>
 <translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="274362947316498129">O aplicație încearcă să acceseze <ph name="DEVICE_NAME" />. Dezactivează comutatorul de confidențialitate <ph name="DEVICE_NAME" /> pentru a permite accesul.</translation>
+<translation id="2744221223678373668">Comune</translation>
 <translation id="2745080116229976798">Subordonare calificată Microsoft</translation>
 <translation id="2749756011735116528">Conectează-te la <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5844,9 +5844,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5087864757604726239">înapoi</translation>
 <translation id="5088427648965532275">Furnizor Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 cu criptare RSA</translation>
-<translation id="5089763948477033443">Ghidaj de redimensionare a panoului lateral</translation>
 <translation id="5090637338841444533">Nu au permisiunea de a urmări poziția camerei</translation>
-<translation id="5090981554736747495">Permite aplicațiilor Linux să acceseze dispozitivele USB.</translation>
 <translation id="5091636240353511739">Afișează codul PIN</translation>
 <translation id="5093477827231450397">Lista site-urilor pe care le-ai blocat și care nu vrei să sugereze anunțuri pentru alte site-uri</translation>
 <translation id="5093569275467863761">Subcadru incognito din memoria cache înainte-înapoi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6557,7 +6555,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Extensia este blocată}few{Extensiile sunt blocate}other{Extensiile sunt blocate}}</translation>
 <translation id="560834977503641186">Sincronizare Wi-Fi, află mai multe</translation>
 <translation id="5608580678041221894">Atinge următoarele taste ca să ajustezi sau să muți zona de decupare</translation>
-<translation id="560919433407466404">Acordă Parallels Desktop permisiunea de a accesa dispozitive USB.</translation>
 <translation id="5609231933459083978">Aplicația pare să nu fie validă.</translation>
 <translation id="5610867721023328944">Încearcă din nou sau selectează una dintre temele disponibile de mai jos.</translation>
 <translation id="5611398002774823980">Salvează în cont</translation>
@@ -8635,7 +8632,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7109543803214225826">Comanda rapidă a fost eliminată</translation>
 <translation id="7110388475787189534">Află cum să organizezi automat filele</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Adaugă fila într-un grup}few{Adaugă filele într-un grup}other{Adaugă filele într-un grup}}</translation>
-<translation id="7110684627876015299">Grup nedenumit – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Denumește fereastra</translation>
 <translation id="7113502843173351041">Vede adresa dvs. de e-mail</translation>
 <translation id="7113974454301513811">Acum adaugă fila actuală în listă</translation>
@@ -9007,7 +9003,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7387107590792462040">Așteaptă cât timp instalarea este în curs</translation>
 <translation id="7387273928653486359">Acceptabilă</translation>
 <translation id="7387951778417998929">Pentru a folosi alt motor de căutare decât cel prestabilit, introdu comanda rapidă respectivă în bara de adrese, urmată de comanda rapidă de la tastatură preferată. Poți să schimbi motorul de căutare prestabilit și de aici.</translation>
-<translation id="7388209873137778229">Se afișează numai dispozitivele compatibile.</translation>
 <translation id="7388615499319468910">Site-urile și advertiserii pot să afle despre performanța anunțurilor. Setarea este dezactivată.</translation>
 <translation id="738903649531469042">Adaugă fila în lista de lectură</translation>
 <translation id="7392118418926456391">Scanarea antivirus nu a reușit</translation>
@@ -10689,7 +10684,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8553342806078037065">Gestionează alte persoane</translation>
 <translation id="8554899698005018844">Nicio limbă</translation>
 <translation id="8555444629041783356">Program automat de retragere</translation>
-<translation id="855604308879080518">Permite accesul aplicațiilor pentru Android la dispozitivele USB conectate la acest Chromebook. Permisiunea va fi solicitată de fiecare dată când conectezi un dispozitiv USB. Aplicațiile pentru Android individuale vor solicita permisiuni suplimentare.</translation>
 <translation id="8557022314818157177">Atinge cheia de securitate până când ți se capturează amprenta</translation>
 <translation id="8557100046150195444">Folosește Touch ID pentru a continua</translation>
 <translation id="8557856025359704738">Următoarea descărcare este pe <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11401,7 +11395,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9036484080057916082">Listă cu marcaje temporale pentru certificatul semnat</translation>
 <translation id="9037054491984310631">Conectat la dispozitivul Bluetooth denumit <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Dispozitivul nu este permis</translation>
-<translation id="9037706442425692248">Permite accesul aplicațiilor pentru Android la dispozitivele USB conectate la acest Chromebook</translation>
 <translation id="9037818663270399707">Conexiunea nu este privată pentru tot traficul de rețea</translation>
 <translation id="9037965129289936994">Afișează versiunea originală</translation>
 <translation id="9038489124413477075">Dosar fără nume</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Սկսեք որևէ նոր բան կամ ստացեք օգնություն աշխատահոսքի համար։</translation>
 <translation id="1054048317165655285">Ավարտեք կարգավորումը ձեր հեռախոսում</translation>
 <translation id="1054153489933238809">Բացել &amp;պատկերի բնօրինակը նոր ներդիրով</translation>
+<translation id="1054187194995068149">Ողջույն։ Սա նախնական տարբերակ է։</translation>
 <translation id="1054502481659725522">Միայն հավելվածները, կայքերը և համակարգային ծառայությունները կարող են օգտագործել ձեր տեղադրության մասին տվյալները</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը 1 շաբաթվա ընթացքում}one{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}other{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}}</translation>
 <translation id="1055606969515662982">Կանգնեցրեք հեռարձակումը հեռակառավարման վահանակի միջոցով</translation>
@@ -458,7 +459,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> կայքը կարող է փոփոխել հետևյալ ֆայլերը</translation>
 <translation id="130174306655812048">Ասեք «Hey Google, what song is this?» (ո՞ր երգն է սա)</translation>
 <translation id="1302227299132585524">Թույլատրել JavaScript-ը Apple-ի միջոցառումներից</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> խումբ – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Էջանշում է HTML ֆայլը</translation>
 <translation id="1303671224831497365">Bluetooth սարքեր չեն գտնվել</translation>
 <translation id="130491383855577612">Լինուքսի հավելվածներն ու ֆայլերը փոխարինվեցին</translation>
@@ -540,7 +540,6 @@
 <translation id="1362829980946830670">Դուք կարող եք վերսկսել ձեր նախորդ աշխատաշրջանը, քանի դեռ ձեր ընթացիկ աշխատաշրջանն ակտիվ է։</translation>
 <translation id="1362865166188278099">Մեխանիկական խնդիր է առաջացել։ Ստուգեք տպիչը։</translation>
 <translation id="1363585519747660921">USB տպիչը հարկավոր է կարգավորել</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />-ին հասանելի դարձրեք USB սարքերը։</translation>
 <translation id="136378536198524553">Էներգիայի տնտեսումը միացված է</translation>
 <translation id="136522805455656552">Ձեր սարքը պաշտպանելու համար գործարկեք և տեղադրեք ծրագրեր միայն վստահելի աղբյուրներից և մշակողներից։ <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Բարձրացրեք հոնքերը</translation>
@@ -2558,6 +2557,7 @@
 <translation id="2743301740238894839">Սկսել</translation>
 <translation id="2743387203779672305">Պատճենել սեղմատախտակին</translation>
 <translation id="274362947316498129">Հավելվածը փորձում է օգտագործել <ph name="DEVICE_NAME" />ը։ Թույլատրելու համար անջատեք <ph name="DEVICE_NAME" />ի գաղտնիության փոխանջատիչը։</translation>
+<translation id="2744221223678373668">Համօգտագործված</translation>
 <translation id="2745080116229976798">Microsoft որակավորված ստորակարգություն</translation>
 <translation id="2749756011735116528">Մուտք գործել <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5843,9 +5843,7 @@
 <translation id="5087864757604726239">հետ</translation>
 <translation id="5088427648965532275">Passpoint-ի մատակարար</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512՝ RSA գաղտնագրումով</translation>
-<translation id="5089763948477033443">Կողային վահանակի չափափոխման բռնիչ</translation>
 <translation id="5090637338841444533">Չի թույլատրվում հետագծել ձեր տեսախցիկի դիրքը</translation>
-<translation id="5090981554736747495">Լինուքսի հավելվածներին հասանելի դարձրեք USB սարքերը։</translation>
 <translation id="5091636240353511739">Ցուցադրել PIN կոդը</translation>
 <translation id="5093477827231450397">Արգելափակված կայքերը, որոնց արգելված է գովազդ առաջարկել այլ կայքերի</translation>
 <translation id="5093569275467863761">Հետադարձ քեշի ենթաշրջանակ ինկոգնիտո ռեժիմում՝ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6556,7 +6554,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումն արգելափակված է}one{Այս ընդլայնումն արգելափակված է}other{Այս ընդլայնումներն արգելափակված են}}</translation>
 <translation id="560834977503641186">Մանրամասն Wi-Fi համաժամացման մասին</translation>
 <translation id="5608580678041221894">Սեղմեք հետևյալ ստեղները` եզրատվող տարածքը ճշգրտելու կամ տեղաշարժելու համար</translation>
-<translation id="560919433407466404">USB սարքերը հասանելի դարձրեք Parallels Desktop-ին։</translation>
 <translation id="5609231933459083978">Հավելվածն անվավեր է:</translation>
 <translation id="5610867721023328944">Նորից փորձեք կամ ընտրեք հասանելի հետևյալ թեմաներից որևէ մեկը։</translation>
 <translation id="5611398002774823980">Պահել հաշվում</translation>
@@ -8630,7 +8627,6 @@
 <translation id="7109543803214225826">Դյուրանցումը հեռացվեց</translation>
 <translation id="7110388475787189534">Իմանալ, թե ինչպես ավտոմատ դասավորել ներդիրները</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիրներ խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
-<translation id="7110684627876015299">Անանուն խումբ – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Անվանեք այս պատուհանը</translation>
 <translation id="7113502843173351041">Տեսնել ձեր էլ․ հասցեն</translation>
 <translation id="7113974454301513811">Այժմ ընթացիկ ներդիրն ավելացրեք ձեր ցանկում</translation>
@@ -9002,7 +8998,6 @@
 <translation id="7387107590792462040">Սպասեք, մինչև տեղադրումն ավարտվի</translation>
 <translation id="7387273928653486359">Ընդունելի</translation>
 <translation id="7387951778417998929">Կանխադրված որոնողական համակարգի փոխարեն մեկ ուրիշն օգտագործելու համար հասցեագոտում մուտքագրեք դրա դյուրանցումը, ապա՝ ձեր նախընտրած ստեղնային դյուրանցումը։ Այստեղ կարող եք նաև փոխել ձեր կանխադրված որոնողական համակարգը։</translation>
-<translation id="7388209873137778229">Ցուցադրվում են միայն աջակցվող սարքերը։</translation>
 <translation id="7388615499319468910">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը։ Այս կարգավորումն անջատված է։</translation>
 <translation id="738903649531469042">Ավելացնել ներդիր ընթերցանության ցանկում</translation>
 <translation id="7392118418926456391">Վիրուսների սկանավորումը չհաջողվեց</translation>
@@ -10682,7 +10677,6 @@
 <translation id="8553342806078037065">Կառավարել այլ օգտատերերի</translation>
 <translation id="8554899698005018844">Լեզու նշված չէ</translation>
 <translation id="8555444629041783356">Մայրամուտի ժամանակացույցի ավտոմատ թարմացում</translation>
-<translation id="855604308879080518">Android հավելվածներին հասանելի դարձրեք USB սարքերն այս Chromebook-ում։ Թույլտվության հարցումը կարվի ամեն անգամ, երբ դուք USB սարք միացնեք։ Առանձին Android հավելվածներ կհայցեն լրացուցիչ թույլտվություններ։</translation>
 <translation id="8557022314818157177">Հպեք անվտանգության բանալուն և պահեք, մինչև ձեր մատնահետքն ավելացվի:</translation>
 <translation id="8557100046150195444">Շարունակելու համար օգտագործեք Touch ID</translation>
 <translation id="8557856025359704738">Հաջորդ ներբեռնումը կլինի հետևյալ ամսաթվին՝ <ph name="NEXT_DATE_DOWNLOAD" />։</translation>
@@ -11394,7 +11388,6 @@
 <translation id="9036484080057916082">Ստորագրված հավաստագրերի ժամադրոշմների ցանկ</translation>
 <translation id="9037054491984310631">Կապ է հաստատվել «<ph name="DEVICE" />» Bluetooth սարքի հետ</translation>
 <translation id="9037640663275993951">Սարքի օգտագործումն արգելված է</translation>
-<translation id="9037706442425692248">Android հավելվածներին հասանելի դարձրեք USB սարքերն այս Chromebook-ում</translation>
 <translation id="9037818663270399707">Կապը պաշտպանված չէ ամբողջ ցանցի թրաֆիկի համար</translation>
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
 <translation id="9038489124413477075">Անանուն պանակ</translation>

@@ -767,7 +767,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4595805675102978678">Error sa Google Account</translation>
 <translation id="4601095002996233687">Mga detalyadong pag-scan para sa mga kahina-hinalang pag-download.</translation>
 <translation id="4606559747793337066">Kapag hiniling ng isang site o app na pribadong mag-preload ng mga link sa page nito, mag-e-encrypt at magpi-preload ng mga page ang Chrome sa pamamagitan ng mga server ng Google nang walang cookies. Iha-hide nito ang iyong pagkakakilanlan sa na-preload na site.</translation>
-<translation id="4609429330876432068">Na-merge ang iyong mga listahan ng mga naka-save na password para sa Chrome at <ph name="CHROME_CHANNEL" />. Puwede mo pa ring i-autofill ang lahat ng iyong naka-save na password sa parehong app.</translation>
 <translation id="4616150815774728855">Buksan ang <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4624065194742029982">Incognito sa Chrome</translation>
@@ -1561,7 +1560,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Susunod, i-import ang mga password</translation>
 <translation id="8015452622527143194">Ibalik ang lahat ng nasa page sa default na sukat</translation>
-<translation id="8026238112629815203">Binago namin kung paano sine-save ang mga password sa device na ito</translation>
 <translation id="8027395186860110042">Posibleng malapit nang hindi gumana ang mga password</translation>
 <translation id="8027863900915310177">Piliin kung saan ida-download</translation>
 <translation id="8030852056903932865">Aprubahan</translation>

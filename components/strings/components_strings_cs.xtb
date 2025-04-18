@@ -1190,7 +1190,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3102312643185441063">Spořicí účet</translation>
 <translation id="3103188521861412364">Akcie a dluhopisy</translation>
 <translation id="3103535543639438037">Porovnejte podobné produkty vedle sebe</translation>
-<translation id="3103993932858740905">Při placení se vyplní jednorázové číslo virtuální karty. Toto číslo platí jen pro tento nákup.</translation>
 <translation id="3105172416063519923">ID díla:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Prostřední zásobník</translation>
@@ -1400,7 +1399,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3440783957068352691">čtverec</translation>
 <translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3443504041532578451">Optický disk (saténový)</translation>
-<translation id="344449859752187052">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="3447644283769633681">Blokovat všechny soubory cookie třetích stran</translation>
 <translation id="3447661539832366887">Vlastník tohoto zařízení hru s dinosaurem vypnul.</translation>
 <translation id="3447884698081792621">Zobrazit certifikát (vydavatel: <ph name="ISSUER" />)</translation>
@@ -2125,7 +2123,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4698692901173737941">Bojové sporty</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Boční</translation>
-<translation id="4702656508969495934">Okamžité titulky jsou viditelný, vyberete ho pomocí přepínače oken</translation>
+<translation id="4702656508969495934">Okamžité titulky jsou viditelné, vyberete je pomocí přepínače oken</translation>
 <translation id="4703342001883078444">Rodina a vztahy</translation>
 <translation id="4704745399240123930">Karty, které tento obchodník nepřijímá (například virtuální karty), nelze vybrat.</translation>
 <translation id="4708268264240856090">Připojení bylo přerušeno</translation>
@@ -2709,7 +2707,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5691848789297492617">Uložení karty je otevřené na celou výšku.</translation>
 <translation id="5695542892312572833">Chcete nákup ověřit a dokončit pomocí Windows Hello?</translation>
 <translation id="5699628521141772782">Mléčné výrobky a vejce</translation>
-<translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="5701381305118179107">Na střed</translation>
 <translation id="5707154300732650394">Pokračovat v cestě</translation>
 <translation id="57094364128775171">Navrhnout silné heslo…</translation>
@@ -2981,7 +2978,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6184868291074982484">Chrome automaticky omezuje soubory cookie třetích stran</translation>
 <translation id="6190518157737269631">Přepsat některé klávesy na klávesnici, například Esc</translation>
 <translation id="6194209731893739467">Tady zobrazíte všechny sledované produkty</translation>
-<translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Spotřební elektronika</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>

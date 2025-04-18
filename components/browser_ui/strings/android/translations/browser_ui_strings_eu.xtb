@@ -285,6 +285,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> aplikazioari mikrofonoa erabiltzeko baimena emateko, mikrofonoa erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desaktibatu mikrofonoa</translation>
 <translation id="4570913071927164677">Xehetasunak</translation>
+<translation id="4578289292431526768">Has gaitezen</translation>
 <translation id="4598549027014564149">Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, erlazionatutako webguneak badira ere. Arakatze-jarduerak ez dira erabiltzen iragarkiak pertsonalizatzeko, ezta antzeko jardueretarako ere. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="461356340001513807">Aukera honi esker, identitate-zerbitzu bateko kontuaren bidez webguneetan saioa has dezakezu</translation>
 <translation id="4635969503923889910">Ez eman NFC bidezko gailuak erabiltzeko baimena webguneei</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6320088164292336938">Dardara</translation>
-<translation id="6344622098450209924">Jarraipenaren aurkako babesa</translation>
 <translation id="6367753977865761591">Blokeatu webgune jakin batean saioa hasteko aukera hirugarrenei.</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
 <translation id="640163077447496506">Gaur iraungiko da</translation>

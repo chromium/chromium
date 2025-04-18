@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 μη αναγνωσμένη ειδοποίηση}other{# μη αναγνωσμένες ειδοποιήσεις}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Ενεργοποιήστε την παρακάτω επέκταση στην ανώνυμη περιήγηση:}other{Ενεργοποιήστε τις παρακάτω επεκτάσεις στην ανώνυμη περιήγηση:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Πριν από 1 μήνα}other{Πριν από # μήνες}}</translation>
+<translation id="4277033906326892359">Η στήλη <ph name="COLUMN_NAME" /> ταξινομήθηκε με αύξουσα σειρά</translation>
 <translation id="4289300219472526559">Έναρξη ομιλίας</translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
 <translation id="4491109536499578614">Εικόνα</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Αποκλεισμός όλων των ειδοποιήσεων</translation>
 <translation id="6620110761915583480">Αποθήκευση Αρχείου</translation>
 <translation id="6699343763173986273">Επόμενο κομμάτι πολυμέσων</translation>
+<translation id="6807086321996342431">Στήλη <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Διακοπή πολυμέσων</translation>
 <translation id="6845383723252244143">Επιλογή Φακέλου</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Απομένει 1 ώρα}other{Απομένουν # ώρες}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{Πριν από 1 ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Απομένει 1 δευτερόλεπτο}other{Απομένουν # δευτερόλεπτα}}</translation>
 <translation id="8134065097954893699">Επαναφόρτωση αυτής της σελίδας</translation>
+<translation id="813785873406874127">Η ταξινόμηση της στήλης <ph name="COLUMN_NAME" /> καταργήθηκε</translation>
 <translation id="815598010540052116">Κύλιση κάτω</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Επόμενη σελίδα</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Αποστολή μηνύματος</translation>
 <translation id="8394908167088220973">Αναπαραγωγή/παύση πολυμέσων</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1έτ.}other{#έτ.}}</translation>
+<translation id="8582972250170726813">Η στήλη <ph name="COLUMN_NAME" /> ταξινομήθηκε με φθίνουσα σειρά</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Αρχείο <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

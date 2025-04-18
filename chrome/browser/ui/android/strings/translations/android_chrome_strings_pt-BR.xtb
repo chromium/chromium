@@ -768,7 +768,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4595805675102978678">Erro na Conta do Google</translation>
 <translation id="4601095002996233687">Faz verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4606559747793337066">Quando um site ou app pede para pré-carregar links anonimamente, o Chrome criptografa e pré-carrega as páginas pelos servidores do Google sem cookies. Isso oculta sua identidade do site pré-carregado.</translation>
-<translation id="4609429330876432068">Suas listas de senhas salvas do Chrome e do <ph name="CHROME_CHANNEL" /> foram fundidas. Você ainda pode preencher automaticamente todas as senhas salvas nos dois apps.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4624065194742029982">Navegação anônima do Chrome</translation>
@@ -1562,7 +1561,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8014210850410408071">Agora, importe as senhas</translation>
 <translation id="8015452622527143194">Retornar tudo na página para o tamanho padrão</translation>
-<translation id="8026238112629815203">Mudamos a forma como as senhas são salvas neste dispositivo</translation>
 <translation id="8027395186860110042">As senhas vão deixar de funcionar em breve</translation>
 <translation id="8027863900915310177">Escolha um local para fazer o download</translation>
 <translation id="8030852056903932865">Aprovar</translation>

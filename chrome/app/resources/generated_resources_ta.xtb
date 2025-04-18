@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">எதையேனும் புதிதாகச் செய்யத் தொடங்கலாம் அல்லது தற்போதைய செயல் தொடர்பாக உதவி பெறலாம்.</translation>
 <translation id="1054048317165655285">அமைவை மொபைலில் நிறைவுசெய்தல்</translation>
 <translation id="1054153489933238809">அசல் &amp;படத்தைப் புதிய தாவலில் திற</translation>
+<translation id="1054187194995068149">ஹாய். இது ஒரு மாதிரிக்காட்சி.</translation>
 <translation id="1054502481659725522">ஆப்ஸ், இணையதளங்கள், சிஸ்டம் சேவைகள் ஆகியவை உங்கள் இருப்பிடத்தைப் பயன்படுத்தலாம்</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 வாரத்திற்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்கவும்}other{{NUM_WEEKS} வாரங்களுக்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்கவும்}}</translation>
 <translation id="1055606969515662982">அலைபரப்புவதை நிறுத்த ரிமோட்டைப் பயன்படுத்தவும்</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080">பின்வரும் கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="130174306655812048">“Ok Google, இது என்ன பாட்டு?” என்று கேட்கலாம்</translation>
 <translation id="1302227299132585524">Apple Events இலிருந்து JavaScriptஐ அனுமதி</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> குழு - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML ஃபைலை புக்மார்க் செய்கிறது</translation>
 <translation id="1303671224831497365">புளூடூத் சாதனங்கள் இல்லை</translation>
 <translation id="130491383855577612">Linux ஆப்ஸ் &amp; ஃபைல்கள்  வெற்றிகரமாக மாற்றப்பட்டன</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">தற்போதைய அமர்வு செயலில் உள்ளபோதே உங்கள் முந்தைய அமர்வை மீண்டும் தொடங்கலாம்.</translation>
 <translation id="1362865166188278099">இயந்திரக் கோளாறு. பிரிண்டரைச் சரிபார்க்கவும்</translation>
 <translation id="1363585519747660921">USB பிரிண்டரை உள்ளமைக்க வேண்டும்</translation>
-<translation id="1363772878823415675">USB சாதனங்களை அணுக <ph name="SPECIFIC_NAME" />க்கு அனுமதி வழங்கும்.</translation>
 <translation id="136378536198524553">எனர்ஜி சேமிப்புப் பயன்முறை இயக்கப்பட்டுள்ளது</translation>
 <translation id="136522805455656552">உங்கள் சாதனத்தைப் பாதுகாப்பாக வைத்திருக்க, நம்பகமான மூலங்கள் மற்றும் டெவெலப்பர்களின் மென்பொருளை மட்டுமே இயக்கவும் நிறுவவும் வேண்டும். <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">புருவங்களை உயர்த்துதல்</translation>
@@ -2571,6 +2570,7 @@
 <translation id="2743301740238894839">தொடங்கு</translation>
 <translation id="2743387203779672305">கிளிப்போர்டுக்கு நகலெடு</translation>
 <translation id="274362947316498129">ஒரு ஆப்ஸ் <ph name="DEVICE_NAME" /> ஐ அணுக முயல்கிறது. அணுகலை வழங்க <ph name="DEVICE_NAME" /> தனியுரிமை ஸ்விட்ச்சை முடக்கவும்.</translation>
+<translation id="2744221223678373668">பகிர்ந்தது</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> இல் உள்நுழையவும்</translation>
 <translation id="2749836841884031656">சிம்</translation>
@@ -5858,9 +5858,7 @@
 <translation id="5087864757604726239">முந்தைய</translation>
 <translation id="5088427648965532275">Passpoint வழங்குநர்</translation>
 <translation id="5088534251099454936">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">பக்கவாட்டுப் பேனலின் அளவை மாற்றுவதற்கான ஹேண்டில்</translation>
 <translation id="5090637338841444533">உங்கள் கேமராவின் நிலையைக் கண்காணிக்க அனுமதி இல்லாத தளங்கள்</translation>
-<translation id="5090981554736747495">USB சாதனங்களை அணுக Linux ஆப்ஸிற்கு அனுமதி வழங்கும்.</translation>
 <translation id="5091636240353511739">பின்னைக் காட்டும்</translation>
 <translation id="5093477827231450397">பிற தளங்களுக்கு விளம்பரங்களைப் பரிந்துரைப்பதை நீங்கள் விரும்பாத தளங்களின் பட்டியல்</translation>
 <translation id="5093569275467863761">‘முன் பின் பக்கங்களைத் தற்காலிகமாகச் சேமித்தல்’ அம்சத்தில் சேமிக்கப்பட்ட மறைநிலை உப ஃபிரேம்: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6572,7 +6570,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பு தடுக்கப்பட்டுள்ளது}other{இந்த நீட்டிப்புகள் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="560834977503641186">வைஃபை ஒத்திசைவு, மேலும் அறிக</translation>
 <translation id="5608580678041221894">செதுக்கும் பகுதியைச் சரிசெய்ய அல்லது நகர்த்த, பின்வரும் விசைகளைத் தட்டவும்</translation>
-<translation id="560919433407466404">USB சாதனங்களை அணுக Parallels Desktopபிற்கு அனுமதி வழங்கும்.</translation>
 <translation id="5609231933459083978">ஆப்ஸ் தவறானது என்பதுபோல் தெரிகிறது.</translation>
 <translation id="5610867721023328944">மீண்டும் முயலவும் அல்லது கீழே உள்ள தீம்களில் இருந்து ஏதேனும் ஒன்றைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="5611398002774823980">கணக்கில் சேமி</translation>
@@ -8649,7 +8646,6 @@
 <translation id="7109543803214225826">ஷார்ட்கட் அகற்றப்பட்டது</translation>
 <translation id="7110388475787189534">உங்கள் பக்கங்களைத் தானாக ஒழுங்கமைப்பது எப்படி என்று தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{குழுவில் தாவலைச் சேர்}other{குழுவில் தாவல்களைச் சேர்}}</translation>
-<translation id="7110684627876015299">பெயரிடப்படாத குழு - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">இந்தச் சாளரத்திற்குப் பெயரிடுங்கள்</translation>
 <translation id="7113502843173351041">உங்கள் மின்னஞ்சல் முகவரியை அணுகுதல்</translation>
 <translation id="7113974454301513811">இப்போது தற்போதைய பக்கத்தைப் பட்டியலில் சேர்க்கலாம்</translation>
@@ -9021,7 +9017,6 @@
 <translation id="7387107590792462040">நிறுவுகிறது, காத்திருக்கவும்</translation>
 <translation id="7387273928653486359">சுமாரானது</translation>
 <translation id="7387951778417998929">இயல்புத் தேடல் இன்ஜினைத் தவிர்த்து வேறொன்றைப் பயன்படுத்த, அதன் ஷார்ட்கட்டை முகவரிப் பட்டியில் டைப் செய்தபிறகு உங்களுக்கு விருப்பமான கீபோர்டு ஷார்ட்கட்டை டைப் செய்யவும். இயல்புத் தேடல் இன்ஜினையும் இங்கே மாற்றலாம்.</translation>
-<translation id="7388209873137778229">ஆதரிக்கப்படும் சாதனங்கள் மட்டும் காட்டப்படுகின்றன.</translation>
 <translation id="7388615499319468910">விளம்பரங்களின் செயல்திறனைத் தளங்களும் விளம்பரதாரர்களும் தெரிந்துகொள்ளலாம். இந்த அமைப்பு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="738903649531469042">வாசிப்புப் பட்டியலில் பிரிவைச் சேர்</translation>
 <translation id="7392118418926456391">வைரஸ் ஸ்கேன் தோல்வி</translation>
@@ -10703,7 +10698,6 @@
 <translation id="8553342806078037065">பிற பயனர்களை நிர்வகி</translation>
 <translation id="8554899698005018844">மொழி இல்லை</translation>
 <translation id="8555444629041783356">சூரிய மறைவிற்கான தானியங்குக் கால அட்டவணை</translation>
-<translation id="855604308879080518">இந்த Chromebookகில் உள்ள USB சாதனங்களை Android ஆப்ஸ் பயன்படுத்த அனுமதியுங்கள். USB சாதனத்தை ஒவ்வொரு முறை நீங்கள் செருகும்போதும் அனுமதி கேட்கப்படும். தனிப்பட்ட முறையில் Android ஆப்ஸ் ஒவ்வொன்றும் கூடுதல் அனுமதிகளைக் கேட்கும்.</translation>
 <translation id="8557022314818157177">உங்கள் கைரேகையைப் பதிவுசெய்யும் வரை உங்கள் பாதுகாப்பு விசையைத் தொடர்ந்து அழுத்தவும்</translation>
 <translation id="8557100046150195444">தொடர Touch IDயை வழங்கவும்</translation>
 <translation id="8557856025359704738"><ph name="NEXT_DATE_DOWNLOAD" /> அன்று அடுத்த பதிவிறக்கம் நிகழும்.</translation>
@@ -11414,7 +11408,6 @@
 <translation id="9036484080057916082">கையொப்பமிட்ட சான்றிதழ் நேரமுத்திரைப் பட்டியல்</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> என்ற புளூடூத் சாதனத்துடன் இணைக்கப்பட்டது</translation>
 <translation id="9037640663275993951">சாதனம் அனுமதிக்கப்படவில்லை</translation>
-<translation id="9037706442425692248">இந்த Chromebookகில் உள்ள USB சாதனங்களை Android ஆப்ஸ் பயன்படுத்த அனுமதிக்கலாம்</translation>
 <translation id="9037818663270399707">சில நெட்வொர்க் டிராஃபிக்கிற்கு மட்டுமே உங்கள் இணைப்பு தனிப்பட்டது</translation>
 <translation id="9037965129289936994">அசல் மொழியில் காட்டு</translation>
 <translation id="9038489124413477075">பெயரிடப்படாதக் கோப்புறை</translation>

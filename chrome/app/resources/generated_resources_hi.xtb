@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">कुछ नया शुरू करें या मौजूदा काम में मदद पाएं.</translation>
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
+<translation id="1054187194995068149">नमस्ते. यह एक झलक है</translation>
 <translation id="1054502481659725522">ऐप्लिकेशन, वेबसाइटें, और सिस्टम की सेवाएं आपकी जगह की जानकारी का इस्तेमाल कर सकती हैं</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को 1 हफ़्ते में अपडेट करें}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में अपडेट करें}}</translation>
 <translation id="1055606969515662982">कास्टिंग रोकने के लिए रिमोट का इस्तेमाल करें</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="130174306655812048">“Ok Google, यह कौनसा गाना है?” पूछें</translation>
 <translation id="1302227299132585524">Apple Events से JavaScript की अनुमति दें</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> ग्रुप - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML फ़ाइल को बुकमार्क करता है</translation>
 <translation id="1303671224831497365">कोई ब्लूटूथ डिवाइस नहीं मि‍ला</translation>
 <translation id="130491383855577612">Linux ऐप्लिकेशन और फ़ाइलें बदल दी गई हैं</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">अपने मौजूदा सेशन को चालू रखते हुए, अपने पिछले सेशन को फिर से शुरू किया जा सकता है.</translation>
 <translation id="1362865166188278099">मशीन से जुड़ी समस्या. प्रिंटर जांचें</translation>
 <translation id="1363585519747660921">यूएसबी प्रिंटर को कॉन्फ़िगर करना होगा</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" /> को यूएसबी डिवाइसों को ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="136378536198524553">एनर्जी सेवर चालू है</translation>
 <translation id="136522805455656552">अपने डिवाइस को सुरक्षित रखने के लिए, आपको सिर्फ़ भरोसेमंद सोर्स और डेवलपर से मिले सॉफ़्टवेयर को चलाना और इंस्टॉल करना चाहिए. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">भौंहें ऊपर करें</translation>
@@ -2572,6 +2571,7 @@
 <translation id="2743301740238894839">शुरू करें</translation>
 <translation id="2743387203779672305">क्लिपबोर्ड में कॉपी करें</translation>
 <translation id="274362947316498129">कोई ऐप्लिकेशन आपके <ph name="DEVICE_NAME" /> को ऐक्सेस करने की कोशिश कर रहा है. ऐक्सेस करने की अनुमति देने के लिए, <ph name="DEVICE_NAME" /> के प्राइवसी स्विच को बंद करें.</translation>
+<translation id="2744221223678373668">शेयर किए गए</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> में साइन इन करें</translation>
 <translation id="2749836841884031656">सिम</translation>
@@ -5857,9 +5857,7 @@
 <translation id="5087864757604726239">वापस जाएं</translation>
 <translation id="5088427648965532275">पासपॉइंट देने वाली कंपनी</translation>
 <translation id="5088534251099454936">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">साइड पैनल का साइज़ बदलने वाला हैंडल</translation>
 <translation id="5090637338841444533">कैमरे की स्थिति को ट्रैक करने की अनुमति नहीं है</translation>
-<translation id="5090981554736747495">Linux के ऐप्लिकेशन को यूएसबी डिवाइस ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="5091636240353511739">पिन दिखाएं</translation>
 <translation id="5093477827231450397">उन साइटों की सूची जिन्हें आपने ब्लॉक किया है और जिनसे आपको अन्य साइटों पर विज्ञापन के सुझाव नहीं चाहिए</translation>
 <translation id="5093569275467863761">बैक/फ़ॉरवर्ड कैश मेमोरी का गुप्त सबफ़्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6570,7 +6568,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{इस एक्सटेंशन को ब्लॉक किया गया है}one{इस एक्सटेंशन को ब्लॉक किया गया है}other{इन एक्सटेंशन को ब्लॉक किया गया है}}</translation>
 <translation id="560834977503641186">'वाई-फ़ाई सिंक' के बारे में ज़्यादा जानें</translation>
 <translation id="5608580678041221894">काटे जाने वाले क्षेत्र को एडजस्ट करने या उसकी जगह बदलने के लिए इन कुंजियों पर टैप करें</translation>
-<translation id="560919433407466404">Parallels Desktop को यूएसबी डिवाइसों को ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="5609231933459083978">ऐप्लिकेशन अमान्य मालूम होता है.</translation>
 <translation id="5610867721023328944">फिर से कोशिश करें या इनमें से किसी एक थीम को चुनें.</translation>
 <translation id="5611398002774823980">खाते में सेव करें</translation>
@@ -8648,7 +8645,6 @@
 <translation id="7109543803214225826">शॉर्टकट हटाया गया</translation>
 <translation id="7110388475787189534">टैब अपने-आप व्यवस्थित होने की सुविधा इस्तेमाल करने के बारे में जानें</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{टैब को ग्रुप में शामिल करें}one{टैब को ग्रुप में शामिल करें}other{टैब को ग्रुप में शामिल करें}}</translation>
-<translation id="7110684627876015299">बिना नाम वाला ग्रुप - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">इस विंडो को कोई नाम दें</translation>
 <translation id="7113502843173351041">अपना ईमेल पता जानें</translation>
 <translation id="7113974454301513811">अब मौजूदा टैब को अपनी सूची में जोड़ें</translation>
@@ -9020,7 +9016,6 @@
 <translation id="7387107590792462040">कृपया इंस्टॉल होने तक इंतज़ार करें</translation>
 <translation id="7387273928653486359">ठीक-ठाक</translation>
 <translation id="7387951778417998929">डिफ़ॉल्ट सर्च इंजन के अलावा, किसी दूसरे सर्च इंजन का इस्तेमाल करने के लिए, पता बार में उसका शॉर्टकट लिखें. इसके बाद, अपने हिसाब से कीबोर्ड शॉर्टकट लिखें. डिफ़ॉल्ट सर्च इंजन को यहां भी बदला जा सकता है.</translation>
-<translation id="7388209873137778229">सिर्फ़ साथ काम करने वाले डिवाइस दिखाए गए हैं.</translation>
 <translation id="7388615499319468910">साइटें और विज्ञापन देने वाले यह पता कर सकते हैं कि विज्ञापनों की परफ़ॉर्मेंस कैसी है. यह सेटिंग बंद है.</translation>
 <translation id="738903649531469042">रीडिंग लिस्ट में टैब जोड़ें</translation>
 <translation id="7392118418926456391">वायरस स्कैन विफल रहा</translation>
@@ -10700,7 +10695,6 @@
 <translation id="8553342806078037065">अन्य लोगों को प्रबंधित करें</translation>
 <translation id="8554899698005018844">कोई भाषा नहीं</translation>
 <translation id="8555444629041783356">जगह की जानकारी अपने-आप बंद होने का शेड्यूल</translation>
-<translation id="855604308879080518">Android ऐप्लिकेशन को इस Chromebook में यूएसबी डिवाइसों को ऐक्सेस करने की अनुमति दें. यूएसबी डिवाइस को प्लग-इन किए जाने पर, हर बार अनुमति मांगी जाएगी. Android का हर ऐप्लिकेशन कुछ और भी अनुमतियां मांगेगा.</translation>
 <translation id="8557022314818157177">अपनी सुरक्षा कुंजी को तब तक छूते रहें, जब तक फ़िंगरप्रिंट कैप्चर न हाे जाए</translation>
 <translation id="8557100046150195444">साइन इन करने के लिए, टच आईडी का इस्तेमाल करें</translation>
 <translation id="8557856025359704738">अगली बार <ph name="NEXT_DATE_DOWNLOAD" /> को डाउनलोड होंगी.</translation>
@@ -11412,7 +11406,6 @@
 <translation id="9036484080057916082">हस्ताक्षर किए गए सर्टिफ़िकेट की टाइमस्टैंप सूची</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है</translation>
 <translation id="9037640663275993951">इस डिवाइस पर वीएम मशीन चलाने की अनुमति नहीं है</translation>
-<translation id="9037706442425692248">Android ऐप्लिकेशन को इस Chromebook में यूएसबी डिवाइसों को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="9037818663270399707">सभी नेटवर्क ट्रैफ़िक के लिए, आपका कनेक्शन निजी नहीं है</translation>
 <translation id="9037965129289936994">मूल दिखाएं</translation>
 <translation id="9038489124413477075">अनाम फ़ोल्डर</translation>

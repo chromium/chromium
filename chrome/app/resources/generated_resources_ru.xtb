@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Находите то, что вам нужно, не закрывая клавиатуру.</translation>
 <translation id="1054048317165655285">Завершите настройку на телефоне</translation>
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
+<translation id="1054187194995068149">Привет. Это проверка голоса</translation>
 <translation id="1054502481659725522">Сайты, приложения и системные службы могут использовать данные о вашем местоположении</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Обновите <ph name="DEVICE_TYPE" /> в течение 1 недели}one{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}few{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}many{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}other{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}}</translation>
 <translation id="1055606969515662982">Чтобы остановить трансляцию, используйте пульт ДУ</translation>
@@ -459,7 +460,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> может изменять указанные ниже файлы.</translation>
 <translation id="130174306655812048">Спросите "Окей, Google, что это за песня?".</translation>
 <translation id="1302227299132585524">Разрешить JavaScript из событий Apple</translation>
-<translation id="1302654693270046655"><ph name="OPENED_STATE" /> группа "<ph name="GROUP_NAME" />"</translation>
 <translation id="1303101771013849280">HTML-файл с закладками</translation>
 <translation id="1303671224831497365">Устройства Bluetooth не найдены</translation>
 <translation id="130491383855577612">Приложения и файлы Linux заменены.</translation>
@@ -541,7 +541,6 @@
 <translation id="1362829980946830670">Вы можете возобновить предыдущий сеанс, пока текущий активен.</translation>
 <translation id="1362865166188278099">Техническая проблема. Проверьте принтер.</translation>
 <translation id="1363585519747660921">Необходимо настроить USB-принтер</translation>
-<translation id="1363772878823415675">Предоставить <ph name="SPECIFIC_NAME" /> доступ к USB-устройствам</translation>
 <translation id="136378536198524553">Режим энергосбережения включен</translation>
 <translation id="136522805455656552">Чтобы устройство оставалось защищенным, устанавливайте и запускайте только программное обеспечение, предоставленное надежными разработчиками и источниками. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Поднять брови</translation>
@@ -2560,6 +2559,7 @@
 <translation id="2743301740238894839">Начать</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="274362947316498129">Приложение пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
+<translation id="2744221223678373668">Общедоступные</translation>
 <translation id="2745080116229976798">Квалифицированное подчинение Microsoft</translation>
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5846,9 +5846,7 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088427648965532275">Поставщик Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
-<translation id="5089763948477033443">Маркер, который позволяет изменить размер боковой панели</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
-<translation id="5090981554736747495">Предоставить приложениям Linux доступ к USB-устройствам</translation>
 <translation id="5091636240353511739">Показать PIN-код</translation>
 <translation id="5093477827231450397">Список заблокированных сайтов, которым запрещено предлагать рекламу для других сайтов</translation>
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6560,7 +6558,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Это расширение заблокировано}one{Эти расширения заблокированы}few{Эти расширения заблокированы}many{Эти расширения заблокированы}other{Эти расширения заблокированы}}</translation>
 <translation id="560834977503641186">Узнать больше о функции "Синхронизация Wi-Fi"</translation>
 <translation id="5608580678041221894">Чтобы двигать рамку кадрирования, нажимайте на следующие кнопки</translation>
-<translation id="560919433407466404">Предоставить Parallels Desktop доступ к USB-устройствам</translation>
 <translation id="5609231933459083978">Неизвестное название приложения</translation>
 <translation id="5610867721023328944">Повторите попытку или выберите одну из тем ниже.</translation>
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
@@ -8642,7 +8639,6 @@
 <translation id="7109543803214225826">Ярлык удален</translation>
 <translation id="7110388475787189534">Как настроить автоматическое упорядочивание вкладок.</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
-<translation id="7110684627876015299"><ph name="OPENED_STATE" /> группа без названия</translation>
 <translation id="7111822978084196600">Добавьте название окна</translation>
 <translation id="7113502843173351041">Доступ к вашему адресу электронной почты</translation>
 <translation id="7113974454301513811">Теперь добавьте текущую вкладку в список</translation>
@@ -9014,7 +9010,6 @@
 <translation id="7387107590792462040">Идет установка. Подождите.</translation>
 <translation id="7387273928653486359">Приемлемое</translation>
 <translation id="7387951778417998929">Чтобы выбрать другую поисковую систему, в адресной строке введите подходящую быструю команду и нажмите нужное сочетание клавиш. Здесь также можно изменить поисковую систему по умолчанию.</translation>
-<translation id="7388209873137778229">Показаны только поддерживаемые устройства.</translation>
 <translation id="7388615499319468910">Сайты и рекламодатели могут оценивать эффективность рекламы. Параметр отключен.</translation>
 <translation id="738903649531469042">Добавить вкладку в список для чтения</translation>
 <translation id="7392118418926456391">Не удалось выполнить проверку на вирусы</translation>
@@ -10695,7 +10690,6 @@
 <translation id="8553342806078037065">Другие пользователи</translation>
 <translation id="8554899698005018844">Язык не указан</translation>
 <translation id="8555444629041783356">Автоматическое обновление времени восхода и захода солнца</translation>
-<translation id="855604308879080518">Приложения Android смогут получать доступ к USB-устройствам на этом Chromebook. Разрешение нужно будет предоставлять при каждом подключении USB-устройства. Некоторым приложениям для Android понадобятся дополнительные разрешения.</translation>
 <translation id="8557022314818157177">Продолжайте прикасаться к сканеру отпечатков пальцев на электронном ключе, пока отпечаток не будет сохранен.</translation>
 <translation id="8557100046150195444">Чтобы продолжить, используйте Touch ID</translation>
 <translation id="8557856025359704738">Следующее скачивание запланировано <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11409,7 +11403,6 @@
 <translation id="9036484080057916082">Список временных меток подписанных сертификатов</translation>
 <translation id="9037054491984310631">Установлено подключение к устройству Bluetooth "<ph name="DEVICE" />"</translation>
 <translation id="9037640663275993951">Не разрешено выполнять ВМ на этом устройстве.</translation>
-<translation id="9037706442425692248">Приложения Android смогут получать доступ к USB-устройствам на этом Chromebook.</translation>
 <translation id="9037818663270399707">Весь ваш сетевой трафик передается через незащищенное подключение.</translation>
 <translation id="9037965129289936994">Показать оригинал</translation>
 <translation id="9038489124413477075">Без названия</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">કંઈક નવું શરૂ કરો અથવા જે ચાલુ હોય તેમાં સહાય મેળવો.</translation>
 <translation id="1054048317165655285">તમારા ફોન પર સેટઅપ પૂર્ણ કરો</translation>
 <translation id="1054153489933238809">નવા ટેબમાં મૂળ &amp;છબી ખોલો</translation>
+<translation id="1054187194995068149">નમસ્તે. આ પ્રીવ્યૂ છે</translation>
 <translation id="1054502481659725522">ઍપ, વેબસાઇટ તેમજ સિસ્ટમ સર્વિસ તમારા લોકેશનનો ઉપયોગ કરી શકે છે</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 અઠવાડિયાની અંદર <ph name="DEVICE_TYPE" /> અપડેટ કરો}one{{NUM_WEEKS} અઠવાડિયાંમાં <ph name="DEVICE_TYPE" /> અપડેટ કરો}other{{NUM_WEEKS} અઠવાડિયાંમાં <ph name="DEVICE_TYPE" /> અપડેટ કરો}}</translation>
 <translation id="1055606969515662982">કાસ્ટ કરવાનું રોકવા માટે રિમોટનો ઉપયોગ કરો</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="130174306655812048">“Ok Google, આ કયું ગીત છે?” એવું પૂછી જુઓ</translation>
 <translation id="1302227299132585524">Apple ઇવેન્ટમાંથી JavaScriptને મંજૂરી આપો</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> ગ્રૂપ - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">બુકમાર્ક HTML ફાઇલ</translation>
 <translation id="1303671224831497365">કોઈ Bluetooth ડિવાઇસ મળ્યાં નથી</translation>
 <translation id="130491383855577612">Linux ઍપ અને ફાઇલો સફળતાપૂર્વક બદલી છે</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">તમારું તાજેતરનું સત્ર સક્રિય રહે ત્યાં સુધી તમે તમારું પાછળનું સત્ર ફરી શરૂ કરી શકો છો.</translation>
 <translation id="1362865166188278099">મિકેનિકલ સમસ્યા. પ્રિન્ટર ચેક કરો</translation>
 <translation id="1363585519747660921">USB પ્રિન્ટર માટે ગોઠવણી જરૂરી છે</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />ને USB ડિવાઇસ ઍક્સેસ કરવાની પરવાનગી આપો.</translation>
 <translation id="136378536198524553">એનર્જી સેવર ચાલુ છે</translation>
 <translation id="136522805455656552">તમારું ડિવાઇસ સુરક્ષિત રાખવા માટે, તમારે માત્ર વિશ્વસનીય સૉર્સ અને ડેવલપરના સૉફ્ટવેર ઇન્સ્ટૉલ કરવા અને તેનો ઉપયોગ કરવો જોઈએ. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ભમ્મરો ઊંચી કરો</translation>
@@ -2556,6 +2555,7 @@
 <translation id="2743301740238894839">શરૂ કરો</translation>
 <translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="274362947316498129">કોઈ ઍપ <ph name="DEVICE_NAME" /> ઍક્સેસ કરવાનો પ્રયાસ કરી રહી છે. ઍક્સેસની મંજૂરી આપવા માટે, <ph name="DEVICE_NAME" />ની પ્રાઇવસીનું સ્વિચ બંધ કરો.</translation>
+<translation id="2744221223678373668">શેર કરેલી</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> પર સાઇન ઇન કરો</translation>
 <translation id="2749836841884031656">સિમ</translation>
@@ -5843,9 +5843,7 @@
 <translation id="5087864757604726239">પાછા ફરો</translation>
 <translation id="5088427648965532275">Passpoint પ્રદાતા</translation>
 <translation id="5088534251099454936">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">બાજુની પૅનલનું કદ બદલવાનું હેન્ડલ</translation>
 <translation id="5090637338841444533">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી નથી</translation>
-<translation id="5090981554736747495">Linux ઍપ પરવાનગીને USB ડિવાઇસ ઍક્સેસ કરવાની પરવાનગી આપો.</translation>
 <translation id="5091636240353511739">પિન બતાવો</translation>
 <translation id="5093477827231450397">તમે બ્લૉક કરેલી એવી સાઇટની સૂચિ કે જે અન્ય સાઇટને જાહેરાતો સૂચવે એવું તમે ઇચ્છતા નથી</translation>
 <translation id="5093569275467863761">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલી છૂપી સબફ્રેમ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6557,7 +6555,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}one{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}other{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યા છે}}</translation>
 <translation id="560834977503641186">વાઇ-ફાઇ સિંક, વધુ જાણો</translation>
 <translation id="5608580678041221894">કાપવા માટેના ક્ષેત્રને સમાયોજિત કરવા અથવા ખસેડવા માટે નીચેની કીને ટૅપ કરો</translation>
-<translation id="560919433407466404">USB ડિવાઇસને ઍક્સેસ કરવાની પરવાનગી Parallels ડેસ્કટૉપને આપો.</translation>
 <translation id="5609231933459083978">ઍપ્લિકેશન અમાન્ય હોય તેવું લાગે છે.</translation>
 <translation id="5610867721023328944">ફરીથી પ્રયાસ કરો અથવા નીચે ઉપલબ્ધ થીમમાંથી એક થીમ પસંદ કરો.</translation>
 <translation id="5611398002774823980">એકાઉન્ટમાં સાચવો</translation>
@@ -8637,7 +8634,6 @@ USB ડિવાઇસ</translation>
 <translation id="7109543803214225826">શૉર્ટકટ કાઢી નાખ્યો</translation>
 <translation id="7110388475787189534">તમારા ટૅબને ઑટોમૅટિક રીતે ગોઠવવાની રીત વિશે જાણો</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ગ્રૂપમાં ટૅબ ઉમેરો}one{ગ્રૂપમાં ટૅબ ઉમેરો}other{ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
-<translation id="7110684627876015299">નામ વિનાનું ગ્રૂપ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">આ વિન્ડોને નામ આપો</translation>
 <translation id="7113502843173351041">તમારું ઇમેઇલ ઍડ્રેસ જાણો</translation>
 <translation id="7113974454301513811">હવે તમારા હાલના ટૅબને તમારી સૂચિમાં ઉમેરો</translation>
@@ -9009,7 +9005,6 @@ USB ડિવાઇસ</translation>
 <translation id="7387107590792462040">ઇન્સ્ટૉલેશનની પ્રક્રિયા ચાલુ હોય ત્યારે કૃપા કરીને રાહ જુઓ</translation>
 <translation id="7387273928653486359">સ્વીકાર્ય</translation>
 <translation id="7387951778417998929">ડિફૉલ્ટ સિવાયના શોધ એન્જિનનો ઉપયોગ કરવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ ટાઇપ કરો. તમે અહીં તમારા ડિફૉલ્ટ શોધ એન્જિનને બદલી પણ શકો છો.</translation>
-<translation id="7388209873137778229">માત્ર સપોર્ટ હોય તેવા ડિવાઇસ બતાવાય છે.</translation>
 <translation id="7388615499319468910">જાહેરાતોના પર્ફોર્મન્સ સંબંધી બાબતો સાઇટ અને જાહેરાતકર્તાઓ સમજી શકે છે. આ સેટિંગ બંધ છે.</translation>
 <translation id="738903649531469042">વાંચન સૂચિમાં ટૅબ ઉમેરો</translation>
 <translation id="7392118418926456391">વાયરસ સ્કેન નિષ્ફળ થયું</translation>
@@ -10685,7 +10680,6 @@ USB ડિવાઇસ</translation>
 <translation id="8553342806078037065">અન્ય લોકોને મેનેજ કરો</translation>
 <translation id="8554899698005018844">કોઈ ભાષા નથી</translation>
 <translation id="8555444629041783356">ઑટોમૅટિક રીતે બંધ કરવા માટેનું શેડ્યૂલ</translation>
-<translation id="855604308879080518">આ Chromebook પર Androidની બધી ઍપને USB ડિવાઇસ ઍક્સેસ કરવાની સુવિધા આપો. તમે જ્યારે પણ કોઈ USB ડિવાઇસ પ્લગ-ઇન કરશો, ત્યારે પરવાનગી માટે વિનંતી કરવામાં આવશે. Androidની જુદી જુદી ઍપ દ્વારા વધારાની પરવાનગીઓ માટે પૂછવામાં આવશે.</translation>
 <translation id="8557022314818157177">જ્યાં સુધી તમારી ફિંગરપ્રિન્ટ કૅપ્ચર ન થાય, ત્યાં સુધી તમારી સિક્યુરિટી કીનો સ્પર્શ કરતા રહો</translation>
 <translation id="8557100046150195444">ચાલુ રાખવા માટે ટચ IDનો ઉપયોગ કરો</translation>
 <translation id="8557856025359704738">આગામી ડાઉનલોડ <ph name="NEXT_DATE_DOWNLOAD" />ના રોજ છે.</translation>
@@ -11397,7 +11391,6 @@ USB ડિવાઇસ</translation>
 <translation id="9036484080057916082">હસ્તાક્ષરિત સર્ટિફિકેટ ટાઇમસ્ટેમ્પની સૂચિ</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> નામના બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટેડ છે</translation>
 <translation id="9037640663275993951">ડિવાઇસને કોઈ મંજૂરી નથી</translation>
-<translation id="9037706442425692248">આ Chromebook પર Androidની બધી ઍપને USB ડિવાઇસ ઍક્સેસ કરવાની સુવિધા આપો</translation>
 <translation id="9037818663270399707">તમારું કનેક્શન બધા નેટવર્ક ટ્રાફિક માટે ખાનગી નથી</translation>
 <translation id="9037965129289936994">મૂળ બતાવો</translation>
 <translation id="9038489124413477075">અનામાંકિત ફોલ્ડર</translation>

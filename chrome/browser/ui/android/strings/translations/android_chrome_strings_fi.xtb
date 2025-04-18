@@ -767,7 +767,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4595805675102978678">Google-tilin virhe</translation>
 <translation id="4601095002996233687">Yksityiskohtaiset tarkistukset epäilyttäville latauksille.</translation>
 <translation id="4606559747793337066">Kun sivusto tai sovellus pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome salaa ja esilataa sivut Googlen palvelimien kautta ilman evästeitä. Henkilöllisyytesi piilotetaan esiladatulta sivustolta.</translation>
-<translation id="4609429330876432068">Chrome‑ ja <ph name="CHROME_CHANNEL" /> ‑sovelluksissa tallennetut salasanat yhdistettiin. Voit yhä täyttää kaikki tallennetut salasanat automaattisesti molemmissa sovelluksissa.</translation>
 <translation id="4616150815774728855">Avaa <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4624065194742029982">Chromen incognito-tila</translation>
@@ -1561,7 +1560,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8014210850410408071">Tuo seuraavaksi salasanat</translation>
 <translation id="8015452622527143194">Palauta sivun kaiken sisällön oletuskoko</translation>
-<translation id="8026238112629815203">Muutimme salasanojen tallennustapaa tällä laitteella</translation>
 <translation id="8027395186860110042">Salasanat saattavat lakata toimimasta pian</translation>
 <translation id="8027863900915310177">Valitse latauspaikka</translation>
 <translation id="8030852056903932865">Hyväksy</translation>

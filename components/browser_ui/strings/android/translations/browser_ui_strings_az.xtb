@@ -285,6 +285,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
+<translation id="4578289292431526768">Başlayaq</translation>
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="461356340001513807">Kimlik xidməti olan hesabdan istifadə edərək veb-saytlara daxil olmağa imkan verir</translation>
 <translation id="4635969503923889910">Saytlara NFC cihazlarından istifadə etmək icazəsi verməyin</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6320088164292336938">Vibrasiya</translation>
-<translation id="6344622098450209924">İzlənmədən qorunma</translation>
 <translation id="6367753977865761591">Müəyyən bir sayt üçün üçüncü tərəfin girişini bloklayın.</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="640163077447496506">Bu gün vaxtı bitir</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">নতুন কিছু শুরু করুন বা আগে থাকা কাজের ক্ষেত্রে সহায়তা পান।</translation>
 <translation id="1054048317165655285">আপনার ফোন সেট আপ করা সম্পূর্ণ করুন</translation>
 <translation id="1054153489933238809">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
+<translation id="1054187194995068149">হ্যালো। এটি হল একটি প্রিভিউ</translation>
 <translation id="1054502481659725522">অ্যাপ, ওয়েবসাইট এবং সিস্টেম সার্ভিস আপনার লোকেশন ব্যবহার করতে পারবে</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{১ সপ্তাহের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}one{{NUM_WEEKS} সপ্তাহের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}other{{NUM_WEEKS} সপ্তাহের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}}</translation>
 <translation id="1055606969515662982">কাস্টিং বন্ধ করতে রিমোট ব্যবহার করুন</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" />-এর কাছে নিচে উল্লেখ করা ফাইলগুলি এডিট করার অনুমতি আছে</translation>
 <translation id="130174306655812048">“Ok Google, এটি কোন গান?” বলে দেখুন</translation>
 <translation id="1302227299132585524">Apple Events থেকে জাভাস্ক্রিপ্ট চালানোর অনুমতি দিন</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> গ্রুপ - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML ফাইল বুকমার্ক করে</translation>
 <translation id="1303671224831497365">কোনো ব্লুটুথ ডিভাইস পাওয়া যায়নি</translation>
 <translation id="130491383855577612">Linux অ্যাপ ও ফাইল প্রতিস্থাপন করা হয়ে গেছে</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">আপনার বর্তমান সেশন চালু থাকলে আগের সেশন চালু করতে পারবেন।</translation>
 <translation id="1362865166188278099">যান্ত্রিক সমস্যা হয়েছে। প্রিন্টারটি চেক করুন</translation>
 <translation id="1363585519747660921">ইউএসবি প্রিন্টার কনফিগার করা প্রয়োজন</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />-কে USB ডিভাইস অ্যাক্সেস করার অনুমতি দিন।</translation>
 <translation id="136378536198524553">পাওয়ার সেভার চালু আছে</translation>
 <translation id="136522805455656552">আপনার ডিভাইস সুরক্ষিত রাখতে, বিশ্বস্ত সোর্স ও ডেভেলপারদের থেকেই শুধুমাত্র সফ্টওয়্যার রান করানো ও ইনস্টল করা উচিত। <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ভুরু কপালে তোলা</translation>
@@ -2572,6 +2571,7 @@
 <translation id="2743301740238894839">শুরু করুন</translation>
 <translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
 <translation id="274362947316498129">কোনও অ্যাপ <ph name="DEVICE_NAME" /> অ্যাক্সেস করা চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, <ph name="DEVICE_NAME" />-এর প্রাইভেসি সুইচ বন্ধ করে দিন।</translation>
+<translation id="2744221223678373668">শেয়ার করে নেওয়া</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />এ সাইন-ইন করুন</translation>
 <translation id="2749836841884031656">সিম (SIM)</translation>
@@ -5859,9 +5859,7 @@
 <translation id="5087864757604726239">ফিরুন</translation>
 <translation id="5088427648965532275">পাসপয়েন্ট পরিষেবা প্রদানকারী</translation>
 <translation id="5088534251099454936">RSA এনক্রিপশানের সাথে PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">সাইড প্যানেল ছোট বড় করার হ্যান্ডেল</translation>
 <translation id="5090637338841444533">আপনার ক্যামেরার পজিশন ট্র্যাক করার অনুমতি দেওয়া হয়নি</translation>
-<translation id="5090981554736747495">USB ডিভাইস অ্যাক্সেস করার জন্য Linux অ্যাপকে অনুমতি দিন।</translation>
 <translation id="5091636240353511739">পিন দেখুন</translation>
 <translation id="5093477827231450397">সেইসব সাইটের তালিকা যা আপনি ব্লক করেছেন এবং যার থেকে আপনি অন্য সাইটে বিজ্ঞাপনের সাজেশন চান না</translation>
 <translation id="5093569275467863761">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6573,7 +6571,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন ব্লক করা আছে}one{এই এক্সটেনশন ব্লক করা আছে}other{এই এক্সটেনশন ব্লক করা আছে}}</translation>
 <translation id="560834977503641186">Wi-Fi সিঙ্ক, আরও জানুন</translation>
 <translation id="5608580678041221894">কাটছাঁট করার এলাকা সমন্বয় করতে বা সরাতে নীচের কী’গুলি আলতো চাপুন</translation>
-<translation id="560919433407466404">Parallels Desktop-কে USB ডিভাইস অ্যাক্সেস করার অনুমতি দিন।</translation>
 <translation id="5609231933459083978">অ্যাপটি ভুল বলে মনে হচ্ছে৷</translation>
 <translation id="5610867721023328944">আবার চেষ্টা করুন বা নিচে দেওয়া উপলভ্য থিম থেকে বেছে নিন।</translation>
 <translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
@@ -8652,7 +8649,6 @@
 <translation id="7109543803214225826">শর্টকাট সরানো হয়েছে</translation>
 <translation id="7110388475787189534">কীভাবে আপনার ট্যাব অটোমেটিক গুছিয়ে রাখবেন তা জানুন</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
-<translation id="7110684627876015299">নামহীন গ্রুপ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">এই উইন্ডোর একটি নাম দিন</translation>
 <translation id="7113502843173351041">আপনার ইমেল আইডি জানুন</translation>
 <translation id="7113974454301513811">এখন আপনার তালিকায় বর্তমান ট্যাব যোগ করুন</translation>
@@ -9024,7 +9020,6 @@
 <translation id="7387107590792462040">ইনস্টলেশনের প্রসেস চলাকালীন অপেক্ষা করুন</translation>
 <translation id="7387273928653486359">ঠিকঠাক</translation>
 <translation id="7387951778417998929">ডিফল্ট সার্চ ইঞ্জিনের পরিবর্তে অন্য কোনও একটি ব্যবহার করতে, অ্যাড্রেস বারে সেটির শর্টকাট টাইপ করে আপনার পছন্দের কীবোর্ড শর্টকাট প্রেস করুন। এছাড়াও, আপনি এখান থেকে আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
-<translation id="7388209873137778229">যেসব ডিভাইসে কাজ করে শুধু সেগুলিই দেখানো হচ্ছে।</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="738903649531469042">পড়ার তালিকাতে ট্যাব যোগ করুন</translation>
 <translation id="7392118418926456391">ভাইরাস স্ক্যান ব্যর্থ হয়েছে</translation>
@@ -10705,7 +10700,6 @@
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>
 <translation id="8554899698005018844">কোনও ভাষা নেই</translation>
 <translation id="8555444629041783356">অটোমেটিক সানসেট শিডিউল</translation>
-<translation id="855604308879080518">এই Chromebook-এ বিভিন্ন USB ডিভাইস অ্যাক্সেস করতে Android অ্যাপে অনুমতি দিন। প্রত্যেকবার USB ডিভাইস প্লাগ-ইন করার সময় অনুমতির জন্য অনুরোধ করা হবে। তবে আলাদা Android অ্যাপের ক্ষেত্রে অতিরিক্ত অনুমতি নিতে হবে।</translation>
 <translation id="8557022314818157177">আপনার আঙ্গুলের ছাপ ক্যাপচার না করা পর্যন্ত 'নিরাপত্তা কী'-তে টাচ করতে থাকুন</translation>
 <translation id="8557100046150195444">চালিয়ে যেতে টাচ আইডি ব্যবহার করুন</translation>
 <translation id="8557856025359704738">পরবর্তী ডাউনলোড <ph name="NEXT_DATE_DOWNLOAD" />-এ উপলভ্য হবে।</translation>
@@ -11417,7 +11411,6 @@
 <translation id="9036484080057916082">সই করা সার্টিফিকেট টাইমস্ট্যাম্প সংক্রান্ত তালিকা</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> নামের ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="9037640663275993951">ডিভাইস ব্যবহার করা যাবে না</translation>
-<translation id="9037706442425692248">এই Chromebook-এ USB ডিভাইস অ্যাক্সেস করার জন্য Android অ্যাপকে অনুমতি দিন</translation>
 <translation id="9037818663270399707">সব নেটওয়ার্ক ট্রাফিকের ক্ষেত্রে আপনার কানেকশন নিরাপদ নয়</translation>
 <translation id="9037965129289936994">প্রকৃত রূপ দেখান</translation>
 <translation id="9038489124413477075">নামবিহীন ফোল্ডার</translation>

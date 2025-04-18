@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
 <translation id="4570913071927164677">Detalii</translation>
+<translation id="4578289292431526768">Să începem!</translation>
 <translation id="4598549027014564149">În modul incognito, site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe site-uri, inclusiv site-urile conexe. Activitatea ta de navigare nu este folosită pentru acțiuni precum personalizarea anunțurilor. Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="461356340001513807">Îți dă posibilitatea să te conectezi pe site-uri folosind contul creat într-un serviciu de identitate</translation>
 <translation id="4635969503923889910">Nu permite site-urilor să folosească dispozitive NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Site-urile îți pot solicita să îți trimită notificări</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6320088164292336938">Vibrații</translation>
-<translation id="6344622098450209924">Protecție împotriva urmăririi</translation>
 <translation id="6367753977865761591">Blochează conectarea terță parte pentru un anumit site.</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="640163077447496506">Expiră astăzi</translation>

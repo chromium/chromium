@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">අලුත් දෙයක් අරඹන්න හෝ ප්‍රවාහයේ දී උදවු ලබා ගන්න.</translation>
 <translation id="1054048317165655285">ඔබගේ දුරකථනයෙහි පිහිටුවීම අවසන් කරන්න</translation>
 <translation id="1054153489933238809">මුල් පින්තූරය නව පටිත්තක විවෘත කරන්න</translation>
+<translation id="1054187194995068149">ආයුබෝවන්. මෙය පෙරදසුනකි</translation>
 <translation id="1054502481659725522">යෙදුම්, වෙබ් අඩවි, සහ පද්ධති සේවා ඔබේ ස්ථානය භාවිත කළ හැක</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{සති 1ක් ඇතුළත <ph name="DEVICE_TYPE" /> යාවත්කාලීන කරන්න}one{සති {NUM_WEEKS}ක් ඇතුළත <ph name="DEVICE_TYPE" /> යාවත්කාලීන කරන්න}other{සති {NUM_WEEKS}ක් ඇතුළත <ph name="DEVICE_TYPE" /> යාවත්කාලීන කරන්න}}</translation>
 <translation id="1055606969515662982">විකාශනය නැවැත්වීමට දුරස්ථ පාලකය භාවිතා කරන්න</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> හට පහත ගොනු සංස්කරණ කළ හැක</translation>
 <translation id="130174306655812048">“Hey Google, මේ ගීතය කුමක් ද?” උත්සාහ කරන්න</translation>
 <translation id="1302227299132585524">Apple Events වෙතින් ජාවාස්ක්‍රිප්ට්වලට ඉඩ දෙන්න</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> සමූහය - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML ගොනුව පිටු සලකුණු කරන්න</translation>
 <translation id="1303671224831497365">බ්ලූටූත් උපාංග හමු නොවිණි.</translation>
 <translation id="130491383855577612">ලිනක්ස් යෙදුම් සහ ගොනු සාර්ථකව ප්‍රතිස්ථාපන කරන ලදි</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">ඔබේ වත්මන් සැසිය සක්‍රියව පවතින අතරේ ඔබට ඔබේ පෙර සැසිය නැවත පටන් ගැනීමට හැක.</translation>
 <translation id="1362865166188278099">කාර්මික ගැටලුවකි. මුද්‍රණ යන්ත්‍රය පරීක්ෂා කරන්න</translation>
 <translation id="1363585519747660921">USB මුද්‍රකයට වින්‍යාස කිරීම අවශ්‍යයි</translation>
-<translation id="1363772878823415675">USB උපාංගවලට ප්‍රවේශ වීමට <ph name="SPECIFIC_NAME" /> හට අවසර දෙන්න.</translation>
 <translation id="136378536198524553">බලශක්ති සුරැකුම ක්‍රියාත්මකයි</translation>
 <translation id="136522805455656552">ඔබේ උපාංගය සුරක්ෂිතව තබා ගැනීම සඳහා, ඔබ විශ්වාසදායක මූලාශ්‍රවලින් සහ සංවර්ධකයන්ගෙන් පමණක් මෘදුකාංග ධාවනය කර ස්ථාපනය කළ යුතු ය. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ඇහි බැම ඔසවන්න</translation>
@@ -2560,6 +2559,7 @@
 <translation id="2743301740238894839">අරඹන්න</translation>
 <translation id="2743387203779672305">ක්ලිප්බෝඩ් එකට පිටපත් කරන්න</translation>
 <translation id="274362947316498129">යෙදුමක් <ph name="DEVICE_NAME" /> වෙත ප්‍රවේශ වීමට උත්සාහ කරයි. ප්‍රවේශයට ඉඩ දීමට <ph name="DEVICE_NAME" /> රහස්‍යතා ස්විචය ක්‍රියාවිරහිත කරන්න.</translation>
+<translation id="2744221223678373668">හුවමාරු කළ</translation>
 <translation id="2745080116229976798">Microsoft සුදුසුකම්ලත් යටත් කිරීම</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> වෙත ඇතුළු වන්න</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5849,9 +5849,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5087864757604726239">ආපසු</translation>
 <translation id="5088427648965532275">පාස්පොයින්ට් සපයන්නා</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA සංකේතනය</translation>
-<translation id="5089763948477033443">පැති පැනලයේ ප්‍රතිප්‍රමාණ කිරීමේ හසුරුව</translation>
 <translation id="5090637338841444533">ඔබගේ කැමරා පිහිටුම හඹා යාමට ඉඩ නොදේ</translation>
-<translation id="5090981554736747495">USB උපාංගවලට ප්‍රවේශ වීමට Linux යෙදුම්වලට අවසර දෙන්න.</translation>
 <translation id="5091636240353511739">PIN පෙන්වන්න</translation>
 <translation id="5093477827231450397">ඔබට වෙනත් අඩවිවලට දැන්වීම් යෝජනා කිරීමට අවශ්‍ය නැති ඔබ අවහිර කළ අඩවි ලැයිස්තුව</translation>
 <translation id="5093569275467863761">අප්‍රසිද්ධ පසුපසට/ඉදිරියට හැඹිලිගත කළ උපරාමුව: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6563,7 +6561,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{මෙම දිගුව අවහිර කර ඇත}one{මෙම දිගු අවහිර කර ඇත}other{මෙම දිගු අවහිර කර ඇත}}</translation>
 <translation id="560834977503641186">Wi-Fi සමමුහුර්තකරණය, තව දැන ගන්න</translation>
 <translation id="5608580678041221894">කප්පාදු ප්‍රදේශය සීරුමාරු කිරීමට හෝ ගෙන යාමට පහත යතුරු තට්ටු කරන්න</translation>
-<translation id="560919433407466404">Parallels Desktop හට USB උපාංග වෙත ප්‍රවේශ වීමට අවසර දෙන්න.</translation>
 <translation id="5609231933459083978">මෙම යෙදුම වලංගු නොවන ලෙසක් පෙනේ.</translation>
 <translation id="5610867721023328944">නැවත උත්සාහ කරන්න නැතහොත් පහත පවතින තේමා වලින් එකකින් තෝරන්න.</translation>
 <translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
@@ -8639,7 +8636,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7109543803214225826">කෙටිමඟ ඉවත් කර ඇත</translation>
 <translation id="7110388475787189534">ඔබේ පටිති ස්වයංක්‍රීයව සංවිධානය කරන ආකාරය දැන ගන්න</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{කණ්ඩායමට පටිත්ත එක් කරන්න}one{කණ්ඩායමට පටිති එක් කරන්න}other{කණ්ඩායමට පටිති එක් කරන්න}}</translation>
-<translation id="7110684627876015299">නම් නොකළ සමූහය - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">මෙම කවුළුව නම් කරන්න</translation>
 <translation id="7113502843173351041">ඔබගේ ඊතැපැල් ලිපිනය දැනගන්න</translation>
 <translation id="7113974454301513811">දැන් ඔබේ ලැයිස්තුවට වත්මන් පටිත්ත එක් කරන්න</translation>
@@ -9011,7 +9007,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7387107590792462040">ස්ථාපනය සිදුවෙමින් පවතින තෙක් රැඳී සිටින්න</translation>
 <translation id="7387273928653486359">පිළිගත හැකි</translation>
 <translation id="7387951778417998929">පෙරනිමිය හැර වෙනත් සෙවීම් යන්ත්‍රයක් භාවිත කිරීමට, එහි කෙටි මඟ ලිපින තීරුවේ ටයිප් කර එයට පසුව ඔබ කැමති යතුරු පුවරු කෙටි මඟ ටයිප් කරන්න. ඔබට මෙහි ඔබගේ පෙරනිමි සෙවීම් යන්ත්‍රයද වෙනස් කළ හැකිය.</translation>
-<translation id="7388209873137778229">සහාය දක්වන උපාංග පමණක් පෙන්වයි.</translation>
 <translation id="7388615499319468910">අඩවි සහ වෙළඳ ප්‍රචාරකයන්ට දැන්වීම් ක්‍රියා කරන ආකාරය වටහා ගත හැක. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
 <translation id="738903649531469042">කියවීම් ලැයිස්තුවට පටිත්ත එක් කරන්න</translation>
 <translation id="7392118418926456391">වෛරස් පරීක්ෂාව අසාර්ථකයි</translation>
@@ -10692,7 +10687,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8553342806078037065">අනෙක් පුද්ගලයින් කළමනාකරණය කරන්න</translation>
 <translation id="8554899698005018844">භාෂාවක් නැත</translation>
 <translation id="8555444629041783356">ස්වයංක්‍රීය හිරු බැස යෑමේ කාලසටහන</translation>
-<translation id="855604308879080518">Android යෙදුම්වලට මෙම Chromebook හි USB උපාංග වෙත ප්‍රවේශ වීමට ඉඩ දෙන්න. ඔබ USB උපාංගයක් පේනුගත කරන සෑම අවස්ථාවකම අවසරය ඉල්ලනු ඇත. තනි Android යෙදුම් අතිරේක අවසර ඉල්ලනු ඇත.</translation>
 <translation id="8557022314818157177">ඔබේ ඇඟිලි සලකුණ ග්‍රහණ කරන තෙක් ඔබේ ආරක්‍ෂක යතුර ස්පර්ශ කරමින් සිටින්න</translation>
 <translation id="8557100046150195444">ඉදිරියට යාමට ස්පර්ශ හැඳුනුම</translation>
 <translation id="8557856025359704738">ඊළඟ බාගැනීම <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -10705,7 +10699,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8562115322675481339">නව පටිති සමූහයක් තනන්න</translation>
 <translation id="8563043098557365232">පද්ධති සේවා සඳහා පමණක් අවසර ඇත</translation>
 <translation id="8564220755011656606">මයික්‍රොෆෝනය වෙත ප්‍රවේශ විය නොහැක</translation>
-<translation id="8564966082627142049">ආයුබෝවන්, මෙය පෙරදසුනකි</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> ඉවත් කරන්න ද?</translation>
 <translation id="8565650234829130278">යෙදුම් පහළ දැමීමට උත්සාහ කරන ලදි.</translation>
 <translation id="8566916288687510520">නව මුරපදය ලැබී ඇත</translation>
@@ -11407,7 +11400,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9036484080057916082">අත්සන් කළ සහතික කාල මුද්‍රා ලැයිස්තුව</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> නම් වූ බ්ලූටූත් උපාංගයට සම්බන්ධ විය</translation>
 <translation id="9037640663275993951">උපාංගයට ඉඩ නොදේ</translation>
-<translation id="9037706442425692248">Android යෙදුම්වලට මෙම Chromebook හි USB උපාංග වෙත ප්‍රවේශ වීමට ඉඩ දෙන්න</translation>
 <translation id="9037818663270399707">සියලුම ජාල තදබදය සඳහා ඔබගේ සම්බන්ධතාව පුද්ගලික නොවේ</translation>
 <translation id="9037965129289936994">මුල් පිටපත පෙන්වන්න</translation>
 <translation id="9038489124413477075">නිර්නාමික ෆෝල්ඩරය</translation>

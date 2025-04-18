@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">የሆነ አዲስ ነገር ይጀምሩ ወይም ፍሰት ውስጥ እገዛ ያግኙ።</translation>
 <translation id="1054048317165655285">በእርስዎ ስልክ ላይ ማዋቀርን ያጠናቅቁ</translation>
 <translation id="1054153489933238809">የመጀመሪያውን ምስል በአዲስ ትር ክፈት</translation>
+<translation id="1054187194995068149">ሰላም። ይህ ቅድመ እይታ ነው</translation>
 <translation id="1054502481659725522">መተግበሪያዎች፣ ድር ጣቢያዎች እና የሥርዓት አገልግሎቶች የእርስዎን አካባቢ መጠቀም ይችላሉ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />ን በ1 ሳምንት ውስጥ ያዘምኑ}one{<ph name="DEVICE_TYPE" /> በ{NUM_WEEKS} ሳምንቶች ውስጥ ያዘምኑ}other{<ph name="DEVICE_TYPE" /> በ{NUM_WEEKS} ሳምንቶች ውስጥ ያዘምኑ}}</translation>
 <translation id="1055606969515662982">Cast ማድረግ ለማስቆም የርቀት መቆጣጠሪያ ይጠቀሙ</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> የሚከተሉትን ፋይሎች ማርትዕ ይችላል</translation>
 <translation id="130174306655812048">«Hey Google፣ ይህ ዘፈን ምንድን ነው?» ለማለት ይሞክሩ</translation>
 <translation id="1302227299132585524">ከApple Events ላይ ጃቫስክሪፕትን ይፍቀዱ</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> ቡድን - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">ለኤችቲኤምኤል ፋይል እልባት ያደርጋል</translation>
 <translation id="1303671224831497365">ምንም የብሉቱዝ መሣሪያዎች አልተገኙም</translation>
 <translation id="130491383855577612">Linux መተግበሪያዎች እና ፋይሎች በተሳካ ሁኔታ ተተክተዋል</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">አሁን ያለው የእርስዎ ክፍለ ጊዜ ንቁ ሆኖ ሳለ ቀዳሚ ክፍለ ጊዜዎን ከቆመበት መቀጠል አይችሉም።</translation>
 <translation id="1362865166188278099">የመካኒካል ችግር አታሚን ይፈትሹ</translation>
 <translation id="1363585519747660921">ዩኤስቢ አታሚ ውቅረት ያስፈልገዋል</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" /> USB መሣሪያዎችን እንዲደርስ ፈቃድ ይስጡ።</translation>
 <translation id="136378536198524553">ኃይል ቆጣቢ በርቷል</translation>
 <translation id="136522805455656552">የመሣሪያዎን ደህንነት ለመጠበቅ፣ ሶፍትዌርን ከታመኑ ምንጮች እና ገንቢዎች ብቻ ማሄድ እና መጫን አለብዎት። <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ቅንድብን ከፍ ያድርጉ</translation>
@@ -2567,6 +2566,7 @@
 <translation id="2743301740238894839">ጀምር</translation>
 <translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="274362947316498129">አንድ መተግበሪያ <ph name="DEVICE_NAME" />ን ለመድረስ እየሞከረ ነው። መዳረሻን ለመፍቀድ የ<ph name="DEVICE_NAME" /> የግላዊነት መቀያየሪያን ያጥፉ።</translation>
+<translation id="2744221223678373668">የተጋራ</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ውስጥ ይግቡ</translation>
 <translation id="2749836841884031656">ሲም</translation>
@@ -5852,9 +5852,7 @@
 <translation id="5087864757604726239">ወደ ኋላ</translation>
 <translation id="5088427648965532275">መተላለፊያ አቅራቢ</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ከRSA ምስጠራ ጋር</translation>
-<translation id="5089763948477033443">የጎን ፓነል የመጠን መቀየሪያ መያዣ</translation>
 <translation id="5090637338841444533">የካሜራዎን አቀማመጥ ለመከታተል አልተፈቀደም</translation>
-<translation id="5090981554736747495">የዩኤስቢ መተግበሪያዎች እንዲደርስባቸው ለLinux ፈቃድ ይስጡት።</translation>
 <translation id="5091636240353511739">ፒን አሳይ</translation>
 <translation id="5093477827231450397">ለሌላ ጣቢያዎች ማስታወቂያዎች እንዲጠቁሙ የማይፈልጓቸው ያገዷቸው ጣቢያዎች ዝርዝር</translation>
 <translation id="5093569275467863761">ማንነት የማያሳውቅ የጀርባ/ፊት መሸጎጫ ንዑስ ክፈፍ፦ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6566,7 +6564,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ ታግዷል}one{እነዚህ ቅጥያዎች ታግደዋል}other{እነዚህ ቅጥያዎች ታግደዋል}}</translation>
 <translation id="560834977503641186">የWi-Fi ስምረት፣ የበለጠ ለመረዳት</translation>
 <translation id="5608580678041221894">የመከርከሚያ አካባቢውን ለማስተካከል ወይም ለመውሰድ የሚከተሉትን ቁልፎች መታ ያድርጉ</translation>
-<translation id="560919433407466404">Parallels ዴስክቶፕ የዩኤስቢ መሣሪያዎችን እንዲደርስ ፈቃድ ይስጡት።</translation>
 <translation id="5609231933459083978">መተግበሪያው ልክ ያልሆነ ይመስላል።</translation>
 <translation id="5610867721023328944">እንደገና ይሞክሩ ወይም ከታች ካሉት ገጽታዎች ውስጥ አንዱን ይምረጡ።</translation>
 <translation id="5611398002774823980">በመለያ ውስጥ አስቀምጥ</translation>
@@ -8644,7 +8641,6 @@
 <translation id="7109543803214225826">አቋራጭ ተወግዷል</translation>
 <translation id="7110388475787189534">እንዴት የእርስዎን ትሮች በራስ-ሰር ማደራጀት እንደሚችሉ ይወቁ</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ትርን ወደ ቡድን ያክሉ}one{ትሮችን ወደ ቡድን ያክሉ}other{ትሮችን ወደ ቡድን ያክሉ}}</translation>
-<translation id="7110684627876015299">ያልተሰየመ ቡድን - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">ይህን መስኮት ስም ይስጡት</translation>
 <translation id="7113502843173351041">የኢሜይል አድራሻዎን ያውቃል</translation>
 <translation id="7113974454301513811">የአሁኑን ትር ወደ ዝርዝርዎ አሁን ያክሉት</translation>
@@ -9016,7 +9012,6 @@
 <translation id="7387107590792462040">መጫኑ በሂደት ላይ እያለ እባክዎን ይጠብቁ</translation>
 <translation id="7387273928653486359">ተቀባይነት ያለው</translation>
 <translation id="7387951778417998929">ከነባሪው በተለየ የፍለጋ ፕሮግራም ለመጠቀም የእርስዎን ተመራጭ የቁልፍ ሰሌዳ አቋራጭን በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ። እንዲሁም ነባሪ የፍለጋ ፕሮግራምዎን እዚህ መለወጥ ይችላሉ።</translation>
-<translation id="7388209873137778229">የሚደገፉ መሣሪያዎች ብቻ ናቸው የሚታዩት።</translation>
 <translation id="7388615499319468910">ጣቢያዎች እና አስተዋዋቂዎች የማስታወቂያዎች አፈጻጸም እንዴት እንደሆነ መረዳት ይችላሉ። ይህ ቅንብር ጠፍቷል።</translation>
 <translation id="738903649531469042">ትርን ወደ የንባብ ዝርዝር ያክሉ</translation>
 <translation id="7392118418926456391">የቫይረስ ቅኝት አልተሳካም</translation>
@@ -10703,7 +10698,6 @@ nil</translation>
 <translation id="8553342806078037065">ሌሎች ሰዎችን አቀናብር</translation>
 <translation id="8554899698005018844">ምንም ቋንቋ</translation>
 <translation id="8555444629041783356">የራስ-ሰር ማቋረጥ መርሐግብር</translation>
-<translation id="855604308879080518">የAndroid መተግበሪያዎች በዚህ Chromebook ላይ የዩኤስቢ መሣሪያዎችን እንዲደርሱ ያድርጉ። የዩኤስቢ መሣሪያ በሰኩ ቁጥር ፈቃድ ያስፈልጋል። ተናጠል የAndroid መተግበሪያዎች ተጨማሪ ፈቃዶችን ይጠይቃሉ።</translation>
 <translation id="8557022314818157177">የጣት አሻራዎ እስኪመዘገብ ድረስ የደህንነት ቁልፍዎን መንካቱን ይቀጥሉ</translation>
 <translation id="8557100046150195444">ለመቀጠል መታወቂያን ይንኩ</translation>
 <translation id="8557856025359704738">ቀጣዩ ውርድ በ<ph name="NEXT_DATE_DOWNLOAD" /> ላይ ነው።</translation>
@@ -11415,7 +11409,6 @@ nil</translation>
 <translation id="9036484080057916082">የተፈረመበት የዕውቅና ማረጋገጫ የጊዜ ማህተም ዝርዝር</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> ከተብሎ ከተሰየመ የብሉቱዝ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="9037640663275993951">መሣሪያ አይፈቀድም</translation>
-<translation id="9037706442425692248">በዚህ Chromebook ላይ የAndroid መተግበሪያዎች የዩኤስቢ መሣሪያዎችን እንዲደርሱ ይፍቀዱ</translation>
 <translation id="9037818663270399707">የእርስዎ ግንኙነት ለሁሉም የአውታረ መረብ ትራፊክ የግል አይደለም</translation>
 <translation id="9037965129289936994">የመጀመሪያውን አሳይ</translation>
 <translation id="9038489124413477075">ያልተሰየመ አቃፊ</translation>

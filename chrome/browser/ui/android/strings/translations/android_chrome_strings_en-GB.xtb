@@ -767,7 +767,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4595805675102978678">Google Account error</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606559747793337066">When a site or app asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
-<translation id="4609429330876432068">Your lists of saved passwords for Chrome and <ph name="CHROME_CHANNEL" /> were merged. You can still autofill all your saved passwords on both apps.</translation>
 <translation id="4616150815774728855">Open <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
@@ -1561,7 +1560,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Next, import the passwords</translation>
 <translation id="8015452622527143194">Return everything on the page to default size</translation>
-<translation id="8026238112629815203">We changed how passwords are saved on this device</translation>
 <translation id="8027395186860110042">Passwords may stop working soon</translation>
 <translation id="8027863900915310177">Choose where to download</translation>
 <translation id="8030852056903932865">Approve</translation>

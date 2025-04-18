@@ -767,7 +767,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4595805675102978678">Google-kontofejl</translation>
 <translation id="4601095002996233687">Grundige scanninger efter mistænkelige downloads.</translation>
 <translation id="4606559747793337066">Når et website eller en app beder om at forudindlæse links privat på det pågældende website, krypterer og forudindlæser Chrome siderne via Googles servere uden cookies. På denne måde skjules din identitet fra det forudindlæste website.</translation>
-<translation id="4609429330876432068">Dine lister over gemte adgangskoder til Chrome og <ph name="CHROME_CHANNEL" /> blev flettet. Du kan stadig udfylde alle dine gemte adgangskoder automatisk i begge apps.</translation>
 <translation id="4616150815774728855">Åbn <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4624065194742029982">Inkognitotilstand i Chrome</translation>
@@ -1561,7 +1560,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Nu skal du importere adgangskoderne</translation>
 <translation id="8015452622527143194">Nulstil alt på siden til standardstørrelsen</translation>
-<translation id="8026238112629815203">Vi har ændret, hvordan adgangskoder gemmes på denne enhed</translation>
 <translation id="8027395186860110042">Dine gemte adgangskoder stopper muligvis snart med at fungere</translation>
 <translation id="8027863900915310177">Vælg, hvor downloadfilen skal gemmes</translation>
 <translation id="8030852056903932865">Godkend</translation>

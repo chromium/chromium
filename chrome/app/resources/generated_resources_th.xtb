@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">เริ่มทำสิ่งใหม่ๆ หรือรับความช่วยเหลือในระหว่างขั้นตอนการทำงาน</translation>
 <translation id="1054048317165655285">ตั้งค่าในโทรศัพท์ให้เสร็จสมบูรณ์</translation>
 <translation id="1054153489933238809">เ&amp;ปิดภาพต้นฉบับในแท็บใหม่</translation>
+<translation id="1054187194995068149">สวัสดี นี่คือตัวอย่าง</translation>
 <translation id="1054502481659725522">แอป เว็บไซต์ และบริการของระบบจะใช้ตำแหน่งของคุณได้</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน 1 สัปดาห์}other{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน {NUM_WEEKS} สัปดาห์}}</translation>
 <translation id="1055606969515662982">ใช้รีโมตเพื่อหยุดแคสต์</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> แก้ไขไฟล์ต่อไปนี้ได้</translation>
 <translation id="130174306655812048">ลองพูดว่า "Ok Google นี่เพลงอะไร"</translation>
 <translation id="1302227299132585524">อนุญาตให้เรียกใช้ JavaScript จากกิจกรรมใน Apple</translation>
-<translation id="1302654693270046655">กลุ่ม <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">ไฟล์ HTML บุ๊กมาร์ก</translation>
 <translation id="1303671224831497365">ไม่พบอุปกรณ์บลูทูธ</translation>
 <translation id="130491383855577612">แทนที่แอปและไฟล์ Linux เรียบร้อยแล้ว</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">คุณกลับไปใช้เซสชันก่อนหน้าได้ในขณะที่เซสชันปัจจุบันยังคงทำงานอยู่</translation>
 <translation id="1362865166188278099">ปัญหาด้านกลไก ตรวจสอบเครื่องพิมพ์</translation>
 <translation id="1363585519747660921">เครื่องพิมพ์ USB ต้องการการกำหนดค่า</translation>
-<translation id="1363772878823415675">ให้สิทธิ์ <ph name="SPECIFIC_NAME" /> เข้าถึงอุปกรณ์ USB</translation>
 <translation id="136378536198524553">โหมดประหยัดพลังงานเปิดอยู่</translation>
 <translation id="136522805455656552">คุณควรเรียกใช้และติดตั้งซอฟต์แวร์จากแหล่งที่มาและนักพัฒนาซอฟต์แวร์ที่เชื่อถือได้เท่านั้นเพื่อรักษาอุปกรณ์ให้ปลอดภัย <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">เลิกคิ้ว</translation>
@@ -2558,6 +2557,7 @@
 <translation id="2743301740238894839">เริ่ม</translation>
 <translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="274362947316498129">มีแอปพยายามเข้าถึง "<ph name="DEVICE_NAME" />" ปิดสวิตช์ความเป็นส่วนตัวของ "<ph name="DEVICE_NAME" />" เพื่ออนุญาตการเข้าถึง</translation>
+<translation id="2744221223678373668">ที่แชร์</translation>
 <translation id="2745080116229976798">ตัวย่อยที่เหมาะสมของ Microsoft</translation>
 <translation id="2749756011735116528">ลงชื่อเข้าใช้ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4542,6 +4542,7 @@
 <translation id="4139326893730851150">การอัปเดตเฟิร์มแวร์</translation>
 <translation id="4142052906269098341">ปลดล็อก <ph name="DEVICE_TYPE" /> ด้วยโทรศัพท์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">ดูวิธีที่ AI ช่วยสร้างประสบการณ์การใช้งานของคุณและตัดสินใจเกี่ยวกับความเป็นส่วนตัวได้อย่างรอบคอบ</translation>
+<translation id="4143754025452944766">คุณยังเลือกนำส่วนขยายของบัญชีออกจากอุปกรณ์นี้ได้ด้วย</translation>
 <translation id="4146026355784316281">เปิดด้วยโปรแกรมดูของระบบทุกครั้ง</translation>
 <translation id="4146785383423576110">รีเซ็ตและล้างข้อมูล</translation>
 <translation id="4147099377280085053">เลือกตารางอักษรเบรลล์</translation>
@@ -5842,9 +5843,7 @@
 <translation id="5087864757604726239">กลับ</translation>
 <translation id="5088427648965532275">ผู้ให้บริการ Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 พร้อมการเข้ารหัส RSA</translation>
-<translation id="5089763948477033443">แฮนเดิลปรับขนาดแผงด้านข้าง</translation>
 <translation id="5090637338841444533">ไม่ได้รับอนุญาตให้ติดตามตำแหน่งของกล้อง</translation>
-<translation id="5090981554736747495">ให้สิทธิ์แอป Linux เข้าถึงอุปกรณ์ USB</translation>
 <translation id="5091636240353511739">แสดง PIN</translation>
 <translation id="5093477827231450397">รายการเว็บไซต์ที่คุณบล็อกและไม่ต้องการให้แนะนำโฆษณาไปยังเว็บไซต์อื่นๆ</translation>
 <translation id="5093569275467863761">ซับเฟรมแคชย้อนหลังในโหมดไม่ระบุตัวตน: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6555,7 +6554,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ส่วนขยายนี้ถูกบล็อก}other{ส่วนขยายเหล่านี้ถูกบล็อก}}</translation>
 <translation id="560834977503641186">การซิงค์ Wi-Fi ดูข้อมูลเพิ่มเติม</translation>
 <translation id="5608580678041221894">แตะแป้นต่อไปนี้เพื่อปรับหรือเลื่อนพื้นที่ครอบตัด</translation>
-<translation id="560919433407466404">ให้สิทธิ์ Parallels Desktop เข้าถึงอุปกรณ์ USB</translation>
 <translation id="5609231933459083978">ดูเหมือนแอปพลิเคชันไม่ถูกต้อง</translation>
 <translation id="5610867721023328944">ลองอีกครั้งหรือเลือกจากธีมใดธีมหนึ่งที่มีอยู่ด้านล่าง</translation>
 <translation id="5611398002774823980">บันทึกในบัญชี</translation>
@@ -8628,7 +8626,6 @@
 <translation id="7109543803214225826">นำทางลัดออกแล้ว</translation>
 <translation id="7110388475787189534">ดูวิธีจัดระเบียบแท็บโดยอัตโนมัติ</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
-<translation id="7110684627876015299">กลุ่มที่ไม่มีชื่อ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">ตั้งชื่อหน้าต่างนี้</translation>
 <translation id="7113502843173351041">ทราบที่อยู่อีเมลของคุณ</translation>
 <translation id="7113974454301513811">เพิ่มแท็บปัจจุบันลงในรายการ</translation>
@@ -9000,7 +8997,6 @@
 <translation id="7387107590792462040">โปรดรอสักครู่ขณะที่ระบบกำลังทำการติดตั้ง</translation>
 <translation id="7387273928653486359">พอใช้</translation>
 <translation id="7387951778417998929">หากต้องการใช้เครื่องมือค้นหาอื่นที่ไม่ใช่ค่าเริ่มต้น ให้พิมพ์ทางลัดของเครื่องมือค้นหานั้นในแถบที่อยู่ แล้วตามด้วยแป้นพิมพ์ลัดที่ต้องการ คุณยังเปลี่ยนเครื่องมือค้นหาเริ่มต้นตรงนี้ได้ด้วย</translation>
-<translation id="7388209873137778229">แสดงเฉพาะอุปกรณ์ที่รองรับ</translation>
 <translation id="7388615499319468910">เว็บไซต์และผู้ลงโฆษณาจะรู้ได้ว่าโฆษณามีประสิทธิภาพเพียงใด การตั้งค่านี้ปิดอยู่</translation>
 <translation id="738903649531469042">เพิ่มแท็บไปยังเรื่องรออ่าน</translation>
 <translation id="7392118418926456391">สแกนไวรัสล้มเหลว</translation>
@@ -10681,7 +10677,6 @@
 <translation id="8553342806078037065">จัดการบุคคลอื่นๆ</translation>
 <translation id="8554899698005018844">ไม่มีภาษา</translation>
 <translation id="8555444629041783356">กำหนดเวลาหยุดให้บริการอัตโนมัติ</translation>
-<translation id="855604308879080518">อนุญาตให้แอป Android เข้าถึงอุปกรณ์ USB ใน Chromebook เครื่องนี้ จะมีการขอสิทธิ์ทุกครั้งที่คุณเสียบอุปกรณ์ USB แอป Android แต่ละรายการจะขอสิทธิ์เพิ่มเติม</translation>
 <translation id="8557022314818157177">แตะคีย์ความปลอดภัยซ้ำๆ จนกว่าระบบจะบันทึกลายนิ้วมือของคุณได้</translation>
 <translation id="8557100046150195444">Touch ID สำหรับดำเนินการต่อ</translation>
 <translation id="8557856025359704738">ดาวน์โหลดครั้งถัดไปในวันที่ <ph name="NEXT_DATE_DOWNLOAD" /></translation>
@@ -11392,7 +11387,6 @@
 <translation id="9036484080057916082">รายการการประทับเวลาใบรับรองที่ลงนามแล้ว</translation>
 <translation id="9037054491984310631">เชื่อมต่ออยู่กับอุปกรณ์บลูทูธชื่อ <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">ไม่อนุญาตอุปกรณ์นี้</translation>
-<translation id="9037706442425692248">อนุญาตให้แอป Android เข้าถึงอุปกรณ์ USB ใน Chromebook เครื่องนี้</translation>
 <translation id="9037818663270399707">การจราจรของข้อมูลทั้งหมดในเครือข่ายไม่เป็นส่วนตัวในการเชื่อมต่อของคุณ</translation>
 <translation id="9037965129289936994">แสดงหน้าเว็บเดิม</translation>
 <translation id="9038489124413477075">โฟลเดอร์ที่ไม่มีชื่อ</translation>

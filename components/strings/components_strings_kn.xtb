@@ -497,6 +497,7 @@
 <translation id="1839331950812095887">ನಿಮ್ಮ ಆಲೋಚನೆಗಳನ್ನು ಸಂಕ್ಷಿಪ್ತಗೊಳಿಸುವ ಕೆಲವು ಪದಗಳು</translation>
 <translation id="1839551713262164453">ದೋಷಗಳಿರುವ ಕಾರಣ ಕಾರ್ಯನೀತಿಯ ಮೌಲ್ಯಗಳ ಮೌಲ್ಯೀಕರಣವು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1840009953725035797">ಹೋಮ್ ಥಿಯೇಟರ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
+<translation id="184153295865602321">ಹೆಚ್ಚಿನ ರಕ್ಷಣೆಗಾಗಿ, ಆಟೋಫಿಲ್ ಬಳಸಿ, ಪಾವತಿಸುವಾಗ ಯಾವಾಗಲೂ ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್, ಮುಖ ಅಥವಾ ಇತರ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1842969606798536927">ಪಾವತಿಸಿ</translation>
 <translation id="184517536440397176">ನೀವು ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಪೋಷಕರ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ. ನೀವು ಅವರನ್ನು ಕೇಳುವ ಮೊದಲು, ಇದು ನೀವೇ ಎಂದು ನಾವು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಬೇಕು.</translation>
 <translation id="1846432862466000825">ಪ್ಲಾಸ್ಟಿಕ್ (ಆರ್ಕೈವಲ್)</translation>
@@ -1190,7 +1191,6 @@
 <translation id="3102312643185441063">ಉಳಿತಾಯ</translation>
 <translation id="3103188521861412364">ಸ್ಟಾಕ್‌ಗಳು ಮತ್ತು ಬಾಂಡ್‌ಗಳು</translation>
 <translation id="3103535543639438037">ಒಂದೇ ರೀತಿಯ ಉತ್ಪನ್ನಗಳನ್ನು ಅಕ್ಕಪಕ್ಕದಲ್ಲಿ ಹೋಲಿಕೆ ಮಾಡಿ</translation>
-<translation id="3103993932858740905">ನೀವು ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಿದಾಗ, ಒಂದು-ಬಾರಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತದೆ. ಈ ಸಂಖ್ಯೆ ಈ ಖರೀದಿಗೆ ಮಾತ್ರ ಸೀಮಿತವಾಗಿದೆ.</translation>
 <translation id="3105172416063519923">ಅಸೆಟ್ ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ಸುರಕ್ಷಿತ DNS ಕಾನ್ಫಿಗರೇಶನ್‌ ಅನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ಮಧ್ಯಭಾಗದ ಟ್ರೇ</translation>
@@ -1401,7 +1401,6 @@
 <translation id="3440783957068352691">ಚೌಕಾಕಾರದ ಪುಟ</translation>
 <translation id="3441653493275994384">ಸ್ಕ್ರೀನ್‌</translation>
 <translation id="3443504041532578451">ಆಪ್ಟಿಕಲ್ ಡಿಸ್ಕ್ (ಸ್ಯಾಟಿನ್)</translation>
-<translation id="344449859752187052">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3447644283769633681">ಮೂರನೇ-ವ್ಯಕ್ತಿಯ ಎಲ್ಲ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="3447661539832366887">ಈ ಸಾಧನದ ಮಾಲೀಕರು ಡೈನೊಸಾರ್ ಆಟವನ್ನು ಆಫ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="3447884698081792621">ಪ್ರಮಾಣಪತ್ರವನ್ನು ತೋರಿಸಿ (<ph name="ISSUER" /> ಇವರಿಂದ ನೀಡಲಾಗಿದೆ)</translation>
@@ -1928,6 +1927,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4298000214066716287">ಹೂಡಿಕೆ</translation>
 <translation id="42981349822642051">ವಿಸ್ತರಿಸಿ</translation>
+<translation id="4298925811540301889">ಈ ಸೈಟ್‌ಗಾಗಿ ಕುಕಿಗಳನ್ನು ನಿಮ್ಮ ChromeOS ಸಾಧನಗಳಾದ್ಯಂತ ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="SYNC_SETTINGS" /> ಗೆ ಹೋಗಿ.</translation>
 <translation id="4300675098767811073">ಬಲಭಾಗದಲ್ಲಿ ಅನೇಕ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="4302514097724775343">ಆಡಲು, ಡೈನೋ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4304049446746819918">{0,plural, =1{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್ ಅನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಸರಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಸರಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಸರಿಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
@@ -2027,6 +2027,7 @@
 <translation id="4477350412780666475">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="448363931695049633">ಪಿಝೇರಿಯಾಗಳು</translation>
 <translation id="4489023393592172404">ಎನ್ವಲಪ್ ಕಾಕು 4</translation>
+<translation id="4489977488133295402">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಸ್ವಯಂ ಭರ್ತಿ ಮಾಡಲು ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">ನಿಮ್ಮ Google ಖಾತೆಯ ಜೊತೆಗೆ ಸಿಂಕ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಿ</translation>
 <translation id="4493480324863638523">ಅಮಾನ್ಯ URL. ಪ್ರಮಾಣಿತ ವ್ಯವಸ್ಥೆಯೊಂದಿಗಿನ URL ಆಗಿರಬೇಕು, ಉದಾ. http://example.com or https://example.com.</translation>
@@ -2710,7 +2711,6 @@
 <translation id="5691848789297492617">'ಸೇವ್ ಕಾರ್ಡ್' ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="5695542892312572833">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು Windows Hello ಬಳಸಬೇಕೆ?</translation>
 <translation id="5699628521141772782">ಡೈರಿ ಮತ್ತು ಮೊಟ್ಟೆಗಳು</translation>
-<translation id="5700761515355162635">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
 <translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
@@ -2982,7 +2982,6 @@
 <translation id="6184868291074982484">Chrome ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="6190518157737269631">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ Esc ನಂತಹ ಕೆಲವು ಕೀಗಳನ್ನು ಓವರ್‌ರೈಡ್ ಮಾಡಿ</translation>
 <translation id="6194209731893739467">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಎಲ್ಲಾ ಉತ್ಪನ್ನಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಿ</translation>
-<translation id="6195163219142236913">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳು ಸೀಮಿತವಾಗಿವೆ</translation>
 <translation id="6195371403461054755">ಭೂವಿಜ್ಞಾನ</translation>
 <translation id="6195418151868446719">ಗ್ರಾಹಕರ ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್</translation>
 <translation id="6196640612572343990">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
@@ -3247,6 +3246,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">ಕಂಪ್ಯೂಟರ್ ಶಿಕ್ಷಣ</translation>
 <translation id="6633476656216409494">ವ್ಯವಹಾರ ಮತ್ತು ಉತ್ಪಾದಕತೆ ಸಾಫ್ಟ್‌ವೇರ್</translation>
+<translation id="6641852376826221947">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6645291930348198241">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಿ.</translation>
 <translation id="6645478838938543427">ಬೆಲೆ ಕುಸಿತದ ಅಲರ್ಟ್‌ಗಳನ್ನು <ph name="EMAIL_ADDRESS" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
@@ -4547,6 +4547,7 @@
 <translation id="8918062451146297192">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ನ CVC</translation>
 <translation id="8919740778133505789">ಕ್ರೀಡಾ ಕಾರುಗಳು</translation>
 <translation id="8919895429178014996">ಎಲ್ಲಾ ಐಟಂಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="8919989290032064330">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಸ್ವಯಂ ಭರ್ತಿ ಮಾಡಲು ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಬೇಕೇ?</translation>
 <translation id="8922013791253848639">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ ಜಾಹೀರಾತುಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />ಲೆಗಸಿ ತಂತ್ರಜ್ಞಾನದ ಈವೆಂಟ್‌ಗಳು<ph name="END_LINK" /> ಸಂಭವಿಸುತ್ತಿರುವ ಸ್ಥಳದಲ್ಲಿ ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳ ಸೀಮಿತ ಪಟ್ಟಿ</translation>
 <translation id="892588693504540538">ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿ ತೂತು ಮಾಡಿ</translation>

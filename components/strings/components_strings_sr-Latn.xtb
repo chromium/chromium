@@ -1190,7 +1190,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3102312643185441063">Štedni račun</translation>
 <translation id="3103188521861412364">Akcije i obveznice</translation>
 <translation id="3103535543639438037">Uporedite slične proizvode jedan pored drugog</translation>
-<translation id="3103993932858740905">Kada plaćate na rate, popunjava se jednokratni broj virtuelne kartice. Ovaj broj je samo za ovu kupovinu.</translation>
 <translation id="3105172416063519923">ID elementa:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />da proverite konfiguraciju bezbednog DNS-a<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Srednja fioka</translation>
@@ -1403,7 +1402,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3440783957068352691">kvadratna</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optički disk (saten)</translation>
-<translation id="344449859752187052">Kolačići treće strane su blokirani</translation>
 <translation id="3447644283769633681">Blokiraj sve kolačiće trećih strana</translation>
 <translation id="3447661539832366887">Vlasnik ovog uređaja je isključio ovu zastarelu igru.</translation>
 <translation id="3447884698081792621">Prikaži sertifikat (izdaje <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4901952598169637881">Svakodnevna obuća</translation>
 <translation id="4905659621780993806">Administrator će automatski restartovati uređaj u <ph name="TIME" />, <ph name="DATE" />. Sačuvajte otvorene stavke pre nego što se uređaj restartuje.</translation>
+<translation id="4913083239887436582">instaliranja veb-aplikacija</translation>
 <translation id="4913987521957242411">Bušenje u gornjem levom uglu</translation>
 <translation id="4914727764832832057">Plava 1</translation>
 <translation id="4916389289686916969">TV rijaliti emisije</translation>
@@ -2586,6 +2585,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5483838506518938965">Spremni ste</translation>
 <translation id="5485100387355669506">Vrlo debela</translation>
 <translation id="5485973315555778056">Mašina u klaudu</translation>
+<translation id="5488367146069768854">Instaliranja veb-aplikacija</translation>
 <translation id="5488590678320979185">Dugme Napravite belešku, aktivirajte ga da biste brzo napravili novu belešku u Google Keep-u</translation>
 <translation id="5490432419156082418">Adrese i drugo</translation>
 <translation id="5492298309214877701">Ovaj sajt na intranetu kompanije, organizacije ili škole ima isti URL kao i jedan spoljni veb-sajt.
@@ -2713,7 +2713,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5691848789297492617">Upit za čuvanje kartice je otvoren u punoj visini.</translation>
 <translation id="5695542892312572833">Želite da koristite Windows Hello da biste potvrdili i završili kupovinu?</translation>
 <translation id="5699628521141772782">Mlečni proizvodi i jaja</translation>
-<translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="5701381305118179107">Centriraj</translation>
 <translation id="5707154300732650394">Nastavite put</translation>
 <translation id="57094364128775171">Predloži jaku lozinku…</translation>
@@ -2985,7 +2984,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće treće strane</translation>
 <translation id="6190518157737269631">Zamena unosa nekih tastera na tastaturi, kao što je Esc</translation>
 <translation id="6194209731893739467">Pogledajte sve proizvode koje pratite ovde</translation>
-<translation id="6195163219142236913">Kolačići treće strane su ograničeni</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Aparati za domaćinstvo</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>

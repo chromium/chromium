@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Um <ph name="APP_NAME" /> Zugriff auf dein Mikrofon zu gewähren, muss die Mikrofonberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4578289292431526768">Los gehts</translation>
 <translation id="4598549027014564149">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen. Das gilt auch für zusammenhängende Websites. Deine Browseraktivitäten werden unter anderem auch nicht für personalisierte Werbung verwendet. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="461356340001513807">Du kannst dich mit einem Konto, das du bei einem Identitätsdienst hast, auf Websites anmelden</translation>
 <translation id="4635969503923889910">Websites dürfen keine NFC-Geräte verwenden</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Websites können fragen, ob du Benachrichtigungen erhalten möchtest</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6320088164292336938">Vibrieren</translation>
-<translation id="6344622098450209924">Schutz vor Tracking</translation>
 <translation id="6367753977865761591">Hier kannst du Websites angeben, für die die Anmeldung über Drittanbieter blockiert werden soll.</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="640163077447496506">Läuft heute ab</translation>

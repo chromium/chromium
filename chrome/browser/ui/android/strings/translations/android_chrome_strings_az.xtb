@@ -767,7 +767,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4595805675102978678">Google Hesabı xətası</translation>
 <translation id="4601095002996233687">Şübhəli endirmələr üçün hərtərəfli skanlama.</translation>
 <translation id="4606559747793337066">Sayt və ya tətbiq öz səhifəsindəki keçidləri məxfi olaraq əvvəlcədən yükləməyi tələb etdikdə Chrome kukilər olmadan Google serverləri vasitəsilə səhifələri şifrələyir və əvvəlcədən yükləyir. Bu, kimliyinizi əvvəlcədən yüklənmiş saytdan gizlədir.</translation>
-<translation id="4609429330876432068">Chrome və <ph name="CHROME_CHANNEL" /> üzrə yadda saxlanılmış parolların siyahısı birləşdirildi. Hər iki tətbiqdə yadda saxlanılmış bütün parolları yenə də avtomatik doldura bilərsiniz.</translation>
 <translation id="4616150815774728855">Açın: <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4624065194742029982">Chrome Anonim</translation>
@@ -1559,7 +1558,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8014210850410408071">İndi parolları import edin</translation>
 <translation id="8015452622527143194">Səhifədəki hər şeyi defolt ölçüsünə qaytarın</translation>
-<translation id="8026238112629815203">Parolların bu cihazda yadda saxlanılma qaydasını dəyişdik</translation>
 <translation id="8027395186860110042">Parollar tezliklə işləməyə bilər</translation>
 <translation id="8027863900915310177">Endiriləcək yeri seçin</translation>
 <translation id="8030852056903932865">Təsdiq edin</translation>

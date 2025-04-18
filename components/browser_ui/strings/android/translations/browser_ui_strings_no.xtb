@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">For å gi <ph name="APP_NAME" /> tilgang til mikrofonen må du også slå på mikrofonen i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
 <translation id="4570913071927164677">Detaljer</translation>
+<translation id="4578289292431526768">Sett i gang</translation>
 <translation id="4598549027014564149">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder – heller ikke relaterte nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="461356340001513807">Lar deg logge på nettsteder med kontoer du har hos identitetstjenester</translation>
 <translation id="4635969503923889910">Ikke la nettsteder bruke NFC-enheter</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Nettsteder kan be om å få sende deg varsler</translation>
 <translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="6320088164292336938">Vibrering</translation>
-<translation id="6344622098450209924">Sporingsbeskyttelse</translation>
 <translation id="6367753977865761591">Blokkér pålogging fra tredjeparter for bestemte nettsteder.</translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="640163077447496506">Utløper i dag</translation>

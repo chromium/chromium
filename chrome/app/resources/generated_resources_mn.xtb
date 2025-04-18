@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Ямар нэг шинэ зүйл эхлүүлэх эсвэл урсгалд тусламж аваарай.</translation>
 <translation id="1054048317165655285">Тохируулгыг утсан дээрээ дуусгана уу</translation>
 <translation id="1054153489933238809">Эх зургийг шинэ цонхонд нээх</translation>
+<translation id="1054187194995068149">Сайн байна уу. Энэ нь урьдчилан үзэлт юм</translation>
 <translation id="1054502481659725522">Апп, вебсайт, системийн үйлчилгээ таны байршлыг ашиглах боломжтой</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />-г 1 долоо хоногийн дотор шинэчлэх}other{<ph name="DEVICE_TYPE" />-г {NUM_WEEKS} долоо хоногийн дотор шинэчлэх}}</translation>
 <translation id="1055606969515662982">Дамжуулахыг зогсоохын тулд алсын удирдлагыг ашиглана уу</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> дараах файлыг засах боломжтой</translation>
 <translation id="130174306655812048">“Ok Google, энэ ямар дуу вэ?” гэж хэлж үзнэ үү</translation>
 <translation id="1302227299132585524">Apple-н арга хэмжээнээс JavaScript-г зөвшөөрөх</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> бүлэг - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML Файлыг жагсааж хадгалах</translation>
 <translation id="1303671224831497365">Bluetooth төхөөрөмж олдсонгүй</translation>
 <translation id="130491383855577612">Linux аппууд болон файлуудыг амжилттай солилоо</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">Та одоогийн харилцан үйлдлээ идэвхтэй байхад өмнөх харилцан үйлдлээ үргэлжлүүлэх боломжтой.</translation>
 <translation id="1362865166188278099">Механик асуудал. Хэвлэгчийг шалгана уу</translation>
 <translation id="1363585519747660921">USB хэвлэгчид тохируулга хийх шаардлагатай</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />-д USB төхөөрөмжүүдэд хандах зөвшөөрөл өгнө үү.</translation>
 <translation id="136378536198524553">Эрчим хүч хэмнэгч асаалттай байна</translation>
 <translation id="136522805455656552">Төхөөрөмжөө аюулгүй байлгахын тулд та программ хангамжийг зөвхөн итгэдэг эх сурвалж болон хөгжүүлэгчдээс ажиллуулж, суулгах хэрэгтэй. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Хөмсгөө өргөх</translation>
@@ -2567,6 +2566,7 @@
 <translation id="2743301740238894839">Эхлүүлэх</translation>
 <translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="274362947316498129">Апп <ph name="DEVICE_NAME" />-д хандахаар оролдож байна. Хандалтыг зөвшөөрөхийн тулд <ph name="DEVICE_NAME" />-н нууцлалын сэлгүүрийг унтраана уу.</translation>
+<translation id="2744221223678373668">Дундын</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> руу нэвтрэх</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5853,9 +5853,7 @@
 <translation id="5087864757604726239">буцах</translation>
 <translation id="5088427648965532275">Passpoint-н үйлчилгээ үзүүлэгч</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
-<translation id="5089763948477033443">Хажуугийн самбарын хэмжээг өөрчлөх бариул</translation>
 <translation id="5090637338841444533">Таны камерын байрлалыг хянахыг зөвшөөрөөгүй</translation>
-<translation id="5090981554736747495">Linux аппуудад USB төхөөрөмжүүдэд хандах зөвшөөрөл өгнө үү.</translation>
 <translation id="5091636240353511739">ПИН харуулах</translation>
 <translation id="5093477827231450397">Таны бусад сайтад зар санал болгохыг хүсэхгүй байгаа блоклосон сайтуудын жагсаалт</translation>
 <translation id="5093569275467863761">Нууцлалтай Back/Forward Cache хийсэн дэд хүрээ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6567,7 +6565,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг блоклосон байна}other{Эдгээр өргөтгөлийг блоклосон байна}}</translation>
 <translation id="560834977503641186">Wi-Fi синк, Нэмэлт мэдээлэл авах</translation>
 <translation id="5608580678041221894">Тайрсан хэсгийг тохируулах эсвэл зөөхийн тулд дараах түлхүүрийг товшино уу</translation>
-<translation id="560919433407466404">Parallels Desktop-д USB төхөөрөмжүүдэд хандах зөвшөөрөл өгнө үү.</translation>
 <translation id="5609231933459083978">Энэхүү апп нь хүчин төгөлдөр бус апп байж болзошгүй байна.</translation>
 <translation id="5610867721023328944">Дахин оролдох эсвэл доорх боломжтой загваруудын аль нэгийг сонгоно уу.</translation>
 <translation id="5611398002774823980">Бүртгэлд хадгалах</translation>
@@ -8642,7 +8639,6 @@
 <translation id="7109543803214225826">Товчлолыг хассан</translation>
 <translation id="7110388475787189534">Табуудаа хэрхэн автоматаар цэгцлэх талаар мэдэж авах</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
-<translation id="7110684627876015299">Нэргүй бүлэг - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Энэ цонхыг нэрлэнэ үү</translation>
 <translation id="7113502843173351041">И-мэйл хаягаа мэдэх</translation>
 <translation id="7113974454301513811">Одоо та одоогийн табыг жагсаалтдаа нэмнэ үү</translation>
@@ -9014,7 +9010,6 @@
 <translation id="7387107590792462040">Суулгаж байх хооронд түр хүлээнэ үү</translation>
 <translation id="7387273928653486359">Зөвшөөрөхүйц</translation>
 <translation id="7387951778417998929">Өгөгдмөл хайлтын системээс өөрийг ашиглахын тулд хаяг оруулах хэсэгт түүний товчлолын араас сонгосон товчлуурын шууд холбоосоо бичнэ үү. Та мөн өгөгдмөл хайлтын системээ энд өөрчлөх боломжтой.</translation>
-<translation id="7388209873137778229">Зөвхөн дэмждэг төхөөрөмжүүдийг харуулж байна.</translation>
 <translation id="7388615499319468910">Сайтууд болон сурталчлагчид зарын гүйцэтгэлийг ойлгох боломжтой. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="738903649531469042">Унших жагсаалтад Таб нэмэх</translation>
 <translation id="7392118418926456391">Вирус шалгалт амжилтгүй боллоо</translation>
@@ -10693,7 +10688,6 @@
 <translation id="8553342806078037065">Бусад хүмүүсийг удирдах</translation>
 <translation id="8554899698005018844">Хэл байхгүй</translation>
 <translation id="8555444629041783356">Нар жаргах автомат хуваарь</translation>
-<translation id="855604308879080518">Энэ Chromebook дээр Android аппуудад USB төхөөрөмжид хандахыг зөвшөөрнө үү. Таныг USB төхөөрөмж залгах бүрд зөвшөөрөл хүснэ. Бие даасан Android аппууд нэмэлт зөвшөөрөл хүснэ.</translation>
 <translation id="8557022314818157177">Хурууны хээг автал аюулгүй байдлын түлхүүр дээрээ үргэлжлүүлэн хүрнэ үү</translation>
 <translation id="8557100046150195444">Үргэлжлүүлэхийн тулд хүрэлтийн ID оруулна уу</translation>
 <translation id="8557856025359704738">Дараагийн татан авалтыг <ph name="NEXT_DATE_DOWNLOAD" />-д хийнэ.</translation>
@@ -11402,7 +11396,6 @@
 <translation id="9036484080057916082">Гарын үсэг зурсан сертификатын хугацаа тэмдэглэгчийн жагсаалт</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> гэсэн Bluetooth төхөөрөмжид холбогдсон</translation>
 <translation id="9037640663275993951">Төхөөрөмжийг зөвшөөрдөггүй</translation>
-<translation id="9037706442425692248">Энэ Chromebook дээр USB төхөөрөмжид хандахыг Android аппуудад зөвшөөрнө үү</translation>
 <translation id="9037818663270399707">Таны холболт сүлжээний бүх ачааллын хувьд хувийн биш байна</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9038489124413477075">Нэрлэгдээгүй хавтас</translation>

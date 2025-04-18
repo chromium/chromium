@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
+<translation id="4578289292431526768">Idemo</translation>
 <translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="461356340001513807">Omogućava vam da se prijavljujete na veb-sajtove pomoću naloga koji imate u usluzi za identitet</translation>
 <translation id="4635969503923889910">Ne dozvoljavaj sajtovima da koriste NFC uređaje</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Sajtovi mogu da traže da šalju obaveštenja</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6320088164292336938">Vibracija</translation>
-<translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="6367753977865761591">Blokirajte prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="640163077447496506">Ističe danas</translation>

@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">नवीन काहीतरी सुरू करा किंवा फ्लोमध्ये मदत मिळवा.</translation>
 <translation id="1054048317165655285">तुमच्या फोनवर सेटअप पूर्ण करा</translation>
 <translation id="1054153489933238809">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
+<translation id="1054187194995068149">हॅलो. हे पूर्वावलोकन आहे</translation>
 <translation id="1054502481659725522">अ‍ॅप्स, वेबसाइट आणि सिस्टीम सेवा तुमचे स्थान वापरू शकतात</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{एका आठवड्याच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}other{{NUM_WEEKS} आठवड्यांच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}}</translation>
 <translation id="1055606969515662982">कास्ट करणे थांबवण्यासाठी रिमोट वापरा</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> खालील फाइल संपादित करू शकते</translation>
 <translation id="130174306655812048">“Ok Google, हे कोणते गाणे आहे?” असे म्हणून पहा</translation>
 <translation id="1302227299132585524">Apple इव्हेंट वरून JavaScript ला अनुमती द्या</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> गट - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML फाईल बुकमार्क करते</translation>
 <translation id="1303671224831497365">ब्लूटूथ डिव्हाइस सापडली नाहीत</translation>
 <translation id="130491383855577612">Linux अ‍ॅप्स आणि फाइल यशस्वीरीत्या बदलण्यात आल्या आहेत</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">तुमचे वर्तमान सेशन अ‍ॅक्टिव्ह असताना तुम्ही तुमचे मागील सेशन पुन्हा सुरू करू शकता.</translation>
 <translation id="1362865166188278099">यांत्रिकी समस्या. प्रिंटर तपासा</translation>
 <translation id="1363585519747660921">USB प्रिंटर कॉन्फिगर करणे आवश्यक आहे</translation>
-<translation id="1363772878823415675">USB डिव्हाइस ॲक्सेस करण्यासाठी <ph name="SPECIFIC_NAME" /> ला परवानगी द्या.</translation>
 <translation id="136378536198524553">एनर्जी सेव्हर सुरू आहे</translation>
 <translation id="136522805455656552">तुमचे डिव्हाइस सुरक्षित ठेवण्यासाठी, तुम्ही फक्त विश्वासार्ह स्रोत आणि डेव्हलपर यांच्याकडील सॉफ्टवेअर रन व इंस्टॉल केले पाहिजे. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">भुवया उंचवा</translation>
@@ -2570,6 +2569,7 @@
 <translation id="2743301740238894839">सुरू करा</translation>
 <translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="274362947316498129">अ‍ॅप <ph name="DEVICE_NAME" /> अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेसला अनुमती देण्यासाठी <ph name="DEVICE_NAME" /> चा गोपनीयता स्विच बंद करा.</translation>
+<translation id="2744221223678373668">शेअर</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मध्ये साइन इन करा</translation>
 <translation id="2749836841884031656">सिम</translation>
@@ -4554,6 +4554,7 @@
 <translation id="4139326893730851150">फर्मवेअर अपडेट</translation>
 <translation id="4142052906269098341">तुमच्या फोनने <ph name="DEVICE_TYPE" /> अनलॉक करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">AI तुमच्या अनुभवाला कसे आकार देते हे एक्सप्लोर करा आणि तुमच्या गोपनीयतेबद्दल माहितीपूर्ण निर्णय घ्या</translation>
+<translation id="4143754025452944766">तुम्ही या डिव्हाइसमधून खाते एक्स्टेंशन काढून टाकणेदेखील निवडू शकता.</translation>
 <translation id="4146026355784316281">नेहमी सिस्टीम दर्शकासह उघडा</translation>
 <translation id="4146785383423576110">रीसेट करा आणि साफ करा</translation>
 <translation id="4147099377280085053">ब्रेल सारणी निवडा</translation>
@@ -5855,9 +5856,7 @@
 <translation id="5087864757604726239">मागे</translation>
 <translation id="5088427648965532275">पासपॉइंट पुरवठादार</translation>
 <translation id="5088534251099454936">PKCS #1 RSA एंक्रिप्शनसह SHA-512</translation>
-<translation id="5089763948477033443">साइड पॅनलचा आकार बदलणारे हँडल</translation>
 <translation id="5090637338841444533">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची अनुमती नाही</translation>
-<translation id="5090981554736747495">USB डिव्हाइस ॲक्सेस करण्यासाठी Linux ला ॲप्सशी संबंधित परवानगी द्या.</translation>
 <translation id="5091636240353511739">पिन दाखवा</translation>
 <translation id="5093477827231450397">तुम्ही ब्लॉक केलेल्या साइटची सूची, ज्यांनी इतर साइटना जाहिराती सुचवू नयेत असे तुम्हाला वाटते</translation>
 <translation id="5093569275467863761">बॅक/फॉरवर्ड कॅशे केलेली गुप्त सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6569,7 +6568,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{हे एक्स्टेंशन ब्लॉक केले आहे}other{ही एक्स्टेंशन ब्लॉक केली आहेत}}</translation>
 <translation id="560834977503641186">वाय-फाय सिंक, अधिक जाणून घ्या</translation>
 <translation id="5608580678041221894">क्रॉप करण्‍याचे क्षेत्र समायोजित करण्‍यासाठी किंवा हलविण्‍यासाठी खालील की टॅप करा</translation>
-<translation id="560919433407466404">Parallels Desktop ला USB डिव्हाइस ॲक्सेस करण्याची परवानगी द्या.</translation>
 <translation id="5609231933459083978">ॲप्लिकेशन चुकीचे असल्याचे दिसते.</translation>
 <translation id="5610867721023328944">पुन्हा प्रयत्न करा किंवा खालील उपलब्ध थीमपैकी एक निवडा.</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
@@ -8648,7 +8646,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7109543803214225826">शॉर्टकट काढला</translation>
 <translation id="7110388475787189534">तुमचे टॅब आपोआप संगतवार कसे लावावेत हे जाणून घ्या</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{गट यामध्ये टॅब जोडा}other{गट यामध्ये टॅब जोडा}}</translation>
-<translation id="7110684627876015299">निनावी गट - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">या विंडोला नाव द्या</translation>
 <translation id="7113502843173351041">तुमचा ईमेल ॲड्रेस माहिती करून घ्या</translation>
 <translation id="7113974454301513811">आता तुमच्या सूचीमध्ये सध्याचा टॅब जोडा</translation>
@@ -9020,7 +9017,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7387107590792462040">इंस्टॉल करणे प्रगतीपथावर असताना कृपया प्रतीक्षा करा</translation>
 <translation id="7387273928653486359">स्वीकारण्यायोग्य</translation>
 <translation id="7387951778417998929">डीफॉल्टपेक्षा वेगळे शोध इंजीन वापरण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा. तुम्ही येथे तुमचे डीफॉल्ट शोध इंजीनदेखील बदलू शकता.</translation>
-<translation id="7388209873137778229">फक्त सपोर्ट असलेली डिव्हाइस दाखवली आहेत.</translation>
 <translation id="7388615499319468910">जाहिराती कशा काम करतात हे साइट आणि जाहिरातदार समजू शकतात. हे सेटिंग बंद आहे.</translation>
 <translation id="738903649531469042">वाचन सूची वर टॅब जोडा</translation>
 <translation id="7392118418926456391">व्हायरस स्कॅन अयशस्वी</translation>
@@ -10700,7 +10696,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8553342806078037065">इतर लोक व्यवस्थापित करा</translation>
 <translation id="8554899698005018844">कोणतीही भाषा नाही</translation>
 <translation id="8555444629041783356">सूर्यास्ताचे ऑटोमॅटिक शेड्यूल</translation>
-<translation id="855604308879080518">Android अ‍ॅप्सना या Chromebook वर USB डिव्हाइस अ‍ॅक्सेस करू द्या. तुम्ही USB डिव्हाइस प्लग इन केल्यावर परवानगीची विनंती केली जाईल. वैयक्तिक Android अ‍ॅप्स अतिरिक्त परवानग्यांची विनंती करतील.</translation>
 <translation id="8557022314818157177">तुमचे फिंगरप्रिंट कॅप्चर होईपर्यंत तुमच्या सिक्युरिटी कीला स्पर्श करत राहा</translation>
 <translation id="8557100046150195444">पुढे सुरू ठेवण्यासाठी टच आयडी</translation>
 <translation id="8557856025359704738">पुढील डाउनलोड <ph name="NEXT_DATE_DOWNLOAD" /> रोजी आहे.</translation>
@@ -11412,7 +11407,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9036484080057916082">स्वाक्षरी केलेल्या सर्टिफिकेट ची टाइमस्टॅंप सूची</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> नावाच्या ब्लूटूथ डिव्‍हाइसशी कनेक्ट केले आहे</translation>
 <translation id="9037640663275993951">डिव्हाइसला अनुमती नाही</translation>
-<translation id="9037706442425692248">Android अ‍ॅप्सना या Chromebook वर USB डिव्हाइस अ‍ॅक्सेस करू द्या</translation>
 <translation id="9037818663270399707">तुमचे कनेक्शन सर्व नेटवर्क ट्रॅफिकसाठी खाजगी नाही</translation>
 <translation id="9037965129289936994">मूळ दर्शवा</translation>
 <translation id="9038489124413477075">अनामित फोल्डर</translation>

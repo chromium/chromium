@@ -767,7 +767,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4595805675102978678">Błąd konta Google</translation>
 <translation id="4601095002996233687">Szczegółowe skanowanie w poszukiwaniu podejrzanych pobranych plików.</translation>
 <translation id="4606559747793337066">Gdy witryna lub aplikacja prosi o prywatne wstępne wczytanie linków z jej strony, Chrome szyfruje i wstępnie wczytuje strony przy użyciu serwerów Google, ale bez plików cookie. Pozwala to na ukrycie Twojej tożsamości przed wstępnie wczytywaną witryną.</translation>
-<translation id="4609429330876432068">Twoje listy zapisanych haseł w Chrome i <ph name="CHROME_CHANNEL" /> zostały scalone. Nadal możesz używać wszystkich zapisanych haseł do autouzupełniania w obu aplikacjach.</translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4624065194742029982">Tryb incognito w Chrome</translation>
@@ -1561,7 +1560,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8014210850410408071">Następnie zaimportuj hasła</translation>
 <translation id="8015452622527143194">Powróć do normalnego rozmiaru całej treści strony</translation>
-<translation id="8026238112629815203">Zmieniliśmy sposób zapisywania haseł na tym urządzeniu</translation>
 <translation id="8027395186860110042">Wkrótce mogą przestać działać hasła</translation>
 <translation id="8027863900915310177">Wybierz lokalizację, do której chcesz pobrać plik</translation>
 <translation id="8030852056903932865">Zatwierdź</translation>

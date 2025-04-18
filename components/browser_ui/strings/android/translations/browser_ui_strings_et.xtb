@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie mikrofonile, lülitage mikrofon sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vaigista mikrofon</translation>
 <translation id="4570913071927164677">Üksikasjad</translation>
+<translation id="4578289292431526768">Alustage</translation>
 <translation id="4598549027014564149">Inkognito režiimis ei saa saidid küpsisefailide kaudu teie sirvimistegevusi saitidel (isegi seotud saitidel) jälgida. Teie sirvimistegevusi ei kasutata näiteks reklaamide isikupärastamiseks. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="461356340001513807">Logime teid veebisaitidele sisse, kasutades teie identiteedihaldusteenuses olevat kontot</translation>
 <translation id="4635969503923889910">Ärge lubage saitidel kasutada NFC-seadmeid</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Saidid saavad küsida luba märguannete saatmiseks</translation>
 <translation id="6295158916970320988">Kõik saidid</translation>
 <translation id="6320088164292336938">Vibreerimine</translation>
-<translation id="6344622098450209924">Jälgimiskaitse</translation>
 <translation id="6367753977865761591">Konkreetse saidi jaoks kolmanda osapoole sisselogimise blokeerimine.</translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="640163077447496506">Aegub täna</translation>

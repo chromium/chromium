@@ -1190,7 +1190,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3102312643185441063">Opsparingskonto</translation>
 <translation id="3103188521861412364">Aktier og obligationer</translation>
 <translation id="3103535543639438037">Sammenlign lignende produkter side om side</translation>
-<translation id="3103993932858740905">Når du betaler på afbetaling, udfyldes et virtuelt engangskortnummer. Nummeret gælder kun for dette køb.</translation>
 <translation id="3105172416063519923">Aktiv-id:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Tjekker den sikre DNS-konfiguration<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Midterste bakke</translation>
@@ -1403,7 +1402,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3440783957068352691">firkant</translation>
 <translation id="3441653493275994384">Skærm</translation>
 <translation id="3443504041532578451">Optisk disk (satin)</translation>
-<translation id="344449859752187052">Tredjepartscookies er blokeret</translation>
 <translation id="3447644283769633681">Bloker alle cookies fra tredjeparter</translation>
 <translation id="3447661539832366887">Ejeren af denne enhed har lukket dinosaurspillet.</translation>
 <translation id="3447884698081792621">Vis certifikat (udstedt af <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4901778704868714008">Gem...</translation>
 <translation id="4901952598169637881">Fritidssko</translation>
 <translation id="4905659621780993806">Din administrator genstarter automatisk din enhed <ph name="TIME" /> <ph name="DATE" />. Gem eventuelle åbne elementer, inden din enhed genstarter.</translation>
+<translation id="4913083239887436582">installationer af webapps</translation>
 <translation id="4913987521957242411">Hul øverst til venstre</translation>
 <translation id="4914727764832832057">Blå 1</translation>
 <translation id="4916389289686916969">Tv-realityshows</translation>
@@ -2586,6 +2585,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5483838506518938965">Så er du klar</translation>
 <translation id="5485100387355669506">Ekstra tyk</translation>
 <translation id="5485973315555778056">Maskine i skyen</translation>
+<translation id="5488367146069768854">Installationer af webapps</translation>
 <translation id="5488590678320979185">Knappen Opret note, aktivér for hurtigt at oprette en ny note i Google Keep</translation>
 <translation id="5490432419156082418">Adresser m.m.</translation>
 <translation id="5492298309214877701">Dette website på virksomhedens, organisationens eller skolens intranet har samme webadresse som et eksternt website.
@@ -2713,7 +2713,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5691848789297492617">"Gem kort" er åbnet i fuld højde.</translation>
 <translation id="5695542892312572833">Vil du bruge Windows Hello til at verificere og gennemføre dit køb?</translation>
 <translation id="5699628521141772782">Mejerivarer og æg</translation>
-<translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
 <translation id="5701381305118179107">Centrér</translation>
 <translation id="5707154300732650394">Genoptag din søgning</translation>
 <translation id="57094364128775171">Foreslå stærk adgangskode…</translation>
@@ -2986,7 +2985,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6184868291074982484">Chrome begrænser automatisk tredjepartscookies</translation>
 <translation id="6190518157737269631">Tilsidesætter visse taster på dit tastatur, f.eks. Esc</translation>
 <translation id="6194209731893739467">Se alle de produkter, du holder øje med, her</translation>
-<translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Forbrugerelektronik</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>

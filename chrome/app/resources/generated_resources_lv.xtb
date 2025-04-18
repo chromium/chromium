@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Iesāciet ko jaunu vai saņemiet palīdzību, kamēr esat plūsmas stāvoklī.</translation>
 <translation id="1054048317165655285">Pabeidziet iestatīšanu tālrunī</translation>
 <translation id="1054153489933238809">Atvērt sākotnējo &amp;attēlu jaunā cilnē</translation>
+<translation id="1054187194995068149">Labdien! Šis ir priekšskatījums</translation>
 <translation id="1054502481659725522">Jūsu atrašanās vietas datus var izmantot lietotnes, vietnes un sistēmas pakalpojumi.</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina vienas nedēļas laikā}zero{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļu laikā}one{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļas laikā}other{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļu laikā}}</translation>
 <translation id="1055606969515662982">Izmantojiet tālvadības ierīci, lai apturētu apraidi</translation>
@@ -458,7 +459,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1301135395320604080">Vietne <ph name="ORIGIN" /> var rediģēt tālāk norādītos failus.</translation>
 <translation id="130174306655812048">Izmēģiniet šādu jautājumu: “Hey Google, what song is this?” (Ok Google, kas šī ir par dziesmu?)</translation>
 <translation id="1302227299132585524">Atļaut izmantot JavaScript no Apple Events</translation>
-<translation id="1302654693270046655">Grupa “<ph name="GROUP_NAME" />” – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Grāmatzīmju HTML fails</translation>
 <translation id="1303671224831497365">Netika atrasta neviena Bluetooth ierīce.</translation>
 <translation id="130491383855577612">Linux lietotnes un faili ir sekmīgi pārvietoti</translation>
@@ -540,7 +540,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1362829980946830670">Varat atsākt iepriekšējās sesijas darbību, kamēr pašreizējā sesija joprojām ir aktīva.</translation>
 <translation id="1362865166188278099">Mehāniska problēma. Pārbaudiet printeri.</translation>
 <translation id="1363585519747660921">USB printerim ir nepieciešama konfigurācija</translation>
-<translation id="1363772878823415675">Piešķiriet virtuālajai mašīnai <ph name="SPECIFIC_NAME" /> atļauju piekļūt USB ierīcēm.</translation>
 <translation id="136378536198524553">Enerģijas taupīšana ir ieslēgta</translation>
 <translation id="136522805455656552">Lai aizsargātu ierīci, ieteicams izpildīt un instalēt tikai programmatūru, kas iegūta no uzticamiem avotiem un izstrādātājiem. <ph name="LEARN_MORE" />.</translation>
 <translation id="1365650529628379165">Paceliet uzacis</translation>
@@ -2560,6 +2559,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2743301740238894839">Sākt</translation>
 <translation id="2743387203779672305">Kopēt starpliktuvē</translation>
 <translation id="274362947316498129">Kāda lietotne mēģina piekļūt ierīcei (<ph name="DEVICE_NAME" />). Lai atļautu piekļuvi, izslēdziet ierīces (<ph name="DEVICE_NAME" />) konfidencialitātes slēdzi.</translation>
+<translation id="2744221223678373668">Koplietojamie</translation>
 <translation id="2745080116229976798">Microsoft pilnīga pakārtotība</translation>
 <translation id="2749756011735116528">Pierakstīties produktā <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5845,9 +5845,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5087864757604726239">atpakaļ</translation>
 <translation id="5088427648965532275">Passpoint nodrošinātājs</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ar RSA šifrējumu</translation>
-<translation id="5089763948477033443">Sānu paneļa lieluma maiņas turis</translation>
 <translation id="5090637338841444533">Nedrīkst izsekot kameras pozīciju</translation>
-<translation id="5090981554736747495">Atļaut Linux lietotnēm piekļūt USB ierīcēm</translation>
 <translation id="5091636240353511739">Rādīt PIN</translation>
 <translation id="5093477827231450397">Jūsu bloķēto vietņu saraksts, kurās nevēlaties, lai tiktu ieteiktas reklāmas citām vietnēm</translation>
 <translation id="5093569275467863761">Pilnīgas saglabāšanas kešatmiņā saglabātais inkognito apakšrāmis: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6558,7 +6556,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Šis paplašinājums ir bloķēts}zero{Šie paplašinājumi ir bloķēti}one{Šie paplašinājumi ir bloķēti}other{Šie paplašinājumi ir bloķēti}}</translation>
 <translation id="560834977503641186">Wi-Fi sinhronizācija, uzzināt vairāk</translation>
 <translation id="5608580678041221894">Pieskarieties tālāk norādītajiem taustiņiem, lai pielāgotu vai pārvietotu apgriešanas apgabalu.</translation>
-<translation id="560919433407466404">Piešķiriet programmatūrai Parallels Desktop atļauju piekļūt USB ierīcēm.</translation>
 <translation id="5609231933459083978">Šķiet, ka lietojumprogramma nav derīga.</translation>
 <translation id="5610867721023328944">Mēģiniet vēlreiz vai atlasiet kādu no tālāk pieejamajiem motīviem.</translation>
 <translation id="5611398002774823980">Saglabāt kontā</translation>
@@ -8635,7 +8632,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7109543803214225826">Saīsne noņemta</translation>
 <translation id="7110388475787189534">Uzzināt, kā automātiski kārtot cilnes</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
-<translation id="7110684627876015299">Grupa bez nosaukuma — <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Piešķiriet nosaukumu šim logam</translation>
 <translation id="7113502843173351041">Piekļūt jūsu e-pasta adresei</translation>
 <translation id="7113974454301513811">Tagad pievienojiet sarakstam pašreizējo cilni.</translation>
@@ -9007,7 +9003,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7387107590792462040">Lūdzu, uzgaidiet, kamēr notiek instalēšana.</translation>
 <translation id="7387273928653486359">Pieņemama</translation>
 <translation id="7387951778417998929">Lai izmantotu meklētājprogrammu, kas nav noklusējuma meklētājprogramma, ievadiet tās saīsni adreses joslā un nospiediet izvēlēto īsinājumtaustiņu Šeit varat arī nomainīt noklusējuma meklētājprogrammu.</translation>
-<translation id="7388209873137778229">Tiek rādītas tikai atbalstītās ierīces.</translation>
 <translation id="7388615499319468910">Vietnes un reklāmdevēji var izprast reklāmu veiktspēju. Šis iestatījums ir izslēgts.</translation>
 <translation id="738903649531469042">Pievienot cilni lasīšanas sarakstam</translation>
 <translation id="7392118418926456391">Vīrusu skenēšana neizdevās.</translation>
@@ -10688,7 +10683,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8553342806078037065">Pārvaldīt citas personas</translation>
 <translation id="8554899698005018844">Nav valodas</translation>
 <translation id="8555444629041783356">Automātisks saulrieta grafiks</translation>
-<translation id="855604308879080518">Atļaujiet Android lietotnēm piekļūt USB ierīcēm šajā Chromebook datorā. Atļauja tiks pieprasīta ikreiz, kad pievienosiet USB ierīci. Noteiktas Android lietotnes pieprasīs papildu atļaujas.</translation>
 <translation id="8557022314818157177">Turpiniet pieskarties drošības atslēgai, līdz tiek reģistrēts jūsu pirksta nospiedums.</translation>
 <translation id="8557100046150195444">Lai turpinātu, izmantojiet Touch ID</translation>
 <translation id="8557856025359704738">Nākamās lejupielādes datums: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11401,7 +11395,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9036484080057916082">Parakstītā sertifikāta laikspiedolu saraksts</translation>
 <translation id="9037054491984310631">Izveidots savienojums ar Bluetooth ierīci “<ph name="DEVICE" />”.</translation>
 <translation id="9037640663275993951">Ierīce nav atļauta</translation>
-<translation id="9037706442425692248">Atļaujiet Android lietotnēm piekļūt USB ierīcēm šajā Chromebook datorā.</translation>
 <translation id="9037818663270399707">Visā tīkla datplūsmā jūsu savienojums nav privāts</translation>
 <translation id="9037965129289936994">Rādīt sākotnējo tekstu</translation>
 <translation id="9038489124413477075">Mape bez nosaukuma</translation>

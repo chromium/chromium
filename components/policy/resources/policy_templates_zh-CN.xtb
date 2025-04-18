@@ -186,11 +186,6 @@
       确定在零售模式设备的登录屏幕上显示屏幕保护程序之前的闲置时间。
 
       应以毫秒为单位指定此政策的值。</translation>
-<translation id="1141534298047883088">您可以通过设置此政策，指定所选用户的设备是否必须连上受管理的网络，才能加入“<ph name="CLASS_TOOLS_NAME" />”课程。
-
-   如果此政策的值设为 true，则这些设备必须连上受管理的网络。
-
-   如果此政策的值设为 false 或未设置，这些设备无需连上受管理的网络即可加入此课程。</translation>
 <translation id="1143257335984030879">此政策用于控制购物清单功能的可用性。
       如果此政策已启用，系统会向用户呈现用于跟踪当前页面上显示的商品价格的界面。跟踪的商品会显示在书签侧边栏中。
       如果此政策已启用或未设置，用户将可以使用购物清单功能。
@@ -726,7 +721,7 @@
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
 <translation id="1509839615768187049">一律使用内置 DNS 客户端</translation>
 <translation id="1514888685242892912">启用 <ph name="PRODUCT_NAME" /></translation>
-<translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
+<translation id="1515230621229117540">启用悬浮无障碍菜单</translation>
 <translation id="1515824657887788963">允许页面在关闭过程中执行同步 XHR 请求。</translation>
 <translation id="1516486219683984217">不允许使用系统通知</translation>
 <translation id="1519092983270375506">默认第三方存储分区设置</translation>
@@ -4408,11 +4403,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       请注意，此功能目前只适用于 Google 内部网络环境。</translation>
 <translation id="4269859918103560644">允许用户决定</translation>
-<translation id="4271245613154024710">设置此政策可指定哪些独立式 Web 应用 (IWA) 可以使用 Web Smart Card API 连接到智能卡，而无需提示用户授予权限。此政策不接受通配符。
-
-<ph name="POLICY_NAME" /> 可覆盖此政策；具体而言，如果屏蔽名单的值为 <ph name="ALL_ISOLATED_WEB_APPS" />，则所有 IWA 都将无法连接到智能卡读卡器（用户甚至不会收到请求授权的提示），但此政策中列出的 IWA 除外。
-
-默认情况下，如果用户以交互方式为每个读卡器授予权限，则在清单文件中指定智能卡权限的 IWA 可以连接到智能卡。</translation>
 <translation id="4274691295133617461">如果此政策设为 3，系统会允许网站通过 File System API 请求对主机操作系统的文件系统中的文件和目录的读取权限。如果此政策设为 2，系统会禁止网站请求访问。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
@@ -6061,11 +6051,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       </translation>
 <translation id="5448022937220253000">选择在 <ph name="LACROS_NAME" /> 停用后如何处理用户数据</translation>
 <translation id="5449690328792750354">Event.path API 将可用。</translation>
-<translation id="5450507908812118425">通过设置此政策，您可以指定哪些独立式 Web 应用 (IWA) 无法连接到智能卡读卡器（用户甚至不会收到请求授权的提示）。此政策接受通配符，例如，<ph name="ALL_ISOLATED_WEB_APPS" /> 将阻止所有 IWA 的访问。
-
-<ph name="POLICY_NAME" /> 可覆盖此政策；具体而言，如果屏蔽名单的值为 <ph name="ALL_ISOLATED_WEB_APPS" />，则所有 IWA 都将无法连接到智能卡读卡器（用户甚至不会收到请求授权的提示），但 <ph name="POLICY_NAME" /> 中列出的 IWA 除外。
-
-默认情况下，如果用户以交互方式为每个读卡器授予权限，则在清单文件中指定智能卡权限的 IWA 可以连接到智能卡。</translation>
 <translation id="5452024130413254050">控制使用该配置的虚拟机能否访问 vTPM，默认是 false 和 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />（如未设置此政策）。</translation>
 <translation id="5454128917282602937">当用户在 <ph name="PRODUCT_OS_NAME" /> 设备之间切换时，<ph name="PRODUCT_NAME" /> V2 服务会在新设备上启动先前所用设备上的浏览器窗口和应用窗口。
 如果此政策已启用，系统会在登录时自动启动当前用户上次所用 <ph name="PRODUCT_OS_NAME" /> 设备上的浏览器窗口和应用窗口。如果此政策已停用或未设置，系统在登录时启动的项目将取决于默认设置。</translation>
@@ -7585,9 +7570,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
        从版本 M106 开始，系统会自动在自助服务终端会话中启用允许的输入法。
 
       注意：如果当前输入法不受支持，它会切换为硬件键盘布局（如果允许）或此列表中的第一个有效条目。无效输入法或不受支持的输入法将被忽略。</translation>
-<translation id="6483115462650732746">在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
+<translation id="6483115462650732746">在自助服务终端模式下显示悬浮式无障碍菜单</translation>
 <translation id="6491139795995924304">允许在设备上使用蓝牙功能</translation>
-<translation id="6491305972928809525">不在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
+<translation id="6491305972928809525">不在自助服务终端模式下显示悬浮式无障碍菜单</translation>
 <translation id="6491872498385040936">此政策已被弃用。请考虑使用替换此政策的 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />；借助该政策，您可以进行更加精确的微调。
 
       强制启用 YouTube“适中”受限模式，并禁止用户更改此设置。

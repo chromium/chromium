@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">开始新任务或在流程中获取帮助。</translation>
 <translation id="1054048317165655285">在您的手机上完成设置</translation>
 <translation id="1054153489933238809">在新标签页中打开原始图片(&amp;I)</translation>
+<translation id="1054187194995068149">您好，这是预览版</translation>
 <translation id="1054502481659725522">应用、网站和系统服务可以使用您的位置信息</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{请在 1 周内更新 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="1055606969515662982">使用遥控器停止投放</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可修改以下文件</translation>
 <translation id="130174306655812048">不妨试着这样问：“Hey Google，这是什么歌？”</translation>
 <translation id="1302227299132585524">允许 Apple 事件中的 JavaScript</translation>
-<translation id="1302654693270046655">“<ph name="GROUP_NAME" />”组 - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">以前导出的书签（HTML 文件）</translation>
 <translation id="1303671224831497365">未找到任何蓝牙设备</translation>
 <translation id="130491383855577612">已成功替换 Linux 应用和文件</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">您可在当前会话保持活跃状态时恢复上一个会话。</translation>
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
-<translation id="1363772878823415675">授权 <ph name="SPECIFIC_NAME" /> 访问 USB 设备。</translation>
 <translation id="136378536198524553">节能模式已开启</translation>
 <translation id="136522805455656552">为了确保设备的安全，您应该仅运行和安装来自可信来源和开发者的软件。<ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">挑眉</translation>
@@ -2550,6 +2549,7 @@
 <translation id="2743301740238894839">开始</translation>
 <translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="274362947316498129">有一款应用正在尝试使用<ph name="DEVICE_NAME" />。若要允许使用<ph name="DEVICE_NAME" />，请关闭它的隐私保护开关。</translation>
+<translation id="2744221223678373668">已共享</translation>
 <translation id="2745080116229976798">Microsoft 合格的部署</translation>
 <translation id="2749756011735116528">登录<ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
@@ -5833,9 +5833,7 @@
 <translation id="5087864757604726239">后退</translation>
 <translation id="5088427648965532275">Passpoint 来源</translation>
 <translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
-<translation id="5089763948477033443">侧边栏大小调整手柄</translation>
 <translation id="5090637338841444533">不允许跟踪您的摄像头位置</translation>
-<translation id="5090981554736747495">授权 Linux 应用访问 USB 设备。</translation>
 <translation id="5091636240353511739">显示 PIN 码</translation>
 <translation id="5093477827231450397">网站列表，这些网站已被您屏蔽，因为您不想让它们向其他网站建议广告</translation>
 <translation id="5093569275467863761">无痕式往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6546,7 +6544,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{这个扩展程序已被屏蔽}other{这些扩展程序已被屏蔽}}</translation>
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
-<translation id="560919433407466404">授权 Parallels Desktop 访问 USB 设备。</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
 <translation id="5610867721023328944">请重试，或从下面可用的主题中选择一个。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
@@ -8619,7 +8616,6 @@
 <translation id="7109543803214225826">已移除快捷方式</translation>
 <translation id="7110388475787189534">了解如何自动整理标签页</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{向群组中添加标签页}other{向群组中添加标签页}}</translation>
-<translation id="7110684627876015299">未命名的组 - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">为此窗口命名</translation>
 <translation id="7113502843173351041">获取您的电子邮件地址</translation>
 <translation id="7113974454301513811">现在，将当前标签页添加到您的清单中</translation>
@@ -8991,7 +8987,6 @@
 <translation id="7387107590792462040">正在安装，请稍候</translation>
 <translation id="7387273928653486359">可接受</translation>
 <translation id="7387951778417998929">若要使用非默认的搜索引擎，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。您还可在此处更改默认搜索引擎。</translation>
-<translation id="7388209873137778229">系统仅会显示受支持的设备。</translation>
 <translation id="7388615499319468910">网站和广告主可以了解广告效果。此设置已关闭。</translation>
 <translation id="738903649531469042">向阅读清单中添加标签页</translation>
 <translation id="7392118418926456391">病毒扫描失败</translation>
@@ -10673,7 +10668,6 @@
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
 <translation id="8555444629041783356">自动更新日落时间表</translation>
-<translation id="855604308879080518">允许 Android 应用在此 Chromebook 上访问 USB 设备。您每次插入 USB 设备时都会收到权限请求。个别 Android 应用会请求额外权限。</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557100046150195444">使用触控 ID 继续</translation>
 <translation id="8557856025359704738">下次下载将于 <ph name="NEXT_DATE_DOWNLOAD" />进行。</translation>
@@ -11384,7 +11378,6 @@
 <translation id="9036484080057916082">签名证书时间戳列表</translation>
 <translation id="9037054491984310631">已连接到名为“<ph name="DEVICE" />”的蓝牙设备</translation>
 <translation id="9037640663275993951">不允许此设备运行虚拟机</translation>
-<translation id="9037706442425692248">允许 Android 应用在此 Chromebook 上访问 USB 设备</translation>
 <translation id="9037818663270399707">您的连接在部分网络流量中不是私密连接</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9038489124413477075">未命名的文件夹</translation>

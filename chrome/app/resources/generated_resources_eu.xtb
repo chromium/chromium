@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Hasi zerbait berria edo jaso laguntza prozesuan.</translation>
 <translation id="1054048317165655285">Amaitu konfigurazioa telefonoan</translation>
 <translation id="1054153489933238809">Ireki jatorrizko &amp;irudia beste fitxa batean</translation>
+<translation id="1054187194995068149">Kaixo: hau ahotsaren aurrebista da</translation>
 <translation id="1054502481659725522">Aplikazioek, webguneek eta sistemaren zerbitzuek kokapena erabil dezakete</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Eguneratu <ph name="DEVICE_TYPE" /> gailua astebeteko epean}other{Eguneratu <ph name="DEVICE_TYPE" /> gailua {NUM_WEEKS} asteko epean}}</translation>
 <translation id="1055606969515662982">Igortzeari uzteko, erabili urruneko kontrolagailua</translation>
@@ -456,7 +457,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1301135395320604080"><ph name="ORIGIN" /> webguneak fitxategi hauek edita ditzake:</translation>
 <translation id="130174306655812048">Probatu "Hey Google, zer abesti da hau?"</translation>
 <translation id="1302227299132585524">Baimendu JavaScript Apple gertaeretan</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> taldea: <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML fitxategiaren laster-marka egiten du</translation>
 <translation id="1303671224831497365">Ez da aurkitu Bluetooth bidezko gailurik</translation>
 <translation id="130491383855577612">Ordeztu dira Linux aplikazioak eta fitxategiak</translation>
@@ -538,7 +538,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1362829980946830670">Oraingo saioak aktibo jarraitzen duen bitartean, aurreko saioari berrekin diezaiokezu.</translation>
 <translation id="1362865166188278099">Arazo mekanikoa. Egiaztatu inprimagailua.</translation>
 <translation id="1363585519747660921">USB bidezko inprimagailua konfiguratu egin behar da</translation>
-<translation id="1363772878823415675">Eman USB bidezko gailuak erabiltzeko baimena <ph name="SPECIFIC_NAME" /> zerbitzuari.</translation>
 <translation id="136378536198524553">Energia-aurreztailea aktibatuta dago</translation>
 <translation id="136522805455656552">Gailua babestuta mantentzeko, iturburu eta garatzaile fidagarrien softwarea soilik exekutatu eta instalatu beharko zenuke. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Bekainak jasotzea</translation>
@@ -2558,6 +2557,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2743301740238894839">Hasi</translation>
 <translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="274362947316498129">Aplikazio bat <ph name="DEVICE_NAME" /> atzitu nahian dabil. Sarbidea emateko, desaktibatu <ph name="DEVICE_NAME" />ren pribatutasun-etengailua.</translation>
+<translation id="2744221223678373668">Partekatutakoak</translation>
 <translation id="2745080116229976798">Microsoft menderakuntza mugatua</translation>
 <translation id="2749756011735116528">Hasi saioa <ph name="PRODUCT_NAME" />-n</translation>
 <translation id="2749836841884031656">SIMa</translation>
@@ -5842,9 +5842,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5087864757604726239">atzera</translation>
 <translation id="5088427648965532275">Passpoint-en hornitzailea</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA enkriptatzearekin</translation>
-<translation id="5089763948477033443">Alboko panelaren tamaina aldatzeko kontrol-puntua</translation>
 <translation id="5090637338841444533">Ezin dute egin kameraren posizioaren jarraipena</translation>
-<translation id="5090981554736747495">Eman USB bidezko gailuak erabiltzeko baimena Linux-eko aplikazioei.</translation>
 <translation id="5091636240353511739">Erakutsi PINa</translation>
 <translation id="5093477827231450397">Blokeatu dituzun eta beste webguneei iragarkiak iradokitzea galarazi nahi diezun webguneen zerrenda</translation>
 <translation id="5093569275467863761">Aurreko orria cachean gordetzeko eginbidean gordetako ezkutuko moduko azpimarkoa: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6555,7 +6553,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Luzapena blokeatuta dago}other{Luzapenak blokeatuta daude}}</translation>
 <translation id="560834977503641186">Wifi-sinkronizazioa, Lortu informazio gehiago</translation>
 <translation id="5608580678041221894">Sakatu tekla hauek ebaki beharreko eremua doitzeko edo mugitzeko</translation>
-<translation id="560919433407466404">Eman USB bidezko gailuak erabiltzeko baimena Parallels Desktop zerbitzuari.</translation>
 <translation id="5609231933459083978">Dirudienez, aplikazioak ez du balio.</translation>
 <translation id="5610867721023328944">Saiatu berriro edo hautatu erabilgarri dauden gaietako bat behean.</translation>
 <translation id="5611398002774823980">Gorde kontuan</translation>
@@ -8627,7 +8624,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7109543803214225826">Kendu da lasterbidea</translation>
 <translation id="7110388475787189534">Lortu fitxak automatikoki antolatzeko argibideak</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
-<translation id="7110684627876015299">Talde izengabea: <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Eman izena leihoari</translation>
 <translation id="7113502843173351041">Zure helbide elektronikoa jakin.</translation>
 <translation id="7113974454301513811">Gehitu oraingo fitxa zerrendan</translation>
@@ -8999,7 +8995,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7387107590792462040">Itxaron instalazioa gauzatu bitartean</translation>
 <translation id="7387273928653486359">Onargarria</translation>
 <translation id="7387951778417998929">Lehenetsia ez den bilatzaile bat erabiltzeko, idatzi haren lasterbidea helbide-barran eta, ondoren, sakatu erabili ohi duzun lasterbidea. Bestela, hemen alda dezakezu bilatzaile lehenetsia.</translation>
-<translation id="7388209873137778229">Gailu bateragarriak soilik daude ikusgai.</translation>
 <translation id="7388615499319468910">Webguneek eta iragarleek iragarkien errendimendua uler dezakete. Desaktibatuta dago ezarpena.</translation>
 <translation id="738903649531469042">Gehitu fitxa irakurketa-zerrendan</translation>
 <translation id="7392118418926456391">Birus-analisiak huts egin du</translation>
@@ -10679,7 +10674,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8553342806078037065">Kudeatu beste pertsona batzuk</translation>
 <translation id="8554899698005018844">Ez da zehaztu hizkuntzarik</translation>
 <translation id="8555444629041783356">Argi-ordu automatikoak</translation>
-<translation id="855604308879080518">Eman USB bidezko gailuak erabiltzeko baimena Android-erako aplikazioei Chromebook honetan. USB bidezko gailu bat konektatzen duzun bakoitzean eskatuko da baimena. Android-erako aplikazio bakoitzak baimen gehigarriak eskatuko ditu.</translation>
 <translation id="8557022314818157177">Jarraitu segurtasun-giltza sakatzen, hatz-marka hauteman arte</translation>
 <translation id="8557100046150195444">Erabili Touch ID aurrera egiteko</translation>
 <translation id="8557856025359704738">Hurrengo deskargaren ordua: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11390,7 +11384,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9036484080057916082">Sinatutako ziurtagiriaren denbora-zigiluen zerrenda</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> izeneko Bluetooth bidezko gailura konektatuta</translation>
 <translation id="9037640663275993951">Ez da onartzen gailua</translation>
-<translation id="9037706442425692248">Eman USB gailuak atzitzeko baimena Android-erako aplikazioei Chromebook honetan</translation>
 <translation id="9037818663270399707">Konexioa ez da pribatua sareko trafiko guztirako</translation>
 <translation id="9037965129289936994">Ikusi jatorrizkoa</translation>
 <translation id="9038489124413477075">Izenik gabeko karpeta</translation>

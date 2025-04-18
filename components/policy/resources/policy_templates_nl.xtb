@@ -186,11 +186,6 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
       Bepaalt de periode waarna de schermbeveiliging zichtbaar is in het inlogvenster voor apparaten in de winkelmodus.
 
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
-<translation id="1141534298047883088">Als je het beleid instelt, bepaal je daarmee of de apparaten van geselecteerde gebruikers zich binnen een beheerd netwerk moeten bevinden om deel uit te maken van de <ph name="CLASS_TOOLS_NAME" />-lesgroep.
-
-   Als de waarde is ingesteld op Waar, moeten ze zich op een beheerd netwerk bevinden.
-
-   Als je het beleid instelt op Onwaar of niet instelt, kunnen ze deelnemen zonder dat ze zich binnen een beheerd netwerk bevinden.</translation>
 <translation id="1143257335984030879">Dit beleid bepaalt de beschikbaarheid van de functie voor boodschappenlijstjes.
       Als je dit beleid toepast, krijgen gebruikers een UI te zien om de prijs te volgen van het product dat op de huidige pagina wordt getoond. Het gevolgde product wordt in het zijvenster met bookmarks getoond.
       Als je dit beleid toepast of niet instelt, is de functie voor boodschappenlijstjes beschikbaar voor gebruikers.
@@ -4420,11 +4415,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 
       Deze functie wordt alleen ondersteund binnen de interne netwerkomgeving van Google.</translation>
 <translation id="4269859918103560644">Toestaan dat gebruikers dit bepalen</translation>
-<translation id="4271245613154024710">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) verbinding kunnen maken met smartcards via de Web Smart Card API zonder dat de gebruiker om toestemming wordt gevraagd. Dit beleid accepteert geen jokertekens.
-
-Dit beleid overschrijft <ph name="POLICY_NAME" />. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in dit beleid.
-
-GWA's die smartcardrechten aangeven in hun manifest, kunnen standaard verbinding maken met smartcards, op voorwaarde dat de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
@@ -6074,11 +6064,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       </translation>
 <translation id="5448022937220253000">Kies wat er gebeurt met gebruikersgegevens nadat <ph name="LACROS_NAME" /> is uitgezet</translation>
 <translation id="5449690328792750354">Event.path API komt beschikbaar.</translation>
-<translation id="5450507908812118425">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming). Dit beleid accepteert jokertekens. <ph name="ALL_ISOLATED_WEB_APPS" /> blokkeert bijvoorbeeld de toegang voor alle GWA's.
-
-Dit beleid wordt overschreven door <ph name="POLICY_NAME" />. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in <ph name="POLICY_NAME" />.
-
-GWA's die smartcardrechten aangeven in hun manifest, kunnen standaard verbinding maken met smartcards, op voorwaarde dat de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="5452024130413254050">Bepaalt of VM's die deze configuratie gebruiken toegang hebben tot een vTPM. Dit beleid wordt standaard ingesteld op False en <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> als het niet is ingesteld.</translation>
 <translation id="5454128917282602937">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" /> V2-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
 Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.

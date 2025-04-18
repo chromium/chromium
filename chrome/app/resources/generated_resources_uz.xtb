@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Yangi ishni boshlang yoki joriysini davom ettiring</translation>
 <translation id="1054048317165655285">Sozlashni telefonda yakunlang</translation>
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
+<translation id="1054187194995068149">Salom. Bu — eskiz.</translation>
 <translation id="1054502481659725522">Ilovalar, saytlar va tizim xizmatlari joylashuvingizdan foydalanishi mumkin</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida yangilang}other{<ph name="DEVICE_TYPE" /> qurilmasini {NUM_WEEKS} hafta ichida yangilang}}</translation>
 <translation id="1055606969515662982">Translatsiyani pult orqali toʻxtating</translation>
@@ -456,7 +457,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1301135395320604080"><ph name="ORIGIN" /> quyidagi fayllarni tahrirlay oladi</translation>
 <translation id="130174306655812048">"Ok Google, bu qaysi tarona?" deb soʻrang</translation>
 <translation id="1302227299132585524">Apple hodisalarida JavaScript ishga tushirilishiga ruxsat berish</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> guruhi — <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Xatcho‘plar HTML-fayli</translation>
 <translation id="1303671224831497365">Bluetooth qurilmalari topilmadi</translation>
 <translation id="130491383855577612">Linux ilova va fayllarning yangi nusxalari tiklandi</translation>
@@ -538,7 +538,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1362829980946830670">Joriy seansni faol qodlirib, avvalgi seansni davom ettirish mumkin.</translation>
 <translation id="1362865166188278099">Mexanik muammo. Printerni tekshirish</translation>
 <translation id="1363585519747660921">USB printer sozlanishi kerak</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" /> uchun USB qurilmalarga ruxsat berish mumkin.</translation>
 <translation id="136378536198524553">Quvvat tejalishi yoniq</translation>
 <translation id="136522805455656552">Qurilmani xavfsiz saqlash uchun faqatgina ishonchli manba yoki ishlab chiquvchi dasturlarini ishga tushirish va oʻrnatish tavsiya etiladi. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Qoshlarni koʻtaring</translation>
@@ -2560,6 +2559,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2743301740238894839">Boshlash</translation>
 <translation id="2743387203779672305">Vaqtincha xotiraga nusxalash</translation>
 <translation id="274362947316498129">Ilova <ph name="DEVICE_NAME" />dan foydalanmoqchi. Ruxsat berish uchun <ph name="DEVICE_NAME" /> maxfiylik kalitini oʻchiring.</translation>
+<translation id="2744221223678373668">Ulashilgan</translation>
 <translation id="2745080116229976798">Microsoft Malakalilarga Bo‘ysunish sertifikatlar xizmati</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> hisobiga kirish</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4544,6 +4544,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4139326893730851150">Mikrodastur yangilanishlari</translation>
 <translation id="4142052906269098341"><ph name="DEVICE_TYPE" /> qulfini telefoningiz bilan oching <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">AI bilan ishlash haqida batafsil axborot oling va oʻzingizga mos maxfiylik sozlamalarini tanlang</translation>
+<translation id="4143754025452944766">Bu qurilmadan hisob kengaytmalarini olib tashlashni ham tanlashingiz mumkin.</translation>
 <translation id="4146026355784316281">Doim tizimdagi birlamchi ko‘rish dasturida ochish</translation>
 <translation id="4146785383423576110">Ilk sozlamalarni tiklash va zararli fayllarni tozalash</translation>
 <translation id="4147099377280085053">Brayl jadvalini tanlang</translation>
@@ -5844,9 +5845,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5087864757604726239">ortga</translation>
 <translation id="5088427648965532275">Passpoint provayderi</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 algoritmli RSA shifrlash</translation>
-<translation id="5089763948477033443">Yon panel oʻlcham dastagi</translation>
 <translation id="5090637338841444533">Kamerangiz joylashuvini kuzatish taqiqlangan</translation>
-<translation id="5090981554736747495">Linux ilovalar uchun USB qurilmalarga ruxsat berish.</translation>
 <translation id="5091636240353511739">PIN kodni koʻrsatish</translation>
 <translation id="5093477827231450397">Boshqa saytlarga reklamani tavsiya qilishi taqiqlangan saytlar roʻyxati</translation>
 <translation id="5093569275467863761">Inkognito rejimida orqaga qaytarilgan kesh subfreymi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6558,7 +6557,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu kengaytma bloklandi}other{Bu kengaytmalar bloklandi}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Batafsil</translation>
 <translation id="5608580678041221894">Qirqilayotgan maydonni surish yoki moslash uchun quyidagi tugmalar ustiga bosing</translation>
-<translation id="560919433407466404">Parallels Desktopga USB qurilmalardagi fayllarni ochishga ruxsat bering.</translation>
 <translation id="5609231933459083978">Ilova nomi noto‘g‘ri kiritilganga o‘xshaydi.</translation>
 <translation id="5610867721023328944">Qayta urining yoki quyidagi mavzulardan birini tanlang.</translation>
 <translation id="5611398002774823980">Hisobda saqlash</translation>
@@ -8633,7 +8631,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7109543803214225826">Yorliq olib tashlandi</translation>
 <translation id="7110388475787189534">Varaqlarni avtomatik tartiblash haqida batafsil</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
-<translation id="7110684627876015299">Nomsiz guruh – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Bu oynaga nom bering</translation>
 <translation id="7113502843173351041">Email manzilingizni bilish</translation>
 <translation id="7113974454301513811">Endi roʻyxatingizga joriy varaqni kiriting</translation>
@@ -9005,7 +9002,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7387107590792462040">Oʻrnatish jarayoni tugashini kuting</translation>
 <translation id="7387273928653486359">Qoniqarli</translation>
 <translation id="7387951778417998929">Boshqa qidiruv vositasidan foydalanish uchun manzillar qatorida buyruqni kiritib, keyin oldindan belgilangan tezkor tugmani bosing. Shuningdek, asosiy qidiruv tizimini shu yerdan almashtirish mumkin.</translation>
-<translation id="7388209873137778229">Faqat quyidagi qurilmalarda ishlaydi.</translation>
 <translation id="7388615499319468910">Saytlar va reklama beruvchilar reklamalar qanday chiqishini oʻrganishi mumkin. Bu sozlama oʻchiq.</translation>
 <translation id="738903649531469042">Varaqni saqlangan sahifalarga kiritish</translation>
 <translation id="7392118418926456391">Virusdan tekshirish amalga oshmadi</translation>
@@ -10685,7 +10681,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8553342806078037065">Boshqa foydalanuvchilarni boshqarish</translation>
 <translation id="8554899698005018844">Til tanlanmagan</translation>
 <translation id="8555444629041783356">Kun botishi avtomatik jadvali</translation>
-<translation id="855604308879080518">Android ilovalarga bu Chromebook USB qurilmalaridan foydalanishiga ruxsat berish. Har safar USB qurilma ulanganda ruxsat soʻraladi. Ayrim Android ilovalar qoʻshimcha ruxsatlar soʻrashi ham mumkin.</translation>
 <translation id="8557022314818157177">Barmoq izi yozib olinguncha elektron kalitga teginib turing</translation>
 <translation id="8557100046150195444">Touch ID bilan davom ettiring</translation>
 <translation id="8557856025359704738">Keyingi yuklab olish sanasi: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11396,7 +11391,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9036484080057916082">Imzolangan sertifikatlar vaqt belgilari roʻyxati</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> nomli Bluetooth qurilmaga ulangan</translation>
 <translation id="9037640663275993951">Qurilmaga ruxsat berilmagan</translation>
-<translation id="9037706442425692248">Bu Chromebookda Android ilovalarga USB qurilmalaridan foydalanishiga ruxsat berish</translation>
 <translation id="9037818663270399707">Saytga ulanish butunlay xavfsiz emas</translation>
 <translation id="9037965129289936994">Asl tilda ko‘rsatish</translation>
 <translation id="9038489124413477075">Nomsiz jild</translation>

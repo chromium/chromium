@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">নতুন কিবা আৰম্ভ কৰক বা চলিত কামটোত সহায় লাভ কৰক।</translation>
 <translation id="1054048317165655285">আপোনাৰ ফ’নত ছেটআপ সম্পূৰ্ণ কৰক</translation>
 <translation id="1054153489933238809">নতুন টেবত প্ৰকৃত &amp;প্ৰতিচ্ছবি খোলক</translation>
+<translation id="1054187194995068149">নমস্কাৰ, এইটো এটা পূৰ্বদৰ্শন</translation>
 <translation id="1054502481659725522">এপ্, ৱেবছাইট আৰু ছিষ্টেম সেৱাসমূহে আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{১ সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}one{{NUM_WEEKS} সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}other{{NUM_WEEKS} সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}}</translation>
 <translation id="1055606969515662982">কাষ্ট কৰাটো বন্ধ কৰিবলৈ ৰিম’ট ব্যৱহাৰ কৰক</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" />এ তলৰ ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
 <translation id="130174306655812048">“Hey Google, এইটো কি গীত?” বুলি সুধি চাওক</translation>
 <translation id="1302227299132585524">Apple Eventsৰ JavaScriptক অনুমতি দিয়ক</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> গোট - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML ফাইল বুকমার্ক কৰে</translation>
 <translation id="1303671224831497365">কোনো ব্লুটুথ ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="130491383855577612">Linux এপ্‌ আৰু ফাইলসমূহ সফলভাৱে সলনি কৰা হ'ল</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">আপোনাৰ বৰ্তমানৰ ছেশ্বনটো সক্ৰিয় হৈ থকা অৱস্থাত আপুনি আপোনাৰ পূৰ্বৰ ছেশ্বনটো পুনৰ আৰম্ভ কৰিব পাৰে।</translation>
 <translation id="1362865166188278099">কাৰিকৰী সমস্যা। প্ৰিণ্টাৰ পৰীক্ষা কৰক</translation>
 <translation id="1363585519747660921">USB প্ৰিণ্টাৰ কনফিগাৰেশ্বন কৰা প্ৰয়োজন</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />ক ইউএছবি ডিভাইচ এক্সেছ কৰিবলৈ অনুমতি দিয়ক।</translation>
 <translation id="136378536198524553">শক্তি সঞ্চয়কাৰী অন আছে</translation>
 <translation id="136522805455656552">আপোনাৰ ডিভাইচটো সুৰক্ষিত কৰিবলৈ, আপুনি কেৱল বিশ্বাসী উৎস আৰু বিকাশকৰ্তা ছফ্টৱেৰ চলাব আৰু ইনষ্টল কৰিব লাগে। <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">চেলাউৰি উঠাওক</translation>
@@ -2569,6 +2568,7 @@
 <translation id="2743301740238894839">আৰম্ভ কৰক</translation>
 <translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="274362947316498129">এটা এপে <ph name="DEVICE_NAME" /> এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ <ph name="DEVICE_NAME" />ৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
+<translation id="2744221223678373668">শ্বেয়াৰ কৰা</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />ত ছাইন ইন কৰক</translation>
 <translation id="2749836841884031656">ছিম</translation>
@@ -5855,9 +5855,7 @@
 <translation id="5087864757604726239">উভতি যাওক</translation>
 <translation id="5088427648965532275">পাছপইণ্ট প্ৰদানকাৰী</translation>
 <translation id="5088534251099454936">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">ছাইডৰ পেনেলৰ আকাৰ সলনি কৰা হেণ্ডেল</translation>
 <translation id="5090637338841444533">আপোনাৰ কেমেৰাৰ স্থান ট্ৰেক কৰাৰ অনুমতি নাই</translation>
-<translation id="5090981554736747495">Linux এপক ইউএছবি ডিভাইচ এক্সেছ কৰিবলৈ অনুমতি দিয়ক।</translation>
 <translation id="5091636240353511739">পিন দেখুৱাওক</translation>
 <translation id="5093477827231450397">আপুনি যিবোৰ ছাইটে অন্য ছাইটসমূহৰ বাবে বিজ্ঞাপনৰ পৰামৰ্শ আগবঢ়োৱাটো নিবিচাৰি সেইবোৰ অৱৰোধ কৰিছে, সেইবোৰৰ সূচী</translation>
 <translation id="5093569275467863761">বেক-ফৰৱাৰ্ড কেশ্বত থকা ইনক’গনিট’ ছাবফ্ৰে’ম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6569,7 +6567,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটো অৱৰোধ কৰা হৈছে}one{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}other{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="560834977503641186">ৱাই-ফাই ছিংক, অধিক জানক</translation>
 <translation id="5608580678041221894">ক্ৰপ কৰা অংশ মিলাবলৈ বা আঁতৰাবলৈ তলত উল্লেখ কৰা চাবিসমূহ টিপক</translation>
-<translation id="560919433407466404">ইউএছবি ডিভাইচসমূহ এক্সেছ কৰিবলৈ Parallels Desktopক অনুমতি দিয়ক।</translation>
 <translation id="5609231933459083978">এই এপ্লিকেশ্বনটো অমান্য যেন লাগিছে।</translation>
 <translation id="5610867721023328944">পুনৰ চেষ্টা কৰক বা তলত উপলব্ধ থীমসমূহৰ এটাৰ পৰা বাছনি কৰক।</translation>
 <translation id="5611398002774823980">একাউণ্টত ছেভ কৰক</translation>
@@ -8646,7 +8643,6 @@
 <translation id="7109543803214225826">শ্বৰ্টকাট আঁতৰোৱা হ’ল</translation>
 <translation id="7110388475787189534">আপোনাৰ টেবসমূহ কেনেকৈ স্বয়ংক্ৰিয়ভাৱে সংগঠিত কৰিব লাগে জানক</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
-<translation id="7110684627876015299">নামবিহীন গোট - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">এই ৱিণ্ড’খনৰ নাম দিয়ক</translation>
 <translation id="7113502843173351041">আপোনাৰ ইমেইল ঠিকনা জানক</translation>
 <translation id="7113974454301513811">এতিয়া বৰ্তমানৰ টেবটো আপোনাৰ সূচীত যোগ দিয়ক</translation>
@@ -9018,7 +9014,6 @@
 <translation id="7387107590792462040">ইনষ্টল হৈ থকাৰ সময়ত অনুগ্ৰহ কৰি অপেক্ষা কৰক</translation>
 <translation id="7387273928653486359">গ্ৰহণযোগ্য</translation>
 <translation id="7387951778417998929">ডিফ’ল্টৰ বাহিৰে আন এটা সন্ধান ইঞ্জিন ব্যৱহাৰ কৰিবলৈ সেইটোৰ শ্বৰ্টকাটটো ঠিকনাৰ বাৰত টাইপ কৰক আৰু তাৰ পাছত আপোনাৰ পচন্দৰ কীব’ৰ্ডৰ শ্বৰ্টকাটটো দিয়ক। আপুনি ইয়াত আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনো সলনি কৰিব পাৰে।</translation>
-<translation id="7388209873137778229">কেৱল সমৰ্থিত ডিভাইচসমূহ প্ৰদৰ্শন কৰা হয়।</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="738903649531469042">পঢ়াৰ সূচীত টেব যোগ দিয়ক</translation>
 <translation id="7392118418926456391">ভাইৰাছ স্কেন কৰিব পৰা নগ’ল</translation>
@@ -10699,7 +10694,6 @@
 <translation id="8553342806078037065">অন্য লোকসকলক পৰিচালনা কৰক</translation>
 <translation id="8554899698005018844">কোনো ভাষা নাই</translation>
 <translation id="8555444629041783356">সূৰ্যাস্তৰ স্বয়ংক্ৰিয় সময়সূচী</translation>
-<translation id="855604308879080518">Android এপ্‌সমূহক এই Chromebookটোত থকা ইউএছবি ডিভাইচসমূহ এক্সেছ কৰিবলৈ দিয়ক। আপুনি ইউএছবি ডিভাইচ প্লাগ ইন কৰা প্ৰতিবাৰতেই অনুমতি বিচৰা হ’ব। গাইগুটীয়া Android এপ্‌সমূহে অতিৰিক্ত অনুমতি বিচাৰিব।</translation>
 <translation id="8557022314818157177">আপোনাৰ ফিংগাৰপ্ৰিণ্টটো কেপশ্বাৰ নকৰা পর্যন্ত আপোনাৰ সুৰক্ষা চাবিটো স্পৰ্শ কৰি থাকক</translation>
 <translation id="8557100046150195444">অব্যাহত ৰাখিবলৈ স্পৰ্শ আইডি ব্যৱহাৰ কৰক</translation>
 <translation id="8557856025359704738">পৰৱৰ্তী ডাউনল’ড <ph name="NEXT_DATE_DOWNLOAD" />ত আছে।</translation>
@@ -11411,7 +11405,6 @@
 <translation id="9036484080057916082">স্বাক্ষৰ কৰা প্ৰমাণপত্ৰৰ টাইমষ্টাম্পৰ সূচী</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> নামৰ ব্লুটুথ ডিভাইচটোৰ সৈতে সংযোগ হৈ আছে</translation>
 <translation id="9037640663275993951">ডিভাইচটোৰ অনুমতি নাই</translation>
-<translation id="9037706442425692248">Android এপ্‌সমূহক এই Chromebookটোত থকা ইউএছবি ডিভাইচসমূহ এক্সেছ কৰিবলৈ দিয়ক</translation>
 <translation id="9037818663270399707">সকলো নেটৱৰ্কৰ ট্ৰেফিকৰ বাবে আপোনাৰ সংযোগটো ব্যক্তিগত নহয়</translation>
 <translation id="9037965129289936994">প্ৰকৃত সমল দেখুৱাওক</translation>
 <translation id="9038489124413477075">নামবিহীন ফ’ল্ডাৰ</translation>

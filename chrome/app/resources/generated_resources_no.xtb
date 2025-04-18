@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Start noe nytt, eller få hjelp på veien.</translation>
 <translation id="1054048317165655285">Fullfør konfigureringen på telefonen din</translation>
 <translation id="1054153489933238809">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
+<translation id="1054187194995068149">Hei. Dette er en forhåndsvisning</translation>
 <translation id="1054502481659725522">Apper, nettsteder og systemtjenester kan bruke posisjonen din</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Oppdater <ph name="DEVICE_TYPE" /> innen én uke}other{Oppdater <ph name="DEVICE_TYPE" /> innen {NUM_WEEKS} uker}}</translation>
 <translation id="1055606969515662982">Bruk fjernkontrollen for å stoppe castingen</translation>
@@ -456,7 +457,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan redigere disse filene</translation>
 <translation id="130174306655812048">Prøv «Hey Google, hvilken sang er dette?»</translation>
 <translation id="1302227299132585524">Tillat JavaScript fra Apple-hendelser</translation>
-<translation id="1302654693270046655">Gruppen <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML-fil med bokmerker</translation>
 <translation id="1303671224831497365">Fant ingen Bluetooth-enheter</translation>
 <translation id="130491383855577612">Linux-apper og -filer er erstattet</translation>
@@ -538,7 +538,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1362829980946830670">Du kan gjenoppta den forrige økten mens den gjeldende økten forblir aktiv.</translation>
 <translation id="1362865166188278099">Mekanisk feil. Sjekk skriveren</translation>
 <translation id="1363585519747660921">USB-skriveren må konfigureres</translation>
-<translation id="1363772878823415675">Gi <ph name="SPECIFIC_NAME" /> tilgang til USB-enheter.</translation>
 <translation id="136378536198524553">Strømsparing er på</translation>
 <translation id="136522805455656552">For å holde enheten din sikker bør du bare kjøre og installere programvare fra pålitelige kilder og utviklere. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Hev øyenbrynene</translation>
@@ -2565,6 +2564,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Kopiér til utklippstavlen</translation>
 <translation id="274362947316498129">En app prøver å få tilgang til <ph name="DEVICE_NAME" />. Slå av personvernbryteren for <ph name="DEVICE_NAME" /> for å gi tilgang.</translation>
+<translation id="2744221223678373668">Delte</translation>
 <translation id="2745080116229976798">Microsoft kvalifisert underordning</translation>
 <translation id="2749756011735116528">Logg på <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM-kort</translation>
@@ -5849,9 +5849,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5087864757604726239">tilbake</translation>
 <translation id="5088427648965532275">Passpoint-leverandør</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
-<translation id="5089763948477033443">Håndtak for endring av størrelsen på sidepanelet</translation>
 <translation id="5090637338841444533">Nettsteder som ikke har lov til å spore kameraposisjonen din</translation>
-<translation id="5090981554736747495">Gi Linux-apper tilgang til USB-enheter.</translation>
 <translation id="5091636240353511739">Vis PIN-koden</translation>
 <translation id="5093477827231450397">Liste over nettsteder som du har blokkert, og som du ikke vil at skal foreslå annonser for andre nettsteder</translation>
 <translation id="5093569275467863761">Inkognito-underramme i frem-og-tilbake-bufferen: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6561,7 +6559,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er blokkert}other{Disse utvidelsene er blokkert}}</translation>
 <translation id="560834977503641186">Wifi-synkronisering – finn ut mer</translation>
 <translation id="5608580678041221894">Trykk på de følgende tastene for å justere eller flytte beskjæringsområdet</translation>
-<translation id="560919433407466404">Gi Parallels Desktop tilgang til USB-enheter.</translation>
 <translation id="5609231933459083978">Appen ser ut til å være ugyldig.</translation>
 <translation id="5610867721023328944">Prøv på nytt, eller velg et av de tilgjengelige temaene nedenfor.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
@@ -8637,7 +8634,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7109543803214225826">Snarveien er fjernet</translation>
 <translation id="7110388475787189534">Finn ut hvordan du organiserer faner automatisk</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
-<translation id="7110684627876015299">Gruppe uten navn – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Gi navn til dette vinduet</translation>
 <translation id="7113502843173351041">se e-postadressen din</translation>
 <translation id="7113974454301513811">Legg til den aktive fanen på listen din</translation>
@@ -9009,7 +9005,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7387107590792462040">Vent til installeringen er fullført</translation>
 <translation id="7387273928653486359">Akseptabel</translation>
 <translation id="7387951778417998929">For å bruke en annen søkemotor enn standard, skriv inn snarveien for søkemotoren i adressefeltet, etterfulgt av hurtigtasten du foretrekker. Du kan også endre standard søkemotor her.</translation>
-<translation id="7388209873137778229">Kun støttede enheter vises.</translation>
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er av.</translation>
 <translation id="738903649531469042">Legg fanen til på leselisten</translation>
 <translation id="7392118418926456391">Virusskanningen mislyktes</translation>
@@ -10691,7 +10686,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8553342806078037065">Administrer andre</translation>
 <translation id="8554899698005018844">Ingen språk</translation>
 <translation id="8555444629041783356">Automatisk tidsplan basert på solnedgang</translation>
-<translation id="855604308879080518">Gi Android-apper tilgang til USB-enheter på denne Chromebooken. Du blir spurt om tillatelse hver gang du kobler til en USB-enhet. Individuelle Android-apper kommer til å spørre om tilleggstillatelser.</translation>
 <translation id="8557022314818157177">Fortsett å berøre sikkerhetsnøkkelen til fingeravtrykket er registrert</translation>
 <translation id="8557100046150195444">Touch ID for å fortsette</translation>
 <translation id="8557856025359704738">Neste nedlasting utføres <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11402,7 +11396,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9036484080057916082">Liste over tidsstempler for signerte sertifikater</translation>
 <translation id="9037054491984310631">Koblet til Bluetooth-enheten <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Enheten er ikke tillatt</translation>
-<translation id="9037706442425692248">Gi Android-apper tilgang til USB-enheter på denne Chromebooken</translation>
 <translation id="9037818663270399707">Tilkoblingen din er ikke privat for all nettverkstrafikk</translation>
 <translation id="9037965129289936994">Vis original</translation>
 <translation id="9038489124413477075">Mappe uten navn</translation>

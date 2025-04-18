@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Жаңа нәрсе бастаңыз немесе жұмыс барысында көмек алыңыз.</translation>
 <translation id="1054048317165655285">Телефоныңыздағы реттеуді аяқтаңыз</translation>
 <translation id="1054153489933238809">Жаңа қойындыда түпнұсқалық &amp;кескінді ашу</translation>
+<translation id="1054187194995068149">Сәлеметсіз бе! Бұл — алғы көрініс.</translation>
 <translation id="1054502481659725522">Локацияңызды қолданбалар, веб-сайттар және жүйелік қызметтер пайдалана алады.</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> құрылғысын 1 апта ішінде жаңарту}other{<ph name="DEVICE_TYPE" /> құрылғысын {NUM_WEEKS} апта ішінде жаңарту}}</translation>
 <translation id="1055606969515662982">Трансляцияны тоқтату үшін пультті пайдаланыңыз</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> мына файлдарды өңдей алады.</translation>
 <translation id="130174306655812048">"Ok Google, мынау қандай ән?" деп сұрап көріңіз.</translation>
 <translation id="1302227299132585524">Apple Events арқылы JavaScript сценарийіне рұқсат беру</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> тобы — <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Бетбелгілердің HTML файлы</translation>
 <translation id="1303671224831497365">Ешқандай Bluetooth құрылғысы табылмады</translation>
 <translation id="130491383855577612">Linux қолданбалары мен файлдары ауыстырылды.</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">Ағымдағы сеанс белсенді болып тұрған кезде, алдыңғы сеансты жалғастыра аласыз.</translation>
 <translation id="1362865166188278099">Механикалық ақау. Принтерді тексеріңіз.</translation>
 <translation id="1363585519747660921">USB принтерін конфигурациялау қажет</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" /> үшін USB құрылғыларына кіруге рұқсат ету.</translation>
 <translation id="136378536198524553">Қуат үнемдеу режимі қосулы</translation>
 <translation id="136522805455656552">Құрылғыңызды қорғау үшін тек сенімді дереккөздер мен әзірлеушілердің бағдарламалық құралын іске қосып, орнатуыңыз керек. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Қасыңызды көтеріңіз.</translation>
@@ -2555,6 +2554,7 @@
 <translation id="2743301740238894839">Бастау</translation>
 <translation id="2743387203779672305">Буферге көшіру</translation>
 <translation id="274362947316498129">Қолданба <ph name="DEVICE_NAME" /> құрылғысын пайдаланғысы келіп тұр. Пайдалануға рұқсат беру үшін <ph name="DEVICE_NAME" /> құпиялық ауыстырғышын өшіріңіз.</translation>
+<translation id="2744221223678373668">Ортақ</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> өніміне кіру</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -4539,6 +4539,7 @@
 <translation id="4139326893730851150">Микробағдарлама жаңартулары</translation>
 <translation id="4142052906269098341">Телефон арқылы <ph name="DEVICE_TYPE" /> құрылғысының құлпын ашыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Жасанды интеллект қандай мүмкіндіктер ұсынатынын зерттеп, құпиялыққа қатысты дұрыс таңдау жасаңыз.</translation>
+<translation id="4143754025452944766">Бұл құрылғыдан аккаунт кеңейтімдерін өшіруге де болады.</translation>
 <translation id="4146026355784316281">Әрқашан жүйелік көру құралымен ашу</translation>
 <translation id="4146785383423576110">Бастапқы күйге қайтару және жою</translation>
 <translation id="4147099377280085053">Брайль қарпінің кестесін таңдау</translation>
@@ -5839,9 +5840,7 @@
 <translation id="5087864757604726239">артқа</translation>
 <translation id="5088427648965532275">Passpoint провайдері</translation>
 <translation id="5088534251099454936">RSA шифрлауына ие PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">Бүйірлік панельдің өлшемін өзгерту маркері</translation>
 <translation id="5090637338841444533">Камераңыздың орнын қадағалауға рұқсаты жоқтар</translation>
-<translation id="5090981554736747495">Linux қолданбаларына USB құрылғыларына кіруге рұқсат ету.</translation>
 <translation id="5091636240353511739">PIN кодын көрсету</translation>
 <translation id="5093477827231450397">Басқа сайттарға жарнамалар ұсынуын қаламайтын, сіз бөгеген сайттар тізімі</translation>
 <translation id="5093569275467863761">Алға-артқа өту кэшінде сақталған инкогнито ішкі жақтауы: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6552,7 +6551,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім бөгелді}other{Бұл кеңейтімдер бөгелді}}</translation>
 <translation id="560834977503641186">Wi-Fi деректерін синхрондау, толығырақ</translation>
 <translation id="5608580678041221894">Қию аймағын реттеу не жылжыту үшін келесі пернелерді түртіңіз</translation>
-<translation id="560919433407466404">Parallels Desktop үшін USB құрылғыларына кіруге рұқсат ету.</translation>
 <translation id="5609231933459083978">Қолданба жарамсыз.</translation>
 <translation id="5610867721023328944">Әрекетті қайталаңыз немесе төменнен қолжетімді тақырыптардың бірін таңдаңыз.</translation>
 <translation id="5611398002774823980">Аккаунтта сақтау</translation>
@@ -8624,7 +8622,6 @@
 <translation id="7109543803214225826">Таңбаша өшірілді</translation>
 <translation id="7110388475787189534">Қойындыларды автоматты түрде реттеу туралы ақпарат</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Топқа қойынды қосу}other{Топқа қойындылар қосу}}</translation>
-<translation id="7110684627876015299">Атауы жоқ топ: <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Терезеге ат қою</translation>
 <translation id="7113502843173351041">Электрондық пошта мекенжайыңызды білу</translation>
 <translation id="7113974454301513811">Енді тізімге ағымдағы қойындыны қосыңыз.</translation>
@@ -8996,7 +8993,6 @@
 <translation id="7387107590792462040">Орнатудың аяқталғанын күтіңіз.</translation>
 <translation id="7387273928653486359">Жарамды</translation>
 <translation id="7387951778417998929">Әдепкіден басқа іздеу жүйесін пайдалану үшін, мекенжай жолағына оның жылдам пәрменін және қажетті перне тіркесімін енгізіңіз. Әдепкі іздеу жүйесін осы жерде өзгерте аласыз.</translation>
-<translation id="7388209873137778229">Тек үйлесімді құрылғылар көрсетілген.</translation>
 <translation id="7388615499319468910">Сайттар мен жарнама берушілер жарнамалардың тиімділігін түсіне алады. Бұл параметр өшірулі.</translation>
 <translation id="738903649531469042">Қойындыны оқу тізіміне қосу</translation>
 <translation id="7392118418926456391">Вирустарды тексеру сәтсіз аяқталды</translation>
@@ -10676,7 +10672,6 @@
 <translation id="8553342806078037065">Басқа пайдаланушыларды басқару</translation>
 <translation id="8554899698005018844">Тілі көрсетілмеген</translation>
 <translation id="8555444629041783356">Күншығыс пен күнбатысты автоматты орнату кестесі</translation>
-<translation id="855604308879080518">Android қолданбаларына Chromebook-та USB құрылғыларын пайдалануға рұқсат етіледі. Рұқсат USB құрылғысын жалғаған сайын сұралады. Жеке Android қолданбалары қосымша рұқсаттар сұрайды.</translation>
 <translation id="8557022314818157177">Саусақ ізі түскенше, қауіпсіздік кілтін басып тұрыңыз.</translation>
 <translation id="8557100046150195444">Жалғастыру үшін Touch ID арқылы саусақ ізімен растаңыз.</translation>
 <translation id="8557856025359704738">Келесі жүктеп алу күні: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11387,7 +11382,6 @@
 <translation id="9036484080057916082">Қол қойылған сертификат уақыт белгілерінің тізімі</translation>
 <translation id="9037054491984310631">"<ph name="DEVICE" />" деп аталатын Bluetooth құрылғысына қосылды.</translation>
 <translation id="9037640663275993951">Құрылғыға рұқсат берілмеген.</translation>
-<translation id="9037706442425692248">Android қолданбаларына бұл Chromebook-та USB құрылғыларын пайдалануға рұқсат етіледі.</translation>
 <translation id="9037818663270399707">Барлық желі трафигі үшін жеке байланыс жасалмайды.</translation>
 <translation id="9037965129289936994">Түпнұсқасын көрсету</translation>
 <translation id="9038489124413477075">Атаусыз қалта</translation>

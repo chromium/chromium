@@ -31,6 +31,7 @@
 <translation id="137466361146087520">Beta verzija preglednika Chrome</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1399397803214730675">Na ovom računalu već postoji novija verzija programa Google Chrome. Ako softver ne radi, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
+<translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti.}=1{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Anonimni se prozor neće ponovno otvoriti.}one{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1434626383986940139">Aplikacije kanala Chrome Canary</translation>
 <translation id="146866447420868597">Želite li se prijaviti u Chrome?</translation>
@@ -168,6 +169,7 @@
 <translation id="3065168410429928842">Chromeova kartica</translation>
 <translation id="3080151273017101988">Nastavi prikazivati ​​pozadinske aplikacije po zatvaranju preglednika Google Chrome</translation>
 <translation id="3100998948628680988">Odaberite naziv profila za Chrome</translation>
+<translation id="310459126943037700">Završavanje zadataka nije uspjelo.</translation>
 <translation id="3112458742631356345">Chrome je blokirao ovo preuzimanje jer se ova datoteka obično ne preuzima i mogla bi biti opasna</translation>
 <translation id="3114643501466072395">Da biste provjerili jesu li vaše druge zaporke sigurne od povrede podataka i drugih poteškoća sa sigurnošću, <ph name="BEGIN_LINK" />prijavite se na Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome je blokirao ovo preuzimanje jer ta arhivska datoteka uključuje druge datoteke koje mogu skrivati zlonamjerni softver</translation>
@@ -509,6 +511,7 @@
 <translation id="7661924425853052955">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="COUNT" /></translation>
 <translation id="7670287553302121848">Chrome račun zahtijeva ponovnu autentifikaciju</translation>
 <translation id="769538538642757151">Chrome će vas obavijestiti ako nešto trebate pregledati</translation>
+<translation id="7716950018788545737">Zadaci su dovršeni.</translation>
 <translation id="77283119132245232">Pruža usluge praćenja sustava za <ph name="BROWSER_NAME" />. Ako se ta usluga onemogući, praćenje izvedbe koje je izradio preglednik neće uključivati događaje na razini sustava, kao što su promjena konteksta i događaji spremnosti niti.</translation>
 <translation id="7736869414036750079">Vaša organizacija zahtijeva da se prijavite u Chrome</translation>
 <translation id="7747138024166251722">Program za instalaciju nije izradio privremeni direktorij. Provjerite ima li slobodnog prostora na disku i postoji li dopuštenje za instalaciju softvera.</translation>

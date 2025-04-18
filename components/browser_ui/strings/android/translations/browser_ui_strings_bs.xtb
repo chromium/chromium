@@ -119,6 +119,7 @@
 <translation id="2490684707762498678">Upravlja aplikacija <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoć i povr. inf.</translation>
 <translation id="2501278716633472235">Nazad</translation>
+<translation id="2536741675336254102">Nemoj dopustiti web-lokacijama upotrebu alata za optimizaciju V8</translation>
 <translation id="2546283357679194313">Kolačići i podaci web lokacije</translation>
 <translation id="2570922361219980984">Pristup lokaciji je također isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite da suzite.</translation>
@@ -285,6 +286,7 @@
 <translation id="4534723447064627427">Da aplikaciji <ph name="APP_NAME" /> dozvolite pristup mikrofonu, također uključite mikrofon u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
 <translation id="4570913071927164677">Detalji</translation>
+<translation id="4578289292431526768">Započnimo</translation>
 <translation id="4598549027014564149">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama, čak ni na srodnim web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="461356340001513807">Omogućava vam da se prijavite na web lokacije pomoću računa koji imate na usluzi za potvrdu identiteta</translation>
 <translation id="4635969503923889910">Nemoj dozvoliti web lokacijama da koriste NFC uređaje</translation>
@@ -423,7 +425,6 @@
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6295158916970320988">Sve web lokacije</translation>
 <translation id="6320088164292336938">Vibracija</translation>
-<translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="6367753977865761591">Blokirajte prijavu trećih stana za određenu web lokaciju.</translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="640163077447496506">Ističe danas</translation>

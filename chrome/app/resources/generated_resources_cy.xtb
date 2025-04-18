@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Dechreuwch rywbeth newydd neu gael help yn y llif.</translation>
 <translation id="1054048317165655285">Gorffennwch osod ar eich ffôn</translation>
 <translation id="1054153489933238809">Agorwch y Llun &amp;Gwreiddiol mewn Tab Newydd</translation>
+<translation id="1054187194995068149">Helo. Mae hwn yn rhagolwg</translation>
 <translation id="1054502481659725522">Gall apiau, gwefannau a gwasanaethau system ddefnyddio'ch lleoliad</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn 1 wythnos}zero{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}two{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}few{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}many{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}other{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}}</translation>
 <translation id="1055606969515662982">Defnyddiwch reolydd i atal castio</translation>
@@ -460,7 +461,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1301135395320604080">Gall <ph name="ORIGIN" /> olygu'r ffeiliau canlynol</translation>
 <translation id="130174306655812048">Rhowch gynnig ar "Hei Google, pa gân yw hon?"</translation>
 <translation id="1302227299132585524">Caniatáu JavaScript gan Apple Events</translation>
-<translation id="1302654693270046655">Grŵp <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Ffeil HTML Nodau Tudalen</translation>
 <translation id="1303671224831497365">Ni chanfuwyd unrhyw ddyfeisiau Bluetooth</translation>
 <translation id="130491383855577612">Mae apiau a ffeiliau Linux wedi cael eu disodli'n llwyddiannus</translation>
@@ -542,7 +542,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1362829980946830670">Gallwch barhau â'ch sesiwn flaenorol tra bod eich sesiwn bresennol yn parhau i fod yn weithredol.</translation>
 <translation id="1362865166188278099">Problem fecanyddol. Gwiriwch yr argraffydd</translation>
 <translation id="1363585519747660921">Mae angen ffurfweddu'r argraffydd USB</translation>
-<translation id="1363772878823415675">Rhowch ganiatâd i <ph name="SPECIFIC_NAME" /> gyrchu dyfeisiau USB.</translation>
 <translation id="136378536198524553">Mae'r Arbedwr Ynni ymlaen</translation>
 <translation id="136522805455656552">Er mwyn cadw'ch dyfais yn ddiogel, dylech redeg a gosod meddalwedd o ffynonellau a datblygwyr dibynadwy yn unig. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Codwch eich aeliau</translation>
@@ -2574,6 +2573,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2743301740238894839">Dechrau</translation>
 <translation id="2743387203779672305">Copïo i'r clipfwrdd</translation>
 <translation id="274362947316498129">Mae ap yn ceisio cael mynediad at y <ph name="DEVICE_NAME" />. Diffoddwch switsh preifatrwydd <ph name="DEVICE_NAME" /> i ganiatáu mynediad.</translation>
+<translation id="2744221223678373668">Cafodd ei rannu â'r defnyddiwr eisoes</translation>
 <translation id="2745080116229976798">Cydlynu Cymwysedig Microsoft</translation>
 <translation id="2749756011735116528">Mewngofnodi i <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5861,9 +5861,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5087864757604726239">nôl</translation>
 <translation id="5088427648965532275">Darparwr Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Gydag Amgryptio RSA</translation>
-<translation id="5089763948477033443">Bachyn Ailfeintio y Panel Ochr</translation>
 <translation id="5090637338841444533">Ni chaniateir i olrhain safle eich camera</translation>
-<translation id="5090981554736747495">Rhowch ganiatâd i apiau Linux gael mynediad at ddyfeisiau USB.</translation>
 <translation id="5091636240353511739">Dangos y PIN</translation>
 <translation id="5093477827231450397">Rhestr o wefannau y gwnaethoch eu rhwystro nad ydych am iddynt awgrymu hysbysebion i wefannau eraill</translation>
 <translation id="5093569275467863761">Is-ffrâm Anhysbys yn y Storfa Yn ôl/Ymlaen: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6575,7 +6573,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Mae'r estyniad hwn wedi'i rwystro}zero{Mae'r estyniadau hyn wedi'u rhwystro}two{Mae'r estyniadau hyn wedi'u rhwystro}few{Mae'r estyniadau hyn wedi'u rhwystro}many{Mae'r estyniadau hyn wedi'u rhwystro}other{Mae'r estyniadau hyn wedi'u rhwystro}}</translation>
 <translation id="560834977503641186">Cysoni Wi-Fi, Dysgu Rhagor</translation>
 <translation id="5608580678041221894">Tapiwch y bysellau canlynol i addasu neu symud yr ardal docio</translation>
-<translation id="560919433407466404">Rhowch ganiatâd i Parallels Desktop gael mynediad at ddyfeisiau USB.</translation>
 <translation id="5609231933459083978">Mae'n ymddangos bod y cais yn annilys.</translation>
 <translation id="5610867721023328944">Rhowch gynnig arall arni neu dewiswch o un o'r themâu sydd ar gael isod.</translation>
 <translation id="5611398002774823980">Cadw yn y cyfrif</translation>
@@ -8659,7 +8656,6 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7109543803214225826">Tynnwyd llwybr byr</translation>
 <translation id="7110388475787189534">Dysgu sut i drefnu eich tabiau yn awtomatig</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Ychwanegu Tab at Grŵp}zero{Ychwanegu Tabiau at Grŵp}two{Ychwanegu Tabiau at Grŵp}few{Ychwanegu Tabiau at Grŵp}many{Ychwanegu Tabiau at Grŵp}other{Ychwanegu Tabiau at Grŵp}}</translation>
-<translation id="7110684627876015299">Grŵp dienw - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Enwch y ffenestr hon</translation>
 <translation id="7113502843173351041">Gwybod eich cyfeiriad e-bost</translation>
 <translation id="7113974454301513811">Nawr ychwanegwch y tab presennol at eich rhestr</translation>
@@ -9031,7 +9027,6 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7387107590792462040">Arhoswch tra bod y gosodiad ar y gweill</translation>
 <translation id="7387273928653486359">Derbyniol</translation>
 <translation id="7387951778417998929">I ddefnyddio peiriant chwilio sy'n wahanol i'r peiriant diofyn, teipiwch ei lwybr byr yn y bar cyfeiriad ac yna eich llwybr byr a ffefrir. Gallwch hefyd newid eich peiriant chwilio diofyn yma.</translation>
-<translation id="7388209873137778229">Dim ond dyfeisiau a gefnogir sy'n cael eu dangos.</translation>
 <translation id="7388615499319468910">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="738903649531469042">Ychwanegu Tab at y Rhestr Ddarllen</translation>
 <translation id="7392118418926456391">Wedi methu â sganio am feirysau</translation>
@@ -10712,7 +10707,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8553342806078037065">Rheoli pobl eraill</translation>
 <translation id="8554899698005018844">Dim iaith</translation>
 <translation id="8555444629041783356">Amserlen machlud awtomatig</translation>
-<translation id="855604308879080518">Gadewch i apiau Android gyrchu dyfeisiau USB ar y Chromebook hwn. Gofynnir am ganiatâd bob tro y byddwch yn plygio dyfais USB i mewn. Bydd apiau Android unigol yn gofyn am ganiatâd ychwanegol.</translation>
 <translation id="8557022314818157177">Parhewch i gyffwrdd â'ch allwedd ddiogelwch nes bod eich olion bysedd wedi'i dynnu</translation>
 <translation id="8557100046150195444">Touch ID i barhau</translation>
 <translation id="8557856025359704738">Mae'r lawrlwythiad nesaf am <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11427,7 +11421,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9036484080057916082">Rhestr Stampiau Amser Tystysgrif wedi'i Llofnodi</translation>
 <translation id="9037054491984310631">Wedi'i gysylltu â dyfais Bluetooth a enwir <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Ni chaniateir y ddyfais</translation>
-<translation id="9037706442425692248">Gadael i apiau Android gyrchu dyfeisiau USB ar y Chromebook hwn</translation>
 <translation id="9037818663270399707">Nid yw eich cysylltiad yn breifat ar gyfer yr holl draffig rhwydwaith</translation>
 <translation id="9037965129289936994">Dangos y Gwreiddiol</translation>
 <translation id="9038489124413477075">Ffolder Ddienw</translation>

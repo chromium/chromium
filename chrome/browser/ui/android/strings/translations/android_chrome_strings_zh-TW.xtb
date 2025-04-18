@@ -767,7 +767,6 @@
 <translation id="4595805675102978678">Google 帳戶錯誤</translation>
 <translation id="4601095002996233687">提供深入掃描功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606559747793337066">網站或應用程式要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器加密網頁並預先載入，且不會使用 Cookie。這麼做可在預先載入網站中隱藏你的身分。</translation>
-<translation id="4609429330876432068">Chrome 和 <ph name="CHROME_CHANNEL" /> 儲存的密碼清單已合併，這兩個應用程式仍可自動填入所有已儲存的密碼。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
@@ -1561,7 +1560,6 @@
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8014210850410408071">下一步是匯入密碼</translation>
 <translation id="8015452622527143194">將網頁上的所有內容都回復為預設大小</translation>
-<translation id="8026238112629815203">我們調整了這部裝置的密碼儲存方式</translation>
 <translation id="8027395186860110042">密碼可能很快就會停止運作</translation>
 <translation id="8027863900915310177">選擇下載位置</translation>
 <translation id="8030852056903932865">核准</translation>

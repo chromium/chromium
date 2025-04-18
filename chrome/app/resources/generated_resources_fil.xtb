@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Magpasimula ng bagong bagay o makakuha ng tulong sa flow.</translation>
 <translation id="1054048317165655285">Kumpletuhin ang pag-set up sa iyong telepono</translation>
 <translation id="1054153489933238809">Buksan ang Or&amp;ihinal na Larawan sa Bagong Tab</translation>
+<translation id="1054187194995068149">Hi. Isa itong preview</translation>
 <translation id="1054502481659725522">Magagamit ng mga app, website, at serbisyo ng system ang iyong lokasyon</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng 1 linggo}one{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_WEEKS} linggo}other{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_WEEKS} na linggo}}</translation>
 <translation id="1055606969515662982">Gumamit ng remote para ihinto ang pag-cast</translation>
@@ -457,7 +458,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1301135395320604080">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga sumusunod na file</translation>
 <translation id="130174306655812048">Subukan ang “Ok Google, anong kanta ito?”</translation>
 <translation id="1302227299132585524">Payagan ang JavaScript mula sa Apple Events</translation>
-<translation id="1302654693270046655">Grupong <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML File ng Mga Bookmark</translation>
 <translation id="1303671224831497365">Walang nakitang Bluetooth device</translation>
 <translation id="130491383855577612">Matagumpay na napalitan ang mga app at file ng Linux</translation>
@@ -539,7 +539,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1362829980946830670">Puwede mong ipagpatuloy ang iyong nakaraang session habang aktibo pa rin ang kasalukuyan mong session.</translation>
 <translation id="1362865166188278099">Mekanikal na isyu. Tingnan ang printer</translation>
 <translation id="1363585519747660921">Kailangan ng pag-configure ng USB printer</translation>
-<translation id="1363772878823415675">Pahintulutan ang <ph name="SPECIFIC_NAME" /> na i-access ang mga USB device.</translation>
 <translation id="136378536198524553">Naka-on ang Energy Saver</translation>
 <translation id="136522805455656552">Para mapanatiling secure ang iyong device, dapat magpatakbo at mag-install ka lang ng software na mula sa mga pinagkakatiwalaang source at developer. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Itaas ang mga kilay</translation>
@@ -2572,6 +2571,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2743301740238894839">Simulan</translation>
 <translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="274362947316498129">May app na sumusubok na i-access ang <ph name="DEVICE_NAME" />. I-off ang switch ng privacy ng <ph name="DEVICE_NAME" /> para payagan ang access.</translation>
+<translation id="2744221223678373668">Nakabahagi</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Mag-sign in sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5859,9 +5859,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5087864757604726239">bumalik</translation>
 <translation id="5088427648965532275">Provider ng Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 na May RSA Encryption</translation>
-<translation id="5089763948477033443">Handle sa Pag-resize ng Panel sa Gilid</translation>
 <translation id="5090637338841444533">Hindi pinapayagang i-track ang posisyon ng iyong camera</translation>
-<translation id="5090981554736747495">Pahintulutan ang mga Linux app na i-access ang mga USB device.</translation>
 <translation id="5091636240353511739">Ipakita ang PIN</translation>
 <translation id="5093477827231450397">Listahan ng mga site na na-block mo na ayaw mong magmungkahi ng mga ad sa iba pang site</translation>
 <translation id="5093569275467863761">Back/Forward Cached na Subframe ng Incognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6573,7 +6571,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Naka-block ang extension na ito}one{Naka-block ang mga extension na ito}other{Naka-block ang mga extension na ito}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Matuto Pa</translation>
 <translation id="5608580678041221894">I-tap ang mga sumusunod na key upang isaayos o ilipat ang lugar ng pag-crop</translation>
-<translation id="560919433407466404">Pahintulutan ang Parallels Desktop na i-access ang mga USB device.</translation>
 <translation id="5609231933459083978">Mukhang di-wasto ang application.</translation>
 <translation id="5610867721023328944">Subukan ulit o pumili mula sa isa sa mga available na tema sa ibaba.</translation>
 <translation id="5611398002774823980">I-save sa account</translation>
@@ -8651,7 +8648,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7109543803214225826">Inalis ang shortcut</translation>
 <translation id="7110388475787189534">Matuto kung paano awtomatikong isaayos ang iyong mga tab</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Magdagdag ng Tab sa Grupo}one{Magdagdag ng Mga Tab sa Grupo}other{Magdagdag ng Mga Tab sa Grupo}}</translation>
-<translation id="7110684627876015299">Grupong walang pangalan - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Pangalanan ang window na ito</translation>
 <translation id="7113502843173351041">Alamin ang iyong email address</translation>
 <translation id="7113974454301513811">Idagdag ngayon ang kasalukuyang tab sa iyong listahan</translation>
@@ -9023,7 +9019,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7387107590792462040">Maghintay habang isinasagawa ang pag-install</translation>
 <translation id="7387273928653486359">Katanggap-tanggap</translation>
 <translation id="7387951778417998929">Para gumamit ng search engine na hindi ang default, i-type ang shortcut nito sa address bar kasunod ang iyong gustong keyboard shortcut. Puwede mo ring palitan ang iyong default na search engine dito.</translation>
-<translation id="7388209873137778229">Ang mga sinusuportahang device lang ang ipinapakita.</translation>
 <translation id="7388615499319468910">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-off ang setting na ito.</translation>
 <translation id="738903649531469042">Idagdag ang Tab sa Listahan ng Babasahin</translation>
 <translation id="7392118418926456391">Nabigo ang pag-scan ng virus</translation>
@@ -10706,7 +10701,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8553342806078037065">Pamahalaan ang iba pang tao</translation>
 <translation id="8554899698005018844">Walang wika</translation>
 <translation id="8555444629041783356">Awtomatikong iskedyul ng paglubog ng araw</translation>
-<translation id="855604308879080518">Payagan ang mga Android app na mag-access ng mga USB device sa Chromebook na ito. Hihiling ng pahintulot sa tuwing magsasaksak ka ng USB device. Hihiling ang mga indibidwal na Android app ng mga karagdagang pahintulot.</translation>
 <translation id="8557022314818157177">Patuloy na pindutin ang iyong security key hanggang ma-capture ang fingerprint mo</translation>
 <translation id="8557100046150195444">Gamitin ang Touch ID para magpatuloy</translation>
 <translation id="8557856025359704738">Ang susunod na pag-download ay sa <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11419,7 +11413,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9036484080057916082">Listahan ng Timestamp ng Nilagdaang Certificate</translation>
 <translation id="9037054491984310631">Nakakonekta sa Bluetooth device na pinangalanang <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Hindi pinapayagan ang device</translation>
-<translation id="9037706442425692248">Payagan ang mga Android app na mag-access ng mga USB device sa Chromebook na ito</translation>
 <translation id="9037818663270399707">Hindi pribado ang iyong koneksyon para sa lahat ng trapiko sa network</translation>
 <translation id="9037965129289936994">Ipakita Ang Orihinal</translation>
 <translation id="9038489124413477075">Walang Pangalan na Folder</translation>

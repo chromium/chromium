@@ -186,11 +186,6 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
        Détermine pour les appareils en mode Point de vente la durée d'inactivité préalable à l'affichage de l'économiseur d'écran sur l'écran de connexion.
 
        La valeur de cette règle est définie en millisecondes.</translation>
-<translation id="1141534298047883088">Cette règle permet de spécifier si les appareils des utilisateurs sélectionnés doivent être connectés à un réseau géré pour que ces utilisateurs puissent rejoindre une session <ph name="CLASS_TOOLS_NAME" />.
-
-   Si la règle est définie sur "True", les appareils doivent être connectés à un réseau géré.
-
-   Si la règle est définie sur "False" ou n'est pas configurée, les utilisateurs peuvent rejoindre une session sans être connectés à un réseau géré.</translation>
 <translation id="1143257335984030879">Cette règle détermine la disponibilité de la fonctionnalité Liste d'achats.
       Si elle est activée, les utilisateurs voient l'interface permettant de suivre le prix du produit affiché sur la page active. Le produit suivi s'affiche alors dans le panneau latéral des favoris.
       Si cette règle est activée ou n'est pas configurée, les utilisateurs ont accès à la fonctionnalité Liste d'achats.
@@ -4425,11 +4420,6 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
 
       Cette fonctionnalité n'est prise en charge que dans l'environnement réseau interne de Google.</translation>
 <translation id="4269859918103560644">Laisser l'utilisateur décider</translation>
-<translation id="4271245613154024710">Cette règle permet de spécifier quelles applications Web isolées (AWI) peuvent se connecter à des cartes à puce à l'aide de l'API Web Smart Card sans demander l'autorisation de l'utilisateur. Cette règle n'accepte pas les caractères génériques.
-
-Cette règle remplace <ph name="POLICY_NAME" />. En particulier, si la valeur de la liste de blocage de est <ph name="ALL_ISOLATED_WEB_APPS" />, aucune AWI ne pourra se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans cette règle.
-
-Par défaut, les AWI qui spécifient des autorisations de carte à puce dans leur fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -6109,11 +6099,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       </translation>
 <translation id="5448022937220253000">Choisissez ce qu'il advient des données utilisateur une fois <ph name="LACROS_NAME" /> désactivé</translation>
 <translation id="5449690328792750354">L'API Event.path sera disponible.</translation>
-<translation id="5450507908812118425">Cette règle permet de spécifier quelles applications Web isolées (AWI) ne pourront pas se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation). Cette règle accepte les caractères génériques. Par exemple, <ph name="ALL_ISOLATED_WEB_APPS" /> bloquera l'accès à toutes les AWI.
-
-Cette règle est remplacée par <ph name="POLICY_NAME" />. En particulier, si la valeur de la liste de blocage est <ph name="ALL_ISOLATED_WEB_APPS" />, les AWI ne pourront pas se connecter aux lecteurs de carte à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans <ph name="POLICY_NAME" />.
-
-Par défaut, les AWI qui spécifient des autorisations de carte à puce dans leur fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="5452024130413254050">Détermine si les VM utilisant cette configuration ont accès à un module vTPM (la valeur par défaut est "false", et <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si la règle n'est pas configurée).</translation>
 <translation id="5454128917282602937">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service <ph name="PRODUCT_NAME" /> V2 rétablit sur le nouvel appareil les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil précédent.
 Si vous activez cette règle, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.

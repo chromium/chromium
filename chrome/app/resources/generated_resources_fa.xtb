@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">کار جدیدی را آغاز کنید یا در جریان کار کمک بگیرید.</translation>
 <translation id="1054048317165655285">تمام کردن راه‌اندازی در تلفن</translation>
 <translation id="1054153489933238809">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
+<translation id="1054187194995068149">سلام. این پیش‌نمایش است</translation>
 <translation id="1054502481659725522">برنامه‌ها، وب‌سایت‌ها، و خدمات سیستم می‌توانند از مکان شما استفاده کنند</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{ظرف ۱ هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}one{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}other{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}}</translation>
 <translation id="1055606969515662982">برای توقف پخش محتوا، از کنترل از دور استفاده کنید</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> می‌تواند این فایل‌ها را ویرایش کند:</translation>
 <translation id="130174306655812048">‏«Ok Google، نام این آهنگ چیست؟» را امتحان کنید</translation>
 <translation id="1302227299132585524">‏مجاز کردن اجرای جاوا اسکریپت را از Apple Events</translation>
-<translation id="1302654693270046655">گروه <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">‏فایل HTML نشانک‌ها</translation>
 <translation id="1303671224831497365">هیچ دستگاه بلوتوثی یافت نشد</translation>
 <translation id="130491383855577612">‏برنامه‌ها و فایل‌های Linux باموفقیت جایگزین شدند</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">می‌توانید ضمن فعال نگه داشتن جلسه فعلی، جلسه قبلی خود را ازسر بگیرید.</translation>
 <translation id="1362865166188278099">مشکل مکانیکی. چاپگر را بررسی کنید</translation>
 <translation id="1363585519747660921">‏چاپگر USB باید پیکربندی شود</translation>
-<translation id="1363772878823415675">‏به <ph name="SPECIFIC_NAME" /> اجازه می‌دهد به دستگاه‌های USB دسترسی داشته باشد.</translation>
 <translation id="136378536198524553">«بهینه‌سازی انرژی» روشن است</translation>
 <translation id="136522805455656552">برای حفظ ایمنی دستگاهتان، نرم‌افزارها را باید فقط از منابع و توسعه‌دهندگان قابل‌اعتماد اجرا و نصب کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">بالا بردن ابروها</translation>
@@ -2568,6 +2567,7 @@
 <translation id="2743301740238894839">شروع</translation>
 <translation id="2743387203779672305">کپی در بریده‌دان</translation>
 <translation id="274362947316498129">برنامه‌ای می‌خواهد به <ph name="DEVICE_NAME" /> دسترسی داشته باشد. برای موافقت با دسترسی، کلید حریم خصوصی <ph name="DEVICE_NAME" /> را خاموش کنید.</translation>
+<translation id="2744221223678373668">اشتراک‌گذاری شده</translation>
 <translation id="2745080116229976798">‏وابستگی مشروط Microsoft</translation>
 <translation id="2749756011735116528">ورود به سیستم <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">سیم‌کارت</translation>
@@ -5855,9 +5855,7 @@
 <translation id="5087864757604726239">برگشت</translation>
 <translation id="5088427648965532275">‏ارائه‌دهنده Passpoint</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 با رمزگذاری RSA</translation>
-<translation id="5089763948477033443">دسته تغییر اندازه پانل کناری</translation>
 <translation id="5090637338841444533">اجازه ندارد موقعیت دوربین را ردیابی کند</translation>
-<translation id="5090981554736747495">‏ارائه اجازه به برنامه‌های Linux برای دسترسی به دستگاه‌های USB.</translation>
 <translation id="5091636240353511739">نمایش پین</translation>
 <translation id="5093477827231450397">فهرست سایت‌های مسدودشده‌ای که نمی‌خواهید آگهی به سایت‌های دیگر پیشنهاد دهند</translation>
 <translation id="5093569275467863761">قاب فرعی ناشناس ذخیره‌شده در حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6569,7 +6567,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
 <translation id="560834977503641186">‏«همگام‌سازی Wi-Fi»، بیشتر بدانید</translation>
 <translation id="5608580678041221894">برای تنظیم یا انتقال ناحیه بریده‌شده، روی کلیدهای زیر تک‌ضرب بزنید</translation>
-<translation id="560919433407466404">‏به Parallels Desktop اجازه می‌دهد به دستگاه‌های USB دسترسی داشته باشد.</translation>
 <translation id="5609231933459083978">به نظر می‌رسد این برنامه معتبر نیست.</translation>
 <translation id="5610867721023328944">دوباره امتحان کنید یا یکی از زمینه‌های زیر را انتخاب کنید.</translation>
 <translation id="5611398002774823980">ذخیره در حساب</translation>
@@ -8647,7 +8644,6 @@
 <translation id="7109543803214225826">میان‌بر برداشته شد</translation>
 <translation id="7110388475787189534">با نحوه سازمان‌دهی خودکار برگه‌ها آشنا شوید</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{افزودن برگه به گروه}one{افزودن برگه‌ها به گروه}other{افزودن برگه‌ها به گروه}}</translation>
-<translation id="7110684627876015299">گروه بدون نام - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">این پنجره را نام‌گذاری کنید</translation>
 <translation id="7113502843173351041">دیدن نشانی ایمیل شما</translation>
 <translation id="7113974454301513811">اکنون برگه فعلی را به فهرست اضافه کنید</translation>
@@ -9019,7 +9015,6 @@
 <translation id="7387107590792462040">لطفاً تا زمانی‌که نصب درحال انجام است صبر کنید</translation>
 <translation id="7387273928653486359">قابل قبول</translation>
 <translation id="7387951778417998929">برای استفاده از موتور جستجویی متفاوت از موتور پیش‌فرض، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن میان‌بر ترجیحی صفحه‌کلید را فشار دهید. در اینجا می‌توانید موتور جستجوی پیش‌فرضتان را نیز تغییر دهید.</translation>
-<translation id="7388209873137778229">فقط دستگاه‌های پشتیبانی‌شده نشان داده می‌شود.</translation>
 <translation id="7388615499319468910">سایت‌ها و تبلیغ‌کنندگان می‌توانند نحوه عملکرد آگهی‌ها را درک کنند. این تنظیم خاموش است.</translation>
 <translation id="738903649531469042">افزودن برگه به فهرست خواندن</translation>
 <translation id="7392118418926456391">اسکن ویروس انجام نشد</translation>
@@ -10700,7 +10695,6 @@
 <translation id="8553342806078037065">مدیریت افراد دیگر</translation>
 <translation id="8554899698005018844">زبانی موجود نیست</translation>
 <translation id="8555444629041783356">زمان‌بندی خودکار غروب</translation>
-<translation id="855604308879080518">‏به برنامه‌های Android اجازه دهید به دستگاه‌های USB در این Chromebook دسترسی داشته باشند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های جانبی درخواست خواهند کرد.</translation>
 <translation id="8557022314818157177">کلید امنیتی را تازمانی‌که اثرانگشت ثبت شود، لمس کنید</translation>
 <translation id="8557100046150195444">‏برای ادامه دادن، از Touch ID استفاده کنید</translation>
 <translation id="8557856025359704738">بارگیری بعدی در تاریخ <ph name="NEXT_DATE_DOWNLOAD" /> انجام می‌شود.</translation>
@@ -11412,7 +11406,6 @@
 <translation id="9036484080057916082">فهرست مُهر زمان گواهینامه امضاشده</translation>
 <translation id="9037054491984310631">متصل به دستگاه بلوتوث با نام <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">دستگاه مجاز نیست</translation>
-<translation id="9037706442425692248">‏به برنامه‌های Android اجازه داده می‌شود به دستگاه‌های USB در این Chromebook دسترسی داشته باشند</translation>
 <translation id="9037818663270399707">اتصال شما برای همه ترافیک شبکه خصوصی نیست</translation>
 <translation id="9037965129289936994">نمایش مورد اصلی</translation>
 <translation id="9038489124413477075">پوشه بدون نام</translation>

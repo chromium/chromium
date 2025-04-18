@@ -767,7 +767,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4595805675102978678">Pogreška Google računa</translation>
 <translation id="4601095002996233687">Dubinska pretraživanja mogućih sumnjivih preuzimanja.</translation>
 <translation id="4606559747793337066">Kad web-lokacija ili aplikacija zatraži privatno predučitavanje veza na stranici, Chrome šifrira i predučitava stranice putem Googleovih poslužitelja bez kolačića. Na taj se način vaš identitet sakriva od predučitane web-lokacije.</translation>
-<translation id="4609429330876432068">Spojili smo vaše popise spremljenih zaporki za Chrome i <ph name="CHROME_CHANNEL" />. I dalje možete automatski unositi sve spremljene zaporke u obje aplikacije.</translation>
 <translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potvrdite svoj identitet</translation>
 <translation id="4624065194742029982">Chromeov anonimni način</translation>
@@ -903,6 +902,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5161262286013276579">Otvoren je list za potvrdu pristupnog ključa</translation>
 <translation id="5163361352003913350">Trenutačno je odabrano: <ph name="NAME" />. Odaberite račun.</translation>
 <translation id="5167637873777016814">Dodirnite dvaput i zadržite da biste izašli iz anonimnog načina</translation>
+<translation id="5169102789680486565">Grupa kartica <ph name="TAB_GROUP_TITLE" /> ima novu aktivnost</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5171045022955879922">Pretražite ili upišite URL</translation>
 <translation id="5174700554036517242">Kartica je vraćena na početnu visinu</translation>
@@ -1561,7 +1561,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8014210850410408071">Zatim uvezite zaporke</translation>
 <translation id="8015452622527143194">Vraćanje svega na stranici na zadanu veličinu</translation>
-<translation id="8026238112629815203">Promijenili smo način spremanja zaporki na ovom uređaju</translation>
 <translation id="8027395186860110042">Zaporke bi uskoro mogle prestati funkcionirati</translation>
 <translation id="8027863900915310177">Odaberite mjesto preuzimanja</translation>
 <translation id="8030852056903932865">Odobri</translation>

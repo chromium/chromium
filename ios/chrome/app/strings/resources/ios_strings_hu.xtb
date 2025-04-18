@@ -158,7 +158,6 @@
 <translation id="1605658421715042784">Kép másolása</translation>
 <translation id="1612754831519568745">A Biztonságos Böngészés jelenleg ki van kapcsolva. Védekezzen a veszélyes webhelyekkel, letölthető tartalmakkal és bővítményekkel szemben.</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="1622195983844804153">A meglévő böngészési adatokat nem helyezzük át a munkahelyi fiókjába. Kijelentkezve vagy személyes fiók hozzáadásával továbbra is hozzájuk férhet.</translation>
 <translation id="1622717322707146952">Válassza a „Hozzáadás a Google Naptárhoz” vagy a „Hozzáadás az Apple Naptárhoz” lehetőséget.</translation>
 <translation id="1629162218487290695">Személyazonosság igazolása…</translation>
 <translation id="1636234353664774105">A navigációs funkció használatával részletes útvonaltervet kaphat úti céljához.</translation>
@@ -1315,7 +1314,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="6476800141292307438">Az oldal lefordítása <ph name="LANGUAGE" /> nyelvre. A képernyő alján láthatók a rendelkezésre álló lehetőségek.</translation>
 <translation id="647867789226964031">A jelszavak módosítása</translation>
 <translation id="6494931198667773526">Vége</translation>
-<translation id="6495521251906266731">Válassza ki, hogy mit szeretne tenni az ezen az eszközön található meglévő böngészési adatokkal (jelszavakkal, előzményekkel stb.).</translation>
 <translation id="6503077044568424649">Gyakori</translation>
 <translation id="6503763061813913607">A biztonsági ellenőrzés értesítései</translation>
 <translation id="6505334220040167806">Lapcsoport összecsukása.</translation>

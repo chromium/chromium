@@ -286,6 +286,7 @@
 <translation id="4534723447064627427">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקרופון, צריך להפעיל את המיקרופון גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
 <translation id="4570913071927164677">פרטים</translation>
+<translation id="4578289292431526768">קדימה, נתחיל</translation>
 <translation id="4598549027014564149">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים, גם לא באתרים קשורים. פעילות הגלישה לא משמשת לפעולות כמו התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="461356340001513807">אפשרות להיכנס לאתרים באמצעות החשבון שלך בשירות זהות מסוים</translation>
 <translation id="4635969503923889910">‏אתרים לא יכולים להשתמש במכשירי NFC</translation>
@@ -424,7 +425,6 @@
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6320088164292336938">רטט</translation>
-<translation id="6344622098450209924">חסימת מעקב</translation>
 <translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="640163077447496506">התוקף יפוג היום</translation>

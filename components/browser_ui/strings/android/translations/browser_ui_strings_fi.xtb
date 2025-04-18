@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
+<translation id="4578289292431526768">Aloitetaan</translation>
 <translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="461356340001513807">Sallii sinun kirjautua verkkosivustoille identiteettipalvelun tilillä</translation>
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6320088164292336938">Värinä</translation>
-<translation id="6344622098450209924">Seurannan esto</translation>
 <translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="640163077447496506">Vanhenee tänään</translation>

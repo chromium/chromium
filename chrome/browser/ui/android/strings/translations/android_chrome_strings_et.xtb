@@ -767,7 +767,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4595805675102978678">Google'i konto viga</translation>
 <translation id="4601095002996233687">Põhjalikud kontrollid kahtlaste allalaadimiste korral.</translation>
 <translation id="4606559747793337066">Kui sait või rakendus palub lehel olevad lingid privaatselt eellaadida, krüpteerib Chrome need lehed ja laadib need Google'i serverite kaudu ilma küpsisefailideta. See peidab teie identiteedi eellaaditud saidi eest.</translation>
-<translation id="4609429330876432068">Teie Chrome’i ja kanali <ph name="CHROME_CHANNEL" /> salvestatud paroolide loendid liideti. Saate endiselt kõiki salvestatud paroole mõlemas rakenduses automaattäita.</translation>
 <translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4624065194742029982">Chrome'i inkognito režiim</translation>
@@ -1561,7 +1560,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8014210850410408071">Järgmiseks importige paroolid</translation>
 <translation id="8015452622527143194">Lehel kuvatud sisu vaikesuuruses kuvamine</translation>
-<translation id="8026238112629815203">Muutsime paroolide salvestamist selles seadmes</translation>
 <translation id="8027395186860110042">Paroolid ei pruugi varsti enam töötada</translation>
 <translation id="8027863900915310177">Valige, kuhu alla laadida</translation>
 <translation id="8030852056903932865">Kinnita</translation>

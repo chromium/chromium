@@ -767,7 +767,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4595805675102978678">Hiba a Google-fiókkal</translation>
 <translation id="4601095002996233687">Mélyreható vizsgálatok a gyanús letöltött tartalmak ellenőrzéséhez.</translation>
 <translation id="4606559747793337066">Ha valamely webhely vagy alkalmazás a linkek privát módon való előtöltését kéri az oldalán, a Chrome cookie-k nélkül titkosítja és tölti be előre az oldalakat a Google szerverein keresztül. Ez a művelet elrejti az Ön személyazonosságát az előre betöltött webhely előtt.</translation>
-<translation id="4609429330876432068">A Chrome-hoz és a <ph name="CHROME_CHANNEL" /> verzióhoz mentett jelszavainak listáit a rendszer egyesítette. Az összes mentett jelszavát továbbra is kitöltheti automatikusan mindkét alkalmazásban.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> megnyitása</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4624065194742029982">Chrome inkognitó mód</translation>
@@ -1561,7 +1560,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8014210850410408071">Most importálja a jelszavakat</translation>
 <translation id="8015452622527143194">Minden visszaállítása alapértelmezett méretűre</translation>
-<translation id="8026238112629815203">Módosítottuk a jelszavak mentésének módját ezen az eszközön</translation>
 <translation id="8027395186860110042">Előfordulhat, hogy a jelszavak hamarosan nem működnek majd.</translation>
 <translation id="8027863900915310177">Letöltés helyének kiválasztása</translation>
 <translation id="8030852056903932865">Jóváhagyás</translation>

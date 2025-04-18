@@ -1190,7 +1190,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3102312643185441063">Megtakarítások</translation>
 <translation id="3103188521861412364">Részvények és kötvények</translation>
 <translation id="3103535543639438037">Hasonló termékek összehasonlítása egymás mellett</translation>
-<translation id="3103993932858740905">Részletfizetés esetén egyszeri virtuális kártyaszám kerül kitöltésre. Ez a kártyaszám csak erre a vásárlásra vonatkozik.</translation>
 <translation id="3105172416063519923">Tartalomazonosító:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />A DNS-konfiguráció ellenőrzése.<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Középső tálca</translation>
@@ -1401,7 +1400,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3440783957068352691">négyzet</translation>
 <translation id="3441653493275994384">Képernyő</translation>
 <translation id="3443504041532578451">Optikai lemez (szatén)</translation>
-<translation id="344449859752187052">Harmadik féltől származó cookie-k letiltva</translation>
 <translation id="3447644283769633681">Az összes harmadik féltől származó cookie tiltása</translation>
 <translation id="3447661539832366887">Az eszköz tulajdonosa kikapcsolta a dinoszauruszos játékot.</translation>
 <translation id="3447884698081792621">Tanúsítvány megjelenítése (kibocsátó: <ph name="ISSUER" />)</translation>
@@ -2253,6 +2251,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4901778704868714008">Mentés…</translation>
 <translation id="4901952598169637881">Cipők mindennapi viseletre</translation>
 <translation id="4905659621780993806">Rendszergazdája a következő időpontban automatikusan újra fogja indítani az eszközét: <ph name="DATE" /> <ph name="TIME" />. Az eszköz újraindítása előtt mentse az összes megnyitott elemet.</translation>
+<translation id="4913083239887436582">internetesalkalmazás-telepítések</translation>
 <translation id="4913987521957242411">Lyuk balra fent</translation>
 <translation id="4914727764832832057">Kék 1</translation>
 <translation id="4916389289686916969">Televíziós valóságshow-k</translation>
@@ -2583,6 +2582,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5483838506518938965">Elkészült</translation>
 <translation id="5485100387355669506">Nagyon vastag</translation>
 <translation id="5485973315555778056">Felhőalapú szolgáltatás – gép</translation>
+<translation id="5488367146069768854">Internetesalkalmazás-telepítések</translation>
 <translation id="5488590678320979185">Jegyzet létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új Google Keep-jegyzetet.</translation>
 <translation id="5490432419156082418">Címek és egyebek</translation>
 <translation id="5492298309214877701">Ennek a vállalati, szervezeti vagy iskolai intraneten található webhelynek az URL-címe megegyezik egy külső webhely URL-címével.
@@ -2710,7 +2710,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5691848789297492617">A „Kártya mentése” utasítás teljes magasságban van megnyitva.</translation>
 <translation id="5695542892312572833">Szeretné a Windows Hello használatával igazolni és befejezni vásárlását?</translation>
 <translation id="5699628521141772782">Tejtermékek és tojás</translation>
-<translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
 <translation id="5701381305118179107">Középre</translation>
 <translation id="5707154300732650394">Utazás folytatása</translation>
 <translation id="57094364128775171">Erős jelszó ajánlása…</translation>
@@ -2983,7 +2982,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6184868291074982484">A Chrome automatikusan korlátozza a harmadik féltől származó cookie-kat</translation>
 <translation id="6190518157737269631">Felülbírálni a billentyűzet egyes gombjait, például az Esc billentyűt</translation>
 <translation id="6194209731893739467">Itt lesz majd látható az összes nyomon követett termék</translation>
-<translation id="6195163219142236913">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="6195371403461054755">Geológia</translation>
 <translation id="6195418151868446719">Szórakoztató elektronika</translation>
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>

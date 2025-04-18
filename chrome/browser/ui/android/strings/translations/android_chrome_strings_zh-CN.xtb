@@ -767,7 +767,6 @@
 <translation id="4595805675102978678">Google 账号错误</translation>
 <translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4606559747793337066">当某个网站或应用请求以私密方式预加载其网页上的链接时，Chrome 会通过 Google 服务器（而不使用 Cookie）加密和预加载网页。这样一来，预加载的网站便无法得知您的身份。</translation>
-<translation id="4609429330876432068">您在 Chrome 和 <ph name="CHROME_CHANNEL" />中保存的密码的列表已合并。您仍可在这两个应用内自动填充所有已保存的密码。</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4624065194742029982">Chrome 无痕模式</translation>
@@ -1559,7 +1558,6 @@
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8014210850410408071">接下来，导入密码</translation>
 <translation id="8015452622527143194">将网页上的所有内容恢复到默认大小</translation>
-<translation id="8026238112629815203">我们更改了此设备上的密码保存方式</translation>
 <translation id="8027395186860110042">密码可能即将失效</translation>
 <translation id="8027863900915310177">选择要下载到何处</translation>
 <translation id="8030852056903932865">批准</translation>

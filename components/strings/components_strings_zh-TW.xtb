@@ -1189,7 +1189,6 @@
 <translation id="3102312643185441063">存款</translation>
 <translation id="3103188521861412364">股票與債券</translation>
 <translation id="3103535543639438037">並排比較類似產品</translation>
-<translation id="3103993932858740905">分期付款時，系統會填入一次性虛擬卡號。這個號碼僅適用於這筆交易。</translation>
 <translation id="3105172416063519923">資產 ID：</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />檢查安全 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中匣</translation>
@@ -1401,7 +1400,6 @@
 <translation id="3440783957068352691">正方形</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3443504041532578451">光碟 (光滑)</translation>
-<translation id="344449859752187052">已封鎖第三方 Cookie</translation>
 <translation id="3447644283769633681">封鎖所有第三方 Cookie</translation>
 <translation id="3447661539832366887">這個裝置的擁有者已關閉恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
@@ -2711,7 +2709,6 @@
 <translation id="5691848789297492617">儲存內容資訊卡功能表已完整開啟。</translation>
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購物嗎？</translation>
 <translation id="5699628521141772782">奶製品與雞蛋</translation>
-<translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="5707154300732650394">繼續瀏覽歷程</translation>
 <translation id="57094364128775171">建議高強度密碼…</translation>
@@ -2984,7 +2981,6 @@
 <translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
 <translation id="6190518157737269631">覆寫鍵盤上的按鍵，例如 Esc 鍵</translation>
 <translation id="6194209731893739467">在這裡查看所有追蹤的產品</translation>
-<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195371403461054755">地質學</translation>
 <translation id="6195418151868446719">消費性電子產品</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>

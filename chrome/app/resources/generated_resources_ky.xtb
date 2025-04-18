@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Жаңы нерсени баштап же иш процессинде жардам алыңыз.</translation>
 <translation id="1054048317165655285">Телефонуңузда жөндөп бүтүрүңүз</translation>
 <translation id="1054153489933238809">Түпнуска &amp;сүрөттү жаңы өтмөктө ачуу</translation>
+<translation id="1054187194995068149">Салам. Бул алдын ала версия</translation>
 <translation id="1054502481659725522">Жайгашкан жериңизди колдонмолор, вебсайттар жана системдик кызматтар колдоно алышат</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> түзмөгүн 1 аптанын ичинде жаңыртыңыз}other{<ph name="DEVICE_TYPE" /> түзмөгүн {NUM_WEEKS} аптанын ичинде жаңыртыңыз}}</translation>
 <translation id="1055606969515662982">Тышкы экранга чыгарууну пульттан токтотуңуз</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> төмөнкү файлдарды түзөтө алат</translation>
 <translation id="130174306655812048">“Окей, Google, бул кайсы ыр?” деп сурап көрүңүз</translation>
 <translation id="1302227299132585524">Apple Events'теги JavaScript'ке уруксат берилсин</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> тобу - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">HTML файлын кыстарат</translation>
 <translation id="1303671224831497365">Bluetooth түзмөктөрү табылган жок</translation>
 <translation id="130491383855577612">Linux колдонмолору менен файлдары ийгиликтүү алмаштырылды</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">Учурдагы сеанс жигердүү болуп турганда, мурункусун уланта аласыз.</translation>
 <translation id="1362865166188278099">Механикалык маселе келип чыкты. Принтерди текшериңиз</translation>
 <translation id="1363585519747660921">USB принтери конфигурацияланышы керек</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" /> кызматына USB түзмөктөрүн колдонууга уруксат бериңиз.</translation>
 <translation id="136378536198524553">Кубатты үнөмдөгүч күйүк</translation>
 <translation id="136522805455656552">Түзмөгүңүздүн коопсуздугу үчүн ишенимдүү булактардын жана иштеп чыгуучулардын программаларын гана орнотуп жана иштетиңиз. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Каштарды көтөрүү</translation>
@@ -2571,6 +2570,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2743301740238894839">Баштоо</translation>
 <translation id="2743387203779672305">Алмашуу буферине көчүрүү</translation>
 <translation id="274362947316498129">Колдонмо <ph name="DEVICE_NAME" /> камерасын пайдаланууга аракет кылып жатат. Уруксат берүү үчүн <ph name="DEVICE_NAME" /> камерасынын купуялык которгучун өчүрүңүз.</translation>
+<translation id="2744221223678373668">Бөлүшүлгөн</translation>
 <translation id="2745080116229976798">Microsoft Квалификациялык көз карандылык</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> кириңиз</translation>
 <translation id="2749836841884031656">SIM-карта</translation>
@@ -5858,9 +5858,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5087864757604726239">артка</translation>
 <translation id="5088427648965532275">Passpoint провайдери</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA шифрлөөсү менен</translation>
-<translation id="5089763948477033443">Капталдагы тилкенин өлчөмүн өзгөртүү маркери</translation>
 <translation id="5090637338841444533">Камераңыздын абалына көз сала албайт</translation>
-<translation id="5090981554736747495">Linux колдонмолоруна USB түзмөктөрүн колдонууга уруксат бериңиз.</translation>
 <translation id="5091636240353511739">PIN кодду көрсөтүү</translation>
 <translation id="5093477827231450397">Башка сайттарда жарнамаларды сунуштоосун каалабаган, сиз бөгөттөгөн сайттардын тизмеси</translation>
 <translation id="5093569275467863761">Кештелген жашыруун көмөкчү фрейм: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6572,7 +6570,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бул кеңейтүү бөгөттөлгөн}other{Бул кеңейтүүлөр бөгөттөлгөн}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync тууралуу кеңири маалымат</translation>
 <translation id="5608580678041221894">Кесиле турган аймакты тууралоо же жылдыруу үчүн төмөнкү баскычтарды басыңыз</translation>
-<translation id="560919433407466404">Parallels Desktop'ко USB түзмөктөрдү колдонууга уруксат бериңиз.</translation>
 <translation id="5609231933459083978">Колдонмо жараксыз окшойт.</translation>
 <translation id="5610867721023328944">Кайталап көрүңүз же төмөндө жеткиликтүү темалардын бирин тандаңыз.</translation>
 <translation id="5611398002774823980">Аккаунтта сактоо</translation>
@@ -8647,7 +8644,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7109543803214225826">Кыска жол өчүрүлдү</translation>
 <translation id="7110388475787189534">Өтмөктөрдү автоматтык түрдө иреттөө жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Өтмөктү топто кошуу}other{Өтмөктөрдү топто кошуу}}</translation>
-<translation id="7110684627876015299">Аталышы жок топ – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Терезенин аталышын коюңуз</translation>
 <translation id="7113502843173351041">Электрондук почта дарегиңизди билүү</translation>
 <translation id="7113974454301513811">Эми учурдагы өтмөктү тизмеңизге кошуңуз</translation>
@@ -9019,7 +9015,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7387107590792462040">Орнотулуп жатат. Күтө туруңуз</translation>
 <translation id="7387273928653486359">Канааттандыраарлык</translation>
 <translation id="7387951778417998929">Демейкиден башка издөө куралын колдонуу үчүн дарек тилкесине анын ыкчам баскычын, андан соң артыкчылыктуу ыкчам баскычты териңиз. Мындан тышкары, бул жерден демейки издөө куралын өзгөртө аласыз.</translation>
-<translation id="7388209873137778229">Колдоого алынган түзмөктөр гана көрсөтүлдү.</translation>
 <translation id="7388615499319468910">Сайттар менен жарнамачылар жарнамалардын майнаптуулугун талдай алышат. Бул параметр өчүк.</translation>
 <translation id="738903649531469042">Өтмөктү окуу тизмесине кошуу</translation>
 <translation id="7392118418926456391">Вирустар иликтенбей калды</translation>
@@ -10700,7 +10695,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8553342806078037065">Башка адамдарды башкаруу</translation>
 <translation id="8554899698005018844">Тил коюлган эмес</translation>
 <translation id="8555444629041783356">Күндүн батышынын графиги</translation>
-<translation id="855604308879080518">Android колдонмолоруна бул Chromebook'тагы USB түзмөктөрүнө кирүүгө уруксат бериңиз. USB түзмөгүн туташтырган сайын уруксат суралат. Жеке Android колдонмолору кошумча уруксаттарды сурайт.</translation>
 <translation id="8557022314818157177">Манжаңыздын изин тартуу үчүн коопсуздук ачкычына бир нече жолу тийиңиз</translation>
 <translation id="8557100046150195444">Улантуу үчүн Touch ID</translation>
 <translation id="8557856025359704738">Кийинки жолу <ph name="NEXT_DATE_DOWNLOAD" /> жүктөлүп алынат.</translation>
@@ -11411,7 +11405,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9036484080057916082">Кол коюлган тастыктамалардын убакыт белгилеринин тизмеси</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> деп аталган Bluetooth түзмөгүнө туташты</translation>
 <translation id="9037640663275993951">Түзмөккө уруксат жок</translation>
-<translation id="9037706442425692248">Android колдонмолоруна бул Chromebook'тагы USB түзмөктөрүнө кирүүгө уруксат бериңиз</translation>
 <translation id="9037818663270399707">Туташууңуз тармактагы трафик үчүн купуя эмес</translation>
 <translation id="9037965129289936994">Түпкү бетин көрсөтүү</translation>
 <translation id="9038489124413477075">Аты жок куржун</translation>

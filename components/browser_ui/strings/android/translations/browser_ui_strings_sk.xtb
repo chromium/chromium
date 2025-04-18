@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať mikrofón, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
+<translation id="4578289292431526768">Začať</translation>
 <translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="461356340001513807">Umožňuje vám prihlásiť sa na weboch účtom, ktorý ste si zriadili prostredníctvom služby identity</translation>
 <translation id="4635969503923889910">Nepovoliť webom používať zariadenia s technológiou NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
 <translation id="6320088164292336938">Vibrovanie</translation>
-<translation id="6344622098450209924">Ochrana pred sledovaním</translation>
 <translation id="6367753977865761591">Na konkrétnom webe môžete blokovať prihlasovanie tretími stranami.</translation>
 <translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="640163077447496506">Vyprší dnes</translation>

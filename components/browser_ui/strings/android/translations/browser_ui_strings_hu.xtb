@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="4566417217121906555">Mikrofon némítása</translation>
 <translation id="4570913071927164677">Részletek</translation>
+<translation id="4578289292431526768">Indítás</translation>
 <translation id="4598549027014564149">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy megfigyeljék az Ön böngészési tevékenységeit a különböző webhelyek között, még kapcsolódó webhelyek esetén sem. Böngészési tevékenységeit nem használjuk fel például a hirdetések személyre szabásához. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="461356340001513807">Lehetővé teszi, hogy identitásszolgáltató által biztosított fiókkal jelentkezzen be a webhelyekre.</translation>
 <translation id="4635969503923889910">A webhelyek nem használhatnak NFC-eszközöket</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6320088164292336938">Rezgés</translation>
-<translation id="6344622098450209924">Nyomon követés elleni védelem</translation>
 <translation id="6367753977865761591">Letilthatja a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
 <translation id="640163077447496506">Ma jár le</translation>

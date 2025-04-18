@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">ເຮັດສິ່ງໃໝ່ໆ ຫຼື ຮັບຄວາມຊ່ວຍເຫຼືອໃນລະຫວ່າງຂັ້ນຕອນການເຮັດວຽກ.</translation>
 <translation id="1054048317165655285">ເຮັດສຳເລັດການຕັ້ງຄ່າໃນໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1054153489933238809">ເປີດຮູບ&amp;ເດີມຢູ່ໃນແຖບໃໝ່</translation>
+<translation id="1054187194995068149">ສະບາຍດີ. ນີ້ແມ່ນຕົວຢ່າງ</translation>
 <translation id="1054502481659725522">ແອັບ, ເວັບໄຊ ແລະ ບໍລິການລະບົບສາມາດໃຊ້ສະຖານທີ່ຂອງທ່ານໄດ້</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{ອັບເດດ <ph name="DEVICE_TYPE" /> ພາຍໃນ 1 ອາທິດ}other{ອັບເດດ <ph name="DEVICE_TYPE" /> ພາຍໃນ {NUM_WEEKS} ອາທິດ}}</translation>
 <translation id="1055606969515662982">ໃຊ້ຣີໂໝດເພື່ອຢຸດການສົ່ງສັນຍານ</translation>
@@ -456,7 +457,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ຕໍ່ໄປນີ້ໄດ້</translation>
 <translation id="130174306655812048">ລອງເວົ້າວ່າ “Ok Google, ນີ້ແມ່ນເພງຫຍັງ?”</translation>
 <translation id="1302227299132585524">ອະນຸຍາດ JavaScript ຈາກ Apple Events</translation>
-<translation id="1302654693270046655">ກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">ໄຟລ໌ HTML ບຸກມາກສ໌</translation>
 <translation id="1303671224831497365">ບໍ່ພົບອຸປະກອນ Bluetooth</translation>
 <translation id="130491383855577612">ປ່ຽນແທນແອັບ ແລະ ໄຟລ໌ Linux ສຳເລັດແລ້ວ</translation>
@@ -538,7 +538,6 @@
 <translation id="1362829980946830670">ທ່ານສາມາດດຳເນີນການເຊດຊັນກ່ອນໜ້ານີ້ຂອງທ່ານຕໍ່ໄດ້ໃນລະຫວ່າງທີ່ເຊດຊັນປັດຈຸບັນຂອງທ່ານຍັງເຮັດວຽກຢູ່.</translation>
 <translation id="1362865166188278099">ບັນຫາກົນໄກ. ກວດສອບເຄື່ອງພິມ</translation>
 <translation id="1363585519747660921">ເຄື່ອງພິມ USB ຈໍາເປັນຕ້ອງກຳນົດຄ່າ</translation>
-<translation id="1363772878823415675">ອະນຸຍາດໃຫ້ <ph name="SPECIFIC_NAME" /> ເຂົ້າເຖິງອຸປະກອນ USB.</translation>
 <translation id="136378536198524553">ເປີດໃຊ້ຕົວປະຢັດພະລັງງານແລ້ວ</translation>
 <translation id="136522805455656552">ເພື່ອຮັກສາອຸປະກອນຂອງທ່ານໃຫ້ປອດໄພ, ທ່ານຄວນເອີ້ນໃຊ້ ແລະ ຕິດຕັ້ງຊອບແວຈາກແຫຼ່ງທີ່ມາ ແລະ ນັກພັດທະນາທີ່ເຊື່ອຖືໄດ້ເທົ່ານັ້ນ. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ຍົກຄິ້ວ</translation>
@@ -2570,6 +2569,7 @@
 <translation id="2743301740238894839">ເລີ່ມ</translation>
 <translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
 <translation id="274362947316498129">ມີແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງ <ph name="DEVICE_NAME" /> ຢູ່. ກະລຸນາປິດສະວິດຄວາມເປັນສ່ວນຕົວ <ph name="DEVICE_NAME" /> ເພື່ອອະນຸຍາດສິດເຂົ້າເຖິງ.</translation>
+<translation id="2744221223678373668">ແຊຣ໌ແລ້ວ</translation>
 <translation id="2745080116229976798">ອັນທີ່​ສຳຄັນ​ນ້ອຍ​ກວ່າ​ທີ່​​ເຂົ້າ​ເກນ​ຄຸນສົມບັດ​ຂອງ Microsoft</translation>
 <translation id="2749756011735116528">ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5857,9 +5857,7 @@
 <translation id="5087864757604726239">ກັບ​ຄືນ​</translation>
 <translation id="5088427648965532275">ຜູ້ໃຫ້ບໍລິການ Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
-<translation id="5089763948477033443">ດ້າມຈັບປັບຂະໜາດແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="5090637338841444533">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຕິດຕາມຕຳແໜ່ງກ້ອງຂອງທ່ານ</translation>
-<translation id="5090981554736747495">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງອຸປະກອນ USB.</translation>
 <translation id="5091636240353511739">ສະແດງ PIN</translation>
 <translation id="5093477827231450397">ລາຍຊື່ຂອງເວັບໄຊທີ່ທ່ານບລັອກ ແລະ ບໍ່ຕ້ອງການໃຫ້ແນະນຳໂຄສະນາໃຫ້ເວັບໄຊອື່ນ</translation>
 <translation id="5093569275467863761">ເຟຣມບ່ອຍແຄສຍ້ອນຫຼັງແບບບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6570,7 +6568,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍນີ້ຖືກບລັອກໄວ້}other{ສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ຖືກບລັອກໄວ້}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, ສຶກສາເພີ່ມເຕີມ</translation>
 <translation id="5608580678041221894">ແຕະປຸ່ມຕໍ່ໄປນີ້ເພື່ອປັບ ຫຼື ຍ້າຍພື້ນທີ່ຕັດແຕ່ງ</translation>
-<translation id="560919433407466404">ອະນຸຍາດໃຫ້ Parallels Desktop ເຂົ້າເຖິງອຸປະກອນ USB.</translation>
 <translation id="5609231933459083978">ປະກົດວ່າແອັບພລິເຄຊັນໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="5610867721023328944">ລອງໃໝ່ ຫຼື ເລືອກຈາກໜຶ່ງໃນຮູບແບບສີສັນທີ່ມີຢູ່ທາງລຸ່ມ.</translation>
 <translation id="5611398002774823980">ບັນທຶກໃນບັນຊີ</translation>
@@ -8645,7 +8642,6 @@
 <translation id="7109543803214225826">ລຶບທາງລັດອອກແລ້ວ</translation>
 <translation id="7110388475787189534">ສຶກສາວິທີຈັດລະບຽບແຖບຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
-<translation id="7110684627876015299">ກຸ່ມທີ່ບໍ່ມີຊື່ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">ຕັ້ງຊື່ໜ້າຈໍນີ້</translation>
 <translation id="7113502843173351041">ຮູ້​ທີ່​ຢູ່​ອີ​ເມວ​ຂອງ​ທ່ານ</translation>
 <translation id="7113974454301513811">ຕອນນີ້ໃຫ້ເພີ່ມແຖບປັດຈຸບັນໃສ່ໃນລາຍຊື່ຂອງທ່ານ</translation>
@@ -9017,7 +9013,6 @@
 <translation id="7387107590792462040">ກະລຸນາລໍຖ້າໃນລະຫວ່າງທີ່ກຳລັງດຳເນີນການຕິດຕັ້ງຢູ່</translation>
 <translation id="7387273928653486359">ຍອມ​ຮັບໄດ້</translation>
 <translation id="7387951778417998929">ເພື່ອໃຊ້ໂປຣແກຣມຊອກຫາໃດໜຶ່ງນອກເໜືອໄປຈາກຄ່າເລີ່ມຕົ້ນ, ໃຫ້ພິມທາງລັດຂອງມັນໃສ່ໃນ​ແຖບທີ່​ຢູ່ຕາມດ້ວຍຄີລັດທີ່ທ່ານຕ້ອງການ. ທ່ານສາມາດປ່ຽນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານຢູ່ບ່ອນນີ້ໄດ້ນຳ.</translation>
-<translation id="7388209873137778229">ສະແດງອຸປະກອນທີ່ຮອງຮັບເທົ່ານັ້ນ.</translation>
 <translation id="7388615499319468910">ເວັບໄຊ ແລະ ຜູ້ລົງໂຄສະນາສາມາດຮູ້ໄດ້ວ່າໂຄສະນາມີປະສິດທິພາບແນວໃດ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
 <translation id="738903649531469042">ເພີ່ມແຖບໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="7392118418926456391">ສະແກນໄວຣັສບໍ່ສໍາເລັດ</translation>
@@ -10696,7 +10691,6 @@
 <translation id="8553342806078037065">ຈັດການບູກຄົນອື່ນ</translation>
 <translation id="8554899698005018844">ບໍ່ມີພາສາ</translation>
 <translation id="8555444629041783356">ກຳນົດເວລາປິດຕົວອັດຕະໂນມັດ</translation>
-<translation id="855604308879080518">ໃຫ້ແອັບ Android ເຂົ້າເຖິງອຸປະກອນ USB ຢູ່ Chromebook ນີ້ໄດ້. ຈະມີການຮ້ອງຂໍການອະນຸຍາດໃນແຕ່ລະເທື່ອທີ່ທ່ານສຽບອຸປະກອນ USB. ແອັບ Android ແຕ່ລະອັນຈະຂໍການອະນຸຍາດເພີ່ມເຕີມ.</translation>
 <translation id="8557022314818157177">ສືບຕໍ່ແຕະກະແຈຄວາມປອດໄພຈົນກວ່າວ່າໄດ້ບັນທຶກລາຍນິ້ວມືຂອງທ່ານໄວ້ແລ້ວ</translation>
 <translation id="8557100046150195444">Touch ID ເພື່ອສືບຕໍ່</translation>
 <translation id="8557856025359704738">ການດາວໂຫຼດຕໍ່ໄປແມ່ນ <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11407,7 +11401,6 @@
 <translation id="9036484080057916082">ລາຍຊື່ເວລາໃບຮັບຮອງທີ່ໄດ້ເຊັນ</translation>
 <translation id="9037054491984310631">ເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth ຊື່ <ph name="DEVICE" /> ແລ້ວ</translation>
 <translation id="9037640663275993951">ບໍ່ອະນຸຍາດອຸປະກອນ</translation>
-<translation id="9037706442425692248">ອະນຸຍາດໃຫ້ແອັບ Android ເຂົ້າເຖິງອຸປະກອນ USB ຢູ່ Chromebook ນີ້ໄດ້</translation>
 <translation id="9037818663270399707">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ເປັນສ່ວນຕົວສຳລັບການຮັບສົ່ງຂໍ້ມູນໃນເຄືອຂ່າຍທັງໝົດ</translation>
 <translation id="9037965129289936994">ສະແດງຕົ້ນສະບັບ</translation>
 <translation id="9038489124413477075">ໂຟລເດີບໍ່ມີຊື່</translation>

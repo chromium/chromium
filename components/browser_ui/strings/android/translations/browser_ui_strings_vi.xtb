@@ -285,6 +285,7 @@
 <translation id="4534723447064627427">Để cho phép <ph name="APP_NAME" /> truy cập vào micrô của bạn, hãy bật cả micrô trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Tắt micrô</translation>
 <translation id="4570913071927164677">Chi tiết</translation>
+<translation id="4578289292431526768">Bắt đầu nào!</translation>
 <translation id="4598549027014564149">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web, ngay cả các trang web có liên quan. Hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
 <translation id="461356340001513807">Giúp bạn đăng nhập vào các trang web bằng tài khoản có dịch vụ định danh</translation>
 <translation id="4635969503923889910">Không cho phép trang web sử dụng thiết bị NFC</translation>
@@ -423,7 +424,6 @@
 <translation id="6270391203985052864">Các trang web có thể xin phép gửi thông báo</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6320088164292336938">Rung</translation>
-<translation id="6344622098450209924">Chống theo dõi</translation>
 <translation id="6367753977865761591">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="640163077447496506">Hết hạn hôm nay</translation>

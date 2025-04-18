@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">Bắt đầu một nhiệm vụ mới hoặc nhận trợ giúp trong quá trình làm việc.</translation>
 <translation id="1054048317165655285">Hoàn tất quá trình thiết lập trên điện thoại</translation>
 <translation id="1054153489933238809">Mở &amp;hình ảnh gốc trong thẻ mới</translation>
+<translation id="1054187194995068149">Xin chào! Đây là bản nghe thử</translation>
 <translation id="1054502481659725522">Các ứng dụng, trang web và dịch vụ hệ thống có thể sử dụng thông tin vị trí của bạn</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng 1 tuần}other{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}}</translation>
 <translation id="1055606969515662982">Sử dụng điều khiển từ xa để dừng truyền</translation>
@@ -456,7 +457,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1301135395320604080"><ph name="ORIGIN" /> có thể chỉnh sửa các tệp sau đây</translation>
 <translation id="130174306655812048">Hãy thử hỏi "Ok Google, đây là bài hát gì?"</translation>
 <translation id="1302227299132585524">Cho phép JavaScript từ Apple Events</translation>
-<translation id="1302654693270046655">Nhóm <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Tệp HTML chứa dấu trang</translation>
 <translation id="1303671224831497365">Không tìm thấy thiết bị Bluetooth nào</translation>
 <translation id="130491383855577612">Đã thay thế thành công các ứng dụng và tệp Linux</translation>
@@ -538,7 +538,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1362829980946830670">Bạn có thể tiếp tục phiên trước đó trong khi phiên hiện tại của bạn vẫn hoạt động.</translation>
 <translation id="1362865166188278099">Vấn đề về máy móc. Hãy kiểm tra máy in</translation>
 <translation id="1363585519747660921">Máy in USB cần định cấu hình</translation>
-<translation id="1363772878823415675">Cấp cho <ph name="SPECIFIC_NAME" /> quyền truy cập vào thiết bị USB.</translation>
 <translation id="136378536198524553">Trình tiết kiệm pin đã bật</translation>
 <translation id="136522805455656552">Để đảm bảo an toàn cho thiết bị, bạn chỉ nên chạy và cài đặt phần mềm từ những nguồn và nhà phát triển đáng tin cậy. <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">Nhướn lông mày</translation>
@@ -2571,6 +2570,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2743301740238894839">Bắt đầu</translation>
 <translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="274362947316498129">Một ứng dụng đang cố truy cập vào <ph name="DEVICE_NAME" />. Hãy tắt nút chuyển quyền riêng tư của <ph name="DEVICE_NAME" /> để cho phép truy cập.</translation>
+<translation id="2744221223678373668">Được chia sẻ</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -5858,9 +5858,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5087864757604726239">quay lại</translation>
 <translation id="5088427648965532275">Nhà cung cấp Passpoint</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Với Mã hóa RSA</translation>
-<translation id="5089763948477033443">Ô điều khiển thay đổi kích thước của bảng điều khiển bên</translation>
 <translation id="5090637338841444533">Không được phép theo dõi vị trí máy ảnh của bạn</translation>
-<translation id="5090981554736747495">Cấp cho các ứng dụng Linux quyền truy cập vào thiết bị USB.</translation>
 <translation id="5091636240353511739">Hiện mã PIN</translation>
 <translation id="5093477827231450397">Danh sách trang web bạn không cho phép đề xuất quảng cáo cho các trang web khác</translation>
 <translation id="5093569275467863761">Khung phụ ẩn danh lưu trong bộ nhớ đệm cho thao tác tiến/lùi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6572,7 +6570,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Tiện ích này đã bị chặn}other{Các tiện ích này đã bị chặn}}</translation>
 <translation id="560834977503641186">Đồng bộ hóa Wi-Fi, Tìm hiểu thêm</translation>
 <translation id="5608580678041221894">Nhấn các phím sau để điều chỉnh hoặc di chuyển vùng cắt</translation>
-<translation id="560919433407466404">Cấp cho ứng dụng Parallels Desktop quyền sử dụng các thiết bị USB.</translation>
 <translation id="5609231933459083978">Ứng dụng này có vẻ không hợp lệ.</translation>
 <translation id="5610867721023328944">Hãy thử lại hoặc chọn một trong những giao diện có sẵn bên dưới.</translation>
 <translation id="5611398002774823980">Lưu trong tài khoản</translation>
@@ -8650,7 +8647,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7109543803214225826">Đã xóa phím tắt</translation>
 <translation id="7110388475787189534">Tìm hiểu cách tự động sắp xếp các thẻ</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Thêm thẻ vào nhóm}other{Thêm các thẻ vào nhóm}}</translation>
-<translation id="7110684627876015299">Nhóm chưa có tên – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Đặt tên cho cửa sổ này</translation>
 <translation id="7113502843173351041">Biết địa chỉ email của bạn</translation>
 <translation id="7113974454301513811">Bây giờ, hãy thêm thẻ hiện tại vào danh sách của bạn</translation>
@@ -9022,7 +9018,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7387107590792462040">Vui lòng đợi, quá trình cài đặt đang diễn ra</translation>
 <translation id="7387273928653486359">Chấp nhận được</translation>
 <translation id="7387951778417998929">Để dùng một công cụ tìm kiếm khác với công cụ mặc định, hãy nhập lối tắt của công cụ đó trong thanh địa chỉ rồi nhập phím tắt ưu tiên của bạn. Bạn cũng có thể thay đổi công cụ tìm kiếm mặc định tại đây.</translation>
-<translation id="7388209873137778229">Chỉ những thiết bị được hỗ trợ mới hiển thị.</translation>
 <translation id="7388615499319468910">Các trang web và nhà quảng cáo có thể nắm được hiệu suất quảng cáo của họ. Chế độ cài đặt này đang tắt.</translation>
 <translation id="738903649531469042">Thêm thẻ vào danh sách đọc</translation>
 <translation id="7392118418926456391">Quét vi-rút không thành công</translation>
@@ -10704,7 +10699,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8553342806078037065">Quản lý những người khác</translation>
 <translation id="8554899698005018844">Không có ngôn ngữ nào</translation>
 <translation id="8555444629041783356">Tự động cập nhật lịch biểu hoàng hôn</translation>
-<translation id="855604308879080518">Cho phép ứng dụng Android truy cập thiết bị USB trên Chromebook này. Hệ thống sẽ yêu cầu cấp quyền mỗi lần bạn cắm thiết bị USB. Từng dụng Android sẽ yêu cầu thêm các quyền riêng.</translation>
 <translation id="8557022314818157177">Chạm liên tục vào khóa bảo mật cho đến khi thiết bị ghi lại vân tay của bạn</translation>
 <translation id="8557100046150195444">Dùng Touch ID để tiếp tục</translation>
 <translation id="8557856025359704738">Lượt tải xuống tiếp theo bắt đầu vào <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
@@ -11415,7 +11409,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9036484080057916082">Danh sách dấu thời gian chứng chỉ đã ký</translation>
 <translation id="9037054491984310631">Đã kết nối với thiết bị Bluetooth có tên <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Thiết bị không được phép</translation>
-<translation id="9037706442425692248">Cho phép các ứng dụng Android truy cập thiết bị USB trên Chromebook này</translation>
 <translation id="9037818663270399707">Đường kết nối của bạn không ở chế độ riêng tư đối với một số lưu lượng truy cập mạng</translation>
 <translation id="9037965129289936994">Hiển thị văn bản gốc</translation>
 <translation id="9038489124413477075">Thư mục không có tên</translation>

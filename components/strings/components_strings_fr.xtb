@@ -1190,7 +1190,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3102312643185441063">Épargne</translation>
 <translation id="3103188521861412364">Actions et obligations</translation>
 <translation id="3103535543639438037">Comparer côte à côte des produits similaires</translation>
-<translation id="3103993932858740905">Lorsque vous payez en plusieurs fois, un numéro de carte virtuelle temporaire est renseigné. Ce numéro est réservé à cet achat.</translation>
 <translation id="3105172416063519923">ID d'élément : </translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifiez la configuration du DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bac intermédiaire</translation>
@@ -1403,7 +1402,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3440783957068352691">carré</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3443504041532578451">Disque optique (satiné)</translation>
-<translation id="344449859752187052">Cookies tiers bloqués</translation>
 <translation id="3447644283769633681">Bloquer tous les cookies tiers</translation>
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu avec le dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (émis par <ph name="ISSUER" />)</translation>
@@ -2256,6 +2254,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4901952598169637881">Chaussures décontractées</translation>
 <translation id="4905659621780993806">L'administrateur redémarrera votre appareil automatiquement le <ph name="DATE" /> à <ph name="TIME" />. Enregistrez tous les éléments ouverts avant que votre appareil ne redémarre.</translation>
+<translation id="4913083239887436582">installations d'applications Web</translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
 <translation id="4914727764832832057">Bleu 1</translation>
 <translation id="4916389289686916969">Émissions de télé-réalité</translation>
@@ -2586,6 +2585,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5483838506518938965">Tout est prêt</translation>
 <translation id="5485100387355669506">Très épais</translation>
 <translation id="5485973315555778056">Machine du cloud</translation>
+<translation id="5488367146069768854">Installations d'applications Web</translation>
 <translation id="5488590678320979185">Bouton "Créer une note" à activer pour créer rapidement une note dans Google Keep</translation>
 <translation id="5490432419156082418">Adresses et autres</translation>
 <translation id="5492298309214877701">Ce site situé sur l'intranet de l'entreprise, de l'organisation ou de l'établissement scolaire possède la même URL qu'un site Web externe.
@@ -2713,7 +2713,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5691848789297492617">Invite "Enregistrer la carte" ouverte à pleine hauteur.</translation>
 <translation id="5695542892312572833">Utiliser Windows Hello pour valider et finaliser votre achat ?</translation>
 <translation id="5699628521141772782">Produits laitiers et œufs</translation>
-<translation id="5700761515355162635">Cookies tiers autorisés</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707154300732650394">Reprendre votre parcours</translation>
 <translation id="57094364128775171">Suggérer un mot de passe sécurisé…</translation>
@@ -2986,7 +2985,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6184868291074982484">Chrome limite automatiquement les cookies tiers</translation>
 <translation id="6190518157737269631">Remplacer certaines touches du clavier, comme Échap</translation>
 <translation id="6194209731893739467">Retrouvez tous vos produits suivis ici</translation>
-<translation id="6195163219142236913">Cookies tiers limités</translation>
 <translation id="6195371403461054755">Géologie</translation>
 <translation id="6195418151868446719">Électronique grand public</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>

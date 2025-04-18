@@ -83,6 +83,7 @@
 <translation id="1053898984916097744">ਕੁਝ ਨਵਾਂ ਸ਼ੁਰੂ ਕਰੋ ਜਾਂ ਮੌਜੂਦਾ ਕੰਮ ਵਿੱਚ ਸਹਾਇਤਾ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="1054048317165655285">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="1054153489933238809">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਮੂਲ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
+<translation id="1054187194995068149">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ। ਇਹ ਇੱਕ ਪੂਰਵ-ਝਲਕ ਹੈ</translation>
 <translation id="1054502481659725522">ਐਪਾਂ, ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ਨੂੰ 1 ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_WEEKS} ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_WEEKS} ਹਫ਼ਤਿਆਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="1055606969515662982">ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰਨ ਲਈ ਰਿਮੋਟ ਵਰਤੋ</translation>
@@ -457,7 +458,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="130174306655812048">“Ok Google, ਇਹ ਕਿਹੜਾ ਗੀਤ ਹੈ?” ਬੋਲ ਕੇ ਦੇਖੋ</translation>
 <translation id="1302227299132585524">Apple ਇਵੈਂਟਾਂ ਤੋਂ JavaScript ਚੱਲਣ ਦਿਓ</translation>
-<translation id="1302654693270046655"><ph name="GROUP_NAME" /> ਗਰੁੱਪ - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">ਬੁੱਕਮਾਰਕਸ HTML ਫਾਈਲ</translation>
 <translation id="1303671224831497365">ਕੋਈ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਹੀਂ ਲੱਭੀਆਂ</translation>
 <translation id="130491383855577612">Linux ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
@@ -539,7 +539,6 @@
 <translation id="1362829980946830670">ਤੁਸੀਂ ਆਪਣੇ ਮੌਜੂਦਾ ਸੈਸ਼ਨ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਰੱਖਦੇ ਹੋਏ, ਆਪਣੇ ਪਿਛਲੇ ਸੈਸ਼ਨ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1362865166188278099">ਮਕੈਨਿਕਲ ਸਮੱਸਿਆ। ਪ੍ਰਿੰਟਰ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="1363585519747660921">USB ਪ੍ਰਿੰਟਰ ਨੂੰ ਸੰਰੂਪਣ ਦੀ ਲੋੜ ਹੈ</translation>
-<translation id="1363772878823415675"><ph name="SPECIFIC_NAME" /> ਨੂੰ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।</translation>
 <translation id="136378536198524553">ਊਰਜਾ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="136522805455656552">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਿਰਫ਼ ਭਰੋਸੇਯੋਗ ਸਰੋਤਾਂ ਅਤੇ ਵਿਕਾਸਕਾਰਾਂ ਤੋਂ ਸਾਫ਼ਟਵੇਅਰ ਚਲਾਉਣਾ ਅਤੇ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ। <ph name="LEARN_MORE" /></translation>
 <translation id="1365650529628379165">ਭਰਵੱਟੇ ਉੱਪਰ ਕਰੋ</translation>
@@ -2572,6 +2571,7 @@
 <translation id="2743301740238894839">ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2743387203779672305">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="274362947316498129">ਕਿਸੇ ਐਪ ਵੱਲੋਂ <ph name="DEVICE_NAME" /> ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੀ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ <ph name="DEVICE_NAME" /> ਦੀ ਪਰਦੇਦਾਰੀ ਸਵਿੱਚ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
+<translation id="2744221223678373668">ਸ਼ੇਅਰ ਕੀਤਾ</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2749836841884031656">ਸਿਮ</translation>
@@ -5859,9 +5859,7 @@
 <translation id="5087864757604726239">ਪਿੱਛੇ</translation>
 <translation id="5088427648965532275">ਪਾਸ ਪੁਆਇੰਟ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="5088534251099454936">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 SHA-512</translation>
-<translation id="5089763948477033443">ਸਾਈਡ ਪੈਨਲ ਦਾ ਆਕਾਰ ਬਦਲਣ ਵਾਲਾ ਹੈਂਡਲ</translation>
 <translation id="5090637338841444533">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
-<translation id="5090981554736747495">USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ Linux ਐਪਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ।</translation>
 <translation id="5091636240353511739">ਪਿੰਨ ਦਿਖਾਓ</translation>
 <translation id="5093477827231450397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਚਾਹੁੰਦੇ ਕਿ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਸੰਬੰਧੀ ਸੁਝਾਅ ਦੇਣ</translation>
 <translation id="5093569275467863761">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਸਬਫ੍ਰੇਮ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -6573,7 +6571,6 @@
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਨ੍ਹਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="560834977503641186">ਵਾਈ-ਫਾਈ ਸਿੰਕ, ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5608580678041221894">ਕਾਂਟ-ਛਾਂਟ ਕਰਨ ਸਬੰਧੀ ਖੇਤਰ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਜਾਂ ਖਿਸਕਾਉਣ ਲਈ ਅੱਗੇ ਦਿੱਤੀਆਂ ਕੁੰਜੀਆਂ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
-<translation id="560919433407466404">Parallels Desktop ਨੂੰ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।</translation>
 <translation id="5609231933459083978">ਐਪਲੀਕੇਸ਼ਨ ਅਵੈਧ ਜਾਪਦੀ ਹੈ।</translation>
 <translation id="5610867721023328944">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਹੇਠਾਂ ਉਪਲਬਧ ਥੀਮਾਂ ਵਿੱਚੋਂ ਇੱਕ ਥੀਮ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="5611398002774823980">ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -8651,7 +8648,6 @@
 <translation id="7109543803214225826">ਸ਼ਾਰਟਕੱਟ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="7110388475787189534">ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਵਿਵਸਥਿਤ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
-<translation id="7110684627876015299">ਬੇਨਾਮ ਗਰੁੱਪ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">ਇਸ ਵਿੰਡੋ ਦਾ ਨਾਮ ਰੱਖੋ</translation>
 <translation id="7113502843173351041">ਆਪਣਾ ਈਮੇਲ ਪਤਾ ਜਾਣੋ</translation>
 <translation id="7113974454301513811">ਹੁਣ ਆਪਣੀ ਸੂਚੀ ਵਿੱਚ ਮੋਜੂਦਾ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -9023,7 +9019,6 @@
 <translation id="7387107590792462040">ਕਿਰਪਾ ਕਰਕੇ ਸਥਾਪਨਾ ਹੋਣ ਦੌਰਾਨ ਉਡੀਕ ਕਰੋ</translation>
 <translation id="7387273928653486359">ਸਵੀਕਾਰਯੋਗ</translation>
 <translation id="7387951778417998929">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੋਂ ਇਲਾਵਾ ਕੋਈ ਵੱਖਰਾ ਖੋਜ ਇੰਜਣ ਵਰਤਣ ਲਈ, ਪਤਾ ਬਾਰ ਵਿੱਚ ਉਸਦੇ ਸ਼ਾਰਟਕੱਟ ਤੋਂ ਬਾਅਦ ਆਪਣਾ ਤਰਜੀਹੀ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਟਾਈਪ ਕਰੋ। ਤੁਸੀਂ ਇੱਥੋਂ ਆਪਣਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਵੀ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
-<translation id="7388209873137778229">ਸਿਰਫ਼ ਸਮਰਥਿਤ ਡੀਵਾਈਸ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="7388615499319468910">ਸਾਈਟਾਂ ਅਤੇ ਵਿਗਿਆਪਨਦਾਤਾ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਬਾਰੇ ਸਮਝ ਸਕਦੇ ਹਨ। ਇਹ ਸੈਟਿੰਗ ਬੰਦ ਹੈ।</translation>
 <translation id="738903649531469042">ਪੜ੍ਹਨ ਸੂਚੀ ਵਿੱਚ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7392118418926456391">ਵਾਇਰਸ ਸਕੈਨ ਅਸਫਲ</translation>
@@ -10703,7 +10698,6 @@
 <translation id="8553342806078037065">ਹੋਰਾਂ ਲੋਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8554899698005018844">ਕੋਈ ਭਾਸ਼ਾ ਨਹੀਂ</translation>
 <translation id="8555444629041783356">ਸੂਰਜ ਡੁੱਬਣ ਦੇ ਸਮੇਂ 'ਤੇ ਆਧਾਰਿਤ ਸਵੈਚਲਿਤ ਸਮਾਂ-ਸੂਚੀ</translation>
-<translation id="855604308879080518">Android ਐਪ ਨੂੰ ਇਸ Chromebook 'ਤੇ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਰ ਵਾਰ USB ਡੀਵਾਈਸ ਪਲੱਗ-ਇਨ ਕਰਨ ਸਮੇਂ ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾਵੇਗੀ। ਵਿਅਕਤੀਗਤ Android ਐਪਾਂ ਵਧੀਕ ਇਜਾਜ਼ਤਾਂ ਮੰਗਣਗੀਆਂ।</translation>
 <translation id="8557022314818157177">ਤੁਹਾਡੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਕੈਪਚਰ ਹੋਣ ਤੱਕ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
 <translation id="8557100046150195444">ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਪਰਸ਼ ਆਈਡੀ</translation>
 <translation id="8557856025359704738">ਅਗਲਾ ਡਾਊਨਲੋਡ <ph name="NEXT_DATE_DOWNLOAD" /> ਨੂੰ ਹੈ।</translation>
@@ -11415,7 +11409,6 @@
 <translation id="9036484080057916082">ਹਸਤਾਖਰ ਕੀਤੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਟਾਈਮਸਟੈਂਪ ਸੂਚੀ</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> ਨਾਮ ਦੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="9037640663275993951">ਡੀਵਾਈਸ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
-<translation id="9037706442425692248">Android ਐਪ ਨੂੰ ਇਸ Chromebook 'ਤੇ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
 <translation id="9037818663270399707">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਸਾਰੇ ਨੈੱਟਵਰਕ ਟਰੈਫ਼ਿਕ ਲਈ ਨਿੱਜੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="9037965129289936994">ਮੂਲ  ਦਿਖਾਓ </translation>
 <translation id="9038489124413477075">ਬਿਨਾਂ ਸਿਰਲੇਖ ਦਾ ਫੋਲਡਰ</translation>
