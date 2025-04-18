@@ -753,33 +753,14 @@ BASE_FEATURE(kVaapiLowPowerEncoderGen9x,
              "VaapiLowPowerEncoderGen9x",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Reject creation of encode/decode VAContexts when the requested resolution is
-// outside the enumerated minimum and maximum. TODO(b/171041334): Remove and
-// enable by default once the ARC++ hw codecs issue is fixed.
-BASE_FEATURE(kVaapiEnforceVideoMinMaxResolution,
-             "VaapiEnforceVideoMinMaxResolution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Ensure the advertised minimum supported resolution is larger than or equal to
 // a given one (likely QVGA + 1) for certain codecs/modes and platforms, for
 // performance reasons. This does not affect JPEG decoding.
+//
+// NOTE: This feature is default-enabled, but selectively disabled by tests
+// so they can test resolutions below the threshold.  See crbug.com/40650027
 BASE_FEATURE(kVaapiVideoMinResolutionForPerformance,
              "VaapiVideoMinResolutionForPerformance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable VA-API hardware encode acceleration for VP8.
-BASE_FEATURE(kVaapiVP8Encoder,
-             "VaapiVP8Encoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable VA-API hardware encode acceleration for VP9.
-BASE_FEATURE(kVaapiVP9Encoder,
-             "VaapiVP9Encoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable VA-API hardware encode acceleration for AV1.
-BASE_FEATURE(kVaapiAV1Encoder,
-             "VaapiAV1Encoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable global VA-API lock. Disable this to use lock-free VA-API function
@@ -789,19 +770,11 @@ BASE_FEATURE(kGlobalVaapiLock,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-// Enable H264 temporal layer encoding with HW encoder on ChromeOS.
-BASE_FEATURE(kVaapiH264TemporalLayerHWEncoding,
-             "VaapiH264TemporalLayerEncoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable software bitrate controller for H264 temporal layer encoding with HW
 // encoder on ChromeOS.
 BASE_FEATURE(kVaapiH264SWBitrateController,
              "VaapiH264SWBitrateController",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enable VP8 temporal layer encoding with HW encoder on ChromeOS.
-BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
-             "VaapiVp8TemporalLayerEncoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable AV1 temporal layer encoding with HW encoder on ChromeOS.
 BASE_FEATURE(kVaapiAV1TemporalLayerHWEncoding,
              "VaapiAv1TemporalLayerEncoding",
@@ -1153,11 +1126,6 @@ BASE_FEATURE(kBuiltInHlsMP4,
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-// Enable hardware AV1 decoder on ChromeOS.
-BASE_FEATURE(kChromeOSHWAV1Decoder,
-             "ChromeOSHWAV1Decoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable Variable Bitrate encoding with hardware accelerated encoders on
 // ChromeOS.
 BASE_FEATURE(kChromeOSHWVBREncoding,

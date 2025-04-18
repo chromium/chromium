@@ -249,14 +249,11 @@ size_t GetActiveTemporalLayers(
 }
 
 bool VP8TLEncodingIsEnabled() {
-  // TODO(b/202926617): Remove once VP8 TL encoding is enabled by default.
-  const static bool enable_vp8_tl_encoding =
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-      base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding);
+  return true;
 #else
-      false;
-#endif
-  return enable_vp8_tl_encoding;
+  return false;
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
