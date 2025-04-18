@@ -271,6 +271,22 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
     return;
   }
 
+  // If focus node has canonical position null then spellcheck should not
+  // be executed.
+  if (RuntimeEnabledFeatures::
+          CheckForCanonicalPositionInIdleSpellCheckEnabled()) {
+    Position selection_focus =
+        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+    if (selection_focus) {
+      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+      if (CanonicalPositionOf(EphemeralRange(selection_focus).StartPosition())
+              .IsNull()) {
+        Deactivate();
+        return;
+      }
+    }
+  }
+
   if (state_ == State::kHotModeRequested) {
     state_ = State::kInHotModeInvocation;
     HotModeInvocation(deadline);

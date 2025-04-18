@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -158,6 +160,37 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
   ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
 
   // Shouldn't crash
+  IdleChecker().ForceInvocationForTesting();
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+}
+
+TEST_F(IdleSpellCheckControllerTest,
+       HotModeRangeDoesNotIncludeVisiblePosition) {
+  SetBodyContent(
+      "<form contenteditable='true'>"
+      "<h2 contenteditable='true'>"
+      "<select contenteditable='true'>"
+      "<optgroup contenteditable='true'><option "
+      "contenteditable='true'>hello</option></optgroup>"
+      "<animateColor></animateColor>"
+      "</select>"
+      "</h2>"
+      "<pre contenteditable='true'>"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaa</pre></form>");
+  auto* option_element = QuerySelector("option");
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(option_element, 1))
+          .Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForTest();
+  TransitTo(State::kHotModeRequested);
+  IdleChecker().RespondToChangedContents();
+  // Should not crash
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }
