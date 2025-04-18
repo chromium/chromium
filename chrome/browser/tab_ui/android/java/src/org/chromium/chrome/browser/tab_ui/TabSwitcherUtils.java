@@ -73,7 +73,8 @@ public class TabSwitcherUtils {
             TabGroupModelFilter tabGroupModelFilter,
             Callback<Integer> requestOpenTabGroupDialog) {
         SavedTabGroup syncGroup = tabGroupSyncService.getGroup(syncId);
-        assert syncGroup != null;
+        if (syncGroup == null) return;
+
         if (syncGroup.localId == null) {
             tabGroupUiActionHandler.openTabGroup(assertNonNull(syncGroup.syncId));
             syncGroup = tabGroupSyncService.getGroup(syncId);
