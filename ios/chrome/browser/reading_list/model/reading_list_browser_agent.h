@@ -32,7 +32,6 @@ class ReadingListBrowserAgent
 
  private:
   friend class BrowserUserData<ReadingListBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit ReadingListBrowserAgent(Browser* browser);
 

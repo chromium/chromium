@@ -48,7 +48,6 @@ class SyncErrorBrowserAgent
 
  private:
   friend class BrowserUserData<SyncErrorBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SyncErrorBrowserAgent(Browser* browser);
 

@@ -46,7 +46,6 @@ class FakeOverlayBrowserAgent
 
  private:
   friend class BrowserUserData<FakeOverlayBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   FakeOverlayBrowserAgent(Browser* browser) : OverlayBrowserAgentBase(browser) {
     // Add a fake callback installer for kModality that supports requests
@@ -63,7 +62,6 @@ class FakeOverlayBrowserAgent
   testing::StrictMock<MockOverlayRequestCallbackReceiver>
       mock_callback_receiver_;
 };
-BROWSER_USER_DATA_KEY_IMPL(FakeOverlayBrowserAgent)
 }  // namespace
 
 // Test fixture for OverlayBrowserAgentBase.

@@ -49,7 +49,6 @@ class StartSurfaceRecentTabBrowserAgent
 
  private:
   friend class BrowserUserData<StartSurfaceRecentTabBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   // Constructor used by CreateForBrowser().
   explicit StartSurfaceRecentTabBrowserAgent(Browser* browser);

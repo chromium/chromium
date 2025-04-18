@@ -22,8 +22,6 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-BROWSER_USER_DATA_KEY_IMPL(ClosingWebStateObserverBrowserAgent)
-
 ClosingWebStateObserverBrowserAgent::ClosingWebStateObserverBrowserAgent(
     Browser* browser)
     : browser_(browser) {

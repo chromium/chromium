@@ -47,7 +47,6 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
  private:
   friend class BrowserUserData<UrlLoadingBrowserAgent>;
   friend class FakeUrlLoadingBrowserAgent;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit UrlLoadingBrowserAgent(Browser* browser);
 

@@ -33,7 +33,6 @@ class CredentialProviderBrowserAgent
 
  private:
   friend class BrowserUserData<CredentialProviderBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit CredentialProviderBrowserAgent(Browser* browser);
 

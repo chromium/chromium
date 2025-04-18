@@ -48,7 +48,6 @@ class WebUsageEnablerBrowserAgent
 
  private:
   friend class BrowserUserData<WebUsageEnablerBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit WebUsageEnablerBrowserAgent(Browser* browser);
 

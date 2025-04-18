@@ -48,8 +48,6 @@ class LensBrowserAgent : public BrowserObserver,
 
   // The Browser that this agent is attached to.
   raw_ptr<Browser> browser_ = nullptr;
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_LENS_MODEL_LENS_BROWSER_AGENT_H_

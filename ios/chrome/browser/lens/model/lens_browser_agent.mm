@@ -108,5 +108,3 @@ void LensBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser->RemoveObserver(this);
   browser_ = nullptr;
 }
-
-BROWSER_USER_DATA_KEY_IMPL(LensBrowserAgent)

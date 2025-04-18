@@ -28,8 +28,6 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(SendTabToSelfBrowserAgent)
-
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
     : browser_(browser),
       model_(

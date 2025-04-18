@@ -14,8 +14,6 @@
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(PagePlaceholderBrowserAgent)
-
 PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
     : browser_(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,

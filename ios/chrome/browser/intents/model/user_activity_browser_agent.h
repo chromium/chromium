@@ -48,7 +48,6 @@ class UserActivityBrowserAgent
 
  private:
   friend class BrowserUserData<UserActivityBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit UserActivityBrowserAgent(Browser* browser);
 

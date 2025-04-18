@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 
-BROWSER_USER_DATA_KEY_IMPL(OmniboxPositionBrowserAgent)
-
 OmniboxPositionBrowserAgent::OmniboxPositionBrowserAgent(Browser* browser) {}
 
 OmniboxPositionBrowserAgent::~OmniboxPositionBrowserAgent() = default;

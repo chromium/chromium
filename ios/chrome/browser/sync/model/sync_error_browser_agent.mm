@@ -24,8 +24,6 @@
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent_profile_state_observer.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-BROWSER_USER_DATA_KEY_IMPL(SyncErrorBrowserAgent)
-
 namespace {
 
 password_manager::PasswordFormCache* GetPasswordFormCacheFromWebState(

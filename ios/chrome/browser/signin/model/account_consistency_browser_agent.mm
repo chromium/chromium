@@ -23,8 +23,6 @@
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
 
-BROWSER_USER_DATA_KEY_IMPL(AccountConsistencyBrowserAgent)
-
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)

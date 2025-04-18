@@ -22,8 +22,6 @@ const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 
 }  // anonymous namespace
 
-BROWSER_USER_DATA_KEY_IMPL(SnapshotBrowserAgent)
-
 SnapshotBrowserAgent::SnapshotBrowserAgent(Browser* browser)
     : browser_(browser) {
   browser->AddObserver(this);

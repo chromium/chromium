@@ -42,7 +42,6 @@ class SnapshotBrowserAgent : public BrowserObserver,
 
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SnapshotBrowserAgent(Browser* browser);
 

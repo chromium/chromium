@@ -338,5 +338,3 @@ id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {
 id<PopupMenuCommands> TabBasedIPHBrowserAgent::PopupMenuHandler() {
   return HandlerForProtocol(command_dispatcher_, PopupMenuCommands);
 }
-
-BROWSER_USER_DATA_KEY_IMPL(TabBasedIPHBrowserAgent)

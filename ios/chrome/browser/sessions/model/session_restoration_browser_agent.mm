@@ -277,8 +277,6 @@ std::unique_ptr<web::WebState> CreateWebState(
 
 }  // namespace
 
-BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
-
 SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     Browser* browser,
     SessionServiceIOS* session_service,

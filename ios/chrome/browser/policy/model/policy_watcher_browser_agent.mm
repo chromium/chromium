@@ -31,8 +31,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 
-BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)
-
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
     : browser_(browser) {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());

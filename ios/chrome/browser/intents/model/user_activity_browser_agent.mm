@@ -109,8 +109,6 @@ bool IsProfileStateReady(Browser* browser) {
 
 }  // namespace
 
-BROWSER_USER_DATA_KEY_IMPL(UserActivityBrowserAgent)
-
 UserActivityBrowserAgent::UserActivityBrowserAgent(Browser* browser)
     : browser_(browser), profile_(browser->GetProfile()) {
   SceneState* scene_state = browser_->GetSceneState();

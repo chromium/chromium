@@ -48,9 +48,6 @@ class OmniboxPositionBrowserAgent
 
   // List of observers to be notified when the omnibox position changes.
   base::ObserverList<OmniboxPositionBrowserAgentObserver, true> observers_;
-
-  // BrowserUserData key.
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_OMNIBOX_POSITION_BROWSER_AGENT_H_

@@ -32,8 +32,6 @@
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebStateDelegateBrowserAgent)
-
 namespace {
 // Callback for HTTP authentication dialogs. This callback is a standalone
 // function rather than an instance method. This is to ensure that the callback

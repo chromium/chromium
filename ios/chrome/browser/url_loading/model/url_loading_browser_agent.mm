@@ -30,8 +30,6 @@
 #import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
 #import "net/base/url_util.h"
 
-BROWSER_USER_DATA_KEY_IMPL(UrlLoadingBrowserAgent)
-
 namespace {
 
 // Rapidly starts leaking memory by 10MB blocks.

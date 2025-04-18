@@ -129,8 +129,6 @@ class FollowBrowserAgent final : public BrowserUserData<FollowBrowserAgent> {
   __weak FeedMetricsRecorder* metrics_recorder_;
 
   base::WeakPtrFactory<FollowBrowserAgent> weak_ptr_factory_{this};
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_H_
