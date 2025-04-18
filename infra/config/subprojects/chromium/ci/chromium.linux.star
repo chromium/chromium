@@ -781,6 +781,8 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-linux-archive",
+        # TODO(crbug.com/401284929): Remove this when noble pool is increased
+        run_tests_serially = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -798,6 +800,12 @@ ci.thin_tester(
             "isolate_profile_data",
         ],
         per_test_modifications = {
+            "content_browsertests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+            ),
             "interactive_ui_tests": targets.mixin(
                 # https://crbug.com/1192997
                 args = [

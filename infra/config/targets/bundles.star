@@ -964,7 +964,7 @@ targets.bundle(
     },
 )
 
-# Run content_browser_tests with BackForwardCache disabled
+# Run content_browsertests with BackForwardCache disabled
 targets.bundle(
     name = "bfcache_generic_gtests",
     targets = [
@@ -1646,8 +1646,16 @@ targets.bundle(
 targets.bundle(
     name = "chromium_gtests_for_linux_wayland_mutter",
     targets = [
+        "content_browsertests",
         "interactive_ui_tests",
     ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
