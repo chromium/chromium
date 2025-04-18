@@ -1955,6 +1955,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorkerCache.CacheStorage.Renderer.{ProcessOps}.AblationDelay"
+    units="ms" expires_after="2025-09-30">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-storage-team-tokyo@google.com</owner>
+  <summary>
+    Records the actual delayed time on completing CacheStorage APIs. The value
+    is Time (in ms) added to run CacheStorage used for ablation study purposes.
+  </summary>
+  <token key="ProcessOps">
+    <variant name="Delete"
+        summary="The time to 'delete' a Cache from the origin's CacheStorage.
+                 If the Cache is still in use then the actual deletion may be
+                 deferred until the last reference is dropped. Additional
+                 time due to deferral is not included in this measurement."/>
+    <variant name="Has"
+        summary="The time to perform the 'has' operation on the origin's
+                 CacheStorage."/>
+    <variant name="Keys"
+        summary="The time to perform the 'keys' operation on the origin's
+                 CacheStorage."/>
+    <variant name="Match"
+        summary="The time to perform a 'match' operation against all caches
+                 associated with the origin's CacheStorage. This histogram
+                 includes measurements for hits, misses, and errors."/>
+    <variant name="Open"
+        summary="The time to 'open' a Cache in the origin's CacheStorage.
+                 Some opening operations may happen asynchronously after the
+                 'open' returns a Cache object. That deferred asynchronous
+                 work is not included in this measurement."/>
+  </token>
+</histogram>
+
+<histogram
     name="ServiceWorkerCache.CacheStorage.{ServiceWorkerCacheProcessType}.{ProcessOps}"
     units="ms" expires_after="2025-08-24">
   <owner>ayui@chromium.org</owner>
