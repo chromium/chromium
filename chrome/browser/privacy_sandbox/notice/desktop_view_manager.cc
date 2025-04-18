@@ -11,6 +11,8 @@
 namespace privacy_sandbox {
 
 using notice::mojom::PrivacySandboxNotice;
+using notice::mojom::PrivacySandboxNoticeEvent;
+using enum notice::mojom::PrivacySandboxNoticeEvent;
 
 DesktopViewManager::DesktopViewManager(
     PrivacySandboxNoticeServiceInterface* notice_service)
@@ -31,8 +33,6 @@ void DesktopViewManager::RemoveObserver(Observer* observer) {
 }
 
 void DesktopViewManager::MaybeCreateView() {
-  // TODO(crbug.com/408016824): Implement checks to determine whether we should
-  // show the notice or not.
   if (!notice_service_) {
     return;
   }
@@ -53,6 +53,42 @@ void DesktopViewManager::CloseAllOpenViews() {
   for (auto& observer : observers_) {
     observer.MaybeNavigateToNextStep(std::nullopt);
   }
+}
+
+void DesktopViewManager::MaybeAdvanceAllOpenViews(
+    PrivacySandboxNoticeEvent event) {
+  switch (event) {
+    case kAck:
+    case kOptIn:
+    case kOptOut:
+    case kSettings: {
+      pending_notices_to_show_.erase(pending_notices_to_show_.begin());
+      std::optional<PrivacySandboxNotice> next_notice =
+          pending_notices_to_show_.empty()
+              ? std::nullopt
+              : std::make_optional(pending_notices_to_show_.front());
+      for (auto& observer : observers_) {
+        observer.MaybeNavigateToNextStep(next_notice);
+      }
+      break;
+    }
+    // TODO(crbug.com/408016824): Change behavior of kClosed based on where it
+    // emits from.
+    case kClosed:
+    case kShown: {
+      return;
+    }
+  }
+}
+
+void DesktopViewManager::OnEventOccurred(PrivacySandboxNotice notice,
+                                         PrivacySandboxNoticeEvent event) {
+  // There should always be one element in the list, that is the notice that's
+  // currently being shown.
+  CHECK(!pending_notices_to_show_.empty());
+  notice_service_->EventOccurred({notice, SurfaceType::kDesktopNewTab}, event);
+
+  MaybeAdvanceAllOpenViews(event);
 }
 
 std::vector<PrivacySandboxNotice>

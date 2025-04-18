@@ -33,6 +33,10 @@ class DesktopViewManager {
         std::optional<notice::mojom::PrivacySandboxNotice> next_id) {}
   };
 
+  // Triggered by the WebUI handler once an event occurs on a |notice|.
+  void OnEventOccurred(notice::mojom::PrivacySandboxNotice notice,
+                       notice::mojom::PrivacySandboxNoticeEvent event);
+
   // Accessors
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
 
@@ -49,6 +53,11 @@ class DesktopViewManager {
 
   // Notifies open views to close.
   void CloseAllOpenViews();
+
+  // If the event taken isn't a shown event, notifies open views to advance to
+  // the next step. If the next step doesn't exist, all open views will be
+  // notified to close.
+  void MaybeAdvanceAllOpenViews(notice::mojom::PrivacySandboxNoticeEvent event);
 
   base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrivacySandboxNoticeServiceInterface> notice_service_;
