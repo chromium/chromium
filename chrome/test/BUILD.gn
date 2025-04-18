@@ -2157,6 +2157,7 @@ if (!is_android) {
       "//chrome/browser:shell_integration",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility:utils",
+      "//chrome/browser/affiliations",
       "//chrome/browser/ai",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
@@ -9232,6 +9233,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/affiliations",
       "//chrome/browser/extensions/api/cookies:helpers",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/web_applications:unit_tests",
@@ -12093,6 +12095,7 @@ if (!is_android) {
       "//chrome:strings",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/affiliations",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/metrics/desktop_session_duration",

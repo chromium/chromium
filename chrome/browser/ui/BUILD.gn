@@ -343,6 +343,7 @@ static_library("ui") {
     "//chrome/browser:fedcm_clickthrough_rate_metadata_proto",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
+    "//chrome/browser/affiliations",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",

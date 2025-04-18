@@ -114,6 +114,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser/affiliations",
       "//chrome/browser/extensions",
       "//chrome/browser/ui",
       "//chrome/browser/ui/webui/settings",
