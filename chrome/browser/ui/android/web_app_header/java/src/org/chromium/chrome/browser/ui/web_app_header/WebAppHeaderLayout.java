@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 
+/** A root view for web app header, it manages paddings and notifies about layout changes. */
 @NullMarked
 public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChangeListener {
 
@@ -26,6 +27,12 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
 
     public WebAppHeaderLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        addOnLayoutChangeListener(this);
     }
 
     @Override
@@ -43,10 +50,20 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
         mOnWidthChanged.onResult(right - left);
     }
 
+    /**
+     * Sets a callback that will be notified about width changes on the next layout pass.
+     *
+     * @param onWidthChanged a {@link Callback} that accepts new width.
+     */
     public void setOnWidthChanged(@Nullable Callback<Integer> onWidthChanged) {
         mOnWidthChanged = onWidthChanged;
         if (mOnWidthChanged != null) {
             mOnWidthChanged.onResult(getWidth());
         }
+    }
+
+    /** Cleans up this view. */
+    public void destroy() {
+        removeOnLayoutChangeListener(this);
     }
 }

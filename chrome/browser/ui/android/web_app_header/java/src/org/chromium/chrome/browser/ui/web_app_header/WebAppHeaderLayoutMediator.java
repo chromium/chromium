@@ -34,7 +34,6 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
-    private final Supplier<Boolean> mIsPendingLayoutSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final Callback<Integer> mOnWidthChangedCallback;
     private final int mWebAppMinHeaderHeight;
@@ -54,13 +53,11 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
             DesktopWindowStateManager desktopWindowStateManager,
             ObservableSupplier<Tab> tabSupplier,
             Supplier<List<Rect>> nonDraggableAreasSupplier,
-            Supplier<Boolean> isPendingLayoutSupplier,
             int webAppHeaderMinHeightFromResources) {
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
         mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
-        mIsPendingLayoutSupplier = isPendingLayoutSupplier;
 
         mWidthSupplier = new ObservableSupplierImpl<>();
         mOnWidthChangedCallback = (width) -> updateNonDraggableAreas();
@@ -116,10 +113,6 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
                     List.of(EMPTY_NON_DRAGGABLE_AREA));
             return;
         }
-
-        // Skip an update, because header is stale anyway. We will get a new width after the layout
-        // and there we will update a non-draggable area.
-        if (mIsPendingLayoutSupplier.get()) return;
 
         final var areas = mNonDraggableAreasSupplier.get();
         mModel.set(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS, areas);
