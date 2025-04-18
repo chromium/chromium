@@ -1319,19 +1319,21 @@ class TabImpl implements Tab {
         updateTitle();
     }
 
-    void updateWindowAndroid(WindowAndroid windowAndroid) {
-        // TODO(yusufo): mWindowAndroid can never be null until crbug.com/657007 is fixed.
-        assert windowAndroid != null;
-
+    void updateWindowAndroid(@Nullable WindowAndroid windowAndroid) {
         if (mWindowAndroid != null) {
             mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
         }
 
         mWindowAndroid = windowAndroid;
         WebContents webContents = getWebContents();
-        if (webContents != null) webContents.setTopLevelNativeWindow(mWindowAndroid);
+        if (webContents != null) {
+            assert mWindowAndroid != null;
+            webContents.setTopLevelNativeWindow(mWindowAndroid);
+        }
 
-        windowAndroid.getOcclusionSupplier().addObserver(mOcclusionCallback);
+        if (windowAndroid != null) {
+            windowAndroid.getOcclusionSupplier().addObserver(mOcclusionCallback);
+        }
 
         // updateIsDetached will also update the web contents visibility if the
         // occlusion has changed.

@@ -13,6 +13,7 @@ import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.AdvancedMockContext;
@@ -57,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorM
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
@@ -93,13 +96,19 @@ public class TabbedModeTabPersistencePolicyTest {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 new TabModelSelectorFactory() {
                     @Override
-                    public TabModelSelector buildSelector(
+                    public TabModelSelector buildTabbedSelector(
                             Context context,
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId, Profile profile) {
+                        return Pair.create(null, null);
                     }
                 });
         mAppContext =

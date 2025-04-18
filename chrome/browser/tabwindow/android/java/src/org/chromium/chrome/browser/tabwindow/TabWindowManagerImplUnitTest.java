@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
@@ -34,6 +36,8 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -95,18 +99,36 @@ public class TabWindowManagerImplUnitTest {
         mProfileProviderSupplier.set(mProfileProvider);
 
         TabModelSelectorFactory mockTabModelSelectorFactory =
-                (context,
-                        modalDialogManager,
-                        profileProviderSupplier,
-                        tabCreatorManager,
-                        nextTabPolicySupplier) -> {
-                    return new MockTabModelSelector(
-                            mProfile,
-                            mIncognitoProfile,
-                            /* tabCount= */ 0,
-                            /* incognitoTabCount= */ 0,
-                            /* delegate= */ null);
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildTabbedSelector(
+                            Context context,
+                            ModalDialogManager modalDialogManager,
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier) {
+                        return new MockTabModelSelector(
+                                mProfile,
+                                mIncognitoProfile,
+                                /* tabCount= */ 0,
+                                /* incognitoTabCount= */ 0,
+                                /* delegate= */ null);
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId, Profile profile) {
+                        return Pair.create(
+                                new MockTabModelSelector(
+                                        mProfile,
+                                        mIncognitoProfile,
+                                        /* tabCount= */ 0,
+                                        /* incognitoTabCount= */ 0,
+                                        /* delegate= */ null),
+                                () -> {});
+                    }
                 };
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAsyncTabParamsManager =
@@ -905,5 +927,51 @@ public class TabWindowManagerImplUnitTest {
         histogramWatcher.assertExpected();
 
         destroyActivity(activityController0);
+    }
+
+    @Test
+    public void testRequestSelectorWithoutActivity() {
+        // Request calls for the same window id should reuse the same selector.
+        TabModelSelector selector1 = mSubject.requestSelectorWithoutActivity(0, mProfile);
+        TabModelSelector selector2 = mSubject.requestSelectorWithoutActivity(0, mProfile);
+        assertEquals(selector1, selector2);
+
+        // Shutting down the selector will cause the next request to generate a new selector.
+        mSubject.shutdownIfHeadless(0);
+        TabModelSelector selector3 = mSubject.requestSelectorWithoutActivity(0, mProfile);
+        assertNotEquals(selector1, selector3);
+
+        // Making an activity will shutdown the old headless selector and make a tabbed selector.
+        ActivityController<Activity> activityController = createActivity();
+        Activity activity = activityController.get();
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(
+                        activity,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMismatchedIndicesHandler0,
+                        0);
+        TabModelSelector selector4 = assignment0.second;
+        assertNotEquals(selector3, selector4);
+
+        // This selector should reuse the tabbed selector created by the activity.
+        TabModelSelector selector5 = mSubject.requestSelectorWithoutActivity(0, mProfile);
+        assertEquals(selector4, selector5);
+
+        // Shutdown should now no-op because the backing selector is tabbed.
+        mSubject.shutdownIfHeadless(0);
+        TabModelSelector selector6 = mSubject.requestSelectorWithoutActivity(0, mProfile);
+        assertEquals(selector5, selector6);
+
+        // Destroying the activity should result in a new (headless) selector when requested.
+        destroyActivity(activityController);
+        TabModelSelector selector7 = mSubject.requestSelectorWithoutActivity(0, mProfile);
+        assertNotEquals(selector6, selector7);
+
+        // Different window ids gets different selectors.
+        TabModelSelector selector8 = mSubject.requestSelectorWithoutActivity(1, mProfile);
+        assertNotEquals(selector7, selector8);
     }
 }

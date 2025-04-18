@@ -151,7 +151,7 @@ public abstract class TabCreator {
     }
 
     /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
-    interface NeedsTabModel {
+    public interface NeedsTabModel {
         void setTabModel(TabModel tabModel);
     }
 
@@ -159,7 +159,7 @@ public abstract class TabCreator {
      * Semi-tag interface to denote dependency and provide a setter for {@link
      * TabModelOrderController}.
      */
-    interface NeedsTabModelOrderController {
+    public interface NeedsTabModelOrderController {
         void setTabModelOrderController(TabModelOrderController tabModelOrderController);
     }
 }

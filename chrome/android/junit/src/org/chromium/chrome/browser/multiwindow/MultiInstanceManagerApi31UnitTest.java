@@ -50,6 +50,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -83,6 +84,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -154,7 +156,6 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock Profile mIncognitoProfile;
     @Mock ProfileProvider mProfileProvider;
     @Mock MismatchedIndicesHandler mMismatchedIndicesHandler;
-
     @Mock TabModelSelectorBase mTabModelSelector;
     @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
@@ -352,13 +353,26 @@ public class MultiInstanceManagerApi31UnitTest {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 new TabModelSelectorFactory() {
                     @Override
-                    public TabModelSelector buildSelector(
+                    public TabModelSelector buildTabbedSelector(
                             Context context,
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId, Profile profile) {
+                        return Pair.create(
+                                new MockTabModelSelector(
+                                        mProfile,
+                                        mIncognitoProfile,
+                                        /* tabCount= */ 0,
+                                        /* incognitoTabCount= */ 0,
+                                        /* delegate= */ null),
+                                () -> {});
                     }
                 });
         mMultiInstanceManager =

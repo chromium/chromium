@@ -31,6 +31,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -84,6 +85,7 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -306,7 +308,7 @@ public class TabPersistentStoreTest {
     private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
                 @Override
-                public TabModelSelector buildSelector(
+                public TabModelSelector buildTabbedSelector(
                         Context context,
                         ModalDialogManager modalDialogManager,
                         OneshotSupplier<ProfileProvider> profileProviderSupplier,
@@ -317,6 +319,12 @@ public class TabPersistentStoreTest {
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
+                }
+
+                @Override
+                public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                        @WindowId int windowId, Profile profile) {
+                    return Pair.create(null, null);
                 }
             };
     private static TabWindowManager sTabWindowManager;

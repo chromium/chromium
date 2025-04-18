@@ -59,6 +59,9 @@ chromium-metrics-reviews@google.com.
 <variants name="TabModelSelectorType">
   <variant name="Archived" summary="The archived tab model selector"/>
   <variant name="Custom" summary="The custom tab model selector."/>
+  <variant name="Headless"
+      summary="Tab models that are not currently owned by an activity, but
+               had previously been."/>
   <variant name="Regular" summary="The regular tab model selector."/>
 </variants>
 

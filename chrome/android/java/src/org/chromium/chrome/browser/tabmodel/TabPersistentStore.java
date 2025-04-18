@@ -80,6 +80,7 @@ public class TabPersistentStore {
     public static final String CLIENT_TAG_REGULAR = "Regular";
     public static final String CLIENT_TAG_CUSTOM = "Custom";
     public static final String CLIENT_TAG_ARCHIVED = "Archived";
+    public static final String CLIENT_TAG_HEADLESS = "Headless";
 
     private static final String TAG = "tabmodel";
     private static final String TAG_MIGRATION = "fb_migration";
