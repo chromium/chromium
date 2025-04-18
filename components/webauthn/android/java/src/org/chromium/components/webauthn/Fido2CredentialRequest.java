@@ -1016,6 +1016,13 @@ public class Fido2CredentialRequest
         RecordHistogram.recordBooleanHistogram(
                 "WebAuthentication.Android.NonDiscoverableCredentialsFound", false);
 
+        mCredManHelper.setNoCredentialsFallback(
+                () ->
+                        this.maybeDispatchGetAssertionRequest(
+                                options,
+                                convertOriginToString(callerOrigin),
+                                clientDataHash,
+                                /* credentialId= */ null));
         // No elements of the allowlist are local, non-discoverable credentials
         // so route to CredMan.
         mCredManHelper.startGetRequest(
