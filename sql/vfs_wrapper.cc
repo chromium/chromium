@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sql/vfs_wrapper.h"
 
 #include <cstring>
@@ -16,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -90,7 +86,7 @@ int Close(sqlite3_file* sqlite_file) {
   // Memory will be freed with sqlite3_free(), so the destructor needs to be
   // called explicitly.
   file->~VfsFile();
-  memset(file, '\0', sizeof(*file));
+  UNSAFE_TODO(memset(file, '\0', sizeof(*file)));
   return r;
 }
 
@@ -400,7 +396,7 @@ void EnsureVfsWrapper() {
       [](sqlite3_vfs* v) {
         sqlite3_free(v);
       });
-  memset(wrapper_vfs.get(), '\0', sizeof(sqlite3_vfs));
+  UNSAFE_TODO(memset(wrapper_vfs.get(), '\0', sizeof(sqlite3_vfs)));
 
   // VFS implementations should always work with a SQLite that only knows about
   // earlier versions.
