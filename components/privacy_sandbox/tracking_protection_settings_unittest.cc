@@ -59,9 +59,12 @@ class TrackingProtectionSettingsTest : public testing::Test {
         {privacy_sandbox::kIpProtectionUx,
          privacy_sandbox::kFingerprintingProtectionUx},
         {});
+    management_service_ = std::make_unique<policy::ManagementService>(
+        std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
             prefs(), host_content_settings_map_.get(),
+            management_service_.get(),
             /*is_incognito=*/false);
   }
 
@@ -79,12 +82,17 @@ class TrackingProtectionSettingsTest : public testing::Test {
     return host_content_settings_map_.get();
   }
 
+  policy::ManagementService* management_service() {
+    return management_service_.get();
+  }
+
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  std::unique_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -108,9 +116,11 @@ TEST_F(TrackingProtectionSettingsTest,
        IsFpProtectionEnabledOnlyReturnsTrueInIncognito) {
   prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
   EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                         management_service(),
                                          /*is_incognito=*/true)
                   .IsFpProtectionEnabled());
   EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                          management_service(),
                                           /*is_incognito=*/false)
                    .IsFpProtectionEnabled());
 }
@@ -126,9 +136,11 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
 TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedTrueInIncognito) {
   prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                         management_service(),
                                          /*is_incognito=*/true)
                   .AreAllThirdPartyCookiesBlocked());
   EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                          management_service(),
                                           /*is_incognito=*/false)
                    .AreAllThirdPartyCookiesBlocked());
 }

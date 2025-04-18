@@ -57,7 +57,10 @@ source_set("util") {
 }
 
 source_set("internal") {
-  visibility = [ "//components/policy/*" ]
+  visibility = [
+    "//components/policy/*",
+    "//components/privacy_sandbox/*",
+  ]
 
   configs += [ "//components/policy:component_implementation" ]
 

@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -25,9 +26,11 @@ namespace privacy_sandbox {
 TrackingProtectionSettings::TrackingProtectionSettings(
     PrefService* pref_service,
     HostContentSettingsMap* host_content_settings_map,
+    policy::ManagementService* management_service,
     bool is_incognito)
     : pref_service_(pref_service),
       host_content_settings_map_(host_content_settings_map),
+      management_service_(management_service),
       is_incognito_(is_incognito) {
   CHECK(pref_service_);
   CHECK(host_content_settings_map_);
@@ -79,6 +82,7 @@ TrackingProtectionSettings::~TrackingProtectionSettings() = default;
 void TrackingProtectionSettings::Shutdown() {
   observers_.Clear();
   host_content_settings_map_ = nullptr;
+  management_service_ = nullptr;
   pref_change_registrar_.Reset();
   pref_service_ = nullptr;
 }

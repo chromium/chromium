@@ -10,6 +10,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 class HostContentSettingsMap;
@@ -26,6 +27,7 @@ class TrackingProtectionSettings : public KeyedService {
   explicit TrackingProtectionSettings(
       PrefService* pref_service,
       HostContentSettingsMap* host_content_settings_map,
+      policy::ManagementService* management_service,
       bool is_incognito);
   ~TrackingProtectionSettings() override;
 
@@ -85,6 +87,8 @@ class TrackingProtectionSettings : public KeyedService {
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<policy::ManagementService> management_service_;
+
   bool is_incognito_;
 };
 

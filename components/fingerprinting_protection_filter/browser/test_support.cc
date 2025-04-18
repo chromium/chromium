@@ -38,6 +38,7 @@ TestSupport::TestSupport() {
   tracking_protection_settings_ =
       std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
           prefs(), host_content_settings_map_.get(),
+          /*management_service=*/nullptr,
           /*is_incognito=*/false);
 }
 

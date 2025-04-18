@@ -617,6 +617,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "DeviceInfoSyncService",
     "DownloadCoreService",
     "EventRouter",
+    "EnterpriseManagementService",
     "ExtensionActionDispatcher",
     "ExtensionActionManager",
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

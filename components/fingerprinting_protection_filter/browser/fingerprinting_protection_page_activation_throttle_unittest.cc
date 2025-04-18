@@ -574,7 +574,7 @@ TEST_P(FPFPageActivationThrottleWithTrackingProtectionSettingTest,
   auto tracking_protection_settings =
       std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
           test_support_.prefs(), test_support_.content_settings(),
-          test_case.is_incognito);
+          /*management_service=*/nullptr, test_case.is_incognito);
 
   // Create ActivationThrottle with the TrackingProtectionSettings, and
   // specified incognito mode.

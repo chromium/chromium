@@ -123,11 +123,6 @@ class IpProtectionCoreHostTest : public testing::Test {
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false, /*should_record_metrics=*/false);
-    tracking_protection_settings_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            prefs(),
-            /*host_content_settings_map=*/host_content_settings_map_.get(),
-            /*is_incognito=*/false);
     auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
     bsa_ = bsa.get();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -136,6 +131,12 @@ class IpProtectionCoreHostTest : public testing::Test {
 #endif
     management_service_ = std::make_unique<policy::ManagementService>(
         std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
+    tracking_protection_settings_ =
+        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+            prefs(),
+            /*host_content_settings_map=*/host_content_settings_map_.get(),
+            /*management_service=*/management_service_.get(),
+            /*is_incognito=*/false);
     core_host_ = std::make_unique<IpProtectionCoreHost>(
         IdentityManager(), tracking_protection_settings_.get(),
         management_service_.get(), prefs(),
