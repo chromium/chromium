@@ -174,6 +174,12 @@ TabModel* TabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   return inserted_tab_model;
 }
 
+void TabCollection::MoveTab(TabModel* tab_model, size_t index) {
+  CHECK(tab_model);
+
+  impl_->MoveTab(tab_model, index);
+}
+
 std::unique_ptr<TabModel> TabCollection::MaybeRemoveTab(TabModel* tab_model) {
   CHECK(tab_model);
 

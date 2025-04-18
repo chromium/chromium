@@ -103,7 +103,7 @@ void TabStripCollection::MoveTabRecursive(
       old_group.has_value() ? GetTabGroupCollection(old_group.value())
                             : nullptr;
   const bool is_only_tab_in_group =
-      old_group.has_value() && old_group_collection->ChildCount() == 1;
+      old_group.has_value() && old_group_collection->TabCountRecursive() == 1;
 
   if (old_group == new_group_id && new_group_id.has_value() &&
       is_only_tab_in_group) {

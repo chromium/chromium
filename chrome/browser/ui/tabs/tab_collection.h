@@ -90,6 +90,7 @@ class TabCollection {
 
   // Manipulate direct child tabs.
   TabModel* AddTab(std::unique_ptr<TabModel> tab_model, size_t index);
+  void MoveTab(TabModel* tab_model, size_t index);
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
   // crash. This may overridden to return nullptr if the collection does not

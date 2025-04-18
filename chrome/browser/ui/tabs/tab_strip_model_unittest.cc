@@ -2221,10 +2221,18 @@ TEST_F(TabStripModelTest, SwapTabsInSplit) {
       tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+  std::vector<tabs::TabModel*> old_tabs =
+      tabstrip.GetSplitData(split_tab_id)->ListTabs();
+  EXPECT_EQ(2ul, old_tabs.size());
 
   tabstrip.SwapTabsInSplit(split_tab_id);
 
   EXPECT_EQ("3ps 0ps 1p 2 4", GetTabStripStateString(tabstrip));
+  std::vector<tabs::TabModel*> new_tabs =
+      tabstrip.GetSplitData(split_tab_id)->ListTabs();
+  EXPECT_EQ(2ul, new_tabs.size());
+  EXPECT_EQ(old_tabs[1], new_tabs[0]);
+  EXPECT_EQ(old_tabs[0], new_tabs[1]);
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());

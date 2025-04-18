@@ -1598,29 +1598,11 @@ void TabStripModel::ReplaceActiveTabInSplit(split_tabs::SplitTabId split_id,
 void TabStripModel::SwapTabsInSplit(split_tabs::SplitTabId split_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  std::vector<std::pair<tabs::TabInterface*, int>> initial_tabs_with_indices =
-      GetTabsAndIndicesInSplit(split_id);
-
-  CHECK_EQ(initial_tabs_with_indices.size(), 2u);
-  int index_of_first_tab_in_split = initial_tabs_with_indices[0].second;
+  tabs::TabInterface* first_tab = GetSplitData(split_id)->ListTabs()[0];
+  const int index_of_first_tab_in_split = GetIndexOfTab(first_tab);
   MoveTabToIndexImpl(index_of_first_tab_in_split,
-                     index_of_first_tab_in_split + 1,
-                     GetTabGroupForTab(index_of_first_tab_in_split),
-                     IsTabPinned(index_of_first_tab_in_split), false);
-  // TODO(crbug.com/392950857): After split tab collections are supported,
-  // rewrite this using collections. For now, since MoveTabToIndexImpl doesn't
-  // support split ids, manually set the split id of the second tab to be the
-  // first's.
-  GetTabModelAtIndex(index_of_first_tab_in_split + 1)
-      ->set_split(GetTabModelAtIndex(index_of_first_tab_in_split)->GetSplit());
-
-  std::vector<std::pair<tabs::TabInterface*, int>> final_tabs_with_indices =
-      GetTabsAndIndicesInSplit(split_id);
-
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitTabContentsUpdated(split_id, initial_tabs_with_indices,
-                                       final_tabs_with_indices);
-  }
+                     index_of_first_tab_in_split + 1, first_tab->GetGroup(),
+                     first_tab->IsPinned(), false);
 }
 
 split_tabs::SplitTabId TabStripModel::AddToNewSplit(
@@ -3585,7 +3567,7 @@ void TabStripModel::MoveTabToIndexImpl(
   CHECK_LT(initial_index, count());
   CHECK_LT(final_index, count());
 
-  tabs::TabInterface* const tab = GetTabAtIndex(initial_index);
+  tabs::TabModel* const tab = GetTabModelAtIndex(initial_index);
   const bool initial_pinned_state = tab->IsPinned();
   const std::optional<tab_groups::TabGroupId> initial_group = tab->GetGroup();
 
@@ -3597,12 +3579,28 @@ void TabStripModel::MoveTabToIndexImpl(
 
   MaybeRemoveSplitsForMove(initial_index, final_index, group, pin);
 
+  // If the tab still has a split id after MaybeRemoveSplitsForMove, then it
+  // must be a move within a split.
+  bool move_within_split =
+      initial_index != final_index && tab->GetSplit().has_value();
+  std::vector<std::pair<tabs::TabInterface*, int>> initial_split_tabs;
+  if (move_within_split) {
+    initial_split_tabs = GetTabsAndIndicesInSplit(tab->GetSplit().value());
+  }
+
   if (initial_index != final_index) {
     FixOpeners(initial_index);
   }
 
   TabStripSelectionChange selection(GetActiveTab(), selection_model());
-  contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
+  if (move_within_split) {
+    int index_of_first_tab_in_split = initial_split_tabs[0].second;
+    CHECK(final_index >= index_of_first_tab_in_split);
+    contents_data_->GetSplitTabCollection(tab->GetSplit().value())
+        ->MoveTab(tab, final_index - index_of_first_tab_in_split);
+  } else {
+    contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
+  }
 
   UpdateSelectionModelForMove(initial_index, final_index, select_after_move);
 
@@ -3613,6 +3611,14 @@ void TabStripModel::MoveTabToIndexImpl(
   // Send all the notifications.
   if (initial_index != final_index) {
     SendMoveNotificationForTab(initial_index, final_index, tab, selection);
+  }
+
+  if (move_within_split) {
+    for (TabStripModelObserver& observer : observers_) {
+      observer.OnSplitTabContentsUpdated(
+          tab->GetSplit().value(), initial_split_tabs,
+          GetTabsAndIndicesInSplit(tab->GetSplit().value()));
+    }
   }
 
   if (initial_pinned_state != tab->IsPinned()) {
