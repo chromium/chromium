@@ -151,8 +151,12 @@ std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
 // static
 bool ProfileMenuView::close_on_deactivate_for_testing_ = true;
 
-ProfileMenuView::ProfileMenuView(views::Button* anchor_button, Browser* browser)
-    : ProfileMenuViewBase(anchor_button, browser) {
+ProfileMenuView::ProfileMenuView(
+    views::Button* anchor_button,
+    Browser* browser,
+    std::optional<signin_metrics::AccessPoint> explicit_signin_access_point)
+    : ProfileMenuViewBase(anchor_button, browser),
+      explicit_signin_access_point_(explicit_signin_access_point) {
   set_close_on_deactivate(close_on_deactivate_for_testing_);
 }
 
@@ -368,7 +372,6 @@ void ProfileMenuView::OnSigninButtonClicked(
                                          access_point);
     return;
   }
-
   signin_ui_util::EnableSyncFromSingleAccountPromo(browser()->profile(),
                                                    account, access_point);
 }
@@ -703,6 +706,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   }
 
   if (!params.button_text.empty()) {
+    if (explicit_signin_access_point_.has_value()) {
+      access_point = *explicit_signin_access_point_;
+    }
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
         account_info_for_signin_action, button_type, access_point);

@@ -613,10 +613,10 @@ class HistorySyncOptinStateProvider : public StateProvider,
         break;
       case switches::HistorySyncOptinExpansionPillOption::
           kSyncHistoryProfileMenu:
-        // TODO(crbug.com/410780322): Add opening the profile menu with the
-        // correct access point.
         ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
-            ->Show(/*is_source_accelerator=*/false);
+            ->Show(/*is_source_accelerator=*/false,
+                   signin_metrics::AccessPoint::
+                       kHistorySyncOptinExpansionPillOnStartup);
         break;
     }
     Clear();

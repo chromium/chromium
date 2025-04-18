@@ -123,6 +123,7 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
+using ::testing::StrictMock;
 
 constexpr char kTestEmail[] = "foo@example.com";
 
@@ -211,10 +212,36 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
 
 #endif
 
+void Click(views::View* clickable_view) {
+  // Simulate a mouse click. Note: Buttons are either fired when pressed or
+  // when released, so the corresponding methods need to be called.
+  clickable_view->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  clickable_view->OnMouseReleased(
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+}
+
+void WaitForMenuToBeActive(ProfileMenuViewBase* profile_menu_view) {
+  ASSERT_TRUE(profile_menu_view);
+  profile_menu_view->set_close_on_deactivate(false);
+#if BUILDFLAG(IS_MAC)
+  base::RunLoop().RunUntilIdle();
+#else
+  views::Widget* menu_widget = profile_menu_view->GetWidget();
+  ASSERT_TRUE(menu_widget);
+  if (menu_widget->CanActivate()) {
+    views::test::WaitForWidgetActive(menu_widget, /*active=*/true);
+  } else {
+    LOG(ERROR) << "menu_widget can not be activated";
+  }
+#endif
+}
+
 }  // namespace
 
 class ProfileMenuViewTestBase {
- public:
  protected:
   void OpenProfileMenu() {
     BrowserView* browser_view =
@@ -227,24 +254,7 @@ class ProfileMenuViewTestBase {
     views::View* avatar_button = toolbar->GetAvatarToolbarButton();
     ASSERT_TRUE(avatar_button);
     Click(avatar_button);
-
-    ASSERT_TRUE(profile_menu_view());
-    profile_menu_view()->set_close_on_deactivate(false);
-
-#if BUILDFLAG(IS_MAC)
-    base::RunLoop().RunUntilIdle();
-#else
-    // If possible wait until the menu is active.
-    views::Widget* menu_widget = profile_menu_view()->GetWidget();
-    ASSERT_TRUE(menu_widget);
-    if (menu_widget->CanActivate()) {
-      views::test::WaitForWidgetActive(menu_widget, /*active=*/true);
-    } else {
-      LOG(ERROR) << "menu_widget can not be activated";
-    }
-#endif
-
-    LOG(INFO) << "Opening profile menu was successful";
+    ASSERT_NO_FATAL_FAILURE(WaitForMenuToBeActive(profile_menu_view()));
   }
 
   ProfileMenuViewBase* profile_menu_view() {
@@ -253,17 +263,6 @@ class ProfileMenuViewTestBase {
                        : nullptr;
   }
   void SetTargetBrowser(Browser* browser) { target_browser_ = browser; }
-
-  void Click(views::View* clickable_view) {
-    // Simulate a mouse click. Note: Buttons are either fired when pressed or
-    // when released, so the corresponding methods need to be called.
-    clickable_view->OnMousePressed(
-        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    clickable_view->OnMouseReleased(ui::MouseEvent(
-        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
 
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> target_browser_ = nullptr;
@@ -779,7 +778,7 @@ class ProfileMenuViewWebOnlyTest : public ProfileMenuViewTestBase,
 
 // Checks that the signin flow starts in one click.
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
-  testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
+  StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
   EXPECT_CALL(mock_signin_ui_delegate,
@@ -1642,3 +1641,89 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, ProfileMenuVisibility) {
   EXPECT_TRUE(toolbar_profile2->GetAvatarToolbarButton()->GetVisible());
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
+ public:
+  // SigninBrowserTestBase:
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    // Add a signed in account.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    account_info_ = identity_test_env()->MakeAccountAvailable(
+        kTestEmail,
+        {.primary_account_consent_level = signin::ConsentLevel::kSignin,
+         .set_cookie = true});
+    ASSERT_TRUE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
+  }
+
+ protected:
+  ProfileMenuSigninAccessPointTest()
+      : delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
+            &mock_signin_ui_delegate_)) {}
+
+  void OpenProfileMenuFromCoordinator(
+      std::optional<signin_metrics::AccessPoint> explicit_access_point =
+          std::nullopt) {
+    auto* coordinator =
+        ProfileMenuCoordinator::GetOrCreateForBrowser(browser());
+    ASSERT_TRUE(coordinator);
+    coordinator->Show(/*is_source_accelerator=*/false, explicit_access_point);
+    ASSERT_NO_FATAL_FAILURE(
+        WaitForMenuToBeActive(coordinator->GetProfileMenuViewBaseForTesting()));
+  }
+
+  void ClickSigninButton() {
+    auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+    ASSERT_TRUE(coordinator);
+    ProfileMenuViewBase* profile_menu_view =
+        coordinator->GetProfileMenuViewBaseForTesting();
+    ASSERT_TRUE(profile_menu_view);
+    profile_menu_view->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    views::View* focused_view =
+        profile_menu_view->GetFocusManager()->GetFocusedView();
+    ASSERT_TRUE(focused_view);
+    Click(focused_view);
+  }
+
+  CoreAccountInfo account_info_;
+
+  StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate_;
+
+ private:
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
+                       DefaultSigninAccessPoint) {
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenuFromCoordinator());
+  EXPECT_CALL(
+      mock_signin_ui_delegate_,
+      ShowTurnSyncOnUI(browser()->profile(),
+                       signin_metrics::AccessPoint::kAvatarBubbleSignIn,
+                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                       account_info_.account_id,
+                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                       /*is_sync_promo=*/false,
+                       /*turn_sync_on_signed_profile=*/true));
+  ASSERT_NO_FATAL_FAILURE(ClickSigninButton());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
+                       ExplicitSigninAccessPoint) {
+  const signin_metrics::AccessPoint explicit_access_point =
+      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
+  ASSERT_NO_FATAL_FAILURE(
+      OpenProfileMenuFromCoordinator(explicit_access_point));
+  EXPECT_CALL(
+      mock_signin_ui_delegate_,
+      ShowTurnSyncOnUI(browser()->profile(), explicit_access_point,
+                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                       account_info_.account_id,
+                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                       /*is_sync_promo=*/false,
+                       /*turn_sync_on_signed_profile=*/true));
+  ASSERT_NO_FATAL_FAILURE(ClickSigninButton());
+}

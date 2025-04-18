@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -1334,6 +1335,15 @@ class AvatarToolbarButtonHistorySyncOptinClickProfileMenuBrowserTest
                                                               "sync-history-"
                                                               "profile-"
                                                               "menu"}}) {}
+
+  void ClickSyncButton(ProfileMenuViewBase* profile_menu_view) {
+    ASSERT_NE(profile_menu_view, nullptr);
+    profile_menu_view->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    views::View* focused_item =
+        profile_menu_view->GetFocusManager()->GetFocusedView();
+    ASSERT_NE(focused_item, nullptr);
+    Click(focused_item);
+  }
 };
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
@@ -1370,6 +1380,20 @@ IN_PROC_BROWSER_TEST_F(
   // Once the history sync opt-in entry point collapses, the button action
   // should be reset to the default behavior.
   EXPECT_FALSE(avatar->HasExplicitButtonAction());
+  // Clicking the sync button in the profile menu should trigger the sync
+  // dialog with the correct access point.
+  EXPECT_CALL(
+      mock_signin_ui_delegate_,
+      ShowTurnSyncOnUI(
+          browser()->profile(),
+          signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
+          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+          account_info.account_id,
+          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+          /*is_sync_promo=*/false,
+          /*turn_sync_on_signed_profile=*/true));
+  ASSERT_NO_FATAL_FAILURE(
+      ClickSyncButton(coordinator->GetProfileMenuViewBaseForTesting()));
 }
 
 class AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest

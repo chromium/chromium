@@ -38,9 +38,16 @@ class Browser;
 
 // This bubble view is displayed when the user clicks on the avatar button.
 // It displays a list of profiles and allows users to switch between profiles.
+//
+// If `explicit_signin_access_point` is provided, it will be used as the access
+// point for the signin (or sync) flow. This is used to track the real source of
+// the signin (or sync), e.g. history sync opt-in identity pill promo.
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
-  ProfileMenuView(views::Button* anchor_button, Browser* browser);
+  ProfileMenuView(views::Button* anchor_button,
+                  Browser* browser,
+                  std::optional<signin_metrics::AccessPoint>
+                      explicit_signin_access_point = std::nullopt);
   ~ProfileMenuView() override;
 
   ProfileMenuView(const ProfileMenuView&) = delete;
@@ -114,6 +121,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // A profile switcher object needed if the user triggers opening other
   // profile in a web app.
   std::optional<WebAppProfileSwitcher> app_profile_switcher_;
+
+  std::optional<signin_metrics::AccessPoint> explicit_signin_access_point_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_H_
