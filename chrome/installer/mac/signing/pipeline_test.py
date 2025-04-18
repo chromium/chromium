@@ -1107,9 +1107,8 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         m: mock.DEFAULT for m in ('move_file', 'copy_files', 'run_command',
                                   'make_dir', 'shutil', 'os')
     })
-@mock.patch.multiple('signing.notarize', **{
-    m: mock.DEFAULT for m in ('submit', 'wait_for_results', 'staple')
-})
+@mock.patch.multiple('signing.notarize',
+                     **{m: mock.DEFAULT for m in ('submit', 'staple')})
 @mock.patch.multiple(
     'signing.pipeline', **{
         m: mock.DEFAULT
@@ -1129,12 +1128,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
-        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid])
-        ]
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
 
@@ -1167,7 +1160,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1176,7 +1168,6 @@ class TestSignAll(unittest.TestCase):
 
             # Notarize the DMG.
             mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
-            mock.call.wait_for_results({dmg_uuid: None}.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.shutil.rmtree('/$W_1'),
 
@@ -1189,12 +1180,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
-        kwargs['submit'].side_effect = [app_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]),
-            iter([]),
-        ]
         kwargs['_package_zip'].return_value = '/$O/AppProduct-99.0.9999.99.zip'
 
         class Config(test_config.TestConfig):
@@ -1226,7 +1211,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1234,7 +1218,6 @@ class TestSignAll(unittest.TestCase):
             mock.call._package_zip(mock.ANY, mock.ANY),
 
             # Notarize the DMG.
-            mock.call.wait_for_results({}.keys(), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
 
             # Package the installer tools.
@@ -1246,12 +1229,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
-        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid])
-        ]
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
 
@@ -1286,7 +1263,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable-5000'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable-5000'), mock.ANY),
             mock.call.run_command([
@@ -1300,7 +1276,6 @@ class TestSignAll(unittest.TestCase):
 
             # Notarize the DMG.
             mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
-            mock.call.wait_for_results({dmg_uuid: None}.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.shutil.rmtree('/$W_1'),
 
@@ -1313,12 +1288,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = 'b2ce64e5-4fae-4043-9c20-d9ff53065b2a'
-        pkg_uuid = 'cb811baf-5d35-4caa-adf4-1f61b4991eed'
-        kwargs['submit'].side_effect = [app_uuid, pkg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([pkg_uuid])
-        ]
         kwargs[
             '_package_and_sign_pkg'].return_value = '/$O/AppProduct-99.0.9999.99.pkg'
 
@@ -1351,7 +1320,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1360,7 +1328,6 @@ class TestSignAll(unittest.TestCase):
 
             # Notarize the DMG.
             mock.call.submit('/$O/AppProduct-99.0.9999.99.pkg', mock.ANY),
-            mock.call.wait_for_results({pkg_uuid: None}.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
 
@@ -1373,12 +1340,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = '6de7df90-cf07-4213-9ce6-45f83588a386'
-        dmg_uuid = '7f77eefd-6c9d-4271-9367-760dc78a49dd'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid])
-        ]
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
         kwargs['_package_zip'].return_value = '/$O/AppProduct-99.0.9999.99.zip'
@@ -1412,7 +1373,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1424,7 +1384,6 @@ class TestSignAll(unittest.TestCase):
             mock.call._package_zip(mock.ANY, mock.ANY),
 
             # Notarize the DMG.
-            mock.call.wait_for_results({dmg_uuid: None}.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.shutil.rmtree('/$W_1'),
 
@@ -1437,13 +1396,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = '6de7df90-cf07-4213-9ce6-45f83588a386'
-        dmg_uuid = '7f77eefd-6c9d-4271-9367-760dc78a49dd'
-        pkg_uuid = '364d9b29-a0a0-4661-b366-e35449197671'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid, pkg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid, pkg_uuid])
-        ]
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
         kwargs[
@@ -1478,7 +1430,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1491,10 +1442,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.submit('/$O/AppProduct-99.0.9999.99.pkg', mock.ANY),
 
             # Wait for notarization results.
-            mock.call.wait_for_results({
-                dmg_uuid: None,
-                pkg_uuid: None
-            }.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
@@ -1508,12 +1455,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = '6de7df90-cf07-4213-9ce6-45f83588a386'
-        pkg_uuid = '364d9b29-a0a0-4661-b366-e35449197671'
-        kwargs['submit'].side_effect = [app_uuid, pkg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([pkg_uuid])
-        ]
         kwargs[
             '_package_and_sign_pkg'].return_value = '/$O/AppProduct-99.0.9999.99.pkg'
         kwargs['_package_zip'].return_value = '/$O/AppProduct-99.0.9999.99.zip'
@@ -1547,7 +1488,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1559,7 +1499,6 @@ class TestSignAll(unittest.TestCase):
             mock.call._package_zip(mock.ANY, mock.ANY),
 
             # Notarize the PKG.
-            mock.call.wait_for_results({pkg_uuid: None}.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
 
@@ -1572,13 +1511,6 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = '6de7df90-cf07-4213-9ce6-45f83588a386'
-        dmg_uuid = '7f77eefd-6c9d-4271-9367-760dc78a49dd'
-        pkg_uuid = '364d9b29-a0a0-4661-b366-e35449197671'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid, pkg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid, pkg_uuid])
-        ]
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
         kwargs[
@@ -1614,7 +1546,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1630,10 +1561,6 @@ class TestSignAll(unittest.TestCase):
             mock.call._package_zip(mock.ANY, mock.ANY),
 
             # Notarize the DMG.
-            mock.call.wait_for_results({
-                dmg_uuid: None,
-                pkg_uuid: None
-            }.keys(), mock.ANY),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
             mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
             mock.call.shutil.rmtree('/$W_1'),
@@ -1646,10 +1573,6 @@ class TestSignAll(unittest.TestCase):
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
-
-        app_uuid = '2d7bf857-c2b2-4ebc-8b51-b2f43ecfc13e'
-        kwargs['submit'].return_value = app_uuid
-        kwargs['wait_for_results'].return_value = iter([app_uuid])
 
         config = test_config.TestConfig()
         pipeline.sign_all(self.paths, config, disable_packaging=True)
@@ -1667,7 +1590,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
@@ -1679,62 +1601,11 @@ class TestSignAll(unittest.TestCase):
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(1, kwargs['run_command'].call_count)
 
-    def test_sign_notarize_no_wait(self, **kwargs):
-        manager = mock.Mock()
-        for attr in kwargs:
-            manager.attach_mock(kwargs[attr], attr)
-
-        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
-        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid])
-        ]
-        kwargs['_package_and_sign_dmg'].return_value = (
-            '/$O/AppProduct-99.0.9999.99.dmg')
-
-        config = test_config.TestConfig(
-            notarize=model.NotarizeAndStapleLevel.NOWAIT)
-        pipeline.sign_all(self.paths, config)
-
-        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
-
-        manager.assert_has_calls([
-            # First customize the distribution and sign it.
-            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
-                                                 '/$W_1/stable', mock.ANY),
-
-            # Prepare the app for notarization.
-            mock.call.run_command([
-                'zip', '--recurse-paths', '--symlinks', '--quiet',
-                '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
-            ],
-                                  cwd='/$W_1/stable'),
-            mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
-
-            # Make the DMG.
-            mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
-
-            # Notarize the DMG.
-            mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
-            mock.call.shutil.rmtree('/$W_1'),
-
-            # Package the installer tools.
-            mock.call._package_installer_tools(mock.ANY, mock.ANY),
-        ])
-
     def test_sign_notarize_wait_no_staple(self, **kwargs):
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
-        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
-        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
-        kwargs['wait_for_results'].side_effect = [
-            iter([app_uuid]), iter([dmg_uuid])
-        ]
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
 
@@ -1757,7 +1628,6 @@ class TestSignAll(unittest.TestCase):
                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
             mock.call.shutil.rmtree('/$W_2'),
-            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
 
             # Make the DMG.
             mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
@@ -1766,7 +1636,6 @@ class TestSignAll(unittest.TestCase):
             mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
 
             # Cleanup.
-            mock.call.wait_for_results({dmg_uuid: None}.keys(), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
 
             # Package the installer tools.

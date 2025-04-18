@@ -5,6 +5,7 @@
 The commands module wraps operations that have side-effects.
 """
 
+import asyncio
 import os
 import platform
 import plistlib
@@ -100,6 +101,21 @@ def run_command(args, **kwargs):
 def run_command_output(args, **kwargs):
     logger.info('Running command: %s', args)
     return subprocess.check_output(args, **kwargs)
+
+
+async def run_command_output_async(args, **kwargs):
+    logger.info('Running command: %s', args)
+    process = await asyncio.create_subprocess_exec(
+        *args,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        **kwargs)
+    stdout, stderr = await process.communicate()
+    if process.returncode:
+        logger.error('%s failed. stdout: %s stderr: %s', args, stdout, stderr)
+        raise subprocess.CalledProcessError(
+            process.returncode, args, output=stdout, stderr=stderr)
+    return stdout
 
 
 def lenient_run_command_output(args, **kwargs):

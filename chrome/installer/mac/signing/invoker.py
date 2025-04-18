@@ -88,7 +88,7 @@ class Interface(Base):
         notarization-related operations.
         """
 
-        def submit(self, path, config):
+        async def submit(self, path, config):
             """Submits an artifact to Apple for notarization.
 
             Args:

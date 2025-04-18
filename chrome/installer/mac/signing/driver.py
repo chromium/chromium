@@ -6,7 +6,9 @@ The driver module provides the command line interface to the signing module.
 """
 
 import argparse
+import asyncio
 import os
+import subprocess
 
 from signing import config_factory, commands, invoker, logger, model, pipeline
 
@@ -70,7 +72,12 @@ def _create_config(config_args, development):
 def _show_tool_versions():
     logger.info('Showing macOS and tool versions.')
     commands.run_command(['sw_vers'])
-    commands.run_command(['xcodebuild', '-version'])
+    try:
+        # xcodebuild -version fails with command-line xcode, but the rest of the
+        # signing script works.
+        commands.run_command(['xcodebuild', '-version'])
+    except subprocess.CalledProcessError as e:
+        print("xcodebuild failed: %s" % e.stderr)
     commands.run_command(['xcrun', '-show-sdk-path'])
 
 
@@ -171,9 +178,10 @@ def main(args):
 
     _show_tool_versions()
 
-    pipeline.sign_all(
-        paths,
-        config,
-        disable_packaging=args.disable_packaging,
-        skip_brands=args.skip_brands,
-        channels=args.channels)
+    asyncio.run(
+        pipeline.sign_all(
+            paths,
+            config,
+            disable_packaging=args.disable_packaging,
+            skip_brands=args.skip_brands,
+            channels=args.channels))
