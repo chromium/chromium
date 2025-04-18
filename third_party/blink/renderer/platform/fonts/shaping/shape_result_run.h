@@ -34,8 +34,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_INLINE_HEADERS_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_INLINE_HEADERS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_RUN_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_RUN_H_
 
 #include <hb.h>
 
@@ -53,16 +53,16 @@ namespace blink {
 
 class SimpleFontData;
 
-struct ShapeResult::RunInfo final
-    : public GarbageCollected<ShapeResult::RunInfo> {
+struct PLATFORM_EXPORT ShapeResultRun final
+    : public GarbageCollected<ShapeResultRun> {
  public:
-  RunInfo(const SimpleFontData* font,
-          hb_direction_t dir,
-          CanvasRotationInVertical canvas_rotation,
-          hb_script_t script,
-          unsigned start_index,
-          unsigned num_glyphs,
-          unsigned num_characters)
+  ShapeResultRun(const SimpleFontData* font,
+                 hb_direction_t dir,
+                 CanvasRotationInVertical canvas_rotation,
+                 hb_script_t script,
+                 unsigned start_index,
+                 unsigned num_glyphs,
+                 unsigned num_characters)
       : glyph_data_(
             std::min(num_glyphs, HarfBuzzRunGlyphData::kMaxCharacterIndex + 1)),
         font_data_(const_cast<SimpleFontData*>(font)),
@@ -73,7 +73,7 @@ struct ShapeResult::RunInfo final
         direction_(dir),
         canvas_rotation_(canvas_rotation) {}
 
-  RunInfo(const RunInfo& other)
+  ShapeResultRun(const ShapeResultRun& other)
       : glyph_data_(other.glyph_data_),
         font_data_(other.font_data_),
         graphemes_(other.graphemes_),
@@ -123,9 +123,9 @@ struct ShapeResult::RunInfo final
     return range;
   }
 
-  // Creates a new RunInfo instance representing a subset of the current run.
-  // Returns |nullptr| if there are no glyphs in the specified range.
-  RunInfo* CreateSubRun(unsigned start, unsigned end) {
+  // Creates a new ShapeResultRun instance representing a subset of the current
+  // run. Returns |nullptr| if there are no glyphs in the specified range.
+  ShapeResultRun* CreateSubRun(unsigned start, unsigned end) {
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
@@ -134,7 +134,7 @@ struct ShapeResult::RunInfo final
       return nullptr;
     }
 
-    auto* run = MakeGarbageCollected<RunInfo>(
+    auto* run = MakeGarbageCollected<ShapeResultRun>(
         font_data_.Get(), direction_, canvas_rotation_, script_,
         start_index_ + start, number_of_glyphs, number_of_characters);
 
@@ -152,13 +152,14 @@ struct ShapeResult::RunInfo final
     return run;
   }
 
-  // Returns new |RunInfo| if |this| and |other| are merged. Otherwise returns
-  // null.
-  RunInfo* MergeIfPossible(const RunInfo& other) const {
-    if (!CanMerge(other))
+  // Returns new |ShapeResultRun| if |this| and |other| are merged. Otherwise
+  // returns null.
+  ShapeResultRun* MergeIfPossible(const ShapeResultRun& other) const {
+    if (!CanMerge(other)) {
       return nullptr;
+    }
     DCHECK_LT(start_index_, other.start_index_);
-    auto* run = MakeGarbageCollected<RunInfo>(
+    auto* run = MakeGarbageCollected<ShapeResultRun>(
         font_data_.Get(), direction_, canvas_rotation_, script_, start_index_,
         glyph_data_.size() + other.glyph_data_.size(),
         num_characters_ + other.num_characters_);
@@ -167,21 +168,23 @@ struct ShapeResult::RunInfo final
     if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
       auto* const end = run->glyph_data_.begin() + other.glyph_data_.size();
-      for (auto* it = run->glyph_data_.begin(); it < end; ++it)
+      for (auto* it = run->glyph_data_.begin(); it < end; ++it) {
         it->character_index += index_adjust;
+      }
     } else {
       run->glyph_data_.CopyFrom(glyph_data_, other.glyph_data_);
       auto* const end = run->glyph_data_.end();
       for (auto* it = run->glyph_data_.begin() + glyph_data_.size(); it < end;
-           ++it)
+           ++it) {
         it->character_index += index_adjust;
+      }
     }
     run->width_ = width_ + other.width_;
     return run;
   }
 
   // Returns true if |other| can be merged at end of |this|.
-  bool CanMerge(const RunInfo& other) const {
+  bool CanMerge(const ShapeResultRun& other) const {
     return start_index_ + num_characters_ == other.start_index_ &&
            canvas_rotation_ == other.canvas_rotation_ &&
            font_data_ == other.font_data_ && direction_ == other.direction_ &&
@@ -198,8 +201,9 @@ struct ShapeResult::RunInfo final
       start = offset + num_characters_;
       for (unsigned i = 0; i < glyph_data_.size(); ++i) {
         int index = offset + glyph_data_[i].character_index;
-        if (start == index)
+        if (start == index) {
           continue;
+        }
         end = index;
         if (end > *from && start < *to) {
           *from = std::min(*from, start);
@@ -212,8 +216,9 @@ struct ShapeResult::RunInfo final
       start = offset + num_characters_;
       for (unsigned i = 0; i < glyph_data_.size(); ++i) {
         int index = offset + glyph_data_[i].character_index;
-        if (start == index)
+        if (start == index) {
           continue;
+        }
         if (end > *from && start < *to) {
           *from = std::min(*from, start);
           *to = std::max(*to, end);
@@ -230,7 +235,7 @@ struct ShapeResult::RunInfo final
   }
 
   // Common signatures with RunInfoPart, to templatize algorithms.
-  const RunInfo* GetRunInfo() const { return this; }
+  const ShapeResultRun* GetRunInfo() const { return this; }
   const GlyphDataRange GetGlyphDataRange() const {
     return {glyph_data_.begin(), glyph_data_.end(),
             glyph_data_.GetMayBeOffsets()};
@@ -355,8 +360,9 @@ struct ShapeResult::RunInfo final
     void Shrink(unsigned new_size) {
       DCHECK_GE(new_size, 1u);
       // Note: To follow Vector<T>::Shrink(), we accept |new_size == size()|
-      if (new_size == size())
+      if (new_size == size()) {
         return;
+      }
       DCHECK_LT(new_size, size());
       HarfBuzzRunGlyphData* new_data = new HarfBuzzRunGlyphData[new_size];
       std::copy(data_.get(), data_.get() + new_size, new_data);
@@ -375,8 +381,9 @@ struct ShapeResult::RunInfo final
 
   void CheckConsistency() const {
 #if DCHECK_IS_ON()
-    for (const HarfBuzzRunGlyphData& glyph : glyph_data_)
+    for (const HarfBuzzRunGlyphData& glyph : glyph_data_) {
       DCHECK_LT(glyph.character_index, num_characters_);
+    }
 #endif
   }
 
@@ -395,10 +402,10 @@ struct ShapeResult::RunInfo final
   hb_direction_t direction_;
 
   // For upright-in-vertical we need to tell the ShapeResultBloberizer to rotate
-  // the canvas back 90deg for this RunInfo.
+  // the canvas back 90deg for this ShapeResultRun.
   CanvasRotationInVertical canvas_rotation_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_INLINE_HEADERS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_RUN_H_

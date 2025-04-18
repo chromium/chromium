@@ -12,12 +12,12 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
-ShapeResultView::RunInfoPart::RunInfoPart(const ShapeResult::RunInfo* run,
+ShapeResultView::RunInfoPart::RunInfoPart(const ShapeResultRun* run,
                                           GlyphDataRange range,
                                           unsigned start_index,
                                           unsigned offset,
@@ -185,7 +185,7 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
       start_index_ + char_index_offset_, num_characters_, Direction());
   new_result->runs_.ReserveInitialCapacity(parts_.size());
   for (const auto& part : RunsOrParts()) {
-    auto* new_run = MakeGarbageCollected<ShapeResult::RunInfo>(
+    auto* new_run = MakeGarbageCollected<ShapeResultRun>(
         part.run_->font_data_.Get(), part.run_->direction_,
         part.run_->canvas_rotation_, part.run_->script_, part.start_index_,
         part.NumGlyphs(), part.num_characters_);

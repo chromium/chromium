@@ -25,7 +25,7 @@ inline bool IsSafeToBreak(SafeToBreak value) {
 }
 
 // Because glyph offsets are often zero, particularly for Latin runs, we hold it
-// in |ShapeResult::RunInfo::GlyphDataCollection::offsets_| for reducing memory
+// in |ShapeResultRun::GlyphDataCollection::offsets_| for reducing memory
 // usage.
 struct HarfBuzzRunGlyphData {
   DISALLOW_NEW();
@@ -339,6 +339,24 @@ struct GlyphOffsetArray::iterator<false> final {
   void operator++() {}
   void operator+=(ptrdiff_t) {}
   GlyphOffset operator[](size_t) const { return GlyphOffset(); }
+};
+
+struct GlyphIndexResult {
+  STACK_ALLOCATED();
+
+ public:
+  // The total number of characters of runs_[0..run_index - 1].
+  unsigned characters_on_left_runs = 0;
+
+  // Those are the left and right character indexes of the group of glyphs
+  // that were selected by OffsetForPosition.
+  unsigned left_character_index = 0;
+  unsigned right_character_index = 0;
+
+  // The glyph origin of the glyph.
+  float origin_x = 0;
+  // The advance of the glyph.
+  float advance = 0;
 };
 
 }  // namespace blink

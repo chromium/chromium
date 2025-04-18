@@ -7,15 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
-class ShapeResultRunInfoTest : public testing::Test {};
+class ShapeResultRunTest : public testing::Test {};
 
-TEST_F(ShapeResultRunInfoTest, CopyConstructor) {
+TEST_F(ShapeResultRunTest, CopyConstructor) {
   GlyphOffsetArray offsets(2);
 
   GlyphOffsetArray offsets2(offsets);
@@ -27,7 +27,7 @@ TEST_F(ShapeResultRunInfoTest, CopyConstructor) {
   EXPECT_EQ(GlyphOffset(1, 1), offsets3.GetStorage()[0]);
 }
 
-TEST_F(ShapeResultRunInfoTest, CopyFromRange) {
+TEST_F(ShapeResultRunTest, CopyFromRange) {
   GlyphOffsetArray offsets(2);
   HarfBuzzRunGlyphData glyhp_data[2];
 
@@ -45,7 +45,7 @@ TEST_F(ShapeResultRunInfoTest, CopyFromRange) {
   EXPECT_EQ(GlyphOffset(1, 1), offsets3.GetStorage()[0]);
 }
 
-TEST_F(ShapeResultRunInfoTest, GlyphOffsetArrayReverse) {
+TEST_F(ShapeResultRunTest, GlyphOffsetArrayReverse) {
   GlyphOffsetArray offsets(2);
 
   offsets.Reverse();
@@ -58,7 +58,7 @@ TEST_F(ShapeResultRunInfoTest, GlyphOffsetArrayReverse) {
   EXPECT_EQ(GlyphOffset(1, 1), offsets.GetStorage()[1]);
 }
 
-TEST_F(ShapeResultRunInfoTest, GlyphOffsetArraySetAddOffsetHeightAt) {
+TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetHeightAt) {
   GlyphOffsetArray offsets(2);
 
   offsets.AddHeightAt(1, 1.5f);
@@ -70,7 +70,7 @@ TEST_F(ShapeResultRunInfoTest, GlyphOffsetArraySetAddOffsetHeightAt) {
   EXPECT_EQ(GlyphOffset(0, 3.5f), offsets.GetStorage()[1]);
 }
 
-TEST_F(ShapeResultRunInfoTest, GlyphOffsetArraySetAddOffsetWidthAt) {
+TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetWidthAt) {
   GlyphOffsetArray offsets(2);
 
   offsets.AddWidthAt(1, 1.5f);
@@ -82,7 +82,7 @@ TEST_F(ShapeResultRunInfoTest, GlyphOffsetArraySetAddOffsetWidthAt) {
   EXPECT_EQ(GlyphOffset(3.5f, 0), offsets.GetStorage()[1]);
 }
 
-TEST_F(ShapeResultRunInfoTest, GlyphOffsetArraySetAt) {
+TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAt) {
   GlyphOffsetArray offsets(2);
 
   offsets.SetAt(0, GlyphOffset());
@@ -92,7 +92,7 @@ TEST_F(ShapeResultRunInfoTest, GlyphOffsetArraySetAt) {
   EXPECT_TRUE(offsets.HasStorage());
 }
 
-TEST_F(ShapeResultRunInfoTest, GlyphOffsetArrayShrink) {
+TEST_F(ShapeResultRunTest, GlyphOffsetArrayShrink) {
   GlyphOffsetArray offsets(3);
 
   offsets.Shrink(2);

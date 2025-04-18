@@ -33,7 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_BOUNDS_ACCUMULATOR_H_
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
