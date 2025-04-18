@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace privacy_sandbox {
 
@@ -50,9 +51,10 @@ class DesktopViewManager {
   friend class DesktopViewManagerTest;
 
   // Performs necessary checks to determine if a new view should be created.
-  // TODO(chrstne): Use BrowserWindowInterace here.
   void MaybeCreateView(
-      base::OnceCallback<void(notice::mojom::PrivacySandboxNotice)> show);
+      BrowserWindowInterface* browser,
+      base::OnceCallback<void(BrowserWindowInterface*,
+                              notice::mojom::PrivacySandboxNotice)> show);
 
   // Notifies open views to close.
   void CloseAllOpenViews();

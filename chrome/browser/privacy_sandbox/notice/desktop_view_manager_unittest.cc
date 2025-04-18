@@ -9,6 +9,7 @@
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +31,7 @@ class DesktopViewManagerTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+    browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
     // Mocking notice service.
     std::vector<PrivacySandboxNotice> required_notices = {
         PrivacySandboxNotice::kTopicsConsentNotice,
@@ -50,7 +52,9 @@ class DesktopViewManagerTest : public testing::Test {
 
   void CreateView(MockDesktopViewManagerObserver* observer) {
     desktop_view_manager()->MaybeCreateView(
-        base::BindOnce([](PrivacySandboxNotice notice) {}));
+        browser_window_interface_.get(),
+        base::BindOnce([](BrowserWindowInterface* browser,
+                          PrivacySandboxNotice notice) {}));
     // An observer is added once a view is created.
     desktop_view_manager()->AddObserver(observer);
   }
@@ -67,6 +71,7 @@ class DesktopViewManagerTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<DesktopViewManager> desktop_view_manager_;
   std::unique_ptr<MockPrivacySandboxNoticeService> mock_notice_service_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
 };
 
 TEST_F(DesktopViewManagerTest, MaybeCreateViewDoesNotNotifyOnSameList) {

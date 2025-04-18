@@ -33,11 +33,9 @@ void DesktopViewManager::RemoveObserver(Observer* observer) {
 }
 
 void DesktopViewManager::MaybeCreateView(
-    base::OnceCallback<void(PrivacySandboxNotice)> show) {
-  if (!notice_service_) {
-    return;
-  }
-
+    BrowserWindowInterface* browser,
+    base::OnceCallback<void(BrowserWindowInterface*, PrivacySandboxNotice)>
+        show) {
   std::vector<PrivacySandboxNotice> required_notices =
       notice_service_->GetRequiredNotices(SurfaceType::kDesktopNewTab);
 
@@ -46,7 +44,7 @@ void DesktopViewManager::MaybeCreateView(
   }
 
   pending_notices_to_show_ = required_notices;
-  std::move(show).Run(pending_notices_to_show_[0]);
+  std::move(show).Run(browser, pending_notices_to_show_[0]);
 }
 
 void DesktopViewManager::CloseAllOpenViews() {

@@ -67,7 +67,9 @@ if (!is_android) {
     deps = [
       ":core",
       ":interfaces",
+      ":notice_mojom",
       "//base",
+      "//chrome/browser/ui/browser_window:browser_window",
     ]
   }
 }

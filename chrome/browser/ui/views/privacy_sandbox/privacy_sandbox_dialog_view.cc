@@ -6,9 +6,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -30,6 +32,7 @@
 namespace {
 
 using enum PrivacySandboxService::AdsDialogCallbackNoArgsEvents;
+using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
 constexpr int kM1DialogWidth = 600;
 constexpr int kDefaultDialogHeight = 494;
@@ -102,6 +105,17 @@ void PrivacySandboxDialog::Show(Browser* browser,
   }
 }
 
+// static
+void PrivacySandboxDialog::Show(BrowserWindowInterface* browser,
+                                PrivacySandboxNotice notice) {
+  // TODO(crbug.com/408016824): Refactor delegate to use BrowserWindowInterface
+  // TODO(crbug.com/408016824): SetContentsView once PsDialogView ctor is
+  // refactored.
+  // TODO(crbug.com/408016824): Add VM observer once a PSDialogView is created.
+}
+
+// TODO(crbug.com/408016824): Change browser to use browser_window_interface
+// instead, separate the prompt_type related code to a separate initializer.
 PrivacySandboxDialogView::PrivacySandboxDialogView(
     Browser* browser,
     PrivacySandboxService::PromptType prompt_type)
