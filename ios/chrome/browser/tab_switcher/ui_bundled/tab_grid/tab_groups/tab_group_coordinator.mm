@@ -272,7 +272,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
-  BOOL incognito = self.profile->IsOffTheRecord();
+  BOOL incognito = self.isOffTheRecord;
   if ([_mediator isItemWithIDSelected:itemID]) {
     if (incognito) {
       base::RecordAction(base::UserMetricsAction(
@@ -498,10 +498,10 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
 
   // Initialize the `_viewController`.
-  _viewController = [[TabGroupViewController alloc]
-      initWithHandler:handler
-            incognito:self.profile->IsOffTheRecord()
-             tabGroup:_tabGroup];
+  _viewController =
+      [[TabGroupViewController alloc] initWithHandler:handler
+                                            incognito:self.isOffTheRecord
+                                             tabGroup:_tabGroup];
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
   _viewController.applicationHandler = HandlerForProtocol(

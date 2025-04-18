@@ -212,7 +212,7 @@ using collaboration::CollaborationControllerDelegate;
                            forProtocol:@protocol(TabGroupsCommands)];
 
   self.mediator.tabGroupsHandler = self;
-  if (!self.profile->IsOffTheRecord()) {
+  if (!self.isOffTheRecord) {
     self.mediator.tabGridToolbarHandler =
         HandlerForProtocol(dispatcher, TabGridToolbarCommands);
   }
@@ -411,7 +411,7 @@ using collaboration::CollaborationControllerDelegate;
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
-  if (!IsTabGroupSyncEnabled() || self.profile->IsOffTheRecord()) {
+  if (!IsTabGroupSyncEnabled() || self.isOffTheRecord) {
     return;
   }
 
