@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.web_app_header;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -56,6 +57,7 @@ public class WebAppHeaderLayoutMediatorTest {
     private PropertyModel mModel;
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ObservableSupplierImpl<List<Rect>> mNonDraggableAreasSupplier;
+    private ObservableSupplierImpl<Boolean> mIsInLayoutSupplier;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public Tab mTab;
     private @Nullable AppHeaderState mAppHeaderState;
@@ -68,6 +70,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
         mTabSupplier = new ObservableSupplierImpl<>();
         mNonDraggableAreasSupplier = new ObservableSupplierImpl<>();
+        mIsInLayoutSupplier = new ObservableSupplierImpl<>(false);
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =
                 new WebAppHeaderLayoutMediator(
@@ -75,6 +78,7 @@ public class WebAppHeaderLayoutMediatorTest {
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
+                        mIsInLayoutSupplier,
                         SYS_APP_HEADER_HEIGHT);
 
         mShadowLooper.idle();
@@ -98,6 +102,7 @@ public class WebAppHeaderLayoutMediatorTest {
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         mNonDraggableAreasSupplier,
+                        mIsInLayoutSupplier,
                         SYS_APP_HEADER_HEIGHT);
 
         assertEquals(
@@ -269,6 +274,7 @@ public class WebAppHeaderLayoutMediatorTest {
     @Test
     public void testInDWInWindowWithLaidOutView_SetNonDraggableAreas() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        mIsInLayoutSupplier.set(false);
 
         final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
         mNonDraggableAreasSupplier.set(nonDraggableAreas);
@@ -283,5 +289,21 @@ public class WebAppHeaderLayoutMediatorTest {
                 "Non draggable areas from supplier should match model areas",
                 areas.toArray(),
                 mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS).toArray());
+    }
+
+    @Test
+    public void testInDWInWindowWithPendingLayout_HeaderShouldBeDraggable() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
+        mIsInLayoutSupplier.set(true);
+
+        final var nonDraggableAreas = List.of(new Rect(0, 0, 10, 10), new Rect(10, 0, 10, 10));
+        mNonDraggableAreasSupplier.set(nonDraggableAreas);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
+        mShadowLooper.idle();
+
+        final var areas = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
+        assertNull("Areas should be kept null prior receiving any header state", areas);
     }
 }
