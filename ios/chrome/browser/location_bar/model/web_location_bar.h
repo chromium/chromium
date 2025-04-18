@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_WEB_LOCATION_BAR_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_WEB_LOCATION_BAR_H_
+#ifndef IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_H_
+#define IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_H_
 
 #include "components/search_engines/template_url.h"
 #include "ui/base/page_transition_types.h"
@@ -41,4 +41,4 @@ class WebLocationBar {
   virtual ~WebLocationBar();
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_WEB_LOCATION_BAR_H_
+#endif  // IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_H_

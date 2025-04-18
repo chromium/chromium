@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_WEB_LOCATION_BAR_IMPL_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_WEB_LOCATION_BAR_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_IMPL_H_
+#define IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_IMPL_H_
 
-#include "ios/chrome/browser/omnibox/ui_bundled/web_location_bar.h"
+#include "ios/chrome/browser/location_bar/model/web_location_bar.h"
 
 @protocol LocationBarURLLoader;
-@protocol OmniboxControllerDelegate;
+@protocol WebLocationBarDelegate;
 @protocol OmniboxFocusDelegate;
 
 // A minimal implementation of WebLocationBar. Designed to work
@@ -17,7 +17,7 @@
 // WebLocationBar once OmniboxViewIOS doesn't need it.
 class WebLocationBarImpl : public WebLocationBar {
  public:
-  explicit WebLocationBarImpl(id<OmniboxControllerDelegate> delegate);
+  explicit WebLocationBarImpl(id<WebLocationBarDelegate> delegate);
   ~WebLocationBarImpl() override;
 
   void SetURLLoader(id<LocationBarURLLoader> URLLoader) {
@@ -35,8 +35,8 @@ class WebLocationBarImpl : public WebLocationBar {
   LocationBarModel* GetLocationBarModel() override;
 
  private:
-  __weak id<OmniboxControllerDelegate> delegate_;
+  __weak id<WebLocationBarDelegate> delegate_;
   __weak id<LocationBarURLLoader> URLLoader_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_WEB_LOCATION_BAR_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_IMPL_H_

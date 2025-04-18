@@ -3,12 +3,7 @@
 # found in the LICENSE file.
 
 source_set("ui_bundled") {
-  sources = [
-    "omnibox_controller_delegate.h",
-    "omnibox_focus_delegate.h",
-    "web_location_bar.cc",
-    "web_location_bar.h",
-  ]
+  sources = [ "omnibox_focus_delegate.h" ]
   deps = [
     "//base",
     "//components/omnibox/browser",
@@ -57,7 +52,6 @@ source_set("model_interface") {
     ":omnibox_util",
     "//base",
     "//components/omnibox/browser",
-    "//components/omnibox/browser:location_bar",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
   ]
 }
@@ -78,8 +72,6 @@ source_set("omnibox_internal") {
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
     "text_field_view_containing.h",
-    "web_location_bar_impl.h",
-    "web_location_bar_impl.mm",
     "zero_suggest_prefetch_helper.h",
     "zero_suggest_prefetch_helper.mm",
   ]
@@ -172,24 +164,6 @@ source_set("omnibox_internal") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_web_location_bar.cc",
-    "test_web_location_bar.h",
-  ]
-  deps = [
-    ":omnibox_internal",
-    ":ui_bundled",
-    "//base",
-    "//components/omnibox/browser:location_bar",
-    "//ios/chrome/browser/omnibox/coordinator",
-    "//ios/web/public",
-    "//url",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -199,7 +173,6 @@ source_set("unit_tests") {
   deps = [
     ":omnibox_internal",
     ":resources_unit_tests",
-    ":test_support",
     ":ui_bundled",
     "//base",
     "//base/test:test_support",

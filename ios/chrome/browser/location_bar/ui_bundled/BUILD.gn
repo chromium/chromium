@@ -20,7 +20,6 @@ source_set("ui_bundled") {
     "location_bar_steady_view_consumer.h",
     "location_bar_steady_view_mediator.h",
     "location_bar_steady_view_mediator.mm",
-    "location_bar_url_loader.h",
     "location_bar_view_controller.h",
     "location_bar_view_controller.mm",
   ]
@@ -28,6 +27,7 @@ source_set("ui_bundled") {
     ":constants",
     ":fakebox_buttons_snapshot",
     ":location_bar_model_delegate",
+    ":protocols",
     "//base",
     "//components/feature_engagement/public",
     "//components/lens",
@@ -59,6 +59,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/lens_overlay/ui:entry_point",
+    "//ios/chrome/browser/location_bar/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/ntp/model",
@@ -68,6 +69,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
@@ -119,8 +121,15 @@ source_set("ui_bundled") {
     "QuartzCore.framework",
     "UIKit.framework",
   ]
-  allow_circular_includes_from =
-      [ "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal" ]
+}
+
+source_set("protocols") {
+  sources = [ "location_bar_url_loader.h" ]
+  deps = [
+    "//components/search_engines",
+    "//ui/base",
+    "//ui/base:types",
+  ]
 }
 
 source_set("location_bar_model_delegate") {

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/web_location_bar_impl.h"
+#import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
 
 #import "components/omnibox/browser/location_bar_model.h"
+#import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_controller_delegate.h"
 #import "url/gurl.h"
 
-WebLocationBarImpl::WebLocationBarImpl(id<OmniboxControllerDelegate> delegate)
+WebLocationBarImpl::WebLocationBarImpl(id<WebLocationBarDelegate> delegate)
     : delegate_(delegate) {}
 
 WebLocationBarImpl::~WebLocationBarImpl() {}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/omnibox/ui_bundled/web_location_bar.h"
+#include "ios/chrome/browser/location_bar/model/web_location_bar.h"
 
 WebLocationBar::WebLocationBar() {}
 

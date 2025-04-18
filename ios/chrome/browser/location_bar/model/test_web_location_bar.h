@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_TEST_WEB_LOCATION_BAR_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_TEST_WEB_LOCATION_BAR_H_
+#ifndef IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_TEST_WEB_LOCATION_BAR_H_
+#define IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_TEST_WEB_LOCATION_BAR_H_
 
 #import "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
-#include "ios/chrome/browser/omnibox/ui_bundled/web_location_bar.h"
+#include "ios/chrome/browser/location_bar/model/web_location_bar.h"
 
 class TestWebLocationBar final : public WebLocationBar {
  public:
@@ -31,4 +31,4 @@ class TestWebLocationBar final : public WebLocationBar {
   raw_ptr<LocationBarModel> location_bar_model_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_TEST_WEB_LOCATION_BAR_H_
+#endif  // IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_TEST_WEB_LOCATION_BAR_H_

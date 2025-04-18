@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
+]
