@@ -399,6 +399,8 @@ void GlicWindowController::OnWidgetUserResizeEnded() {
   if (GetGlicWidget()) {
     glic_size_ = GetGlicWidget()->GetSize();
   }
+
+  glic_window_animator_->ResetLastTargetSize();
 }
 
 void GlicWindowController::ShowAfterSignIn(base::WeakPtr<Browser> browser) {

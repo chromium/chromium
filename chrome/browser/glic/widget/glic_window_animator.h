@@ -75,6 +75,9 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
   // the widget's current bounds.
   gfx::Rect GetCurrentTargetBounds();
 
+  // Reset the saved target size.
+  void ResetLastTargetSize();
+
   // If there's a saved target size, start the resize animation for it.
   void MaybeAnimateToTargetSize();
 
