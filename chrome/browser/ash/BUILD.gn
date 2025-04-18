@@ -230,6 +230,12 @@ source_set("unit_tests") {
     "//chrome/browser/ash/video_conference:unit_tests",
     "//chrome/browser/ash/wallpaper_handlers:unit_tests",
     "//chrome/browser/ui/views/select_file_dialog_extension:unit_tests",
+
+    # TODO(crbug.com/410983208): This is for FakeOwnerSettingsService.
+    # Split the target into two, one for the production modules and
+    # the other for test only modules, then let this target depend on
+    # the latter.
+    "//chrome/browser/ash/ownership",
   ]
 
   if (is_cfm) {
