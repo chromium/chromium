@@ -2231,11 +2231,8 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:command.completion];
 }
 
-- (void)showAccountMenuWithAnchorView:(UIView*)anchorView
-                 skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
-                          accessPoint:(AccountMenuAccessPoint)accessPoint
-                           completion:(void (^)())completion {
-  if (skipIfUINotAvailable && ![self isTabAvailableToPresentViewController]) {
+- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint {
+  if (![self isTabAvailableToPresentViewController]) {
     return;
   }
   DCHECK(!self.signinCoordinator)
@@ -2249,17 +2246,13 @@ using UserFeedbackDataCallback =
                                                browser:browser
                                           contextStyle:SigninContextStyle::
                                                            kDefault
-                                            anchorView:anchorView
-                                           accessPoint:accessPoint];
+                                            anchorView:nil
+                                           accessPoint:AccountMenuAccessPoint::
+                                                           kWeb];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
-  [self startSigninCoordinatorWithCompletion:^(SigninCoordinatorResult result,
-                                               id<SystemIdentity>) {
-    if (completion) {
-      completion();
-    }
-  }];
+  [self startSigninCoordinatorWithCompletion:nil];
 }
 
 - (void)

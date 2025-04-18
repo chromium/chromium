@@ -160,9 +160,8 @@ void AccountConsistencyBrowserAgent::ShowAccountMenu() {
   // TODO(crbug.com/375605412): Adjust the account menu shown here so that it
   // has "Manage accounts on this device" as a top-level button, and no overflow
   // menu.
+  // TODO(crbug.com/411614444): Open the account menu here instead of going
+  // through the handler.
   [application_handler_
-      showAccountMenuWithAnchorView:nil
-               skipIfUINotAvailable:YES
-                        accessPoint:AccountMenuAccessPoint::kWeb
-                         completion:nil];
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb];
 }

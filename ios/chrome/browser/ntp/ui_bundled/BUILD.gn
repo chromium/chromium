@@ -110,6 +110,8 @@ source_set("coordinator") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",

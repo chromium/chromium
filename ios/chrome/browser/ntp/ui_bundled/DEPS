@@ -71,4 +71,7 @@ specific_include_rules = {
   "^new_tab_page_controller\.mm$": [
     "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
   ],
+  "new_tab_page_coordinator\.mm": [
+    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
+  ],
 }

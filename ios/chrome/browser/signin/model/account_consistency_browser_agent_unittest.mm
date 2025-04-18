@@ -187,10 +187,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   // Since there is another profile, the agent should trigger the account menu
   // instead of the add-account flow.
   OCMExpect([application_commands_mock_
-      showAccountMenuWithAnchorView:[OCMArg any]
-               skipIfUINotAvailable:YES
-                        accessPoint:AccountMenuAccessPoint::kWeb
-                         completion:[OCMArg any]]);
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb]);
   agent_->OnAddAccount();
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
   // be called. This is ensured by TearDown because application_commands_mock_
@@ -235,10 +232,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   // Since there is another profile, the agent should trigger the account menu
   // instead of the manage accounts screen.
   OCMExpect([application_commands_mock_
-      showAccountMenuWithAnchorView:[OCMArg any]
-               skipIfUINotAvailable:YES
-                        accessPoint:AccountMenuAccessPoint::kWeb
-                         completion:[OCMArg any]]);
+      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb]);
   agent_->OnManageAccounts();
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not
   // be called. This is ensured by TearDown because application_commands_mock_
