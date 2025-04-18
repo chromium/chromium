@@ -422,8 +422,6 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   if (IsContainedTabGroupEnabled()) {
     [_topToolbarButtonsStackView insertArrangedSubview:_facePileView atIndex:0];
   } else {
-    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_facePileView];
     [self configureNavigationBarItems];
   }
 }
@@ -580,6 +578,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   UIBarButtonItem* facePileBarButton;
   if (_facePileView) {
     _facePileView.userInteractionEnabled = NO;
+    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIButton* facePileButton =
         [[UIButton alloc] initWithFrame:_facePileView.bounds];
@@ -598,6 +597,12 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
     [NSLayoutConstraint activateConstraints:@[
       [facePileButton.widthAnchor constraintEqualToConstant:kFacePileWidth],
       [facePileButton.heightAnchor constraintEqualToConstant:kFacePileHeight],
+      [facePileButton.leadingAnchor
+          constraintLessThanOrEqualToAnchor:_facePileView.leadingAnchor],
+      [facePileButton.centerYAnchor
+          constraintEqualToAnchor:_facePileView.centerYAnchor],
+      [facePileButton.trailingAnchor
+          constraintEqualToAnchor:_facePileView.trailingAnchor],
     ]];
 
     facePileBarButton =
