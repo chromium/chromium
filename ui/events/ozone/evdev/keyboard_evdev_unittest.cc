@@ -88,6 +88,7 @@ TEST_F(KeyboardEvdevTest, HeldKeyAutoRepeats) {
   EXPECT_EQ(key_event->code(), DomCode::US_A);
   EXPECT_EQ(key_event->type(), EventType::kKeyPressed);
   EXPECT_EQ(key_event->time_stamp(), timestamp);
+  EXPECT_FALSE(key_event->is_repeat());
 
   task_environment_.FastForwardBy(kTestAutoRepeatDelay +
                                   (kTestAutoRepeatInterval * 2.5));
@@ -97,18 +98,21 @@ TEST_F(KeyboardEvdevTest, HeldKeyAutoRepeats) {
   EXPECT_EQ(key_event->code(), DomCode::US_A);
   EXPECT_EQ(key_event->type(), EventType::kKeyPressed);
   EXPECT_EQ(key_event->time_stamp(), timestamp + kTestAutoRepeatDelay);
+  EXPECT_TRUE(key_event->is_repeat());
 
   key_event = dispatched_events_.at(2)->AsKeyEvent();
   EXPECT_EQ(key_event->code(), DomCode::US_A);
   EXPECT_EQ(key_event->type(), EventType::kKeyPressed);
   EXPECT_EQ(key_event->time_stamp(),
             timestamp + kTestAutoRepeatDelay + kTestAutoRepeatInterval);
+  EXPECT_TRUE(key_event->is_repeat());
 
   key_event = dispatched_events_.at(3)->AsKeyEvent();
   EXPECT_EQ(key_event->code(), DomCode::US_A);
   EXPECT_EQ(key_event->type(), EventType::kKeyPressed);
   EXPECT_EQ(key_event->time_stamp(),
             timestamp + kTestAutoRepeatDelay + (kTestAutoRepeatInterval * 2));
+  EXPECT_TRUE(key_event->is_repeat());
 
   ReleaseKey(KEY_A, EventTimeForNow());
   ASSERT_EQ(dispatched_events_.size(), 5u);
@@ -116,6 +120,7 @@ TEST_F(KeyboardEvdevTest, HeldKeyAutoRepeats) {
   EXPECT_EQ(key_event->code(), DomCode::US_A);
   EXPECT_EQ(key_event->type(), EventType::kKeyReleased);
   EXPECT_EQ(key_event->time_stamp(), EventTimeForNow());
+  EXPECT_FALSE(key_event->is_repeat());
 
   task_environment_.FastForwardBy(kTestAutoRepeatDelay * 2);
   ASSERT_EQ(dispatched_events_.size(), 5u);
