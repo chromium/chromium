@@ -7,10 +7,10 @@ import {AnnotationBrushType, Ink2Manager, TextAlignment} from 'chrome-extension:
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertDeepEquals, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertDeepEquals, setGetAnnotationBrushReply, setupTestViewportAndMockPluginForInk} from './test_util.js';
 import type {MockPdfPluginElement} from './test_util.js';
 
-const mockPlugin = setupTestMockPluginForInk();
+const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
 
 /**
@@ -262,6 +262,48 @@ chrome.test.runTests([
         'setTextAnnotTextBoxRect', setTextAnnotTextBoxRectMessage.type);
     chrome.test.assertTrue(
         chrome.test.checkDeepEq(newRect, setTextAnnotTextBoxRectMessage.data));
+    chrome.test.succeed();
+  },
+
+  async function testViewport() {
+    const initialParams = manager.getViewportParams();
+    chrome.test.assertEq(1.0, initialParams.zoom);
+    // pageMarginY * zoom = 3 * 1
+    chrome.test.assertEq(3, initialParams.pageY);
+    // (windowWidth - docWidth * zoom)/2 + pageMarginX * zoom =
+    // (100 - 90 * 1)/2 + 5 * 1
+    chrome.test.assertEq(10, initialParams.pageX);
+
+    // Zoom out should fire an event.
+    let whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.setZoom(0.5);
+    let changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(0.5, changedEvent.detail.zoom);
+    // pageMarginY * zoom = 3 * .5
+    chrome.test.assertEq(1.5, changedEvent.detail.pageY);
+    // (windowWidth - docWidth * zoom)/2 + pageMarginX * zoom =
+    // (100 - 90 * .5)/2 + 5 * .5
+    chrome.test.assertEq(30, changedEvent.detail.pageX);
+
+    // Zoom in should fire an event.
+    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.setZoom(2.0);
+    changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(2, changedEvent.detail.zoom);
+    // pageMarginY * zoom = 3 * 2
+    chrome.test.assertEq(6, changedEvent.detail.pageY);
+    // docWidth * zoom > windowWidth, so this is now pageMarginX * zoom = 5 * 2
+    chrome.test.assertEq(10, changedEvent.detail.pageX);
+
+    // Translation.
+    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.goToPageAndXy(0, 20, 20);
+    changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(2, changedEvent.detail.zoom);
+    // Shifts by -20 * zoom = -40 from previous position.
+    chrome.test.assertEq(-34, changedEvent.detail.pageY);
+    // Shifts by -20 * zoom = -40 from previous position.
+    chrome.test.assertEq(-30, changedEvent.detail.pageX);
     chrome.test.succeed();
   },
 ]);

@@ -9,6 +9,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {AnnotationText, TextBoxRect} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
+import type {ViewportParams} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
 
 import {getCss} from './ink_text_box.css.js';
@@ -24,7 +25,8 @@ export interface InkTextBoxElement {
 // This is 12px of padding + 24px. For some reason, Blink crashes at < 24px wide
 // textarea. Since the textarea won't resize width-wise automatically, it also
 // doesn't work to set this dynamically like we do with the height; just set a
-// reasonable minimum width regardless of the content of the text box.
+// reasonable minimum width regardless of the content of the text box. Note that
+// this value is held constant regardless of zoom due to the rendering issue.
 const MIN_WIDTH_PX = 36;
 
 const InkTextBoxElementBase = InkTextObserverMixin(CrLitElement);
@@ -44,23 +46,32 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   static override get properties() {
     return {
+      height_: {type: Number},
       locationX_: {type: Number},
       locationY_: {type: Number},
       minHeight_: {type: Number},
-      height_: {type: Number},
+      pageX_: {type: Number},
+      pageY_: {type: Number},
       textValue_: {type: String},
       width_: {type: Number},
+      zoom_: {type: Number},
     };
   }
 
+  // Note: locationX_, locationY_, minHeight_, height_ and width_ are in
+  // screen coordinates.
   private accessor locationX_: number = 0;
   private accessor locationY_: number = 0;
   private accessor minHeight_: number = 0;
   private accessor height_: number = 0;
   protected accessor textValue_: string = 'Sample Text';
+  private accessor pageX_: number = 0;
+  private accessor pageY_: number = 0;
+  private accessor zoom_: number = 1.0;
   private accessor width_: number = 0;
 
   private eventTracker_: EventTracker = new EventTracker();
+  private fontSize_: number = 0;
   private pointerStart_: {x: number, y: number}|null = null;
   private sendTextboxUpdateTimeout_: number|null = null;
   private startPosition_: TextBoxRect|null = null;
@@ -71,6 +82,11 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         Ink2Manager.getInstance(), 'update-text-box',
         (e: Event) =>
             this.onUpdateTextBox_((e as CustomEvent<TextBoxRect>).detail));
+    this.onViewportChanged_(Ink2Manager.getInstance().getViewportParams());
+    this.eventTracker_.add(
+        Ink2Manager.getInstance(), 'viewport-changed',
+        (e: Event) =>
+            this.onViewportChanged_((e as CustomEvent<ViewportParams>).detail));
     this.eventTracker_.add(
         this, 'pointerdown', (e: PointerEvent) => this.onPointerDown_(e));
   }
@@ -102,6 +118,38 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         changedPrivateProperties.has('height_')) {
       this.hidden = this.width_ === 0 && this.height_ === 0;
     }
+
+    if (changedPrivateProperties.has('zoom_')) {
+      const previousZoom =
+          changedPrivateProperties.get('zoom_') as number | undefined;
+      if (previousZoom !== undefined) {
+        this.width_ =
+            Math.max(this.width_ * this.zoom_ / previousZoom, MIN_WIDTH_PX);
+        this.height_ = this.height_ * this.zoom_ / previousZoom;
+      }
+    }
+
+    if (changedPrivateProperties.has('zoom_') ||
+        changedPrivateProperties.has('pageX_') ||
+        changedPrivateProperties.has('pageY_')) {
+      // Note that lastPageX and lastPageY are in the old screen coordinates,
+      // i.e. they were using the old zoom value.
+      const lastPageX =
+          (changedPrivateProperties.get('pageX_') as number | undefined) ||
+          this.pageX_;
+      const lastPageY =
+          (changedPrivateProperties.get('pageY_') as number | undefined) ||
+          this.pageY_;
+      const previousZoom =
+          (changedPrivateProperties.get('zoom_') as number | undefined) ||
+          this.zoom_;
+      this.locationX_ =
+          (this.locationX_ - lastPageX) * this.zoom_ / previousZoom +
+          this.pageX_;
+      this.locationY_ =
+          (this.locationY_ - lastPageY) * this.zoom_ / previousZoom +
+          this.pageY_;
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -121,10 +169,17 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (changedPrivateProperties.has('locationY_')) {
       this.style.setProperty('--textbox-location-y', `${this.locationY_}px`);
     }
+    if (changedPrivateProperties.has('zoom_')) {
+      this.styleFontSize_();
+    }
     if (changedPrivateProperties.has('width_') ||
         changedPrivateProperties.has('height_')) {
       this.updateMinimumHeight_();
     }
+  }
+
+  private styleFontSize_() {
+    this.$.textbox.style.fontSize = `${this.fontSize_ * this.zoom_}px`;
   }
 
   protected onTextValueInput_() {
@@ -134,10 +189,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       // Height will adjust to minHeight_ on the next update cycle. Notify the
       // backend. Debouncing by 10ms.
       const update = {
-        height: this.minHeight_,
-        locationX: this.locationX_,
-        locationY: this.locationY_,
-        width: this.width_,
+        height: this.minHeight_ / this.zoom_,
+        locationX: (this.locationX_ - this.pageX_) / this.zoom_,
+        locationY: (this.locationY_ - this.pageY_) / this.zoom_,
+        width: this.width_ / this.zoom_,
       };
       if (this.sendTextboxUpdateTimeout_) {
         clearTimeout(this.sendTextboxUpdateTimeout_);
@@ -158,11 +213,19 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private onUpdateTextBox_(update: TextBoxRect) {
-    this.width_ = update.width;
-    this.height_ = update.height;
+    // Convert to screen coordinates from the update which is in page
+    // coordinates.
+    this.width_ = update.width * this.zoom_;
+    this.height_ = update.height * this.zoom_;
     this.minHeight_ = 0;
-    this.locationX_ = update.locationX;
-    this.locationY_ = update.locationY;
+    this.locationX_ = update.locationX * this.zoom_ + this.pageX_;
+    this.locationY_ = update.locationY * this.zoom_ + this.pageY_;
+  }
+
+  private onViewportChanged_(update: ViewportParams) {
+    this.zoom_ = update.zoom;
+    this.pageX_ = update.pageX;
+    this.pageY_ = update.pageY;
   }
 
   protected onPointerDown_(e: PointerEvent) {
@@ -238,16 +301,17 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.eventTracker_.remove(target, 'pointerup');
     this.eventTracker_.remove(target, 'pointermove');
     Ink2Manager.getInstance().setTextBoxRect({
-      height: this.height_,
-      locationX: this.locationX_,
-      locationY: this.locationY_,
-      width: this.width_,
+      height: this.height_ / this.zoom_,
+      locationX: (this.locationX_ - this.pageX_) / this.zoom_,
+      locationY: (this.locationY_ - this.pageY_) / this.zoom_,
+      width: this.width_ / this.zoom_,
     });
   }
 
   override onTextChanged(newTextStyles: AnnotationText) {
     this.$.textbox.style.fontFamily = newTextStyles.font;
-    this.$.textbox.style.fontSize = `${newTextStyles.size}px`;
+    this.fontSize_ = newTextStyles.size;
+    this.styleFontSize_();
     this.$.textbox.style.textAlign = newTextStyles.alignment;
     this.$.textbox.style.fontStyle =
         newTextStyles.styles.italic ? 'italic' : 'normal';

@@ -9,6 +9,13 @@ import type {AnnotationBrush, AnnotationText, Color, TextBoxRect, TextStyles} fr
 import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
 import type {MessageData} from './controller.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
+import type {Viewport} from './viewport.js';
+
+export interface ViewportParams {
+  pageX: number;
+  pageY: number;
+  zoom: number;
+}
 
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
@@ -27,6 +34,8 @@ export class Ink2Manager extends EventTarget {
   private brushResolver_: PromiseResolver<void>|null = null;
   private fontsResolver_: PromiseResolver<string[]>|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
+  private viewport_: Viewport|null = null;
+  private viewportParams_: ViewportParams = {pageX: 0, pageY: 0, zoom: 1.0};
 
   constructor() {
     super();
@@ -35,12 +44,41 @@ export class Ink2Manager extends EventTarget {
         (e: Event) => this.handlePluginMessage_(e as CustomEvent<MessageData>));
   }
 
+  setViewport(viewport: Viewport) {
+    this.viewport_ = viewport;
+  }
+
   private handlePluginMessage_(e: CustomEvent<MessageData>) {
     const data = e.detail;
     if (data.type.toString() === 'updateTextAnnotTextBoxRect') {
       const detail = data as unknown as TextBoxRect;
       this.dispatchEvent(new CustomEvent('update-text-box', {detail}));
     }
+  }
+
+  getViewportParams(): ViewportParams {
+    return this.viewportParams_;
+  }
+
+  viewportChanged() {
+    assert(this.viewport_, 'Must call setViewport() before viewportChanged()');
+    const visiblePage = this.viewport_.getMostVisiblePage();
+    const visiblePageDimensions = this.viewport_.getPageScreenRect(visiblePage);
+    const zoom = this.viewport_.getZoom();
+    if (visiblePageDimensions.x === this.viewportParams_.pageX &&
+        visiblePageDimensions.y === this.viewportParams_.pageY &&
+        zoom === this.viewportParams_.zoom) {
+      // Early return to avoid firing unnecessary events.
+      return;
+    }
+
+    this.viewportParams_ = {
+      pageX: visiblePageDimensions.x,
+      pageY: visiblePageDimensions.y,
+      zoom,
+    };
+    this.dispatchEvent(
+        new CustomEvent('viewport-changed', {detail: this.viewportParams_}));
   }
 
   isInitializationStarted(): boolean {
