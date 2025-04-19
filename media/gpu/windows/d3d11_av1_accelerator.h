@@ -45,7 +45,7 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
       const DXVA_PicParams_AV1& pic_params,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
 
-  void FillPicParams(size_t picture_index,
+  bool FillPicParams(size_t picture_index,
                      bool apply_grain,
                      const libgav1::ObuFrameHeader& frame_header,
                      const libgav1::ObuSequenceHeader& seq_header,

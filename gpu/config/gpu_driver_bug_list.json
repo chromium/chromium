@@ -3376,14 +3376,19 @@
       "vendor_id": "0x8086",
       "multi_gpu_category": "any",
       "intel_gpu_series": [
+            "alderlake",
             "meteorlake",
             "arrowlake",
             "lunarlake",
             "battlemage"
       ],
       "features": [
-        "use_current_picture_for_av1_invalid_ref"
-      ]
+        "use_first_valid_ref_for_av1_invalid_ref"
+      ],
+      "driver_version": {
+        "op": "<",
+        "value": "32.0.101.6557"
+      }
     },
     {
       "id": 438,
