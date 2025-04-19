@@ -3317,6 +3317,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3298789223962368867">URL tidak sah dimasukkan.</translation>
 <translation id="32991397311664836">Peranti:</translation>
 <translation id="3301554464236215299">Fail ini tidak biasa dimuat turun dan mungkin berbahaya</translation>
+<translation id="3301996560342889673">Sejarah penyegerakan?</translation>
 <translation id="33022249435934718">Pemegang GDI</translation>
 <translation id="3302388252085547855">Masukkan justifikasi...</translation>
 <translation id="3303795387212510132">Benarkan apl membuka pautan <ph name="PROTOCOL_SCHEME" />?</translation>
@@ -4557,6 +4558,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4139326893730851150">Kemaskinian perisian tegar</translation>
 <translation id="4142052906269098341">Buka kunci <ph name="DEVICE_TYPE" /> anda dengan telefon anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">Terokai cara AI membentuk pengalaman anda dan buat pilihan termaklum tentang privasi anda</translation>
+<translation id="4144386561593830385">Anda boleh menyimpan kata laluan anda secara selamat dengan Google Chrome - hanya log masuk seperti biasa dan kami akan uruskan yang selebihnya</translation>
 <translation id="4146026355784316281">Sentiasa Buka dengan Alat Lihat Sistem</translation>
 <translation id="4146785383423576110">Tetapkan semula dan padam bersih</translation>
 <translation id="4147099377280085053">Pilih jadual braille</translation>
@@ -5229,6 +5231,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4637083375689622795">Lagi tindakan, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Gunakan kamera sekali lagi</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Teks}other{# teks}}</translation>
+<translation id="4638568775382459156">Aktiviti Kumpulan Tab Kongsi</translation>
 <translation id="4638930039313743000">Dayakan penyahpepijatan ADB</translation>
 <translation id="4639390152280993480">Untuk melihat paparan yang diringkaskan bagi halaman ini, akses Lagi Alatan &gt; Mod Membaca</translation>
 <translation id="4641539339823703554">Chrome tidak dapat menetapkan masa sistem. Sila semak masa di bawah dan betulkan jika perlu.</translation>
@@ -6038,6 +6041,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5213114823401215820">Buka semula kumpulan yang ditutup</translation>
 <translation id="5213481667492808996">Perkhidmatan data '<ph name="NAME" />' anda sedia untuk digunakan</translation>
 <translation id="5213891612754844763">Tunjukkan tetapan proksi</translation>
+<translation id="5214484632844730228">Lihat tab daripada peranti lain?</translation>
 <translation id="5214639857958972833">Penanda halaman '<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="5215450412607891876">Hidupkan kemaskinian keselamatan lanjutan</translation>
 <translation id="5215502535566372932">Pilih negara</translation>
@@ -10547,6 +10551,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="844059392176531372">Kongsi Kumpulan Tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="8440630305826533614">Apl Linux</translation>
 <translation id="844063558976952706">Sentiasa hidup pada laman ini</translation>
+<translation id="8440730169421032987">Semak imbas merentas peranti?</translation>
 <translation id="8441313165929432954">Dayakan/Lumpuhkan Penambatan</translation>
 <translation id="8443986842926457191">URL melebihi 2048 aksara</translation>
 <translation id="8445281870900174108">Tab ini menggunakan kamera anda</translation>
@@ -10860,6 +10865,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8673026256276578048">Cari di Web...</translation>
 <translation id="867329473311423817">Dibenarkan untuk mengurus tetingkap pada semua paparan anda</translation>
 <translation id="8673383193459449849">Masalah pelayan</translation>
+<translation id="8674846270100425817">Simpan kata laluan anda secara selamat dengan Google Chrome - hanya log masuk seperti biasa dan kami akan uruskan yang selebihnya</translation>
 <translation id="8674903726754070732">Malangnya, komputer anda dikonfigurasi dengan ID perkakasan tidak sempurna. Hal ini menghalang Chrome OS daripada mengemas kini kepada pembetulan keselamatan terbaharu dan komputer anda <ph name="BEGIN_BOLD" />mungkin terdedah kepada serangan hasad<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Laman menggunakan ciri ini untuk memasuki skrin penuh secara automatik. Secara lazim, memasuki skrin penuh memerlukan interaksi pengguna.</translation>
 <translation id="8675704450909805533">Pemasang tidak menemukan destinasi yang sah untuk memasang <ph name="DEVICE_OS" />.</translation>
@@ -11104,6 +11110,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8831769650322069887">Buka <ph name="FILE_NAME" /></translation>
 <translation id="8832781841902333794">Profil anda</translation>
 <translation id="8834039744648160717">Konfigurasi rangkaian dikawal oleh <ph name="USER_EMAIL" />.</translation>
+<translation id="8835005853697140186">Benarkan Alatan Pembangun mengedit fail?</translation>
 <translation id="8835786707922974220">Pastikan anda dapat mengakses kata laluan anda yang disimpan pada bila-bila masa</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan memulangkan <ph name="DEVICE_TYPE" /> ini dalam masa seminggu. <ph name="LINK_BEGIN" />Lihat butiran<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Tinggalkan Kumpulan}other{Tinggalkan Kumpulan}}</translation>

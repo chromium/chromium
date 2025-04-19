@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Pemberitahuan Belum Dibaca}other{# Pemberitahuan Belum Dibaca}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Hidupkan sambungan berikut dalam mod Inkognito:}other{Hidupkan sambungan berikut dalam mod Inkognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 bulan yang lalu}other{# bulan yang lalu}}</translation>
+<translation id="4277033906326892359">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menaik</translation>
 <translation id="4289300219472526559">Mula Bercakap</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4491109536499578614">Imej</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Sekat semua pemberitahuan</translation>
 <translation id="6620110761915583480">Simpan Fail</translation>
 <translation id="6699343763173986273">Lagu Media Seterusnya</translation>
+<translation id="6807086321996342431">Lajur <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Media Berhenti</translation>
 <translation id="6845383723252244143">Pilih Folder</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 jam lagi}other{# jam lagi}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 jam yang lalu}other{# jam yang lalu}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 saat lagi}other{# saat lagi}}</translation>
 <translation id="8134065097954893699">Memuatkan semula halaman ini</translation>
+<translation id="813785873406874127">Lajur <ph name="COLUMN_NAME" /> dinyahisih</translation>
 <translation id="815598010540052116">Tatal Ke Bawah</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Ke Bawah Halaman</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Hantar mesej</translation>
 <translation id="8394908167088220973">Main/Jeda Media</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1t}other{#t}}</translation>
+<translation id="8582972250170726813">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menurun</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Fail (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

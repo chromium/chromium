@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{১টি অপঠিত বিজ্ঞপ্তি}one{#টি অপঠিত বিজ্ঞপ্তি}other{#টি অপঠিত বিজ্ঞপ্তি}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}one{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}other{ছদ্মবেশী মোডে নিম্নলিখিত এক্সটেনশনটি চালু করুন:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{১ মাস আগে}one{# মাস আগে}other{# মাস আগে}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> কলামটি ছোট থেকে বড় ক্রমানুসারে সাজানো হয়েছে</translation>
 <translation id="4289300219472526559">কথা বলা শুরু করুন</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="4491109536499578614">ছবি</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">সমস্ত বিজ্ঞপ্তি ব্লক করুন</translation>
 <translation id="6620110761915583480">ফাইল সেভ করুন</translation>
 <translation id="6699343763173986273">মিডিয়া পরবর্তী ট্র্যাক</translation>
+<translation id="6807086321996342431">কলাম <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">মিডিয়া থামান</translation>
 <translation id="6845383723252244143">ফোল্ডার বেছে নিন</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{১ ঘণ্টা বাকি}one{# ঘণ্টা বাকি}other{# ঘণ্টা বাকি}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{১ ঘণ্টা পূর্বে}one{# ঘণ্টা পূর্বে}other{# ঘণ্টা পূর্বে}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{১ সেকেন্ড বাকি}one{# সেকেন্ড বাকি}other{# সেকেন্ড বাকি}}</translation>
 <translation id="8134065097954893699">এই পৃষ্ঠা আবার লোড করা হচ্ছে</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> কলামটি সাজানো হয়নি</translation>
 <translation id="815598010540052116">নিচে স্ক্রল করুন</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8394908167088220973">মিডিয়া প্লে করুন/বিরতি</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{১ বছর}one{# বছর}other{# বছর}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> কলামটি বড় থেকে ছোট ক্রমানুসারে সাজানো হয়েছে</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ফাইল (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> কেবি/সেকেণ্ড</translation>

@@ -498,6 +498,7 @@
 <translation id="1839331950812095887">আপনার ধারণার সংক্ষিপ্তসার করতে পারে এমন কিছু শব্দ</translation>
 <translation id="1839551713262164453">নীতির মূল্য যাচাইকরণে সমস্যা হওয়ার জন্য যাচাই করা যায়নি</translation>
 <translation id="1840009953725035797">হোম থিয়েটার সিস্টেম</translation>
+<translation id="184153295865602321">অটোফিল ব্যবহার করে পেমেন্ট করার সময়, অতিরিক্ত সুরক্ষার জন্য সবসময় নিজের ফিঙ্গারপ্রিন্ট, মুখ বা অন্যান্য 'স্ক্রিন লক' ব্যবহার করুন</translation>
 <translation id="1842969606798536927">পেমেন্ট করুন</translation>
 <translation id="184517536440397176">এই ওয়েবসাইটে ভিজিট করতে হলে তোমার কোনও অভিভাবককে সম্মতি দিতে হবে। তুমি তাকে জিজ্ঞাসা করার আগে, আমাদের নিশ্চিত করতে হবে যে তুমিই এটি ব্যবহার করছ কিনা।</translation>
 <translation id="1846432862466000825">প্লাস্টিক (আর্কাইভাল)</translation>
@@ -1930,6 +1931,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> আপডেট করা হয়েছে</translation>
 <translation id="4298000214066716287">লগ্নিকরণ</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
+<translation id="4298925811540301889">আপনার ChromeOS ডিভাইস জুড়ে এই সাইটের কুকি সিঙ্ক করা হয়েছে। আপনি কী সিঙ্ক করবেন, তা ম্যানেজ করার জন্য <ph name="SYNC_SETTINGS" />-এ যান।</translation>
 <translation id="4300675098767811073">ডানদিকে মাল্টিপল পাঞ্চ</translation>
 <translation id="4302514097724775343">ডাইনোসর গেম খেলতে, ট্যাপ করুন</translation>
 <translation id="4304049446746819918">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}}</translation>
@@ -2029,6 +2031,7 @@
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
 <translation id="448363931695049633">পিৎজার রেস্তোরাঁ</translation>
 <translation id="4489023393592172404">এনভেলপ কাকু ৪</translation>
+<translation id="4489977488133295402">পেমেন্ট পদ্ধতি অটোফিল করতে আপনার পরিচয় যাচাই করুন</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা পাসওয়ার্ডগুলি এনক্রিপ্ট করুন</translation>
 <translation id="4493480324863638523">ইউআরএলটি সঠিক নয়। অবশ্যই স্ট্যান্ডার্ড স্কিম সহ ইউআরএল হতে হবে, যেমন http://example.com বা https://example.com.</translation>
@@ -3247,6 +3250,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">কম্পিউটার শিক্ষা</translation>
 <translation id="6633476656216409494">ব্যবসা ও প্রোডাক্টিভিটি সফ্টওয়্যার</translation>
+<translation id="6641852376826221947">আপনার কেনাকাটা কনফার্ম করুন</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6645291930348198241">কুকি ও সাইট ডেটা অ্যাক্সেস করার অনুমতি দিন।</translation>
 <translation id="6645478838938543427">দাম কমে যাওয়া সংক্রান্ত বিজ্ঞপ্তি <ph name="EMAIL_ADDRESS" />-এ পাঠানো হবে</translation>
@@ -4546,6 +4550,7 @@
 <translation id="8918062451146297192">ভার্চুয়াল কার্ডের জন্য CVC</translation>
 <translation id="8919740778133505789">স্পোর্টস কার</translation>
 <translation id="8919895429178014996">সবকটি আইটেম লুকান</translation>
+<translation id="8919989290032064330">পেমেন্ট পদ্ধতি অটোফিল করতে আপনার পরিচয় যাচাই করবেন?</translation>
 <translation id="8922013791253848639">এই সাইটে সবসময় বিজ্ঞাপন দেখানোর অনুমতি দিন</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />পুরনো টেকনোলজি ইভেন্ট হচ্ছে<ph name="END_LINK" /> এমন যে পৃষ্ঠা আপনি দেখেন, তার URL-এর সীমিত তালিকা</translation>
 <translation id="892588693504540538">উপরের ডানদিকে পাঞ্চ</translation>
