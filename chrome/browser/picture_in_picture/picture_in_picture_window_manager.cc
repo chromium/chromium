@@ -655,6 +655,10 @@ void PictureInPictureWindowManager::MaybeRecordPictureInPictureChanged(
   }
 
   uma_helper_->MaybeRecordPictureInPictureChanged(is_picture_in_picture);
+
+  if (!is_picture_in_picture) {
+    uma_helper_.reset();
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
