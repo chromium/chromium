@@ -651,8 +651,7 @@ void LoginOnUff() {
 
 // Tests that the typed credentials are correctly updated in the sign-in UFF
 // flow when there is already a credential stored for the corresponding email.
-// TODO(crbug.com/343361399): Test is failing.
-- (void)DISABLED_testUpdateTypedCredentialInUff {
+- (void)testUpdateTypedCredentialInUff {
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
   NSString* passwordValueToBeReplaced = @"old-password";
