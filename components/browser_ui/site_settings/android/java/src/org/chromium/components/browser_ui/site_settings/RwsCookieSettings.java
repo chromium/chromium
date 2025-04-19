@@ -8,8 +8,11 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.preference.Preference;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -62,7 +65,6 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
 
         @CookieControlsMode
         int pageState = getArguments().getInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE);
-
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
             setupAllowRwsPreference();
             mAllowRwsPreference.setVisible(true);
@@ -120,6 +122,17 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
                             + " or "
                             + CookieControlsMode.INCOGNITO_ONLY;
         }
+    }
+
+    @Override
+    public RecyclerView onCreateRecyclerView(
+            LayoutInflater inflater, ViewGroup parent, @Nullable Bundle savedInstanceState) {
+        RecyclerView view =
+                super.onCreateRecyclerView(
+                        assertNonNull(inflater), assertNonNull(parent), savedInstanceState);
+        // Make main content not focusable by keyboard when there is no actual actionable item.
+        view.setFocusable(false);
+        return view;
     }
 
     @Override
