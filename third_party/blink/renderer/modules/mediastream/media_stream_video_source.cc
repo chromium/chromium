@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 #include <algorithm>
@@ -168,12 +163,10 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
       suspended_tracks_.EraseAt(it);
   }
 
-  for (auto it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
-    if (it->track == video_track) {
-      pending_tracks_.erase(it);
-      break;
-    }
-  }
+  auto to_remove = std::ranges::remove_if(
+      pending_tracks_,
+      [video_track](const auto& t) { return t.track == video_track; });
+  pending_tracks_.erase(to_remove.begin(), to_remove.end());
 
   // Call |frame_adapter_->RemoveTrack| here even if adding the track has
   // failed and |frame_adapter_->AddCallback| has not been called.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 
 #include <stddef.h>
@@ -103,8 +98,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     const size_t length = frames_per_packet * kNumberOfPacketsForTest;
     auto capture_data = base::HeapArray<int16_t>::Uninit(length);
     ReadDataFromSpeechFile(capture_data);
-    const int16_t* data_ptr =
-        reinterpret_cast<const int16_t*>(capture_data.data());
+    base::span<const int16_t> data_span = capture_data.as_span();
     std::unique_ptr<media::AudioBus> data_bus =
         media::AudioBus::Create(params.channels(), params.frames_per_buffer());
 
@@ -112,7 +106,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     int num_preferred_channels = -1;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
       data_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-          data_ptr, data_bus->frames());
+          data_span.data(), data_bus->frames());
 
       // 1. Provide playout audio, if echo cancellation is enabled.
       const bool is_aec_enabled =
@@ -140,7 +134,8 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       EXPECT_EQ(expected_output_buffer_size,
                 audio_processor.output_format().frames_per_buffer());
 
-      data_ptr += params.frames_per_buffer() * params.channels();
+      data_span = data_span.subspan(
+          static_cast<size_t>(params.frames_per_buffer() * params.channels()));
 
       // Test different values of num_preferred_channels.
       if (++num_preferred_channels > 5) {
@@ -361,7 +356,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
       media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
   data_bus->Zero();
   for (int i = 0; i < data_bus->frames(); ++i) {
-    data_bus->channel(0)[i] = (i % 11) * 0.1f - 0.5f;
+    data_bus->channel_span(0)[i] = (i % 11) * 0.1f - 0.5f;
   }
 
   // Test without and with audio processing enabled.
@@ -423,10 +418,10 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
             float left_channel_energy = 0.0f;
             float right_channel_energy = 0.0f;
             for (int i = 0; i < processed_audio.frames(); ++i) {
-              left_channel_energy +=
-                  processed_audio.channel(0)[i] * processed_audio.channel(0)[i];
-              right_channel_energy +=
-                  processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
+              left_channel_energy += processed_audio.channel_span(0)[i] *
+                                     processed_audio.channel_span(0)[i];
+              right_channel_energy += processed_audio.channel_span(1)[i] *
+                                      processed_audio.channel_span(1)[i];
             }
             if (use_apm && num_preferred_channels <= 1) {
               // Mono output. Output channels are averaged.
