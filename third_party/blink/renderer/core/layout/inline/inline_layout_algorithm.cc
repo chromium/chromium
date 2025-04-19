@@ -1114,6 +1114,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
                                         column_spanner_path_);
   bool is_line_created = false;
   bool is_end_paragraph = false;
+  LayoutUnit previous_line_block_size = kIndefiniteSize;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
   wtf_size_t opportunities_index = 0;
@@ -1125,6 +1126,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if ((opportunities_index + 1) == opportunities.size()) {
       // We shouldn't have any shapes affecting the last opportunity.
       DCHECK(!opportunity.HasShapeExclusions());
+      DCHECK_EQ(previous_line_block_size, kIndefiniteSize);
       DCHECK_EQ(line_block_size, LayoutUnit());
       DCHECK_EQ(block_delta, LayoutUnit());
 
@@ -1267,6 +1269,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
           block_delta < opportunity.rect.BlockSize() &&
           !opportunity.IsBlockDeltaBelowShapes(block_delta)) [[unlikely]] {
         block_delta += LayoutUnit(1);
+        previous_line_block_size = kIndefiniteSize;
         line_block_size = LayoutUnit();
         continue;
       }
@@ -1274,6 +1277,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       // to test, proceed to the next layout opportunity.
       if ((opportunities_index + 1) != opportunities.size()) {
         block_delta = LayoutUnit();
+        previous_line_block_size = kIndefiniteSize;
         line_block_size = LayoutUnit();
         ++opportunities_index;
         continue;
@@ -1340,12 +1344,21 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     // this logic.
     if (opportunity.HasShapeExclusions() && !line_info.IsEmptyLine())
         [[unlikely]] {
-      LineLayoutOpportunity line_opportunity_with_height =
-          opportunity.ComputeLineLayoutOpportunity(
-              constraint_space, total_block_size, block_delta);
+      const LayoutUnit new_inline_size =
+          opportunity
+              .ComputeLineLayoutOpportunity(constraint_space, total_block_size,
+                                            block_delta)
+              .AvailableInlineSize();
+      const LayoutUnit old_inline_size = line_opportunity.AvailableInlineSize();
 
-      if (line_opportunity_with_height.AvailableInlineSize() !=
-          line_opportunity.AvailableInlineSize()) {
+      // We can find ourselves in a situation where we are jumping between two
+      // line heights. In this situation allow *shrinking* of the available
+      // inline-size.
+      const bool use_new_size = (previous_line_block_size == total_block_size)
+                                    ? new_inline_size < old_inline_size
+                                    : new_inline_size != old_inline_size;
+      if (use_new_size) {
+        previous_line_block_size = line_block_size;
         line_block_size = total_block_size;
         continue;
       }
@@ -1354,6 +1367,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     // Check if the line will fit in the current opportunity.
     if (total_block_size + block_delta > opportunity.rect.BlockSize()) {
       block_delta = LayoutUnit();
+      previous_line_block_size = kIndefiniteSize;
       line_block_size = LayoutUnit();
       ++opportunities_index;
       continue;
