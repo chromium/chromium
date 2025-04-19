@@ -19,7 +19,7 @@ namespace optimization_guide {
 class SafetyConfig final {
  public:
   SafetyConfig();
-  explicit SafetyConfig(std::optional<proto::FeatureTextSafetyConfiguration>);
+  explicit SafetyConfig(proto::FeatureTextSafetyConfiguration);
   SafetyConfig(const SafetyConfig&);
   SafetyConfig(SafetyConfig&&);
   SafetyConfig& operator=(SafetyConfig&&);
@@ -94,9 +94,7 @@ class SafetyConfig final {
   // canceling.
   bool OnlyCancelUnsafeResponseOnComplete() const;
 
-  const std::optional<proto::FeatureTextSafetyConfiguration>& proto() const {
-    return proto_;
-  }
+  const proto::FeatureTextSafetyConfiguration& proto() const { return proto_; }
 
  private:
   // Whether the text is in a language not supported by the safety classifier,
@@ -106,7 +104,7 @@ class SafetyConfig final {
       const on_device_model::mojom::SafetyInfoPtr& safety_info,
       double threshold) const;
 
-  std::optional<proto::FeatureTextSafetyConfiguration> proto_;
+  proto::FeatureTextSafetyConfiguration proto_;
 };
 
 }  // namespace optimization_guide

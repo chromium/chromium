@@ -674,17 +674,14 @@ bool OnDeviceModelServiceController::Solution::IsValid() {
 mojom::ModelSolutionConfigPtr
 OnDeviceModelServiceController::Solution::MakeConfig() {
   auto config = mojom::ModelSolutionConfig::New();
-
   config->feature_config = mojo_base::ProtoWrapper(adapter_->config());
   config->model_versions = mojo_base::ProtoWrapper(
       GetModelVersions(*controller_->base_model_controller_->model_metadata(),
                        controller_->safety_client_,
                        controller_->GetFeatureMetadata(feature_)->version()));
   config->max_tokens = adapter_->GetTokenLimits().max_tokens;
-  auto& safety_config = safety_checker_->safety_cfg().proto();
-  if (safety_config) {
-    config->text_safety_config = mojo_base::ProtoWrapper(*safety_config);
-  }
+  config->text_safety_config =
+      mojo_base::ProtoWrapper(safety_checker_->safety_cfg().proto());
   return config;
 }
 
