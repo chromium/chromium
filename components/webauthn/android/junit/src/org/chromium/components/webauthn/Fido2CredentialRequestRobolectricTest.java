@@ -507,6 +507,7 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mCredManHelperMock)
                 .startGetRequest(
                         any(), any(), any(), any(), any(), any(), /* ignoreGpm= */ eq(true));
+        verify(mCredManHelperMock).setNoCredentialsFallback(any());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
