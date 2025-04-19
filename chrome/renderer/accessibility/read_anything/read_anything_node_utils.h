@@ -17,6 +17,9 @@ bool IsSuperscript(ui::AXNode* ax_node);
 // Returns whether the given node is a text node displayed by read anything.
 bool IsTextForReadAnything(ui::AXNode* ax_node, bool is_pdf, bool is_docs);
 
+// Returns whether the given node should be ignored by reading mode.
+bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf);
+
 // Returns the html tag for the given node.
 std::string GetHtmlTag(ui::AXNode* ax_node, bool is_pdf, bool is_docs);
 

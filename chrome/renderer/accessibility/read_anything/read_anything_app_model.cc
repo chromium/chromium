@@ -116,31 +116,7 @@ void ReadAnythingAppModel::InsertIdIfNotIgnored(
     return;
   }
 
-  // PDFs processed with OCR have additional nodes that mark the start and end
-  // of a page. The start of a page is indicated with a `kBanner` node that has
-  // a child static text node. Ignore both. The end of a page is indicated with
-  // a `kContentInfo` node that has a child static text node. Ignore the static
-  // text node but keep the `kContentInfo` so a line break can be inserted in
-  // between pages during `a11y::GetHtmlTagForPDF()`.
-  const ax::mojom::Role role = ax_node->GetRole();
-  if (is_pdf_) {
-    // The text content of the aforementioned `kBanner` or `kContentInfo` node
-    // is the same as the text content of its child static text node.
-    const ui::AXNode* const parent = ax_node->GetParent();
-    if (const std::string_view text = ax_node->GetTextContentUTF8();
-        text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN)) {
-      if (role == ax::mojom::Role::kBanner ||
-          (parent && parent->GetRole() == ax::mojom::Role::kBanner)) {
-        return;
-      }
-    } else if (text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END) &&
-               parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
-      return;
-    }
-  }
-
-  // Ignore interactive elements, except for text fields.
-  if ((!ui::IsControl(role) || ui::IsTextField(role)) && !ui::IsSelect(role)) {
+  if (!a11y::IsIgnored(ax_node, is_pdf_)) {
     non_ignored_ids.insert(id);
   }
 }
