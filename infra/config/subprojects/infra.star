@@ -89,5 +89,8 @@ builders.builder(
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
         ),
     ],
+    properties = {
+        "target_runtime": 15.0,
+    },
     service_account = "chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com",
 )
