@@ -516,42 +516,7 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-
         mHomeButton.setOnClickListener(this);
-
-        getTabSwitcherButtonCoordinator()
-                .getContainerView()
-                .setOnKeyListener(
-                        new KeyboardNavigationListener() {
-                            @Override
-                            public View getNextFocusForward() {
-                                if (isMenuButtonPresent()) {
-                                    return getMenuButtonCoordinator().getMenuButton();
-                                } else {
-                                    return getCurrentTabView();
-                                }
-                            }
-                        });
-
-        getMenuButtonCoordinator()
-                .setOnKeyListener(
-                        new KeyboardNavigationListener() {
-                            @Override
-                            public View getNextFocusForward() {
-                                return getCurrentTabView();
-                            }
-
-                            @Override
-                            public View getNextFocusBackward() {
-                                return getTabSwitcherButtonCoordinator().getContainerView();
-                            }
-
-                            @Override
-                            protected boolean handleEnterKeyPress() {
-                                return getMenuButtonCoordinator().onEnterKeyPress();
-                            }
-                        });
-
         updateVisualsForLocationBarState();
     }
 

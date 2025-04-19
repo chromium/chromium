@@ -22,7 +22,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,19 +98,6 @@ public class HubToolbarView extends LinearLayout {
 
     void setMenuButtonVisible(boolean visible) {
         mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    void setMenuButtonEnterPressedRunnable(Runnable r) {
-        findViewById(R.id.menu_button_wrapper)
-                .setOnKeyListener(
-                        (View view, int keyCode, KeyEvent event) -> {
-                            if (keyCode == KeyEvent.KEYCODE_ENTER
-                                    && event.getAction() == KeyEvent.ACTION_UP) {
-                                r.run();
-                                return true;
-                            }
-                            return false;
-                        });
     }
 
     void setActionButton(@Nullable FullButtonData buttonData) {

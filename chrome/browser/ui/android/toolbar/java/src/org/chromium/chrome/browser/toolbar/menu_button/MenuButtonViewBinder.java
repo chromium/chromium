@@ -53,6 +53,8 @@ class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, Prop
                     themeProperty.mBrandedColorScheme);
         } else if (propertyKey == MenuButtonProperties.TRANSLATION_X) {
             view.setTranslationX(model.get(MenuButtonProperties.TRANSLATION_X));
+        } else if (propertyKey == MenuButtonProperties.ON_KEY_LISTENER) {
+            view.setOnKeyListener(model.get(MenuButtonProperties.ON_KEY_LISTENER));
         }
     }
 }
