@@ -365,8 +365,7 @@ void ChromeTestExtensionLoader::AdjustPackedExtension(
     // access to the install param.
     TestExtensionRegistryObserver registry_observer(extension_registry_,
                                                     extension_id_);
-    extension_registrar_->ReloadExtension(
-        extension_id_, ExtensionRegistrar::LoadErrorBehavior::kNoisy);
+    extension_registrar_->ReloadExtension(extension_id_);
     registry_observer.WaitForExtensionLoaded();
   }
 }

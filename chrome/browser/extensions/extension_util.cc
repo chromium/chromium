@@ -63,8 +63,7 @@ std::string ReloadExtension(const std::string& extension_id,
   // When we reload the extension the ID may be invalidated if we've passed it
   // by const ref everywhere. Make a copy to be safe. http://crbug.com/103762
   std::string id = extension_id;
-  ExtensionRegistrar::Get(context)->ReloadExtension(
-      extension_id, ExtensionRegistrar::LoadErrorBehavior::kNoisy);
+  ExtensionRegistrar::Get(context)->ReloadExtension(extension_id);
   return id;
 }
 

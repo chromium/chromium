@@ -100,8 +100,7 @@ void ShellExtensionLoader::ReloadExtension(ExtensionId extension_id) {
   // the reload so that the first step, disabling the extension, doesn't release
   // the last remaining keep-alive and shut down the application.
   keep_alive_requester_.StartTrackingReload(extension);
-  extension_registrar_->ReloadExtension(extension_id,
-                                        LoadErrorBehavior::kQuiet);
+  extension_registrar_->ReloadExtensionWithQuietFailure(extension_id);
   if (did_schedule_reload_)
     return;
 

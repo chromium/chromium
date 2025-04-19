@@ -305,7 +305,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     EXPECT_CALL(delegate_,
                 LoadExtensionForReload(extension()->id(), extension()->path(),
                                        LoadErrorBehavior::kNoisy));
-    registrar()->ReloadExtension(extension()->id(), LoadErrorBehavior::kNoisy);
+    registrar()->ReloadExtension(extension()->id());
     VerifyMock();
 
     // ExtensionRegistrar should have disabled the extension in preparation for
@@ -323,7 +323,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     EXPECT_CALL(delegate_,
                 LoadExtensionForReload(extension()->id(), extension()->path(),
                                        LoadErrorBehavior::kNoisy));
-    registrar()->ReloadExtension(extension()->id(), LoadErrorBehavior::kNoisy);
+    registrar()->ReloadExtension(extension()->id());
     VerifyMock();
 
     // The extension should remain in the terminated set until the reload
@@ -457,7 +457,7 @@ TEST_F(ExtensionRegistrarTest, AddBlocklisted) {
   registrar()->DisableExtension(extension()->id(),
                                 {disable_reason::DISABLE_USER_ACTION});
   ExpectInSet(ExtensionRegistry::BLOCKLISTED);
-  registrar()->ReloadExtension(extension()->id(), LoadErrorBehavior::kQuiet);
+  registrar()->ReloadExtensionWithQuietFailure(extension()->id());
   ExpectInSet(ExtensionRegistry::BLOCKLISTED);
 
   RemoveBlocklistedExtension();
@@ -525,7 +525,7 @@ TEST_F(ExtensionRegistrarTest, RemoveReloadedExtension) {
   RemoveDisabledExtension();
 
   // Attempting to reload it silently fails.
-  registrar()->ReloadExtension(extension()->id(), LoadErrorBehavior::kQuiet);
+  registrar()->ReloadExtensionWithQuietFailure(extension()->id());
   ExpectInSet(ExtensionRegistry::NONE);
 }
 

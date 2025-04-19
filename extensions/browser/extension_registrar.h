@@ -257,13 +257,10 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   void RemoveDisableReasonAndMaybeEnable(const std::string& extension_id,
                                          disable_reason::DisableReason reason);
 
-  // Attempts to reload the specified extension by disabling it if it is enabled
-  // and requesting the Delegate load it again.
-  // NOTE: Reloading an extension can invalidate |extension_id| and Extension
-  // pointers for the given extension. Consider making a copy of |extension_id|
-  // first and retrieving a new Extension pointer afterwards.
-  void ReloadExtension(const ExtensionId extension_id,
-                       LoadErrorBehavior load_error_behavior);
+  // Attempts to reload extension with noisy failures.
+  void ReloadExtension(const ExtensionId& extension_id);
+  // Attempts to reload extension with suppressing noisy failures.
+  void ReloadExtensionWithQuietFailure(const ExtensionId& extension_id);
 
   // Uninstalls the specified extension. Callers should only call this method
   // with extensions that exist. |reason| lets the caller specify why the
@@ -387,6 +384,14 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Triggers the unloaded notifications to deactivate an extension.
   void DeactivateExtension(const Extension* extension,
                            UnloadedExtensionReason reason);
+
+  // Attempts to reload the specified extension by disabling it if it is enabled
+  // and requesting the Delegate load it again.
+  // Because reloading can invalidate a reference to the ID. So make a copy of
+  // `extension_id` first by passing value and retrieve a new Extension pointer
+  // afterwards.
+  void DoReloadExtension(ExtensionId extension_id,
+                         LoadErrorBehavior load_error_behavior);
 
   // Unregister the service worker that is not from manifest and has extension
   // root scope.

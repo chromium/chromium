@@ -713,8 +713,7 @@ void ExtensionBrowserTest::ReloadExtension(
       extension_registry()->GetInstalledExtension(extension_id);
   ASSERT_TRUE(extension);
   TestExtensionRegistryObserver observer(extension_registry(), extension_id);
-  extension_registrar()->ReloadExtension(
-      extension_id, ExtensionRegistrar::LoadErrorBehavior::kNoisy);
+  extension_registrar()->ReloadExtension(extension_id);
   // Re-grab the extension after the reload to get the updated copy.
   extension = observer.WaitForExtensionLoaded();
   // We need to let other ExtensionRegistryObservers handle the extension load
