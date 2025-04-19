@@ -1615,24 +1615,18 @@ class FileSystemAccessDeepScanningBrowserTest
 
   void InitiateWriteViaFSA(content::WebContents* web_contents,
                            const std::string& content) {
-    // Script that triggers FSA API write. Executes async and reports results
-    // via messaging.
-    const std::string js_script = R"(
-      (async (content) => {
-        try {
-          const handle = await window.showSaveFilePicker();
-          const writable = await handle.createWritable();
-          await writable.write(content);
-          await writable.close();
-          window.domAutomationController.send("Success");
-        } catch (e) {
-          window.domAutomationController.send("Error: " + e.name +
-                                              " - " + e.message);
-        }
-      })(')" + content + R"(');
+    // Script that triggers FSA API write. Executes async and creates promise.
+    constexpr char js_script[] = R"(
+      window.fsaPromise = (async (content) => {
+        const handle = await window.showSaveFilePicker();
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+      })($1);
     )";
 
-    content::ExecuteScriptAsync(web_contents, js_script);
+    content::ExecuteScriptAsync(web_contents,
+                                content::JsReplace(js_script, content));
   }
 
  protected:
@@ -1642,6 +1636,8 @@ class FileSystemAccessDeepScanningBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// For FSA writes that trigger a block deep scan verdict, write should be
+// blocked and the destination file empty.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   SetUpReporting();
 
@@ -1705,11 +1701,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
 
   validator_run_loop.Run();
 
-  std::string js_completion_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
+  content::EvalJsResult result =
+      content::EvalJs(web_contents, "window.fsaPromise");
+
+  ASSERT_THAT(result, content::EvalJsResult::IsError());
+
   // TODO(crbug.com/407065784): Improve error message for SB checks.
-  EXPECT_EQ(js_completion_result,
-            "\"Error: AbortError - Blocked by Safe Browsing.\"");
+  EXPECT_EQ(result.error,
+            "a JavaScript error: \"AbortError: Blocked by Safe Browsing.\"\n");
 
   // File is created but remains empty due to block.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1717,6 +1716,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   EXPECT_EQ(0, base::GetFileSize(GetTestFilePath()));
 }
 
+// For FSA writes that trigger a safe deep scan verdict, write should be allowed
+// and the destination file populated appropriately.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
   SetUpReporting();
 
@@ -1748,9 +1749,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
-  std::string js_completion_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
-  EXPECT_EQ(js_completion_result, "\"Success\"");
+  ASSERT_THAT(content::EvalJs(web_contents, "window.fsaPromise"),
+              content::EvalJsResult::IsOk());
 
   // Checks that file is written successfully.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1761,6 +1761,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
   EXPECT_EQ(file_content, kTestContent);
 }
 
+// For FSA writes that trigger a warn deep scan verdict, write should be allowed
+// and the destination file populated appropriately.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
   SetUpReporting();
 
@@ -1823,9 +1825,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
 
   // For warn verdicts, we allow the write to happen as there is currently no
   // dialog that allows the user to bypass warnings.
-  std::string js_completion_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
-  EXPECT_EQ(js_completion_result, "\"Success\"");
+  ASSERT_THAT(content::EvalJs(web_contents, "window.fsaPromise"),
+              content::EvalJsResult::IsOk());
 
   // Checks that file is written successfully.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1836,6 +1837,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
   EXPECT_EQ(file_content, kTestContent);
 }
 
+// Fail-open behavior for failed deep scan requests on FSA writes.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest,
                        DeepScanFailure) {
   SetUpReporting();
@@ -1865,11 +1867,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest,
 
   WaitForDeepScanRequest();
 
-  std::string js_completion_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&js_completion_result));
-
   // When scan fails, write should still succeed (fail-open behavior).
-  EXPECT_EQ(js_completion_result, "\"Success\"");
+  ASSERT_THAT(content::EvalJs(web_contents, "window.fsaPromise"),
+              content::EvalJsResult::IsOk());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(GetTestFilePath()));
