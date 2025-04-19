@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/files/file_path.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,7 +171,7 @@ TEST_F(FileSystemUtilTest, VirtualPathGetComponents) {
   struct test_data {
     const base::FilePath::StringType path;
     size_t count;
-    const base::FilePath::StringType components[2];
+    const std::array<base::FilePath::StringType, 2> components;
   } test_cases[] = {
       {FILE_PATH_LITERAL("foo/bar"),
        2,

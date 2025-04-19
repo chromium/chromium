@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -549,11 +550,11 @@ TEST_F(BlobReaderTest, SegmentedBufferAndMemory) {
   const size_t kTotalSize = kNumItems * kItemSize;
   char current_value = 0;
   for (size_t i = 0; i < kNumItems; i++) {
-    char buf[kItemSize];
+    std::array<char, kItemSize> buf;
     for (size_t j = 0; j < kItemSize; j++) {
       buf[j] = current_value++;
     }
-    b->AppendData(std::string(buf, kItemSize));
+    b->AppendData(std::string(buf.data(), kItemSize));
   }
   this->InitializeReader(std::move(b));
 
