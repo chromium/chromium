@@ -89,6 +89,11 @@ TEST_F(MetricsHelperTest, RecordInterstitialShowDelay) {
       "interstitial.phishing.show_delay.from_client_side_detection",
       "interstitial.phishing.show_delay.from_client_side_detection.scam_"
       "experiment_verdict_1");
+  VerifyInterstitialHistograms(
+      "interstitial.phishing.show_delay_long_range",
+      "interstitial.phishing.show_delay_long_range.from_client_side_detection",
+      "interstitial.phishing.show_delay_long_range.from_client_side_detection."
+      "scam_experiment_verdict_1");
 }
 
 }  // namespace security_interstitials

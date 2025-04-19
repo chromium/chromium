@@ -1156,6 +1156,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
   const std::string delay_histogram = "interstitial." + prefix + ".show_delay";
+  const std::string delay_long_range_histogram =
+      "interstitial." + prefix + ".show_delay_long_range";
   const std::string threat_source = ".from_device_v4";
 
   // TODO(nparker): Check for *.from_device as well.
@@ -1174,6 +1176,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       security_interstitials::MetricsHelper::SHOW, 1);
   histograms.ExpectTimeBucketCount(delay_histogram, base::TimeDelta::Min(), 1);
   histograms.ExpectTimeBucketCount(delay_histogram + threat_source,
+                                   base::TimeDelta::Min(), 1);
+  histograms.ExpectTimeBucketCount(delay_long_range_histogram,
+                                   base::TimeDelta::Min(), 1);
+  histograms.ExpectTimeBucketCount(delay_long_range_histogram + threat_source,
                                    base::TimeDelta::Min(), 1);
   histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
@@ -1239,6 +1245,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
   const std::string delay_histogram = "interstitial." + prefix + ".show_delay";
+  const std::string delay_long_range_histogram =
+      "interstitial." + prefix + ".show_delay_long_range";
   const std::string threat_source = ".from_device_v4";
 
   // Histograms should start off empty.
@@ -1255,6 +1263,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       security_interstitials::MetricsHelper::SHOW, 1);
   histograms.ExpectTimeBucketCount(delay_histogram, base::TimeDelta::Min(), 1);
   histograms.ExpectTimeBucketCount(delay_histogram + threat_source,
+                                   base::TimeDelta::Min(), 1);
+  histograms.ExpectTimeBucketCount(delay_long_range_histogram,
+                                   base::TimeDelta::Min(), 1);
+  histograms.ExpectTimeBucketCount(delay_long_range_histogram + threat_source,
                                    base::TimeDelta::Min(), 1);
   histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(

@@ -189,16 +189,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="interstitial.phishing.show_delay.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
+    name="interstitial.phishing.show_delay{TimeRange}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
     enum="SecurityInterstitialDecision" expires_after="2026-04-09">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>
-    The time between when the blocked page is shown and when the interstitial is
-    shown. 0 if the blocked page is not shown. This is specifically for phishing
-    ThreatType from client side detection for
+    The time {TimeRange} between when the blocked page is shown and when the
+    interstitial is shown. 0 if the blocked page is not shown. This is
+    specifically for phishing ThreatType from client side detection for
     {SecurityInterstitialSBWithSourceSubtype}.
   </summary>
+  <token key="TimeRange">
+    <variant name="" summary="(capped at 10 seconds)"/>
+    <variant name="_long_range" summary="(capped at 3 minutes)"/>
+  </token>
   <token key="SecurityInterstitialSBWithSourceSubtype"
       variants="SecurityInterstitialSBWithSourceSubtype"/>
 </histogram>
@@ -483,18 +487,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="interstitial.{SecurityInterstitialSBType}show_delay{SecurityInterstitialSBWithSourceType}"
+    name="interstitial.{SecurityInterstitialSBType}show_delay{TimeRange}{SecurityInterstitialSBWithSourceType}"
     units="ms" expires_after="2025-08-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The time between when the blocked page is shown and when the interstitial is
-    shown. 0 if the blocked page is not shown.
+    The time {TimeRange} between when the blocked page is shown and when the
+    interstitial is shown. 0 if the blocked page is not shown.
 
     {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
   </summary>
   <token key="SecurityInterstitialSBType"
       variants="SecurityInterstitialSBType"/>
+  <token key="TimeRange">
+    <variant name="" summary="(capped at 10 seconds)"/>
+    <variant name="_long_range" summary="(capped at 3 minutes)"/>
+  </token>
   <token key="SecurityInterstitialSBWithSourceType"
       variants="SecurityInterstitialSBWithSourceType">
     <variant name=""/>

@@ -227,19 +227,28 @@ void MetricsHelper::RecordShutdownMetrics() {
 void MetricsHelper::RecordInterstitialShowDelay() {
   const std::string histogram_name("interstitial." + settings_.metric_prefix +
                                    ".show_delay");
+  const std::string histogram_name_long_range(
+      "interstitial." + settings_.metric_prefix + ".show_delay_long_range");
   base::TimeDelta delay =
       settings_.blocked_page_shown_timestamp.has_value()
           ? base::TimeTicks::Now() -
                 settings_.blocked_page_shown_timestamp.value()
           : base::TimeDelta::Min();
   base::UmaHistogramTimes(histogram_name, delay);
+  base::UmaHistogramMediumTimes(histogram_name_long_range, delay);
   if (!settings_.extra_suffix.empty()) {
     base::UmaHistogramTimes(histogram_name + "." + settings_.extra_suffix,
                             delay);
+    base::UmaHistogramMediumTimes(
+        histogram_name_long_range + "." + settings_.extra_suffix, delay);
     if (!settings_.extra_extra_suffix.empty()) {
       base::UmaHistogramTimes(histogram_name + "." + settings_.extra_suffix +
                                   "." + settings_.extra_extra_suffix,
                               delay);
+      base::UmaHistogramMediumTimes(histogram_name_long_range + "." +
+                                        settings_.extra_suffix + "." +
+                                        settings_.extra_extra_suffix,
+                                    delay);
     }
   }
 }
