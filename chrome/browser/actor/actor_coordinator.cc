@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -137,6 +138,7 @@ void ActorCoordinator::Act(const BrowserAction& action,
 
   // StartTask must have been called to initialize the tab for action.
   if (!task_tab_) {
+    VLOG(1) << "Unable to perform action: no active tab";
     PostTaskForActCallback(std::move(callback), /*success=*/false);
     return;
   }
@@ -163,6 +165,7 @@ void ActorCoordinator::TryStartNewTask(const BrowserAction& action,
   // Only a single task, in a single tab, allowed at a time. This includes when
   // initialization of a new task in progress (i.e. creating a new tab).
   if (initializing_new_task_ || task_tab_) {
+    VLOG(1) << "Cannot start new task: task already in progress";
     PostTaskForStartCallback(std::move(callback), /*tab=*/nullptr);
     return;
   }
@@ -172,6 +175,7 @@ void ActorCoordinator::TryStartNewTask(const BrowserAction& action,
   if (action.action_information_size() != 1 ||
       action.action_information().at(0).action_info_case() !=
           ActionInformation::kNavigate) {
+    VLOG(1) << "Cannot start new task: first action was not kNavigate";
     PostTaskForStartCallback(std::move(callback), /*tab=*/nullptr);
     return;
   }
@@ -197,6 +201,7 @@ void ActorCoordinator::CreateNewTab(StartTaskCallback callback) {
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       Navigate(&params);
   if (!navigation_handle) {
+    VLOG(1) << "Cannot start new task: unable to open about:blank";
     PostTaskForStartInitializationFailed(std::move(callback));
     return;
   }
@@ -220,10 +225,12 @@ void ActorCoordinator::OnNewTabCreated(StartTaskCallback callback,
   new_tab_web_contents_observer_.reset();
 
   if (!web_contents) {
+    VLOG(1) << "Unable to start new task: failed to create tab";
     std::move(callback).Run(/*tab=*/nullptr);
     return;
   }
 
+  VLOG(1) << "Started new task";
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   task_tab_ = tab->GetWeakPtr();
   std::move(callback).Run(tab->GetWeakPtr());
