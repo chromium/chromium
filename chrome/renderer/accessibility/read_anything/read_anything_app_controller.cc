@@ -480,11 +480,6 @@ void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
   if (model_.display_node_ids().contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);
-    if (IsReadAloudEnabled() && !read_aloud_model_.speech_playing()) {
-      model_.RemoveDisplayNode(node_id);
-      ExecuteJavaScript("chrome.readingMode.onNodeWillBeDeleted(" +
-                        base::ToString(node_id) + ")");
-    }
   }
 }
 
@@ -493,9 +488,10 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
   if (displayed_nodes_pending_deletion_.contains(node_id)) {
     displayed_nodes_pending_deletion_.erase(node_id);
 
-    // Instead of redrawing everything, we inform the webui that the node is
-    // being deleted and it will adjust on that side. See OnNodeWillBeDeleted.
-    if (IsReadAloudEnabled()) {
+    // If speech is playing, we don't want to redraw because this can disrupt
+    // speech.
+    if (features::IsReadAnythingReadAloudEnabled() &&
+        read_aloud_model_.speech_playing()) {
       return;
     }
 

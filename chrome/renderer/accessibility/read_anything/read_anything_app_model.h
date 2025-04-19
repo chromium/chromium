@@ -237,7 +237,6 @@ class ReadAnythingAppModel {
   void SetUrlInformationCallback(base::OnceCallback<void()> callback);
   bool IsDocs() const;
   bool IsReload() const;
-  void RemoveDisplayNode(ui::AXNodeID id);
 
   const std::set<ui::AXNodeID>* GetCurrentlyVisibleNodes() const;
 
