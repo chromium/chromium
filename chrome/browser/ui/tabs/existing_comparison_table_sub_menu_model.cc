@@ -123,9 +123,13 @@ void ExistingComparisonTableSubMenuModel::AddUrlToSet(const UrlInfo& url_info,
     product_specs_service_->SetUrls(set_uuid, std::move(existing_url_infos));
   }
 
-  ShowProductSpecsConfirmationToast(
-      base::UTF8ToUTF16(set->name()),
-      chrome::FindBrowserWithProfile(model()->profile()));
+  Browser* browser = chrome::FindBrowserWithProfile(model()->profile());
+  if (!browser) {
+    // Do nothing.
+    return;
+  }
+
+  ShowProductSpecsConfirmationToast(base::UTF8ToUTF16(set->name()), browser);
 }
 
 }  // namespace commerce
