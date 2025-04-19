@@ -27,6 +27,12 @@ inline constexpr char kUploadFCMTokenTemplate[] = "v1/users/$1";
 inline constexpr char kUpdateSessionUrlTemplate[] =
     "v1/teachers/$1/sessions/$2?updateMask=$3";
 
+inline constexpr char kUpdateSessionConfigUrlTemplate[] =
+    "v1/teachers/$1/sessions/$2:updateConfig";
+
+inline constexpr char kUpdateSessionConfigUrlTemplateWithUpdateMask[] =
+    "v1/teachers/$1/sessions/$2:updateConfig?updateMask=$3";
+
 inline constexpr char kInsertStudentActivity[] =
     "v1/sessions/$1/students/$2/devices/$3/activities:insert";
 
@@ -59,6 +65,7 @@ inline constexpr char kRoster[] = "roster";
 inline constexpr char kRosterTitle[] = "title";
 inline constexpr char kStudentGroupTitle[] = "title";
 inline constexpr char kStudentGroups[] = "studentGroups";
+inline constexpr char kStudentGroupIds[] = "studentGroupIds";
 inline constexpr char kStudents[] = "students";
 inline constexpr char kGaiaId[] = "gaiaId";
 inline constexpr char kEmail[] = "email";
@@ -69,6 +76,7 @@ inline constexpr char kStartTime[] = "startTime";
 inline constexpr char kDuration[] = "duration";
 inline constexpr char kSessionState[] = "sessionState";
 inline constexpr char kOnTaskConfig[] = "onTaskConfig";
+inline constexpr char kSessionConfig[] = "sessionConfig";
 inline constexpr char kCaptionsConfig[] = "captionsConfig";
 inline constexpr char kCaptionsEnabled[] = "captionsEnabled";
 inline constexpr char kTranslationsEnabled[] = "translationsEnabled";
