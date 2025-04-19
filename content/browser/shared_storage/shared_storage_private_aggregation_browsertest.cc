@@ -2264,7 +2264,7 @@ class SharedStoragePrivateAggregationErrorReportingEnabledBrowserTest
         "reserved.insufficient-budget",
         {bucket: 5n, value: 6, filteringId: 7n});
     privateAggregation.contributeToHistogramOnEvent(
-        "reserved.uncaught-exception",
+        "reserved.uncaught-error",
         {bucket: 6n, value: 7, filteringId: 8n});
     privateAggregation.contributeToHistogramOnEvent(
         "reserved.contribution-timeout-reached",
@@ -2943,7 +2943,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SharedStoragePrivateAggregationErrorReportingEnabledBrowserTest,
-    UncaughtException_Triggered) {
+    UncaughtError_Triggered) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("a.test", kSimplePagePath)));
 
@@ -2968,7 +2968,7 @@ IN_PROC_BROWSER_TEST_F(
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
-                    // Conditional on reserved.uncaught-exception:
+                    // Conditional on reserved.uncaught-error:
                     testing::AllOf(
                         Field("bucket", &Contribution::bucket, 6),
                         Field("value", &Contribution::value, 7),
@@ -3009,10 +3009,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL out_script_url;
 
   // Invoke the exception after the conditional contributions are made.
-  std::string uncaught_exception_script =
+  std::string uncaught_error_script =
       base::StrCat({kScriptToContributeToEachErrorEvent, "undefinedVariable;"});
 
-  ExecuteScriptInWorklet(shell(), uncaught_exception_script, &out_script_url);
+  ExecuteScriptInWorklet(shell(), uncaught_error_script, &out_script_url);
 
   EXPECT_EQ(console_observer.messages().size(), 1u);
   EXPECT_THAT(base::UTF16ToUTF8(console_observer.messages()[0].message),
@@ -3422,7 +3422,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             /*worklet_id=*/0)}});
 }
 
-// TODO(alexmt): Consider testing that reserved.uncaught-exception not triggered
+// TODO(alexmt): Consider testing that reserved.uncaught-error not triggered
 // for selectURL if the incorrect type is returned.
 
 }  // namespace content

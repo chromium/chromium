@@ -51,18 +51,18 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
     // Contributions that should be forwarded if and only if an uncaught
     // exception occurs.
     Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
-        contributions_conditional_on_uncaught_exception;
+        contributions_conditional_on_uncaught_error;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(private_aggregation_host);
     }
   };
 
-  // Indicates whether the operation was terminated due to an uncaught exception
-  // or not.
+  // Indicates whether the operation was terminated due to an uncaught error or
+  // not.
   enum class TerminationStatus {
-    kNoUncaughtException,
-    kUncaughtException,
+    kNoUncaughtError,
+    kUncaughtError,
   };
 
   explicit PrivateAggregation(SharedStorageWorkletGlobalScope* global_scope);

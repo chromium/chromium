@@ -63,8 +63,8 @@ std::optional<mojom::blink::PrivateAggregationErrorEvent> ParseEvent(
   } else if (event == "reserved.contribution-timeout-reached") {
     return mojom::blink::PrivateAggregationErrorEvent::
         kContributionTimeoutReached;
-  } else if (event == "reserved.uncaught-exception") {
-    // Note: uncaught exception is the only external error for Shared Storage.
+  } else if (event == "reserved.uncaught-error") {
+    // Note: uncaught error is the only external error for Shared Storage.
     return mojom::blink::PrivateAggregationErrorEvent::
         kAlreadyTriggeredExternalError;
   } else {
@@ -173,10 +173,10 @@ void PrivateAggregation::contributeToHistogramOnEvent(
     // Limit worst-case memory usage.
     constexpr size_t kConditionalContributionLimit = 10'000;
     if (GetCurrentOperationState()
-            .contributions_conditional_on_uncaught_exception.size() <
+            .contributions_conditional_on_uncaught_error.size() <
         kConditionalContributionLimit) {
       GetCurrentOperationState()
-          .contributions_conditional_on_uncaught_exception.push_back(
+          .contributions_conditional_on_uncaught_error.push_back(
               std::move(parsed_contribution));
     }
     return;
@@ -266,19 +266,19 @@ void PrivateAggregation::OnOperationFinished(
     TerminationStatus termination_status) {
   CHECK(operation_states_.Contains(operation_id));
 
-  bool completion_caused_by_uncaught_exception =
-      termination_status == TerminationStatus::kUncaughtException;
-  if (completion_caused_by_uncaught_exception) {
+  bool completion_caused_by_uncaught_error =
+      termination_status == TerminationStatus::kUncaughtError;
+  if (completion_caused_by_uncaught_error) {
     Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
-        contributions_conditional_on_uncaught_exception =
+        contributions_conditional_on_uncaught_error =
             std::move(operation_states_.at(operation_id)
-                          ->contributions_conditional_on_uncaught_exception);
-    if (!contributions_conditional_on_uncaught_exception.empty()) {
+                          ->contributions_conditional_on_uncaught_error);
+    if (!contributions_conditional_on_uncaught_error.empty()) {
       operation_states_.at(operation_id)
           ->private_aggregation_host->ContributeToHistogramOnEvent(
               mojom::blink::PrivateAggregationErrorEvent::
                   kAlreadyTriggeredExternalError,
-              std::move(contributions_conditional_on_uncaught_exception));
+              std::move(contributions_conditional_on_uncaught_error));
     }
   }
 
@@ -296,8 +296,7 @@ void PrivateAggregation::OnWorkletDestroyed() {
 
   std::ranges::for_each(remaining_operation_ids, [this](int64_t operation_id) {
     OnOperationFinished(
-        operation_id,
-        PrivateAggregation::TerminationStatus::kNoUncaughtException);
+        operation_id, PrivateAggregation::TerminationStatus::kNoUncaughtError);
   });
 
   CHECK(operation_states_.empty());
