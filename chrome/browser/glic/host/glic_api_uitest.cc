@@ -223,17 +223,6 @@ class GlicApiTest : public test::InteractiveGlicTest {
            << (frame != nullptr);
   }
 
-  content::RenderFrameHost* FindGlicGuestMainFrame() {
-    GlicKeyedService* glic =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-    for (GlicPageHandler* handler : glic->host().GetPageHandlersForTesting()) {
-      if (handler->GetGuestMainFrame()) {
-        return handler->GetGuestMainFrame();
-      }
-    }
-    return nullptr;
-  }
-
   void WaitForWebUiState(mojom::WebUiState state) {
     WebUIStateListener listener(&window_controller());
     listener.WaitForWebUiState(state);

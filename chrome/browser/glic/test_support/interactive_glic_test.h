@@ -18,6 +18,8 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -393,6 +395,16 @@ class InteractiveGlicTestT : public T {
         Api::ObserveState(glic::test::internal::kDelayState,
                           std::move(observer)),
         Api::WaitForState(glic::test::internal::kDelayState, true));
+  }
+
+  content::RenderFrameHost* FindGlicGuestMainFrame() {
+    for (GlicPageHandler* handler :
+         glic_service()->host().GetPageHandlersForTesting()) {
+      if (handler->GetGuestMainFrame()) {
+        return handler->GetGuestMainFrame();
+      }
+    }
+    return nullptr;
   }
 
   glic::GlicTestEnvironment& glic_test_environment() {
