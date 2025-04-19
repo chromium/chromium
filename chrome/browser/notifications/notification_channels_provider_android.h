@@ -25,6 +25,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "url/origin.h"
 
 class TemplateURLService;
 
@@ -151,7 +152,7 @@ class NotificationChannelsProviderAndroid
   // Helper methods for implementing ClearBlockedChannelsIfNecessary(). Called
   // when updated channels are retrieved.
   void ClearBlockedChannelsIfNecessaryImpl(
-      TemplateURLService* template_url_service,
+      const url::Origin& default_search_engine_origin,
       const std::vector<NotificationChannel>& channels);
 
   // Don't call this directly.

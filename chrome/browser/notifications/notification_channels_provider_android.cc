@@ -34,7 +34,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 #include "url/url_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -293,23 +292,21 @@ void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessary(
     return;
   }
 
-  ScheduleGetChannels(
-      /*skip_get_if_cached_channels_are_available=*/false,
-      base::BindOnce(&NotificationChannelsProviderAndroid::
-                         ClearBlockedChannelsIfNecessaryImpl,
-                     weak_factory_.GetWeakPtr(),
-                     base::Unretained(template_url_service)));
-}
-
-void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessaryImpl(
-    TemplateURLService* template_url_service,
-    const std::vector<NotificationChannel>& channels) {
   url::Origin default_search_engine_origin;
   if (template_url_service) {
     default_search_engine_origin =
         template_url_service->GetDefaultSearchProviderOrigin();
   }
+  ScheduleGetChannels(
+      /*skip_get_if_cached_channels_are_available=*/false,
+      base::BindOnce(&NotificationChannelsProviderAndroid::
+                         ClearBlockedChannelsIfNecessaryImpl,
+                     weak_factory_.GetWeakPtr(), default_search_engine_origin));
+}
 
+void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessaryImpl(
+    const url::Origin& default_search_engine_origin,
+    const std::vector<NotificationChannel>& channels) {
   for (const NotificationChannel& channel : channels) {
     if (channel.status != NotificationChannelStatus::BLOCKED)
       continue;
