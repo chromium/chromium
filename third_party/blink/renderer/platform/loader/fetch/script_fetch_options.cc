@@ -29,8 +29,7 @@ ScriptFetchOptions::ScriptFetchOptions(
     network::mojom::CredentialsMode credentials_mode,
     network::mojom::ReferrerPolicy referrer_policy,
     mojom::blink::FetchPriorityHint fetch_priority_hint,
-    RenderBlockingBehavior render_blocking_behavior,
-    RejectCoepUnsafeNone reject_coep_unsafe_none)
+    RenderBlockingBehavior render_blocking_behavior)
     : nonce_(nonce),
       integrity_metadata_(integrity_metadata),
       integrity_attribute_(integrity_attribute),
@@ -38,8 +37,7 @@ ScriptFetchOptions::ScriptFetchOptions(
       credentials_mode_(credentials_mode),
       referrer_policy_(referrer_policy),
       fetch_priority_hint_(fetch_priority_hint),
-      render_blocking_behavior_(render_blocking_behavior),
-      reject_coep_unsafe_none_(reject_coep_unsafe_none) {}
+      render_blocking_behavior_(render_blocking_behavior) {}
 
 ScriptFetchOptions::~ScriptFetchOptions() = default;
 
@@ -60,7 +58,6 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   ResourceLoaderOptions resource_loader_options(world_for_csp);
   resource_loader_options.initiator_info.name =
       fetch_initiator_type_names::kScript;
-  resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none_;
   FetchParameters params(std::move(resource_request), resource_loader_options);
   params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
   params.SetRequestDestination(network::mojom::RequestDestination::kScript);

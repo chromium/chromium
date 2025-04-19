@@ -179,9 +179,6 @@ void ModuleScriptLoader::FetchInternal(
   // ...</spec>
   options.parser_disposition = options_.ParserState();
 
-  // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
-  options.reject_coep_unsafe_none = options_.GetRejectCoepUnsafeNone();
-
   if (level == ModuleGraphLevel::kDependentModuleFetch) {
     options.initiator_info.is_imported_module = true;
     options.initiator_info.referrer = module_request.ReferrerString();

@@ -146,9 +146,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object_data,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      RejectCoepUnsafeNone reject_coep_unsafe_none =
-          RejectCoepUnsafeNone(false));
+      network::mojom::CredentialsMode);
 
   // Posts a task to the worker thread to close the global scope and terminate
   // the underlying thread. This task may be blocked by JavaScript execution on
@@ -367,8 +365,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object,
       WorkerResourceTimingNotifier* outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      bool reject_coep_unsafe_none);
+      network::mojom::CredentialsMode);
 
   // PrepareForShutdownOnWorkerThread() notifies that the context will be
   // destroyed, discards queued tasks to prevent running further tasks, and

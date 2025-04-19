@@ -147,8 +147,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-      network::mojom::CredentialsMode,
-      RejectCoepUnsafeNone reject_coep_unsafe_none) override;
+      network::mojom::CredentialsMode) override;
   void Dispose() override;
   InstalledScriptsManager* GetInstalledScriptsManager() override;
 

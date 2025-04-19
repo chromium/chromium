@@ -751,8 +751,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // credentials mode, and referrer policy is referrer policy.</spec>
   ScriptFetchOptions options(nonce, integrity_metadata, integrity_attr,
                              parser_state, credentials_mode, referrer_policy,
-                             fetch_priority_hint, render_blocking_behavior,
-                             RejectCoepUnsafeNone(false));
+                             fetch_priority_hint, render_blocking_behavior);
 
   // <spec step="30">Let settings object be el's node document's relevant
   // settings object.</spec>

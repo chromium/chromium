@@ -111,7 +111,6 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
       net::StorageAccessApiStatus storage_access_api_status);
 
@@ -414,10 +413,6 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // TODO(crbug.com/40054797): Remove `creator_coep_reporter_` after this
   // class's lifetime is aligned with the associated frame.
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
-
-  // TODO(crbug.com/40093136): Remove `ancestor_coep_reporter_` now that
-  // PlzDedicatedWorker is enabled by default.
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
 
   // This is valid after DidStartScriptLoad() and remains non-null for the
   // lifetime of `this`.

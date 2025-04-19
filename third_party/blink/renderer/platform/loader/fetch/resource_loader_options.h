@@ -63,12 +63,6 @@ enum CacheAwareLoadingEnabled : uint8_t {
   kIsCacheAwareLoadingEnabled
 };
 
-// https://github.com/WICG/cross-origin-embedder-policy/pull/13
-// When true, a response is blocked unless it has
-// cross-origin-embedder-policy: require-corp.
-using RejectCoepUnsafeNone =
-    base::StrongAlias<class RejectCoepUnsafeNoneTag, bool>;
-
 // This class is thread-bound. Do not copy/pass an instance across threads.
 struct PLATFORM_EXPORT ResourceLoaderOptions final {
   DISALLOW_NEW();
@@ -93,9 +87,6 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
 
   network::mojom::CSPDisposition content_security_policy_option;
   SynchronousPolicy synchronous_policy;
-
-  // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
-  RejectCoepUnsafeNone reject_coep_unsafe_none = RejectCoepUnsafeNone(false);
 
   String content_security_policy_nonce;
   IntegrityMetadataSet integrity_metadata;

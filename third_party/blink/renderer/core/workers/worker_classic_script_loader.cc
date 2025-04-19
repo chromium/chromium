@@ -144,7 +144,6 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     network::mojom::CredentialsMode credentials_mode,
     base::OnceClosure response_callback,
     base::OnceClosure finished_callback,
-    RejectCoepUnsafeNone reject_coep_unsafe_none,
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         blob_url_loader_factory) {
   DCHECK(fetch_client_settings_object_fetcher);
@@ -186,7 +185,6 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
   ResourceLoaderOptions resource_loader_options(
       execution_context.GetCurrentWorld());
   need_to_cancel_ = true;
-  resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none;
   if (blob_url_loader_factory) {
     resource_loader_options.url_loader_factory =
         base::MakeRefCounted<base::RefCountedData<

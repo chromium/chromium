@@ -95,8 +95,6 @@ class CORE_EXPORT WorkerClassicScriptLoader final
       network::mojom::CredentialsMode,
       base::OnceClosure response_callback,
       base::OnceClosure finished_callback,
-      RejectCoepUnsafeNone reject_coep_unsafe_none =
-          RejectCoepUnsafeNone(false),
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
           blob_url_loader_factory = {});
 
