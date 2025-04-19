@@ -38,6 +38,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -59,8 +60,11 @@ constexpr int kIconHeight = 16;
 constexpr int kTextWithIconViewIconSize = 24;
 
 std::unique_ptr<views::ImageView> CreateIconView(
-    TitleWithIconAfterLabelView::Icon icon_to_show) {
+    TitleWithIconAfterLabelView::Icon icon_to_show,
+    const base::RepeatingCallback<ui::ColorVariant()>&
+        get_background_color_callback) {
   ui::ImageModel model;
+  std::optional<ui::ImageModel> model_dark;
   switch (icon_to_show) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY:
@@ -72,23 +76,26 @@ std::unique_ptr<views::ImageView> CreateIconView(
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM:
       model = ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-                  ? IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK
-                  : IDR_AUTOFILL_GOOGLE_PAY_AFFIRM));
+              IDR_AUTOFILL_GOOGLE_PAY_AFFIRM));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK));
       break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFTERPAY:
       model = ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-                  ? IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY_DARK
-                  : IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY));
+              IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY_DARK));
       break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP:
       model = ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-                  ? IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK
-                  : IDR_AUTOFILL_GOOGLE_PAY_ZIP));
+              IDR_AUTOFILL_GOOGLE_PAY_ZIP));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK));
       break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_G: {
       const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
@@ -104,7 +111,8 @@ std::unique_ptr<views::ImageView> CreateIconView(
       break;
     }
   }
-  return views::Builder<views::ImageView>().SetImage(model).Build();
+  return std::make_unique<views::ThemeTrackingImageView>(
+      model, model_dark.value_or(model), get_background_color_callback);
 }
 
 }  // namespace
@@ -148,7 +156,14 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
       window_title, views::style::CONTEXT_DIALOG_TITLE));
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_label->SetMultiLine(true);
-  auto* icon_view = AddChildView(CreateIconView(icon_to_show));
+  auto* icon_view = AddChildView(CreateIconView(
+      icon_to_show,
+      base::BindRepeating(
+          [](views::View* view) {
+            return ui::ColorVariant(
+                view->GetColorProvider()->GetColor(ui::kColorDialogBackground));
+          },
+          base::Unretained(this))));
 
   // Center the icon against the first line of the title label. This needs to be
   // done after we create the title label, so that we can use its preferred
