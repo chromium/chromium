@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <array>
@@ -19,6 +16,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -1207,16 +1205,15 @@ BiddingAndAuctionSerializer::BuildRequestFromMessage(const url::Origin& seller,
            maybe_msg->size() + kFramingHeaderSize);
 
   std::vector<uint8_t> request(padded_size.ValueOrDie());
-  // first byte is version and compression
-  request[0] = (kRequestVersion << kRequestVersionBitOffset) |
-               (kGzipCompression << kCompressionBitOffset);
-  uint32_t request_size = maybe_msg->size();
-  request[1] = (request_size >> 24) & 0xff;
-  request[2] = (request_size >> 16) & 0xff;
-  request[3] = (request_size >> 8) & 0xff;
-  request[4] = (request_size >> 0) & 0xff;
+  base::SpanWriter<uint8_t> span_writer(request);
 
-  memcpy(&request[kFramingHeaderSize], maybe_msg->data(), maybe_msg->size());
+  // first byte is version and compression
+  span_writer.WriteU8BigEndian((kRequestVersion << kRequestVersionBitOffset) |
+                               (kGzipCompression << kCompressionBitOffset));
+  // No need for a checked_cast here, since size was checked above.
+  span_writer.WriteU32BigEndian(static_cast<uint32_t>(maybe_msg->size()));
+  span_writer.Write(*maybe_msg);
+
   return request;
 }
 
