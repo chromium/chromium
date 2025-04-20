@@ -2673,7 +2673,7 @@
     },
     {
       name: "LayoutNGShapeCache",
-      status: "test",
+      status: "stable",
       base_feature: "LayoutNGShapeCache",
     },
     {
