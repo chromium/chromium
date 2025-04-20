@@ -33,6 +33,14 @@
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #endif
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
+
+#if BUILDFLAG(SKIA_USE_METAL)
+#include "components/viz/common/gpu/metal_context_provider.h"
+#endif
+
 // From ANGLE's EGL/eglext_angle.h. This should be included instead of being
 // redefined here.
 #ifndef EGL_ANGLE_device_metal
@@ -109,12 +117,42 @@ void RecordFrameTypes(bool is_handling_interaction,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+id<MTLDevice> GetMTLDevice(scoped_refptr<SharedContextState> context_state) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (context_state->IsGraphiteDawnMetal()) {
+    CHECK(context_state->dawn_context_provider());
+    return dawn::native::metal::GetMTLDevice(
+        context_state->dawn_context_provider()->GetDevice().Get());
+  }
+#endif
+#if BUILDFLAG(SKIA_USE_METAL)
+  if (context_state->IsGraphiteMetal()) {
+    CHECK(context_state->metal_context_provider());
+    return context_state->metal_context_provider()->GetMTLDevice();
+  }
+#endif
+  if (context_state->GrContextIsGL()) {
+    EGLAttrib angle_device_attrib = 0;
+    if (eglQueryDisplayAttribEXT(context_state->display()->GetDisplay(),
+                                 EGL_DEVICE_EXT, &angle_device_attrib)) {
+      EGLDeviceEXT angle_device =
+          reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
+      EGLAttrib metal_device_attrib = 0;
+      if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
+                                  &metal_device_attrib)) {
+        return (__bridge id)(void*)metal_device_attrib;
+      }
+    }
+  }
+  return nil;
+}
+
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider)
-    : dawn_context_provider_(dawn_context_provider), weak_ptr_factory_(this) {
+    scoped_refptr<SharedContextState> context_state,
+    SurfaceHandle surface_handle)
+    : weak_ptr_factory_(this) {
   static bool av_disabled_at_command_line =
       !base::FeatureList::IsEnabled(kAVFoundationOverlays);
 
@@ -123,7 +161,8 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
                           weak_ptr_factory_.GetWeakPtr());
 
   ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
-      !av_disabled_at_command_line, std::move(buffer_presented_callback));
+      !av_disabled_at_command_line, std::move(buffer_presented_callback),
+      GetMTLDevice(std::move(context_state)));
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   // The BELayerHierarchy needs to be created on a thread that supports
@@ -186,37 +225,6 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // at the CoreAnimation level.
   ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->SetDisplayHDRHeadroom(data.display_hdr_headroom);
-
-  // Query the underlying Metal device, if one exists. This is needed to ensure
-  // synchronization between the display compositor and the HDRCopierLayer.
-  // https://crbug.com/1372898
-  if (gl::GLDisplayEGL* display =
-          gl::GLDisplayEGL::GetDisplayForCurrentContext()) {
-    // With SkiaGraphite, we pass the Graphite-Dawn MTLDevice for creating
-    // CAMetalLayer used to display HDR IOSurfaces. With SkiaGanesh, we pass the
-    // ANGLE MTLDevice instead.
-    if (dawn_context_provider_ &&
-        dawn_context_provider_->backend_type() == wgpu::BackendType::Metal) {
-      id<MTLDevice> metal_device = dawn::native::metal::GetMTLDevice(
-          dawn_context_provider_->GetDevice().Get());
-      ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
-          ->SetMetalDevice(metal_device);
-    } else {
-      EGLAttrib angle_device_attrib = 0;
-      if (eglQueryDisplayAttribEXT(display->GetDisplay(), EGL_DEVICE_EXT,
-                                   &angle_device_attrib)) {
-        EGLDeviceEXT angle_device =
-            reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
-        EGLAttrib metal_device_attrib = 0;
-        if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
-                                    &metal_device_attrib)) {
-          id<MTLDevice> metal_device = (__bridge id)(void*)metal_device_attrib;
-          ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
-              ->SetMetalDevice(metal_device);
-        }
-      }
-    }
-  }
 
   ca_layer_tree_coordinator_->Present(std::move(completion_callback),
                                       std::move(presentation_callback));
