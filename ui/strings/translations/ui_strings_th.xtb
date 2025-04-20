@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{การแจ้งเตือนที่ยังไม่อ่าน 1 รายการ}other{การแจ้งเตือนที่ยังไม่อ่าน # รายการ}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}other{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 เดือนที่ผ่านมา}other{# เดือนที่ผ่านมา}}</translation>
+<translation id="4277033906326892359">คอลัมน์ <ph name="COLUMN_NAME" /> จัดเรียงจากน้อยไปมาก</translation>
 <translation id="4289300219472526559">เริ่มพูด</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4491109536499578614">รูปภาพ</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">บล็อกการแจ้งเตือนทั้งหมด</translation>
 <translation id="6620110761915583480">บันทึกไฟล์</translation>
 <translation id="6699343763173986273">แทร็กถัดไปของสื่อ</translation>
+<translation id="6807086321996342431">คอลัมน์ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">หยุดสื่อ</translation>
 <translation id="6845383723252244143">เลือกโฟลเดอร์</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{เหลือ 1 ชั่วโมง}other{เหลือ # ชั่วโมง}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ชั่วโมงที่ผ่านมา}other{# ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{เหลือ 1 วินาที}other{เหลือ # วินาที}}</translation>
 <translation id="8134065097954893699">กำลังโหลดหน้านี้ใหม่</translation>
+<translation id="813785873406874127">คอลัมน์ <ph name="COLUMN_NAME" /> ไม่มีการจัดเรียง</translation>
 <translation id="815598010540052116">เลื่อนลง</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">เลื่อนหน้าลง</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">ส่งข้อความ</translation>
 <translation id="8394908167088220973">เล่น/หยุดสื่อชั่วคราว</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ปี}other{# ปี}}</translation>
+<translation id="8582972250170726813">คอลัมน์ <ph name="COLUMN_NAME" /> จัดเรียงจากมากไปน้อย</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">ไฟล์ <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/วินาที</translation>

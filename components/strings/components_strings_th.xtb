@@ -498,6 +498,7 @@
 <translation id="1839331950812095887">สรุปความคิดของคุณในไม่กี่คำ</translation>
 <translation id="1839551713262164453">การตรวจสอบความถูกต้องของค่านโยบายมีข้อผิดพลาดและล้มเหลว</translation>
 <translation id="1840009953725035797">ชุดโฮมเธียเตอร์</translation>
+<translation id="184153295865602321">ใช้ลายนิ้วมือ ใบหน้า หรือการล็อกหน้าจออื่นๆ เสมอเมื่อชำระเงินโดยใช้การป้อนข้อความอัตโนมัติเพื่อเพิ่มการป้องกัน</translation>
 <translation id="1842969606798536927">จ่าย</translation>
 <translation id="184517536440397176">พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้ ก่อนจะถาม เราต้องตรวจสอบว่าเป็นคุณจริงๆ</translation>
 <translation id="1846432862466000825">พลาสติก (Archival)</translation>
@@ -1928,6 +1929,7 @@
 <translation id="4297937944457164390">อัปเดต <ph name="ATTRIBUTE_NAME" /> แล้ว</translation>
 <translation id="4298000214066716287">การลงทุน</translation>
 <translation id="42981349822642051">ขยาย</translation>
+<translation id="4298925811540301889">คุกกี้สำหรับเว็บไซต์นี้จะซิงค์ในอุปกรณ์ ChromeOS ของคุณ หากต้องการจัดการสิ่งที่ซิงค์ ให้ไปที่<ph name="SYNC_SETTINGS" /></translation>
 <translation id="4300675098767811073">เจาะรูด้านขวาหลายรู</translation>
 <translation id="4302514097724775343">แตะไดโนเสาร์เพื่อเล่น</translation>
 <translation id="4304049446746819918">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ย้ายไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ย้ายไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
@@ -2027,6 +2029,7 @@
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
 <translation id="448363931695049633">ร้านพิซซ่า</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
+<translation id="4489977488133295402">ยืนยันตัวตนเพื่อป้อนวิธีการชำระเงินโดยอัตโนมัติ</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">เข้ารหัสรหัสผ่านที่ซิงค์กับบัญชี Google ของคุณ</translation>
 <translation id="4493480324863638523">URL ไม่ถูกต้อง ต้องเป็น URL ที่มีรูปแบบมาตรฐาน เช่น http://example.com หรือ https://example.com</translation>
@@ -3248,6 +3251,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">การศึกษาด้านคอมพิวเตอร์</translation>
 <translation id="6633476656216409494">ซอฟต์แวร์สำหรับธุรกิจและประสิทธิภาพการทำงาน</translation>
+<translation id="6641852376826221947">ยืนยันการซื้อของคุณ</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645291930348198241">เข้าถึงคุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="6645478838938543427">ระบบจะส่งการแจ้งเตือนราคาลดลงไปยัง <ph name="EMAIL_ADDRESS" /></translation>
@@ -4548,6 +4552,7 @@
 <translation id="8918062451146297192">CVC สำหรับบัตรเสมือน (Virtual Card)</translation>
 <translation id="8919740778133505789">รถสปอร์ต</translation>
 <translation id="8919895429178014996">ซ่อนรายการทั้งหมด</translation>
+<translation id="8919989290032064330">ยืนยันตัวตนเพื่อป้อนวิธีการชำระเงินโดยอัตโนมัติไหม</translation>
 <translation id="8922013791253848639">อนุญาตโฆษณาในไซต์นี้เสมอ</translation>
 <translation id="8922734931659847428">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้<ph name="BEGIN_LINK" />เหตุการณ์เทคโนโลยีเดิม<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">เจาะรูด้านขวาบน</translation>

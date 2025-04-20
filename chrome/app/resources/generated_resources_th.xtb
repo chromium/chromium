@@ -3302,6 +3302,7 @@
 <translation id="3298789223962368867">URL ที่ป้อนไม่ถูกต้อง</translation>
 <translation id="32991397311664836">อุปกรณ์:</translation>
 <translation id="3301554464236215299">ไฟล์นี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
+<translation id="3301996560342889673">หากต้องการซิงค์ประวัติการเข้าชม</translation>
 <translation id="33022249435934718">GDI จัดการ</translation>
 <translation id="3302388252085547855">ป้อนเหตุผล...</translation>
 <translation id="3303795387212510132">อนุญาตให้แอปเปิดลิงก์ <ph name="PROTOCOL_SCHEME" /> ไหม</translation>
@@ -4543,6 +4544,7 @@
 <translation id="4142052906269098341">ปลดล็อก <ph name="DEVICE_TYPE" /> ด้วยโทรศัพท์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4143606504420684845">ดูวิธีที่ AI ช่วยสร้างประสบการณ์การใช้งานของคุณและตัดสินใจเกี่ยวกับความเป็นส่วนตัวได้อย่างรอบคอบ</translation>
 <translation id="4143754025452944766">คุณยังเลือกนำส่วนขยายของบัญชีออกจากอุปกรณ์นี้ได้ด้วย</translation>
+<translation id="4144386561593830385">คุณสามารถบันทึกรหัสผ่านอย่างปลอดภัยด้วย Google Chrome เพียงลงชื่อเข้าใช้ตามปกติแล้วเราจะจัดการส่วนที่เหลือให้เอง</translation>
 <translation id="4146026355784316281">เปิดด้วยโปรแกรมดูของระบบทุกครั้ง</translation>
 <translation id="4146785383423576110">รีเซ็ตและล้างข้อมูล</translation>
 <translation id="4147099377280085053">เลือกตารางอักษรเบรลล์</translation>
@@ -5215,6 +5217,7 @@
 <translation id="4637083375689622795">การทำงานเพิ่มเติม <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">ใช้กล้องอีกครั้ง</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ข้อความ}other{# ข้อความ}}</translation>
+<translation id="4638568775382459156">กิจกรรมในกลุ่มแท็บที่แชร์</translation>
 <translation id="4638930039313743000">เปิดใช้การแก้ไขข้อบกพร่อง ADB</translation>
 <translation id="4639390152280993480">หากต้องการดูมุมมองอย่างง่ายของหน้านี้ ให้ไปที่เครื่องมือเพิ่มเติม &gt; โหมดการอ่าน</translation>
 <translation id="4641539339823703554">Chrome ไม่สามารถตั้งเวลาระบบได้ โปรดตรวจสอบเวลาด้านล่างและแก้ไขให้ถูกต้องหากจำเป็น</translation>
@@ -6023,6 +6026,7 @@
 <translation id="5213114823401215820">เปิดกลุ่มที่ปิดไปแล้วอีกครั้ง</translation>
 <translation id="5213481667492808996">บริการอินเทอร์เน็ต "<ph name="NAME" />" พร้อมใช้งานแล้ว</translation>
 <translation id="5213891612754844763">แสดงการตั้งค่าพร็อกซี</translation>
+<translation id="5214484632844730228">หากต้องการดูแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="5214639857958972833">สร้างบุ๊กมาร์ก "<ph name="BOOKMARK_TITLE" />" แล้ว</translation>
 <translation id="5215450412607891876">เปิดการอัปเดตความปลอดภัยเพิ่มเติม</translation>
 <translation id="5215502535566372932">เลือกประเทศ</translation>
@@ -10526,6 +10530,7 @@
 <translation id="844059392176531372">แชร์กลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="8440630305826533614">แอป Linux</translation>
 <translation id="844063558976952706">ทำงานบนไซต์นี้เสมอ</translation>
+<translation id="8440730169421032987">หากต้องการท่องเว็บในอุปกรณ์ต่างๆ</translation>
 <translation id="8441313165929432954">เปิด/ปิดการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="8443986842926457191">URL มีจำนวนอักขระมากกว่า 2,048 ตัว</translation>
 <translation id="8445281870900174108">แท็บนี้กำลังใช้กล้องของคุณ</translation>
@@ -10839,6 +10844,7 @@
 <translation id="8673026256276578048">ค้นหาเว็บ...</translation>
 <translation id="867329473311423817">อนุญาตให้จัดการหน้าต่างบนจอแสดงผลทั้งหมด</translation>
 <translation id="8673383193459449849">ปัญหาของเซิร์ฟเวอร์</translation>
+<translation id="8674846270100425817">บันทึกรหัสผ่านอย่างปลอดภัยด้วย Google Chrome เพียงลงชื่อเข้าใช้ตามปกติแล้วเราจะจัดการส่วนที่เหลือให้เอง</translation>
 <translation id="8674903726754070732">ขออภัย คอมพิวเตอร์ของคุณกำหนดค่าด้วยรหัสฮาร์ดแวร์ที่มีรูปแบบไม่ถูกต้อง ซึ่งทำให้ Chrome OS อัปเดตการแก้ไขปัญหาความปลอดภัยล่าสุดไม่ได้ และคอมพิวเตอร์<ph name="BEGIN_BOLD" />อาจเสี่ยงต่อการถูกโจมตีที่เป็นอันตราย<ph name="END_BOLD" /></translation>
 <translation id="8675657007450883866">เว็บไซต์ใช้ฟีเจอร์นี้เพื่อเข้าสู่โหมดเต็มหน้าจอโดยอัตโนมัติ โดยปกติแล้วจะต้องมีการโต้ตอบจากผู้ใช้จึงจะเข้าสู่โหมดเต็มหน้าจอได้</translation>
 <translation id="8675704450909805533">โปรแกรมติดตั้งไม่พบปลายทางที่ถูกต้องในการติดตั้ง <ph name="DEVICE_OS" /></translation>
@@ -11083,6 +11089,7 @@
 <translation id="8831769650322069887">เปิด <ph name="FILE_NAME" /></translation>
 <translation id="8832781841902333794">โปรไฟล์ของคุณ</translation>
 <translation id="8834039744648160717">การกำหนดค่าเครือข่ายควบคุมโดย <ph name="USER_EMAIL" /></translation>
+<translation id="8835005853697140186">อนุญาตให้เครื่องมือสำหรับนักพัฒนาเว็บแก้ไขไฟล์ใช่ไหม</translation>
 <translation id="8835786707922974220">ตรวจสอบว่าคุณเข้าถึงรหัสผ่านที่บันทึกไว้ได้เสมอ</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน 1 สัปดาห์ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ออกจากกลุ่ม}other{ออกจากกลุ่ม}}</translation>

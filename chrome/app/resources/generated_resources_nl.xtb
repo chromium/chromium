@@ -8715,7 +8715,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7181840534454431748">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" />}=1{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # andere persoon}other{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # anderen}}</translation>
 <translation id="7182051712900867547">Ander account gebruiken</translation>
-<translation id="7182063559013288142">Instant-hotspot</translation>
+<translation id="7182063559013288142">Instant hotspot</translation>
 <translation id="7182791023900310535">Je wachtwoord verplaatsen</translation>
 <translation id="718427252411067142">Als je niet wilt dat anderen je wachtwoord gebruiken, open je de app om je wachtwoord te wijzigen</translation>
 <translation id="718512729823942418">Geen microfoon beschikbaar</translation>

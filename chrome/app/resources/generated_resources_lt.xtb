@@ -278,6 +278,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="117916940443676133">Saugos raktas neapsaugotas PIN kodu. Kad galėtumėte tvarkyti prisijungimo duomenis, pirmiausia sukurkite PIN kodą.</translation>
 <translation id="1179400851034021914">IBAN netinkamas</translation>
 <translation id="1179902906564467236">Vadovaukitės telefone pateikiamomis instrukcijomis arba naudokite Fotoaparato programą</translation>
+<translation id="1180117276105724040">Atkuriami langai iš ankstesnio seanso...</translation>
 <translation id="118057123461613219">Labai daug sutaupoma</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1182876754474670069">klavišas „Home“</translation>
@@ -754,6 +755,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="151501797353681931">Importuota iš „Safari“</translation>
 <translation id="1515163294334130951">Paleidimas</translation>
 <translation id="1517467582299994451">Jei norite perduoti naudodami kodą, įjunkite „Chrome“ naršyklės sinchronizavimo nustatymus.</translation>
+<translation id="1519090060276706457">Langų atkūrimas trunka ilgiau, nei tikėtasi</translation>
 <translation id="1521442365706402292">Valdyti sertifikatus</translation>
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
 <translation id="1521774566618522728">Aktyvus šiandien</translation>
@@ -1277,6 +1279,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1865769994591826607">Tik ryšiai toje pačioje svetainėje</translation>
 <translation id="186594096341696655">Sumažinti dažnį</translation>
 <translation id="186612162884103683">„<ph name="EXTENSION" />“ patikrintose vietose gali nuskaityti ir įrašyti vaizdus, vaizdo įrašus ir garso failus.</translation>
+<translation id="1866589962721094893">Suteikite „Android“ programoms USB įrenginių valdymo teisę šiame „Chromebook“. Leidimo užklausa bus pateikta kaskart prijungus USB įrenginį. Atskiros „Android“ programos prašys papildomų leidimų.</translation>
 <translation id="1867780286110144690">„<ph name="PRODUCT_NAME" />“ pasirengusi baigti diegimą</translation>
 <translation id="1868553836791672080">Naudojant „Chromium“ slaptažodžio patikra nepasiekiama</translation>
 <translation id="1868617395637139709">Naudokite vietovės paslaugas „Android“ programose ir paslaugose.</translation>
@@ -1614,6 +1617,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> vykdant procesą sistema bus paleista iš naujo.</translation>
+<translation id="2093792000875799555">„Steam“, skirtos „Chromebook“, naujienos</translation>
 <translation id="209423774103268003">Pasiekiami išmaniųjų kortelių skaitytuvai</translation>
 <translation id="2095774564753225041">Palaikomi failų tipai</translation>
 <translation id="2096716221239095980">Ištrinti visus duomenis</translation>
@@ -2377,6 +2381,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Atidaryti ir redaguoti „<ph name="FILE1" />“ šiame plėtinyje}one{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}few{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}many{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}other{Atidaryti ir redaguoti „<ph name="FILE1" />“ šioje programoje}}</translation>
 <translation id="2616366145935564096">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Bendrinimo netoliese nustatymas</translation>
+<translation id="2619305858360733464"><ph name="SHARED_STATE" /> grupė be pavadinimo – <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">paleisti / pristabdyti</translation>
 <translation id="261953424982546039">„Chrome“ ir Laboratorijos...</translation>
 <translation id="2620215283731032047">Negalima saugiai atsisiųsti failo „<ph name="FILE_NAME" />“.</translation>
@@ -3880,6 +3885,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3697952514309507634">Kiti „Chrome“ profiliai</translation>
 <translation id="3698471669415859717">Peržiūra baigta</translation>
 <translation id="3699624789011381381">El. pašto adresas</translation>
+<translation id="3699755232086000535">Suteikite „Parallels Desktop“ USB įrenginių valdymo teisę.</translation>
 <translation id="3699920817649120894">Išjungti sinchronizavimą ir suasmeninimą?</translation>
 <translation id="3700888195348409686">Pristatoma (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Neleisti svetainėms stebėti fotoaparato pozicijos</translation>
@@ -4360,6 +4366,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="399179161741278232">Importuota</translation>
 <translation id="3992008114154328194">Atsisiunčiama: <ph name="FILE_NAME" /> (<ph name="STATUS" />)</translation>
 <translation id="3993259701827857030">Atsarginės duomenų kopijos kūrimas</translation>
+<translation id="3994075804072562819">Suteikite „<ph name="SPECIFIC_NAME" />“ USB įrenginių valdymo teisę.</translation>
 <translation id="3994318741694670028">Deja, jūsų kompiuteris yra sukonfigūruotas naudojant netinkamai suformuotą aparatinės įrangos ID. Tai neleidžia „ChromeOS Flex“ atnaujinti naujausiais saugos pataisymais ir jūsų kompiuteris <ph name="BEGIN_BOLD" />gali būti neatsparus kenkėjiškoms atakoms<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Kad atrakintumėte „<ph name="DEVICE_TYPE" />“, atrakinkite telefoną ir padėkite jį arčiau.</translation>
 <translation id="3994530503403062649">Planšetinio kompiuterio klavišai</translation>
@@ -7090,6 +7097,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5984334442529819751">Įdiegiant atsisiunčiamą turinį įvyko klaida (dažnai reikia paleisti iš naujo; jei reikia daugiau informacijos, žr. „Nustatymai\&gt;\&gt;Apie „ChromeOS“).</translation>
 <translation id="5985458664595100876">Netinkamas URL formatas. Palaikomi formatai yra „\\server\share“ ir „smb://server/share“.</translation>
 <translation id="5985556342298151179">„Chrome“ programą įdiegė įrenginio administratorius.</translation>
+<translation id="5986442691296752186">Suteikite „Linux“ programoms USB įrenginių valdymo teisę.</translation>
 <translation id="598810097218913399">Pašalinti priskyrimą</translation>
 <translation id="5988563937187882754">Pažiūrėti į dešinę</translation>
 <translation id="5989497858237037960">Kai naršote svetaines, jų puslapių turinys užkoduojamas ir išsaugomas jūsų įrenginyje. Tai gali turėti įtakos „Chrome“ našumui</translation>
@@ -7293,6 +7301,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6136114942382973861">Uždaryti atsisiuntimų juostą</translation>
 <translation id="6136285399872347291">naikinimas</translation>
 <translation id="6136287496450963112">Saugos raktas neapsaugotas PIN kodu. Kad galėtumėte tvarkyti kontrolinius kodus, pirmiausia sukurkite PIN kodą.</translation>
+<translation id="6136872094979134163">Nepavyko gauti „Steam“, skirtos „Chromebook“, naujienų.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA parašas naudojant SHA-384</translation>
 <translation id="6140948187512243695">Rodyti išsamią informaciją</translation>
 <translation id="6141988275892716286">Atsisiuntimo patvirtinimas</translation>
@@ -8612,6 +8621,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7070484045139057854">Gali būti skaitomi ir keičiami svetainės duomenys</translation>
 <translation id="7072010813301522126">Sparčiojo klavišo pavadinimas</translation>
 <translation id="7072078320324181561">Programos ir svetainės, turinčios leidimą pasiekti vietovės duomenis, bei sistemos paslaugos gali naudoti jūsų vietovės informaciją. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="7074703793383805632"><ph name="SHARED_STATE" /> grupė „<ph name="GROUP_NAME" />“ – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS Nr. 1 MD5 su RSA šifruote</translation>
 <translation id="7075625805486468288">Tvarkykite HTTPS / SSL sertifikatus ir nustatymus</translation>
 <translation id="7075896597860500885">Nerekomenduojama kopijuoti iš šios svetainės</translation>
@@ -8949,6 +8959,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7336799713063880535">Praneš. užblokuoti.</translation>
 <translation id="7337258336304389677">Naudokite telefoną arba planšetinį kompiuterį</translation>
 <translation id="7338630283264858612">Netinkamas įrenginio serijos numeris.</translation>
+<translation id="7339052793671338107">Šoninio skydelio dydžio keitimo rankenėlė (velkama)</translation>
 <translation id="7339763383339757376">PKCS Nr. 7, vienas sertifikatas</translation>
 <translation id="7339785458027436441">Rašant tikrinti rašybos klaidas</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
@@ -9315,6 +9326,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7602173054665172958">Spausdinimo valdymas</translation>
 <translation id="7603785829538808504">Toliau nurodytoms svetainėms taikomas tinkintas nustatymas</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{Vienas slaptažodis neimportuotas}one{{NUM_PASSWORDS} slaptažodis neimportuotas}few{{NUM_PASSWORDS} slaptažodžiai neimportuoti}many{{NUM_PASSWORDS} slaptažodžio neimportuota}other{{NUM_PASSWORDS} slaptažodžių neimportuota}}</translation>
+<translation id="7605163396341021431">Suteikite „Android“ programoms USB įrenginių valdymo teisę šiame „Chromebook“</translation>
 <translation id="7605594153474022051">Sinchronizavimas neveikia</translation>
 <translation id="7606248551867844312">Patvirtinti apkirpimą</translation>
 <translation id="7606560865764296217">Pristabdyti animaciją</translation>
@@ -9836,6 +9848,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="794676567536738329">Patvirtinti leidimus</translation>
 <translation id="7947962633355574091">K&amp;opijuoti vaizdo įrašo adresą</translation>
 <translation id="7947964080535614577">Paprastai svetainėse rodomi skelbimai, kad būtų galima be mokesčio teikti turinį ar paslaugas. Tačiau žinoma, kad kai kuriose svetainėse rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
+<translation id="7948239795436419268">Neatkurti langų</translation>
 <translation id="7948407723851303488">Visi <ph name="DOMAIN_NAME" /> puslapiai</translation>
 <translation id="7950629216186736592">Priežastis: LBS palaiko tik „http://“, „https://“ ir „file://“ URL.</translation>
 <translation id="7950814699499457511">Įjungta • Šis plėtinys nepaskelbė privatumo praktikos, pvz., kaip renka ir naudoja duomenis</translation>
@@ -10298,6 +10311,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8263228331881858381">Prieigos raktas išsaugotas</translation>
 <translation id="8263336784344783289">Suteikite šiai grupei pavadinimą</translation>
 <translation id="8264024885325823677">Šį nustatymą tvarko jūsų administratorius.</translation>
+<translation id="8264195025773092348">Rodomi tik palaikomi įrenginiai. USB įrenginiai nebebus pasiekiami savosioms programoms, kol nebus atjungti.</translation>
 <translation id="8265018477030547118">Tik šiame įrenginyje</translation>
 <translation id="826511437356419340">Įjungtas langų apžvalgos režimas. Norėdami naršyti perbraukite arba paspauskite tabuliavimo klavišą, jei naudojate klaviatūrą.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Paleidus iš naujo inkognito langas nebus rodomas}one{Paleidus iš naujo {COUNT} inkognito langas nebus rodomas}few{Paleidus iš naujo {COUNT} inkognito langai nebus rodomi}many{Paleidus iš naujo {COUNT} inkognito lango nebus rodoma}other{Paleidus iš naujo {COUNT} inkognito langų nebus rodoma}}</translation>

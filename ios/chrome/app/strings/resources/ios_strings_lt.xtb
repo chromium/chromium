@@ -282,6 +282,7 @@
 <translation id="2119636449201577317">Atidaryti…</translation>
 <translation id="2120553909046681540">Organizacija išjungė privatų naršymą.</translation>
 <translation id="2122754583996902531">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="2139692631842690197">Prisijungus prie valdomos paskyros galima atskirti su organizacija susijusį naršymą, pvz., skirtukus, slaptažodžius ir istoriją.</translation>
 <translation id="2139867232736819575">Ieškoti nukopijuoto teksto</translation>
 <translation id="2147127444698817042">Pasiekiama tik „iPhone“</translation>
 <translation id="2148799636999124959">Sparčiai prisijunkite prie svetainių ir programų naudodami išsaugotus slaptažodžius.</translation>
@@ -511,6 +512,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="310900540163454140">Ištrinti „<ph name="WEBSITE" />“ slaptažodį?</translation>
 <translation id="3112556859945124369">Pažymėti…</translation>
 <translation id="3119874402040566234">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
+<translation id="3119915634508614502">Esami naršymo duomenys nebus perkelti į darbo paskyrą. Vis tiek galėsite juos naudoti atsijungę nuo valdomos paskyros.</translation>
 <translation id="3124568093781685165">Bendrinkite slaptažodžius su šeimos nariais</translation>
 <translation id="3130863904455712965">Istorija ir daugiau</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
@@ -1289,6 +1291,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6410005280995367944">Kitų programų slaptažodžiai</translation>
 <translation id="6410390304316730527">Saugaus naršymo funkcija apsaugo jus nuo atakų vykdytojų, kurie gali bandyti apgaule priversti jus atlikti pavojingus veiksmus, pvz., įdiegti kenkėjišką programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefono numerius ar kredito kortelių duomenis). Jei ją išjungsite, būkite atsargūs naršydami nežinomose ar nepatikimose svetainėse.</translation>
 <translation id="6410883413783534063">Atidarykite skirtukus ir vienu metu lankykitės skirtinguose puslapiuose</translation>
+<translation id="6415646765510136">Pasirinkite, ką norite daryti su esamais naršymo duomenimis šiame įrenginyje.</translation>
 <translation id="6416807286621280684">Stebimi siuntiniai ir pristatymo atnaujinimai.</translation>
 <translation id="6418346271604475326">Ruošiamas PDF</translation>
 <translation id="6421038304268477484">Išverstas tekstas</translation>
