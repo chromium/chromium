@@ -48,6 +48,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final SeekBar mSeekBar;
     private final ScrollView mScrollView;
     private final LinearLayout mPlayerControls;
+    private ImageView mModeSelectorButton;
+    private boolean mIsModeActive;
     private View mContentView;
     // Effectively final and non null, can be null only in tests
     private OptionsMenuSheetContent mOptionsMenu;
@@ -95,6 +97,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
+        mModeSelectorButton = mContentView.findViewById(R.id.readaloud_mode_selector);
+        mModeSelectorButton.setSelected(mIsModeActive);
 
         View publisherButton = mContentView.findViewById(R.id.readaloud_player_publisher_button);
         publisherButton.addOnLayoutChangeListener(
@@ -166,11 +170,21 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     void setPlaybackMode(PlaybackMode playbackMode) {
-      // TODO(crbug.com/401256755): Implement with actual logic.
+      if (playbackMode == PlaybackMode.OVERVIEW) {
+            mIsModeActive = true;
+            mModeSelectorButton.setSelected(true);
+        } else {
+            mIsModeActive = false;
+            mModeSelectorButton.setSelected(false);
+        }
     }
 
     void setPlaybackModeSelectionEnabled(boolean enabled) {
-      // TODO(crbug.com/401256755): Implement with actual logic.
+      if (enabled) {
+        mModeSelectorButton.setVisibility(View.VISIBLE);
+      } else {
+        mModeSelectorButton.setVisibility(View.GONE);
+      }
     }
 
     void setTitle(String title) {
@@ -208,6 +222,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
         setOnClickListener(R.id.readaloud_playback_speed, this::showSpeedMenu);
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
+        setOnClickListener(R.id.readaloud_mode_selector, () -> onPlaybackModeChangeClick(handler));
 
         SeekBar seekBar =
                 (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
@@ -255,6 +270,17 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     @Nullable
     OptionsMenuSheetContent getOptionsMenu() {
         return mOptionsMenu;
+    }
+
+    private void onPlaybackModeChangeClick(InteractionHandler interactionHandler) {
+        mIsModeActive = !mIsModeActive;
+        mModeSelectorButton.setSelected(mIsModeActive);
+
+        if (mIsModeActive) {
+            interactionHandler.onPlaybackModeChanged(PlaybackMode.OVERVIEW);
+        } else {
+            interactionHandler.onPlaybackModeChanged(PlaybackMode.CLASSIC);
+        }
     }
 
     public void showOptionsMenu() {
