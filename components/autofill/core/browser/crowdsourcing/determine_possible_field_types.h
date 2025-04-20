@@ -16,18 +16,18 @@
 
 namespace autofill {
 
-class AutofillClient;
 class AutofillProfile;
 class CreditCard;
 class FormStructure;
 
 // For each submitted field in the `form_structure`, determines whether
 // `ADDRESS_HOME_STATE` is a possible matching type.
-// This function is intended to run before
-// DeterminePossibleFieldTypesForUpload() on the browser UI thread.
-void PreProcessStateMatchingTypes(const AutofillClient& client,
-                                  const std::vector<AutofillProfile>& profiles,
-                                  FormStructure& form_structure);
+// This function is intended to run on the UI thread and its result can be
+// passed to DeterminePossibleFieldTypesForUpload().
+[[nodiscard]] std::set<FieldGlobalId> PreProcessStateMatchingTypes(
+    const std::vector<AutofillProfile>& profiles,
+    const FormStructure& form_structure,
+    const std::string& app_locale);
 
 // Uses the existing personal data in |profiles| and |credit_cards| to
 // determine possible field types for the |form|.  This is
@@ -37,6 +37,7 @@ void PreProcessStateMatchingTypes(const AutofillClient& client,
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::set<FieldGlobalId>& fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form);

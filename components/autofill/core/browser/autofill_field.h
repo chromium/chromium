@@ -336,12 +336,6 @@ class AutofillField : public FormFieldData {
     }
   }
 
-  // Getter and Setter methods for |state_is_a_matching_type_|.
-  void set_state_is_a_matching_type(bool value = true) {
-    state_is_a_matching_type_ = value;
-  }
-  bool state_is_a_matching_type() const { return state_is_a_matching_type_; }
-
   void set_field_log_events(const std::vector<FieldLogEventType>& events) {
     field_log_events_ = events;
   }
@@ -525,9 +519,6 @@ class AutofillField : public FormFieldData {
   // triggered the vote.
   AutofillUploadContents::Field::VoteType vote_type_ =
       AutofillUploadContents::Field::NO_INFORMATION;
-
-  // Denotes if |ADDRESS_HOME_STATE| should be added to |possible_types_|.
-  bool state_is_a_matching_type_ = false;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

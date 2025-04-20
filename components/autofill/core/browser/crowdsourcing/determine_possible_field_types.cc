@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -140,6 +139,7 @@ void FindAndSetPossibleFieldTypesForField(
     AutofillField& field,
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::set<FieldGlobalId> fields_that_match_state,
     const std::string& app_locale) {
   std::u16string value = field.value_for_import();
   base::TrimWhitespace(value, base::TRIM_ALL, &value);
@@ -160,7 +160,7 @@ void FindAndSetPossibleFieldTypesForField(
     card.GetMatchingTypes(value, app_locale, &matching_types);
   }
 
-  if (field.state_is_a_matching_type()) {
+  if (fields_that_match_state.contains(field.global_id())) {
     matching_types.insert(ADDRESS_HOME_STATE);
   }
   if (matching_types.empty()) {
@@ -175,12 +175,13 @@ void FindAndSetPossibleFieldTypesForField(
 void FindAndSetPossibleFieldTypes(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::set<FieldGlobalId> fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form) {
   for (size_t i = 0; i < form.field_count(); ++i) {
     FindAndSetPossibleFieldTypesForField(*form.field(i), profiles, credit_cards,
-                                         app_locale);
+                                         fields_that_match_state, app_locale);
   }
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
@@ -221,9 +222,11 @@ std::vector<std::u16string> GetMatchingCompleteDateFormats(
 
 }  // namespace
 
-void PreProcessStateMatchingTypes(const AutofillClient& client,
-                                  const std::vector<AutofillProfile>& profiles,
-                                  FormStructure& form_structure) {
+std::set<FieldGlobalId> PreProcessStateMatchingTypes(
+    const std::vector<AutofillProfile>& profiles,
+    const FormStructure& form_structure,
+    const std::string& app_locale) {
+  std::set<FieldGlobalId> fields_that_match_state;
   for (const auto& profile : profiles) {
     std::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_from_profile =
@@ -233,11 +236,11 @@ void PreProcessStateMatchingTypes(const AutofillClient& client,
       continue;
     }
 
-    const std::u16string& country_code = profile.GetInfo(
-        AutofillType(HtmlFieldType::kCountryCode), client.GetAppLocale());
+    const std::u16string& country_code =
+        profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
 
     for (auto& field : form_structure) {
-      if (field->state_is_a_matching_type()) {
+      if (fields_that_match_state.contains(field->global_id())) {
         continue;
       }
 
@@ -249,15 +252,17 @@ void PreProcessStateMatchingTypes(const AutofillClient& client,
       if (canonical_state_name_from_text &&
           canonical_state_name_from_text.value() ==
               canonical_state_name_from_profile.value()) {
-        field->set_state_is_a_matching_type();
+        fields_that_match_state.insert(field->global_id());
       }
     }
   }
+  return fields_that_match_state;
 }
 
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::set<FieldGlobalId>& fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form) {
@@ -266,7 +271,7 @@ void DeterminePossibleFieldTypesForUpload(
     // the values so that the first call does not affect later calls.
     field->set_possible_types({});
   }
-  FindAndSetPossibleFieldTypes(profiles, credit_cards,
+  FindAndSetPossibleFieldTypes(profiles, credit_cards, fields_that_match_state,
                                last_unlocked_credit_card_cvc, app_locale, form);
   DisambiguatePossibleFieldTypes(form);
 }

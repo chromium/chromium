@@ -325,8 +325,9 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/u"", "en-us", *form_structure);
 
   ASSERT_EQ(1U, form_structure->field_count());
 
@@ -372,8 +373,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
       ConstructFormStructureFromFormData(form);
   form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, kCvc16, "en-us",
-                                       *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/kCvc16, "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
       *form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
@@ -420,8 +422,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
+      *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -468,8 +472,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
+      *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -515,8 +521,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
+      *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -562,8 +570,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
+      *form_structure);
   CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
@@ -606,8 +616,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", *form_structure);
+  DeterminePossibleFieldTypesForUpload(
+      profiles, credit_cards, /*fields_that_match_state=*/{},
+      /*last_unlocked_credit_card_cvc=*/u"", "en-us", *form_structure);
 
   CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
@@ -662,8 +673,9 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
                 u"");
     }
 
-    PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
-    EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+    EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
+                                             client().GetAppLocale()),
+                ElementsAre(form_structure.field(1)->global_id()));
   }
 
   const char* const kInvalidMatches[] = {"Garbage", "BYA",   "BYA is a state",
@@ -679,8 +691,9 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
 
-    PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
-    EXPECT_FALSE(form_structure.field(1)->state_is_a_matching_type());
+    EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
+                                             client().GetAppLocale()),
+                IsEmpty());
   }
 
   test::PopulateAlternativeStateNameMapForTesting(
@@ -709,8 +722,9 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial), u"");
   }
 
-  PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
-  EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+  EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
+                                           client().GetAppLocale()),
+              ElementsAre(form_structure.field(1)->global_id()));
 }
 
 // Test fixture for DeterminePossibleFormatStringsForUpload().

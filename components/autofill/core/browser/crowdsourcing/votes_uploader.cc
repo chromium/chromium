@@ -236,7 +236,9 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
-  PreProcessStateMatchingTypes(*client_, copied_profiles, *form);
+  std::set<FieldGlobalId> fields_that_match_state =
+      PreProcessStateMatchingTypes(copied_profiles, *form,
+                                   client_->GetAppLocale());
 
   task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -247,10 +249,11 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
              std::optional<RandomizedEncoder> randomized_encoder,
-             FormStructure::FormAssociations form_associations) {
-            DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
-                                                 last_unlocked_credit_card_cvc,
-                                                 app_locale, *form);
+             FormStructure::FormAssociations form_associations,
+             std::set<FieldGlobalId> fields_that_match_state) {
+            DeterminePossibleFieldTypesForUpload(
+                profiles, credit_cards, fields_that_match_state,
+                last_unlocked_credit_card_cvc, app_locale, *form);
 
             EncodeUploadRequestOptions options;
             options.encoder = std::move(randomized_encoder);
@@ -285,7 +288,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           last_unlocked_credit_card_cvc, client_->GetAppLocale(),
           observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
-          std::move(form_associations)),
+          std::move(form_associations), std::move(fields_that_match_state)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
