@@ -2219,18 +2219,22 @@ void URLLoader::DispatchOnRawRequest(
   bool is_main_frame_navigation =
       url_request_->isolation_info().IsMainFrameRequest() ||
       url_request_->force_main_frame_for_same_site_cookies();
+  net::SchemefulSite request_site(url_request_->url());
   // TODO when crbug.com/40093296 "Don't trust |site_for_cookies| provided by
   // the renderer" is fixed. Update the FromNetworkIsolationKey method to use
   // url_request_->isolation_info().site_for_cookies() instead of
   // url_request_->site_for_cookies().
-  std::optional<bool> site_has_cookie_in_other_partition =
-      url_request_->context()->cookie_store()->SiteHasCookieInOtherPartition(
-          net::SchemefulSite(url_request_->url()),
-          net::CookiePartitionKey::FromNetworkIsolationKey(
-              url_request_->isolation_info().network_isolation_key(),
-              url_request_->site_for_cookies(),
-              net::SchemefulSite(url_request_->url()),
-              is_main_frame_navigation));
+  std::optional<net::CookiePartitionKey> partition_key =
+      net::CookiePartitionKey::FromNetworkIsolationKey(
+          url_request_->isolation_info().network_isolation_key(),
+          url_request_->site_for_cookies(), request_site,
+          is_main_frame_navigation);
+  std::optional<bool> site_has_cookie_in_other_partition;
+  if (partition_key.has_value()) {
+    site_has_cookie_in_other_partition =
+        url_request_->context()->cookie_store()->SiteHasCookieInOtherPartition(
+            request_site, partition_key.value());
+  }
   network::mojom::OtherPartitionInfoPtr other_partition_info = nullptr;
   if (site_has_cookie_in_other_partition.has_value()) {
     other_partition_info = network::mojom::OtherPartitionInfo::New();

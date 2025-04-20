@@ -87,10 +87,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
                           SetCanonicalCookieCallback callback) override;
   void DeleteCanonicalCookie(const net::CanonicalCookie& cookie,
                              DeleteCanonicalCookieCallback callback) override;
-  void SiteHasCookieInOtherPartition(
-      const net::SchemefulSite& schemeful_site,
-      const std::optional<net::CookiePartitionKey>& cookie_partition_key,
-      SiteHasCookieInOtherPartitionCallback callback) override;
   void SetContentSettings(ContentSettingsType content_settings_type,
                           const ContentSettingsForOneType& settings,
                           SetContentSettingsCallback callback) override;

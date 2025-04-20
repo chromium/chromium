@@ -3045,27 +3045,20 @@ CookieMonster::IsCookieSentToSamePortThatSetIt(
 
 std::optional<bool> CookieMonster::SiteHasCookieInOtherPartition(
     const net::SchemefulSite& site,
-    const std::optional<CookiePartitionKey>& partition_key) const {
+    const CookiePartitionKey& partition_key) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // If the partition key is null, it implies the partitioned cookies feature is
-  // not enabled.
-  if (!partition_key)
-    return std::nullopt;
-
   std::string domain = site.GetURL().host();
   if (store_ && !finished_fetching_all_cookies_ &&
       !keys_loaded_.count(domain)) {
     return std::nullopt;
   }
 
-  for (const auto& it : partitioned_cookies_) {
-    if (it.first == partition_key || CookiePartitionKey::HasNonce(it.first))
-      continue;
-    if (it.second->find(domain) != it.second->end()) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(partitioned_cookies_, [&](const auto& pair) {
+    const auto& [other_key, cookie_map] = pair;
+    return other_key != partition_key &&
+           !CookiePartitionKey::HasNonce(other_key) &&
+           cookie_map->contains(domain);
+  });
 }
 
 }  // namespace net

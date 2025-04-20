@@ -180,11 +180,9 @@ class NET_EXPORT CookieStore {
   // Returns a boolean indicating whether the cookie `site` has any cookie
   // in another partition other than the `cookie_partition_key` supplied.
   // Will return nullopt if cookies have not finished loading.
-  // If the partition key is null, the method assumes it is because partitioned
-  // cookies are disabled.
   virtual std::optional<bool> SiteHasCookieInOtherPartition(
       const net::SchemefulSite& site,
-      const std::optional<CookiePartitionKey>& cookie_partition_key) const;
+      const CookiePartitionKey& cookie_partition_key) const;
 
  private:
   // Used to determine whether a particular cookie should be subject to legacy
