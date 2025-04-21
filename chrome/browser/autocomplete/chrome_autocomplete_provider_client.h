@@ -136,10 +136,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
     storage_partition_ = storage_partition;
   }
 
-  bool StrippedURLsAreEqual(const GURL& url1,
-                            const GURL& url2,
-                            const AutocompleteInput* input) const;
-
  private:
   raw_ptr<Profile> profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;

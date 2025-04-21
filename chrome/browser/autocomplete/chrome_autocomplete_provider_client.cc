@@ -528,22 +528,6 @@ ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
-    const GURL& url1,
-    const GURL& url2,
-    const AutocompleteInput* input) const {
-  AutocompleteInput empty_input;
-  if (!input)
-    input = &empty_input;
-  const TemplateURLService* template_url_service = GetTemplateURLService();
-  return AutocompleteMatch::GURLToStrippedGURL(
-             url1, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false) ==
-         AutocompleteMatch::GURLToStrippedGURL(
-             url2, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false);
-}
-
 void ChromeAutocompleteProviderClient::OpenSharingHub() {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
