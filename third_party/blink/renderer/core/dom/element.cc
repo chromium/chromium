@@ -1594,6 +1594,34 @@ bool Element::InterestLost(Element& interest_target) {
 }
 
 void Element::DefaultEventHandler(Event& event) {
+  if (GetInterestState() != Element::InterestState::kNoInterest) [[unlikely]] {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+        keyboard_event && event.type() == event_type_names::kKeydown) {
+      const int modifiers =
+          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+      auto* target = InterestTargetElement();
+      if (GetInterestState() == Element::InterestState::kPartialInterest &&
+          keyboard_event->key() == keywords::kArrowUp &&
+          modifiers == WebInputEvent::kAltKey) {
+        // Hitting the hotkey (Alt-UpArrow) on an invoker that has partial
+        // interest causes interest to be "upgraded" to full interest. It also
+        // focuses the first focusable element within the target.
+        ChangeInterestState(target, InterestState::kFullInterest);
+        if (Element* first_focusable = target->GetFocusDelegate()) {
+          first_focusable->Focus();
+        }
+        event.SetDefaultHandled();
+        return;
+      } else if (keyboard_event->key() == keywords::kEscape && !modifiers) {
+        if (GainOrLoseInterest(this, target, InterestState::kNoInterest)) {
+          event.SetDefaultHandled();
+          return;
+        }
+      }
+    }
+  }
   ContainerNode::DefaultEventHandler(event);
 }
 
@@ -7260,11 +7288,48 @@ bool Element::IsKeyboardFocusableScroller(
   return true;
 }
 
+// TODO(crbug.com/326681249): Should `tabindex` take precedence?
+bool Element::IsInPartialInterestPopover() const {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return false;
+  }
+  for (const ContainerNode* node = this; node;
+       node = FlatTreeTraversal::Parent(*node)) {
+    auto* element = DynamicTo<Element>(node);
+    if (!element) {
+      continue;
+    }
+    Element* invoker = element->GetInterestInvoker();
+    if (!invoker) {
+      continue;
+    }
+    // At this point, we are at the target of an interest invoker. Return true
+    // if this is an open popover and it has partial interest. False otherwise.
+    if (auto* html_element = DynamicTo<HTMLElement>(element);
+        html_element && html_element->popoverOpen() &&
+        invoker->GetInterestState() == InterestState::kPartialInterest) {
+      DCHECK_EQ(invoker->InterestTargetElement(), html_element);
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {
   FocusableState focusable_state = Element::IsFocusableState(update_behavior);
   if (focusable_state == FocusableState::kNotFocusable) {
     return false;
   }
+
+  // Interest invoker targets with partial interest aren't keyboard focusable.
+  if (IsInPartialInterestPopover()) {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    return false;
+  }
+
   // If the element has a tabindex, then that determines keyboard
   // focusability.
   if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly)) {
@@ -10802,14 +10867,14 @@ Element* Element::GetInterestInvoker() const {
 }
 
 Element::InterestState Element::GetInterestState() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return InterestState::kNoInterest;
+  }
   auto* invoker_data = GetInvokerData();
   if (!invoker_data) {
     return InterestState::kNoInterest;
   }
-  CHECK(InterestTargetElement());
   return invoker_data->GetInterestState();
 }
 
