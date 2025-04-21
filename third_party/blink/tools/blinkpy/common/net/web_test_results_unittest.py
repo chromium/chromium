@@ -95,7 +95,7 @@ class WebTestResultsTest(unittest.TestCase):
                     "is_missing_text": true
                 },
                 "prototype-slow.html": {
-                    "expected": "SLOW",
+                    "expected": "TIMEOUT",
                     "actual": "FAIL",
                     "is_unexpected": true
                 }

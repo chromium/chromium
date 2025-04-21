@@ -147,7 +147,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                         'is_missing_image': True
                     },
                     'slow-fail.html': {
-                        'expected': 'SLOW',
+                        'expected': 'TIMEOUT',
                         'actual': 'FAIL',
                         'is_unexpected': True,
                         'artifacts': {
