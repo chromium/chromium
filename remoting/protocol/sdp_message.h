@@ -42,10 +42,6 @@ class SdpMessage {
   bool AddCodecParameter(const std::string& codec,
                          const std::string& parameters_to_add);
 
-  // Prefers |codec| in current session description. Returns false if |codec| is
-  // not found.
-  bool PreferVideoCodec(const std::string& codec);
-
  private:
   // Finds the lines of the form "a=rtpmap:<payload_type> <codec>/.." with the
   // specified |codec| and returns a list of the matching payload types with

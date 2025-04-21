@@ -272,8 +272,6 @@ class WebrtcTransport : public Transport,
   std::vector<std::unique_ptr<webrtc::IceCandidateInterface>>
       pending_incoming_candidates_;
 
-  std::string preferred_video_codec_;
-
   SessionOptions session_options_;
 
   // Track the data channels so we can make sure they are closed before we

@@ -763,10 +763,6 @@ void WebrtcTransport::Close(ErrorCode error,
 void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   session_options_ = options;
-  std::optional<std::string> video_codec = options.Get("Video-Codec");
-  if (video_codec) {
-    preferred_video_codec_ = *video_codec;
-  }
 }
 
 void WebrtcTransport::OnAudioTransceiverCreated(
@@ -807,11 +803,6 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
 
   SdpMessage sdp_message(description_sdp);
   UpdateCodecParameters(&sdp_message, /*incoming=*/false);
-  if (preferred_video_codec_.empty()) {
-    sdp_message.PreferVideoCodec("VP8");
-  } else {
-    sdp_message.PreferVideoCodec(preferred_video_codec_);
-  }
   description_sdp = sdp_message.ToString();
   webrtc::SdpParseError parse_error;
   description = webrtc::CreateSessionDescription(description->GetType(),
