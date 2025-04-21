@@ -19855,6 +19855,21 @@
             ]
         }
     ],
+    "ReadAloudAudioOverviews": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "ReadAloudAudioOverviews"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAloudClankStudy": [
         {
             "platforms": [
