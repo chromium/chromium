@@ -330,7 +330,13 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
 
   if (config.require_low_delay) {
-    AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
+    // Android docs recommend not setting the latency key with H264 baseline
+    // profile since some devices will fail configure. Since latency=1 means
+    // no b-frames for h.264 and baseline doesn't support b-frames, this should
+    // be okay. See https://crbug.com/409110228
+    if (config.output_profile != H264PROFILE_BASELINE) {
+      AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
+    }
     // MediaCodec supports two priorities: 0 - realtime, 1 - best effort
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PRIORITY, 0);
   }
