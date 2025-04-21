@@ -51,6 +51,10 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   void FinishExtensionReload(const ExtensionId old_extension_id,
                              scoped_refptr<const Extension> extension);
 
+  // Given an extension ID and/or path, loads that extension as a reload.
+  void DoLoadExtensionForReload(const ExtensionId& extension_id,
+                                const base::FilePath& path);
+
   // ExtensionRegistrar::Delegate:
   void PreAddExtension(const Extension* extension,
                        const Extension* old_extension) override;
@@ -61,10 +65,11 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   void PreUninstallExtension(scoped_refptr<const Extension> extension) override;
   void PostUninstallExtension(scoped_refptr<const Extension> extension,
                               base::OnceClosure done_callback) override;
-  void LoadExtensionForReload(
+  void LoadExtensionForReload(const ExtensionId& extension_id,
+                              const base::FilePath& path) override;
+  void LoadExtensionForReloadWithQuietFailure(
       const ExtensionId& extension_id,
-      const base::FilePath& path,
-      ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override;
+      const base::FilePath& path) override;
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override;
   bool CanEnableExtension(const Extension* extension) override;

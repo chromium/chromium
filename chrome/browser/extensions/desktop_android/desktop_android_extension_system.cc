@@ -44,8 +44,6 @@
 using content::BrowserContext;
 namespace extensions {
 
-using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
-
 namespace {
 
 // A factory implementation to construct and return the
@@ -106,11 +104,9 @@ class DesktopAndroidExtensionRegistrarDelegate
             Profile::FromBrowserContext(browser_context)) {}
   ~DesktopAndroidExtensionRegistrarDelegate() override = default;
 
-  // ExtensionRegistrar::Delegate:
-  void LoadExtensionForReload(
-      const ExtensionId& extension_id,
-      const base::FilePath& path,
-      ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override {
+  void DoLoadExtensionForReload(const ExtensionId& extension_id,
+                                const base::FilePath& path,
+                                bool load_error_behavior_noisy) {
     CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
                             "unknown extension with no path";
     auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
@@ -120,6 +116,18 @@ class DesktopAndroidExtensionRegistrarDelegate
         android_system->LoadExtensionFromDirectory(path);
     DCHECK(extension);
     DCHECK_EQ(extension->id(), extension_id);
+  }
+
+  // ExtensionRegistrar::Delegate:
+  void LoadExtensionForReload(const ExtensionId& extension_id,
+                              const base::FilePath& path) override {
+    DoLoadExtensionForReload(extension_id, path, true);
+  }
+
+  void LoadExtensionForReloadWithQuietFailure(
+      const ExtensionId& extension_id,
+      const base::FilePath& path) override {
+    DoLoadExtensionForReload(extension_id, path, false);
   }
 };
 

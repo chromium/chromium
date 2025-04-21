@@ -50,13 +50,6 @@ class RendererStartupHelper;
 // but eventually only ExtensionRegistrar will be able to make changes to it.
 class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
  public:
-  // How to surface an extension load error, e.g. showing an error dialog. The
-  // actual behavior is up to the embedder.
-  enum class LoadErrorBehavior {
-    kQuiet = 0,  // Just log the error.
-    kNoisy,      // Show an error dialog.
-  };
-
   // Delegate for embedder-specific functionality like policy and permissions.
   class Delegate {
    public:
@@ -96,11 +89,15 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
         scoped_refptr<const Extension> extension,
         base::OnceClosure done_callback) = 0;
 
-    // Given an extension ID and/or path, loads that extension as a reload.
-    virtual void LoadExtensionForReload(
+    // Given an extension ID and/or path, loads that extension as a reload with
+    // noisy load error behavior.
+    virtual void LoadExtensionForReload(const ExtensionId& extension_id,
+                                        const base::FilePath& path) = 0;
+    // Given an extension ID and/or path, loads that extension as a reload with
+    // quiet load error behavior.
+    virtual void LoadExtensionForReloadWithQuietFailure(
         const ExtensionId& extension_id,
-        const base::FilePath& path,
-        LoadErrorBehavior load_error_behavior) = 0;
+        const base::FilePath& path) = 0;
 
     // Informs the user that an extension was disabled after upgrading to higher
     // permissions. If |is_remote_install| is true, the extension was disabled
@@ -372,6 +369,13 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   }
 
  private:
+  // How to surface an extension load error, e.g. showing an error dialog. The
+  // actual behavior is up to the embedder.
+  enum class LoadErrorBehavior {
+    kQuiet = 0,  // Just log the error.
+    kNoisy,      // Show an error dialog.
+  };
+
   // Adds the extension to the appropriate registry set, based on ExtensionPrefs
   // and our |delegate_|. Activates the extension if it's added to the enabled
   // set.

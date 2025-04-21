@@ -1076,7 +1076,11 @@ void ExtensionRegistrar::DoReloadExtension(
     return;
   }
 
-  delegate_->LoadExtensionForReload(extension_id, path, load_error_behavior);
+  if (load_error_behavior == LoadErrorBehavior::kQuiet) {
+    delegate_->LoadExtensionForReloadWithQuietFailure(extension_id, path);
+  } else {
+    delegate_->LoadExtensionForReload(extension_id, path);
+  }
 }
 
 void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(

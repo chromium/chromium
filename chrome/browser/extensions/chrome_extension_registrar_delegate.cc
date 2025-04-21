@@ -68,8 +68,6 @@ using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
-using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
-
 namespace {
 
 // When uninstalling an extension, determine if the extension's directory
@@ -256,10 +254,10 @@ void ChromeExtensionRegistrarDelegate::PostUninstallExtension(
   DataDeleter::StartDeleting(profile_, extension.get(), subtask_done_callback);
 }
 
-void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
+void ChromeExtensionRegistrarDelegate::DoLoadExtensionForReload(
     const ExtensionId& extension_id,
     const base::FilePath& path,
-    ExtensionRegistrar::LoadErrorBehavior load_error_behavior) {
+    bool load_error_behavior_noisy) {
   // If we're reloading a component extension, use the component extension
   // loader's reloader.
   if (component_loader_->Exists(extension_id)) {
@@ -281,8 +279,7 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
                             "unknown extension with no path";
     scoped_refptr<UnpackedInstaller> unpacked_installer =
         UnpackedInstaller::Create(profile_);
-    unpacked_installer->set_be_noisy_on_failure(load_error_behavior ==
-                                                LoadErrorBehavior::kNoisy);
+    unpacked_installer->set_be_noisy_on_failure(load_error_behavior_noisy);
     unpacked_installer->set_completion_callback(base::BindOnce(
         &ChromeExtensionRegistrarDelegate::OnUnpackedReloadFailure,
         weak_factory_.GetWeakPtr()));
@@ -292,6 +289,16 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
     NOTIMPLEMENTED() << "UnpackedInstaller not yet supported on Android";
 #endif
   }
+}
+void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
+    const ExtensionId& extension_id,
+    const base::FilePath& path) {
+  DoLoadExtensionForReload(extension_id, path, true);
+}
+void ChromeExtensionRegistrarDelegate::LoadExtensionForReloadWithQuietFailure(
+    const ExtensionId& extension_id,
+    const base::FilePath& path) {
+  DoLoadExtensionForReload(extension_id, path, false);
 }
 
 void ChromeExtensionRegistrarDelegate::ShowExtensionDisabledError(

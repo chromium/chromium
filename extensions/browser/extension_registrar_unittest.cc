@@ -45,8 +45,6 @@ namespace {
 using testing::Return;
 using testing::_;
 
-using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
-
 // Supplies dependencies needed by the tests. Specifically,
 // ExtensionRegistrar::CanBlockExtension() depends on ManagementPolicy.
 class TestExtensionSystem : public MockExtensionSystem {
@@ -91,10 +89,12 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   MOCK_METHOD2(PostUninstallExtension,
                void(scoped_refptr<const Extension> extension,
                     base::OnceClosure done_callback));
-  MOCK_METHOD3(LoadExtensionForReload,
+  MOCK_METHOD2(LoadExtensionForReload,
                void(const ExtensionId& extension_id,
-                    const base::FilePath& path,
-                    LoadErrorBehavior load_error_behavior));
+                    const base::FilePath& path));
+  MOCK_METHOD2(LoadExtensionForReloadWithQuietFailure,
+               void(const ExtensionId& extension_id,
+                    const base::FilePath& path));
   MOCK_METHOD2(ShowExtensionDisabledError, void(const Extension*, bool));
   MOCK_METHOD1(CanEnableExtension, bool(const Extension* extension));
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
@@ -303,8 +303,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     SCOPED_TRACE("ReloadEnabledExtension");
     EXPECT_CALL(delegate_, PostDeactivateExtension(extension()));
     EXPECT_CALL(delegate_,
-                LoadExtensionForReload(extension()->id(), extension()->path(),
-                                       LoadErrorBehavior::kNoisy));
+                LoadExtensionForReload(extension()->id(), extension()->path()));
     registrar()->ReloadExtension(extension()->id());
     VerifyMock();
 
@@ -321,8 +320,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
   void ReloadTerminatedExtension() {
     SCOPED_TRACE("ReloadTerminatedExtension");
     EXPECT_CALL(delegate_,
-                LoadExtensionForReload(extension()->id(), extension()->path(),
-                                       LoadErrorBehavior::kNoisy));
+                LoadExtensionForReload(extension()->id(), extension()->path()));
     registrar()->ReloadExtension(extension()->id());
     VerifyMock();
 

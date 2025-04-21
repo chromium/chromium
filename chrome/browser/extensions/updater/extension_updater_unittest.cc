@@ -211,10 +211,11 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
                               base::OnceClosure done_callback) override {}
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override {}
-  void LoadExtensionForReload(
+  void LoadExtensionForReload(const ExtensionId& extension_id,
+                              const base::FilePath& path) override {}
+  void LoadExtensionForReloadWithQuietFailure(
       const ExtensionId& extension_id,
-      const base::FilePath& path,
-      ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override {}
+      const base::FilePath& path) override {}
   bool CanEnableExtension(const Extension* extension) override { return true; }
   bool CanDisableExtension(const Extension* extension) override { return true; }
   void GrantActivePermissions(const Extension* extension) override {}

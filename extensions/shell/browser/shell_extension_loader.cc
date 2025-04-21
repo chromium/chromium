@@ -24,8 +24,6 @@
 
 namespace extensions {
 
-using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
-
 namespace {
 
 scoped_refptr<const Extension> LoadUnpacked(
@@ -155,10 +153,9 @@ void ShellExtensionLoader::PostUninstallExtension(
     scoped_refptr<const Extension> extension,
     base::OnceClosure done_callback) {}
 
-void ShellExtensionLoader::LoadExtensionForReload(
+void ShellExtensionLoader::DoLoadExtensionForReload(
     const ExtensionId& extension_id,
-    const base::FilePath& path,
-    LoadErrorBehavior load_error_behavior) {
+    const base::FilePath& path) {
   CHECK(!path.empty());
 
   GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
@@ -166,6 +163,18 @@ void ShellExtensionLoader::LoadExtensionForReload(
       base::BindOnce(&ShellExtensionLoader::FinishExtensionReload,
                      weak_factory_.GetWeakPtr(), extension_id));
   did_schedule_reload_ = true;
+}
+
+void ShellExtensionLoader::LoadExtensionForReload(
+    const ExtensionId& extension_id,
+    const base::FilePath& path) {
+  DoLoadExtensionForReload(extension_id, path);
+}
+
+void ShellExtensionLoader::LoadExtensionForReloadWithQuietFailure(
+    const ExtensionId& extension_id,
+    const base::FilePath& path) {
+  DoLoadExtensionForReload(extension_id, path);
 }
 
 void ShellExtensionLoader::ShowExtensionDisabledError(
