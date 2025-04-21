@@ -47,6 +47,43 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   return on_device_model::LoadModelAssets(model_paths);
 }
 #endif
+
+base::flat_map<std::string, std::string> GetCriteria(
+    optimization_guide::OnDeviceModelComponentStateManager* component_manager) {
+  auto* criteria = component_manager->GetRegistrationCriteria();
+  base::flat_map<std::string, std::string> mojom_criteria;
+  if (criteria == nullptr) {
+    return mojom_criteria;
+  }
+  mojom_criteria["device capable"] = base::ToString(criteria->device_capable);
+  mojom_criteria["on device feature recently used"] =
+      base::ToString(criteria->on_device_feature_recently_used);
+  mojom_criteria["enabled by feature"] =
+      base::ToString(criteria->enabled_by_feature);
+  mojom_criteria["enabled by enterprise policy"] =
+      base::ToString(criteria->enabled_by_enterprise_policy);
+  mojom_criteria["out of retention"] =
+      base::ToString(criteria->out_of_retention);
+  mojom_criteria["is already installing"] =
+      base::ToString(criteria->is_already_installing);
+
+  // Disk criteria, needs to show what's available vs. required when not met.
+  std::string disk_space_string =
+      base::ToString(criteria->disk_space_available);
+  if (!criteria->disk_space_available) {
+    int disk_space_required_mb = optimization_guide::features::
+        GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
+    int disk_space_available_mb =
+        component_manager->GetDiskBytesAvailableForModel() / (1024 * 1024);
+    disk_space_string = base::StrCat(
+        {" (", base::NumberToString(disk_space_available_mb),
+         " MiB available, ", base::NumberToString(disk_space_required_mb),
+         " MiB required)"});
+  }
+  mojom_criteria["disk space available"] = disk_space_string;
+  return mojom_criteria;
+}
+
 }  // namespace
 
 OnDeviceInternalsPageHandler::OnDeviceInternalsPageHandler(
@@ -188,40 +225,7 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
   data->model_state =
       base::ToString(component_manager->GetOnDeviceModelStatus());
 
-  // Populate criteria.
-  base::flat_map<bool, std::string> bool_strings = {{true, "true"},
-                                                    {false, "false"}};
-  auto* criteria = component_manager->GetRegistrationCriteria();
-  base::flat_map<std::string, std::string> mojom_criteria;
-  if (criteria != nullptr) {
-    mojom_criteria["device capable"] = bool_strings[criteria->device_capable];
-    mojom_criteria["on device feature recently used"] =
-        bool_strings[criteria->on_device_feature_recently_used];
-    mojom_criteria["enabled by feature"] =
-        bool_strings[criteria->enabled_by_feature];
-    mojom_criteria["enabled by enterprise policy"] =
-        bool_strings[criteria->enabled_by_enterprise_policy];
-    mojom_criteria["out of retention"] =
-        bool_strings[criteria->out_of_retention];
-    mojom_criteria["is already installing"] =
-        bool_strings[criteria->is_already_installing];
-
-    // Disk criteria, needs to show what's available vs. required when not met.
-    std::string disk_space_string =
-        bool_strings[criteria->disk_space_available];
-    if (!criteria->disk_space_available) {
-      int disk_space_required_mb = optimization_guide::features::
-          GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
-      int disk_space_available_mb =
-          component_manager->GetDiskBytesAvailableForModel() / (1024 * 1024);
-      disk_space_string +=
-          " (" + base::NumberToString(disk_space_available_mb) +
-          " MiB available, " + base::NumberToString(disk_space_required_mb) +
-          " MiB required)";
-    }
-    mojom_criteria["disk space available"] = disk_space_string;
-  }
-  data->registration_criteria = mojom_criteria;
+  data->registration_criteria = GetCriteria(component_manager);
 
   // Populate status for supplementary models.
   base::flat_map<std::string, bool> supp_models =
