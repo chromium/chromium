@@ -417,7 +417,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
               Optional(IsError(ERR_NAME_NOT_RESOLVED)));
   ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
   ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
-  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
+  ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {

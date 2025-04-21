@@ -154,9 +154,9 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (finalized_result_.has_value()) {
-    // TODO(bashi): When the corresponding Job was cancelled we should return
-    // false.
-    return true;
+    // If there are no endpoints in the finalized result, `this` is not ready
+    // for cryptographic handshakes.
+    return !finalized_result_->endpoints.empty();
   }
 
   if (job_ && job_.value()->dns_task_results_manager()) {
