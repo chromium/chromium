@@ -258,8 +258,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     DISALLOW_NEW();
 
    public:
-    explicit GlyphDataCollection(unsigned num_glyphs)
-        : data_(num_glyphs), offsets_(num_glyphs) {}
+    explicit GlyphDataCollection(unsigned num_glyphs) : data_(num_glyphs) {}
 
     GlyphDataCollection(const GlyphDataCollection& other)
         : data_(other.data_), offsets_(other.offsets_) {}
@@ -305,7 +304,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
                 data_.data());
       std::copy(other2.data_.data(), other2.data_.data() + other2.size(),
                 data_.data() + other1.size());
-      offsets_.CopyFrom(other1.offsets_, other2.offsets_);
+      offsets_.CopyFrom(other1.offsets_, other1.size(), other2.offsets_,
+                        other2.size());
     }
 
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
@@ -317,15 +317,15 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     void AddOffsetHeightAt(unsigned index, float delta) {
-      offsets_.AddHeightAt(index, delta);
+      offsets_.AddHeightAt(index, delta, size());
     }
 
     void AddOffsetWidthAt(unsigned index, float delta) {
-      offsets_.AddWidthAt(index, delta);
+      offsets_.AddWidthAt(index, delta, size());
     }
 
     void SetOffsetAt(unsigned index, GlyphOffset offset) {
-      offsets_.SetAt(index, offset);
+      offsets_.SetAt(index, offset, size());
     }
 
     // Vector<HarfBuzzRunGlyphData> like functions
@@ -347,7 +347,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return std::make_reverse_iterator(begin());
     }
 
-    unsigned size() const { return offsets_.size(); }
+    unsigned size() const { return data_.size(); }
     bool IsEmpty() const { return size() == 0; }
 
     const HarfBuzzRunGlyphData& front() const {

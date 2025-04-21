@@ -75,7 +75,6 @@ struct SameSizeAsRunInfo {
   struct GlyphDataCollection {
     Vector<int> glyphs;
     Vector<int> offsets;
-    unsigned integer;
   } glyph_data;
   Member<void*> pointer2[2];
   int integers[5];

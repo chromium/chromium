@@ -22,15 +22,12 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
   DISALLOW_NEW();
 
  public:
-  explicit GlyphOffsetArray(unsigned size) : size_(size) {}
-
-  GlyphOffsetArray(const GlyphOffsetArray& other)
-      : storage_(other.storage_), size_(other.size_) {}
+  GlyphOffsetArray() = default;
+  GlyphOffsetArray(const GlyphOffsetArray& other) : storage_(other.storage_) {}
 
   // The `span` of `GlyphOffset` if `HasStorage()`, or an empty span.
   explicit operator base::span<const GlyphOffset>() const {
-    return HasStorage() ? base::span{GetStorage(), size()}
-                        : base::span<const GlyphOffset>{};
+    return base::span{storage_};
   }
 
   // A return value of |GetOffsets()| to represent optional |GlyphOffset|
@@ -43,54 +40,47 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
     return iterator<has_non_zero_glyph_offsets>(*this);
   }
 
-  unsigned size() const { return size_; }
-  bool IsEmpty() const { return size() == 0; }
-
   size_t ByteSize() const {
-    return HasStorage() ? size() * sizeof(GlyphOffset) : 0;
+    return HasStorage() ? AllocatedSize() * sizeof(GlyphOffset) : 0;
   }
 
   void CopyFrom(const GlyphOffsetArray& other1,
-                const GlyphOffsetArray& other2) {
-    SECURITY_CHECK(size() == other1.size() + other2.size());
-    DCHECK(!other1.IsEmpty());
-    DCHECK(!other2.IsEmpty());
+                wtf_size_t size1,
+                const GlyphOffsetArray& other2,
+                wtf_size_t size2) {
+    other1.CheckSize(size1);
+    other2.CheckSize(size2);
+    DCHECK(size1);
+    DCHECK(size2);
+    const wtf_size_t size = size1 + size2;
     if (other1.HasStorage()) {
-      AllocateStorageIfNeeded();
-      std::copy(other1.GetStorage(), other1.GetStorage() + other1.size(),
-                GetStorage());
+      AllocateStorageIfNeeded(size);
+      std::ranges::copy(other1.storage_, GetStorage());
     }
     if (other2.HasStorage()) {
-      AllocateStorageIfNeeded();
-      std::copy(other2.GetStorage(), other2.GetStorage() + other2.size(),
-                GetStorage() + other1.size());
+      AllocateStorageIfNeeded(size);
+      std::ranges::copy(other2.storage_, GetStorage() + size1);
     }
   }
 
   void CopyFromRange(const GlyphDataRange& range) {
-    CHECK_EQ(range.size(), size());
     if (!range.HasOffsets() || range.IsEmpty()) {
       storage_.clear();
       return;
     }
-    AllocateStorage();
+    AllocateStorage(range.size());
     std::ranges::copy(range.Offsets(), GetStorage());
   }
 
   GlyphOffset* GetStorage() { return storage_.data(); }
   const GlyphOffset* GetStorage() const { return storage_.data(); }
   bool HasStorage() const { return !storage_.empty(); }
+  wtf_size_t AllocatedSize() const { return storage_.size(); }
 
   void Reverse() { storage_.Reverse(); }
 
   void Shrink(unsigned new_size) {
     DCHECK_GE(new_size, 1u);
-    // Note: To follow Vector<T>::Shrink(), we accept |new_size == size()|
-    if (new_size == size()) {
-      return;
-    }
-    CHECK_LT(new_size, size());
-    size_ = new_size;
     if (!HasStorage()) {
       return;
     }
@@ -98,27 +88,24 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
   }
 
   // Functions to change one element.
-  void AddHeightAt(unsigned index, float delta) {
-    CHECK_LT(index, size());
+  void AddHeightAt(unsigned index, float delta, wtf_size_t size) {
     DCHECK_NE(delta, 0.0f);
-    AllocateStorageIfNeeded();
+    AllocateStorageIfNeeded(size);
     storage_[index].set_y(storage_[index].y() + delta);
   }
 
-  void AddWidthAt(unsigned index, float delta) {
-    CHECK_LT(index, size());
+  void AddWidthAt(unsigned index, float delta, wtf_size_t size) {
     DCHECK_NE(delta, 0.0f);
-    AllocateStorageIfNeeded();
+    AllocateStorageIfNeeded(size);
     storage_[index].set_x(storage_[index].x() + delta);
   }
 
-  void SetAt(unsigned index, GlyphOffset offset) {
-    CHECK_LT(index, size());
+  void SetAt(unsigned index, GlyphOffset offset, wtf_size_t size) {
     if (!HasStorage()) {
       if (offset.IsZero()) {
         return;
       }
-      AllocateStorage();
+      AllocateStorage(size);
     }
     storage_[index] = offset;
   }
@@ -126,21 +113,25 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
   void Trace(Visitor* visitor) const { visitor->Trace(storage_); }
 
  private:
-  // Note: HarfBuzzShaperTest.ShapeVerticalUpright uses non-zero glyph offset.
-  void AllocateStorage() {
-    DCHECK_GE(size(), 1u);
-    DCHECK(!HasStorage());
-    storage_.resize(size_);
+  void CheckSize(wtf_size_t size) const {
+    CHECK(!HasStorage() || size == AllocatedSize());
   }
 
-  void AllocateStorageIfNeeded() {
+  // Note: HarfBuzzShaperTest.ShapeVerticalUpright uses non-zero glyph offset.
+  void AllocateStorage(wtf_size_t size) {
+    DCHECK_GE(size, 1u);
+    DCHECK(!HasStorage());
+    storage_.resize(size);
+  }
+
+  void AllocateStorageIfNeeded(wtf_size_t size) {
+    CheckSize(size);
     if (!HasStorage()) {
-      AllocateStorage();
+      AllocateStorage(size);
     }
   }
 
   HeapVector<GlyphOffset> storage_;
-  unsigned size_;
 };
 
 // For non-zero glyph offset array
