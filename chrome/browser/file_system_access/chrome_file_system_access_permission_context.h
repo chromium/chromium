@@ -379,6 +379,7 @@ class ChromeFileSystemAccessPermissionContext
       HandleType handle_type,
       UserAction user_action,
       content::GlobalRenderFrameHostId frame_id,
+      const base::TimeTicks start_time,
       base::OnceCallback<void(SensitiveEntryResult)> callback,
       bool should_block);
 
