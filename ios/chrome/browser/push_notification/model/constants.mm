@@ -40,6 +40,8 @@ NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
 
 NSString* const kOriginatingProfileNameKey = @"originating_profile_name";
 
+NSString* const kOriginatingGaiaIDKey = @"SenderGaiaId";
+
 std::string PushNotificationClientIdToString(
     PushNotificationClientId client_id) {
   switch (client_id) {

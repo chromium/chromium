@@ -72,18 +72,18 @@ enum class PushNotificationClientManagerFailurePoint {
   // Failed inside `GetClientManagerForProfile()` because the
   // `PushNotificationProfileService` couldn't be retrieved.
   kGetClientManagerMissingProfileService = 6,
-  // Failed inside `GetClientManagerForUserInfo()` because the
-  // Profile name key was missing from the user info dictionary.
-  kGetClientManagerMissingProfileNameInUserInfo = 7,
+  // Failed inside `GetClientManagerForUserInfo()` because the Profile name
+  // could not be retrieved from user info.
+  kGetClientManagerFailedToGetProfileName = 7,
   // Failed inside `GetClientManagerForUserInfo()` because the Profile couldn't
   // be found (or wasn't loaded) using the name from user info.
   kGetClientManagerProfileNotFoundByName = 8,
-  // Failed inside `ExtractAndValidateProfileNameFromUserInfo()` because the
+  // Failed inside `GetProfileNameFromUserInfo()` because the
   // profile name was missing/empty in user info.
-  kValidateProfileNameMissingFromUserInfo = 9,
-  // Failed inside `ExtractAndValidateProfileNameFromUserInfo()` because the
+  kGetProfileNameEmptyNameProvided = 9,
+  // Failed inside `GetProfileNameFromUserInfo()` because the
   // profile name was not found in storage.
-  kValidateProfileNameNotFoundInStorage = 10,
+  kGetProfileNameDirectNameNotFoundInStorage = 10,
   // Failed inside `HandleNotificationInteractionAfterProfileSwitch()` because
   // the client manager couldn't be retrieved for the switched profile.
   kInteractionContinuationMissingClientManager = 11,
@@ -103,7 +103,18 @@ enum class PushNotificationClientManagerFailurePoint {
   // Failed inside `-notificationTargetSceneStateForResponse:` because
   // `response.targetScene` was `nil`.
   kGetResponseTargetSceneNil = 15,
-  kMaxValue = kGetResponseTargetSceneNil,
+  // Failed inside `GetProfileNameFromUserInfo()` because the string provided
+  // for `kOriginatingGaiaIDKey` was either missing or empty.
+  kGetProfileNameMissingOrEmptyGaiaID = 16,
+  // Failed inside `GetProfileNameFromUserInfo()` because the valid Gaia ID
+  // extracted from `kOriginatingGaiaIDKey` could not be mapped to any known
+  // Profile name via `AccountProfileMapper`.
+  kGetProfileNameGaiaIdNotMapped = 17,
+  // Failed inside `GetProfileNameFromUserInfo()` because the profile name,
+  // successfully obtained by mapping a Gaia ID, was not found in
+  // `ProfileAttributesStorageIOS` (e.g., stale mapping).
+  kGetProfileNameMappedNameNotFoundInStorage = 18,
+  kMaxValue = kGetProfileNameMappedNameNotFoundInStorage,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientManagerFailurePoint)
 
@@ -239,6 +250,11 @@ extern NSString* const kPushNotificationClientIdKey;
 // originated the local notification. Used for mapping local notifications to
 // the correct Profile on the device.
 extern NSString* const kOriginatingProfileNameKey;
+
+// Key used in UNNotificationContent.userInfo to store the obfuscated Gaia ID
+// that originated the remote notification. Used for mapping remote
+// notifications to the correct Profile on the device.
+extern NSString* const kOriginatingGaiaIDKey;
 
 // Returns the string representation of the given `client_id`. This string is
 // used to store the client's push notification permission settings in the pref

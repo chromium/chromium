@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
@@ -204,25 +205,19 @@ PushNotificationClientManager* GetClientManagerForProfile(ProfileIOS* profile) {
   return profile_service->GetPushNotificationClientManager();
 }
 
-// Extracts the Profile name from the notification's `user_info` dictionary. It
-// validates that the name is present, non-empty, and corresponds to an existing
-// Profile in `ProfileAttributesStorageIOS`. Returns the Profile name if
-// successful, otherwise returns an empty string.
+// Determines the associated Profile name using `user_info`.
 //
-// Records specific failures to UMA via `RecordClientManagerAccessFailure`.
+// It first looks for `kOriginatingProfileNameKey`. If absent or otherwise
+// invalid, it falls back to checking `kOriginatingGaiaIDKey` and uses
+// `AccountProfileMapper` to map the Gaia ID to a Profile name.
 //
-// Requires `IsIOSMultiProfilePushNotificationHandlingEnabled()` to be true.
-std::string ExtractAndValidateProfileNameFromUserInfo(NSDictionary* user_info) {
+// Returns the Profile name if found, otherwise returns an empty string. Logs
+// specific reasons for failure to UMA.
+//
+// Note: This function should only be called when
+// `IsIOSMultiProfilePushNotificationHandlingEnabled()` is true.
+std::string GetProfileNameFromUserInfo(NSDictionary* user_info) {
   CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
-
-  NSString* profile_name_ns = user_info[kOriginatingProfileNameKey];
-
-  if (!profile_name_ns || profile_name_ns.length == 0) {
-    RecordClientManagerAccessFailure(
-        PushNotificationClientManagerFailurePoint::
-            kValidateProfileNameMissingFromUserInfo);
-    return "";
-  }
 
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
@@ -232,43 +227,87 @@ std::string ExtractAndValidateProfileNameFromUserInfo(NSDictionary* user_info) {
     return "";
   }
 
-  ProfileAttributesStorageIOS* storage =
-      profile_manager->GetProfileAttributesStorage();
+  NSString* profile_name_ns = user_info[kOriginatingProfileNameKey];
 
-  if (!storage) {
-    CHECK_IS_TEST();
-    return "";
+  if (profile_name_ns) {
+    if (profile_name_ns.length == 0) {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::
+              kGetProfileNameEmptyNameProvided);
+      // Definite failure: An empty Profile name was explicitly provided. Cannot
+      // proceed or fallback.
+      return "";
+    }
+
+    std::string profile_name = base::SysNSStringToUTF8(profile_name_ns);
+
+    if (!profile_manager->HasProfileWithName(profile_name)) {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::
+              kGetProfileNameDirectNameNotFoundInStorage);
+      // Definite failure: An invalid Profile name was explicitly provided.
+      // Cannot proceed or fallback.
+      return "";
+    }
+
+    // Definite success: Found a valid, existing Profile name directly via
+    // `kOriginatingProfileNameKey`.
+    return profile_name;
   }
 
-  std::string profile_name = base::SysNSStringToUTF8(profile_name_ns);
+  NSString* gaia_id_ns = user_info[kOriginatingGaiaIDKey];
+  GaiaId gaia_id = GaiaId(gaia_id_ns);
 
-  if (!storage->HasProfileWithName(profile_name)) {
+  if (gaia_id.empty()) {
     RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
-                                         kValidateProfileNameNotFoundInStorage);
+                                         kGetProfileNameMissingOrEmptyGaiaID);
+    // Definite failure: The string provided for kOriginatingGaiaIDKey was
+    // either missing or empty.
     return "";
   }
 
-  return profile_name;
+  std::optional<std::string> mapped_profile_name =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(gaia_id);
+
+  if (!mapped_profile_name.has_value()) {
+    RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
+                                         kGetProfileNameGaiaIdNotMapped);
+    // Definite failure: The Gaia ID was valid but is not associated with any
+    // known Profile according to the AccountProfileMapper.
+    return "";
+  }
+
+  if (!profile_manager->HasProfileWithName(mapped_profile_name.value())) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kGetProfileNameMappedNameNotFoundInStorage);
+    // Definite failure: Gaia ID mapped successfully to a Profile name, but that
+    // Profile name does not exist in ProfileAttributesStorageIOS (e.g., stale
+    // mapping or recently deleted profile).
+    return "";
+  }
+
+  return mapped_profile_name.value();
 }
 
-// Helper function to get the profile-specific PushNotificationClientManager
-// using userInfo containing the profile name. Returns nullptr if the profile
-// cannot be found or the manager cannot be retrieved.
+// Helper function to get the profile-specific `PushNotificationClientManager`
+// using `user_info` containing the profile name. Returns `nullptr` if the
+// profile cannot be found or the manager cannot be retrieved.
 PushNotificationClientManager* GetClientManagerForUserInfo(
     NSDictionary* user_info) {
   CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
 
-  NSString* profile_name_ns = user_info[kOriginatingProfileNameKey];
+  std::string profile_name = GetProfileNameFromUserInfo(user_info);
 
-  if (!profile_name_ns) {
+  if (profile_name.empty()) {
     RecordClientManagerAccessFailure(
         PushNotificationClientManagerFailurePoint::
-            kGetClientManagerMissingProfileNameInUserInfo);
+            kGetClientManagerFailedToGetProfileName);
 
     return nullptr;
   }
-
-  std::string profile_name = base::SysNSStringToUTF8(profile_name_ns);
 
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
@@ -276,9 +315,9 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
   ProfileIOS* profile = profile_manager->GetProfileWithName(profile_name);
 
   if (!profile) {
-    // TODO(crbug.com/407999350): Enable PushNotificationClientManager to switch
-    // to potentially unloaded Profiles for proper notification handling.
-    // Replace this nullptr return with Profile loading functionality once
+    // TODO(crbug.com/407999350): Enable `PushNotificationClientManager` to
+    // switch to potentially unloaded Profiles for proper notification handling.
+    // Replace this `nullptr` return with Profile loading functionality once
     // implemented.
     //
     // Note: Currently, this metric is logged when the Profile matching
@@ -921,7 +960,7 @@ ChangeProfileContinuation CreateNotificationInteractionContinuation(
     (UNNotificationResponse*)response {
   CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
 
-  std::string profileName = ExtractAndValidateProfileNameFromUserInfo(
+  std::string profileName = GetProfileNameFromUserInfo(
       response.notification.request.content.userInfo);
 
   if (profileName.empty()) {

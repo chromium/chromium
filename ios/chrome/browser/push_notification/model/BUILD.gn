@@ -106,6 +106,7 @@ source_set("push_notification_delegate") {
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",

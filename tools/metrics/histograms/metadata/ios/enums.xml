@@ -1443,10 +1443,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Will Process Incoming Remote Notification"/>
   <int value="5" label="GetClientManager: Null Profile Input"/>
   <int value="6" label="GetClientManager: Missing Profile Service"/>
-  <int value="7" label="GetClientManager: Missing Profile Name in UserInfo"/>
+  <int value="7" label="GetClientManager: Failed To Get Profile Name"/>
   <int value="8" label="GetClientManager: Profile Not Found By Name"/>
-  <int value="9" label="Validate: Missing UserInfo Name"/>
-  <int value="10" label="Validate: Name Not Found In Storage"/>
+  <int value="9" label="GetProfileName: Empty Name Provided"/>
+  <int value="10" label="GetProfileName: Direct Name Not Found In Storage"/>
   <int value="11" label="Continuation: Missing Client Manager"/>
   <int value="12" label="HandleInteraction: Invalid Profile Name"/>
   <int value="13" label="HandleInteraction: Missing Target Scene">
@@ -1458,6 +1458,9 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="14" label="HandleInteraction: Missing Fallback Scene"/>
   <int value="15" label="GetTargetScene: Response Scene Nil"/>
+  <int value="16" label="GetProfileName: Missing or Empty Gaia ID"/>
+  <int value="17" label="GetProfileName: Gaia ID Not Mapped"/>
+  <int value="18" label="GetProfileName: Mapped Name Not Found In Storage"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationClientManagerFailurePoint) -->
