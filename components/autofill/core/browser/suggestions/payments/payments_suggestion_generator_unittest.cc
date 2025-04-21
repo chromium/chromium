@@ -2278,16 +2278,12 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
               EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
                   /*obfuscation_length=*/2, u"1111")}}));
 #else
-  // There should be 1 lines of labels with 3 columns:
-  // 1. Card Network + last 4 digits.
-  // 2. A dot ("•") separator.
-  // 3. Expiration date.
+  // The label for virtual card suggestion should be:
+  // Card Network + last 4 digits.
   EXPECT_THAT(
       virtual_card_name_field_suggestion,
       EqualLabels(
-          {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
-            kEllipsisDotSeparator,
-            server_card.AbbreviatedExpirationDateForDisplay(false)}}));
+          {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2)}}));
 #endif
   EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(), true);
   EXPECT_EQ(virtual_card_name_field_suggestion.iph_metadata.feature,
@@ -2844,17 +2840,12 @@ TEST_P(
     EXPECT_THAT(
         virtual_card_name_field_suggestion,
         EqualLabels(
-            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
-              kEllipsisDotSeparator,
-              server_card.AbbreviatedExpirationDateForDisplay(false)},
+            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2)},
              {l10n_util::GetStringUTF16(expected_message_id())}}));
   } else {
-    EXPECT_THAT(
-        virtual_card_name_field_suggestion,
-        EqualLabels(
-            {{server_card.NetworkAndLastFourDigits(/*obfuscation_length=*/2),
-              kEllipsisDotSeparator,
-              server_card.AbbreviatedExpirationDateForDisplay(false)}}));
+    EXPECT_THAT(virtual_card_name_field_suggestion,
+                EqualLabels({{server_card.NetworkAndLastFourDigits(
+                    /*obfuscation_length=*/2)}}));
   }
 #endif
 }

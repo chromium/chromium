@@ -581,7 +581,8 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
     suggestion.labels = {};
   }
 #else   // Desktop dropdown.
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+  // The label fields will be consistent regardless of focused field.
+  if (ShouldUseNewFopDisplay() || trigger_field_type == CREDIT_CARD_NUMBER) {
     // Reset the labels as we only show benefit and virtual card label to
     // conserve space.
     suggestion.labels = {};
