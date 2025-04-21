@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for holding properties of hub pane host views. */
+@NullMarked
 class HubPaneHostProperties {
     /**
      * The root view of the pane that should be inserted into view hierarchy. When changed, the

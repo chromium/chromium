@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.animation.AnimatorSet;
@@ -18,14 +19,14 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationPerformanceTracker;
 import org.chromium.ui.animation.AnimationPerformanceTracker.AnimationMetrics;
@@ -35,6 +36,7 @@ import java.lang.ref.WeakReference;
 import java.util.function.DoubleConsumer;
 
 /** {@link HubLayoutAnimatorProvider} for shrink, expand, and new tab animations. */
+@NullMarked
 public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorProvider {
     /**
      * Utility class for the bitmap callback. This retains weak references to an image view to
@@ -43,7 +45,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
      * to it is held for an extended duration. If this happens a fallback animator will run and it
      * is desirable for the view and runnable to be available for garbage collection.
      */
-    @VisibleForTesting()
+    @VisibleForTesting
     static class ImageViewWeakRefBitmapCallback implements Callback<Bitmap> {
         private final WeakReference<ImageView> mViewRef;
         private final WeakReference<Runnable> mOnFinishedRunnableRef;
@@ -71,10 +73,10 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     private final @Nullable AnimationPerformanceTracker mAnimationTracker;
     private final long mCreationTime = SystemClock.elapsedRealtime();
     private final @HubLayoutAnimationType int mAnimationType;
-    private final @NonNull HubContainerView mHubContainerView;
-    private final @NonNull SyncOneshotSupplierImpl<HubLayoutAnimator> mAnimatorSupplier;
+    private final HubContainerView mHubContainerView;
+    private final SyncOneshotSupplierImpl<HubLayoutAnimator> mAnimatorSupplier;
 
-    private final @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> mAnimationDataSupplier;
+    private final SyncOneshotSupplier<ShrinkExpandAnimationData> mAnimationDataSupplier;
     private final @Nullable ImageViewWeakRefBitmapCallback mBitmapCallback;
     private final long mDurationMs;
     private final DoubleConsumer mOnAlphaChange;
@@ -105,8 +107,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     public ShrinkExpandHubLayoutAnimatorProvider(
             @HubLayoutAnimationType int animationType,
             boolean needsBitmap,
-            @NonNull HubContainerView hubContainerView,
-            @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
+            HubContainerView hubContainerView,
+            SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
             DoubleConsumer onAlphaChange) {
@@ -140,9 +142,9 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     public ShrinkExpandHubLayoutAnimatorProvider(
             @HubLayoutAnimationType int animationType,
             boolean needsBitmap,
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ShrinkExpandImageView shrinkExpandImageView,
-            @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
+            HubContainerView hubContainerView,
+            ShrinkExpandImageView shrinkExpandImageView,
+            SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
             DoubleConsumer onAlphaChange) {
@@ -185,7 +187,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     @Override
-    public @NonNull SyncOneshotSupplier<HubLayoutAnimator> getAnimatorSupplier() {
+    public SyncOneshotSupplier<HubLayoutAnimator> getAnimatorSupplier() {
         return mAnimatorSupplier;
     }
 
@@ -201,7 +203,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         return mBitmapCallback;
     }
 
-    public ShrinkExpandImageView getImageViewForTesting() {
+    public @Nullable ShrinkExpandImageView getImageViewForTesting() {
         return mShrinkExpandImageView;
     }
 
@@ -304,6 +306,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         : 0;
         Rect initialRect = animationData.getInitialRect();
         Rect finalRect = animationData.getFinalRect();
+        assert mShrinkExpandImageView != null;
         mShrinkExpandAnimator =
                 new ShrinkExpandAnimator(
                         mShrinkExpandImageView, initialRect, finalRect, searchBoxHeight);
@@ -353,12 +356,14 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         }
                         mOnAlphaChange.accept(initialAlpha);
                         mHubContainerView.setVisibility(View.VISIBLE);
+                        assumeNonNull(mShrinkExpandImageView);
                         mShrinkExpandImageView.setVisibility(View.VISIBLE);
                         if (mAnimationTracker != null) mAnimationTracker.onStart();
                     }
 
                     @Override
                     public void onEnd(boolean wasForcedToFinish) {
+                        assumeNonNull(mShrinkExpandImageView);
                         // At this point the mShrinkExpandImageView is located at
                         // animationData#getFinalRect(); however, its layout params still has its
                         // dimensions as those from animationData#getInitialRect(). This is because
@@ -398,6 +403,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
      * animation is finished or the animation is aborted.
      */
     private void resetState() {
+        assumeNonNull(mShrinkExpandImageView);
         mHubContainerView.removeView(mShrinkExpandImageView);
         mShrinkExpandImageView.setImageBitmap(null);
         mShrinkExpandImageView = null;

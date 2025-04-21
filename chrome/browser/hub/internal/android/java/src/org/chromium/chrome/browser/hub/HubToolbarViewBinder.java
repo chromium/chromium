@@ -17,10 +17,12 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VI
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Applies properties to the view that holds one pane at a time. */
+@NullMarked
 public class HubToolbarViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, HubToolbarView view, PropertyKey key) {

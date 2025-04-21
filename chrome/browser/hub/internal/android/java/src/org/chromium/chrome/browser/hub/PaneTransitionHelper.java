@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -17,6 +16,7 @@ import java.util.Queue;
  * minimize jank if notifying of a {@link LoadHint} results in significant work for a Pane. This
  * class should only be interacted with on the UI thread.
  */
+@NullMarked
 public class PaneTransitionHelper {
     /** Information about a transition. */
     private static class TransitionData {
@@ -45,7 +45,7 @@ public class PaneTransitionHelper {
     /**
      * @param paneLookup The {@link PaneLookup} to operate on.
      */
-    public PaneTransitionHelper(@NonNull PaneLookup paneLookup) {
+    public PaneTransitionHelper(PaneLookup paneLookup) {
         ThreadUtils.assertOnUiThread();
         mPaneLookup = paneLookup;
     }

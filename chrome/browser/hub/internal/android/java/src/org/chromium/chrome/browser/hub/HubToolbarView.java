@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
@@ -33,8 +34,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.widget.ImageViewCompat;
 import androidx.core.widget.TextViewCompat;
@@ -44,6 +43,8 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -52,6 +53,7 @@ import org.chromium.ui.animation.AnimationHandler;
 import java.util.List;
 
 /** Toolbar for the Hub. May contain a single or multiple rows, of which this view is the parent. */
+@NullMarked
 public class HubToolbarView extends LinearLayout {
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
@@ -61,8 +63,8 @@ public class HubToolbarView extends LinearLayout {
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
 
-    public Callback<Integer> mToolbarOverviewColorSetter;
-    private OnTabSelectedListener mOnTabSelectedListener;
+    private Callback<Integer> mToolbarOverviewColorSetter;
+    private @Nullable OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
     private boolean mApplyDelayForSearchBoxAnimation;
     private final AnimationHandler mHubSearchAnimatorHandler;
@@ -129,7 +131,8 @@ public class HubToolbarView extends LinearLayout {
 
     void setPaneSwitcherButtonData(
             @Nullable List<FullButtonData> buttonDataList, int selectedIndex) {
-        mPaneSwitcher.removeOnTabSelectedListener(mOnTabSelectedListener);
+        // Null can safely be passed here.
+        mPaneSwitcher.removeOnTabSelectedListener(assumeNonNull(mOnTabSelectedListener));
         mPaneSwitcher.removeAllTabs();
 
         if (buttonDataList == null || buttonDataList.size() <= 1) {
@@ -356,18 +359,17 @@ public class HubToolbarView extends LinearLayout {
         }
     }
 
-    private View getButtonView(int index) {
-        @Nullable Tab tab = mPaneSwitcher.getTabAt(index);
+    private @Nullable View getButtonView(int index) {
+        Tab tab = mPaneSwitcher.getTabAt(index);
         return tab == null ? null : tab.view;
     }
 
-    private OnTabSelectedListener makeTabSelectedListener(
-            @NonNull List<FullButtonData> buttonDataList) {
+    private OnTabSelectedListener makeTabSelectedListener(List<FullButtonData> buttonDataList) {
         return new OnTabSelectedListener() {
             @Override
             public void onTabSelected(Tab tab) {
                 if (!mBlockTabSelectionCallback) {
-                    buttonDataList.get(tab.getPosition()).getOnPressRunnable().run();
+                    assumeNonNull(buttonDataList.get(tab.getPosition()).getOnPressRunnable()).run();
                 }
             }
 

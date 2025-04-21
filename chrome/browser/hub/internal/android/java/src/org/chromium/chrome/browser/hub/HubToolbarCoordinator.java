@@ -10,8 +10,8 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ImageButton;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -20,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Sets up the component that handles the toolbar of the Hub. */
+@NullMarked
 public class HubToolbarCoordinator {
     private final HubToolbarMediator mMediator;
     private final HubToolbarView mHubToolbarView;
@@ -35,13 +36,13 @@ public class HubToolbarCoordinator {
      * @param hubColorMixer Mixes the Hub Overview Color.
      */
     public HubToolbarCoordinator(
-            @NonNull Activity activity,
-            @NonNull HubToolbarView hubToolbarView,
-            @NonNull PaneManager paneManager,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator,
-            @NonNull Tracker tracker,
-            @NonNull SearchActivityClient searchActivityClient,
-            @NonNull HubColorMixer hubColorMixer) {
+            Activity activity,
+            HubToolbarView hubToolbarView,
+            PaneManager paneManager,
+            MenuButtonCoordinator menuButtonCoordinator,
+            Tracker tracker,
+            SearchActivityClient searchActivityClient,
+            HubColorMixer hubColorMixer) {
         PropertyModel model =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, hubColorMixer)
@@ -60,7 +61,7 @@ public class HubToolbarCoordinator {
     }
 
     /** Returns the button view for a given pane if present. */
-    public View getPaneButton(@PaneId int paneId) {
+    public @Nullable View getPaneButton(@PaneId int paneId) {
         return mMediator.getButton(paneId);
     }
 

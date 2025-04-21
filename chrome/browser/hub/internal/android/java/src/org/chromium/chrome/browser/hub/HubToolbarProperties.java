@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -17,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.List;
 
 /** Responsible for holding properties of the toolbar in the hub. */
+@NullMarked
 class HubToolbarProperties {
     // When set then an interactable button for the primary pane action should be shown.
     public static final WritableObjectPropertyKey<FullButtonData> ACTION_BUTTON_DATA =
@@ -48,7 +51,7 @@ class HubToolbarProperties {
 
     @FunctionalInterface
     public interface PaneButtonLookup {
-        View get(int index);
+        @Nullable View get(int index);
     }
 
     public static final WritableObjectPropertyKey<Callback<PaneButtonLookup>>

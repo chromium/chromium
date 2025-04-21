@@ -60,7 +60,7 @@ public class ShrinkExpandAnimator {
      *
      * @param thumbnailSize The size of the thumbnail in the tab grid.
      */
-    public void setThumbnailSizeForOffset(Size thumbnailSize) {
+    public void setThumbnailSizeForOffset(@Nullable Size thumbnailSize) {
         mThumbnailSize = thumbnailSize;
     }
 

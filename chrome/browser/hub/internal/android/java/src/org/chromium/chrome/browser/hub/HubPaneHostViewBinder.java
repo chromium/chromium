@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VIS
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Applies properties to the view that holds one pane at a time. */
+@NullMarked
 public class HubPaneHostViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, HubPaneHostView view, PropertyKey key) {
