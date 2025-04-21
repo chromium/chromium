@@ -2638,7 +2638,7 @@ crbug.com/411623170 external/wpt/html/semantics/interactive-elements/the-dialog-
 crbug.com/411623170 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-3-crash.html [ Crash ]
 crbug.com/411723253 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/411723254 [ Win10.20h2 ] external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Crash Timeout ]
-crbug.com/411723254 [ Linux ] external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Crash ]
+crbug.com/411723254 [ Linux ] external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Crash Timeout ]
 crbug.com/411576891 [ Linux ] external/wpt/webdriver/tests/classic/minimize_window/minimize.py [ Failure ]
 crbug.com/411723253 [ Win10.20h2 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/409979093 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/contexts.py [ Failure ]
