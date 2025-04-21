@@ -127,6 +127,10 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "VideoConferencing.TotalTime",
         total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "VideoConferencing.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
     AccumulateTotalPipTimeForSession(total_pip_time,
                                      /*is_video_conferencing=*/true);
   } else if (auto_pip_trigger_reason_ ==
@@ -135,6 +139,10 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "MediaPlayback.TotalTime",
         total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "MediaPlayback.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
     AccumulateTotalPipTimeForSession(total_pip_time,
                                      /*is_video_conferencing=*/false);
   }
@@ -152,6 +160,11 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
         "VideoConferencing.TotalTimeForSession",
         total_video_conferencing_pip_time_for_session_.value(),
         base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "VideoConferencing.TotalTimeForSessionV2",
+        total_video_conferencing_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
   }
 
   if (total_media_playback_pip_time_for_session_) {
@@ -160,6 +173,11 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
         "MediaPlayback.TotalTimeForSession",
         total_media_playback_pip_time_for_session_.value(),
         base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "MediaPlayback.TotalTimeForSessionV2",
+        total_media_playback_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
   }
 
   total_video_conferencing_pip_time_for_session_ = std::nullopt;
