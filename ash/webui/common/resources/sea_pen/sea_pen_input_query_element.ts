@@ -36,7 +36,7 @@ import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {SeaPenHistoryPromptSelectedEvent} from './sea_pen_images_element.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
-import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
+import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
 import {SeaPenRecentImageDeleteEvent} from './sea_pen_recent_wallpapers_element.js';
 import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -271,8 +271,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       this.shouldShowSuggestions_ = false;
       return;
     }
-    // This only works for English. We only support English queries for now.
-    logNumWordsInTextQuery(this.textValue_.split(/\s+/).length);
     const query: SeaPenQuery = {
       textQuery: this.textValue_,
     };

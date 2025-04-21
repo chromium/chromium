@@ -17,7 +17,6 @@ const enum HistogramName {
   SEA_PEN_TEMPLATE_SUBPAGE = 'Ash.SeaPen.Template',
   SEA_PEN_THUMBNAIL_CLICKED = 'Ash.SeaPen.ThumbnailClicked',
   SEA_PEN_CREATE_BUTTON = 'Ash.SeaPen.CreateButton',
-  SEA_PEN_WORD_COUNT = 'Ash.SeaPen.WordCount',
   SEA_PEN_SUGGESTION_CLICKED = `Ash.SeaPen.Freeform.Suggestion.Clicked`,
   SEA_PEN_SUGGESTION_SHUFFLE_CLICKED =
       `Ash.SeaPen.Freeform.Suggestion.Shuffle.Clicked`,
@@ -107,11 +106,6 @@ export function logSeaPenThumbnailClicked(templateId: SeaPenTemplateId|Query) {
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.SEA_PEN_THUMBNAIL_CLICKED, templateIdForMetrics,
       VC_BACKGROUND_FREEFORM + 1);
-}
-
-export function logNumWordsInTextQuery(wordCount: number) {
-  chrome.metricsPrivate.recordCount(
-      HistogramName.SEA_PEN_WORD_COUNT, wordCount);
 }
 
 export function logSuggestionClicked() {
