@@ -9123,3 +9123,6 @@ crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.worker.html [ 
 
 crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass Timeout ]
 crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Failure Pass Timeout ]
+
+# Gardener 2025-04-21
+crbug.com/412321937 [ Mac ] media/controls/closed-captions-switch-track.html [ Crash Failure Pass ]
