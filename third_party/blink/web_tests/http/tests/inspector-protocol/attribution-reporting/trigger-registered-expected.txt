@@ -96,6 +96,34 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 }
             ]
         }
+        namedBudgets : [
+            [0] : {
+                filters : {
+                    filters : [
+                    ]
+                    notFilters : [
+                    ]
+                }
+                name : x
+            }
+            [1] : {
+                filters : {
+                    filters : [
+                        [0] : {
+                            filterValues : [
+                                [0] : {
+                                    key : q
+                                    values : [
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                    notFilters : [
+                    ]
+                }
+            }
+        ]
         scopes : [
             [0] : a
         ]

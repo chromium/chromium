@@ -37,6 +37,12 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
             }
         ]
         maxEventLevelReports : 1
+        namedBudgets : [
+            [0] : {
+                budget : 456
+                name : x
+            }
+        ]
         priority : 0
         reportingOrigin : https://devtools.test:8443
         scopesData : {

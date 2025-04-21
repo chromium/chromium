@@ -11165,6 +11165,11 @@ experimental domain Storage
       number limit
       number maxEventStates
 
+  experimental type AttributionReportingNamedBudgetDef extends object
+    properties
+      string name
+      integer budget
+
   experimental type AttributionReportingSourceRegistration extends object
     properties
       Network.TimeSinceEpoch time
@@ -11187,6 +11192,7 @@ experimental domain Storage
       AttributionReportingAggregatableDebugReportingConfig aggregatableDebugReportingConfig
       optional AttributionScopesData scopesData
       integer maxEventLevelReports
+      array of AttributionReportingNamedBudgetDef namedBudgets
 
   experimental type AttributionReportingSourceRegistrationResult extends string
     enum
@@ -11249,6 +11255,11 @@ experimental domain Storage
       optional UnsignedInt64AsBase10 dedupKey
       AttributionReportingFilterPair filters
 
+  experimental type AttributionReportingNamedBudgetCandidate extends object
+    properties
+      optional string name
+      AttributionReportingFilterPair filters
+
   experimental type AttributionReportingTriggerRegistration extends object
     properties
       AttributionReportingFilterPair filters
@@ -11264,6 +11275,7 @@ experimental domain Storage
       optional string triggerContextId
       AttributionReportingAggregatableDebugReportingConfig aggregatableDebugReportingConfig
       array of string scopes
+      array of AttributionReportingNamedBudgetCandidate namedBudgets
 
   experimental type AttributionReportingEventLevelResult extends string
     enum
