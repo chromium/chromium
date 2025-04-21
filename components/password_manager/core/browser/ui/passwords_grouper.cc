@@ -442,8 +442,7 @@ PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
 void PasswordsGrouper::InitializePSLExtensionList(
     std::vector<std::string> psl_extension_list) {
   CheckHeapIntegrity();
-  psl_extensions_ =
-      base::MakeFlatSet<std::string>(std::move(psl_extension_list));
+  psl_extensions_ = base::flat_set<std::string>(std::move(psl_extension_list));
   CheckHeapIntegrity();
 }
 

@@ -688,7 +688,7 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
       forms.push_back(queried_form_signatures[i]);
     }
   }
-  return base::MakeFlatSet<FormSignature>(std::move(forms));
+  return base::flat_set<FormSignature>(std::move(forms));
 }
 
 }  // namespace
