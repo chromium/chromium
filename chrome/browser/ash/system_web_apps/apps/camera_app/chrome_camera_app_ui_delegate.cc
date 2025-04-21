@@ -13,7 +13,6 @@
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -307,7 +306,7 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::GetThumbnail(
     std::move(callback).Run({});
     return;
   }
-  UNSAFE_TODO(memcpy(pdf_region.mapping.memory(), pdf.data(), pdf.size()));
+  pdf_region.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(pdf);
 
   mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
   mojo::PendingRemote<pdf::mojom::PdfThumbnailer> pdf_thumbnailer;

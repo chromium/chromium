@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,7 +19,7 @@ DEFINE_PROTO_FUZZER(
   const std::string model_str = fuzzing_case.memory_region();
   base::MappedReadOnlyRegion mapped_region = base::MappedReadOnlyRegion();
   mapped_region = base::ReadOnlySharedMemoryRegion::Create(model_str.size());
-  memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
+  mapped_region.mapping.GetMemoryAsSpan<char>().copy_prefix_from(model_str);
 
   std::unique_ptr<safe_browsing::Scorer> scorer(safe_browsing::Scorer::Create(
       mapped_region.region.Duplicate(), base::File()));
