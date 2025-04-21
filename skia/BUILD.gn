@@ -138,7 +138,6 @@ config("skia_config") {
     }
     if (enable_vulkan) {
       defines += [ "SK_VULKAN=1" ]
-      include_dirs += [ "//third_party/vulkan/include" ]
       configs += [ "//third_party/vulkan-headers/src:vulkan_headers_config" ]
     }
 
