@@ -1,5 +1,5 @@
 // META: title=translator.create without options do not crash
-// META: global=window,worker
+// META: global=window
 // META: timeout=long
 //
 // Setting `timeout=long` as this test may require downloading the translation

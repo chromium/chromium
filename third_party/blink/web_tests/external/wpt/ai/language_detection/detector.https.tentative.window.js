@@ -1,5 +1,5 @@
 // META: title=Detect english
-// META: global=window,worker
+// META: global=window
 // META: script=../resources/util.js
 
 'use strict';
@@ -163,8 +163,13 @@ promise_test(async t => {
 }, 'Aborting LanguageDetector.measureInputUsage().');
 
 promise_test(async () => {
-  const expectedLanguages = ['en', 'es'];
-  const detector = await LanguageDetector.create(
-      {expectedInputLanguages: expectedLanguages});
-  assert_array_equals(detector.expectedInputLanguages, expectedLanguages);
+  const detector = await LanguageDetector.create();
+  assert_equals(detector.expectedInputLanguages, null);
+}, 'Creating LanguageDetector without expectedInputLanguages');
+
+promise_test(async () => {
+  const expectedInputLanguages = ['en', 'es'];
+  const detector = await LanguageDetector.create({expectedInputLanguages});
+  assert_array_equals(detector.expectedInputLanguages, expectedInputLanguages);
+  assert_true(Object.isFrozen(detector.expectedInputLanguages));
 }, 'Creating LanguageDetector with expectedInputLanguages');
