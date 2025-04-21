@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1247,6 +1248,16 @@ void GroupTab(Browser* browser) {
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),
       TabStripModel::ContextMenuCommand::CommandToggleGrouped);
+}
+
+void NewSplitTab(Browser* browser) {
+  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  const int active_index = tab_strip_model->active_index();
+  tab_strip_model->delegate()->AddTabAt(
+      GURL(chrome::kChromeUISplitViewNewTabPageURL), active_index + 1, true,
+      tab_strip_model->GetTabGroupForTab(active_index));
+  tab_strip_model->AddToNewSplit({active_index},
+                                 split_tabs::SplitTabLayout::kHorizontal);
 }
 
 void AddNewTabToGroup(Browser* browser) {

@@ -66,6 +66,22 @@ class SplitTabButtonInteractiveTest
         },
         expected_icon.name);
   }
+
+  auto CheckTabCount(int expected_count) {
+    return CheckResult(
+        [this]() { return browser()->tab_strip_model()->count(); },
+        expected_count);
+  }
+
+  auto CheckTabInSplit(int tab_index, bool expected_split_state) {
+    return CheckResult(
+        [=, this]() {
+          tabs::TabInterface* const tab =
+              browser()->tab_strip_model()->GetTabAtIndex(tab_index);
+          return tab->IsSplit();
+        },
+        expected_split_state);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, PinSplitTabButton) {
@@ -108,4 +124,12 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ButtonIconUpdates) {
                   FocusInactiveTabInSplit(),
                   EnsurePresent(kToolbarSplitTabsToolbarButtonElementId),
                   CheckSplitTabButtonIcon(kSplitSceneRightIcon));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, EnterSplitView) {
+  RunTestSequence(
+      UpdateSplitTabButtonPinState(true),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId), CheckTabCount(1),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId), CheckTabCount(2),
+      CheckTabInSplit(0, true), CheckTabInSplit(1, true));
 }

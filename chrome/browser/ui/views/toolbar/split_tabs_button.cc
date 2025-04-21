@@ -8,6 +8,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
@@ -67,7 +68,16 @@ void SplitTabsToolbarButton::OnSplitTabRemoved(
   UpdateButtonVisibility();
 }
 
-void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {}
+void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
+  TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+  tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
+
+  if (active_tab->IsSplit()) {
+    // TODO(crbug.com/403350993): Open split tab menu.
+  } else {
+    chrome::NewSplitTab(browser_);
+  }
+}
 
 void SplitTabsToolbarButton::UpdateButtonVisibility() {
   UpdateButtonIcon();

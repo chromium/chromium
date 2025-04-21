@@ -81,7 +81,8 @@
 #endif
 
 #define IDC_OPEN_IN_PWA_WINDOW          34053
-#define IDC_MOVE_TAB_TO_NEW_WINDOW          34054
+#define IDC_MOVE_TAB_TO_NEW_WINDOW      34054
+#define IDC_NEW_SPLIT_TAB               34055
 
 // Web app window commands
 #define IDC_COPY_URL                    34060

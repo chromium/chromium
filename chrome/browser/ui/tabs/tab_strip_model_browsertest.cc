@@ -166,7 +166,8 @@ class TabStripModelBrowserTest : public InProcessBrowserTest,
                                  public TabStripModelObserver {
  public:
   TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kSideBySide}, {});
   }
 
   void TearDownOnMainThread() override { observer_.Reset(); }
@@ -179,6 +180,12 @@ class TabStripModelBrowserTest : public InProcessBrowserTest,
               OnTabGroupWillBeRemoved,
               (const tab_groups::TabGroupId& group_id),
               (override));
+
+  void AddTabs(int num_tabs) {
+    for (int i = 0; i < num_tabs; i++) {
+      chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), 1, false);
+    }
+  }
 
   base::test::ScopedFeatureList feature_list_;
   base::ScopedObservation<TabStripModel, TabStripModelBrowserTest> observer_{
@@ -295,4 +302,71 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   EXPECT_EQ(tabs::TabInterface::DetachReason::kDelete,
             removed_observer.tab_detach_reason());
   tab_strip_model->AppendWebContents(std::move(extracted_contents), true);
+}
+
+// Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
+// CommandTogglePinned.
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandAddToSplit) {
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  AddTabs(4);
+  EXPECT_EQ(tab_strip_model->count(), 5);
+  tab_strip_model->SetTabPinned(0, true);
+  tab_strip_model->SetTabPinned(1, true);
+
+  // Add tab at index 4 to a group.
+  tab_strip_model->AddToNewGroup({4});
+
+  tab_strip_model->ActivateTabAt(3);
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      2, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      3, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      4, TabStripModel::CommandAddToSplit));
+
+  tab_strip_model->ExecuteContextMenuCommand(0,
+                                             TabStripModel::CommandAddToSplit);
+
+  // The first tab should become unpinned and adjacent to the active tab.
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsPinned());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(1)->IsPinned());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(2)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(3)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(4)->GetGroup().has_value());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(4)->IsSplit());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandRemoveSplit) {
+  AddTabs(3);
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->count(), 4);
+  tab_strip_model->ActivateTabAt(1);
+
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      3, TabStripModel::CommandAddToSplit));
+  tab_strip_model->ExecuteContextMenuCommand(3,
+                                             TabStripModel::CommandAddToSplit);
+
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(2)->IsSplit());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(3)->IsSplit());
+
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandRemoveSplit));
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      3, TabStripModel::CommandRemoveSplit));
+  tab_strip_model->ExecuteContextMenuCommand(1,
+                                             TabStripModel::CommandRemoveSplit);
+
+  // The two tabs in the split will now be unsplit retaining their indexes.
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(2)->IsSplit());
+  EXPECT_FALSE(tab_strip_model->GetTabAtIndex(3)->IsSplit());
 }
