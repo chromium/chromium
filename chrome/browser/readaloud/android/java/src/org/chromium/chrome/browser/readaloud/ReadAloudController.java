@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
@@ -389,7 +390,8 @@ public class ReadAloudController
     private final ObservableSupplierImpl<Boolean> mHighlightingEnabled;
 
     // Whether or not to show the playback mode selector.
-    private final ObservableSupplierImpl<Boolean> mPlaybackModeSelectionEnabled;
+    private final ObservableSupplierImpl<PlaybackModeSelectionEnablementStatus>
+            mPlaybackModeSelectionEnabled;
 
     // Voices to show in voice selection menu.
     private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
@@ -559,7 +561,9 @@ public class ReadAloudController
         mBottomControlsStacker = bottomControlsStacker;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
-        mPlaybackModeSelectionEnabled = new ObservableSupplierImpl<>(false);
+        mPlaybackModeSelectionEnabled =
+                new ObservableSupplierImpl<>(
+                        PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
         ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         mActivityWindowAndroid = activityWindowAndroid;
@@ -1366,17 +1370,33 @@ public class ReadAloudController
         return language;
     }
 
-    private void updatePlaybackModeSelectionEnabled(ReadabilityInfo readabilityInfo, String language) {
-      // We allow playback mode selection only if both modes are supported.
-      if (readabilityInfo == null) {
-          mPlaybackModeSelectionEnabled.set(false);
+    private void updatePlaybackModeSelectionEnabled(
+            ReadabilityInfo readabilityInfo, String language) {
+        if (!ReadAloudFeatures.isAudioOverviewsAllowed()) {
+            mPlaybackModeSelectionEnabled.set(
+                    PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
+            return;
+        }
+        // We allow playback mode selection only if both modes are supported.
+        if (readabilityInfo == null) {
+            mPlaybackModeSelectionEnabled.set(
+                    PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_UNKNOWN_REASON);
+            return;
+        }
+        boolean classicSupported = readabilityInfo.isReadable(PlaybackMode.CLASSIC);
+        boolean overviewSupported = readabilityInfo.isReadable(PlaybackMode.OVERVIEW);
+        boolean isLanguageSupported = isLanguageSupportedForOverview(language);
+        if (classicSupported && overviewSupported && isLanguageSupported) {
+          mPlaybackModeSelectionEnabled.set(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED);
           return;
-      }
-      boolean featureEnabled = ReadAloudFeatures.isAudioOverviewsAllowed();
-      boolean classicSupported = readabilityInfo.isReadable(PlaybackMode.CLASSIC);
-      boolean overviewSupported = readabilityInfo.isReadable(PlaybackMode.OVERVIEW);
-      boolean isLanguageSupported = isLanguageSupportedForOverview(language);
-      mPlaybackModeSelectionEnabled.set(featureEnabled && classicSupported && overviewSupported && isLanguageSupported);
+        }
+
+        if (!overviewSupported || !isLanguageSupported) {
+          mPlaybackModeSelectionEnabled.set(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_AO_UNAVAILABLE);
+          return;
+        }
+
+        mPlaybackModeSelectionEnabled.set(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_CLASSIC_UNAVAILABLE);
     }
 
     private void updateVoiceMenu(@Nullable String language) {
@@ -1450,7 +1470,8 @@ public class ReadAloudController
     }
 
     @Override
-    public ObservableSupplier<Boolean> getPlaybackModeSelectionEnabled() {
+    public ObservableSupplier<PlaybackModeSelectionEnablementStatus>
+            getPlaybackModeSelectionEnabled() {
         return mPlaybackModeSelectionEnabled;
     }
 

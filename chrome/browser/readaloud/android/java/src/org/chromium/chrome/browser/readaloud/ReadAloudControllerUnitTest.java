@@ -94,6 +94,7 @@ import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.PlaybackListener.PlaybackData;
@@ -169,7 +170,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityWindowAndroid mActivityWindowAndroid;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock Callback<Boolean> mPlaybackModeSelectionEnabledCallback;
+    @Mock Callback<PlaybackModeSelectionEnablementStatus> mPlaybackModeSelectionEnabledCallback;
     MockTabModelSelector mTabModelSelector;
 
     @Captor ArgumentCaptor<ReadAloudReadabilityHooks.ReadabilityPerModeCallback> mCallbackCaptor;
@@ -1122,22 +1123,28 @@ public class ReadAloudControllerUnitTest {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("en");
 
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
-      mCallbackCaptor.getValue().onSuccess(
-        testUrl,
-        ImmutableMap.of(
-          PlaybackMode.CLASSIC,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
-          PlaybackMode.OVERVIEW,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-      ObservableSupplier<Boolean> observable = mController.getPlaybackModeSelectionEnabled();
-      observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
       mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
       resolvePromises();
@@ -1149,9 +1156,10 @@ public class ReadAloudControllerUnitTest {
 
       onPlaybackSuccess(mPlayback);
       verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
-      assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+        assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
-      verify(mPlaybackModeSelectionEnabledCallback).onResult(eq(true));
+        verify(mPlaybackModeSelectionEnabledCallback)
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
     }
 
     @Test
@@ -1159,22 +1167,28 @@ public class ReadAloudControllerUnitTest {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("en");
 
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
-      mCallbackCaptor.getValue().onSuccess(
-        testUrl,
-        ImmutableMap.of(
-          PlaybackMode.CLASSIC,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
-          PlaybackMode.OVERVIEW,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-      ObservableSupplier<Boolean> observable = mController.getPlaybackModeSelectionEnabled();
-      observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
       mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
       resolvePromises();
@@ -1186,9 +1200,13 @@ public class ReadAloudControllerUnitTest {
 
       onPlaybackSuccess(mPlayback);
       verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
-      assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+        assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
-      verify(mPlaybackModeSelectionEnabledCallback, never()).onResult(eq(true));
+        // We cannot assert that there's an update for FEATURE_DISABLED because that's the initial value of the observable
+        // and it doesn't really change.
+        // Instead, we assert that the state isn't enabled.
+        verify(mPlaybackModeSelectionEnabledCallback, never())
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
     }
 
     @Test
@@ -1197,22 +1215,28 @@ public class ReadAloudControllerUnitTest {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("fr");
 
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
-      mCallbackCaptor.getValue().onSuccess(
-        testUrl,
-        ImmutableMap.of(
-          PlaybackMode.CLASSIC,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
-          PlaybackMode.OVERVIEW,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-      ObservableSupplier<Boolean> observable = mController.getPlaybackModeSelectionEnabled();
-      observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
       mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
       resolvePromises();
@@ -1224,9 +1248,13 @@ public class ReadAloudControllerUnitTest {
 
       onPlaybackSuccess(mPlayback);
       verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
-      assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+        assertEquals(PlaybackMode.CLASSIC, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
-      verify(mPlaybackModeSelectionEnabledCallback, never()).onResult(eq(true));
+        verify(mPlaybackModeSelectionEnabledCallback)
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_AO_UNAVAILABLE));
+
+        verify(mPlaybackModeSelectionEnabledCallback, never())
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
     }
 
     @Test
@@ -1235,22 +1263,28 @@ public class ReadAloudControllerUnitTest {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("en");
 
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
-      mCallbackCaptor.getValue().onSuccess(
-        testUrl,
-        ImmutableMap.of(
-          PlaybackMode.CLASSIC,
-          new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
-          PlaybackMode.OVERVIEW,
-          new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        testUrl,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
+                                PlaybackMode.OVERVIEW,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-      ObservableSupplier<Boolean> observable = mController.getPlaybackModeSelectionEnabled();
-      observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+                mController.getPlaybackModeSelectionEnabled();
+        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
       mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
       resolvePromises();
@@ -1262,9 +1296,13 @@ public class ReadAloudControllerUnitTest {
 
       onPlaybackSuccess(mPlayback);
       verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
-      assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
+        assertEquals(PlaybackMode.OVERVIEW, mPlaybackArgsCaptor.getValue().getPlaybackMode());
 
-      verify(mPlaybackModeSelectionEnabledCallback, never()).onResult(eq(true));
+        verify(mPlaybackModeSelectionEnabledCallback)
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_DISABLED_CLASSIC_UNAVAILABLE));
+
+        verify(mPlaybackModeSelectionEnabledCallback, never())
+                .onResult(eq(PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED));
     }
 
     @Test
@@ -1272,12 +1310,15 @@ public class ReadAloudControllerUnitTest {
     public void testPlayTabInOverviewMode() {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("en");
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
       mCallbackCaptor.getValue().onSuccess(
         testUrl,
         ImmutableMap.of(
@@ -1298,12 +1339,15 @@ public class ReadAloudControllerUnitTest {
     public void testNonEnglishTabClassicIsUsed() {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("fr");
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
       mCallbackCaptor.getValue().onSuccess(
         testUrl,
         ImmutableMap.of(
@@ -1324,12 +1368,15 @@ public class ReadAloudControllerUnitTest {
     public void testPreferenceUnspecifiedOverviewsDefault() {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("en");
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.UNSPECIFIED.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.UNSPECIFIED.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
       mCallbackCaptor.getValue().onSuccess(
         testUrl,
         ImmutableMap.of(
@@ -1350,12 +1397,15 @@ public class ReadAloudControllerUnitTest {
     public void testOverviewsUnreadableFallsbackToClassic() {
       mFakeTranslateBridge.setIsPageTranslated(false);
       mFakeTranslateBridge.setCurrentLanguage("en");
-      when(mPrefService.getInteger("readaloud.playback_mode")).thenReturn(PlaybackMode.OVERVIEW.getValue());
+        when(mPrefService.getInteger("readaloud.playback_mode"))
+                .thenReturn(PlaybackMode.OVERVIEW.getValue());
       String testUrl = "https://en.wikipedia.org/wiki/Google";
       mTab.setGurlOverrideForTesting(new GURL(testUrl));
 
       mController.maybeCheckReadability(mTab);
-      verify(mHooksImpl, times(1)).isPageReadable(eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
+        verify(mHooksImpl, times(1))
+                .isPageReadable(
+                        eq("https://en.wikipedia.org/wiki/Google"), mCallbackCaptor.capture());
       mCallbackCaptor.getValue().onSuccess(
         testUrl,
         ImmutableMap.of(

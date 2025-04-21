@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -179,12 +180,12 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         }
     }
 
-    void setPlaybackModeSelectionEnabled(boolean enabled) {
-      if (enabled) {
-        mModeSelectorButton.setVisibility(View.VISIBLE);
-      } else {
-        mModeSelectorButton.setVisibility(View.GONE);
-      }
+    void setPlaybackModeSelectionEnabled(PlaybackModeSelectionEnablementStatus status) {
+        if (status == PlaybackModeSelectionEnablementStatus.MODE_SELECTION_ENABLED) {
+          mModeSelectorButton.setVisibility(View.VISIBLE);
+        } else {
+          mModeSelectorButton.setVisibility(View.GONE);
+        }
     }
 
     void setTitle(String title) {
