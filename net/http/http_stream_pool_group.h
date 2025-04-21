@@ -271,9 +271,9 @@ class HttpStreamPool::Group {
   // are called "pending". Pending jobs are associated with an AttemptManager
   // but haven't attempted connections yet.
   PausedJobSet paused_jobs_;
-  // Keeps jobs that are previously paused and already notified results. We
-  // need to keep them to avoid dangling pointers.
-  PausedJobSet notified_paused_jobs_;
+  // Keeps jobs that are previously paused and already resumed. We need to keep
+  // them to avoid dangling pointers.
+  PausedJobSet resumed_jobs_;
 
   base::OnceClosure on_attempt_manager_complete_callback_for_testing_;
 

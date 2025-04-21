@@ -4308,6 +4308,56 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResumePausedJobExistingSpdySession) {
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
 }
 
+// Regression test for crbug.com/411879984. Group must outlive a Job when a
+// resumed request (job) used an existing SPDY session if exists.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       ResumePausedJobExistingSpdySessionGroupOutliveJob) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v6("2001:db8::1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto failed_data = std::make_unique<SequencedSocketData>();
+  failed_data->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data.get());
+
+  HttpStreamKey stream_key = StreamKeyBuilder(kDefaultDestination).Build();
+
+  // The first request fails.
+  StreamRequester failing_requester(stream_key);
+  failing_requester.RequestStream(pool());
+  failing_requester.WaitForResult();
+  EXPECT_THAT(failing_requester.result(),
+              Optional(IsError(ERR_CONNECTION_RESET)));
+
+  // This second request is paused as the previous request failed and isn't
+  // destroyed yet.
+  StreamRequester requester(stream_key);
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Simulate creating a SPDY session before resuming the paused request.
+  CreateFakeSpdySession(stream_key);
+
+  // Destroy the first request to resume the second request.
+  failing_requester.ResetRequest();
+
+  // The second request should complete with the existing SPDY session.
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoHTTP2);
+
+  // Close the SPDY session so that the Group can complete. The Group should not
+  // be destroyed yet since the second request isn't destroyed yet.
+  http_network_session()->CloseAllConnections(ERR_ABORTED, "For testing");
+  FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(pool().GetGroupForTesting(stream_key));
+
+  // Destroy the second request. The Group should complete immediately.
+  requester.ResetRequest();
+  ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
+}
+
 // When a request (job) is resumed, it should handle an existing QUIC session if
 // exists. This test uses an HTTP/3 Origin frame to make a session usable for
 // the destination.
