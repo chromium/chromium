@@ -39,6 +39,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
@@ -195,6 +196,7 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   std::unique_ptr<ExtensionTelemetryService> telemetry_service_;
   raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
+  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client_;
   base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(20);
@@ -210,6 +212,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
 
   // Create extension prefs and registry instances.
   extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
+  extension_registrar_ = extensions::ExtensionRegistrar::Get(&profile_);
   extension_registry_ = extensions::ExtensionRegistry::Get(&profile_);
 
   // Set up and enable ESB telemetry reporting by default.
@@ -315,7 +318,7 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
 
 void ExtensionTelemetryServiceTest::UnregisterExtensionWithExtensionService(
     const ExtensionId& extension_id) {
-  extension_service_->UnloadExtension(
+  extension_registrar_->RemoveExtension(
       extension_id, extensions::UnloadedExtensionReason::UNINSTALL);
   extension_prefs_->DeleteExtensionPrefs(extension_id);
 }
