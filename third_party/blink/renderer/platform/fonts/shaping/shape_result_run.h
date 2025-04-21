@@ -87,7 +87,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
         direction_(other.direction_),
         canvas_rotation_(other.canvas_rotation_) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(font_data_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(glyph_data_);
+    visitor->Trace(font_data_);
+    visitor->Trace(graphemes_);
+  }
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
@@ -250,15 +254,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
    public:
     explicit GlyphDataCollection(unsigned num_glyphs)
-        : data_(new HarfBuzzRunGlyphData[num_glyphs]), offsets_(num_glyphs) {}
+        : data_(num_glyphs), offsets_(num_glyphs) {}
 
     GlyphDataCollection(const GlyphDataCollection& other)
-        : data_(new HarfBuzzRunGlyphData[other.size()]),
-          offsets_(other.offsets_) {
-      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::copy(other.data_.get(), other.data_.get() + other.size(),
-                data_.get());
-    }
+        : data_(other.data_), offsets_(other.offsets_) {}
 
     HarfBuzzRunGlyphData& operator[](unsigned index) {
       CHECK_LT(index, size());
@@ -287,7 +286,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return offsets_.GetIterator<has_non_zero_glyph_offsets>();
     }
 
-    GlyphOffset* GetMayBeOffsets() const { return offsets_.GetStorage(); }
+    GlyphOffset* GetMayBeOffsets() { return offsets_.GetStorage(); }
+    const GlyphOffset* GetMayBeOffsets() const { return offsets_.GetStorage(); }
 
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFrom(const GlyphDataCollection& other1,
@@ -295,10 +295,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
       SECURITY_CHECK(size() == other1.size() + other2.size());
       DCHECK(!other1.IsEmpty());
       DCHECK(!other2.IsEmpty());
-      std::copy(other1.data_.get(), other1.data_.get() + other1.size(),
-                data_.get());
-      std::copy(other2.data_.get(), other2.data_.get() + other2.size(),
-                data_.get() + other1.size());
+      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
+      std::copy(other1.data_.data(), other1.data_.data() + other1.size(),
+                data_.data());
+      std::copy(other2.data_.data(), other2.data_.data() + other2.size(),
+                data_.data() + other1.size());
       offsets_.CopyFrom(other1.offsets_, other2.offsets_);
     }
 
@@ -306,7 +307,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     void CopyFromRange(const GlyphDataRange& range) {
       CHECK_EQ(range.size(), size());
       static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::ranges::copy(range, data_.get());
+      std::ranges::copy(range, data_.data());
       offsets_.CopyFromRange(range);
     }
 
@@ -325,10 +326,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
     // Vector<HarfBuzzRunGlyphData> like functions
     using iterator = HarfBuzzRunGlyphData*;
     using const_iterator = const HarfBuzzRunGlyphData*;
-    iterator begin() { return data_.get(); }
-    iterator end() { return data_.get() + size(); }
-    const_iterator begin() const { return data_.get(); }
-    const_iterator end() const { return data_.get() + size(); }
+    iterator begin() { return data_.data(); }
+    iterator end() { return data_.data() + size(); }
+    const_iterator begin() const { return data_.data(); }
+    const_iterator end() const { return data_.data() + size(); }
 
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -369,23 +370,26 @@ struct PLATFORM_EXPORT ShapeResultRun final
         return;
       }
       DCHECK_LT(new_size, size());
-      HarfBuzzRunGlyphData* new_data = new HarfBuzzRunGlyphData[new_size];
-      std::copy(data_.get(), data_.get() + new_size, new_data);
-      data_.reset(new_data);
+      data_.Shrink(new_size);
       offsets_.Shrink(new_size);
+    }
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(data_);
+      visitor->Trace(offsets_);
     }
 
    private:
     // Note: |offsets_| holds number of elements instead o here to reduce
     // memory usage.
-    std::unique_ptr<HarfBuzzRunGlyphData[]> data_;
+    HeapVector<HarfBuzzRunGlyphData> data_;
     // |offsets_| holds collection of offset for |data_[i]|.
     // When all offsets are zero, we don't allocate for reducing memory usage.
     GlyphOffsetArray offsets_;
   };
 
   void CheckConsistency() const {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     for (const HarfBuzzRunGlyphData& glyph : glyph_data_) {
       DCHECK_LT(glyph.character_index, num_characters_);
     }
@@ -397,7 +401,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
   // graphemes_[i] is the number of graphemes up to (and including) the ith
   // character in the run.
-  Vector<unsigned> graphemes_;
+  Member<GCedHeapVector<unsigned>> graphemes_;
 
   unsigned start_index_;
   unsigned num_characters_;
@@ -410,6 +414,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
   // the canvas back 90deg for this ShapeResultRun.
   CanvasRotationInVertical canvas_rotation_;
 };
+
+static_assert(std::is_trivially_destructible_v<ShapeResultRun>);
 
 }  // namespace blink
 

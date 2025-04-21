@@ -12,6 +12,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -23,13 +24,8 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
  public:
   explicit GlyphOffsetArray(unsigned size) : size_(size) {}
 
-  GlyphOffsetArray(const GlyphOffsetArray& other) : size_(other.size_) {
-    if (!other.storage_) {
-      return;
-    }
-    std::copy(other.storage_.get(), other.storage_.get() + other.size(),
-              AllocateStorage());
-  }
+  GlyphOffsetArray(const GlyphOffsetArray& other)
+      : storage_(other.storage_), size_(other.size_) {}
 
   // The `span` of `GlyphOffset` if `HasStorage()`, or an empty span.
   explicit operator base::span<const GlyphOffset>() const {
@@ -51,7 +47,7 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
   bool IsEmpty() const { return size() == 0; }
 
   size_t ByteSize() const {
-    return storage_ ? size() * sizeof(GlyphOffset) : 0;
+    return HasStorage() ? size() * sizeof(GlyphOffset) : 0;
   }
 
   void CopyFrom(const GlyphOffsetArray& other1,
@@ -59,40 +55,33 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
     SECURITY_CHECK(size() == other1.size() + other2.size());
     DCHECK(!other1.IsEmpty());
     DCHECK(!other2.IsEmpty());
-    if (other1.storage_) {
-      if (!storage_) {
-        AllocateStorage();
-      }
-      std::copy(other1.storage_.get(), other1.storage_.get() + other1.size(),
-                storage_.get());
+    if (other1.HasStorage()) {
+      AllocateStorageIfNeeded();
+      std::copy(other1.GetStorage(), other1.GetStorage() + other1.size(),
+                GetStorage());
     }
-    if (other2.storage_) {
-      if (!storage_) {
-        AllocateStorage();
-      }
-      std::copy(other2.storage_.get(), other2.storage_.get() + other2.size(),
-                storage_.get() + other1.size());
+    if (other2.HasStorage()) {
+      AllocateStorageIfNeeded();
+      std::copy(other2.GetStorage(), other2.GetStorage() + other2.size(),
+                GetStorage() + other1.size());
     }
   }
 
   void CopyFromRange(const GlyphDataRange& range) {
     CHECK_EQ(range.size(), size());
     if (!range.HasOffsets() || range.IsEmpty()) {
-      storage_.reset();
+      storage_.clear();
       return;
     }
-    std::ranges::copy(range.Offsets(), AllocateStorage());
+    AllocateStorage();
+    std::ranges::copy(range.Offsets(), GetStorage());
   }
 
-  GlyphOffset* GetStorage() const { return storage_.get(); }
-  bool HasStorage() const { return storage_.get(); }
+  GlyphOffset* GetStorage() { return storage_.data(); }
+  const GlyphOffset* GetStorage() const { return storage_.data(); }
+  bool HasStorage() const { return !storage_.empty(); }
 
-  void Reverse() {
-    if (!storage_) {
-      return;
-    }
-    std::reverse(storage_.get(), storage_.get() + size());
-  }
+  void Reverse() { storage_.Reverse(); }
 
   void Shrink(unsigned new_size) {
     DCHECK_GE(new_size, 1u);
@@ -102,36 +91,30 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
     }
     CHECK_LT(new_size, size());
     size_ = new_size;
-    if (!storage_) {
+    if (!HasStorage()) {
       return;
     }
-    GlyphOffset* new_offsets = new GlyphOffset[new_size];
-    std::copy(storage_.get(), storage_.get() + new_size, new_offsets);
-    storage_.reset(new_offsets);
+    storage_.Shrink(new_size);
   }
 
   // Functions to change one element.
   void AddHeightAt(unsigned index, float delta) {
     CHECK_LT(index, size());
     DCHECK_NE(delta, 0.0f);
-    if (!storage_) {
-      AllocateStorage();
-    }
+    AllocateStorageIfNeeded();
     storage_[index].set_y(storage_[index].y() + delta);
   }
 
   void AddWidthAt(unsigned index, float delta) {
     CHECK_LT(index, size());
     DCHECK_NE(delta, 0.0f);
-    if (!storage_) {
-      AllocateStorage();
-    }
+    AllocateStorageIfNeeded();
     storage_[index].set_x(storage_[index].x() + delta);
   }
 
   void SetAt(unsigned index, GlyphOffset offset) {
     CHECK_LT(index, size());
-    if (!storage_) {
+    if (!HasStorage()) {
       if (offset.IsZero()) {
         return;
       }
@@ -140,16 +123,23 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
     storage_[index] = offset;
   }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(storage_); }
+
  private:
   // Note: HarfBuzzShaperTest.ShapeVerticalUpright uses non-zero glyph offset.
-  GlyphOffset* AllocateStorage() {
+  void AllocateStorage() {
     DCHECK_GE(size(), 1u);
-    DCHECK(!storage_);
-    storage_.reset(new GlyphOffset[size()]);
-    return storage_.get();
+    DCHECK(!HasStorage());
+    storage_.resize(size_);
   }
 
-  std::unique_ptr<GlyphOffset[]> storage_;
+  void AllocateStorageIfNeeded() {
+    if (!HasStorage()) {
+      AllocateStorage();
+    }
+  }
+
+  HeapVector<GlyphOffset> storage_;
   unsigned size_;
 };
 
@@ -161,7 +151,7 @@ struct GlyphOffsetArray::iterator<true> final {
  public:
   // The constructor for ShapeResult
   explicit iterator(const GlyphOffsetArray& array)
-      : pointer(array.storage_.get()) {
+      : pointer(array.GetStorage()) {
     DCHECK(pointer);
   }
 

@@ -73,11 +73,11 @@ ASSERT_SIZE(HarfBuzzRunGlyphData, SameSizeAsHarfBuzzRunGlyphData);
 
 struct SameSizeAsRunInfo {
   struct GlyphDataCollection {
-    void* pointers[2];
+    Vector<int> glyphs;
+    Vector<int> offsets;
     unsigned integer;
   } glyph_data;
-  Member<void*> pointer;
-  Vector<int> vector;
+  Member<void*> pointer2[2];
   int integers[6];
 };
 
@@ -157,12 +157,13 @@ float ShapeResultRun::XPositionForVisualOffset(
 }
 
 unsigned ShapeResultRun::NumGraphemes(unsigned start, unsigned end) const {
-  if (graphemes_.size() == 0 || start >= num_characters_)
+  if (!graphemes_ || start >= num_characters_) {
     return 0;
+  }
   CHECK_LT(start, end);
   CHECK_LE(end, num_characters_);
-  CHECK_EQ(num_characters_, graphemes_.size());
-  return graphemes_[end - 1] - graphemes_[start] + 1;
+  CHECK_EQ(num_characters_, graphemes_->size());
+  return (*graphemes_)[end - 1] - (*graphemes_)[start] + 1;
 }
 
 void ShapeResult::EnsureGraphemes(const StringView& text) const {
@@ -173,10 +174,14 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
   if (runs_.empty())
     return;
 
-  bool is_computed = !runs_.front()->graphemes_.empty();
-#if DCHECK_IS_ON()
-  for (const auto& run : runs_)
-    DCHECK_EQ(is_computed, !run->graphemes_.empty());
+  const bool is_computed = runs_.front()->graphemes_;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  for (const auto& run : runs_) {
+    DCHECK_EQ(is_computed, !!run->graphemes_);
+    if (run->graphemes_) {
+      DCHECK_EQ(run->num_characters_, run->graphemes_->size());
+    }
+  }
 #endif
   if (is_computed)
     return;
@@ -186,11 +191,12 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
     if (!run)
       continue;
     DCHECK_GE(run->start_index_, result_start_index);
-    run->graphemes_.resize(run->num_characters_);
+    run->graphemes_ =
+        MakeGarbageCollected<GCedHeapVector<unsigned>>(run->num_characters_);
     GraphemesClusterList(
         StringView(text, run->start_index_ - result_start_index,
                    run->num_characters_),
-        run->graphemes_);
+        *run->graphemes_);
   }
 }
 
