@@ -367,6 +367,10 @@ void GlicWindowController::OnWidgetUserResizeEnded() {
   if (GetGlicView()) {
     GetGlicView()->UpdatePrimaryDraggableAreaOnResize();
   }
+
+  if (GetGlicWidget()) {
+    glic_size_ = GetGlicWidget()->GetSize();
+  }
 }
 
 void GlicWindowController::ShowAfterSignIn() {
