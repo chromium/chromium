@@ -950,8 +950,9 @@ TEST_F(OnDeviceModelServiceTest, JSONSchemaInvalid) {
   session->Generate(std::move(options), response.BindRemote());
   response.WaitForCompletion();
 
-  // For now invalid schema will just send an empty response.
+  // For now invalid schema will cause a disconnect.
   EXPECT_THAT(response.responses(), ElementsAre());
+  EXPECT_TRUE(response.disconnected());
 }
 #endif
 
