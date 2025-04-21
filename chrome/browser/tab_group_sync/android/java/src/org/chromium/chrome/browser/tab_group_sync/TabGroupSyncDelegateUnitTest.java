@@ -31,8 +31,7 @@ public class TabGroupSyncDelegateUnitTest {
 
     @Before
     public void setUp() {
-        TabGroupSyncDelegate.Deps deps = new Deps();
-        deps.tabWindowManager = mTabWindowManager;
+        TabGroupSyncDelegate.Deps deps = new Deps(mTabWindowManager);
         mDelegate = TabGroupSyncDelegate.create(5, deps);
         verify(mTabWindowManager).addObserver(eq(mDelegate));
     }
