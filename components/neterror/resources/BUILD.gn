@@ -11,7 +11,7 @@ import("//ui/webui/webui_features.gni")
 js_files = [
   "constants.js",
   "neterror.ts",
-  "dino_game/background_el.js",
+  "dino_game/background_el.ts",
   "dino_game/cloud.ts",
   "dino_game/constants.ts",
   "dino_game/dimensions.ts",
