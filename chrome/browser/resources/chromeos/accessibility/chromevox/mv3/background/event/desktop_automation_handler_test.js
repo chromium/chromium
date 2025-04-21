@@ -535,7 +535,7 @@ ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest =
     class extends ChromeVoxDesktopAutomationHandlerTest {
   /** @override */
   get featureList() {
-    let list = super.featureList = {};
+    let list = super.featureList || {};
     list.enabled = list.enabled || [];
     list.enabled.push('features::kTaskManagerDesktopRefresh');
     return list;
