@@ -661,6 +661,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     wtf_size_t IndexOf(const PhysicalBoxFragment& fragment) const;
     bool Contains(const PhysicalBoxFragment& fragment) const;
 
+    // Note: We can't use std::views.  It's banned in Chromium.
     class CORE_EXPORT Iterator {
      public:
       using iterator_category = std::forward_iterator_tag;
@@ -675,14 +676,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
       const PhysicalBoxFragment& operator*() const;
 
-      Iterator& operator++() {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(++iterator_);
+      UNSAFE_BUFFER_USAGE Iterator& operator++() {
+        // SAFETY: This is not safe. We should not use this operator directly.
+        UNSAFE_BUFFERS(++iterator_);
         return *this;
       }
-      Iterator operator++(int) {
+      UNSAFE_BUFFER_USAGE Iterator operator++(int) {
         Iterator copy = *this;
-        ++*this;
+        // SAFETY: This is not safe. We should not use this operator directly.
+        UNSAFE_BUFFERS(++*this);
         return copy;
       }
 
