@@ -232,14 +232,18 @@ gfx::Rect GlicWindowAnimator::GetCurrentTargetBounds() {
   }
 }
 
+void GlicWindowAnimator::ResetLastTargetSize() {
+  last_target_size_ = gfx::Size();
+}
+
 void GlicWindowAnimator::MaybeAnimateToTargetSize() {
   if (!last_target_size_.IsEmpty() &&
       last_target_size_ != window_controller_->GetGlicWidget()
                                ->GetWindowBoundsInScreen()
                                .size()) {
     AnimateSize(last_target_size_, base::Milliseconds(300), base::DoNothing());
-    last_target_size_ = gfx::Size();
   }
+  ResetLastTargetSize();
 }
 
 void GlicWindowAnimator::SetGlicWebViewVisibility(bool is_visible) {
