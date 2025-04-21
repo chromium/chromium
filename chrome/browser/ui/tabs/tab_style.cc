@@ -37,6 +37,7 @@ class ChromeRefresh2023TabStyle : public TabStyle {
   int GetStandardSplitWidth() const override;
   int GetPinnedWidth() const override;
   int GetMinimumActiveWidth() const override;
+  int GetMinimumActiveSplitWidth() const override;
   int GetMinimumInactiveWidth() const override;
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
@@ -89,6 +90,12 @@ int ChromeRefresh2023TabStyle::GetMinimumActiveWidth() const {
             tabs::kMinimumTabWidthFeatureParameterName, min_active_width));
   }
   return min_active_width;
+}
+
+int ChromeRefresh2023TabStyle::GetMinimumActiveSplitWidth() const {
+  // Split tabs take over half of the overlap space between them so they can
+  // appear larger.
+  return GetMinimumActiveWidth() / 2 + GetTabOverlap() / 2;
 }
 
 int ChromeRefresh2023TabStyle::GetMinimumInactiveWidth() const {

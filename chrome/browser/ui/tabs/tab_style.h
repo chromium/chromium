@@ -129,6 +129,11 @@ class TabStyle {
   // inactive tabs.
   virtual int GetMinimumActiveWidth() const = 0;
 
+  // Returns the minimum possible width of an active split Tab. Active tabs must
+  // always show a close button, and thus have a larger minimum size than
+  // inactive tabs.
+  virtual int GetMinimumActiveSplitWidth() const = 0;
+
   // Returns the minimum possible width of a single inactive Tab.
   virtual int GetMinimumInactiveWidth() const = 0;
 
