@@ -230,12 +230,6 @@ group = 'test'
 [crate.prost-derive]
 group = 'test'
 
-[crate.rand]
-group = 'test'
-
-[crate.rand_pcg]
-group = 'test'
-
 [crate.read-fonts]
 extra_src_roots = ['../generated']
 

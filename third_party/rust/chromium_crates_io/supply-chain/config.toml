@@ -161,9 +161,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."font-types:0.8.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."getrandom:0.2.15"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."group:0.13.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -344,9 +341,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."potential_utf:0.1.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ppv-lite86:0.2.21"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."proc-macro2:1.0.94"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -362,20 +356,8 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."quote:1.0.40"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."rand:0.8.5"]
-criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."rand_chacha:0.3.1"]
-criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."rand_core:0.6.4"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."rand_core:0.9.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."rand_pcg:0.3.1"]
-criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."read-fonts:0.27.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -470,9 +452,6 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."tinystr:0.8.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."tinyvec:1.9.0"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."toktrie:0.7.14"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -490,9 +469,6 @@ criteria = []
 
 [policy."utf8_iter:1.0.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."wasi:0.11.0+wasi-snapshot-preview1"]
-criteria = []
 
 [policy."wasm-bindgen-backend:0.2.100"]
 criteria = []
@@ -568,12 +544,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."yoke:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."zerocopy-derive:0.8.24"]
-criteria = []
-
-[policy."zerocopy:0.8.24"]
-criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
