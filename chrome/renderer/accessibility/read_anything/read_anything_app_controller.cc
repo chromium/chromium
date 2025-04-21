@@ -1752,7 +1752,7 @@ void ReadAnythingAppController::ResetGranularityIndex() {
 void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
-  read_aloud_model_.InitAXPositionWithNode(ax_node);
+  read_aloud_model_.InitAXPositionWithNode(ax_node, model_.active_tree_id());
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {

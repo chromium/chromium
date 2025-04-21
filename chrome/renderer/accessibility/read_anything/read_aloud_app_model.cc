@@ -86,7 +86,9 @@ void ReadAloudAppModel::ResetGranularityIndex() {
   processed_granularity_index_ = 0;
 }
 
-void ReadAloudAppModel::InitAXPositionWithNode(ui::AXNode* ax_node) {
+void ReadAloudAppModel::InitAXPositionWithNode(
+    ui::AXNode* ax_node,
+    const ui::AXTreeID& active_tree_id) {
   // If instance is Null or Empty, create the next AxPosition. Don't create a
   // new position if the node's manager is missing, as that means we've
   // received incorrect data somewhere.
@@ -97,6 +99,7 @@ void ReadAloudAppModel::InitAXPositionWithNode(ui::AXNode* ax_node) {
     current_text_index_ = 0;
     processed_granularity_index_ = 0;
     processed_granularities_on_current_page_.clear();
+    active_tree_id_ = active_tree_id;
   }
 }
 void ReadAloudAppModel::MovePositionToNextGranularity() {
@@ -710,13 +713,17 @@ bool ReadAloudAppModel::IsValidAXPosition(
     return false;
   }
 
+  // AXPosition returns nodes that aren't part of the active tree, but
+  // reading mode only displays nodes that are part of the active tree.
+  bool on_active_tree = anchor_node->tree()->GetAXTreeID() == active_tree_id_;
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = a11y::IsTextForReadAnything(anchor_node, is_pdf, is_docs);
   bool contains_node = base::Contains(*current_nodes, anchor_node->id());
   bool is_ignored = a11y::IsIgnored(anchor_node, is_pdf);
 
-  return !is_ignored && !was_previously_spoken && is_text_node && contains_node;
+  return !is_ignored && !was_previously_spoken && is_text_node &&
+         contains_node && on_active_tree;
 }
 
 std::vector<ReadAloudTextSegment>
