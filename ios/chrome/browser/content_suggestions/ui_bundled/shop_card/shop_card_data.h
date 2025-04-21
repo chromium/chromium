@@ -52,7 +52,7 @@ class GURL;
 @property(nonatomic, assign) const GURL& productURL;
 
 // Product favicon image.
-@property(nonatomic, assign) UIImage* faviconImage;
+@property(nonatomic, strong) UIImage* faviconImage;
 
 // Product image.
 @property(nonatomic, strong) NSData* productImage;
