@@ -178,10 +178,6 @@ public class AdaptiveToolbarFeatures {
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY);
     }
 
-    public static boolean isPriceInsightsPageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_INSIGHTS);
-    }
-
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
     }
