@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_UTILS_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/cookie_access_details.h"
 
 class GURL;
 
@@ -20,6 +21,24 @@ enum class PopupProvider {
 };
 
 CONTENT_EXPORT PopupProvider GetPopupProvider(const GURL& popup_url);
+
+// These values are emitted in metrics and should not be renumbered. This one
+// type is used for both of the IsAdTagged and HasSameSiteIframe UKM enums.
+enum class OptionalBool {
+  kUnknown = 0,
+  kFalse = 1,
+  kTrue = 2,
+};
+
+inline OptionalBool ToOptionalBool(bool b) {
+  return b ? OptionalBool::kTrue : OptionalBool::kFalse;
+}
+
+// Returns whether the provided cookie access was ad-tagged, based on the cookie
+// settings overrides. Returns Unknown if kSkipTpcdMitigationsForAdsHeuristics
+// is false and the override is not set regardless.
+CONTENT_EXPORT OptionalBool
+IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details);
 
 }  // namespace content
 
