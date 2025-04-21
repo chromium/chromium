@@ -262,13 +262,16 @@ config("default_sanitizer_ldflags") {
     ldflags = []
     if (is_asan) {
       assert(current_cpu == "x64", "WinASan unsupported architecture")
-      libs = [ "clang_rt.asan_dynamic-x86_64.lib" ]
+      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib/windows"
+      libs = [ "$_clang_lib_dir/clang_rt.asan_dynamic-x86_64.lib" ]
       if (is_component_build) {
         ldflags +=
             [ "-wholearchive:clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
+        libs += [ "$_clang_lib_dir/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
       } else {
         ldflags +=
             [ "-wholearchive:clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
+        libs += [ "$_clang_lib_dir/clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
       }
     }
     if (use_libfuzzer) {
