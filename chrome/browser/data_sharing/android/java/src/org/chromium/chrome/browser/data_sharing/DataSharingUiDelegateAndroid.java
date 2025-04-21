@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.data_sharing;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
@@ -27,6 +27,7 @@ import org.chromium.url.GURL;
  * Implementation of {@link DataSharingUIDelegate} that implements some methods while delegating
  * some to the internal delegate.
  */
+@NullMarked
 public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
 
     private final @Nullable DataSharingUIDelegate mInternalDelegate;
@@ -53,7 +54,7 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
     }
 
     @Override
-    public String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
+    public @Nullable String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
         if (mInternalDelegate != null) {
             return mInternalDelegate.showCreateFlow(createUiConfig);
         }
@@ -61,7 +62,7 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
     }
 
     @Override
-    public String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
+    public @Nullable String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
         if (mInternalDelegate != null) {
             return mInternalDelegate.showJoinFlow(joinUiConfig);
         }
@@ -69,7 +70,7 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
     }
 
     @Override
-    public String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
+    public @Nullable String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
         if (mInternalDelegate != null) {
             return mInternalDelegate.showManageFlow(manageUiConfig);
         }
@@ -77,7 +78,8 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
     }
 
     @Override
-    public void updateRuntimeData(String sessionId, DataSharingRuntimeDataConfig runtimeData) {
+    public void updateRuntimeData(
+            @Nullable String sessionId, DataSharingRuntimeDataConfig runtimeData) {
         if (mInternalDelegate != null) {
             mInternalDelegate.updateRuntimeData(sessionId, runtimeData);
         }
