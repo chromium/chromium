@@ -3,6 +3,7 @@ timeout: 43200s
 
 options:
   machineType: 'E2_HIGHCPU_32'
+  diskSizeGb: 200
   logging: 'CLOUD_LOGGING_ONLY'
 
 steps:
