@@ -8,8 +8,6 @@ if (is_chromeos_device) {
 }
 import("//build/config/rust.gni")
 
-assert(enable_rust, "Nearby Presence requires rust to be enabled")
-
 # Nearby Config
 config("nearby_include_config") {
   include_dirs = [

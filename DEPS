@@ -296,7 +296,6 @@ vars = {
   'skia_git': 'https://skia.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'webrtc_git': 'https://webrtc.googlesource.com',
-  'betocore_git': 'https://beto-core.googlesource.com',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -518,10 +517,6 @@ vars = {
   # and whatever else without interference from each other.
   'ffmpeg_revision': '2a253f5db8a0acfb705b3a0fa387a1e225956e09',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling beto-core
-  # and whatever else without interference from each other.
-  'betocore_revision': '89563fec14c756482afa08b016eeba9087c8d1e3',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling webpagereplay
   # and whatever else without interference from each other.
   'webpagereplay_revision': '2c5049abfc2cf36ece82f7f84ebdcb786659eaf7',
@@ -564,7 +559,6 @@ vars = {
 allowed_hosts = [
   'android.googlesource.com',
   'aomedia.googlesource.com',
-  'beto-core.googlesource.com',
   'boringssl.googlesource.com',
   'chrome-infra-packages.appspot.com',
   'chrome-internal.googlesource.com',
@@ -2282,9 +2276,6 @@ deps = {
 
   'src/third_party/nearby/src':
     Var('chromium_git') + '/external/github.com/google/nearby-connections.git' + '@' + Var('nearby_revision'),
-
-  'src/third_party/beto-core/src':
-    Var('betocore_git') + '/beto-core.git' + '@' + Var('betocore_revision'),
 
   'src/third_party/securemessage/src':
     Var('chromium_git') + '/external/github.com/google/securemessage.git' + '@' + Var('securemessage_revision'),

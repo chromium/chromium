@@ -354,9 +354,6 @@
 [submodule "third_party/nearby/src"]
 	path = third_party/nearby/src
 	url = https://chromium.googlesource.com/external/github.com/google/nearby-connections
-[submodule "third_party/beto-core/src"]
-	path = third_party/beto-core/src
-	url = https://beto-core.googlesource.com/beto-core
 [submodule "third_party/securemessage/src"]
 	path = third_party/securemessage/src
 	url = https://chromium.googlesource.com/external/github.com/google/securemessage
