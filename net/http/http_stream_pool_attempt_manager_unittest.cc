@@ -7315,4 +7315,40 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CertificateErrorCancelQuic) {
               Optional(IsError(ERR_CERT_DATE_INVALID)));
 }
 
+// Regression test for crbug.com/403373872. ServiceEndpointRequest may change
+// current endpoints during TCP handshake. This should not cause a crash.
+TEST_F(HttpStreamPoolAttemptManagerTest, EndpointDisapperDuringTcpHandshake) {
+  MockConnectCompleter completer;
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(&completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_enable_alternative_services(false)
+      .RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // Endpoints become empty tentatively. In production code, this could happen
+  // when a DnsTask is canceled during resolution.
+  endpoint_request->set_endpoints({});
+
+  // Complete the TCP handshake and the DNS resolution.
+  completer.Complete(OK);
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  requester.WaitForResult();
+  // TODO(crbug.com/403373872): Ideally the request should succeed.
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_ABORTED)));
+}
+
 }  // namespace net

@@ -1958,6 +1958,8 @@ void HttpStreamPool::AttemptManager::HandleTcpBasedAttemptFailure(
 
   if (tcp_based_attempt->is_aborted()) {
     CHECK_EQ(rv, ERR_ABORTED);
+    // TODO(crbug.com/403373872): Reduce this failure.
+    most_recent_tcp_error_ = ERR_ABORTED;
     return;
   }
 
