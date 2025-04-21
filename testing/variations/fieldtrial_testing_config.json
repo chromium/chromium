@@ -16162,6 +16162,34 @@
             ]
         }
     ],
+    "OmniboxOnFocusZPS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_6_Suggestions",
+                    "params": {
+                        "OnFocusMaxSearchSuggestions": "3",
+                        "OnFocusMaxUrlSuggestions": "3",
+                        "OnFocusMostVisitedMaxSuggestions": "6"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveyForOmniboxOnFocusZps",
+                        "OmniboxFocusTriggersWebAndSRPZeroSuggest",
+                        "OmniboxHideSuggestionGroupHeaders",
+                        "OmniboxUrlSuggestionsOnFocus",
+                        "ZeroSuggestPrefetchingOnWeb"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPrerender": [
         {
             "platforms": [
