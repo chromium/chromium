@@ -88,23 +88,30 @@ enum class NoticeActionBehavior {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeActionBehavior)
 
+struct NoticeEventTimestampPair {
+  bool operator==(const NoticeEventTimestampPair& other) const = default;
+  notice::mojom::PrivacySandboxNoticeEvent event;
+  base::Time timestamp;
+};
+
 class PrivacySandboxNoticeData {
  public:
   PrivacySandboxNoticeData();
-  PrivacySandboxNoticeData& operator=(const PrivacySandboxNoticeData&);
   ~PrivacySandboxNoticeData();
-  PrivacySandboxNoticeData(const PrivacySandboxNoticeData& data);
+  PrivacySandboxNoticeData& operator=(const PrivacySandboxNoticeData&) = delete;
+  PrivacySandboxNoticeData(const PrivacySandboxNoticeData& data) = delete;
+  PrivacySandboxNoticeData(PrivacySandboxNoticeData&& data);
+  PrivacySandboxNoticeData& operator=(PrivacySandboxNoticeData&& data);
 
   int GetSchemaVersion() const;
   std::string GetChromeVersion() const;
-  std::vector<std::pair<notice::mojom::PrivacySandboxNoticeEvent, base::Time>>
-  GetNoticeEvents() const;
+  base::span<const std::unique_ptr<NoticeEventTimestampPair>> GetNoticeEvents()
+      const;
 
   void SetSchemaVersion(int schema_version);
   void SetChromeVersion(std::string_view chrome_version);
   void SetNoticeEvents(
-      const std::vector<std::pair<notice::mojom::PrivacySandboxNoticeEvent,
-                                  base::Time>>& events);
+      std::vector<std::unique_ptr<NoticeEventTimestampPair>>&& events);
 
   // Gets the timestamp when the notice was first shown. If the notice was never
   // shown, the default timestamp will be returned.
@@ -118,7 +125,7 @@ class PrivacySandboxNoticeData {
   // notice was shown. If the notice hasn't been shown for the first time, or
   // there was no action associated, no value is returned. If there are multiple
   // actions associated, only the last action is returned.
-  std::optional<std::pair<notice::mojom::PrivacySandboxNoticeEvent, base::Time>>
+  std::optional<NoticeEventTimestampPair>
   GetNoticeActionTakenForFirstShownFromEvents() const;
 
   // TODO(crbug.com/392088228): Remove other actions once the new event fields
@@ -132,8 +139,7 @@ class PrivacySandboxNoticeData {
  private:
   int schema_version_ = 0;
   std::string chrome_version_;
-  std::vector<std::pair<notice::mojom::PrivacySandboxNoticeEvent, base::Time>>
-      notice_events_;
+  std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events_;
 };
 
 // Stores pre-migration interactions on a notice in the v1 schema.

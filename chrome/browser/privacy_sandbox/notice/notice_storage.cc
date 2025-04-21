@@ -173,7 +173,8 @@ void PopulateV2NoticeData(PrefService* pref_service,
     update.Get()
         .EnsureDict(notice)
         ->EnsureList(kPrivacySandboxEvents)
-        ->Append(BuildDictEntryEvent(event.first, event.second));
+        ->Append(
+            BuildDictEntryEvent(event.get()->event, event.get()->timestamp));
   }
 }
 
@@ -181,11 +182,13 @@ void PopulateV2NoticeData(PrefService* pref_service,
 
 // PrivacySandboxNoticeData definitions.
 PrivacySandboxNoticeData::PrivacySandboxNoticeData() = default;
-PrivacySandboxNoticeData& PrivacySandboxNoticeData::operator=(
-    const PrivacySandboxNoticeData&) = default;
+
 PrivacySandboxNoticeData::~PrivacySandboxNoticeData() = default;
+
 PrivacySandboxNoticeData::PrivacySandboxNoticeData(
-    const PrivacySandboxNoticeData& data) = default;
+    PrivacySandboxNoticeData&& data) = default;
+PrivacySandboxNoticeData& PrivacySandboxNoticeData::operator=(
+    PrivacySandboxNoticeData&& data) = default;
 
 int PrivacySandboxNoticeData::GetSchemaVersion() const {
   return schema_version_;
@@ -193,7 +196,7 @@ int PrivacySandboxNoticeData::GetSchemaVersion() const {
 std::string PrivacySandboxNoticeData::GetChromeVersion() const {
   return chrome_version_;
 }
-std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>>
+base::span<const std::unique_ptr<NoticeEventTimestampPair>>
 PrivacySandboxNoticeData::GetNoticeEvents() const {
   return notice_events_;
 }
@@ -208,16 +211,15 @@ void PrivacySandboxNoticeData::SetChromeVersion(
 }
 
 void PrivacySandboxNoticeData::SetNoticeEvents(
-    const std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>>&
-        events) {
-  notice_events_ = events;
+    std::vector<std::unique_ptr<NoticeEventTimestampPair>>&& events) {
+  notice_events_ = std::move(events);
 }
 
 std::optional<base::Time>
 PrivacySandboxNoticeData::GetNoticeFirstShownFromEvents() const {
-  for (const auto event : notice_events_) {
-    if (event.first == PrivacySandboxNoticeEvent::kShown) {
-      return event.second;
+  for (const auto& notice_event : notice_events_) {
+    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
+      return notice_event->timestamp;
     }
   }
   return std::nullopt;
@@ -226,29 +228,28 @@ PrivacySandboxNoticeData::GetNoticeFirstShownFromEvents() const {
 std::optional<base::Time>
 PrivacySandboxNoticeData::GetNoticeLastShownFromEvents() const {
   for (const auto& notice_event : base::Reversed(notice_events_)) {
-    if (notice_event.first == PrivacySandboxNoticeEvent::kShown) {
-      return notice_event.second;
+    if (notice_event->event == PrivacySandboxNoticeEvent::kShown) {
+      return notice_event->timestamp;
     }
   }
   return std::nullopt;
 }
 
-std::optional<std::pair<PrivacySandboxNoticeEvent, base::Time>>
+std::optional<NoticeEventTimestampPair>
 PrivacySandboxNoticeData::GetNoticeActionTakenForFirstShownFromEvents() const {
-  std::optional<std::pair<PrivacySandboxNoticeEvent, base::Time>>
-      notice_action_pair;
+  std::optional<NoticeEventTimestampPair> notice_event_data;
   int last_shown_idx = 0;
   int first_notice_idx = 0;
-  for (auto event : notice_events_) {
-    if (event.first == PrivacySandboxNoticeEvent::kShown) {
+  for (const auto& event_data : notice_events_) {
+    if (event_data->event == PrivacySandboxNoticeEvent::kShown) {
       last_shown_idx++;
-    } else if (!notice_action_pair.has_value() ||
+    } else if (!notice_event_data.has_value() ||
                first_notice_idx == last_shown_idx) {
       first_notice_idx = last_shown_idx;
-      notice_action_pair = event;
+      notice_event_data = *event_data;
     }
   }
-  return notice_action_pair;
+  return notice_event_data;
 }
 
 // V1MigrationData definitions.
@@ -304,20 +305,23 @@ PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
 PrivacySandboxNoticeData PrivacySandboxNoticeStorage::ConvertV1SchemaToV2Schema(
     const V1MigrationData& data_v1) {
   PrivacySandboxNoticeData data_v2;
-  std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events;
+  std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
   data_v2.SetSchemaVersion(2);
 
   if (data_v1.notice_last_shown != base::Time()) {
-    notice_events.emplace_back(PrivacySandboxNoticeEvent::kShown,
-                               data_v1.notice_last_shown);
+    notice_events.emplace_back(
+        std::make_unique<NoticeEventTimestampPair>(NoticeEventTimestampPair{
+            PrivacySandboxNoticeEvent::kShown, data_v1.notice_last_shown}));
   }
 
   auto notice_event = NoticeActionToNoticeEvent(data_v1.notice_action_taken);
   if (notice_event.has_value()) {
-    notice_events.emplace_back(*notice_event, data_v1.notice_action_taken_time);
+    notice_events.emplace_back(
+        std::make_unique<NoticeEventTimestampPair>(NoticeEventTimestampPair{
+            *notice_event, data_v1.notice_action_taken_time}));
   }
 
-  data_v2.SetNoticeEvents(notice_events);
+  data_v2.SetNoticeEvents(std::move(notice_events));
   return data_v2;
 }
 
@@ -393,7 +397,7 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
     // E.g. UnknownActionPreMigration && no first shown time set.
     startup_state = NoticeStartupState::kUnknownState;
   } else {  // Notice has been shown, action handling below.
-    switch (notice_data->GetNoticeEvents().back().first) {
+    switch (notice_data->GetNoticeEvents().back().get()->event) {
       case PrivacySandboxNoticeEvent::kShown:
         startup_state = NoticeStartupState::kPromptWaiting;
         break;
@@ -449,7 +453,7 @@ PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
   const base::Value::List* events = pref_data.FindListByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxEvents));
 
-  std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events;
+  std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
   if (events) {
     for (const base::Value& event : *events) {
       const auto* dict = event.GetIfDict();
@@ -467,12 +471,12 @@ PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
       if (notice_event_taken_time) {
         timestamp = base::ValueToTime(*notice_event_taken_time);
       }
-      notice_events.emplace_back(
+      notice_events.emplace_back(std::make_unique<NoticeEventTimestampPair>(
           static_cast<PrivacySandboxNoticeEvent>(*notice_event_taken),
-          timestamp.value_or(base::Time()));
+          timestamp.value_or(base::Time())));
     }
   }
-  notice_data->SetNoticeEvents(notice_events);
+  notice_data->SetNoticeEvents(std::move(notice_events));
 
   return notice_data;
 }
@@ -510,7 +514,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   }
 
   // Performing multiple actions on an existing notice is unexpected.
-  if (notice_data->GetNoticeEvents().back().first !=
+  if (notice_data->GetNoticeEvents().back().get()->event !=
       PrivacySandboxNoticeEvent::kShown) {
     base::UmaHistogramEnumeration(
         base::StrCat(

@@ -11,7 +11,11 @@
 namespace privacy_sandbox {
 
 using notice::mojom::PrivacySandboxNoticeEvent;
+using ::testing::Eq;
 using ::testing::IsSupersetOf;
+using ::testing::Pointee;
+
+using enum NoticeActionTaken;
 
 void CheckConvertsV1SchemaSuccessfully(NoticeActionTaken notice_action_taken,
                                        base::Time notice_taken_time,
@@ -26,14 +30,14 @@ void CheckConvertsV1SchemaSuccessfully(NoticeActionTaken notice_action_taken,
   auto notice_event = PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
       notice_action_taken);
   if (notice_event.has_value()) {
-    EXPECT_THAT(
-        data_v2.GetNoticeEvents(),
-        IsSupersetOf({std::make_pair(*notice_event, notice_taken_time)}));
+    EXPECT_THAT(data_v2.GetNoticeEvents(),
+                IsSupersetOf({Pointee(Eq(NoticeEventTimestampPair(
+                    *notice_event, notice_taken_time)))}));
   }
   if (notice_last_shown != base::Time()) {
     EXPECT_THAT(data_v2.GetNoticeEvents(),
-                IsSupersetOf({std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                                             notice_last_shown)}));
+                IsSupersetOf({Pointee(Eq(NoticeEventTimestampPair(
+                    PrivacySandboxNoticeEvent::kShown, notice_last_shown)))}));
   }
 }
 
@@ -49,14 +53,18 @@ fuzztest::Domain<base::Time> AnyTime() {
 FUZZ_TEST(PrivacySandboxNoticeStorageFuzzTest,
           CheckConvertsV1SchemaSuccessfully)
     .WithDomains(
-        /*notice_action_taken:*/ fuzztest::ElementOf<NoticeActionTaken>(
-            {NoticeActionTaken::kNotSet, NoticeActionTaken::kAck,
-             NoticeActionTaken::kClosed, NoticeActionTaken::kOptIn,
-             NoticeActionTaken::kOptOut, NoticeActionTaken::kSettings,
-             NoticeActionTaken::kLearnMore_Deprecated,
-             NoticeActionTaken::kOther,
-             NoticeActionTaken::kUnknownActionPreMigration,
-             NoticeActionTaken::kTimedOut}),
+        /*notice_action_taken:*/ fuzztest::ElementOf<NoticeActionTaken>({
+            kNotSet,
+            kAck,
+            kClosed,
+            kOptIn,
+            kOptOut,
+            kSettings,
+            kLearnMore_Deprecated,
+            kOther,
+            kUnknownActionPreMigration,
+            kTimedOut,
+        }),
         /*notice_taken_time:*/ AnyTime(),
         /*notice_last_shown:*/ AnyTime());
 
