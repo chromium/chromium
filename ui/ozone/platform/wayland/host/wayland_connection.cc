@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 #include <content-type-v1-client-protocol.h>
@@ -16,6 +11,7 @@
 
 #include <cstdint>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -576,7 +572,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
   auto factory_it = global_object_factories_.find(interface);
   if (factory_it != global_object_factories_.end()) {
     (*factory_it->second)(this, registry, name, interface, version);
-  } else if (!compositor_ && strcmp(interface, "wl_compositor") == 0) {
+  } else if (!compositor_ &&
+             UNSAFE_TODO(strcmp(interface, "wl_compositor")) == 0) {
     compositor_ = wl::Bind<wl_compositor>(
         registry, name, std::min(version, kMaxCompositorVersion));
     compositor_version_ = version;
@@ -584,13 +581,14 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       LOG(ERROR) << "Failed to bind to wl_compositor global";
       return;
     }
-  } else if (!subcompositor_ && strcmp(interface, "wl_subcompositor") == 0) {
+  } else if (!subcompositor_ &&
+             UNSAFE_TODO(strcmp(interface, "wl_subcompositor")) == 0) {
     subcompositor_ = wl::Bind<wl_subcompositor>(registry, name, 1);
     if (!subcompositor_) {
       LOG(ERROR) << "Failed to bind to wl_subcompositor global";
       return;
     }
-  } else if (!shell_ && strcmp(interface, "xdg_wm_base") == 0) {
+  } else if (!shell_ && UNSAFE_TODO(strcmp(interface, "xdg_wm_base")) == 0) {
     shell_ = wl::Bind<xdg_wm_base>(registry, name,
                                    std::min(version, kMaxXdgShellVersion));
     if (!shell_) {
@@ -602,7 +600,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
     };
     xdg_wm_base_add_listener(shell_.get(), &kShellBaseListener, this);
   } else if (!alpha_compositing_ &&
-             (strcmp(interface, "zcr_alpha_compositing_v1") == 0)) {
+             (UNSAFE_TODO(strcmp(interface, "zcr_alpha_compositing_v1")) ==
+              0)) {
     alpha_compositing_ = wl::Bind<zcr_alpha_compositing_v1>(
         registry, name, std::min(version, kMaxAlphaCompositingVersion));
     if (!alpha_compositing_) {
@@ -610,8 +609,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!linux_explicit_synchronization_ &&
-             (strcmp(interface, "zwp_linux_explicit_synchronization_v1") ==
-              0)) {
+             (UNSAFE_TODO(strcmp(
+                  interface, "zwp_linux_explicit_synchronization_v1")) == 0)) {
     linux_explicit_synchronization_ =
         wl::Bind<zwp_linux_explicit_synchronization_v1>(
             registry, name, std::min(version, kMaxExplicitSyncVersion));
@@ -620,7 +619,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!linux_drm_syncobj_manager_ &&
-             (strcmp(interface, "wp_linux_drm_syncobj_manager_v1") == 0)) {
+             (UNSAFE_TODO(
+                  strcmp(interface, "wp_linux_drm_syncobj_manager_v1")) == 0)) {
     if (enable_linux_drm_syncobj_for_testing_ ||
         (base::FeatureList::IsEnabled(features::kWaylandLinuxDrmSyncobj) &&
          MinSupportedKernelForLinuxDrmSyncobj())) {
@@ -632,14 +632,16 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       }
     }
   } else if (!content_type_manager_v1_ &&
-             (strcmp(interface, "wp_content_type_manager_v1") == 0)) {
+             (UNSAFE_TODO(strcmp(interface, "wp_content_type_manager_v1")) ==
+              0)) {
     content_type_manager_v1_ = wl::Bind<wp_content_type_manager_v1>(
         registry, name, std::min(version, kMaxWpContentTypeVersion));
     if (!content_type_manager_v1_) {
       LOG(ERROR) << "Failed to bind wp_content_type_v1";
       return;
     }
-  } else if (!presentation_ && (strcmp(interface, "wp_presentation") == 0)) {
+  } else if (!presentation_ &&
+             (UNSAFE_TODO(strcmp(interface, "wp_presentation")) == 0)) {
     presentation_ = wl::Bind<wp_presentation>(
         registry, name, std::min(version, kMaxWpPresentationVersion));
     if (!presentation_) {
@@ -651,7 +653,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
     };
     wp_presentation_add_listener(presentation_.get(), &kPresentationListener,
                                  this);
-  } else if (!viewporter_ && (strcmp(interface, "wp_viewporter") == 0)) {
+  } else if (!viewporter_ &&
+             (UNSAFE_TODO(strcmp(interface, "wp_viewporter")) == 0)) {
     viewporter_ = wl::Bind<wp_viewporter>(
         registry, name, std::min(version, kMaxWpViewporterVersion));
     if (!viewporter_) {
@@ -659,7 +662,7 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!keyboard_extension_v1_ &&
-             strcmp(interface, "zcr_keyboard_extension_v1") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zcr_keyboard_extension_v1")) == 0) {
     keyboard_extension_v1_ = wl::Bind<zcr_keyboard_extension_v1>(
         registry, name, std::min(version, kMaxKeyboardExtensionVersion));
     if (!keyboard_extension_v1_) {
@@ -672,7 +675,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       seat_->RefreshKeyboard();
     }
   } else if (!keyboard_shortcuts_inhibit_manager_v1_ &&
-             strcmp(interface, "zwp_keyboard_shortcuts_inhibit_manager_v1") ==
+             UNSAFE_TODO(strcmp(interface,
+                                "zwp_keyboard_shortcuts_inhibit_manager_v1")) ==
                  0) {
     keyboard_shortcuts_inhibit_manager_v1_ =
         wl::Bind<zwp_keyboard_shortcuts_inhibit_manager_v1>(
@@ -683,7 +687,7 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!text_input_manager_v1_ &&
-             strcmp(interface, "zwp_text_input_manager_v1") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zwp_text_input_manager_v1")) == 0) {
     text_input_manager_v1_ = wl::Bind<zwp_text_input_manager_v1>(
         registry, name, std::min(version, kMaxTextInputManagerV1Version));
     if (!text_input_manager_v1_) {
@@ -691,11 +695,12 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!text_input_extension_v1_ &&
-             strcmp(interface, "zcr_text_input_extension_v1") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zcr_text_input_extension_v1")) ==
+                 0) {
     text_input_extension_v1_ = wl::Bind<zcr_text_input_extension_v1>(
         registry, name, std::min(version, kMaxTextInputExtensionVersion));
   } else if (!text_input_manager_v3_ &&
-             strcmp(interface, "zwp_text_input_manager_v3") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zwp_text_input_manager_v3")) == 0) {
     text_input_manager_v3_ = wl::Bind<zwp_text_input_manager_v3>(
         registry, name, std::min(version, kMaxTextInputManagerV3Version));
     if (!text_input_manager_v3_) {
@@ -703,7 +708,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!xdg_decoration_manager_ &&
-             strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zxdg_decoration_manager_v1")) ==
+                 0) {
     xdg_decoration_manager_ = wl::Bind<zxdg_decoration_manager_v1>(
         registry, name, std::min(version, kMaxXdgDecorationVersion));
     if (!xdg_decoration_manager_) {
@@ -711,7 +717,7 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!extended_drag_v1_ &&
-             strcmp(interface, "zcr_extended_drag_v1") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zcr_extended_drag_v1")) == 0) {
     extended_drag_v1_ = wl::Bind<zcr_extended_drag_v1>(
         registry, name, std::min(version, kMaxExtendedDragVersion));
     if (!extended_drag_v1_) {
@@ -719,7 +725,8 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!xdg_toplevel_drag_manager_v1_ &&
-             strcmp(interface, "xdg_toplevel_drag_manager_v1") == 0 &&
+             UNSAFE_TODO(strcmp(interface, "xdg_toplevel_drag_manager_v1")) ==
+                 0 &&
              IsWaylandXdgToplevelDragEnabled()) {
     xdg_toplevel_drag_manager_v1_ = wl::Bind<::xdg_toplevel_drag_manager_v1>(
         registry, name, std::min(version, kMaxXdgToplevelDragVersion));
@@ -728,7 +735,7 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
       return;
     }
   } else if (!xdg_output_manager_ &&
-             strcmp(interface, "zxdg_output_manager_v1") == 0) {
+             UNSAFE_TODO(strcmp(interface, "zxdg_output_manager_v1")) == 0) {
     xdg_output_manager_ = wl::Bind<zxdg_output_manager_v1>(
         registry, name, std::min(version, kMaxXdgOutputManagerVersion));
     if (!xdg_output_manager_) {
