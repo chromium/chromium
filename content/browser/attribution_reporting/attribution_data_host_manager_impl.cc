@@ -401,10 +401,11 @@ class AttributionDataHostManagerImpl::NavigationForPendingRegistration {
     eligible_ = false;
   }
 
-  void Set(int64_t navigation_id) {
+  void Set(int64_t navigation_id, AttributionSuitableContext suitable_context) {
     CHECK(!eligible_.has_value());
 
     navigation_id_ = navigation_id;
+    suitable_context_ = std::move(suitable_context);
     eligible_ = true;
   }
 
@@ -422,10 +423,15 @@ class AttributionDataHostManagerImpl::NavigationForPendingRegistration {
 
   std::optional<int64_t> navigation_id() const { return navigation_id_; }
 
+  const std::optional<AttributionSuitableContext>& suitable_context() const {
+    return suitable_context_;
+  }
+
  private:
   size_t pending_registrations_count_;
   std::optional<bool> eligible_;
   std::optional<int64_t> navigation_id_;
+  std::optional<AttributionSuitableContext> suitable_context_;
 };
 
 class AttributionDataHostManagerImpl::RegistrationContext {
@@ -529,9 +535,11 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 
   std::optional<int64_t> navigation_id() const { return navigation_id_; }
 
-  void SetNavigation(int64_t navigation_id) {
+  void SetNavigation(int64_t navigation_id,
+                     AttributionSuitableContext suitable_context) {
     CHECK(!navigation_id_.has_value());
     navigation_id_.emplace(navigation_id);
+    suitable_context_ = std::move(suitable_context);
   }
 
   // Contexts are considered equivalent if their properties are equals except
@@ -725,9 +733,10 @@ class AttributionDataHostManagerImpl::Registrations {
     registrations_complete_ = true;
   }
 
-  void SetNavigation(int64_t navigation_id) {
+  void SetNavigation(int64_t navigation_id,
+                     AttributionSuitableContext suitable_context) {
     CHECK(waiting_on_navigation_);
-    context_.SetNavigation(navigation_id);
+    context_.SetNavigation(navigation_id, std::move(suitable_context));
     waiting_on_navigation_ = false;
   }
 
@@ -1409,8 +1418,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
 
     receivers_.Add(
         this, std::move(it->second),
-        RegistrationContext(std::move(suitable_context),
-                            RegistrationEligibility::kSource,
+        RegistrationContext(suitable_context, RegistrationEligibility::kSource,
                             /*devtools_request_id=*/std::nullopt, navigation_id,
                             RegistrationMethod::kNavBackgroundBlink));
 
@@ -1428,7 +1436,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
       // The background registration will no longer be present if it completed
       // without attempting to register any data.
       if (auto it = registrations_.find(id); it != registrations_.end()) {
-        it->SetNavigation(navigation_id);
+        it->SetNavigation(navigation_id, suitable_context);
         RecordBackgroundNavigationOutcome(
             BackgroundNavigationOutcome::kTiedWithDelay);
 
@@ -1446,7 +1454,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
   if (auto it = navigations_waiting_on_background_registrations_.find(
           attribution_src_token);
       it != navigations_waiting_on_background_registrations_.end()) {
-    it->second.Set(navigation_id);
+    it->second.Set(navigation_id, std::move(suitable_context));
   }
 }
 
@@ -1567,6 +1575,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
   CHECK(BackgroundRegistrationsEnabled());
 
   std::optional<int64_t> navigation_id;
+  std::optional<AttributionSuitableContext> navigation_suitable_context;
 
   if (attribution_src_token.has_value()) {
     const blink::AttributionSrcToken& token = attribution_src_token.value();
@@ -1587,6 +1596,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
         return;
       }
       navigation_id = nav_waiting_it->second.navigation_id();
+      navigation_suitable_context = nav_waiting_it->second.suitable_context();
     } else {
       // Navigation has not started yet
       //
@@ -1612,12 +1622,18 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
     }
   }
 
+  AttributionSuitableContext suitable_context_for_registration =
+      navigation_suitable_context.has_value()
+          ? *std::move(navigation_suitable_context)
+          : std::move(suitable_context);
+
   bool waiting_on_navigation =
       attribution_src_token.has_value() && !navigation_id.has_value();
   std::optional<int64_t> deferred_until;
-  if (deferred_receivers_.contains(suitable_context.last_navigation_id()) &&
+  if (deferred_receivers_.contains(
+          suitable_context_for_registration.last_navigation_id()) &&
       registration_eligibility != RegistrationEligibility::kSource) {
-    deferred_until = suitable_context.last_navigation_id();
+    deferred_until = suitable_context_for_registration.last_navigation_id();
   }
 
   bool navigation_tied =
@@ -1626,8 +1642,9 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
   auto [_, inserted] = registrations_.emplace(
       RegistrationsId(id),
       RegistrationContext(
-          std::move(suitable_context), registration_eligibility,
-          std::move(devtools_request_id), navigation_id,
+          std::move(suitable_context_for_registration),
+          registration_eligibility, std::move(devtools_request_id),
+          navigation_id,
           attribution_src_token.has_value()
               ? RegistrationMethod::kNavBackgroundBrowser
               : RegistrationMethod::kForegroundOrBackgroundBrowser),
