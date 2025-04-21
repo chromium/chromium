@@ -76,7 +76,9 @@ class FromGWSAbandonedPageLoadMetricsObserver
 
   std::optional<std::set<NavigationMilestone>> last_logged_ukm_milestones_;
 
-  // The value of `category=` URL parameter in the initial navigated url.
+  // The value of the URL category (which is configured by
+  // `kBeaconLeakageLoggingCategoryPrefix` and defaults to "category") parameter
+  // in the initial navigated url.
   std::optional<uint32_t> category_parameter_id_;
 };
 
