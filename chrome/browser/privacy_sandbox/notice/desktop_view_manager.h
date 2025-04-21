@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -41,9 +42,13 @@ class DesktopViewManager {
 
   // Accessors
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
+  NavigationHandler* GetNavigationHandler();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  // Called by an the new navigation entrypoint handler when a suitable URL has
+  // been found. All suitable URLs are chrome-owned.
+  void HandleChromeOwnedPageNavigation();
 
  private:
   // TODO(chrstne): Remove this and modify tests once MaybeCreateView is called
@@ -67,6 +72,8 @@ class DesktopViewManager {
   base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrivacySandboxNoticeServiceInterface> notice_service_;
   std::vector<notice::mojom::PrivacySandboxNotice> pending_notices_to_show_;
+  // Storage of various entrypoint handlers.
+  std::unique_ptr<NavigationHandler> navigation_handler_;
 };
 
 }  // namespace privacy_sandbox

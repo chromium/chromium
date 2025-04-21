@@ -37,6 +37,10 @@ class MockPrivacySandboxNoticeService
               ((std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>),
                notice::mojom::PrivacySandboxNoticeEvent),
               (override));
+
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(DesktopViewManager*, GetDesktopViewManager, (), (override));
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace privacy_sandbox

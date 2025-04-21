@@ -62,14 +62,22 @@ source_set("notice") {
 # (Desktop Only)
 if (!is_android) {
   source_set("desktop_view_manager") {
-    sources = [ "desktop_view_manager.cc" ]
-    public = [ "desktop_view_manager.h" ]
+    sources = [
+      "desktop_entrypoint_handlers.cc",
+      "desktop_view_manager.cc",
+    ]
+    public = [
+      "desktop_entrypoint_handlers.h",
+      "desktop_view_manager.h",
+    ]
     deps = [
       ":core",
       ":interfaces",
       ":notice_mojom",
       "//base",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window:browser_window",
+      "//content/public/browser",
     ]
   }
 }
@@ -141,7 +149,10 @@ source_set("unit_tests") {
 
   # (Desktop Only)
   if (!is_android) {
-    sources += [ "desktop_view_manager_unittest.cc" ]
+    sources += [
+      "desktop_entrypoint_handlers_unittest.cc",
+      "desktop_view_manager_unittest.cc",
+    ]
     deps += [ ":desktop_view_manager" ]
   }
 }

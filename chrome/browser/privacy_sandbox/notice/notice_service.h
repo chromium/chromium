@@ -50,7 +50,7 @@ class PrivacySandboxNoticeService
   NoticeCatalog* GetCatalog();
 
 #if !BUILDFLAG(IS_ANDROID)
-  DesktopViewManager* GetDesktopViewManager();
+  DesktopViewManager* GetDesktopViewManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // KeyedService:

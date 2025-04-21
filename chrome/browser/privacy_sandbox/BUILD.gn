@@ -10,6 +10,11 @@ group("privacy_sandbox") {
     "notice:core",
     "notice:interfaces",
   ]
+
+  # (Desktop Only)
+  if (!is_android) {
+    public_deps += [ "notice:desktop_view_manager" ]
+  }
 }
 
 group("unit_tests") {
