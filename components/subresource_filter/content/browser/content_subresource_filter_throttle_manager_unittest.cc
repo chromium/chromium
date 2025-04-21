@@ -256,8 +256,11 @@ class ContentSubresourceFilterThrottleManagerTest
   }
 
   void TearDown() override {
-    throttle_manager_test_support_.reset();
+    // Delete `WebContents` before deleting the dealer handle.
+    DeleteContents();
     dealer_handle_.reset();
+
+    throttle_manager_test_support_.reset();
     base::RunLoop().RunUntilIdle();
     content::RenderViewHostTestHarness::TearDown();
 #if BUILDFLAG(IS_ANDROID)

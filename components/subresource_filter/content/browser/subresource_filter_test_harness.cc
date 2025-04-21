@@ -117,6 +117,8 @@ void SubresourceFilterTestHarness::SetUp() {
 }
 
 void SubresourceFilterTestHarness::TearDown() {
+  // Delete `WebContents` before deleting the service.
+  DeleteContents();
   ruleset_service_.reset();
 
   content::RenderViewHostTestHarness::TearDown();

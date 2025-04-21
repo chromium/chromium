@@ -204,6 +204,8 @@ class SafeBrowsingPageActivationThrottleTest
   }
 
   void TearDown() override {
+    // Delete `WebContents` before deleting the dealer handle.
+    DeleteContents();
     ruleset_dealer_.reset();
 
     // RunUntilIdle() must be called multiple times to flush any outstanding
