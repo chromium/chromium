@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -184,36 +185,8 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
       optimization_guide_keyed_service_->GetComponentManager();
   data->base_model_ready = component_manager->IsInstallerRegistered();
 
-  // Populate model state.
-  std::string state_string;
-  switch (component_manager->GetOnDeviceModelStatus()) {
-    case optimization_guide::OnDeviceModelStatus::kReady:
-      state_string = "Ready";
-      break;
-    case optimization_guide::OnDeviceModelStatus::kNotEligible:
-      state_string = "Not Eligible";
-      break;
-    case optimization_guide::OnDeviceModelStatus::kInstallNotComplete:
-      state_string = "Install Not Complete";
-      break;
-    case optimization_guide::OnDeviceModelStatus::
-        kModelInstallerNotRegisteredForUnknownReason:
-      state_string = "Model Installer Not Registered For Unknown Reason";
-      break;
-    case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
-      state_string = "Model Installed Too Late";
-      break;
-    case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
-      state_string = "Not Ready For Unknown Reason";
-      break;
-    case optimization_guide::OnDeviceModelStatus::kInsufficientDiskSpace:
-      state_string = "Insufficient Disk Space";
-      break;
-    case optimization_guide::OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
-      state_string = "No On-device Feature Used";
-      break;
-  }
-  data->model_state = state_string;
+  data->model_state =
+      base::ToString(component_manager->GetOnDeviceModelStatus());
 
   // Populate criteria.
   base::flat_map<bool, std::string> bool_strings = {{true, "true"},

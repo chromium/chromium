@@ -84,6 +84,27 @@ void LogInstallCriteria(
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status) {
+  switch (status) {
+    case OnDeviceModelStatus::kReady:
+      return out << "Ready";
+    case OnDeviceModelStatus::kNotEligible:
+      return out << "Not Eligible";
+    case OnDeviceModelStatus::kInstallNotComplete:
+      return out << "Install Not Complete";
+    case OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason:
+      return out << "Model Installer Not Registered For Unknown Reason";
+    case OnDeviceModelStatus::kModelInstalledTooLate:
+      return out << "Model Installed Too Late";
+    case OnDeviceModelStatus::kNotReadyForUnknownReason:
+      return out << "Not Ready For Unknown Reason";
+    case OnDeviceModelStatus::kInsufficientDiskSpace:
+      return out << "Insufficient Disk Space";
+    case OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
+      return out << "No On-device Feature Used";
+  }
+}
+
 OnDeviceBaseModelSpec::OnDeviceBaseModelSpec() = default;
 OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(
     const std::string& model_name,
