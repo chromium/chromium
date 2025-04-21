@@ -36,10 +36,6 @@ class BrowserViewLayoutDelegate {
   virtual float GetTopControlsSlideBehaviorShownRatio() const = 0;
   virtual bool SupportsWindowFeature(Browser::WindowFeature feature) const = 0;
   virtual gfx::NativeView GetHostViewForAnchoring() const = 0;
-  virtual bool BrowserIsSystemWebApp() const = 0;
-  virtual bool BrowserIsWebApp() const = 0;
-  virtual bool BrowserIsTypeApp() const = 0;
-  virtual bool BrowserIsTypeNormal() const = 0;
   virtual bool HasFindBarController() const = 0;
   virtual void MoveWindowForFindBarIfNecessary() const = 0;
   virtual bool IsWindowControlsOverlayEnabled() const = 0;

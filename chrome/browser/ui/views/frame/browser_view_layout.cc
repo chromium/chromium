@@ -226,6 +226,12 @@ BrowserViewLayout::BrowserViewLayout(
 
 BrowserViewLayout::~BrowserViewLayout() = default;
 
+void BrowserViewLayout::SetUseBrowserContentMinimumSize(
+    bool use_browser_content_minimum_size) {
+  use_browser_content_minimum_size_ = use_browser_content_minimum_size;
+  InvalidateLayout();
+}
+
 WebContentsModalDialogHost* BrowserViewLayout::GetWebContentsModalDialogHost() {
   return dialog_host_.get();
 }
@@ -268,13 +274,10 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
   // TODO(pkotwicz): Adjust the minimum height for the find bar.
 
   gfx::Size contents_size(contents_container_->GetMinimumSize());
-  contents_size.SetToMax(
-      (delegate_->BrowserIsTypeNormal() ||
-       (delegate_->BrowserIsTypeApp() && delegate_->BrowserIsWebApp() &&
-        !delegate_->BrowserIsSystemWebApp()))
-          ? gfx::Size(kMainBrowserContentsMinimumWidth,
-                      kMainBrowserContentsMinimumHeight)
-          : kContentsMinimumSize);
+  contents_size.SetToMax(use_browser_content_minimum_size_
+                             ? gfx::Size(kMainBrowserContentsMinimumWidth,
+                                         kMainBrowserContentsMinimumHeight)
+                             : kContentsMinimumSize);
 
   const int min_height =
       delegate_->GetTopInsetInBrowserView() + tabstrip_size.height() +

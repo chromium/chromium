@@ -1151,6 +1151,9 @@ class BrowserView : public BrowserWindow,
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
 
+  bool ShouldUseBrowserContentMinimumSize() const;
+  bool IsBrowserAWebApp() const;
+
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame> frame_ = nullptr;
 

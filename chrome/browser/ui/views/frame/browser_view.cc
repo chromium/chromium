@@ -847,26 +847,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return browser_view_->GetWidgetForAnchoring()->GetNativeView();
   }
 
-  bool BrowserIsSystemWebApp() const override {
-#if BUILDFLAG(IS_CHROMEOS)
-    return browser_view_->browser()->app_controller()->system_app();
-#else
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  bool BrowserIsWebApp() const override {
-    return browser_view_->GetIsWebAppType();
-  }
-
-  bool BrowserIsTypeApp() const override {
-    return browser_view_->browser()->is_type_app();
-  }
-
-  bool BrowserIsTypeNormal() const override {
-    return browser_view_->browser()->is_type_normal();
-  }
-
   bool HasFindBarController() const override {
     return browser_view_->browser()->HasFindBarController();
   }
@@ -5179,14 +5159,17 @@ void BrowserView::AddedToWidget() {
 
   // TODO(crbug.com/40664862): Remove BrowserViewLayout dependence on
   // Widget and move to the constructor.
-  SetLayoutManager(std::make_unique<BrowserViewLayout>(
-      std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
-      window_scrim_view_, top_container_, web_app_frame_toolbar_,
-      web_app_window_title_, tab_strip_region_view_, tabstrip_, toolbar_,
-      infobar_container_, contents_container_,
-      left_aligned_side_panel_separator_, unified_side_panel_,
-      right_aligned_side_panel_separator_, side_panel_rounded_corner_,
-      immersive_mode_controller_.get(), contents_separator_));
+  BrowserViewLayout* browser_view_layout =
+      SetLayoutManager(std::make_unique<BrowserViewLayout>(
+          std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
+          window_scrim_view_, top_container_, web_app_frame_toolbar_,
+          web_app_window_title_, tab_strip_region_view_, tabstrip_, toolbar_,
+          infobar_container_, contents_container_,
+          left_aligned_side_panel_separator_, unified_side_panel_,
+          right_aligned_side_panel_separator_, side_panel_rounded_corner_,
+          immersive_mode_controller_.get(), contents_separator_));
+  browser_view_layout->SetUseBrowserContentMinimumSize(
+      ShouldUseBrowserContentMinimumSize());
 
   EnsureFocusOrder();
 
@@ -6323,6 +6306,19 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
         allowed_without_policy &&
         GetProfile()->GetPrefs()->GetBoolean(fullscreen_pref_path));
   }
+}
+
+bool BrowserView::ShouldUseBrowserContentMinimumSize() const {
+  return browser()->is_type_normal() || IsBrowserAWebApp();
+}
+
+bool BrowserView::IsBrowserAWebApp() const {
+  bool is_web_app = browser()->is_type_app() && GetIsWebAppType();
+#if BUILDFLAG(IS_CHROMEOS)
+  // app_controller() is only available if the BrowserView is a WebAppType.
+  is_web_app = is_web_app && !browser()->app_controller()->system_app();
+#endif
+  return is_web_app;
 }
 
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {

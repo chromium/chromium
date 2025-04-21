@@ -85,8 +85,9 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     contents_border_widget_ = contents_border_widget;
   }
-
   views::Widget* contents_border_widget() { return contents_border_widget_; }
+
+  void SetUseBrowserContentMinimumSize(bool use_browser_content_minimum_size);
 
   // Sets the bounds for the contents border.
   // * If nullopt, no specific bounds are set, and the border will be drawn
@@ -218,6 +219,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // The distance the web contents modal dialog is from the top of the dialog
   // host widget.
   int dialog_top_y_ = -1;
+
+  // Whether or not to use the browser based content minimum size.
+  bool use_browser_content_minimum_size_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_
