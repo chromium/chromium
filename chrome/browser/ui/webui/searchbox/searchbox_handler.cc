@@ -30,8 +30,10 @@
 #include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 
@@ -326,13 +328,18 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.type == AutocompleteMatchType::CALCULATOR ||
         match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED;
     for (const auto& action : match.actions) {
+      std::string icon_url;
+      if (action->GetIconImage().IsEmpty()) {
+        icon_url = SearchboxHandler::ActionVectorIconToResourceName(
+            action->GetVectorIcon());
+      } else {
+        icon_url = webui::GetBitmapDataUrl(action->GetIconImage().AsBitmap());
+      }
       const OmniboxAction::LabelStrings& label_strings =
           action->GetLabelStrings();
       mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
           label_strings.accessibility_hint, label_strings.hint,
-          label_strings.suggestion_contents,
-          SearchboxHandler::ActionVectorIconToResourceName(
-              action->GetVectorIcon())));
+          label_strings.suggestion_contents, icon_url));
     }
     mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
         match, match.contents, line, 0,
