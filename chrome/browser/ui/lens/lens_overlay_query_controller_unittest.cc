@@ -128,10 +128,13 @@ constexpr char kGen204IdentifierQueryParameter[] = "plla";
 const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
 const std::vector<uint8_t> kFakeContentBytes2({2, 3, 4, 5, 6});
 const std::vector<uint8_t> kNewFakeContentBytes({5, 6, 7, 8});
+const std::vector<uint8_t> kFakeSmallContentBytes({1, 2});
 
 // The PageContent needs to outlive the query controller, so initialize it here.
 const std::vector<lens::PageContent> kFakePdfPageContents = {
     lens::PageContent(kFakeContentBytes, lens::MimeType::kPdf)};
+const std::vector<lens::PageContent> kFakeSmallPdfPageContents = {
+    lens::PageContent(kFakeSmallContentBytes, lens::MimeType::kPdf)};
 const std::vector<lens::PageContent> kFakeTextPageContents = {
     lens::PageContent(kFakeContentBytes, lens::MimeType::kPlainText)};
 const std::vector<lens::PageContent> kFakeHtmlPageContents = {
@@ -393,7 +396,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
   void InitFeaturesWithUploadChunking() {
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensOverlayUploadChunking, {{}}},
+        {{lens::features::kLensOverlayUploadChunking,
+          {{"chunk-size-bytes", "3"}}},
          kDefaultLensOverlayContextualSearchboxParams},
         {});
   }
@@ -406,7 +410,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
     params.insert({"use-inner-text-with-inner-html", "true"});
     params.insert({"use-apc-with-inner-html", "true"});
     feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensOverlayUploadChunking, {{}}},
+        {{lens::features::kLensOverlayUploadChunking,
+          {{"chunk-size-bytes", "3"}}},
          {lens::features::kLensOverlayContextualSearchbox, params}},
         {});
   }
@@ -3743,13 +3748,13 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
 
   // Verify chunks are set correctly on payload.
   ASSERT_TRUE(page_content_request.payload().has_stored_chunk_options());
-  EXPECT_EQ(1, page_content_request.payload()
+  EXPECT_EQ(2, page_content_request.payload()
                    .stored_chunk_options()
                    .total_stored_chunks());
   EXPECT_TRUE(page_content_request.payload()
                   .stored_chunk_options()
                   .read_stored_chunks());
-  EXPECT_EQ(1, query_controller.num_upload_chunk_requests_sent());
+  EXPECT_EQ(2, query_controller.num_upload_chunk_requests_sent());
   ASSERT_EQ(page_content_request.payload().compression_type(),
             lens::CompressionType::ZSTD);
 
@@ -3819,6 +3824,81 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
             1);
 }
 
+TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF_SmallPdf) {
+  InitFeaturesWithUploadChunking();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      kFakeSmallPdfPageContents, lens::MimeType::kPdf,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  query_controller.SendContextualTextQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+  ASSERT_TRUE(url_response_future.Wait());
+  WaitForSuggestInputsWithEncodedImageSignals();
+  query_controller.EndQuery();
+
+  // Verify the content bytes were not included with the image bytes request.
+  auto full_image_request = query_controller.sent_full_image_objects_request();
+  ASSERT_EQ(full_image_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(full_image_request.image_data().image_metadata().height(), 100);
+  ASSERT_TRUE(full_image_request.payload().content_data().empty());
+
+  // Verify the content bytes were included in a followup request.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request();
+
+  // When chunking a PDF under the chunk size, the request should follow the
+  // normal page content request flow, not the chunking flow.
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
+  ASSERT_EQ("application/pdf", page_content_request.payload().content_type());
+
+  // Verify the page url was included in the request.
+  ASSERT_EQ(kTestPageUrl, page_content_request.payload().page_url());
+
+  // Verify the page content request has the correct request id.
+  ASSERT_EQ(1,
+            page_content_request.request_context().request_id().sequence_id());
+
+  // Verify chunks was not sent.
+  ASSERT_FALSE(page_content_request.payload().has_stored_chunk_options());
+  EXPECT_EQ(0, query_controller.num_upload_chunk_requests_sent());
+}
+
 TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
   InitFeaturesWithUploadChunking();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
@@ -3877,9 +3957,10 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
   // Verify the content bytes were included in a followup request.
   auto page_content_request =
       query_controller.sent_page_content_objects_request();
-  // When chunking, content data should be empty but content type should still
-  // be set.
-  ASSERT_TRUE(page_content_request.payload().content_data().empty());
+
+  // When chunking, HTML should not be chunked and therefore in the content
+  // data.
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
   ASSERT_EQ(page_content_request.payload().content_type(), "text/html");
 
   // Verify the page url was included in the request.
@@ -3889,17 +3970,9 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
   ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
             page_content_request.request_context().request_id().sequence_id());
 
-  // Verify chunks are set correctly on payload.
-  ASSERT_TRUE(page_content_request.payload().has_stored_chunk_options());
-  EXPECT_EQ(1, page_content_request.payload()
-                   .stored_chunk_options()
-                   .total_stored_chunks());
-  EXPECT_TRUE(page_content_request.payload()
-                  .stored_chunk_options()
-                  .read_stored_chunks());
-  EXPECT_EQ(1, query_controller.num_upload_chunk_requests_sent());
-  ASSERT_EQ(page_content_request.payload().compression_type(),
-            lens::CompressionType::ZSTD);
+  // Verify chunks were not sent.
+  ASSERT_FALSE(page_content_request.payload().has_stored_chunk_options());
+  EXPECT_EQ(0, query_controller.num_upload_chunk_requests_sent());
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request();
@@ -4053,7 +4126,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDFWithNewContentPayload) {
                   .content()
                   .content_data(0)
                   .has_stored_chunk_options());
-  EXPECT_EQ(1, page_content_request.payload()
+  EXPECT_EQ(2, page_content_request.payload()
                    .content()
                    .content_data(0)
                    .stored_chunk_options()
@@ -4063,7 +4136,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDFWithNewContentPayload) {
                   .content_data(0)
                   .stored_chunk_options()
                   .read_stored_chunks());
-  EXPECT_EQ(1, query_controller.num_upload_chunk_requests_sent());
+  EXPECT_EQ(2, query_controller.num_upload_chunk_requests_sent());
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request();
@@ -4191,18 +4264,14 @@ TEST_F(LensOverlayQueryControllerTest,
   auto page_content_request =
       query_controller.sent_page_content_objects_request();
   ASSERT_EQ(page_content_request.payload().content().content_data().size(), 1);
-  // When chunking, content data should be empty but content type should still
-  // be set.
-  ASSERT_TRUE(
+
+  // When chunking is enabled, the HTML should not be chunked and therefore
+  // still included in the content data.
+  ASSERT_FALSE(
       page_content_request.payload().content().content_data(0).data().empty());
   ASSERT_EQ(
       page_content_request.payload().content().content_data(0).content_type(),
       lens::ContentData::CONTENT_TYPE_INNER_HTML);
-  ASSERT_EQ(page_content_request.payload()
-                .content()
-                .content_data(0)
-                .compression_type(),
-            lens::CompressionType::ZSTD);
 
   // Verify the page url and title were included in the request.
   ASSERT_EQ(page_content_request.payload().content().webpage_url(),
@@ -4214,22 +4283,22 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
             page_content_request.request_context().request_id().sequence_id());
 
-  // Verify chunks are set correctly on payload.
-  ASSERT_TRUE(page_content_request.payload()
-                  .content()
-                  .content_data(0)
-                  .has_stored_chunk_options());
-  EXPECT_EQ(1, page_content_request.payload()
+  // Verify chunks are not sent.
+  ASSERT_FALSE(page_content_request.payload()
+                   .content()
+                   .content_data(0)
+                   .has_stored_chunk_options());
+  EXPECT_EQ(0, page_content_request.payload()
                    .content()
                    .content_data(0)
                    .stored_chunk_options()
                    .total_stored_chunks());
-  EXPECT_TRUE(page_content_request.payload()
-                  .content()
-                  .content_data(0)
-                  .stored_chunk_options()
-                  .read_stored_chunks());
-  EXPECT_EQ(1, query_controller.num_upload_chunk_requests_sent());
+  EXPECT_FALSE(page_content_request.payload()
+                   .content()
+                   .content_data(0)
+                   .stored_chunk_options()
+                   .read_stored_chunks());
+  EXPECT_EQ(0, query_controller.num_upload_chunk_requests_sent());
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request();
