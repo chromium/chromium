@@ -6,19 +6,21 @@
 
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system_provider.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/warning_service_factory.h"
 #include "ui/base/clipboard/file_info.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/account_extension_tracker.h"
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/permissions_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
@@ -74,11 +76,11 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(PermissionsManager::GetFactory());
+  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  DependsOn(ExtensionManagementFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(AppWindowRegistry::Factory::GetInstance());
-  DependsOn(ExtensionManagementFactory::GetInstance());
   DependsOn(CommandService::GetFactoryInstance());
-  DependsOn(ChromeExtensionSystemFactory::GetInstance());
   DependsOn(ToolbarActionsModelFactory::GetInstance());
   DependsOn(AccountExtensionTracker::GetFactory());
 #endif  // !BUILDFLAG(IS_ANDROID)

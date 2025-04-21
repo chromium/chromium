@@ -4,14 +4,11 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_desktop.h"
 
-#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/ui_util.h"
 
 namespace extensions {
@@ -21,11 +18,7 @@ namespace developer = api::developer_private;
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
   app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
-  extension_management_observation_.Observe(
-      ExtensionManagementFactory::GetForBrowserContext(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
-  extension_allowlist_observer_.Observe(
-      ExtensionSystem::Get(profile)->extension_service()->allowlist());
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
   if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
@@ -57,22 +50,6 @@ void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
     const Command& removed_command) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
-    const ExtensionId& extension_id,
-    bool show_warning) {
-  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
-}
-
-void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
-  base::Value::List args;
-  args.Append(CreateProfileInfo(profile_).ToValue());
-
-  auto event = std::make_unique<Event>(
-      events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
-      developer::OnProfileStateChanged::kEventName, std::move(args));
-  event_router_->BroadcastEvent(std::move(event));
 }
 
 void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {

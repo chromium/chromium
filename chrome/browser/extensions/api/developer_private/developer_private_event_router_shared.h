@@ -12,6 +12,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,7 +38,9 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
                                           public ProcessManagerObserver,
                                           public ExtensionPrefsObserver,
                                           public WarningService::Observer,
-                                          public PermissionsManager::Observer {
+                                          public PermissionsManager::Observer,
+                                          public ExtensionManagement::Observer,
+                                          public ExtensionAllowlist::Observer {
  public:
   static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
       const PermissionsManager::UserPermissionsSettings& settings);
@@ -120,6 +124,13 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       const PermissionSet& permissions,
       PermissionsManager::UpdateReason reason) override;
 
+  // ExtensionManagement::Observer:
+  void OnExtensionManagementSettingsChanged() override;
+
+  // ExtensionAllowlist::Observer:
+  void OnExtensionAllowlistWarningStateChanged(const ExtensionId& extension_id,
+                                               bool show_warning) override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -141,6 +152,10 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       warning_service_observation_{this};
   base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
       permissions_manager_observation_{this};
+  base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
+      extension_management_observation_{this};
+  base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
+      extension_allowlist_observer_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently

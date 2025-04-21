@@ -11,8 +11,6 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_shared.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/commands/command_service.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -24,8 +22,6 @@ namespace extensions {
 class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public AppWindowRegistry::Observer,
                                     public CommandService::Observer,
-                                    public ExtensionAllowlist::Observer,
-                                    public ExtensionManagement::Observer,
                                     public ToolbarActionsModel::Observer,
                                     public AccountExtensionTracker::Observer {
  public:
@@ -48,13 +44,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                  const Command& removed_command) override;
 
-  // ExtensionAllowlist::Observer
-  void OnExtensionAllowlistWarningStateChanged(const ExtensionId& extension_id,
-                                               bool show_warning) override;
-
-  // ExtensionManagement::Observer:
-  void OnExtensionManagementSettingsChanged() override;
-
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}
   void OnToolbarActionRemoved(
@@ -70,12 +59,8 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
 
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
-  base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
-      extension_management_observation_{this};
   base::ScopedObservation<CommandService, CommandService::Observer>
       command_service_observation_{this};
-  base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
-      extension_allowlist_observer_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
   base::ScopedObservation<AccountExtensionTracker,
