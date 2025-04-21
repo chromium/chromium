@@ -43,9 +43,8 @@ class LOCKABLE BASE_EXPORT Lock {
   // here instead of `explicit Lock(FunctionRef<void()>)` avoids a compile error
   // about instantiation of an undefined template when code that neither
   // #includes function_ref.h nor calls this constructor #includes this header.
-  template <typename T,
-            typename =
-                std::enable_if_t<std::is_convertible_v<T, FunctionRef<void()>>>>
+  template <typename T>
+    requires(std::is_convertible_v<T, FunctionRef<void()>>)
   explicit Lock(T check_invariants) : Lock() {}
   ~Lock() = default;
 
