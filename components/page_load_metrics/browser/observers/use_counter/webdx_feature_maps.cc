@@ -381,7 +381,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
             WebDXFeature::kComposedRanges},
            {WebFeature::kSharedDictionaryUsed,
             WebDXFeature::kCompressionDictionaryTransport},
-           {WebFeature::kHttp3, WebDXFeature::kHttp3}}};
+           {WebFeature::kHttp3, WebDXFeature::kHttp3},
+           {WebFeature::kSpeculationRules, WebDXFeature::kSpeculationRules}}};
 
   return *kMap;
 }

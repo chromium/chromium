@@ -372,6 +372,7 @@ enum WebDXFeature {
   kComposedRanges = 314,
   kCompressionDictionaryTransport = 315,
   kHttp3 = 316,
+  kSpeculationRules = 317,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
