@@ -2375,6 +2375,19 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ForceInstalledManagementAuthorityTrustworthiness"
+    enum="ManagementAuthorityTrustworthiness" expires_after="2025-10-01">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the higher of two values, trust level for the machine or that of the
+    user profile. The trust level is determined by the management authority,
+    such as local device, non-local, cryptographically verifiable policy source,
+    etc. This histogram is emitted when all the force-installed extensions are
+    ready to use. Recorded for only Windows and Mac.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ForceInstalledNotLoadedDisableReason"
     enum="ExtensionDisableReason" expires_after="never">
 <!-- expires-never: Monitoring outcomes of admin installed extensions -->
