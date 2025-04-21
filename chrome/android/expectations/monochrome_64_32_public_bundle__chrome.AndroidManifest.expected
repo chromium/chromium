@@ -906,6 +906,7 @@
         android:exported="true">
       <intent-filter>  # DIFF-ANCHOR: d46bf795
         <action android:name="android.support.customtabs.action.CustomTabsService"/>
+        <category android:name="androidx.browser.auth.category.AuthTab"/>
         <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
         <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
         <category android:name="androidx.browser.customtabs.category.SetNetwork"/>
