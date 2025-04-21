@@ -1616,6 +1616,8 @@ enum AnnotatedPageContentVersion {
 // See crrev.com/c/6072788 for an example.
 // Next ID: 26;
 enum ContentAttributeType {
+  // Unknown is not a valid attribute type and should never be used by the
+  // client. You can consider discarding ContentNodes with this attribute type.
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
   CONTENT_ATTRIBUTE_ROOT = 1;
