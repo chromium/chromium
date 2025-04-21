@@ -373,11 +373,7 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
       GetD3D12VideoDecodeGUID(config.profile(), bit_depth, chroma_sampling);
   DXGI_FORMAT decode_format = GetOutputDXGIFormat(bit_depth, chroma_sampling);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
-  // it is defined by Intel or DXVA spec(as part of Windows SDK).
-  if (guid == DXVA_ModeHEVC_VLD_Main10_422) {
-    decode_format = DXGI_FORMAT_Y210;
-  } else if (guid == DXVA_ModeHEVC_VLD_Main12) {
+  if (guid == DXVA_ModeHEVC_VLD_Main12) {
     constexpr UINT kNVIDIADeviceId = 0x10DE;
     ComDXGIDevice dxgi_device;
     if (SUCCEEDED(video_device.As(&dxgi_device)) &&
