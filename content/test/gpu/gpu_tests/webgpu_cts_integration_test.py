@@ -22,7 +22,10 @@ ERROR_SCOPE_TESTS = 'webgpu:api,validation,error_scope'
 OOM_ERROR_TEST_PREFIXES = [
     ERROR_SCOPE_TESTS + ':current_scope:errorFilter="out-of-memory";',
     ERROR_SCOPE_TESTS + ':parent_scope:errorFilter="out-of-memory";',
-    ERROR_SCOPE_TESTS + ':simple:errorType="out-of-memory";'
+    ERROR_SCOPE_TESTS + ':simple:errorType="out-of-memory";',
+]
+WEBCAM_TEST_PREFIXES = [
+    'webgpu:web_platform,external_texture,video:importExternalTexture,camera',
 ]
 
 
@@ -128,6 +131,11 @@ class WebGpuCtsIntegrationTest(
     # tiered limits to more consistently cause failures.
     if any(query.startswith(prefix) for prefix in OOM_ERROR_TEST_PREFIXES):
       return ['--disable-dawn-features=tiered_adapter_limits']
+    if any(query.startswith(prefix) for prefix in WEBCAM_TEST_PREFIXES):
+      return [
+          '--use-fake-device-for-media-stream',
+          '--auto-accept-camera-and-microphone-capture'
+      ]
     return None
 
   @classmethod
