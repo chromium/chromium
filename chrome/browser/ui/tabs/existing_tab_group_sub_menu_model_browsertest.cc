@@ -6,25 +6,28 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
-class ExistingTabGroupSubMenuModelTest : public BrowserWithTestWindowTest {
+class ExistingTabGroupSubMenuModelTest : public InProcessBrowserTest {
  public:
   ExistingTabGroupSubMenuModelTest() = default;
 };
 
 // Ensure that add to group submenu only appears when there is another group to
 // move the tab into.
-TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowSubmenu) {
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowSubmenu) {
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model = browser()->tab_strip_model();
   ASSERT_EQ(model->group_model()->ListTabGroups().size(), 0U);
@@ -41,10 +44,11 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowSubmenu) {
 }
 
 // Validate that the submenu has the correct items.
-TEST_F(ExistingTabGroupSubMenuModelTest, BuildSubmenuItems) {
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest, BuildSubmenuItems) {
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model = browser()->tab_strip_model();
   model->AddToNewGroup({0});
@@ -66,10 +70,12 @@ TEST_F(ExistingTabGroupSubMenuModelTest, BuildSubmenuItems) {
 }
 
 // Verify tabs can be added tab groups in the same window.
-TEST_F(ExistingTabGroupSubMenuModelTest, AddTabsToGroupSameWindow) {
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
+                       AddTabsToGroupSameWindow) {
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model = browser()->tab_strip_model();
   model->AddToNewGroup({0});
@@ -90,11 +96,16 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddTabsToGroupSameWindow) {
 }
 
 // Verify non-selected tabs can be added tab groups in the same window.
-TEST_F(ExistingTabGroupSubMenuModelTest, AddNonSelectedTabsToTabGroup) {
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
+                       AddNonSelectedTabsToTabGroup) {
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model = browser()->tab_strip_model();
   model->AddToNewGroup({0});
@@ -123,20 +134,26 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddNonSelectedTabsToTabGroup) {
 }
 
 // Verify tabs can be added to tab groups in other browser windows.
-TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
-  std::unique_ptr<BrowserWindow> window_1 = CreateBrowserWindow();
-  std::unique_ptr<Browser> new_browser = CreateBrowser(
-      browser()->profile(), browser()->type(), false, window_1.get());
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
+                       AddAllSelectedTabsToAnotherWindow) {
+  Browser* new_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
 
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
-  AddTab(new_browser.get(), GURL("chrome://newtab"));
-  AddTab(new_browser.get(), GURL("chrome://newtab"));
-  AddTab(new_browser.get(), GURL("chrome://newtab"));
-  AddTab(new_browser.get(), GURL("chrome://newtab"));
+  chrome::AddTabAt(new_browser, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(new_browser, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(new_browser, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(new_browser, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model_1 = new_browser->tab_strip_model();
   TabStripModel* model_2 = browser()->tab_strip_model();
@@ -145,7 +162,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   EXPECT_EQ(model_2->count(), 4);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser.get());
+      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser);
 
   // First tabs of each model consists of a tab group.
   model_1->AddToNewGroup({0});
@@ -187,18 +204,18 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   // Expect the number of tabs we moved from model_1 into model_2 is still 3.
   EXPECT_EQ(num_selected, 3);
 
-  new_browser.get()->tab_strip_model()->CloseAllTabs();
-  new_browser.reset();
+  CloseBrowserSynchronously(new_browser);
 }
 
-TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowExistingTabGroups) {
-  std::unique_ptr<BrowserWindow> window_1 = CreateBrowserWindow();
-  std::unique_ptr<Browser> new_browser = CreateBrowser(
-      browser()->profile(), browser()->type(), false, window_1.get());
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
+                       ShouldShowExistingTabGroups) {
+  Browser* new_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
 
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(new_browser.get(), GURL("chrome://newtab"));
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(new_browser, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model_1 = browser()->tab_strip_model();
   TabStripModel* model_2 = new_browser->tab_strip_model();
@@ -216,7 +233,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowExistingTabGroups) {
   ASSERT_EQ(model_2->group_model()->ListTabGroups().size(), 0U);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser.get());
+      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser);
 
   ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_1, 1);
   ExistingTabGroupSubMenuModel menu_2(nullptr, delegate_1.get(), model_2, 0);
@@ -231,17 +248,20 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowExistingTabGroups) {
   EXPECT_TRUE(ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
       model_2, 0, delegate_1.get()));
 
-  new_browser.get()->tab_strip_model()->CloseAllTabs();
-  new_browser.reset();
+  CloseBrowserSynchronously(new_browser);
 }
 
 // Verify tab groups are display in the order they were created
-TEST_F(ExistingTabGroupSubMenuModelTest, ShowTabGroupsInTheOrderTheyWereAdded) {
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
-  AddTab(browser(), GURL("chrome://newtab"));
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
+                       ShowTabGroupsInTheOrderTheyWereAdded) {
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
 
   TabStripModel* model = browser()->tab_strip_model();
   std::vector<tab_groups::TabGroupId> group_ids;
@@ -257,27 +277,33 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShowTabGroupsInTheOrderTheyWereAdded) {
 }
 // Verify that pinned tabs added to a group in another window maintain
 // their selection state and are inserted in the correct position.
-TEST_F(ExistingTabGroupSubMenuModelTest, AddPinnedTabsToTabGroup) {
+IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
+                       AddPinnedTabsToTabGroup) {
   // Window 1: 3 tabs, the first two in a group.
-  std::unique_ptr<BrowserWindow> window_1 = CreateBrowserWindow();
-  std::unique_ptr<Browser> browser_1 = CreateBrowser(
-      browser()->profile(), browser()->type(), false, window_1.get());
-  AddTab(browser_1.get(), GURL("chrome://newtab/"));
-  AddTab(browser_1.get(), GURL("chrome://newtab/"));
-  AddTab(browser_1.get(), GURL("chrome://newtab/"));
-  TabStripModel* model_1 = browser_1->tab_strip_model();
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+
+  TabStripModel* model_1 = browser()->tab_strip_model();
   model_1->AddToNewGroup({0, 1});
   EXPECT_EQ(model_1->count(), 3);
 
   // Window 2: 5 tabs, 3 pinned; tabs 0, 2, and 4 are selected.
-  std::unique_ptr<BrowserWindow> window_2 = CreateBrowserWindow();
-  std::unique_ptr<Browser> browser_2 = CreateBrowser(
-      browser()->profile(), browser()->type(), false, window_2.get());
-  AddTab(browser_2.get(), GURL("chrome://newtab/"));
-  AddTab(browser_2.get(), GURL("chrome://newtab/"));
-  AddTab(browser_2.get(), GURL("chrome://newtab/"));
-  AddTab(browser_2.get(), GURL("chrome://newtab/"));
-  AddTab(browser_2.get(), GURL("chrome://newtab/"));
+  Browser* browser_2 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+
+  chrome::AddTabAt(browser_2, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser_2, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser_2, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser_2, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser_2, GURL("chrome://newtab"), /*index=*/-1,
+                   /*foreground=*/true);
+
   TabStripModel* model_2 = browser_2->tab_strip_model();
   // Pin all tabs
   model_2->SetTabPinned(0, true);
@@ -292,7 +318,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddPinnedTabsToTabGroup) {
   EXPECT_EQ(model_2->count(), 5);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
-      std::make_unique<chrome::BrowserTabMenuModelDelegate>(browser_2.get());
+      std::make_unique<chrome::BrowserTabMenuModelDelegate>(browser_2);
   ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_2, 0);
 
   // Move the selected tabs from Window 2 to the group in Window 1.
@@ -307,8 +333,5 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddPinnedTabsToTabGroup) {
   EXPECT_TRUE(model_1->IsTabSelected(3));
   EXPECT_TRUE(model_1->IsTabSelected(4));
 
-  browser_1.get()->tab_strip_model()->CloseAllTabs();
-  browser_1.reset();
-  browser_2.get()->tab_strip_model()->CloseAllTabs();
-  browser_2.reset();
+  CloseBrowserSynchronously(browser_2);
 }
