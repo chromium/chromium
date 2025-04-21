@@ -11,46 +11,53 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_GLYPH_DATA_RANGE_H_
 
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
+
+struct ShapeResultRun;
 
 // Represents a range of HarfBuzzRunGlyphData. |begin| and |end| follow the
 // iterator pattern; i.e., |begin| is lower or equal to |end| in the address
 // space regardless of LTR/RTL. |begin| is inclusive, |end| is exclusive.
 class PLATFORM_EXPORT GlyphDataRange {
+  DISALLOW_NEW();
+
  public:
   GlyphDataRange() = default;
-  GlyphDataRange(const HarfBuzzRunGlyphData* begin,
-                 const HarfBuzzRunGlyphData* end,
-                 const GlyphOffset* offsets)
-      : begin_(begin), end_(end), offsets_(offsets) {}
+  explicit GlyphDataRange(const ShapeResultRun&);
 
-  unsigned size() const { return static_cast<unsigned>(end_ - begin_); }
-  bool IsEmpty() const { return begin_ == end_; }
+  unsigned size() const { return size_; }
+  bool IsEmpty() const { return !size_; }
 
-  base::span<const HarfBuzzRunGlyphData> Glyphs() const {
-    return base::span{begin_, end_};
-  }
+  // The `span` of `HarfBuzzRunGlyphData`.
+  base::span<const HarfBuzzRunGlyphData> Glyphs() const;
 
   using const_iterator = const HarfBuzzRunGlyphData*;
-  const_iterator begin() const { return begin_; }
-  const_iterator end() const { return end_; }
+  const_iterator begin() const;
+  const_iterator end() const;
 
-  bool HasOffsets() const { return offsets_; }
-  base::span<const GlyphOffset> Offsets() const {
-    return HasOffsets() ? base::span{offsets_, size()}
-                        : base::span<const GlyphOffset>{};
-  }
-  const GlyphOffset* Offset() const { return offsets_; }
+  bool HasOffsets() const { return has_offsets_; }
+  // The `span` of `GlyphOffset` if `HasOffsets()`, or an empty span.
+  base::span<const GlyphOffset> Offsets() const;
+  const GlyphOffset* Offset() const { return Offsets().data(); }
+
+  void Trace(Visitor*) const;
 
   GlyphDataRange FindGlyphDataRange(bool is_rtl,
                                     unsigned start_character_index,
                                     unsigned end_character_index) const;
 
  private:
-  const HarfBuzzRunGlyphData* begin_ = nullptr;
-  const HarfBuzzRunGlyphData* end_ = nullptr;
-  const GlyphOffset* offsets_ = nullptr;
+  GlyphDataRange(const GlyphDataRange&,
+                 const_iterator begin,
+                 const_iterator end);
+
+  Member<const ShapeResultRun> run_;
+  wtf_size_t index_ = 0;
+  wtf_size_t size_ = 0;
+  bool has_offsets_ = false;
 };
 
 }  // namespace blink

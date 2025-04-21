@@ -31,6 +31,12 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
               AllocateStorage());
   }
 
+  // The `span` of `GlyphOffset` if `HasStorage()`, or an empty span.
+  explicit operator base::span<const GlyphOffset>() const {
+    return HasStorage() ? base::span{GetStorage(), size()}
+                        : base::span<const GlyphOffset>{};
+  }
+
   // A return value of |GetOffsets()| to represent optional |GlyphOffset|
   // array.
   template <bool has_non_zero_glyph_offsets>
@@ -39,12 +45,6 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
   template <bool has_non_zero_glyph_offsets>
   iterator<has_non_zero_glyph_offsets> GetIterator() const {
     return iterator<has_non_zero_glyph_offsets>(*this);
-  }
-
-  template <bool has_non_zero_glyph_offsets>
-  iterator<has_non_zero_glyph_offsets> GetIteratorForRange(
-      const GlyphDataRange& range) const {
-    return iterator<has_non_zero_glyph_offsets>(range);
   }
 
   unsigned size() const { return size_; }
@@ -156,6 +156,9 @@ class PLATFORM_EXPORT GlyphOffsetArray final {
 // For non-zero glyph offset array
 template <>
 struct GlyphOffsetArray::iterator<true> final {
+  STACK_ALLOCATED();
+
+ public:
   // The constructor for ShapeResult
   explicit iterator(const GlyphOffsetArray& array)
       : pointer(array.storage_.get()) {
@@ -185,6 +188,7 @@ struct GlyphOffsetArray::iterator<false> final {
   explicit iterator(const GlyphDataRange& range) {
     DCHECK(!range.HasOffsets());
   }
+
   GlyphOffset operator*() const { return GlyphOffset(); }
   void operator++() {}
   void operator+=(ptrdiff_t) {}

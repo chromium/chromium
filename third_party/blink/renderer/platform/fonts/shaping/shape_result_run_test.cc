@@ -28,19 +28,19 @@ TEST_F(ShapeResultRunTest, CopyConstructor) {
 }
 
 TEST_F(ShapeResultRunTest, CopyFromRange) {
-  GlyphOffsetArray offsets(2);
-  HarfBuzzRunGlyphData glyhp_data[2];
+  ShapeResultRun* run = MakeGarbageCollected<ShapeResultRun>(
+      nullptr, HB_DIRECTION_LTR, CanvasRotationInVertical::kRegular,
+      HB_SCRIPT_COMMON, 0, 2, 2);
 
   GlyphOffsetArray offsets2(2);
-  offsets2.CopyFromRange({&glyhp_data[0], &glyhp_data[2], nullptr});
+  offsets2.CopyFromRange(GlyphDataRange{*run});
   EXPECT_FALSE(offsets2.HasStorage());
 
-  offsets.SetAt(0, GlyphOffset(1, 1));
-  ASSERT_TRUE(offsets.HasStorage());
+  run->glyph_data_.SetOffsetAt(0, GlyphOffset(1, 1));
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
 
   GlyphOffsetArray offsets3(2);
-  offsets3.CopyFromRange(
-      {&glyhp_data[0], &glyhp_data[2], offsets.GetStorage()});
+  offsets3.CopyFromRange(GlyphDataRange{*run});
   ASSERT_TRUE(offsets3.HasStorage());
   EXPECT_EQ(GlyphOffset(1, 1), offsets3.GetStorage()[0]);
 }

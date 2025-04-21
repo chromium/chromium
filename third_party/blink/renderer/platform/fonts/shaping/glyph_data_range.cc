@@ -9,7 +9,48 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
+
 namespace blink {
+
+GlyphDataRange::GlyphDataRange(const ShapeResultRun& run)
+    : run_(&run),
+      size_(run.glyph_data_.size()),
+      has_offsets_(run.glyph_data_.HasNonZeroOffsets()) {}
+
+GlyphDataRange::GlyphDataRange(const GlyphDataRange& range,
+                               const_iterator begin_glyph,
+                               const_iterator end_glyph)
+    : run_(range.run_), has_offsets_(range.HasOffsets()) {
+  DCHECK(run_);
+  CHECK_GE(begin_glyph, run_->glyph_data_.begin());
+  index_ = begin_glyph - run_->glyph_data_.begin();
+  DCHECK_GE(index_, range.index_);
+  CHECK_LE(index_, run_->NumGlyphs());
+  CHECK_GE(end_glyph, begin_glyph);
+  size_ = end_glyph - begin_glyph;
+  CHECK_LE(size_, run_->NumGlyphs() - index_);
+}
+
+base::span<const HarfBuzzRunGlyphData> GlyphDataRange::Glyphs() const {
+  return run_ ? base::span{run_->glyph_data_}.subspan(index_, size_)
+              : base::span<const HarfBuzzRunGlyphData>{};
+}
+
+GlyphDataRange::const_iterator GlyphDataRange::begin() const {
+  return run_ ? run_->glyph_data_.begin() + index_ : nullptr;
+}
+
+GlyphDataRange::const_iterator GlyphDataRange::end() const {
+  return run_ ? run_->glyph_data_.begin() + index_ + size_ : nullptr;
+}
+
+base::span<const GlyphOffset> GlyphDataRange::Offsets() const {
+  if (HasOffsets() && run_) [[unlikely]] {
+    return run_->glyph_data_.Offsets().subspan(index_, size_);
+  }
+  return base::span<const GlyphOffset>{};
+}
 
 // Find the range of HarfBuzzRunGlyphData for the specified character index
 // range. This function uses binary search twice, hence O(2 log n).
@@ -29,10 +70,7 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
     }
     const HarfBuzzRunGlyphData* end_glyph =
         std::lower_bound(start_glyph, end(), end_character_index, comparer);
-    if (HasOffsets()) {
-      return {start_glyph, end_glyph, Offset() + (start_glyph - begin())};
-    }
-    return {start_glyph, end_glyph, nullptr};
+    return {*this, start_glyph, end_glyph};
   }
 
   // RTL needs to use reverse iterators because there maybe multiple glyphs
@@ -50,10 +88,11 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
   // inclusive and |end| exclusive.
   const HarfBuzzRunGlyphData* start_glyph = &*end_glyph_it + 1;
   const HarfBuzzRunGlyphData* end_glyph = &*start_glyph_it + 1;
-  if (HasOffsets()) {
-    return {start_glyph, end_glyph, Offset() + (start_glyph - begin())};
-  }
-  return {start_glyph, end_glyph, nullptr};
+  return {*this, start_glyph, end_glyph};
+}
+
+void GlyphDataRange::Trace(Visitor* visitor) const {
+  visitor->Trace(run_);
 }
 
 }  // namespace blink

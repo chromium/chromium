@@ -34,6 +34,7 @@ ShapeResultView::RunInfoPart::RunInfoPart(const ShapeResultRun* run,
 
 void ShapeResultView::RunInfoPart::Trace(Visitor* visitor) const {
   visitor->Trace(run_);
+  visitor->Trace(range_);
 }
 
 unsigned ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(

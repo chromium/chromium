@@ -240,12 +240,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
   // Common signatures with RunInfoPart, to templatize algorithms.
   const ShapeResultRun* GetRunInfo() const { return this; }
   const GlyphDataRange GetGlyphDataRange() const {
-    return {glyph_data_.begin(), glyph_data_.end(),
-            glyph_data_.GetMayBeOffsets()};
+    return GlyphDataRange{*this};
   }
   unsigned OffsetToRunStartIndex() const { return 0; }
-
-  class GlyphDataCollection;
 
   // Collection of |HarfBuzzRunGlyphData| with optional glyph offset
   class GlyphDataCollection final {
@@ -278,6 +275,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
     size_t ByteSize() const {
       return sizeof(*this) + size() * sizeof(HarfBuzzRunGlyphData) +
              offsets_.ByteSize();
+    }
+
+    // The `span` of `GlyphOffset` if `HasNonZeroOffsets()`, or an empty span.
+    base::span<const GlyphOffset> Offsets() const {
+      return static_cast<base::span<const GlyphOffset>>(offsets_);
     }
 
     template <bool has_non_zero_glyph_offsets>
