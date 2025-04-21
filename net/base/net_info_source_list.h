@@ -12,6 +12,7 @@ const char kNetInfoHostResolver[] = "hostResolverInfo";
 const char kNetInfoDohProvidersDisabledDueToFeature[] =
     "dohProvidersDisabledDueToFeature";
 const char kNetInfoSocketPool[] = "socketPoolInfo";
+const char kNetInfoHttpStreamPool[] = "httpStreamPoolInfo";
 const char kNetInfoQuic[] = "quicInfo";
 const char kNetInfoSpdySessions[] = "spdySessionInfo";
 const char kNetInfoSpdyStatus[] = "spdyStatus";
