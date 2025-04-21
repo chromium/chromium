@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/http/http_vary_data.h"
-
-#include <stdlib.h>
 
 #include <array>
 #include <string_view>
@@ -48,7 +41,7 @@ bool HttpVaryData::Init(const HttpRequestInfo& request_info,
     if (*request_header == "*") {
       // What's in request_digest_ will never be looked at, but make it
       // deterministic so we don't serialize out uninitialized memory content.
-      memset(&request_digest_, 0, sizeof(request_digest_));
+      request_digest_.a.fill(0u);
       return is_valid_ = true;
     }
     AddField(request_info, *request_header, &ctx);
