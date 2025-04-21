@@ -63,8 +63,9 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
     }
 
     @Override
-    public void onPageLoadFinished(int tabId) {
-        GroupSuggestionsServiceImplJni.get().onPageLoadFinished(mNativePtr, tabId);
+    public void onDidFinishNavigation(int tabId, int transitionType) {
+        GroupSuggestionsServiceImplJni.get()
+                .onDidFinishNavigation(mNativePtr, tabId, transitionType);
     }
 
     @Override
@@ -105,7 +106,8 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
 
         void tabClosureCommitted(long nativeGroupSuggestionsServiceAndroid, int tabId);
 
-        void onPageLoadFinished(long nativeGroupSuggestionsServiceAndroid, int tabId);
+        void onDidFinishNavigation(
+                long nativeGroupSuggestionsServiceAndroid, int tabId, int transitionType);
 
         void didEnterTabSwitcher(long nativeGroupSuggestionsServiceAndroid);
     }

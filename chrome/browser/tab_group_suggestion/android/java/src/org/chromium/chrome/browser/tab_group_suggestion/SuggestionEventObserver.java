@@ -25,7 +25,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionType;
-import org.chromium.url.GURL;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.NavigationHistory;
 
 /** Observer for events that are relevant to TabGroup suggestion triggering or calculation. */
 @NullMarked
@@ -73,6 +75,18 @@ public class SuggestionEventObserver {
                 }
 
                 @Override
+                public void restoreCompleted() {
+                    // Initiate a select event for the very first tab. didSelectTab will not capture
+                    // this select.
+                    Tab currentTab = mTabModel.getCurrentTabSupplier().get();
+                    mGroupSuggestionsService.didSelectTab(
+                            currentTab.getId(),
+                            currentTab.getUrl(),
+                            TabSelectionType.FROM_NEW_TAB,
+                            Tab.INVALID_TAB_ID);
+                }
+
+                @Override
                 public void willCloseTab(Tab tab, boolean didCloseAlone) {
                     mGroupSuggestionsService.willCloseTab(tab.getId());
                 }
@@ -90,9 +104,6 @@ public class SuggestionEventObserver {
 
     private @Nullable ObservableSupplier<Boolean> mHubVisibilitySupplier;
     private @Nullable ObservableSupplier<Pane> mFocusedPaneSupplier;
-    // The event observer will not populate any signal when in observation mode. Currently it's only
-    // blocking the very first navigation after startup.
-    private boolean mSeenFirstPageLoad = true;
 
     /** Creates the observer. */
     public SuggestionEventObserver(
@@ -102,12 +113,21 @@ public class SuggestionEventObserver {
         mTabObserver =
                 new TabModelSelectorTabObserver(tabModelSelector) {
                     @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        if (tab.isIncognitoBranded() || mSeenFirstPageLoad) {
-                            mSeenFirstPageLoad = false;
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigationHandle) {
+                        NavigationController controller =
+                                navigationHandle.getWebContents().getNavigationController();
+                        if (tab.isIncognitoBranded() || controller == null) {
                             return;
                         }
-                        mGroupSuggestionsService.onPageLoadFinished(tab.getId());
+                        NavigationHistory history = controller.getNavigationHistory();
+                        if (history == null) {
+                            return;
+                        }
+                        int transitionType =
+                                history.getEntryAtIndex(history.getCurrentEntryIndex())
+                                        .getTransition();
+                        mGroupSuggestionsService.onDidFinishNavigation(tab.getId(), transitionType);
                     }
                 };
         mGroupSuggestionsService =

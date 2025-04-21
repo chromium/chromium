@@ -6,6 +6,8 @@
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_GROUPING_TAB_EVENT_TRACKER_H_
 
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "ui/base/page_transition_types.h"
+
 namespace visited_url_ranking {
 
 class TabEventTracker {
@@ -60,8 +62,9 @@ class TabEventTracker {
   // Called when a tab is moved in the window.
   virtual void DidMoveTab(int tab_id, int new_index, int current_index) = 0;
 
-  // Called when page load finishes on any candidate tab.
-  virtual void OnPageLoadFinished(int tab_id) = 0;
+  // Called when user-initiated page navigation finishes on any candidate tab.
+  virtual void OnDidFinishNavigation(int tab_id,
+                                     ui::PageTransition page_transition) = 0;
 
   // Called when users enter tab switcher.
   virtual void DidEnterTabSwitcher() = 0;

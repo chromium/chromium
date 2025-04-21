@@ -24,6 +24,7 @@ TabEventTrackerImpl::TabEventTrackerImpl(
           features::kGroupSuggestionEnableTabSwitcherOnly.Get()) {}
 TabEventTrackerImpl::~TabEventTrackerImpl() = default;
 
+TabEventTrackerImpl::TabSelection::TabSelection() = default;
 TabEventTrackerImpl::TabSelection::TabSelection(
     int tab_id,
     TabSelectionType tab_selection_type,
@@ -41,13 +42,15 @@ void TabEventTrackerImpl::DidSelectTab(int tab_id,
                                        const GURL& url,
                                        TabSelectionType tab_selection_type,
                                        int last_tab_id) {
+  current_selection_ =
+      TabSelection(tab_id, tab_selection_type, base::Time::Now());
   if ((tab_selection_type != TabSelectionType::kFromUser &&
        tab_selection_type != TabSelectionType::kFromOmnibox) ||
       last_tab_id == tab_id || url.spec() == kAndroidNativeNewTabPageURL) {
     return;
   }
-  tab_id_selection_map_[tab_id].emplace_back(tab_id, tab_selection_type,
-                                             base::Time::Now());
+  current_selection_.committed = true;
+  tab_id_selection_map_[tab_id].emplace_back(current_selection_);
   if (!tab_switcher_trigger_only_) {
     on_new_event_callback_.Run();
   }
@@ -70,7 +73,22 @@ void TabEventTrackerImpl::DidMoveTab(int tab_id,
                                      int new_index,
                                      int current_index) {}
 
-void TabEventTrackerImpl::OnPageLoadFinished(int tab_id) {
+void TabEventTrackerImpl::OnDidFinishNavigation(
+    int tab_id,
+    ui::PageTransition page_transition) {
+  if (!ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_LINK) &&
+      !ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_TYPED) &&
+      !ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
+      (page_transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) == 0) {
+    return;
+  }
+  if (current_selection_.tab_id == tab_id && !current_selection_.committed) {
+    current_selection_.committed = true;
+    tab_id_selection_map_[tab_id].emplace_back(current_selection_);
+  }
   if (!tab_switcher_trigger_only_) {
     on_new_event_callback_.Run();
   }

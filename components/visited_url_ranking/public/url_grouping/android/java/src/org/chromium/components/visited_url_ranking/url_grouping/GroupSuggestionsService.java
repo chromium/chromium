@@ -43,8 +43,8 @@ public interface GroupSuggestionsService {
     /** Gets called when user enters tab switcher. */
     void didEnterTabSwitcher();
 
-    /** Gets called when page load finishes on any candidate tab. */
-    void onPageLoadFinished(int tabId);
+    /** Gets called when user-initiated page navigation finishes on any candidate tab. */
+    void onDidFinishNavigation(int tabId, int transitionType);
 
     /** Registers a delegate to receive backend suggestions. */
     void registerDelegate(Delegate delegate, int windowId);

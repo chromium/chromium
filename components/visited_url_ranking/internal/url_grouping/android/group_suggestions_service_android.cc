@@ -245,9 +245,12 @@ void GroupSuggestionsServiceAndroid::TabClosureCommitted(JNIEnv* env,
   group_suggestions_service_->GetTabEventTracker()->TabClosureCommitted(tab_id);
 }
 
-void GroupSuggestionsServiceAndroid::OnPageLoadFinished(JNIEnv* env,
-                                                        int tab_id) {
-  group_suggestions_service_->GetTabEventTracker()->OnPageLoadFinished(tab_id);
+void GroupSuggestionsServiceAndroid::OnDidFinishNavigation(
+    JNIEnv* env,
+    int tab_id,
+    int page_transition) {
+  group_suggestions_service_->GetTabEventTracker()->OnDidFinishNavigation(
+      tab_id, ui::PageTransitionFromInt(page_transition));
 }
 
 void GroupSuggestionsServiceAndroid::DidEnterTabSwitcher(JNIEnv* env) {

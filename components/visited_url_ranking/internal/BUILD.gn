@@ -84,6 +84,7 @@ static_library("internal_url_grouping") {
     "//components/prefs:prefs",
     "//components/segmentation_platform/public",
     "//components/visited_url_ranking/public",
+    "//ui/base:base",
   ]
 
   if (is_android) {
@@ -197,6 +198,7 @@ if (is_android) {
       "//build/android:build_java",
       "//components/visited_url_ranking/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
       "//url:url_java",
     ]
   }

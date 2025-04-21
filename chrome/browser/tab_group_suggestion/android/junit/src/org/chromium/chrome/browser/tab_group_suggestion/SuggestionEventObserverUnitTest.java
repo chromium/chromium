@@ -26,9 +26,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -42,6 +45,12 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -60,6 +69,11 @@ public class SuggestionEventObserverUnitTest {
     @Mock PaneManager mPaneManager;
     @Mock Tab mTab;
     @Mock Pane mPane;
+    @Mock NavigationHandle mNavigationHandle;
+    @Mock WebContents mWebContents;
+    @Mock NavigationController mNavigationController;
+    @Mock NavigationHistory mNavigationHistory;
+    @Mock NavigationEntry mNavigationEntry;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -71,6 +85,22 @@ public class SuggestionEventObserverUnitTest {
     public void setup() {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        ObservableSupplier<Tab> currentTabSupplier =
+                new ObservableSupplier<>() {
+                    @Override
+                    public @Nullable Tab addObserver(Callback<Tab> obs, int behavior) {
+                        return null;
+                    }
+
+                    @Override
+                    public void removeObserver(Callback<Tab> obs) {}
+
+                    @Override
+                    public Tab get() {
+                        return mTab;
+                    }
+                };
+        doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.getUrl()).thenReturn(TEST_URL);
@@ -82,6 +112,11 @@ public class SuggestionEventObserverUnitTest {
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         OneshotSupplierImpl<HubManager> hubManagerSupplier = new OneshotSupplierImpl<>();
         hubManagerSupplier.set(mHubManager);
+        when(mNavigationHandle.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mNavigationController.getNavigationHistory()).thenReturn(mNavigationHistory);
+        when(mNavigationHistory.getCurrentEntryIndex()).thenReturn(0);
+        when(mNavigationHistory.getEntryAtIndex(0)).thenReturn(mNavigationEntry);
         GroupSuggestionsServiceFactory.setGroupSuggestionsServiceForTesting(
                 mGroupSuggestionsService);
 
@@ -145,6 +180,18 @@ public class SuggestionEventObserverUnitTest {
     }
 
     @Test
+    public void testRestoreCompleted() {
+        mTabModelObserverCaptor.getValue().restoreCompleted();
+
+        verify(mGroupSuggestionsService)
+                .didSelectTab(
+                        eq(TAB_ID),
+                        eq(TEST_URL),
+                        eq(TabSelectionType.FROM_NEW),
+                        eq(Tab.INVALID_TAB_ID));
+    }
+
+    @Test
     public void testEnterPane_FocusTabSwitcher() {
         doReturn(PaneId.TAB_SWITCHER).when(mPane).getPaneId();
 
@@ -181,20 +228,15 @@ public class SuggestionEventObserverUnitTest {
     }
 
     @Test
-    public void testTabNavigation_NormalTab() {
+    public void testTabNavigation() {
         when(mTab.isIncognitoBranded()).thenReturn(false);
 
+        when(mNavigationEntry.getTransition()).thenReturn(PageTransition.LINK);
         mSuggestionEventObserver
                 .getTabModelSelectorTabObserverForTesting()
-                .onPageLoadFinished(mTab, new GURL(""));
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
-        verify(mGroupSuggestionsService, never()).onPageLoadFinished(anyInt());
-
-        mSuggestionEventObserver
-                .getTabModelSelectorTabObserverForTesting()
-                .onPageLoadFinished(mTab, new GURL(""));
-
-        verify(mGroupSuggestionsService).onPageLoadFinished(eq(TAB_ID));
+        verify(mGroupSuggestionsService).onDidFinishNavigation(eq(TAB_ID), eq(PageTransition.LINK));
     }
 
     @Test
@@ -202,14 +244,12 @@ public class SuggestionEventObserverUnitTest {
         Tab incognitoTab = mock(Tab.class);
         when(incognitoTab.isIncognitoBranded()).thenReturn(true);
 
+        when(mNavigationEntry.getTransition()).thenReturn(PageTransition.LINK);
         mSuggestionEventObserver
                 .getTabModelSelectorTabObserverForTesting()
-                .onPageLoadFinished(incognitoTab, new GURL(""));
-        mSuggestionEventObserver
-                .getTabModelSelectorTabObserverForTesting()
-                .onPageLoadFinished(incognitoTab, new GURL(""));
+                .onDidFinishNavigationInPrimaryMainFrame(incognitoTab, mNavigationHandle);
 
-        verify(mGroupSuggestionsService, never()).onPageLoadFinished(anyInt());
+        verify(mGroupSuggestionsService, never()).onDidFinishNavigation(anyInt(), anyInt());
     }
 
     @Test

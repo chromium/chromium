@@ -179,4 +179,81 @@ TEST_F(TabEventTrackerImplTest, DidEnterTabSwitcher) {
   tab_event_tracker_->DidEnterTabSwitcher();
 }
 
+TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreTypes) {
+  const int kTabId1 = 1;
+  const int kTabId2 = 2;
+
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
+
+  tab_event_tracker_->DidSelectTab(
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromCloseActiveTab,
+      2);
+  tab_event_tracker_->DidSelectTab(
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUndoClosure,
+      1);
+
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
+
+  tab_event_tracker_->DidSelectTab(
+      1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+  tab_event_tracker_->DidSelectTab(
+      2, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromOmnibox, 1);
+
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
+}
+
+TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_CommitsSelection) {
+  const int kTabId = 1;
+  EXPECT_CALL(mock_callback_, Run()).Times(0);
+  tab_event_tracker_->DidSelectTab(
+      kTabId, GURL(kTestUrl),
+      TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
+
+  EXPECT_CALL(mock_callback_, Run());
+  tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
+
+  EXPECT_CALL(mock_callback_, Run());
+  tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
+}
+
+TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_IgnoreNavigationTypes) {
+  const int kTabId = 1;
+  EXPECT_CALL(mock_callback_, Run()).Times(0);
+  tab_event_tracker_->DidSelectTab(
+      kTabId, GURL(kTestUrl),
+      TabEventTracker::TabSelectionType::kFromCloseActiveTab, 2);
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
+
+  EXPECT_CALL(mock_callback_, Run()).Times(0);
+  tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_RELOAD);
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
+
+  EXPECT_CALL(mock_callback_, Run()).Times(0);
+  tab_event_tracker_->OnDidFinishNavigation(kTabId,
+                                            ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId));
+
+  EXPECT_CALL(mock_callback_, Run());
+  tab_event_tracker_->OnDidFinishNavigation(
+      kTabId, ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
+}
+
+TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_NoRepeatCommit) {
+  const int kTabId = 1;
+  tab_event_tracker_->DidSelectTab(
+      kTabId, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
+
+  tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
+  tab_event_tracker_->OnDidFinishNavigation(kTabId, ui::PAGE_TRANSITION_LINK);
+  EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId));
+}
 }  // namespace visited_url_ranking
