@@ -231,7 +231,18 @@ void FormStructure::DetermineHeuristicTypes(
 
 void FormStructure::RationalizeAndAssignSections(LogManager* log_manager,
                                                  bool legacy_order) {
-  if (!legacy_order) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUnifyRationalizationAndSectioningOrder)) {
+    // We call AssignSections() before *and* after rationalization because
+    // - rationalization depends on sections and
+    // - sectioning depends on field types, which rationalization may change.
+    AssignSections(fields_);
+    // TODO(crbug.com/408497919): Merge the two Rationalize*() functions when
+    // kAutofillUnifyRationalizationAndSectioningOrder is launched.
+    RationalizeFormStructure(log_manager);
+    RationalizePhoneNumberFieldsForFilling();
+    AssignSections(fields_);
+  } else if (!legacy_order) {
     AssignSections(fields_);
     RationalizeFormStructure(log_manager);
     RationalizePhoneNumberFieldsForFilling();

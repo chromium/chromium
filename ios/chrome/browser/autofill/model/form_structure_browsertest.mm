@@ -206,6 +206,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillFixValueSemantics,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
+          features::kAutofillUnifyRationalizationAndSectioningOrder,
       },
       // Disabled
       {

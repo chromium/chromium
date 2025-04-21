@@ -4,7 +4,7 @@ UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | -default
 NAME_FIRST | nombres | Nombre(s): |  | -default
 NAME_LAST | apellidos | Apellido(s): |  | -default
 UNKNOWN_TYPE | nacionalidad | Nacionalidad: |  | -default
-UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | fecha_nacimiento_1
+UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | -default
 UNKNOWN_TYPE | sexo_pago | Sexo: |  | -default
 UNKNOWN_TYPE | sexo | Sexo: |  | -default
 UNKNOWN_TYPE | monto_tramite | Monto trámite: | 558.00 | -default
