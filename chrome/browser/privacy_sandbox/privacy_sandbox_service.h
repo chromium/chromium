@@ -247,8 +247,9 @@ class PrivacySandboxService : public KeyedService {
   // across multiple browser windows. Only relevant for Desktop.
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Informs the service that a Privacy Sandbox prompt has been opened
-  // or closed for |browser|.
+  // TODO(crbug.com/408016824): Look into changing the mapping to store
+  // BrowserWindowInterface instead of Browser. Informs the service that a
+  // Privacy Sandbox prompt has been opened or closed for |browser|.
   virtual void PromptOpenedForBrowser(Browser* browser,
                                       views::Widget* widget) = 0;
   virtual void PromptClosedForBrowser(Browser* browser) = 0;

@@ -58,7 +58,8 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
 
 class PrivacySandboxDialogDelegate : public views::DialogDelegate {
  public:
-  explicit PrivacySandboxDialogDelegate(Browser* browser) : browser_(browser) {
+  explicit PrivacySandboxDialogDelegate(BrowserWindowInterface* browser)
+      : browser_(browser) {
     RegisterWindowClosingCallback(
         base::BindOnce(&PrivacySandboxDialogDelegate::OnWindowClosing,
                        base::Unretained(this)));
@@ -73,14 +74,17 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
   }
 
   void OnWindowClosing() {
+    // TODO(crbug.com/408016824): To be deprecated once V2 is migrated to.
     if (auto* privacy_sandbox_service =
-            PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-      privacy_sandbox_service->PromptClosedForBrowser(browser_);
+            PrivacySandboxServiceFactory::GetForProfile(
+                browser_->GetProfile())) {
+      privacy_sandbox_service->PromptClosedForBrowser(
+          browser_->GetBrowserForMigrationOnly());
     }
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 }  // namespace
@@ -108,7 +112,6 @@ void PrivacySandboxDialog::Show(Browser* browser,
 // static
 void PrivacySandboxDialog::Show(BrowserWindowInterface* browser,
                                 PrivacySandboxNotice notice) {
-  // TODO(crbug.com/408016824): Refactor delegate to use BrowserWindowInterface
   // TODO(crbug.com/408016824): SetContentsView once PsDialogView ctor is
   // refactored.
   // TODO(crbug.com/408016824): Add VM observer once a PSDialogView is created.
