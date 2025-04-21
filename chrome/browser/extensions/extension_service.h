@@ -209,18 +209,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void DisableExtension(const ExtensionId& extension_id,
                         const DisableReasonSet& disable_reasons);
 
-  // Any code which needs to write unknown reasons should use the
-  // methods below, which operate on raw integers. This is needed for scenarios
-  // like Sync where unknown reasons can be synced from newer versions of the
-  // browser to older versions. The methods above will trigger undefined
-  // behavior when unknown values are casted to DisableReason while constructing
-  // DisableReasonSet. Most code should use the methods above. We want to limit
-  // the usage of the method below, so it is guarded by a passkey.
-  void DisableExtensionWithRawReasons(
-      ExtensionPrefs::DisableReasonRawManipulationPasskey,
-      const ExtensionId& extension_id,
-      const base::flat_set<int>& disable_reasons);
-
   // Disable non-default and non-managed extensions with ids not in
   // |except_ids|. Default extensions are those from the Web Store with
   // |was_installed_by_default| flag.

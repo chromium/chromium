@@ -1556,7 +1556,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
 
     // Disable it if the test case says so.
     if (!test_case.previous_disable_reasons.empty()) {
-      service()->DisableExtensionWithRawReasons(
+      registrar()->DisableExtensionWithRawReasons(
           passkey, id, test_case.previous_disable_reasons);
       ASSERT_TRUE(registry()->disabled_extensions().Contains(id));
     }

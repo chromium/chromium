@@ -474,16 +474,6 @@ void ExtensionService::DisableExtension(
   extension_registrar_->DisableExtension(extension_id, disable_reasons);
 }
 
-void ExtensionService::DisableExtensionWithRawReasons(
-    ExtensionPrefs::DisableReasonRawManipulationPasskey,
-    const ExtensionId& extension_id,
-    const base::flat_set<int>& disable_reasons) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  extension_registrar_->DisableExtensionWithRawReasons(passkey, extension_id,
-                                                      disable_reasons);
-}
-
 void ExtensionService::DisableUserExtensionsExcept(
     const std::vector<std::string>& except_ids) {
   ManagementPolicy* management_policy = system_->management_policy();
