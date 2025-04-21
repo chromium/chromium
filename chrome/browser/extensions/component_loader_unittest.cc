@@ -13,30 +13,40 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_service_user_test_base.h"
-#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service_user_test_base.h"
+#endif
 
 namespace extensions {
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
  public:
-  explicit ExtensionUnloadedObserver(ExtensionRegistry* registry)
-      : unloaded_count_(0) {
+  explicit ExtensionUnloadedObserver(ExtensionRegistry* registry) {
     observation_.Observe(registry);
   }
 
@@ -55,18 +65,27 @@ class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
   }
 
  private:
-  size_t unloaded_count_;
+  size_t unloaded_count_ = 0;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       observation_{this};
 };
 
-class ComponentLoaderTest : public ExtensionServiceUserTestBase {
+// TODO(crbug.com/408458901): Use an extensions test base class once we have
+// one that works on desktop Android.
+class ComponentLoaderTest : public testing::Test {
  public:
+  ComponentLoaderTest() = default;
+
   void SetUp() override {
-    ExtensionServiceUserTestBase::InitializeEmptyExtensionService();
-    ExtensionServiceUserTestBase::SetUp();
-    extension_system_ =
-        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName, /*prefs=*/nullptr,
+        /*user_name=*/std::u16string(),
+        /*avatar_id=*/0, /*testing_factories=*/{});
+
+    extension_system_ = ExtensionSystem::Get(profile());
 
     extension_path_ =
         GetBasePath().AppendASCII("good")
@@ -80,16 +99,60 @@ class ComponentLoaderTest : public ExtensionServiceUserTestBase {
         &manifest_contents_));
 
     component_loader_ = ComponentLoader::Get(profile());
+    component_loader_->set_ignore_allowlist_for_testing(true);
+
+    // Set up ExtensionRegistrar with a delegate.
+    extension_registrar_delegate_ =
+        std::make_unique<ChromeExtensionRegistrarDelegate>(profile_.get());
+    extension_registrar_ = ExtensionRegistrar::Get(profile_.get());
+    extension_registrar_->Init(extension_registrar_delegate_.get(), true,
+                               base::CommandLine::ForCurrentProcess(),
+                               base::FilePath(), base::FilePath());
+    extension_registrar_delegate_->Init(extension_registrar_);
   }
 
   void TearDown() override {
+    extension_registrar_delegate_->Shutdown();
+    extension_registrar_ = nullptr;
     component_loader_ = nullptr;
     extension_system_ = nullptr;
-    ExtensionServiceUserTestBase::TearDown();
+    profile_ = nullptr;
+    profile_manager_.reset();
   }
 
+  base::FilePath GetBasePath() {
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    return test_data_dir.AppendASCII("extensions");
+  }
+
+  void UninstallAllExtensions() {
+    auto* registry = ExtensionRegistry::Get(profile());
+    ExtensionSet extensions = registry->GenerateInstalledExtensionsSet();
+    for (const auto& extension : extensions) {
+      extension_registrar_->RemoveExtension(extension->id(),
+                                            UnloadedExtensionReason::UNINSTALL);
+    }
+  }
+
+  void SetExtensionSystemReady() {
+    // The const_cast is ugly, but it's much simpler and more readable than
+    // trying to inject a MockExtensionSystem across desktop and Android,
+    // which use different ExtensionSystems and different factories.
+    const_cast<base::OneShotEvent*>(&extension_system_->ready())->Signal();
+  }
+
+  TestingProfile* profile() { return profile_; }
+
  protected:
-  raw_ptr<TestExtensionSystem> extension_system_ = nullptr;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<ChromeExtensionRegistrarDelegate>
+      extension_registrar_delegate_;
+  raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
+  raw_ptr<ExtensionSystem> extension_system_ = nullptr;
   raw_ptr<ComponentLoader> component_loader_ = nullptr;
 
   // The root directory of the text extension.
@@ -98,25 +161,11 @@ class ComponentLoaderTest : public ExtensionServiceUserTestBase {
   // The contents of the text extension's manifest file.
   std::string manifest_contents_;
 
-  base::FilePath GetBasePath() {
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    return test_data_dir.AppendASCII("extensions");
-  }
-
-  // Test that certain histograms are emitted for user and non-user profiles
-  // (users for ChromeOS Ash).
-  void RunEmitUserHistogramsTest(int nonuser_expected_total_count,
-                                 int user_expected_total_count) {
-    component_loader_->set_profile_for_testing(profile());
-    base::HistogramTester histograms;
-    component_loader_->LoadAll();
-    histograms.ExpectTotalCount("Extensions.LoadAllComponentTime", 1);
-    histograms.ExpectTotalCount("Extensions.LoadAllComponentTime.NonUser",
-                                nonuser_expected_total_count);
-    histograms.ExpectTotalCount("Extensions.LoadAllComponentTime.User",
-                                user_expected_total_count);
-  }
+#if BUILDFLAG(IS_ANDROID)
+  // WebContentImpl requires a Screen instance on Android.
+  display::test::TestScreen screen_{/*create_display=*/true,
+                                    /*register_screen=*/true};
+#endif
 };
 
 TEST_F(ComponentLoaderTest, ParseManifest) {
@@ -176,7 +225,7 @@ TEST_F(ComponentLoaderTest, AddWhenNotReady) {
 
 // Test that it *is* loaded when the extension service *is* ready.
 TEST_F(ComponentLoaderTest, AddWhenReady) {
-  extension_system_->SetReady();
+  SetExtensionSystemReady();
   std::string extension_id =
       component_loader_->Add(manifest_contents_, extension_path_);
   EXPECT_NE("", extension_id);
@@ -199,7 +248,7 @@ TEST_F(ComponentLoaderTest, Remove) {
   EXPECT_EQ(0u, registry->enabled_extensions().size());
 
   // Load an extension, and check that it's unloaded when Remove() is called.
-  extension_system_->SetReady();
+  SetExtensionSystemReady();
   std::string extension_id =
       component_loader_->Add(manifest_contents_, extension_path_);
   EXPECT_EQ(1u, registry->enabled_extensions().size());
@@ -224,26 +273,55 @@ TEST_F(ComponentLoaderTest, LoadAll) {
   unsigned int default_count = registry->enabled_extensions().size();
 
   // Clear the list of loaded extensions, and reload with one more.
-  extension_system_->extension_service()->UnloadAllExtensionsForTest();
+  UninstallAllExtensions();
   component_loader_->Add(manifest_contents_, extension_path_);
   component_loader_->LoadAll();
 
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());
 }
 
-TEST_F(ComponentLoaderTest, LoadAll_EmitUserHistograms) {
+// TODO(crbug.com/408458901): Port these to desktop Android when we have an
+// extensions unit test base class where we can move MaybeSetupTestUser().
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ComponentLoaderExtensionServiceTest
+    : public ExtensionServiceUserTestBase {
+ public:
+  // testing::Test:
+  void SetUp() override {
+    ExtensionServiceUserTestBase::InitializeEmptyExtensionService();
+    ExtensionServiceUserTestBase::SetUp();
+  }
+
+  // Test that certain histograms are emitted for user and non-user profiles
+  // (users for ChromeOS Ash).
+  void RunEmitUserHistogramsTest(int nonuser_expected_total_count,
+                                 int user_expected_total_count) {
+    auto* component_loader = ComponentLoader::Get(profile());
+    component_loader->set_profile_for_testing(profile());
+    base::HistogramTester histograms;
+    component_loader->LoadAll();
+    histograms.ExpectTotalCount("Extensions.LoadAllComponentTime", 1);
+    histograms.ExpectTotalCount("Extensions.LoadAllComponentTime.NonUser",
+                                nonuser_expected_total_count);
+    histograms.ExpectTotalCount("Extensions.LoadAllComponentTime.User",
+                                user_expected_total_count);
+  }
+};
+
+TEST_F(ComponentLoaderExtensionServiceTest, LoadAll_EmitUserHistograms) {
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
 
   RunEmitUserHistogramsTest(/*nonuser_expected_total_count=*/0,
                             /*user_expected_total_count=*/1);
 }
 
-TEST_F(ComponentLoaderTest, LoadAll_NonUserEmitHistograms) {
+TEST_F(ComponentLoaderExtensionServiceTest, LoadAll_NonUserEmitHistograms) {
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/true));
 
   RunEmitUserHistogramsTest(/*nonuser_expected_total_count=*/1,
                             /*user_expected_total_count=*/0);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test is flaky. https://crbug.com/1306983
 TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {
@@ -271,7 +349,7 @@ TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {
   EXPECT_EQ(default_count + 1,
             component_loader_->registered_extensions_count());
 
-  extension_system_->SetReady();
+  SetExtensionSystemReady();
   component_loader_->LoadAll();
 
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());
