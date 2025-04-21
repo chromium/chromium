@@ -286,6 +286,8 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
     // cleared without having |manager_| attempt to perform optimizations.
     test_keep_alive_.reset();
 
+    profile_ = nullptr;
+
     // The Profile Manager references the Browser Process.
     // The Browser Process references the Notification UI Manager.
     // The Notification UI Manager references the Message Center.
@@ -315,7 +317,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  raw_ptr<TestingProfile> profile_;
 
  private:
   // Required for extension service.
