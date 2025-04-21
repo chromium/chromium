@@ -910,13 +910,21 @@ int HttpUtil::MapStatusCodeForHistogram(int code) {
 
 HttpUtil::HeadersIterator::HeadersIterator(std::string_view headers,
                                            const std::string& line_delimiter)
-    : headers_(headers), lines_(headers, line_delimiter) {}
+    : headers_(headers),
+      // It's important to use `headers_` here rather than `headers`, since
+      // subtracting two string_view::iterators from each other is not
+      // guaranteed to work, if they're from different string_views, even if one
+      // is a copy of the other. Note that StringViewTokenizer uses iterators to
+      // the passed in string_view, rather than a copying it.
+      lines_(headers_, line_delimiter) {}
 
 HttpUtil::HeadersIterator::~HeadersIterator() = default;
 
 bool HttpUtil::HeadersIterator::GetNext() {
   while (lines_.GetNext()) {
-    // Calculate begin/end positions relative to entire string.
+    // Since `tokenizer_` was constructed using `headers_`, this is subtracting
+    // iterators for the exact same string_view, rather than to two copies of
+    // the same string_view, so is safe.
     name_begin_ = lines_.token_begin() - headers_.begin();
     values_end_ = lines_.token_end() - headers_.begin();
 
@@ -957,7 +965,12 @@ HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
                                          bool ignore_empty_values)
     : values_(values),
       ignore_empty_values_(ignore_empty_values),
-      tokenizer_(values, std::string(1, delimiter)) {
+      // It's important to use `values_` here rather than `value`, since
+      // subtracting two string_view::iterators from each other is not
+      // guaranteed to work, if they're from different string_views, even if one
+      // is a copy of the other. Note that StringViewTokenizer uses iterators to
+      // the passed in string_view, rather than a copying it.
+      tokenizer_(values_, std::string(1, delimiter)) {
   tokenizer_.set_quote_chars("\"");
   // Could set this unconditionally, since code below has to check for empty
   // values after trimming, anyways, but may provide a minor performance
@@ -973,6 +986,9 @@ HttpUtil::ValuesIterator::~ValuesIterator() = default;
 
 bool HttpUtil::ValuesIterator::GetNext() {
   while (tokenizer_.GetNext()) {
+    // Since `tokenizer_` was constructed using `values_`, this is subtracting
+    // iterators for the exact same string_view, rather than to two copies of
+    // the same string_view, so is safe.
     value_begin_ = tokenizer_.token_begin() - values_.begin();
     value_end_ = tokenizer_.token_end() - values_.begin();
     TrimLWS(values_, value_begin_, value_end_);
