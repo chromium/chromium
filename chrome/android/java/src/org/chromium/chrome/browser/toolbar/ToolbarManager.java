@@ -1560,7 +1560,8 @@ public class ToolbarManager
                             mWindowAndroid.getKeyboardDelegate(),
                             mActivity,
                             mControlContainer,
-                            mSuppressToolbarSceneLayerSupplier);
+                            mSuppressToolbarSceneLayerSupplier,
+                            mBrowserControlsSizer);
         }
     }
 

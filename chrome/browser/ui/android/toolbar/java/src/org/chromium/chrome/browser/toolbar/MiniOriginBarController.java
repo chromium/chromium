@@ -9,6 +9,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -19,7 +22,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
  * text at a reduced size.
  */
 @NullMarked
-public class MiniOriginBarController {
+public class MiniOriginBarController implements Observer {
     private final LocationBar mLocationBar;
     private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -28,6 +31,7 @@ public class MiniOriginBarController {
     private final Context mContext;
     private final ControlContainer mControlContainer;
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
+    private final BrowserControlsSizer mBrowserControlsSizer;
     private boolean mShowMiniOriginBar;
 
     /**
@@ -46,13 +50,16 @@ public class MiniOriginBarController {
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Context context,
             ControlContainer controlContainer,
-            ObservableSupplierImpl<Boolean> suppressToolbarSceneLayerSupplier) {
+            ObservableSupplierImpl<Boolean> suppressToolbarSceneLayerSupplier,
+            BrowserControlsSizer browserControlsSizer) {
         mLocationBar = locationBar;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mContext = context;
         mControlContainer = controlContainer;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
+        mBrowserControlsSizer = browserControlsSizer;
+        mBrowserControlsSizer.addObserver(this);
 
         mIsFormFieldFocusedObserver = (focused) -> updateMiniOriginBarState();
         mKeyboardVisibilityObserver = (showing) -> updateMiniOriginBarState();
@@ -66,8 +73,11 @@ public class MiniOriginBarController {
         boolean isKeyboardVisible =
                 mKeyboardVisibilityDelegate.isKeyboardShowing(
                         mContext, mControlContainer.getView());
+        boolean isToolbarBottomAnchored =
+                mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM;
 
-        boolean showMiniOriginBar = isFormFieldFocused && isKeyboardVisible;
+        boolean showMiniOriginBar =
+                isToolbarBottomAnchored && isFormFieldFocused && isKeyboardVisible;
         if (showMiniOriginBar == mShowMiniOriginBar) return;
 
         mShowMiniOriginBar = showMiniOriginBar;
@@ -78,5 +88,11 @@ public class MiniOriginBarController {
     public void destroy() {
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityObserver);
         mIsFormFieldFocusedSupplier.removeObserver(mIsFormFieldFocusedObserver);
+        mBrowserControlsSizer.removeObserver(this);
+    }
+
+    @Override
+    public void onControlsPositionChanged(int controlsPosition) {
+        updateMiniOriginBarState();
     }
 }

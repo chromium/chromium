@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -21,6 +22,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -30,6 +33,7 @@ public class MiniOriginBarControllerTest {
 
     @Mock private ControlContainer mControlContainer;
     @Mock private LocationBar mLocationBar;
+    @Mock private BrowserControlsSizer mBrowserControlsSizer;
 
     private Context mContext;
     private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
@@ -43,6 +47,7 @@ public class MiniOriginBarControllerTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsSizer).getControlsPosition();
         mMiniOriginBarController =
                 new MiniOriginBarController(
                         mLocationBar,
@@ -50,7 +55,8 @@ public class MiniOriginBarControllerTest {
                         mKeyboardVisibilityDelegate,
                         mContext,
                         mControlContainer,
-                        mSuppressToolbarSceneLayerSupplier);
+                        mSuppressToolbarSceneLayerSupplier,
+                        mBrowserControlsSizer);
     }
 
     @Test
@@ -59,6 +65,10 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBar, never()).setShowOriginOnly(anyBoolean());
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        verify(mLocationBar, never()).setShowOriginOnly(anyBoolean());
+
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
         verify(mLocationBar).setShowOriginOnly(true);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
