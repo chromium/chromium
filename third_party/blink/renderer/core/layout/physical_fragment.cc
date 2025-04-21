@@ -809,7 +809,7 @@ PhysicalFragment::PostLayoutChildLinkList PhysicalFragment::PostLayoutChildren()
   if (Type() == kFragmentBox) {
     return static_cast<const PhysicalBoxFragment*>(this)->PostLayoutChildren();
   }
-  return PostLayoutChildLinkList(0, nullptr);
+  return PostLayoutChildLinkList(base::span<const PhysicalFragmentLink>());
 }
 
 void PhysicalFragment::SetChildrenInvalid() const {

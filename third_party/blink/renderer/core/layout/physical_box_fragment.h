@@ -109,7 +109,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // post-layout, and therefore all descendants are safe.
   PhysicalFragment::PostLayoutChildLinkList PostLayoutChildren() const {
     DCHECK(children_valid_);
-    return PostLayoutChildLinkList(children_.size(), children_.data());
+    return PostLayoutChildLinkList(base::span(children_));
   }
 
   // This exposes a mutable part of the fragment for |OutOfFlowLayoutPart|.
