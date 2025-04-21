@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_H_
-#define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_H_
+#ifndef COMPONENTS_THEMES_NTP_BACKGROUND_SERVICE_H_
+#define COMPONENTS_THEMES_NTP_BACKGROUND_SERVICE_H_
 
 #include <list>
 #include <memory>
@@ -14,10 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
-#include "chrome/browser/search/background/ntp_background_data.h"
-#include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/themes/ntp_background_data.h"
+#include "components/themes/ntp_background_service_observer.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
@@ -246,4 +246,4 @@ class NtpBackgroundService : public KeyedService {
   ErrorInfo next_image_error_info_;
 };
 
-#endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_H_
+#endif  // COMPONENTS_THEMES_NTP_BACKGROUND_SERVICE_H_

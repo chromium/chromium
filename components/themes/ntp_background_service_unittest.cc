@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/background/ntp_background_service.h"
+#include "components/themes/ntp_background_service.h"
 
 #include <utility>
 #include <vector>
@@ -15,12 +15,11 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/search/background/ntp_background_data.h"
-#include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/search/ntp_features.h"
+#include "components/themes/ntp_background_data.h"
+#include "components/themes/ntp_background_service_observer.h"
 #include "components/version_info/version_info.h"
-#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -49,8 +48,7 @@ class MockNtpBackgroundServiceObserver : public NtpBackgroundServiceObserver {
 class NtpBackgroundServiceTest : public testing::Test {
  public:
   NtpBackgroundServiceTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        test_shared_loader_factory_(
+      : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         application_locale_storage_(
@@ -95,7 +93,7 @@ class NtpBackgroundServiceTest : public testing::Test {
 
  protected:
   // Required to run tests from UI and threads.
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -273,24 +271,24 @@ TEST_F(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasReplacement) {
   *image_response.add_images() = image_2;
   std::string image_response_string;
   image_response.SerializeToString(&image_response_string);
-    SetUpResponseWithData(service()->GetImagesURLForTesting(),
-                          image_response_string);
-    SetUpResponseWithNetworkError(
-        GURL(image_1.image_url() + GetThumbnailImageOptions()));
-    SetUpResponseWithNetworkSuccess(
-        GURL(image_2.image_url() + GetThumbnailImageOptions()));
+  SetUpResponseWithData(service()->GetImagesURLForTesting(),
+                        image_response_string);
+  SetUpResponseWithNetworkError(
+      GURL(image_1.image_url() + GetThumbnailImageOptions()));
+  SetUpResponseWithNetworkSuccess(
+      GURL(image_2.image_url() + GetThumbnailImageOptions()));
 
-    base::RunLoop run_loop;
-    auto replacement_image_callback = base::BindLambdaForTesting(
-        [&](const std::optional<GURL>& replacement_image_url) {
-          EXPECT_TRUE(replacement_image_url.has_value());
-          EXPECT_EQ(replacement_image_url.value(),
-                    GURL(image_2.image_url() + GetThumbnailImageOptions()));
-          run_loop.Quit();
-        });
-    service()->FetchReplacementCollectionPreviewImage(
-        collection.collection_id(), std::move(replacement_image_callback));
-    run_loop.Run();
+  base::RunLoop run_loop;
+  auto replacement_image_callback = base::BindLambdaForTesting(
+      [&](const std::optional<GURL>& replacement_image_url) {
+        EXPECT_TRUE(replacement_image_url.has_value());
+        EXPECT_EQ(replacement_image_url.value(),
+                  GURL(image_2.image_url() + GetThumbnailImageOptions()));
+        run_loop.Quit();
+      });
+  service()->FetchReplacementCollectionPreviewImage(
+      collection.collection_id(), std::move(replacement_image_callback));
+  run_loop.Run();
 }
 
 TEST_F(NtpBackgroundServiceTest, CollectionImagesNetworkError) {
@@ -351,10 +349,10 @@ TEST_F(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
-    EXPECT_FALSE(service()->collection_images().empty());
-    EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
-    EXPECT_EQ(service()->collection_images_error_info().error_type,
-              ErrorType::NONE);
+  EXPECT_FALSE(service()->collection_images().empty());
+  EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
+  EXPECT_EQ(service()->collection_images_error_info().error_type,
+            ErrorType::NONE);
 }
 
 TEST_F(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {

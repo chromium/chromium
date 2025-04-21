@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/background/ntp_background_data.h"
+#include "components/themes/ntp_background_data.h"
 
 namespace {
 // The options to be added to a thumbnail image URL, specifying resolution,

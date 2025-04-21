@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_OBSERVER_H_
-#define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_OBSERVER_H_
+#ifndef COMPONENTS_THEMES_NTP_BACKGROUND_SERVICE_OBSERVER_H_
+#define COMPONENTS_THEMES_NTP_BACKGROUND_SERVICE_OBSERVER_H_
 
 // Observer for NtpBackgroundService.
 class NtpBackgroundServiceObserver {
@@ -30,4 +30,4 @@ class NtpBackgroundServiceObserver {
   virtual void OnNtpBackgroundServiceShuttingDown() {}
 };
 
-#endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_OBSERVER_H_
+#endif  // COMPONENTS_THEMES_NTP_BACKGROUND_SERVICE_OBSERVER_H_

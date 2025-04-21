@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_
-#define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_
+#ifndef COMPONENTS_THEMES_NTP_BACKGROUND_DATA_H_
+#define COMPONENTS_THEMES_NTP_BACKGROUND_DATA_H_
 
 #include <optional>
 #include <string>
 
 #include "base/token.h"
-#include "chrome/browser/search/background/ntp_background.pb.h"
+#include "components/themes/ntp_background.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -161,4 +161,4 @@ struct CustomBackground {
   bool daily_refresh_enabled = false;
 };
 
-#endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_
+#endif  // COMPONENTS_THEMES_NTP_BACKGROUND_DATA_H_

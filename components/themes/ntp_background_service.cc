@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/background/ntp_background_service.h"
+#include "components/themes/ntp_background_service.h"
 
 #include <string_view>
 
@@ -14,12 +14,10 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chrome/browser/search/background/ntp_background.pb.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/search/ntp_features.h"
+#include "components/themes/ntp_background.pb.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -81,7 +79,6 @@ NtpBackgroundService::NtpBackgroundService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       url_loader_factory_(url_loader_factory) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   default_image_options_ = kImageOptions;
   thumbnail_image_options_ = GetThumbnailImageOptions();
   collections_api_url_ = GetUrl(kCollectionsPath);
@@ -99,8 +96,9 @@ void NtpBackgroundService::Shutdown() {
 }
 
 void NtpBackgroundService::FetchCollectionInfo() {
-  if (collections_loader_ != nullptr)
+  if (collections_loader_ != nullptr) {
     return;
+  }
   collection_error_info_.ClearError();
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -438,8 +436,9 @@ void NtpBackgroundService::FetchNextCollectionImage(
     const std::string& collection_id,
     const std::optional<std::string>& resume_token) {
   next_image_error_info_.ClearError();
-  if (next_image_loader_ != nullptr)
+  if (next_image_loader_ != nullptr) {
     return;
+  }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("backdrop_next_image_download",
@@ -664,8 +663,9 @@ void NtpBackgroundService::RemoveObserver(
 
 bool NtpBackgroundService::IsValidBackdropUrl(const GURL& url) const {
   for (auto& image : collection_images_) {
-    if (image.image_url == url)
+    if (image.image_url == url) {
       return true;
+    }
   }
   return false;
 }
@@ -673,8 +673,9 @@ bool NtpBackgroundService::IsValidBackdropUrl(const GURL& url) const {
 bool NtpBackgroundService::IsValidBackdropCollection(
     const std::string& collection_id) const {
   for (auto& collection : collection_info_) {
-    if (collection.collection_id == collection_id)
+    if (collection.collection_id == collection_id) {
       return true;
+    }
   }
   return false;
 }
@@ -708,8 +709,9 @@ void NtpBackgroundService::SetNextCollectionImageForTesting(
 
 const GURL& NtpBackgroundService::GetThumbnailUrl(const GURL& image_url) {
   for (auto& image : collection_images_) {
-    if (image.image_url == image_url)
+    if (image.image_url == image_url) {
       return image.thumbnail_image_url;
+    }
   }
   return GURL::EmptyGURL();
 }
