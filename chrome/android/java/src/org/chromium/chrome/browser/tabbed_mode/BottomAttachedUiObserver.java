@@ -23,6 +23,9 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvide
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -49,6 +52,7 @@ public class BottomAttachedUiObserver
                 OverlayPanelStateProvider.Observer,
                 BottomSheetObserver,
                 AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver,
+                KeyboardAccessoryVisualStateProvider.Observer,
                 AccessorySheetVisualStateProvider.Observer,
                 InsetObserver.WindowInsetObserver {
 
@@ -103,6 +107,14 @@ public class BottomAttachedUiObserver
 
     private final InsetObserver mInsetObserver;
 
+    private ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+            mKeyboardAccessoryVisualStateProviderSupplier;
+    private Callback<KeyboardAccessoryVisualStateProvider>
+            mKeyboardAccessoryProviderSupplierObserver;
+    private KeyboardAccessoryVisualStateProvider mKeyboardAccessoryVisualStateProvider;
+    private boolean mKeyboardAccessoryVisible;
+    private @Nullable @ColorInt Integer mKeyboardAccessoryColor;
+
     private ObservableSupplier<AccessorySheetVisualStateProvider>
             mAccessorySheetVisualStateProviderSupplier;
     private Callback<AccessorySheetVisualStateProvider> mAccessorySheetProviderSupplierObserver;
@@ -126,9 +138,8 @@ public class BottomAttachedUiObserver
      *     changes to the bottom sheet.
      * @param omniboxSuggestionsVisualState An optional {@link OmniboxSuggestionsVisualState} for
      *     access to the visual state of the omnibox suggestions.
-     * @param accessorySheetVisualStateProviderSupplier Supplies an {@link
-     *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
-     *     sheet.
+     * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
+     *     observing the visual state of keyboard accessories.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     public BottomAttachedUiObserver(
@@ -138,9 +149,7 @@ public class BottomAttachedUiObserver
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
-            @NonNull
-                    ObservableSupplier<AccessorySheetVisualStateProvider>
-                            accessorySheetVisualStateProviderSupplier,
+            @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
             InsetObserver insetObserver) {
         mObservers = new ObserverList<>();
 
@@ -162,21 +171,42 @@ public class BottomAttachedUiObserver
         mInsetObserver.addObserver(this);
         checkIfBottomNavbarIsPresent();
 
-        mAccessorySheetVisualStateProviderSupplier = accessorySheetVisualStateProviderSupplier;
-        mAccessorySheetProviderSupplierObserver =
-                (visualStateProvider) -> {
-                    if (mAccessorySheetVisualStateProvider != null) {
-                        mAccessorySheetVisualStateProvider.removeObserver(this);
-                    }
-                    mAccessorySheetVisible = false;
-                    mAccessorySheetColor = null;
-                    mAccessorySheetVisualStateProvider = visualStateProvider;
-                    if (mAccessorySheetVisualStateProvider != null) {
-                        mAccessorySheetVisualStateProvider.addObserver(this);
-                    }
-                };
-        mAccessorySheetVisualStateProviderSupplier.addObserver(
-                mAccessorySheetProviderSupplierObserver);
+        ManualFillingComponent manualFillingComponent = manualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            mKeyboardAccessoryVisualStateProviderSupplier =
+                    manualFillingComponent.getKeyboardAccessoryVisualStateProvider();
+            mKeyboardAccessoryProviderSupplierObserver =
+                    (visualStateProvider) -> {
+                        if (mKeyboardAccessoryVisualStateProvider != null) {
+                            mKeyboardAccessoryVisualStateProvider.removeObserver(this);
+                        }
+                        mKeyboardAccessoryVisible = false;
+                        mKeyboardAccessoryColor = null;
+                        mKeyboardAccessoryVisualStateProvider = visualStateProvider;
+                        if (mKeyboardAccessoryVisualStateProvider != null) {
+                            mKeyboardAccessoryVisualStateProvider.addObserver(this);
+                        }
+                    };
+            mKeyboardAccessoryVisualStateProviderSupplier.addObserver(
+                    mKeyboardAccessoryProviderSupplierObserver);
+
+            mAccessorySheetVisualStateProviderSupplier =
+                    manualFillingComponent.getAccessorySheetVisualStateProvider();
+            mAccessorySheetProviderSupplierObserver =
+                    (visualStateProvider) -> {
+                        if (mAccessorySheetVisualStateProvider != null) {
+                            mAccessorySheetVisualStateProvider.removeObserver(this);
+                        }
+                        mAccessorySheetVisible = false;
+                        mAccessorySheetColor = null;
+                        mAccessorySheetVisualStateProvider = visualStateProvider;
+                        if (mAccessorySheetVisualStateProvider != null) {
+                            mAccessorySheetVisualStateProvider.addObserver(this);
+                        }
+                    };
+            mAccessorySheetVisualStateProviderSupplier.addObserver(
+                    mAccessorySheetProviderSupplierObserver);
+        }
 
         contextualSearchManagerSupplier.addObserver(
                 (manager) -> {
@@ -303,6 +333,9 @@ public class BottomAttachedUiObserver
         if (mUseBottomControlsColor) {
             return mBottomControlsColor;
         }
+        if (mKeyboardAccessoryVisible) {
+            return mKeyboardAccessoryColor;
+        }
         if (mSnackbarVisible) {
             return mSnackbarColor;
         }
@@ -367,6 +400,10 @@ public class BottomAttachedUiObserver
             }
 
             if (mOverlayPanelVisible) {
+                return true;
+            }
+
+            if (mKeyboardAccessoryVisible) {
                 return true;
             }
 
@@ -562,6 +599,15 @@ public class BottomAttachedUiObserver
                 updateBottomAttachedColor();
             }
         }
+    }
+
+    // KeyboardAccessoryVisualStateProvider.Observer
+
+    @Override
+    public void onKeyboardAccessoryVisualStateChanged(boolean visible, @ColorInt int color) {
+        mKeyboardAccessoryVisible = visible;
+        mKeyboardAccessoryColor = color;
+        updateBottomAttachedColor();
     }
 
     // AccessorySheetVisualStateProvider.Observer

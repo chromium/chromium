@@ -269,8 +269,15 @@ public interface ManualFillingComponent extends BackPressHandler {
     void forceShowForTesting();
 
     /**
+     * Returns a supplier for {@link KeyboardAccessoryVisualStateProvider} that can be observed to
+     * be notified of changes to the visual state of the keyboard accessory.
+     */
+    ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+            getKeyboardAccessoryVisualStateProvider();
+
+    /**
      * Returns a supplier for {@link AccessorySheetVisualStateProvider} that can be observed to be
-     * notified of changes to the visual state of the accessory sheel.
+     * notified of changes to the visual state of the keyboard accessory sheet.
      */
     ObservableSupplier<AccessorySheetVisualStateProvider> getAccessorySheetVisualStateProvider();
 }
