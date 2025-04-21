@@ -604,8 +604,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   for (const auto& event : events) {
     if (event.first.name ==
         GetFeatureEventNameForPromoReason(self.currentPromoReason)) {
-      interactions = event.second;
-      break;
+      // Take the maximum interaction count across all matching events to ensure
+      // we have the most accurate count regardless of time window
+      interactions =
+          std::max(interactions, static_cast<unsigned int>(event.second));
     }
   }
   return interactions;
