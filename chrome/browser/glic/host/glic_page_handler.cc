@@ -678,8 +678,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "without the GlicZeroStateSuggestions feature enabled.");
       return;
     }
-    glic_service_->FetchZeroStateSuggestions(is_fre.value_or(false),
-                                             std::move(callback));
+    glic_service_->FetchZeroStateSuggestions(
+        is_fre.value_or(false),
+        base::BindOnce(
+            [](GetZeroStateSuggestionsForFocusedTabCallback callback,
+               base::TimeTicks start,
+               glic::mojom::ZeroStateSuggestionsPtr suggestions) {
+              base::UmaHistogramTimes(
+                  "Glic.Api.FetchZeroStateSuggestionsLatency",
+                  base::TimeTicks::Now() - start);
+              std::move(callback).Run(std::move(suggestions));
+            },
+            std::move(callback), base::TimeTicks::Now()));
   }
 
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,

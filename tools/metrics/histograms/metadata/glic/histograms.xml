@@ -33,6 +33,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.FetchZeroStateSuggestionsLatency" units="ms"
+    expires_after="2026-01-15">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>jeffreycohen@google.com</owner>
+  <summary>
+    Records the latency of fetching zero state suggestions whenever the glic web
+    client requests zero state suggestions from Chrome.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
