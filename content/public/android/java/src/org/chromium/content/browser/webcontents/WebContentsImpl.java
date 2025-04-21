@@ -34,6 +34,7 @@ import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -600,6 +601,8 @@ public class WebContentsImpl
     @Override
     public void setPrimaryMainFrameImportance(@ChildProcessImportance int importance) {
         checkNotDestroyed();
+        assert ChildProcessConnection.supportNotPerceptibleBinding()
+                || importance != ChildProcessImportance.PERCEPTIBLE;
         WebContentsImplJni.get()
                 .setPrimaryMainFrameImportance(mNativeWebContentsAndroid, importance);
     }
