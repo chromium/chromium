@@ -84,6 +84,16 @@ gfx::Insets GetContentsBorderInsets(BrowserView& browser_view) {
 }
 }  // namespace
 
+GlicBorderView::Factory* GlicBorderView::Factory::factory_ = nullptr;
+
+std::unique_ptr<GlicBorderView> GlicBorderView::Factory::Create(
+    Browser* browser) {
+  if (factory_) [[unlikely]] {
+    return factory_->CreateBorderView(browser);
+  }
+  return base::WrapUnique(new GlicBorderView(browser, /*tester=*/nullptr));
+}
+
 class GlicBorderView::BorderViewUpdater {
  public:
   explicit BorderViewUpdater(Browser* browser, GlicBorderView* border_view)
@@ -283,9 +293,10 @@ class GlicBorderView::BorderViewUpdater {
   std::list<std::string> border_update_reasons_;
 };
 
-GlicBorderView::GlicBorderView(Browser* browser)
+GlicBorderView::GlicBorderView(Browser* browser, std::unique_ptr<Tester> tester)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
       creation_time_(base::TimeTicks::Now()),
+      tester_(std::move(tester)),
       theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
       browser_(browser) {
   auto* gpu_data_manager = content::GpuDataManager::GetInstance();

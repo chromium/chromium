@@ -1082,7 +1082,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (glic::GlicEnabling::IsProfileEligible(browser_->profile())) {
     glic_border_ = contents_container->AddChildView(
         views::Builder<glic::GlicBorderView>(
-            std::make_unique<glic::GlicBorderView>(browser_.get()))
+            glic::GlicBorderView::Factory::Create(browser_.get()))
             // https://crbug.com/387458471: By default the border view is
             // visible, meaning it will paint during the initial layout of the
             // browser UI, causing a flash of the border.
