@@ -784,9 +784,7 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
 
 void HighlightPainter::PaintOriginatingShadow(const TextPaintStyle& text_style,
                                               DOMNodeId node_id) {
-  DCHECK_EQ(paint_case_, kOverlay);
-
-  // First paint the shadows for the whole range.
+  // Paint the shadows for the whole range.
   if (text_style.shadow) {
     text_painter_.Paint(fragment_paint_info_, text_style, node_id,
                         foreground_auto_dark_mode_, TextPainter::kShadowsOnly);

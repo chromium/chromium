@@ -189,7 +189,6 @@ class CORE_EXPORT HighlightPainter {
   // PaintCase() == kFastSpellingGrammar only
   void FastPaintSpellingGrammarDecorations();
 
-  // PaintCase() == kOverlay only
   void PaintOriginatingShadow(const TextPaintStyle&, DOMNodeId);
   void PaintHighlightOverlays(const TextPaintStyle&,
                               DOMNodeId,

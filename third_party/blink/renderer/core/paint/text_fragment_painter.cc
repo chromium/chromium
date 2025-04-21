@@ -497,21 +497,26 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   HighlightPainter::Case highlight_case = highlight_painter.PaintCase();
   switch (highlight_case) {
     case HighlightPainter::kNoHighlights:
+    case HighlightPainter::kFastSpellingGrammar: {
       // Fast path: just paint the text, including its decorations.
+      // Shadows must paint before decorations, but painting shadows in their
+      // own pass is less efficient, so only do it when decorations are present.
+      bool paint_shadows_first =
+          text_style.shadow && style.HasAppliedTextDecorations();
+      if (paint_shadows_first) {
+        highlight_painter.PaintOriginatingShadow(text_style, node_id);
+      }
       decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, text_style, node_id,
-                         auto_dark_mode);
+      text_painter.Paint(
+          fragment_paint_info, text_style, node_id, auto_dark_mode,
+          paint_shadows_first ? TextPainter::kTextProperOnly
+                              : TextPainter::kBothShadowsAndTextProper);
       decoration_painter.PaintOnlyLineThrough();
-      break;
-    case HighlightPainter::kFastSpellingGrammar:
-      decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
-      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(fragment_paint_info, text_style, node_id,
-                         auto_dark_mode);
-      decoration_painter.PaintOnlyLineThrough();
-      highlight_painter.FastPaintSpellingGrammarDecorations();
-      break;
+      if (highlight_case == HighlightPainter::kFastSpellingGrammar) {
+        highlight_painter.FastPaintSpellingGrammarDecorations();
+      }
+    } break;
     case HighlightPainter::kFastSelection:
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
           text_painter, fragment_paint_info, text_style, node_id,
