@@ -286,7 +286,8 @@ class BASE_EXPORT TaskQueue {
   virtual void SetQueuePriority(QueuePriority priority) = 0;
 
   // Same as above but with an enum value as the priority.
-  template <typename T, typename = typename std::enable_if_t<std::is_enum_v<T>>>
+  template <typename T>
+    requires(std::is_enum_v<T>)
   void SetQueuePriority(T priority) {
     static_assert(std::is_same_v<std::underlying_type_t<T>, QueuePriority>,
                   "Enumerated priorites must have the same underlying type as "
