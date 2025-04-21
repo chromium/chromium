@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -30,7 +29,6 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 
 /** Observer for events that are relevant to TabGroup suggestion triggering or calculation. */
-@NullMarked
 public class SuggestionEventObserver {
 
     private final @NonNull TabModel mTabModel;
@@ -72,18 +70,6 @@ public class SuggestionEventObserver {
                     if (creationState != TabCreationState.FROZEN_ON_RESTORE) {
                         mGroupSuggestionsService.didAddTab(tab.getId(), type);
                     }
-                }
-
-                @Override
-                public void restoreCompleted() {
-                    // Initiate a select event for the very first tab. didSelectTab will not capture
-                    // this select.
-                    Tab currentTab = mTabModel.getCurrentTabSupplier().get();
-                    mGroupSuggestionsService.didSelectTab(
-                            currentTab.getId(),
-                            currentTab.getUrl(),
-                            TabSelectionType.FROM_NEW_TAB,
-                            Tab.INVALID_TAB_ID);
                 }
 
                 @Override
@@ -132,6 +118,20 @@ public class SuggestionEventObserver {
                 };
         mGroupSuggestionsService =
                 GroupSuggestionsServiceFactory.getForProfile(assumeNonNull(mTabModel.getProfile()));
+        mTabModel
+                .getCurrentTabSupplier()
+                .addSyncObserverAndCallIfNonNull(
+                        new Callback<>() {
+                            @Override
+                            public void onResult(Tab tab) {
+                                mGroupSuggestionsService.didSelectTab(
+                                        tab.getId(),
+                                        tab.getUrl(),
+                                        TabSelectionType.FROM_NEW_TAB,
+                                        Tab.INVALID_TAB_ID);
+                                mTabModel.getCurrentTabSupplier().removeObserver(this);
+                            }
+                        });
         mTabModel.addObserver(mTabModelObserver);
         hubManagerSupplier.runSyncOrOnAvailable(
                 hubManager -> {

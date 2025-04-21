@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +81,7 @@ public class SuggestionEventObserverUnitTest {
     private SuggestionEventObserver mSuggestionEventObserver;
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier;
     private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
+    private OneshotSupplierImpl<HubManager> mHubManagerSupplier;
 
     @Before
     public void setup() {
@@ -110,8 +112,8 @@ public class SuggestionEventObserverUnitTest {
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier.set(mPane);
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
-        OneshotSupplierImpl<HubManager> hubManagerSupplier = new OneshotSupplierImpl<>();
-        hubManagerSupplier.set(mHubManager);
+        mHubManagerSupplier = new OneshotSupplierImpl<>();
+        mHubManagerSupplier.set(mHubManager);
         when(mNavigationHandle.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getNavigationHistory()).thenReturn(mNavigationHistory);
@@ -121,7 +123,7 @@ public class SuggestionEventObserverUnitTest {
                 mGroupSuggestionsService);
 
         mSuggestionEventObserver =
-                new SuggestionEventObserver(mTabModelSelector, hubManagerSupplier);
+                new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
     }
 
     @Test
@@ -180,14 +182,25 @@ public class SuggestionEventObserverUnitTest {
     }
 
     @Test
-    public void testRestoreCompleted() {
-        mTabModelObserverCaptor.getValue().restoreCompleted();
+    public void testSelectFirstTab() {
+        ObservableSupplierImpl<Tab> currentTabSupplier = new ObservableSupplierImpl<>();
+        currentTabSupplier.set(mTab);
+        doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
 
-        verify(mGroupSuggestionsService)
+        mSuggestionEventObserver =
+                new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
+
+        // Later current tab changes will be ignored
+        Tab tab2 = mock(Tab.class);
+        currentTabSupplier.set(tab2);
+
+        verify(mGroupSuggestionsService, times(1))
                 .didSelectTab(
                         eq(TAB_ID),
                         eq(TEST_URL),
-                        eq(TabSelectionType.FROM_NEW),
+                        eq(
+                                org.chromium.components.visited_url_ranking.url_grouping
+                                        .TabSelectionType.FROM_NEW_TAB),
                         eq(Tab.INVALID_TAB_ID));
     }
 
