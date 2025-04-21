@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,6 +30,8 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/collaboration/public/collaboration_flow_entry_point.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -501,8 +505,14 @@ void RecentActivityRowView::ManageSharing() {
           group_id.value())) {
     data_sharing::RequestInfo request_info(group_id.value(),
                                            data_sharing::FlowType::kManage);
-    DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
-        request_info);
+    collaboration::CollaborationService* service =
+        collaboration::CollaborationServiceFactory::GetForProfile(
+            browser->profile());
+    std::unique_ptr<CollaborationControllerDelegateDesktop> delegate =
+        std::make_unique<CollaborationControllerDelegateDesktop>(browser);
+    service->StartShareOrManageFlow(
+        std::move(delegate), group_id.value(),
+        collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
   }
 }
 

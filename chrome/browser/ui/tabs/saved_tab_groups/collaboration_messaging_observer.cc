@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer.h"
 
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -15,9 +16,12 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "components/collaboration/public/collaboration_flow_entry_point.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 
@@ -321,8 +325,14 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
 
     data_sharing::RequestInfo request_info(group_id.value(),
                                            data_sharing::FlowType::kManage);
-    DataSharingBubbleController::GetOrCreateForBrowser(browser)->Show(
-        request_info);
+    collaboration::CollaborationService* service =
+        collaboration::CollaborationServiceFactory::GetForProfile(
+            browser->profile());
+    std::unique_ptr<CollaborationControllerDelegateDesktop> delegate =
+        std::make_unique<CollaborationControllerDelegateDesktop>(browser);
+    service->StartShareOrManageFlow(
+        std::move(delegate), group_id.value(),
+        collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
   }
 }
 

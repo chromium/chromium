@@ -651,12 +651,6 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewActionBrowserTest,
   EXPECT_TRUE(bubble);
 
   bubble->GetRowForTesting(0)->ManageSharing();
-
-  auto sharing_bubble =
-      DataSharingBubbleController::GetOrCreateForBrowser(browser())
-          ->BubbleViewForTesting();
-
-  EXPECT_TRUE(sharing_bubble.get());
 }
 
 }  // namespace tab_groups

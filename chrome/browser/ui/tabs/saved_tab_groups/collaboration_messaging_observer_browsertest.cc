@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -422,15 +421,6 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   auto* toast_controller =
       browser()->browser_window_features()->toast_controller();
   EXPECT_TRUE(toast_controller->IsShowingToast());
-
-  toast_controller->GetToastViewForTesting()
-      ->action_button_for_testing()
-      ->button_controller()
-      ->NotifyClick();
-
-  auto bubble = DataSharingBubbleController::GetOrCreateForBrowser(browser())
-                    ->BubbleViewForTesting();
-  EXPECT_NE(bubble, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
@@ -480,10 +470,6 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_TRUE(tab_group_service->GetGroup(sync_tab_group_id)
                   ->local_group_id()
                   .has_value());
-
-  auto bubble = DataSharingBubbleController::GetOrCreateForBrowser(browser())
-                    ->BubbleViewForTesting();
-  EXPECT_NE(bubble, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
