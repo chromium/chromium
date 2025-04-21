@@ -897,11 +897,9 @@ void SearchBoxViewBase::SetShowAssistantButton(bool show) {
 }
 
 void SearchBoxViewBase::SetShowAssistantNewEntryPointButton(bool show) {
-  if (show) {
-    CHECK(assistant_new_entry_point_button_);
-    show_assistant_new_entry_point_button_ = show;
-    assistant_new_entry_point_button_->SetVisible(show);
-  }
+  CHECK(assistant_new_entry_point_button_);
+  show_assistant_new_entry_point_button_ = show;
+  assistant_new_entry_point_button_->SetVisible(show);
 
   UpdateButtonsVisibility();
 }

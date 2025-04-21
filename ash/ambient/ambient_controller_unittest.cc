@@ -62,6 +62,7 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "net/base/url_util.h"
@@ -1489,6 +1490,11 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {
 
 TEST_P(AmbientControllerTestForAnyUiSettings,
        ShowDismissAmbientScreenUponAssistantQuery) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << "Assistant is not available if new entry point is enabled. "
+                    "crbug.com/388361414";
+  }
+
   // Without user interaction, should show ambient mode.
   SetAmbientShownAndWaitForWidgets();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());

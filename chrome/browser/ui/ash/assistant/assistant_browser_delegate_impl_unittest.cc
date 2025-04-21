@@ -54,6 +54,7 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     session_manager->OnUserManagerCreated(fake_user_manager_.Get());
 
     delegate_.emplace();
+    delegate_->SetGoogleChromeBuildForTesting();
 
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();

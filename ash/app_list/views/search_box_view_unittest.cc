@@ -1446,12 +1446,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          &AssistantNewEntryPointTestBase::GenerateParamName);
 
 TEST_P(AssistantNewEntryPointDisabledTest, NewEntryPointButtonHidden) {
+  ASSERT_FALSE(ash::assistant::features::IsNewEntryPointEnabled());
+
   GetAppListTestHelper()->ShowAppList();
   views::ImageButton* new_entry_point_button =
       GetAppListTestHelper()
           ->GetSearchBoxView()
           ->assistant_new_entry_point_button();
-  EXPECT_FALSE(new_entry_point_button);
+  ASSERT_TRUE(new_entry_point_button);
+  EXPECT_FALSE(new_entry_point_button->GetVisible());
 }
 
 class SunfishLauncherButtonTest : public AshTestBase,

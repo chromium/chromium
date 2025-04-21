@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -47,6 +48,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -72,6 +74,10 @@ using views::Widget;
 
 namespace ash {
 namespace {
+
+constexpr std::string_view kNoAssistantForNewEntryPoint =
+    "Assistant is not available if new entry point is enabled. "
+    "crbug.com/388361414";
 
 constexpr int kBorderInset = 1;
 
@@ -466,6 +472,10 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
 }
 
 TEST_F(AppListBubbleViewTest, AssistantScreenshotClosesBubbleWithoutAnimation) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   AddAppItems(5);
 
@@ -610,6 +620,10 @@ TEST_F(AppListBubbleViewTest, SearchBoxTextUsesPrimaryTextColor) {
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   ShowAppList();
 
@@ -625,6 +639,10 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
 }
 
 TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   ShowAppList();
   ASSERT_EQ(AssistantVisibility::kClosed, GetAssistantVisibility());
@@ -643,6 +661,10 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
 }
 
 TEST_F(AppListBubbleViewTest, AssistantPageLayout) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   ShowAppList();
   LeftClickOn(GetSearchBoxView()->assistant_button());
@@ -875,6 +897,10 @@ class AppListBubbleViewSunfishDisabledTest : public AppListBubbleViewTest {
 // Exercises ButtonFocusSkipper with only the Assistant button.
 TEST_F(AppListBubbleViewSunfishDisabledTest,
        DownAndUpArrowSkipsAssistantButton) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   // Add an app, but no "Continue" suggestions.
   AddAppItems(1);
@@ -966,6 +992,10 @@ TEST_F(AppListBubbleViewSunfishEnabledTest, DownAndUpArrowSkipsSunfishButton) {
 // Exercises ButtonFocusSkipper with both Sunfish and Assistant buttons.
 TEST_F(AppListBubbleViewSunfishEnabledTest,
        DownAndUpArrowSkipsSunfishAndAssistantButton) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   // Add an app, but no "Continue" suggestions.
   AddAppItems(1);
@@ -1261,6 +1291,10 @@ TEST_F(AppListBubbleViewTest, FolderClosedOnAppListDismiss) {
 }
 
 TEST_F(AppListBubbleViewTest, FolderClosedAfterInvokingAssistant) {
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
+  }
+
   SimulateAssistantEnabled();
   AddFolderWithApps(3);
   ShowAppList();

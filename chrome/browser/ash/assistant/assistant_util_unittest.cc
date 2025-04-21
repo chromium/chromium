@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -40,6 +41,9 @@
 
 namespace assistant {
 namespace {
+
+constexpr std::string_view kNoAssistantWithNewEntryPoint =
+    "Assistant is not available if new entry point is enabled.";
 
 constexpr char kTestProfileName[] = "user@gmail.com";
 constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
@@ -238,6 +242,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId(profile()));
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -249,6 +261,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_SecondaryUser) {
   ScopedLogIn primary_user_login(GetFakeUserManager(), identity_test_env(),
                                  GetGaiaUserAccountId(profile()));
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(
       ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
       IsAssistantAllowedForProfile(profile()));
@@ -259,6 +279,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_ChildUser) {
                     GetGaiaUserAccountId(profile()),
                     user_manager::UserType::kChild);
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -267,6 +295,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GuestUser) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     user_manager::GuestAccountId(),
                     user_manager::UserType::kGuest);
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
 
   EXPECT_EQ(
       ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
@@ -282,6 +318,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_Locale) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId(profile()));
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
             IsAssistantAllowedForProfile(profile()));
   icu::Locale::setDefault(old_locale, error_code);
@@ -294,6 +338,15 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_DemoMode) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::UserType::kPublicAccount);
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_DEMO_MODE,
             IsAssistantAllowedForProfile(profile()));
 
@@ -305,6 +358,15 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PublicSession) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::UserType::kPublicAccount);
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -314,6 +376,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_NonGmail) {
       GetFakeUserManager(), identity_test_env(),
       GetGaiaUserAccountId("user2@someotherdomain.com", GaiaId("0123456789")));
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -322,6 +392,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GoogleMail) {
   ScopedLogIn login(
       GetFakeUserManager(), identity_test_env(),
       GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
@@ -334,6 +412,15 @@ TEST_F(ChromeAssistantUtilTest,
       GetGaiaUserAccountId("user2@someotherdomain.com", GaiaId("0123456789")));
 
   ScopedSpoofGoogleBrandedDevice make_google_branded_device;
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -343,6 +430,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_KioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::UserType::kKioskApp);
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -351,6 +446,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::UserType::kWebKioskApp);
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
             IsAssistantAllowedForProfile(profile()));
@@ -364,6 +467,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCEnabled) {
       GetFakeUserManager(), identity_test_env(),
       GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
 
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
+
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
@@ -375,6 +486,14 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCDisabled) {
   ScopedLogIn login(
       GetFakeUserManager(), identity_test_env(),
       GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
+
+  if (ash::assistant::features::IsNewEntryPointEnabled()) {
+    EXPECT_EQ(
+        ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+        IsAssistantAllowedForProfile(profile()))
+        << kNoAssistantWithNewEntryPoint;
+    return;
+  }
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_NO_BINARY,
             IsAssistantAllowedForProfile(profile()));

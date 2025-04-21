@@ -30,6 +30,7 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
 
 class ProfileManager;
@@ -128,6 +129,7 @@ class AppListClientImpl
   void GetAssistantNewEntryPointEligibility(
       GetAssistantNewEntryPointEligibilityCallback callback) override;
   std::optional<std::string> GetAssistantNewEntryPointName() override;
+  ui::ImageModel GetGeminiIcon() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

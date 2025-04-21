@@ -31,6 +31,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -67,6 +68,12 @@ class HomeButtonTapOverlayTest
         switches::kAshEnableTabletMode);
 
     AshTestBase::SetUp();
+
+    if (ash::assistant::features::IsNewEntryPointEnabled()) {
+      GTEST_SKIP()
+          << "Assistant is not available if new entry point is enabled. "
+             "crbug.com/388361414";
+    }
 
     // Enable Assistant
     Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
