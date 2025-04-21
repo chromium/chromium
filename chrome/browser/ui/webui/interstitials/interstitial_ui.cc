@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -307,7 +308,8 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url),
       state,
-      /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled());
+      /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled(),
+      /*metrics_callback=*/base::DoNothing());
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

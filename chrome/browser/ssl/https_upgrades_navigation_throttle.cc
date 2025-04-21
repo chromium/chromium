@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -26,6 +27,8 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/page_transition_types.h"
 
 using security_interstitials::https_only_mode::Event;
@@ -157,10 +160,15 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
 
       // Mark this as a fallback HTTP navigation and trigger the interstitial.
       tab_helper->set_is_navigation_fallback(true);
+
+      ukm::SourceId source_id =
+          ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
+                                 ukm::SourceIdType::NAVIGATION_ID);
       std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
           blocking_page =
               blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
-                  contents, handle->GetURL(), interstitial_state_);
+                  contents, handle->GetURL(), interstitial_state_,
+                  base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
       std::string interstitial_html = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(handle, std::move(blocking_page));
@@ -210,6 +218,8 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
     handle->CancelNavigationTimeout();
   }
 
+  ukm::SourceId source_id = ukm::ConvertToSourceId(
+      navigation_handle()->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
   if (tab_helper->is_navigation_fallback() &&
       !handle->GetURL().SchemeIsCryptographic() &&
       IsInterstitialEnabled(interstitial_state_)) {
@@ -218,7 +228,8 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
 
     std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
         blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
-            contents, handle->GetURL(), interstitial_state_);
+            contents, handle->GetURL(), interstitial_state_,
+            base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
     std::string interstitial_html = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle, std::move(blocking_page));
