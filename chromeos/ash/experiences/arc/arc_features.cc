@@ -311,12 +311,6 @@ BASE_FEATURE(kSkipDropCaches,
              "ArcSkipDropPageCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, CertStoreService will talk to KeyMint instead of Keymaster on
-// ARC-T.
-BASE_FEATURE(kSwitchToKeyMintOnT,
-             "ArcSwitchToKeyMintOnT",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // On boards that blocks KeyMint at launch, enable this feature to force enable
 // KeyMint.
 BASE_FEATURE(kSwitchToKeyMintOnTOverride,

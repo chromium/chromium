@@ -2477,8 +2477,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_Enabled) {
                          arc::kArcVersionT),
       base::Time::Now());
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{arc::kEnableArcAttestation, true}, {arc::kSwitchToKeyMintOnT, true}});
+  feature_list.InitWithFeatureStates({{arc::kEnableArcAttestation, true}});
   StartMiniArc();
 
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2493,8 +2492,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_DisabledOnR) {
                          arc::kArcVersionR),
       base::Time::Now());
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{arc::kEnableArcAttestation, true}, {arc::kSwitchToKeyMintOnT, true}});
+  feature_list.InitWithFeatureStates({{arc::kEnableArcAttestation, true}});
   StartMiniArc();
 
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
@@ -2509,24 +2507,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_DisabledOnT) {
                          arc::kArcVersionT),
       base::Time::Now());
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{arc::kEnableArcAttestation, false}, {arc::kSwitchToKeyMintOnT, true}});
-  StartMiniArc();
-
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-  EXPECT_FALSE(is_system_shutdown().has_value());
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.mini_instance_request().enable_arc_attestation());
-}
-
-TEST_F(ArcVmClientAdapterTest,
-       StartMiniArc_EnableArcAttestation_KeymintDisabled) {
-  base::test::ScopedChromeOSVersionInfo version(
-      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d",
-                         arc::kArcVersionT),
-      base::Time::Now());
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kSwitchToKeyMintOnT, false);
+  feature_list.InitWithFeatureStates({{arc::kEnableArcAttestation, false}});
   StartMiniArc();
 
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);

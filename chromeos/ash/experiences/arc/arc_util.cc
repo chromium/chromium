@@ -539,7 +539,6 @@ bool ShouldUseArcKeyMint() {
   // TODO(b/308630124): Change to ">= kArcVersionT", when ready to enable
   // KeyMint on ARC V+.
   return version == kArcVersionT && version < kMaxArcVersion &&
-         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT) &&
          (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               ash::switches::kArcBlockKeyMint) ||
           base::FeatureList::IsEnabled(kSwitchToKeyMintOnTOverride));
