@@ -47,7 +47,8 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 #if !BUILDFLAG(IS_CHROMEOS)
             toast_features::kToastRefinements,
 #endif
-            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi},
+            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
+            privacy_sandbox::kFingerprintingProtectionUx},
         /*disabled_features=*/{});
     set_test_loader_host(chrome::kChromeUISettingsHost);
   }
@@ -254,6 +255,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, IdleLoad) {
   RunTest("settings/idle_load_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, IncognitoTrackingProtectionsPageTest) {
+  RunTest("settings/incognito_tracking_protections_page_test.js",
+          "runMochaSuite('IncognitoTrackingProtectionsPageTest')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -738,10 +744,6 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ExceptionsList) {
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('TrackingProtectionSettings')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ActSettings) {
-  RunTest("settings/cookies_page_test.js", "runMochaSuite('ActSettings')");
 }
 
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint
