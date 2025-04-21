@@ -67,7 +67,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
 
   uint32_t framerate_ = 30;
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
-  std::optional<D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize>> dpb_;
+  D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;
 };
 

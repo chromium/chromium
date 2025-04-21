@@ -334,7 +334,7 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
           D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_FULL_FRAME,
       .ResolutionsListCount = 1,
       .pResolutionList = &input_size_,
-      .MaxReferenceFramesInDPB = static_cast<UINT>(max_num_ref_frames_),
+      .MaxReferenceFramesInDPB = max_num_ref_frames_,
 
       .SuggestedProfile /*output*/ = {.DataSize = sizeof(profile),
                                       .pAV1Profile = &profile},
@@ -361,9 +361,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
             " Failed to initialize D3D12VideoEncoderWrapper."};
   }
 
-  dpb_.emplace(max_num_ref_frames_);
-  if (!dpb_->InitializeTextureArray(device_.Get(), config.input_visible_size,
-                                    input_format_)) {
+  if (!dpb_.InitializeTextureArray(device_.Get(), config.input_visible_size,
+                                   input_format_, max_num_ref_frames_)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,
             "Failed to initialize DPB."};
   }
@@ -497,10 +496,10 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(
       picture_params_.FrameType == D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME;
   input_arguments_.PictureControlDesc.Flags =
       D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE;
-  auto reconstructed_buffer = dpb_->GetCurrentFrame();
+  auto reconstructed_buffer = dpb_.GetCurrentFrame();
   D3D12_VIDEO_ENCODE_REFERENCE_FRAMES reference_frames{};
   if (!is_keyframe) {
-    reference_frames = dpb_->ToD3D12VideoEncodeReferenceFrames();
+    reference_frames = dpb_.ToD3D12VideoEncodeReferenceFrames();
   }
   input_arguments_.PictureControlDesc.ReferenceFrames = reference_frames;
   input_arguments_.pInputFrame = input_frame;
@@ -574,7 +573,7 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
   software_brc_->PostEncodeUpdate(packed_header_size + compressed_size);
 
   // Refresh DPB slot 0 with current reconstructed picture.
-  dpb_->ReplaceWithCurrentFrame(0);
+  dpb_.ReplaceWithCurrentFrame(0);
 
   // Follow RefreshFrameFlags to refresh the descriptors array.
   D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR a_descriptor = {

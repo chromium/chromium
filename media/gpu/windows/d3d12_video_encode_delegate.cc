@@ -435,8 +435,7 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeDelegate::ReadbackBitstream(
 
 template <size_t maxDpbSize>
 D3D12VideoEncodeDecodedPictureBuffers<
-    maxDpbSize>::D3D12VideoEncodeDecodedPictureBuffers(size_t size)
-    : size_(size) {}
+    maxDpbSize>::D3D12VideoEncodeDecodedPictureBuffers() = default;
 
 template <size_t maxDpbSize>
 D3D12VideoEncodeDecodedPictureBuffers<
@@ -446,7 +445,12 @@ template <size_t maxDpbSize>
 bool D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InitializeTextureArray(
     ID3D12Device* device,
     gfx::Size texture_size,
-    DXGI_FORMAT format) {
+    DXGI_FORMAT format,
+    size_t max_num_ref_frames) {
+  CHECK_GT(max_num_ref_frames, 0u);
+  CHECK_LE(max_num_ref_frames, kMaxDpbSize);
+  size_ = max_num_ref_frames;
+
   // We reserve one space in extra for the current frame.
   const size_t array_size = size_ + 1;
   resources_.resize(array_size);
@@ -485,6 +489,7 @@ D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::GetCurrentFrame() const {
 template <size_t maxDpbSize>
 void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InsertCurrentFrame(
     size_t position) {
+  CHECK_GT(resources_.size(), 0u);
   base::span raw_resources_span = base::span(raw_resources_).subspan(position);
   std::ranges::rotate(raw_resources_span, std::prev(raw_resources_span.end()));
   base::span subresources_span = base::span(subresources_).subspan(position);
@@ -494,6 +499,7 @@ void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InsertCurrentFrame(
 template <size_t maxDpbSize>
 void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::ReplaceWithCurrentFrame(
     size_t position) {
+  CHECK_GT(resources_.size(), 0u);
   std::swap(raw_resources_[position], raw_resources_.back());
   std::swap(subresources_[position], subresources_.back());
 }
