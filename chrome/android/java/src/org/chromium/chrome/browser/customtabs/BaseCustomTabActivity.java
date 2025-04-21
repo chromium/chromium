@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
+import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.HANDLED_BY_OS;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
 
 import android.app.Activity;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -626,11 +628,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         getCustomTabActivityNavigationController()
                 .setFinishHandler(
                         (reason, warmupOnFinish) -> {
-                            if (reason == USER_NAVIGATION) {
+                            if (reason == USER_NAVIGATION || reason == HANDLED_BY_OS) {
                                 getCustomTabActivityClientConnectionKeeper()
                                         .recordClientConnectionStatus();
                             }
-                            handleFinishAndClose(warmupOnFinish);
+                            handleFinishAndClose(reason, warmupOnFinish);
                         });
 
         mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
@@ -885,7 +887,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     protected boolean handleBackPressed() {
-        return getCustomTabActivityNavigationController().navigateOnBack();
+        return getCustomTabActivityNavigationController()
+                .navigateOnBack(FinishReason.USER_NAVIGATION);
     }
 
     @Override
@@ -909,7 +912,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
      * Internal implementation that finishes the activity and removes the references from Android
      * recents.
      */
-    protected void handleFinishAndClose(boolean warmupOnFinish) {
+    protected void handleFinishAndClose(@FinishReason int reason, boolean warmupOnFinish) {
         // Delay until we're destroyed to avoid jank in the transition animation when closing the
         // tab.
         mWarmupOnDestroy = warmupOnFinish;
@@ -934,7 +937,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             // WebContents is missing during the close animation due to android:windowIsTranslucent.
             // We let partial CCT handle the animation.
             mBaseCustomTabRootUiCoordinator.handleCloseAnimation(defaultBehavior);
-        } else {
+        } else if (reason != HANDLED_BY_OS) {
+            // Back events handled by the OS, such as predictive gesture, are removed by the OS.
+            // There is no need in overriding their transitions.
             defaultBehavior.run();
         }
     }
