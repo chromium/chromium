@@ -631,6 +631,7 @@ void OnDeviceModelServiceController::SolutionProvider::UpdateSubscriber(
   if (!solution_.has_value()) {
     subscriber.Unavailable(
         *AvailabilityFromEligibilityReason(solution_.error()));
+    return;
   }
   if (!solution_->IsValid()) {
     subscriber.Unavailable(mojom::ModelUnavailableReason::kPendingAssets);
@@ -667,7 +668,8 @@ OnDeviceModelServiceController::Solution&
 OnDeviceModelServiceController::Solution::operator=(Solution&&) = default;
 
 bool OnDeviceModelServiceController::Solution::IsValid() {
-  return model_controller_ && safety_checker_->client();
+  return model_controller_ &&
+         (adapter_->CanSkipTextSafety() || safety_checker_->client());
 }
 
 // Creates a config describing this solution;

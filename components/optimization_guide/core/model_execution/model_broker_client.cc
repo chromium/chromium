@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/model_capability_client.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
@@ -17,6 +18,8 @@
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace optimization_guide {
 
@@ -124,7 +127,13 @@ void ModelClient::OnDisconnect() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-ModelSubscriber::ModelSubscriber() = default;
+ModelSubscriber::ModelSubscriber(
+    mojo::PendingReceiver<mojom::ModelSubscriber> pending)
+    : receiver_(this, std::move(pending)) {
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&ModelSubscriber::Unavailable, base::Unretained(this),
+                     mojom::ModelUnavailableReason::kNotSupported));
+}
 ModelSubscriber::~ModelSubscriber() = default;
 
 void ModelSubscriber::CreateSession(
@@ -179,17 +188,25 @@ ModelBrokerClient::ModelBrokerClient(
     : remote_(std::move(remote)), args_(std::move(args)) {}
 ModelBrokerClient::~ModelBrokerClient() = default;
 
+ModelSubscriber& ModelBrokerClient::GetSubscriber(
+    mojom::ModelBasedCapabilityKey key) {
+  std::unique_ptr<ModelSubscriber>& ptr = subscribers_[key];
+  if (!ptr) {
+    mojo::PendingRemote<mojom::ModelSubscriber> pending;
+    ptr = std::make_unique<ModelSubscriber>(
+        pending.InitWithNewPipeAndPassReceiver());
+    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(key, true),
+                       std::move(pending));
+  }
+  return *ptr;
+}
+
 void ModelBrokerClient::CreateSession(
     mojom::ModelBasedCapabilityKey key,
     const std::optional<SessionConfigParams>& config_params,
     CreateSessionCallback callback) {
-  std::unique_ptr<ModelSubscriber>& ptr = subscribers_[key];
-  if (!ptr) {
-    ptr = std::make_unique<ModelSubscriber>();
-    remote_->Subscribe(mojom::ModelSubscriptionOptions::New(key, true),
-                       ptr->BindAndPassRemote());
-  }
-  ptr->CreateSession(args_, std::move(config_params), std::move(callback));
+  GetSubscriber(key).CreateSession(args_, std::move(config_params),
+                                   std::move(callback));
 }
 
 }  // namespace optimization_guide

@@ -241,8 +241,8 @@ static_library("core") {
       "model_execution/execute_remote_fn.h",
       "model_execution/json_response_parser.cc",
       "model_execution/json_response_parser.h",
-      "model_execution/model_capability_client.cc",
-      "model_execution/model_capability_client.h",
+      "model_execution/model_broker_client.cc",
+      "model_execution/model_broker_client.h",
       "model_execution/model_execution_features.cc",
       "model_execution/model_execution_features.h",
       "model_execution/model_execution_features_controller.cc",
@@ -463,6 +463,8 @@ static_library("test_support") {
       "mock_optimization_guide_model_executor.h",
       "model_execution/test/fake_model_assets.cc",
       "model_execution/test/fake_model_assets.h",
+      "model_execution/test/fake_model_broker.cc",
+      "model_execution/test/fake_model_broker.h",
       "model_execution/test/fake_remote.cc",
       "model_execution/test/fake_remote.h",
       "model_execution/test/feature_config_builder.cc",
@@ -475,6 +477,8 @@ static_library("test_support") {
       "model_execution/test/test_on_device_model_component_state_manager.h",
     ]
     deps += [
+      "//components/optimization_guide/public/mojom",
+      "//components/prefs:test_support",
       "//services/on_device_model/public/cpp:types",
       "//services/on_device_model/public/cpp/test_support:test_support",
     ]
@@ -549,6 +553,7 @@ source_set("unit_tests") {
     sources += [
       "model_execution/aqa_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
+      "model_execution/model_broker_client_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
       "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",

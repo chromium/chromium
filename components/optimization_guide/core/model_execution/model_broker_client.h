@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_CAPABILITY_CLIENT_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_CAPABILITY_CLIENT_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_BROKER_CLIENT_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_BROKER_CLIENT_H_
 
 #include <memory>
 
@@ -29,7 +29,7 @@
 
 namespace optimization_guide {
 
-struct CreateSessionArgs {
+struct CreateSessionArgs final {
   CreateSessionArgs(base::WeakPtr<OptimizationGuideLogger> logger,
                     ExecuteRemoteFn remote_fn);
   ~CreateSessionArgs();
@@ -76,9 +76,10 @@ class ModelClient final : public TextSafetyClient {
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};
 };
 
-class ModelSubscriber : public mojom::ModelSubscriber {
+class ModelSubscriber final : public mojom::ModelSubscriber {
  public:
-  ModelSubscriber();
+  explicit ModelSubscriber(
+      mojo::PendingReceiver<mojom::ModelSubscriber> pending);
   ~ModelSubscriber() override;
 
   using CreateSessionResult =
@@ -98,10 +99,6 @@ class ModelSubscriber : public mojom::ModelSubscriber {
                      const std::optional<SessionConfigParams>& config_params,
                      CreateSessionCallback callback);
 
-  mojo::PendingRemote<mojom::ModelSubscriber> BindAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
  private:
   // Wait for the client to be available and call the callback with a reference.
   // Calls the callback with nullptr if the state become NotSupported.
@@ -119,7 +116,7 @@ class ModelSubscriber : public mojom::ModelSubscriber {
   std::optional<mojom::ModelUnavailableReason> unavailable_reason_ =
       mojom::ModelUnavailableReason::kUnknown;
   std::optional<ModelClient> client_;
-  mojo::Receiver<mojom::ModelSubscriber> receiver_{this};
+  mojo::Receiver<mojom::ModelSubscriber> receiver_;
 };
 
 class ModelBrokerClient final {
@@ -130,6 +127,9 @@ class ModelBrokerClient final {
 
   using CreateSessionResult = ModelSubscriber::CreateSessionResult;
   using CreateSessionCallback = ModelSubscriber::CreateSessionCallback;
+
+  // Get or create the subscriber for the given key.
+  ModelSubscriber& GetSubscriber(mojom::ModelBasedCapabilityKey key);
 
   // Async session creation.
   void CreateSession(mojom::ModelBasedCapabilityKey key,
@@ -147,4 +147,4 @@ class ModelBrokerClient final {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_CAPABILITY_CLIENT_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_BROKER_CLIENT_H_
