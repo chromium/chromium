@@ -1397,7 +1397,7 @@ bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShimlessRMAHardwareValidationSkipEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsShimlessRMADynamicDeviceInfoInputs();
+bool IsShimlessRMADynamicDeviceInfoInputsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShowSharingUserInLauncherContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
