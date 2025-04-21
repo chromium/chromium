@@ -284,6 +284,7 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public @LayerVisibility int getLayerVisibility() {
+        if (mIsKeyboardVisible && mKeyboardInset > 0) return LayerVisibility.HIDDEN;
         return (mModel.get(CAN_SHOW) && !mIsPagedOptedIntoEdgeToEdge)
                 ? LayerVisibility.VISIBLE
                 : LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE;
