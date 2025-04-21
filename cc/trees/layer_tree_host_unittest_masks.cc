@@ -466,7 +466,7 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
     ++display_count_;
   }
 
-  void DidCommit() override {
+  void DidCommitAndDrawFrame() override {
     switch (commit_count_) {
       case 0:
         gfx::Size double_root_size(200, 200);
