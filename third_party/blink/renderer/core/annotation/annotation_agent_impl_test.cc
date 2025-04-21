@@ -1282,4 +1282,68 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
   }
 }
 
+// Ensure that a range that's valid in a flat-tree ordering but invalid in
+// regular DOM order doesn't cause a crash. https://crbug.com/410033683.
+TEST_F(AnnotationAgentImplTest, ValidFlatTreeRangeIsInvalidDOMRange) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <script>
+          customElements.define(
+            'my-component',
+            class extends HTMLElement {
+              constructor() {
+                super();
+                const template = document.getElementById('my-component-template');
+                let templateContent = template.content;
+
+                const shadowRoot = this.attachShadow({mode: 'open'});
+                shadowRoot.appendChild(templateContent.cloneNode(true));
+              }
+            },
+          );
+        </script>
+      </head>
+      <body>
+        <template id="my-component-template">
+          <slot>
+            <p>
+              Temp
+            </p>
+          </slot>
+          <p>
+            After Slot
+          </p>
+        </template>
+
+        <my-component>
+          <!-- In a flat-tree traversal this node is treated as a child of the
+               <slot> element (inside <my-component>'s shadow root) but in a
+               regular tree traversal it is visited as part of the light-tree
+               children of the <my-component> element. This swaps its order with
+               respect to the "After Slot" <p>. -->
+          <p>
+            Match Text
+          </p>
+        </my-component>
+      </body>
+    </html>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+  auto* agent = CreateTextFinderAgent("Match%20Text,After%20Slot");
+
+  ASSERT_TRUE(agent->NeedsAttachment());
+  Compositor().BeginFrame();
+  ASSERT_FALSE(agent->NeedsAttachment());
+
+  // Attachment will currently fail since DocumentMarkers doesn't support
+  // FlatTree ranges.
+  EXPECT_FALSE(agent->IsAttached());
+}
+
 }  // namespace blink
