@@ -110,6 +110,9 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="iOSTabStripManage"/>
   <int value="17" label="iOSTabGroupViewShare"/>
   <int value="18" label="iOSTabGroupViewManage"/>
+  <int value="19" label="DesktopGroupEditorShareOrManageButton"/>
+  <int value="20" label="DesktopNotification"/>
+  <int value="21" label="DesktopRecentActivity"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceShareOrManageEntryPoint) -->

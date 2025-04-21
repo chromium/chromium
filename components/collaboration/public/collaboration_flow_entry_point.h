@@ -52,7 +52,10 @@ enum class CollaborationServiceShareOrManageEntryPoint {
   kiOSTabStripManage = 16,
   kiOSTabGroupViewShare = 17,
   kiOSTabGroupViewManage = 18,
-  kMaxValue = kiOSTabGroupViewManage,
+  kDesktopGroupEditorShareOrManageButton = 19,
+  kDesktopNotification = 20,
+  kDesktopRecentActivity = 21,
+  kMaxValue = kDesktopRecentActivity,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEntryPoint)
 

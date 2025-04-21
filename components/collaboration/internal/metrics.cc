@@ -214,6 +214,13 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
       return "iOSTabGroupViewShare";
     case CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewManage:
       return "iOSTabGroupViewManage";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kDesktopGroupEditorShareOrManageButton:
+      return "DesktopGroupEditorShareOrManageButton";
+    case CollaborationServiceShareOrManageEntryPoint::kDesktopNotification:
+      return "DesktopNotification";
+    case CollaborationServiceShareOrManageEntryPoint::kDesktopRecentActivity:
+      return "DesktopRecentActivity";
   }
 }
 

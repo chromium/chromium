@@ -792,7 +792,8 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
       const_cast<Browser*>(browser_.get()));
   service->StartShareOrManageFlow(
       std::move(delegate), group_,
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      collaboration::CollaborationServiceShareOrManageEntryPoint::
+          kDesktopGroupEditorShareOrManageButton);
 
   bool is_group_shared = IsGroupShared();
   if (!is_group_shared) {

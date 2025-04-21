@@ -332,7 +332,8 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
         std::make_unique<CollaborationControllerDelegateDesktop>(browser);
     service->StartShareOrManageFlow(
         std::move(delegate), group_id.value(),
-        collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+        collaboration::CollaborationServiceShareOrManageEntryPoint::
+            kDesktopNotification);
   }
 }
 
