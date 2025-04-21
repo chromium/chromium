@@ -69,7 +69,9 @@
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
+#include "chrome/browser/ui/lens/test_lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -506,7 +508,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
 };
 
 // Stubs out network requests and mojo calls.
-class LensOverlayControllerFake : public LensOverlayController {
+class LensOverlayControllerFake : public lens::TestLensOverlayController {
  public:
   LensOverlayControllerFake(tabs::TabInterface* tab,
                             variations::VariationsClient* variations_client,
@@ -514,12 +516,12 @@ class LensOverlayControllerFake : public LensOverlayController {
                             PrefService* pref_service,
                             syncer::SyncService* sync_service,
                             ThemeService* theme_service)
-      : LensOverlayController(tab,
-                              variations_client,
-                              identity_manager,
-                              pref_service,
-                              sync_service,
-                              theme_service) {}
+      : lens::TestLensOverlayController(tab,
+                                        variations_client,
+                                        identity_manager,
+                                        pref_service,
+                                        sync_service,
+                                        theme_service) {}
 
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
@@ -623,10 +625,10 @@ class LensOverlayControllerFake : public LensOverlayController {
       &fake_overlay_page_};
 };
 
-class LensSearchControllerFake : public LensSearchController {
+class LensSearchControllerFake : public lens::TestLensSearchController {
  public:
   explicit LensSearchControllerFake(tabs::TabInterface* tab)
-      : LensSearchController(tab) {}
+      : lens::TestLensSearchController(tab) {}
 
  protected:
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
