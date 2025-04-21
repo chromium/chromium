@@ -284,7 +284,8 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier) {
         assert mTabModelSelectorSupplier.get() != null;
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
         mToolbarLayout.setTabCountSupplier(
@@ -309,6 +310,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             mResourceManagerSupplier,
                             topUiThemeColorProvider,
                             bottomToolbarControlsOffsetSupplier,
+                            suppressToolbarSceneLayerSupplier,
                             LayoutType.BROWSING
                                     | LayoutType.SIMPLE_ANIMATION
                                     | LayoutType.TAB_SWITCHER,

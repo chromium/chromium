@@ -65,6 +65,7 @@ public class TopToolbarOverlayMediator {
     private final PropertyModel mModel;
 
     private final ObservableSupplier<Integer> mBottomToolbarControlsOffsetSupplier;
+    private final ObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier;
 
     /** Whether visibility is controlled internally or manually by the feature. */
     private boolean mIsVisibilityManuallyControlled;
@@ -97,6 +98,7 @@ public class TopToolbarOverlayMediator {
             BrowserControlsStateProvider browserControlsStateProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean manualVisibilityControl) {
         mContext = context;
@@ -106,7 +108,9 @@ public class TopToolbarOverlayMediator {
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mModel = model;
         mBottomToolbarControlsOffsetSupplier = bottomToolbarControlsOffsetSupplier;
+        mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
         mBottomToolbarControlsOffsetSupplier.addObserver((unused) -> updateContentOffset());
+        mSuppressToolbarSceneLayerSupplier.addObserver((suppress) -> updateVisibility());
         mIsVisibilityManuallyControlled = manualVisibilityControl;
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
         mTabSupplier = tabSupplier;
@@ -350,7 +354,8 @@ public class TopToolbarOverlayMediator {
     /** Update the visibility of the overlay. */
     private void updateVisibility() {
         Tab tab = mTabSupplier.get();
-        if (tab != null && tab.isNativePage() && tab.isDisplayingBackForwardAnimation()) {
+        if (mSuppressToolbarSceneLayerSupplier.get()
+                || (tab != null && tab.isNativePage() && tab.isDisplayingBackForwardAnimation())) {
             // TODO(crbug.com/365818512): Add a screenshot capture test to cover this case.
             mModel.set(TopToolbarOverlayProperties.VISIBLE, false);
         } else if (mIsVisibilityManuallyControlled) {

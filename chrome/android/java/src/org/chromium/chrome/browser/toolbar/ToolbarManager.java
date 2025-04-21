@@ -232,6 +232,8 @@ public class ToolbarManager
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
             new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
+            new ObservableSupplierImpl<>(false);
     private TabModelSelector mTabModelSelector;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -1557,7 +1559,8 @@ public class ToolbarManager
                             mFormFieldFocusedSupplier,
                             mWindowAndroid.getKeyboardDelegate(),
                             mActivity,
-                            mControlContainer);
+                            mControlContainer,
+                            mSuppressToolbarSceneLayerSupplier);
         }
     }
 
@@ -1959,7 +1962,8 @@ public class ToolbarManager
                 mActivityTabProvider,
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider,
-                mBottomToolbarControlsOffsetSupplier);
+                mBottomToolbarControlsOffsetSupplier,
+                mSuppressToolbarSceneLayerSupplier);
         mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =

@@ -72,6 +72,8 @@ public class TopToolbarOverlayMediatorTest {
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
     private ObservableSupplierImpl<Integer> mBottomControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
+    private ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
+            new ObservableSupplierImpl<>(false);
 
     @Before
     public void beforeTest() {
@@ -103,6 +105,7 @@ public class TopToolbarOverlayMediatorTest {
                         mBrowserControlsProvider,
                         mTopUiThemeColorProvider,
                         mBottomControlsOffsetSupplier,
+                        mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
                         false);
 
@@ -233,6 +236,7 @@ public class TopToolbarOverlayMediatorTest {
                         mBrowserControlsProvider,
                         mTopUiThemeColorProvider,
                         mBottomControlsOffsetSupplier,
+                        mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
                         false);
         mMediator.setIsAndroidViewVisible(true);
@@ -384,5 +388,18 @@ public class TopToolbarOverlayMediatorTest {
                 newHeight + mBottomControlsOffsetSupplier.get(),
                 mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testSuppressVisibility() {
+        Assert.assertTrue(
+                "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        mSuppressToolbarSceneLayerSupplier.set(true);
+        Assert.assertFalse("View should be gone.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        mSuppressToolbarSceneLayerSupplier.set(false);
+        Assert.assertTrue(
+                "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
     }
 }

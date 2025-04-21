@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 
@@ -36,6 +37,8 @@ public class MiniOriginBarControllerTest {
             mKeyboardVisibilityDelegate =
                     new ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate();
     private MiniOriginBarController mMiniOriginBarController;
+    private ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
+            new ObservableSupplierImpl<>(false);
 
     @Before
     public void setUp() {
@@ -46,7 +49,8 @@ public class MiniOriginBarControllerTest {
                         mIsFormFieldFocused,
                         mKeyboardVisibilityDelegate,
                         mContext,
-                        mControlContainer);
+                        mControlContainer,
+                        mSuppressToolbarSceneLayerSupplier);
     }
 
     @Test
