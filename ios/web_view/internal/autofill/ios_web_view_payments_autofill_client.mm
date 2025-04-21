@@ -9,6 +9,7 @@
 #import "base/check_deref.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "ios/web/public/web_state.h"
@@ -100,6 +101,15 @@ void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
 PaymentsDataManager&
 IOSWebViewPaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
+}
+
+payments::MandatoryReauthManager*
+IOSWebViewPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!payments_reauth_manager_) {
+    payments_reauth_manager_ =
+        std::make_unique<payments::MandatoryReauthManager>(&client_.get());
+  }
+  return payments_reauth_manager_.get();
 }
 
 }  // namespace autofill::payments
