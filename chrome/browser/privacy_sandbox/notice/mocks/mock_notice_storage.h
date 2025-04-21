@@ -31,9 +31,6 @@ class MockNoticeStorage : public NoticeStorage {
               RecordHistogramsOnStartup,
               (std::string_view notice),
               (const, override));
-
-  void RecordEvent(std::string_view notice,
-                   notice::mojom::PrivacySandboxNoticeEvent event) override {}
 };
 
 }  // namespace privacy_sandbox

@@ -476,18 +476,6 @@ PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
 }
 
 void PrivacySandboxNoticeStorage::RecordEvent(
-    std::string_view notice,
-    notice::mojom::PrivacySandboxNoticeEvent event) {
-  CheckNoticeNameEligibility(notice);
-
-  if (event == PrivacySandboxNoticeEvent::kShown) {
-    SetNoticeShown(notice, base::Time::Now());
-    return;
-  }
-  SetNoticeActionTaken(notice, event, base::Time::Now());
-}
-
-void PrivacySandboxNoticeStorage::RecordEvent(
     NoticeId notice_id,
     notice::mojom::PrivacySandboxNoticeEvent event) {
   const Notice& notice = FindNotice(notice_id, catalog_);

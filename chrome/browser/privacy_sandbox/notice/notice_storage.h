@@ -160,9 +160,6 @@ class NoticeStorage {
   virtual void RecordHistogramsOnStartup(std::string_view notice) const = 0;
 
   // Records a Notice Event.
-  virtual void RecordEvent(std::string_view notice,
-                           notice::mojom::PrivacySandboxNoticeEvent event) = 0;
-
   virtual void RecordEvent(
       std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
       notice::mojom::PrivacySandboxNoticeEvent event) = 0;
@@ -180,9 +177,6 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
       std::string_view notice) const override;
 
   void RecordHistogramsOnStartup(std::string_view notice) const override;
-
-  void RecordEvent(std::string_view notice,
-                   notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   void RecordEvent(
       std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,

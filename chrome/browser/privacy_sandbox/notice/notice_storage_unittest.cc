@@ -60,6 +60,10 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
         std::make_unique<PrivacySandboxNoticeStorage>(prefs(), catalog_.get());
     scoped_feature_list_.InitAndEnableFeature(
         kPrivacySandboxMigratePrefsToSchemaV2);
+
+    default_notice_map_ = BuildDefaultNoticeMap();
+    ON_CALL(*mock_catalog(), GetNoticeMap())
+        .WillByDefault(testing::ReturnRef(default_notice_map_));
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {
@@ -69,24 +73,6 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   MockNoticeCatalog* mock_catalog() { return catalog_.get(); }
 
   TestingPrefServiceSimple* prefs() { return &prefs_; }
-
- protected:
-  base::HistogramTester histogram_tester_;
-  base::test::TaskEnvironment task_env_;
-  TestingPrefServiceSimple prefs_;
-  std::unique_ptr<MockNoticeCatalog> catalog_;
-  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class PrivacySandboxNoticeStorageWithCatalogTest
-    : public PrivacySandboxNoticeStorageTest {
- public:
-  PrivacySandboxNoticeStorageWithCatalogTest() {
-    default_notice_map_ = BuildDefaultNoticeMap();
-    ON_CALL(*mock_catalog(), GetNoticeMap())
-        .WillByDefault(testing::ReturnRef(default_notice_map_));
-  }
 
  protected:
   virtual NoticeMap BuildDefaultNoticeMap() {
@@ -104,6 +90,13 @@ class PrivacySandboxNoticeStorageWithCatalogTest
 
     return map;
   }
+
+  base::HistogramTester histogram_tester_;
+  base::test::TaskEnvironment task_env_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<MockNoticeCatalog> catalog_;
+  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   NoticeMap default_notice_map_;
@@ -174,28 +167,11 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateDoesNotExist) {
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeNameExpectCrash) {
-  EXPECT_DEATH(notice_storage()->RecordEvent("Notice1", kShown), "");
-}
-
-TEST_F(PrivacySandboxNoticeStorageWithCatalogTest, NoNoticeNameExpectCrash) {
   EXPECT_DEATH(notice_storage()->RecordEvent(kNoticeIdNotInCatalog, kShown),
                "");
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsPromptWaiting) {
-  notice_storage()->RecordEvent(kTopicsConsentModal, kShown);
-
-  notice_storage()->RecordHistogramsOnStartup(kTopicsConsentModal);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
-      NoticeStartupState::kPromptWaiting, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeStartupState2.TopicsConsentDesktopModal",
-      NoticeStartupState::kPromptWaiting, 1);
-}
-
-TEST_F(PrivacySandboxNoticeStorageWithCatalogTest,
-       StartupStateEmitsPromptWaiting) {
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
 
   notice_storage()->RecordHistogramsOnStartup(kTopicsConsentModal);
@@ -247,7 +223,7 @@ class PrivacySandboxNoticeStorageStartupTest
 
 TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
   for (auto event : std::get<0>(GetParam())) {
-    notice_storage()->RecordEvent(kTopicsConsentModal, event);
+    notice_storage()->RecordEvent(kNotice1InCatalog, event);
     task_env_.AdvanceClock(base::Milliseconds(10));
   }
 
@@ -264,65 +240,7 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeStorageStartupTest,
                          PrivacySandboxNoticeStorageStartupTest,
                          testing::ValuesIn(kStartupTestValues));
 
-class PrivacySandboxNoticeStorageStartupWithCatalogTest
-    : public PrivacySandboxNoticeStorageWithCatalogTest,
-      public testing::WithParamInterface<
-          std::tuple<std::vector<PrivacySandboxNoticeEvent>,
-                     NoticeStartupState>> {};
-
-TEST_P(PrivacySandboxNoticeStorageStartupWithCatalogTest,
-       StartupStateEmitsSuccessfully) {
-  for (auto event : std::get<0>(GetParam())) {
-    notice_storage()->RecordEvent(kNotice1InCatalog, event);
-    task_env_.AdvanceClock(base::Milliseconds(10));
-  }
-
-  notice_storage()->RecordHistogramsOnStartup(kTopicsConsentModal);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
-      std::get<1>(GetParam()), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeStartupState2.TopicsConsentDesktopModal",
-      std::get<1>(GetParam()), 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeStorageStartupWithCatalogTest,
-                         PrivacySandboxNoticeStorageStartupWithCatalogTest,
-                         testing::ValuesIn(kStartupTestValues));
-
 TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
-  base::Time t0 = base::Time::Now();
-  notice_storage()->RecordEvent(kTopicsConsentModal, kShown);
-  task_env_.AdvanceClock(base::Milliseconds(100));
-  base::Time t1 = base::Time::Now();
-  notice_storage()->RecordEvent(kTopicsConsentModal, kAck);
-
-  const auto actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
-
-  ASSERT_EQ(actual->GetNoticeEvents().size(), 2u);
-  EXPECT_EQ(actual->GetNoticeEvents()[0], std::make_pair(kShown, t0));
-  EXPECT_EQ(actual->GetNoticeEvents()[1], std::make_pair(kAck, t1));
-
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kAck, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kAck, 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.FirstShownToInteractedDuration."
-      "TopicsConsentDesktopModal_Ack",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.LastShownToInteractedDuration."
-      "TopicsConsentDesktopModal_Ack",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kShown, 1);
-}
-
-TEST_F(PrivacySandboxNoticeStorageWithCatalogTest, SetsValuesAndReadsData) {
   base::Time t0 = base::Time::Now();
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
   task_env_.AdvanceClock(base::Milliseconds(100));
@@ -355,47 +273,6 @@ TEST_F(PrivacySandboxNoticeStorageWithCatalogTest, SetsValuesAndReadsData) {
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest,
-       ReActionDoesNotRegisterAndEmitsHistogram) {
-  std::string notice = kTopicsConsentModal;
-  notice_storage()->RecordEvent(notice, kShown);
-  task_env_.AdvanceClock(base::Milliseconds(100));
-  base::Time t1 = base::Time::Now();
-  notice_storage()->RecordEvent(notice, kSettings);
-
-  auto actual = notice_storage()->ReadNoticeData(notice);
-  ASSERT_EQ(actual->GetNoticeEvents().size(), 2u);
-  EXPECT_EQ(actual->GetNoticeEvents()[1], std::make_pair(kSettings, t1));
-
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kSettings,
-      1);
-
-  // Tries to override action, should not override and emits histograms.
-  task_env_.AdvanceClock(base::Milliseconds(50));
-  notice_storage()->RecordEvent(notice, kAck);
-  actual = notice_storage()->ReadNoticeData(
-      notice);  // Re-read data after potential change
-  EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
-  EXPECT_EQ(actual->GetNoticeEvents()[1], std::make_pair(kSettings, t1));
-
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kAck, 0);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kAck, 0);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeActionTakenBehavior."
-      "TopicsConsentDesktopModal",
-      NoticeActionBehavior::kDuplicateActionTaken, 1);
-}
-
-TEST_F(PrivacySandboxNoticeStorageWithCatalogTest,
        ReActionDoesNotRegisterAndEmitsHistogram) {
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
   task_env_.AdvanceClock(base::Milliseconds(100));
@@ -436,53 +313,6 @@ TEST_F(PrivacySandboxNoticeStorageWithCatalogTest,
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest,
-       MultipleNoticeShownValuesRegisterSuccessfully) {
-  std::string notice = kTopicsConsentModal;
-
-  base::Time t0 = base::Time::Now();
-  notice_storage()->RecordEvent(notice, kShown);
-  task_env_.AdvanceClock(base::Milliseconds(100));
-  notice_storage()->RecordEvent(notice, kSettings);
-
-  auto actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
-  EXPECT_EQ(t0, actual->GetNoticeFirstShownFromEvents());
-  EXPECT_EQ(t0, actual->GetNoticeLastShownFromEvents());
-
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShownForFirstTime.TopicsConsentDesktopModal",
-      true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kSettings,
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kSettings, 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.FirstShownToInteractedDuration."
-      "TopicsConsentDesktopModal_Settings",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.LastShownToInteractedDuration."
-      "TopicsConsentDesktopModal_Settings",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kShown, 1);
-
-  // Set notice shown value again.
-  task_env_.AdvanceClock(base::Milliseconds(50));
-  base::Time t1 = base::Time::Now();
-  notice_storage()->RecordEvent(notice, kShown);
-  actual = notice_storage()->ReadNoticeData(kTopicsConsentModal);
-  EXPECT_EQ(t1, actual->GetNoticeLastShownFromEvents());
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShownForFirstTime.TopicsConsentDesktopModal",
-      false, 1);
-  EXPECT_EQ(t0, actual->GetNoticeFirstShownFromEvents());
-}
-
-TEST_F(PrivacySandboxNoticeStorageWithCatalogTest,
        MultipleNoticeShownValuesRegisterSuccessfully) {
   base::Time t0 = base::Time::Now();
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
@@ -528,60 +358,6 @@ TEST_F(PrivacySandboxNoticeStorageWithCatalogTest,
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
-  // Notice data 1.
-  std::string notice = kTopicsConsentModal;
-  notice_storage()->RecordEvent(notice, kShown);
-  task_env_.AdvanceClock(base::Milliseconds(100));
-  notice_storage()->RecordEvent(notice, kSettings);
-  const auto actual_notice1 = notice_storage()->ReadNoticeData(notice);
-
-  // Notice data 2.
-  std::string notice2 = kTopicsConsentModalClankCCT;
-  notice_storage()->RecordEvent(notice2, kShown);
-  task_env_.AdvanceClock(base::Milliseconds(20));
-  notice_storage()->RecordEvent(notice2, kAck);
-  const auto actual_notice2 = notice_storage()->ReadNoticeData(notice2);
-
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
-      NoticeActionTaken::kSettings, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kSettings,
-      1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.FirstShownToInteractedDuration."
-      "TopicsConsentDesktopModal_Settings",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.LastShownToInteractedDuration."
-      "TopicsConsentDesktopModal_Settings",
-      base::Milliseconds(100), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kShown, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.TopicsConsentModalClankCCT",
-      NoticeActionTaken::kAck, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentModalClankCCT", kAck, 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.FirstShownToInteractedDuration."
-      "TopicsConsentModalClankCCT_"
-      "Ack",
-      base::Milliseconds(20), 1);
-  histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.LastShownToInteractedDuration."
-      "TopicsConsentModalClankCCT_Ack",
-      base::Milliseconds(20), 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.TopicsConsentModalClankCCT", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentModalClankCCT", kShown,
-      1);
-}
-
-TEST_F(PrivacySandboxNoticeStorageWithCatalogTest, SetMultipleNotices) {
   // Notice data 1.
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
   task_env_.AdvanceClock(base::Milliseconds(100));
