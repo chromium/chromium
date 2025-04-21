@@ -33,7 +33,7 @@ proto_library("tflite_support_proto") {
   cc_generator_options = "lite=true:"
 
   import_dirs = [ "//third_party/tflite/src" ]
-  proto_deps = [ "//third_party/tflite:tflite_proto" ]
+  deps = [ "//third_party/tflite:tflite_proto" ]
 }
 
 config("tflite_support_flags") {
