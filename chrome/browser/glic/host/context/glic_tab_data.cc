@@ -15,6 +15,8 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace glic {
 namespace {
@@ -135,10 +137,12 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
   SkBitmap favicon;
   auto* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
-  if (favicon_driver) {
-    if (favicon_driver->FaviconIsValid()) {
-      favicon = favicon_driver->GetFavicon().AsBitmap();
-    }
+  if (favicon_driver && favicon_driver->FaviconIsValid()) {
+    // Attempt to get a 32x32 favicon by default (16x16 DIP at 2x scale).
+    favicon = favicon_driver->GetFavicon()
+                  .ToImageSkia()
+                  ->GetRepresentation(2.0f)
+                  .GetBitmap();
   }
   return glic::mojom::TabData::New(
       GetTabId(web_contents),

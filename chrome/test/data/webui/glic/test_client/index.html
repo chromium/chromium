@@ -67,6 +67,10 @@ found in the LICENSE file.
     border: thick double black;
     background-image: linear-gradient(cyan, fuchsia);
   }
+  .favicon {
+    width: 16px;
+    height: 16px;
+  }
   #content {
     overflow-y: scroll;
     position: absolute;
@@ -253,7 +257,7 @@ found in the LICENSE file.
   <div>
     <h4>Focused Tab V1</h4>
     <label>Focused Tab Url: </label><input id="focusedUrl" type="text" /> <br />
-    <label>Favicon: </label><img id="focusedFavicon" />
+    <label>Favicon: </label><img class="favicon" id="focusedFavicon" />
     <span id="focusedTabLogs"></span>
     <div>
       <label>Enable setContextAccessIndicator
@@ -264,7 +268,7 @@ found in the LICENSE file.
   <div>
     <h4>Focused Tab V2</h4>
     <label>Focused Tab Url: </label><input id="focusedUrlV2" type="text" /> <br />
-    <label>Favicon: </label><img id="focusedFaviconV2" />
+    <label>Favicon: </label><img class="favicon" id="focusedFaviconV2" />
     <span id="focusedTabLogsV2"></span>
     <div>
       <label>Enable setContextAccessIndicator
@@ -316,7 +320,7 @@ found in the LICENSE file.
     </label>
   </div>
   <div>
-    <img id="faviconImg" />
+    <img class="favicon" id="faviconImg" />
   </div>
   <div id="screenshot">
     <img id="screenshotImg" />
