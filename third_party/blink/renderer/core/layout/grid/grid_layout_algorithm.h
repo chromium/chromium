@@ -49,6 +49,10 @@ class CORE_EXPORT GridLayoutAlgorithm
       wtf_size_t range_starting_set_index,
       wtf_size_t range_set_count);
 
+  const GapGeometry* GetGapGeometryForTest() {
+    return container_builder_.GetGapGeometryForTest();
+  }
+
  private:
   friend class GridLayoutAlgorithmTest;
 
@@ -215,14 +219,6 @@ class CORE_EXPORT GridLayoutAlgorithm
       Vector<LayoutUnit>* row_offset_adjustments,
       LayoutUnit* intrinsic_block_size,
       LayoutUnit* offset_in_stitched_container);
-
-  void BuildGapIntersectionPoints(const GridLayoutData& layout_data,
-                                  GapGeometry* gap_geometry) const;
-
-  // Updates the blocked status of the relevant gap intersection
-  // points in `gap_geometry` based on the span of `grid_item`.
-  void MarkBlockedStatusForGapIntersections(const GridItemData& grid_item,
-                                            GapGeometry* gap_geometry) const;
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).
