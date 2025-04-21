@@ -35,6 +35,8 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -125,19 +127,23 @@ namespace ash {
 namespace sharesheet {
 
 class SharesheetBubbleView::SharesheetParentWidgetObserver
-    : public views::WidgetObserver {
+    : public views::WidgetObserver,
+      public aura::WindowObserver {
  public:
   SharesheetParentWidgetObserver(SharesheetBubbleView* owner,
                                  views::Widget* widget)
       : owner_(owner) {
-    observer_.Observe(widget);
+    widget_observer_.Observe(widget);
+    window_observer_.Observe(widget->GetNativeWindow());
   }
   ~SharesheetParentWidgetObserver() override = default;
 
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override {
-    DCHECK(observer_.IsObservingSource(widget));
-    observer_.Reset();
+    DCHECK(widget_observer_.IsObservingSource(widget));
+    DCHECK(window_observer_.IsObservingSource(widget->GetNativeWindow()));
+    widget_observer_.Reset();
+    window_observer_.Reset();
     // |this| may be destroyed here!
 
     // TODO(crbug.com/40173521) Code clean up.
@@ -152,9 +158,23 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
     owner_->UpdateAnchorPosition();
   }
 
+  // aura::WindowObserver:
+  void OnWindowTransformed(aura::Window* window,
+                           ui::PropertyChangeReason reason) override {
+    // Update the anchor bounds when the transform animation is complete, or
+    // when the transform is set without animation.
+    if (!window->layer()->GetAnimator()->IsAnimatingOnePropertyOf(
+            ui::LayerAnimationElement::TRANSFORM)) {
+      owner_->UpdateAnchorPosition();
+    }
+  }
+
  private:
   raw_ptr<SharesheetBubbleView> owner_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver> window_observer_{
+      this};
 };
 
 SharesheetBubbleView::SharesheetBubbleView(
