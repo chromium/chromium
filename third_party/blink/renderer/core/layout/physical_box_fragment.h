@@ -417,7 +417,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
   bool HasDescendantsForTablePart() const {
     DCHECK(IsTablePart() || IsTableCell());
-    return bit_field_.get<HasDescendantsForTablePartFlag>();
+    return children_.size() || NeedsOOFPositionedInfoPropagation();
   }
 
   bool IsFragmentationContextRoot() const {
@@ -621,10 +621,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   using InkOverflowTypeValue =
       IncludeBorderLeftFlag::DefineNextValue<uint8_t, InkOverflow::kTypeBits>;
   using IsFirstForNodeFlag = InkOverflowTypeValue::DefineNextValue<bool, 1>;
-  using HasDescendantsForTablePartFlag =
-      IsFirstForNodeFlag::DefineNextValue<bool, 1>;
   using IsFragmentationContextRootFlag =
-      HasDescendantsForTablePartFlag::DefineNextValue<bool, 1>;
+      IsFirstForNodeFlag::DefineNextValue<bool, 1>;
   using IsMonolithicFlag =
       IsFragmentationContextRootFlag::DefineNextValue<bool, 1>;
   using IsMonolithicOverflowPropagationDisabledFlag =

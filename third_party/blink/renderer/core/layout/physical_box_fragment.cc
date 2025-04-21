@@ -311,7 +311,6 @@ PhysicalBoxFragment::PhysicalBoxFragment(
                        kFragmentBox,
                        builder->GetBoxType()),
       bit_field_(ConstHasFragmentItemsFlag::encode(has_fragment_items) |
-                 HasDescendantsForTablePartFlag::encode(false) |
                  IsFragmentationContextRootFlag::encode(
                      builder->is_fragmentation_context_root_) |
                  IsMonolithicFlag::encode(builder->is_monolithic_) |
@@ -397,9 +396,6 @@ PhysicalBoxFragment::PhysicalBoxFragment(
   }
   use_last_baseline_for_inline_baseline_ =
       builder->use_last_baseline_for_inline_baseline_;
-
-  bit_field_.set<HasDescendantsForTablePartFlag>(
-      children_.size() || NeedsOOFPositionedInfoPropagation());
 
 #if DCHECK_IS_ON()
   CheckIntegrity();
@@ -1534,8 +1530,6 @@ void PhysicalBoxFragment::CheckSameForSimplifiedLayout(
             other.has_adjoining_object_descendants_);
   DCHECK_EQ(may_have_descendant_above_block_start_,
             other.may_have_descendant_above_block_start_);
-  DCHECK_EQ(bit_field_.get<HasDescendantsForTablePartFlag>(),
-            other.bit_field_.get<HasDescendantsForTablePartFlag>());
   DCHECK_EQ(IsFragmentationContextRoot(), other.IsFragmentationContextRoot());
 
   // `depends_on_percentage_block_size_` can change within out-of-flow
