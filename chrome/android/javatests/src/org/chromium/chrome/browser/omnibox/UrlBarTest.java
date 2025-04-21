@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -15,16 +18,21 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -63,10 +71,15 @@ import java.util.concurrent.atomic.AtomicReference;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class UrlBarTest {
+    public static final String EXAMPLE_STRING = "example string";
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
     private UrlBar mUrlBar;
     private OmniboxTestUtils mOmnibox;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Runnable mListener;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -859,5 +872,30 @@ public class UrlBarTest {
                     mUrlBar.onTextContextMenuItem(android.R.id.paste);
                 });
         verify(listener).run();
+    }
+
+    @Test
+    @SmallTest
+    // Added to prevent regression of crbug.com/410642190
+    public void notify_typingStarted_beforeTextChange() {
+        // Setup.
+        AutocompleteEditTextModelBase model = spy(mUrlBar.getModelForTesting());
+        mUrlBar.setModelForTesting(model);
+        InOrder inOrder = inOrder(mListener, model);
+
+        mOmnibox.clearFocus();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mUrlBar.setTypingStartedListener(mListener);
+        mOmnibox.requestFocus();
+        verifyNoInteractions(mListener);
+        clearInvocations(model);
+
+        // Set text and wait for listeners to be called.
+        mUrlBar.onTextChanged(EXAMPLE_STRING, 0, 0, EXAMPLE_STRING.length());
+
+        // Verify that the typing started listener is called before model.onTextChanged is called.
+        inOrder.verify(mListener).run();
+        inOrder.verify(model, times(1))
+                .onTextChanged(EXAMPLE_STRING, 0, 0, EXAMPLE_STRING.length());
     }
 }

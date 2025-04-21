@@ -356,4 +356,12 @@ public class AutocompleteEditText extends VerticallyFixedEditText
                         getContext().getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
         return defaultIme == null ? "" : defaultIme;
     }
+
+    /* package */ void setModelForTesting(@NonNull AutocompleteEditTextModelBase model) {
+        mModel = model;
+    }
+
+    /* package */ AutocompleteEditTextModelBase getModelForTesting() {
+        return mModel;
+    }
 }
