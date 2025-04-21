@@ -9,4 +9,10 @@ namespace privacy_sandbox {
 MockNoticeStorage::MockNoticeStorage() = default;
 MockNoticeStorage::~MockNoticeStorage() = default;
 
+void MockNoticeStorage::RecordEvent(
+    std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
+    notice::mojom::PrivacySandboxNoticeEvent event) {
+  RecordEventWithNoticeId(notice_id, event);
+}
+
 }  // namespace privacy_sandbox

@@ -17,6 +17,9 @@ class PrefService;
 
 namespace privacy_sandbox {
 
+enum class SurfaceType;
+class NoticeCatalog;
+
 // Startup states. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
 // LINT.IfChange(NoticeStartupState)
@@ -159,11 +162,16 @@ class NoticeStorage {
   // Records a Notice Event.
   virtual void RecordEvent(std::string_view notice,
                            notice::mojom::PrivacySandboxNoticeEvent event) = 0;
+
+  virtual void RecordEvent(
+      std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
+      notice::mojom::PrivacySandboxNoticeEvent event) = 0;
 };
 
 class PrivacySandboxNoticeStorage : public NoticeStorage {
  public:
-  explicit PrivacySandboxNoticeStorage(PrefService* pref_service);
+  PrivacySandboxNoticeStorage(PrefService* pref_service,
+                              NoticeCatalog* catalog);
   ~PrivacySandboxNoticeStorage() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -175,6 +183,10 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
 
   void RecordEvent(std::string_view notice,
                    notice::mojom::PrivacySandboxNoticeEvent event) override;
+
+  void RecordEvent(
+      std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
+      notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   // Migration functions.
 
@@ -212,6 +224,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   void SetNoticeShown(std::string_view notice, base::Time notice_shown_time);
 
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<NoticeCatalog> catalog_;
 };
 
 }  // namespace privacy_sandbox

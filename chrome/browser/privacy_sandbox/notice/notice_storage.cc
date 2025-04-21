@@ -14,7 +14,9 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -22,6 +24,7 @@
 
 namespace privacy_sandbox {
 namespace {
+using notice::mojom::PrivacySandboxNotice;
 using notice::mojom::PrivacySandboxNoticeEvent;
 
 // Notice data will be saved as a dictionary in the PrefService of a profile.
@@ -110,6 +113,14 @@ void CheckNoticeNameEligibility(std::string_view notice_name) {
   CHECK(privacy_sandbox::kPrivacySandboxNoticeNames.contains(notice_name))
       << "Notice name " << notice_name
       << " does not exist in notice_constants.h";
+}
+
+const Notice& FindNotice(NoticeId notice_id, NoticeCatalog* catalog) {
+  const auto& notice_map = catalog->GetNoticeMap();
+  auto notice_ptr = catalog->GetNoticeMap().find(notice_id);
+  CHECK(notice_ptr != notice_map.end());
+  CHECK(notice_ptr->second != nullptr);
+  return *(notice_ptr->second.get());
 }
 
 std::optional<V1MigrationData> ExtractV1NoticeData(
@@ -349,9 +360,11 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
 NoticeStorage::~NoticeStorage() = default;
 
 PrivacySandboxNoticeStorage::PrivacySandboxNoticeStorage(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
+    PrefService* pref_service,
+    NoticeCatalog* catalog)
+    : pref_service_(pref_service), catalog_(catalog) {
   CHECK(pref_service_);
+  CHECK(catalog_);
 }
 
 PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
@@ -465,6 +478,8 @@ PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
 void PrivacySandboxNoticeStorage::RecordEvent(
     std::string_view notice,
     notice::mojom::PrivacySandboxNoticeEvent event) {
+  CheckNoticeNameEligibility(notice);
+
   if (event == PrivacySandboxNoticeEvent::kShown) {
     SetNoticeShown(notice, base::Time::Now());
     return;
@@ -472,11 +487,22 @@ void PrivacySandboxNoticeStorage::RecordEvent(
   SetNoticeActionTaken(notice, event, base::Time::Now());
 }
 
+void PrivacySandboxNoticeStorage::RecordEvent(
+    NoticeId notice_id,
+    notice::mojom::PrivacySandboxNoticeEvent event) {
+  const Notice& notice = FindNotice(notice_id, catalog_);
+
+  if (event == PrivacySandboxNoticeEvent::kShown) {
+    SetNoticeShown(notice.GetStorageName(), base::Time::Now());
+    return;
+  }
+  SetNoticeActionTaken(notice.GetStorageName(), event, base::Time::Now());
+}
+
 void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     std::string_view notice,
     PrivacySandboxNoticeEvent notice_action_taken,
     base::Time notice_action_taken_time) {
-  CheckNoticeNameEligibility(notice);
   CHECK(notice_action_taken != PrivacySandboxNoticeEvent::kShown)
       << "Use `SetNoticeShown` to set a kShown PrivacySandboxNoticeEvent "
          "instead.";
@@ -554,7 +580,6 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
 }
 void PrivacySandboxNoticeStorage::SetNoticeShown(std::string_view notice,
                                                  base::Time notice_shown_time) {
-  CheckNoticeNameEligibility(notice);
   ScopedDictPrefUpdate update(pref_service_, kPrivacySandboxNoticeDataPath);
   SetSchemaVersion(pref_service_, notice);
   SetChromeVersion(pref_service_, notice);
