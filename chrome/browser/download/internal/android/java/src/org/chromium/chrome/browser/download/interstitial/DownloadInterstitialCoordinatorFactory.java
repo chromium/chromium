@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.download.interstitial;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Factory class to build a {@link DownloadInterstitialCoordinator} instance. */
+@NullMarked
 public class DownloadInterstitialCoordinatorFactory {
     /**
      * @param contextSupplier Supplier which provides the context of the parent tab.
@@ -29,7 +33,7 @@ public class DownloadInterstitialCoordinatorFactory {
                 contextSupplier,
                 downloadUrl,
                 OfflineContentAggregatorFactory.get(),
-                windowAndroid.getModalDialogManager(),
+                assumeNonNull(windowAndroid.getModalDialogManager()),
                 SnackbarManagerProvider.from(windowAndroid),
                 reloadCallback);
     }

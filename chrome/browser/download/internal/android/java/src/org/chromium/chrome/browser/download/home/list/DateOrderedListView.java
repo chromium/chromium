@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.Recycler;
 import androidx.recyclerview.widget.RecyclerView.State;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
@@ -35,6 +38,7 @@ import org.chromium.ui.modelutil.RecyclerViewAdapter;
  * The View component of a DateOrderedList. This takes the DateOrderedListModel and creates the glue
  * to display it on the screen.
  */
+@NullMarked
 class DateOrderedListView {
     private final DownloadManagerUiConfig mConfig;
     private final DecoratedListItemModel mModel;
@@ -99,6 +103,7 @@ class DateOrderedListView {
                 };
         mView.setId(R.id.download_home_recycler_view);
         mView.setHasFixedSize(true);
+        assumeNonNull(mView.getItemAnimator());
         ((DefaultItemAnimator) mView.getItemAnimator()).setSupportsChangeAnimations(false);
         mView.getItemAnimator().setMoveDuration(0);
 

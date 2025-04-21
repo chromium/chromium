@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -14,6 +15,7 @@ import java.util.Comparator;
  * Comparator based on score. Comparison is done first based on the score. For items having same
  * score, filter type and timestamp will be used to further compare.
  */
+@NullMarked
 public class ScoreComparator implements Comparator<OfflineItem> {
     @Override
     public int compare(OfflineItem lhs, OfflineItem rhs) {

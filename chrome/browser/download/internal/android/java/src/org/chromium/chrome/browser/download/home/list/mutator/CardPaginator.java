@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.download.home.list.mutator;
 
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Maintains the pagination info for the group cards to be shown. */
+@NullMarked
 public class CardPaginator {
     private static final int ITEM_COUNT_PER_PAGE = 3;
 

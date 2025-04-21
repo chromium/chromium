@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.download.home.snackbars;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -18,6 +22,7 @@ import java.util.Collection;
  * A coordinator that is responsible for processing {@link OfflineItem} deletion requests and -
  * based on a user decision or inaction - approve or reject the request.
  */
+@NullMarked
 public class DeleteUndoCoordinator {
     private final SnackbarManager mView;
     private final SnackbarController mController;
@@ -44,7 +49,7 @@ public class DeleteUndoCoordinator {
 
         Snackbar snackbar =
                 Snackbar.make(
-                        UndoUiUtils.getTitleFor(itemsSelected),
+                        assumeNonNull(UndoUiUtils.getTitleFor(itemsSelected)),
                         mController,
                         Snackbar.TYPE_ACTION,
                         Snackbar.UMA_DOWNLOAD_DELETE_UNDO);
@@ -56,17 +61,18 @@ public class DeleteUndoCoordinator {
     private static class SnackbarControllerImpl implements SnackbarController {
         // SnackbarController implementation.
         @Override
-        public void onAction(Object actionData) {
+        public void onAction(@Nullable Object actionData) {
             notifyCallback(actionData, false);
         }
 
         @Override
-        public void onDismissNoAction(Object actionData) {
+        public void onDismissNoAction(@Nullable Object actionData) {
             notifyCallback(actionData, true);
         }
 
         @SuppressWarnings("unchecked")
-        private static void notifyCallback(Object actionData, boolean delete) {
+        private static void notifyCallback(@Nullable Object actionData, boolean delete) {
+            if (actionData == null) return;
             ((Callback<Boolean>) actionData).onResult(delete);
         }
     }

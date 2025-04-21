@@ -137,7 +137,8 @@ public class DownloadUtils {
      * @param limit Character limit.
      * @return The text to display, or null if the input was invalid.
      */
-    public static @Nullable String formatUrlForDisplayInNotification(GURL url, int limit) {
+    public static @Nullable String formatUrlForDisplayInNotification(
+            @Nullable GURL url, int limit) {
         if (GURL.isEmptyOrInvalid(url)) return null;
 
         String formattedUrl =

@@ -16,19 +16,20 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Collection of methods computing various height dimensions that differ by OS build version. */
 @NullMarked
 public abstract class DimensionCompat {
     protected final Activity mActivity;
-    protected final Runnable mPositionUpdater;
+    protected final @Nullable Runnable mPositionUpdater;
 
     /**
      * @param activity {@link Activity} in which the UI dimensions are queried
      * @param positionUpdater {@link Runnable} to be invoked to reflect the app content frame
      *        size updates if it resizes dynamically in the course of app lifecycle.
      */
-    public static DimensionCompat create(Activity activity, Runnable positionUpdater) {
+    public static DimensionCompat create(Activity activity, @Nullable Runnable positionUpdater) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return new DimensionCompatLegacy(activity, positionUpdater);
         }
@@ -57,12 +58,13 @@ public abstract class DimensionCompat {
     /** Implementation that supports R+ */
     @RequiresApi(Build.VERSION_CODES.R)
     private static class DimensionCompatR extends DimensionCompat {
-        private DimensionCompatR(Activity activity, Runnable positionUpdater) {
+        private DimensionCompatR(Activity activity, @Nullable Runnable positionUpdater) {
             super(activity, positionUpdater);
         }
 
         @Override
         public void updatePosition() {
+            if (mPositionUpdater == null) return;
             mPositionUpdater.run();
         }
 
@@ -101,14 +103,14 @@ public abstract class DimensionCompat {
         }
     }
 
-    DimensionCompat(Activity activity, Runnable positionUpdater) {
+    DimensionCompat(Activity activity, @Nullable Runnable positionUpdater) {
         mActivity = activity;
         mPositionUpdater = positionUpdater;
     }
 
     /** Implementation that supports version below R */
     private static class DimensionCompatLegacy extends DimensionCompat {
-        private DimensionCompatLegacy(Activity activity, Runnable positionUpdater) {
+        private DimensionCompatLegacy(Activity activity, @Nullable Runnable positionUpdater) {
             super(activity, positionUpdater);
         }
 
@@ -135,6 +137,7 @@ public abstract class DimensionCompat {
                                 int oldRight,
                                 int oldBottom) {
                             contentFrame.removeOnLayoutChangeListener(this);
+                            if (mPositionUpdater == null) return;
                             mPositionUpdater.run();
                         }
                     });

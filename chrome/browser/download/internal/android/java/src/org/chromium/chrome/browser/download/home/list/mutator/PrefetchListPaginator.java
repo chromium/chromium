@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 
 import java.util.ArrayList;
@@ -13,10 +15,11 @@ import java.util.List;
  * Handles pagination for the prefetch tab. Always ensures that the items in a card are displayed
  * fully even if the total item count might exceed the desired limit.
  */
+@NullMarked
 public class PrefetchListPaginator implements DateOrderedListMutator.ListPaginator {
     private static final int DEFAULT_PAGE_SIZE = 25;
 
-    private ListConsumer mListConsumer;
+    private @Nullable ListConsumer mListConsumer;
     private int mCurrentPageIndex;
 
     @Override

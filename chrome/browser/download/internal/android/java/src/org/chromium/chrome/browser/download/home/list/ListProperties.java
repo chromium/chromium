@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.VisualsCallback;
@@ -22,6 +23,7 @@ import java.util.Date;
  * download manager: (1) A set of properties that act directly on the list view itself. (2) A set of
  * properties that are effectively shared across all list items like callbacks.
  */
+@NullMarked
 public interface ListProperties {
     /** A helper interface to support retrieving {@link OfflineItemVisuals} asynchronously. */
     @FunctionalInterface

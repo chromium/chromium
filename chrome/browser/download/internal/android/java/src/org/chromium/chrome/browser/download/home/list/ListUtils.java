@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download.home.list;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
@@ -24,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 /** Utility methods for representing {@link ListItem}s in a {@link RecyclerView} list. */
+@NullMarked
 public class ListUtils {
     /** The potential types of list items that could be displayed. */
     @IntDef({
@@ -176,7 +179,7 @@ public class ListUtils {
     }
 
     /** @return Whether the given {@link ListItem} can be grouped inside a card. */
-    public static boolean canGroup(ListItem listItem) {
+    public static boolean canGroup(@Nullable ListItem listItem) {
         if (!(listItem instanceof OfflineItemListItem)) return false;
         return LegacyHelpers.isLegacyContentIndexedItem(((OfflineItemListItem) listItem).item.id);
     }
@@ -243,9 +246,17 @@ public class ListUtils {
      *          1 if {@code a} should be shown after {@code b}.
      */
     public static int compareItemByID(OfflineItem a, OfflineItem b) {
-        int comparison = a.id.namespace.compareTo(b.id.namespace);
+        if (a.id == null && b.id == null) return 0;
+        if (a.id == null || b.id == null) return a.id == null ? -1 : 1;
+        int comparison = compareNullableStrings(a.id.namespace, b.id.namespace);
         if (comparison != 0) return comparison;
-        return a.id.id.compareTo(b.id.id);
+        return compareNullableStrings(a.id.id, b.id.id);
+    }
+
+    private static int compareNullableStrings(@Nullable String a, @Nullable String b) {
+        if (a == null && b == null) return 0;
+        if (a == null || b == null) return a == null ? -1 : 1;
+        return a.compareTo(b);
     }
 
     private static int getVisualPriorityForFilter(@FilterType int type) {
@@ -254,7 +265,8 @@ public class ListUtils {
         }
 
         assert false
-                : "Unexpected Filters.FilterType (did you forget to update FILTER_TYPE_ORDER_LIST?).";
+                : "Unexpected Filters.FilterType (did you forget to update"
+                        + " FILTER_TYPE_ORDER_LIST?).";
         return 0;
     }
 }

@@ -72,7 +72,7 @@ public class OfflineItem implements Cloneable {
     public @Nullable ContentId id;
 
     // Display metadata.
-    public @Nullable String title;
+    public String title;
     public @Nullable String description;
     @OfflineItemFilter public int filter;
     public boolean isTransient;
@@ -117,6 +117,7 @@ public class OfflineItem implements Cloneable {
         id = new ContentId();
         filter = OfflineItemFilter.OTHER;
         state = OfflineItemState.COMPLETE;
+        title = "";
     }
 
     @Override

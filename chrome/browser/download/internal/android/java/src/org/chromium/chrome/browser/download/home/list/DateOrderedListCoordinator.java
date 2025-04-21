@@ -19,6 +19,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.StableIds;
@@ -43,6 +45,7 @@ import java.util.List;
  * The top level coordinator for the download home UI.  This is currently an in progress class and
  * is not fully fleshed out yet.
  */
+@NullMarked
 public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarListActionDelegate {
     /**
      * A helper interface for exposing the decision for whether or not to delete
@@ -304,7 +307,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     }
 
     @Override
-    public void setSearchQuery(String query) {
+    public void setSearchQuery(@Nullable String query) {
         mMediator.onFilterStringChanged(query);
     }
 

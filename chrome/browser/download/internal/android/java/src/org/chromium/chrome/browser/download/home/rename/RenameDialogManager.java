@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -20,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  * A class to manage Rename Dialog and Rename Extension Dialog display sequence.
  * Decides the state transition of two dialog, and provide controller for action events.
  */
+@NullMarked
 public class RenameDialogManager {
     /**
      * Helper interface for handling rename attempts by the UI, must be called when user click
@@ -108,6 +111,7 @@ public class RenameDialogManager {
      * @param originalName The original name for the download item.
      * @param callback  The callback that talks to the backend.
      */
+    @Initializer
     public void startRename(String originalName, RenameCallback callback) {
         mRenameCallback = callback;
         mOriginalName = originalName;

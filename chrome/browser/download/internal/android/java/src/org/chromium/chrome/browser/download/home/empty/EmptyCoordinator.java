@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.empty.EmptyProperties.State;
 import org.chromium.chrome.browser.download.home.filter.FilterCoordinator;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.Collection;
 
 /** A class that determines whether an empty view should be shown and inserts into the model. */
+@NullMarked
 public class EmptyCoordinator implements OfflineItemFilterObserver, FilterCoordinator.Observer {
     private final OfflineItemFilterSource mSource;
 

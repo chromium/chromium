@@ -46,12 +46,12 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
         boolean maybeSwitchToFocusedActivity();
 
         /** Called to open the downloads page. */
-        void openDownloadsPage(OtrProfileId otrProfileId, @DownloadOpenSource int source);
+        void openDownloadsPage(@Nullable OtrProfileId otrProfileId, @DownloadOpenSource int source);
 
         /** Called to open the download associated with the given {@link OfflineItem}. */
         void openDownload(
-                OfflineItem offlineItem,
-                OtrProfileId otrProfileId,
+                @Nullable OfflineItem offlineItem,
+                @Nullable OtrProfileId otrProfileId,
                 @DownloadOpenSource int source,
                 Context context);
 

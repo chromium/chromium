@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.internal.R;
@@ -23,6 +24,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import java.util.ArrayList;
 
 /** Utility methods for download home toolbar. */
+@NullMarked
 public class ToolbarUtils {
     /**
      * Sets up feature engagement tracker for the download settings in-product help text bubble.

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The Coordinator for the Rename Dialog. Manages UI objects like views and model, and
  * handles communication with the {@link ModalDialogManager}.
  */
+@NullMarked
 public class RenameDialogCoordinator {
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mRenameDialogModel;
