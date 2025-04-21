@@ -154,11 +154,23 @@ void WaylandToplevelWindow::Hide() {
   for (auto bubble : child_bubbles()) {
     bubble->Hide();
   }
-  WaylandWindow::Hide();
 
-  toplevel_session_.reset();
+  // Note that the xdg_toplevel object should be destroyed before we touch
+  // anything else in order to provide the compositor a good reference point
+  // when the window contents can be frozen in case a window closing animation
+  // needs to be played. Ideally, the xdg_toplevel object should also be
+  // destroyed before any subsurface is destroyed, otherwise the window may have
+  // missing contents when the compositor animates it.
+  //
+  // The xdg-shell spec provides another way to hide a window: attach a nil
+  // buffer to the root surface. However, compositors often get it wrong, and it
+  // makes sense only if the xdg_toplevel object is going to be reused, which is
+  // not the case here.
   xdg_toplevel_.reset();
+  toplevel_session_.reset();
   appmenu_.reset();
+
+  WaylandWindow::Hide();
   ClearInFlightRequestsSerial();
 
   connection()->Flush();

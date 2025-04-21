@@ -142,17 +142,28 @@ void WaylandPopup::Hide() {
   if (child_popup()) {
     child_popup()->Hide();
   }
+
+  // Note that the xdg_popup object should be destroyed before we touch
+  // anything else in order to provide the compositor a good reference point
+  // when the window contents can be frozen in case a window closing animation
+  // needs to be played. Ideally, the xdg_popup object should also be
+  // destroyed before any subsurface is destroyed, otherwise the window may have
+  // missing contents when the compositor animates it.
+  //
+  // The xdg-shell spec provides another way to hide a window: attach a nil
+  // buffer to the root surface. However, compositors often get it wrong, and it
+  // makes sense only if the xdg_popup object is going to be reused, which is
+  // not the case here.
+  parent_window()->set_child_popup(nullptr);
+  xdg_popup_.reset();
+
   WaylandWindow::Hide();
   // Mutter compositor crashes if we don't reset subsurfaces when hiding.
   if (WaylandWindow::primary_subsurface()) {
     WaylandWindow::primary_subsurface()->ResetSubsurface();
   }
 
-  if (xdg_popup_) {
-    parent_window()->set_child_popup(nullptr);
-    xdg_popup_.reset();
-    ClearInFlightRequestsSerial();
-  }
+  ClearInFlightRequestsSerial();
 
   connection()->Flush();
 }
