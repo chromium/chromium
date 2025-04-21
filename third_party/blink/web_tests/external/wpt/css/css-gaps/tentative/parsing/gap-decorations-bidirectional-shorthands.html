@@ -19,9 +19,8 @@
     column-rule-width: 10px;
     row-rule-width: 10px;
 
-    /* Adding  `column-rule-style` property because
-    `column-rule-width` defaults to 0px without it */
     column-rule-style: solid;
+    row-rule-style: solid;
   }
 
   #target2 {
@@ -30,25 +29,31 @@
 
     column-rule-width: 15px;
     row-rule-width: 20px;
+
+    column-rule-style: double;
+    row-rule-style: dotted;
   }
 </style>
 <script>
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-color'), 'rgb(0, 255, 0)');
-
   }, "rule-color shorthand computed from longhand values");
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-width'), '10px');
-
   }, "rule-width shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-style'), 'solid');
+  }, "rule-style shorthand computed from longhand values");
 
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-color'), '');
   }, "rule-color shorthand cannot be computed from longhand values so expect an empty string");
-
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-width'), '');
   }, "rule-width shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-style'), '');
+  }, "rule-style shorthand cannot be computed from longhand values so expect an empty string");
 </script>
 </body>
 </html>

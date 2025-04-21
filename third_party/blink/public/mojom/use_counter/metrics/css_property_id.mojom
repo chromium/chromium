@@ -909,6 +909,7 @@ enum CSSSampleId {
     kColumnWrap = 850,
     kRuleColor = 851,
     kRuleWidth = 852,
+    kRuleStyle = 853,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

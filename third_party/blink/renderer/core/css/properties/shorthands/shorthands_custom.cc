@@ -4181,6 +4181,42 @@ const CSSValue* RuleWidth::CSSValueFromComputedStyleInternal(
       value_phase);
 }
 
+bool RuleStyle::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  DCHECK_EQ(shorthandForProperty(CSSPropertyID::kRuleStyle).length(), 2u);
+  CSSValue* rule_style = css_parsing_utils::ConsumeGapDecorationPropertyList(
+      stream, context, CSSGapDecorationPropertyType::kStyle);
+
+  if (!rule_style) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleStyle, CSSPropertyID::kRuleStyle, *rule_style,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleStyle, CSSPropertyID::kRuleStyle, *rule_style,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+
+  return true;
+}
+
+const CSSValue* RuleStyle::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForBidirectionalGapRuleShorthand(
+      ruleStyleShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool TextBox::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
