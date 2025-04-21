@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
+#include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/drop_data.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -41,14 +43,12 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/ui_util.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -590,16 +590,12 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
   }
 
   if (MatchesExtension(file, FILE_PATH_LITERAL(".zip"))) {
-#if BUILDFLAG(IS_ANDROID)
-    return RespondNow(Error("zip file is not yet supported on android"));
-#else
     ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
     ZipFileInstaller::Create(
         GetExtensionFileTaskRunner(),
         MakeRegisterInExtensionServiceCallback(browser_context()))
         ->InstallZipFileToUnpackedExtensionsDir(
             file.path, registrar->unpacked_install_directory());
-#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
     scoped_refptr<CrxInstaller> crx_installer =
