@@ -1594,6 +1594,16 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
       return ERR_CACHE_MISS;
     }
 
+    if (IsUsingURLFromNoVarySearchCache()) {
+      // The entry is probably fine, we just couldn't get a lock on it this
+      // time. The restarted request is permitted to attempt to get a cache lock
+      // for the original URL, and on successful completion may later replace
+      // the entry in the NoVarySearchCache.
+      return RestartWithoutNoVarySearchCache(
+          RestartCacheEntryAction::kDontErase,
+          NoVarySearchUseResult::kCacheLockTimeout);
+    }
+
     // The cache is busy, bypass it for this transaction.
     mode_ = NONE;
     TransitionToState(STATE_SEND_REQUEST);
@@ -4295,6 +4305,8 @@ std::string_view HttpCache::Transaction::NoVarySearchUseResultToString(
       return "Validated";
     case kUpdated:
       return "Updated";
+    case kCacheLockTimeout:
+      return "CacheLockTimeout";
   }
 }
 
