@@ -33,7 +33,7 @@ namespace extensions {
 //  - Avoid event pages. Some events such as navigation will be even worse than
 //    background pages since it will cause the extension to be frequently
 //    loaded and unloaded. Even if your event page is "good" now, it's
-//    something that is easy to regress with inocuous looking changes, so
+//    something that is easy to regress with innocuous looking changes, so
 //    try to use explicit C++ invocation of the extension when reasonable.
 //
 // =============================================================================
