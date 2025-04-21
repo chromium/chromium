@@ -80,8 +80,8 @@ class BufferIterator {
 
   // Copies out an object. As compared to using `Object`, this avoids potential
   // unaligned access which may be undefined behavior.
-  template <typename T,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+  template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   std::optional<T> CopyObject() {
     std::optional<T> t;
     if (remaining_.size() >= sizeof(T)) {
@@ -101,8 +101,8 @@ class BufferIterator {
   // `CopyObject` as it avoids this problem entirely.
   // TODO(danakj): We should probably CHECK this instead of allowing UB into
   // production.
-  template <typename T,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+  template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   const T* Object() {
     return MutableObject<const T>();
   }
@@ -117,8 +117,8 @@ class BufferIterator {
   // `CopyObject` as it avoids this problem entirely.
   // TODO(danakj): We should probably CHECK this instead of allowing UB into
   // production.
-  template <typename T,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+  template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   T* MutableObject() {
     T* t = nullptr;
     if (remaining_.size() >= sizeof(T)) {
@@ -142,8 +142,8 @@ class BufferIterator {
   // using the span will cause Undefined Behaviour.
   // TODO(danakj): We should probably CHECK this instead of allowing UB into
   // production.
-  template <typename T,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+  template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   span<T> MutableSpan(size_t count) {
     size_t byte_size;
     if (!CheckMul(sizeof(T), count).AssignIfValid(&byte_size)) {
@@ -165,10 +165,9 @@ class BufferIterator {
 
   // An overload for when the size is known at compile time. The result will be
   // a fixed-size span.
-  template <typename T,
-            size_t N,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
-    requires(N <= std::numeric_limits<size_t>::max() / sizeof(T))
+  template <typename T, size_t N>
+    requires(N <= std::numeric_limits<size_t>::max() / sizeof(T) &&
+             std::is_trivially_copyable_v<T>)
   std::optional<span<T, N>> MutableSpan() {
     constexpr size_t byte_size =
         N * sizeof(T);  // Overflow is checked by `requires`.
@@ -194,18 +193,17 @@ class BufferIterator {
   // using the span will cause Undefined Behaviour.
   // TODO(danakj): We should probably CHECK this instead of allowing UB into
   // production.
-  template <typename T,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+  template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   span<const T> Span(size_t count) {
     return MutableSpan<const T>(count);
   }
 
   // An overload for when the size is known at compile time. The result will be
   // a fixed-size span.
-  template <typename T,
-            size_t N,
-            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
-    requires(N <= std::numeric_limits<size_t>::max() / sizeof(T))
+  template <typename T, size_t N>
+    requires(N <= std::numeric_limits<size_t>::max() / sizeof(T) &&
+             std::is_trivially_copyable_v<T>)
   std::optional<span<const T, N>> Span() {
     return MutableSpan<const T, N>();
   }
