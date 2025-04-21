@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -27,11 +28,14 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.util.AttrUtils;
+import org.chromium.ui.util.KeyboardNavigationListener;
 
 /**
  * ClickableSpan isn't accessible by default, so we create a subclass of TextView that tries to
@@ -42,8 +46,12 @@ import org.chromium.ui.util.AttrUtils;
 @NullMarked
 public class TextViewWithClickableSpans extends TextViewWithLeading
         implements View.OnLongClickListener {
+    private static final String TAG = "TextViewWithSpans";
     private @Nullable PopupMenu mDisambiguationMenu;
-    private final @ColorInt int mSpanColor;
+    private @Nullable ClickableSpan mFocusedSpan;
+    private final OnKeyListener mOnKeyListener;
+    private final SpanBackgroundHelper mSpanBackgroundHelper;
+    private @ColorInt int mSpanColor;
 
     public TextViewWithClickableSpans(Context context) {
         this(context, /* attrs= */ null);
@@ -55,6 +63,8 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         TypedArray typedArray =
                 context.obtainStyledAttributes(attrs, R.styleable.TextViewWithClickableSpans);
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.span_background);
+        int horizontalPadding =
+                getResources().getDimensionPixelSize(R.dimen.span_background_horizontal_padding);
 
         int defaultStrokeColor = context.getColor(R.color.default_text_color_link_baseline);
         int globalStrokeColor =
@@ -75,8 +85,21 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
             ((GradientDrawable) drawable.mutate()).setStroke(strokeWidth, strokeColor);
         }
         mSpanColor = strokeColor;
+        mSpanBackgroundHelper = new SpanBackgroundHelper(horizontalPadding, drawable);
+        mOnKeyListener = createOnKeyListener();
 
         typedArray.recycle();
+        init();
+    }
+
+    @VisibleForTesting
+    TextViewWithClickableSpans(
+            Context context,
+            @Nullable AttributeSet attrs,
+            SpanBackgroundHelper spanBackgroundHelper) {
+        super(context, attrs);
+        mSpanBackgroundHelper = spanBackgroundHelper;
+        mOnKeyListener = createOnKeyListener();
         init();
     }
 
@@ -86,6 +109,63 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         // See crbug.com/533362
         setSaveEnabled(false);
         setOnLongClickListener(this);
+        setOnFocusChangeListener(createOnFocusChangeListener());
+    }
+
+    private OnKeyListener createOnKeyListener() {
+        return new KeyboardNavigationListener() {
+            @Override
+            protected boolean handleEnterKeyPress() {
+                if (mFocusedSpan == null) {
+                    Log.w(
+                            TAG,
+                            "OnKeyListener is active when the view does not contain a focused"
+                                    + " clickable span.");
+                    return false;
+                }
+                mFocusedSpan.onClick(TextViewWithClickableSpans.this);
+                return true;
+            }
+        };
+    }
+
+    private OnFocusChangeListener createOnFocusChangeListener() {
+        return (view, focused) -> {
+            if (focused && mFocusedSpan == null) {
+                var clickableSpans = getClickableSpans();
+                // TODO (crbug.com/405441323): Support keyboard focus handling for text containing
+                // multiple clickable spans.
+                if (clickableSpans == null || clickableSpans.length != 1) return;
+                mFocusedSpan = clickableSpans[0];
+                if (mFocusedSpan instanceof ChromeClickableSpan) {
+                    ((ChromeClickableSpan) mFocusedSpan).setFocused(true);
+                }
+                setOnKeyListener(mOnKeyListener);
+                invalidate();
+            } else if (!focused && mFocusedSpan != null) {
+                if (mFocusedSpan instanceof ChromeClickableSpan) {
+                    ((ChromeClickableSpan) mFocusedSpan).setFocused(false);
+                }
+                mFocusedSpan = null;
+                setOnKeyListener(null);
+                invalidate();
+            }
+        };
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (mFocusedSpan == null || !(getText() instanceof Spanned text)) {
+            super.onDraw(canvas);
+            return;
+        }
+
+        // Draw the background first so that text can be on top during super.onDraw().
+        canvas.translate(getTotalPaddingLeft(), getTotalPaddingTop());
+        mSpanBackgroundHelper.drawFocusedSpanBackground(canvas, text, mFocusedSpan, getLayout());
+        canvas.translate(-getTotalPaddingLeft(), -getTotalPaddingTop());
+
+        super.onDraw(canvas);
     }
 
     @Override
@@ -221,5 +301,9 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
                     }
                 });
         mDisambiguationMenu.show();
+    }
+
+    @Nullable ClickableSpan getFocusedSpanForTesting() {
+        return mFocusedSpan;
     }
 }

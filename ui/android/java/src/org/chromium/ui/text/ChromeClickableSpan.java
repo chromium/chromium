@@ -21,6 +21,7 @@ import org.chromium.ui.util.AttrUtils;
 public class ChromeClickableSpan extends ClickableSpan {
     private final int mColor;
     private final Callback<View> mOnClick;
+    private boolean mFocused;
 
     /**
      * @param context The {@link Context} used for accessing colors.
@@ -53,5 +54,26 @@ public class ChromeClickableSpan extends ClickableSpan {
     public void updateDrawState(TextPaint textPaint) {
         super.updateDrawState(textPaint);
         textPaint.setColor(mColor);
+        // When the span is focused, it means that it contains a background highlight. Remove the
+        // text underline in this case.
+        textPaint.setUnderlineText(!mFocused);
+    }
+
+    /**
+     * Sets whether the span is focused.
+     *
+     * @param focused Whether the span is focused.
+     */
+    public void setFocused(boolean focused) {
+        mFocused = focused;
+    }
+
+    /**
+     * Determines whether the span is focused.
+     *
+     * @return {@code true} if the span is focused, {@code false} otherwise.
+     */
+    public boolean isFocused() {
+        return mFocused;
     }
 }
