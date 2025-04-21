@@ -1671,13 +1671,15 @@ TEST_F(SafeBrowsingUrlCheckerTest,
                                    /*expected_urt_log_count=*/1,
                                    /*expected_hpd_log_count=*/0);
 }
-MATCHER_P4(DiscrepancyReportMatches,
+MATCHER_P5(DiscrepancyReportMatches,
            url,
+           page_url,
            report_type,
            url_realtime_threat_type,
            hash_realtime_threat_type,
            "") {
-  return arg->url() == url && arg->type() == report_type &&
+  return arg->url() == url && arg->page_url() == page_url &&
+         arg->type() == report_type &&
          arg->url_real_time_and_hash_real_time_discrepancy_info()
                  .url_realtime_threat_type() == url_realtime_threat_type &&
          arg->url_real_time_and_hash_real_time_discrepancy_info()
@@ -1814,7 +1816,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       *url_checker_delegate_,
       SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
           DiscrepancyReportMatches(
-              "https://example.test/",
+              "https://example.test/", "https://example.test/",
               ClientSafeBrowsingReportRequest::
                   URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY,
               ClientSafeBrowsingReportRequest::
@@ -1880,7 +1882,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       *url_checker_delegate_,
       SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
           DiscrepancyReportMatches(
-              "https://example.test/",
+              "https://example.test/", "https://example.test/",
               ClientSafeBrowsingReportRequest::
                   URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY,
               ClientSafeBrowsingReportRequest::

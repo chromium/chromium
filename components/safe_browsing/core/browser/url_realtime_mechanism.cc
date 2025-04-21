@@ -331,6 +331,7 @@ void UrlRealTimeMechanism::LogBackgroundHprtLookupResults(
     report->set_type(ClientSafeBrowsingReportRequest::
                          URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY);
     report->set_url(url_.spec());
+    report->set_page_url(url_.spec());
     report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
         ->set_url_realtime_threat_type(
             GetDiscrepancyThreatType(urt_threat_type));
