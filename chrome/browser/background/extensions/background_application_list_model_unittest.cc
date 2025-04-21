@@ -283,8 +283,8 @@ TEST_F(BackgroundApplicationListModelTest, ExtensionLoadAndUnload) {
   ASSERT_EQ(1U, model()->size());
 
   extensions::TestExtensionRegistryObserver unload_observer(registry());
-  service()->UnloadExtension(bgapp->id(),
-                             extensions::UnloadedExtensionReason::UNINSTALL);
+  registrar()->RemoveExtension(bgapp->id(),
+                               extensions::UnloadedExtensionReason::UNINSTALL);
   unload_observer.WaitForExtensionUnloaded();
   ASSERT_TRUE(registry()->enabled_extensions().empty());
   EXPECT_EQ(0U, model()->size());
