@@ -335,24 +335,26 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
 
   const base::Value::Dict* data = notice_data_pref->GetIfDict();
 
-  for (const auto notice : kPrivacySandboxNoticeNames) {
-    if (!data || !data->contains(notice)) {
+  if (!data) {
+    return;
+  }
+
+  for (const auto [notice, notice_value] : *data) {
+    const base::Value::Dict* notice_value_dict = notice_value.GetIfDict();
+    if (!notice_value_dict) {
       continue;
     }
-
-    std::optional<int> schema_version = data->FindIntByDottedPath(
-        CreatePrefPath(notice, kPrivacySandboxSchemaVersion));
+    std::optional<int> schema_version =
+        notice_value_dict->FindInt(kPrivacySandboxSchemaVersion);
     if (schema_version.has_value() && *schema_version == 2) {
       continue;
     }
 
     auto data_v1 = ExtractV1NoticeData(pref_service, notice, *data);
     if (!data_v1) {
-      return;
+      continue;
     }
-
     PrivacySandboxNoticeData data_v2 = ConvertV1SchemaToV2Schema(*data_v1);
-
     PopulateV2NoticeData(pref_service, notice, data_v2);
   }
 }
