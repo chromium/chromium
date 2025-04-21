@@ -1225,7 +1225,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   // Unload extension.
   void UnloadExtension(const std::string& extension_id,
                        UnloadedExtensionReason reason) {
-    extension_service_->UnloadExtension(extension_id, reason);
+    extension_registrar_->RemoveExtension(extension_id, reason);
   }
 
   const GURL& GetWebAppUrl(const std::string& web_app_id) const {
