@@ -452,6 +452,14 @@ void CompoundTabContainer::NotifyTabstripBubbleClosed() {
   unpinned_tab_container_->NotifyTabstripBubbleClosed();
 }
 
+void CompoundTabContainer::OnSplitCreated(const std::vector<int>& indices) {
+  unpinned_tab_container_->OnSplitCreated(indices);
+}
+
+void CompoundTabContainer::OnSplitRemoved(const std::vector<int>& indices) {
+  unpinned_tab_container_->OnSplitRemoved(indices);
+}
+
 std::optional<int> CompoundTabContainer::GetModelIndexOf(
     const TabSlotView* slot_view) const {
   const std::optional<int> unpinned_index =
