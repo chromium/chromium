@@ -12,6 +12,8 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/glyph_offset_array.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
