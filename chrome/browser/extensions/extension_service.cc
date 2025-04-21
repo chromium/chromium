@@ -367,7 +367,8 @@ void ExtensionService::Init() {
   delayed_install_manager_->FinishInstallationsDelayedByShutdown();
   SetReadyAndNotifyListeners();
 
-  UninstallMigratedExtensions();
+  extension_registrar_->UninstallMigratedExtensions(
+      kObsoleteComponentExtensionIds);
 
   // TODO(erikkay): this should probably be deferred to a future point
   // rather than running immediately at startup.
@@ -717,6 +718,11 @@ void ExtensionService::ReloadExtensionsForTest() {
   // times.
 }
 
+void ExtensionService::UninstallMigratedExtensionsForTest() {
+  extension_registrar_->UninstallMigratedExtensions(
+      kObsoleteComponentExtensionIds);
+}
+
 void ExtensionService::SetReadyAndNotifyListeners() {
   TRACE_EVENT0("browser,startup",
                "ExtensionService::SetReadyAndNotifyListeners");
@@ -943,11 +949,6 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
         service->OnBlocklistUpdated();
       },
       AsExtensionServiceWeakPtr()));
-}
-
-void ExtensionService::UninstallMigratedExtensions() {
-  extension_registrar_->UninstallMigratedExtensions(
-      kObsoleteComponentExtensionIds);
 }
 
 void ExtensionService::OnDeveloperModePrefChanged() {

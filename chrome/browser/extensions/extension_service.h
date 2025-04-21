@@ -260,12 +260,12 @@ class ExtensionService : public ExtensionServiceInterface,
   void GreylistExtensionForTest(const std::string& extension_id,
                                 const BitMapBlocklistState& state);
 
+  void UninstallMigratedExtensionsForTest();
+
 #if defined(UNIT_TEST)
   void FinishInstallationForTest(const Extension* extension) {
     extension_registrar_->FinishInstallation(extension);
   }
-
-  void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
 
   void ProfileMarkedForPermanentDeletionForTest() {
     OnProfileMarkedForPermanentDeletion(profile_);
@@ -323,9 +323,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Called when the initial extensions load has completed.
   void OnInstalledExtensionsLoaded();
-
-  // Uninstall extensions that have been migrated to component extensions.
-  void UninstallMigratedExtensions();
 
   // Called when the Developer Mode preference is changed:
   // - Disables unpacked extensions if developer mode is OFF.
