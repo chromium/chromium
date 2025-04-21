@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gfx/x/connection.h"
 
 #include <xcb/xcb.h>
@@ -17,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -265,13 +261,13 @@ bool Connection::GetWmNormalHints(Window window, SizeHints* hints) {
   if (hints32.size() != sizeof(SizeHints) / 4) {
     return false;
   }
-  memcpy(hints, hints32.data(), sizeof(*hints));
+  UNSAFE_TODO(memcpy(hints, hints32.data(), sizeof(*hints)));
   return true;
 }
 
 void Connection::SetWmNormalHints(Window window, const SizeHints& hints) {
   std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
-  memcpy(hints32.data(), &hints, sizeof(SizeHints));
+  UNSAFE_TODO(memcpy(hints32.data(), &hints, sizeof(SizeHints)));
   SetArrayProperty(window, Atom::WM_NORMAL_HINTS, Atom::WM_SIZE_HINTS, hints32);
 }
 
@@ -283,13 +279,13 @@ bool Connection::GetWmHints(Window window, WmHints* hints) {
   if (hints32.size() != sizeof(WmHints) / 4) {
     return false;
   }
-  memcpy(hints, hints32.data(), sizeof(*hints));
+  UNSAFE_TODO(memcpy(hints, hints32.data(), sizeof(*hints)));
   return true;
 }
 
 void Connection::SetWmHints(Window window, const WmHints& hints) {
   std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
-  memcpy(hints32.data(), &hints, sizeof(WmHints));
+  UNSAFE_TODO(memcpy(hints32.data(), &hints, sizeof(WmHints)));
   SetArrayProperty(window, Atom::WM_HINTS, Atom::WM_HINTS, hints32);
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "ui/gfx/render_text.h"
 
 #include <limits.h>
@@ -17,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
@@ -372,10 +368,10 @@ void SkiaTextRenderer::DrawPosText(const SkPoint* pos,
   const auto& run_buffer = builder.allocRunPos(font_, glyph_count);
 
   static_assert(sizeof(*glyphs) == sizeof(*run_buffer.glyphs), "");
-  memcpy(run_buffer.glyphs, glyphs, glyph_count * sizeof(*glyphs));
+  UNSAFE_TODO(memcpy(run_buffer.glyphs, glyphs, glyph_count * sizeof(*glyphs)));
 
   static_assert(sizeof(*pos) == 2 * sizeof(*run_buffer.pos), "");
-  memcpy(run_buffer.pos, pos, glyph_count * sizeof(*pos));
+  UNSAFE_TODO(memcpy(run_buffer.pos, pos, glyph_count * sizeof(*pos)));
 
   canvas_skia_->drawTextBlob(builder.make(), 0, 0, flags_);
 }
