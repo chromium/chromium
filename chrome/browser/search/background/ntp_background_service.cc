@@ -7,14 +7,15 @@
 #include <string_view>
 
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/search/ntp_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -76,8 +77,10 @@ GURL GetUrl(std::string_view path) {
 }  // namespace
 
 NtpBackgroundService::NtpBackgroundService(
+    ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      url_loader_factory_(url_loader_factory) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   default_image_options_ = kImageOptions;
   thumbnail_image_options_ = GetThumbnailImageOptions();
@@ -141,7 +144,7 @@ void NtpBackgroundService::FetchCollectionInfo() {
 
   ntp::background::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(g_browser_process->GetApplicationLocale());
+  request.set_language(application_locale_storage_->Get());
   request.add_filtering_label(kFilteringLabel);
   // Add some extra filtering information in case we need to target a specific
   // milestone post release.
@@ -484,7 +487,7 @@ void NtpBackgroundService::FetchNextCollectionImage(
   *request.add_collection_ids() = requested_next_image_collection_id_;
   request.set_resume_token(requested_next_image_resume_token_);
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(g_browser_process->GetApplicationLocale());
+  request.set_language(application_locale_storage_->Get());
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
 
@@ -604,7 +607,7 @@ void NtpBackgroundService::FetchCollectionImageInfoInternal(
   ntp::background::GetImagesInCollectionRequest request;
   request.set_collection_id(collection_id);
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(g_browser_process->GetApplicationLocale());
+  request.set_language(application_locale_storage_->Get());
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
   collection_image_info_loader_ptr->AttachStringForUpload(serialized_proto,

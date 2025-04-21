@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
@@ -26,6 +26,8 @@ namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
+
+class ApplicationLocaleStorage;
 
 /**
  * Types of images that are shown on the New Tab Page's frontend.
@@ -45,6 +47,7 @@ enum class NtpImageType {
 class NtpBackgroundService : public KeyedService {
  public:
   NtpBackgroundService(
+      ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   NtpBackgroundService(const NtpBackgroundService&) = delete;
@@ -153,6 +156,9 @@ class NtpBackgroundService : public KeyedService {
   GURL next_image_api_url_;
 
   using URLLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
+  // Must be non-null and outlive this object.
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   // Used to download the proto from the Backdrop service.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

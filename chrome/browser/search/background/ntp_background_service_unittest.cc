@@ -15,9 +15,9 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/search/ntp_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,8 +52,9 @@ class NtpBackgroundServiceTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
-  }
+                &test_url_loader_factory_)),
+        application_locale_storage_(
+            std::make_unique<ApplicationLocaleStorage>()) {}
 
   void TearDown() override {
     if (service_) {
@@ -81,8 +82,8 @@ class NtpBackgroundServiceTest : public testing::Test {
 
   NtpBackgroundService* service() {
     if (!service_) {
-      service_ =
-          std::make_unique<NtpBackgroundService>(test_shared_loader_factory_);
+      service_ = std::make_unique<NtpBackgroundService>(
+          application_locale_storage_.get(), test_shared_loader_factory_);
       service_->AddObserver(&observer_);
     }
     return service_.get();
@@ -98,6 +99,7 @@ class NtpBackgroundServiceTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
   MockNtpBackgroundServiceObserver observer_;
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
@@ -105,7 +107,7 @@ class NtpBackgroundServiceTest : public testing::Test {
 };
 
 TEST_F(NtpBackgroundServiceTest, CollectionRequest) {
-  g_browser_process->SetApplicationLocale("foo");
+  application_locale_storage_->Set("foo");
 
   service()->FetchCollectionInfo();
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -136,7 +138,7 @@ TEST_F(NtpBackgroundServiceTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       ntp_features::kNtpBackgroundImageErrorDetection);
-  g_browser_process->SetApplicationLocale("foo");
+  application_locale_storage_->Set("foo");
 
   service()->FetchCollectionInfo();
   EXPECT_TRUE(base::test::RunUntil([&]() {
