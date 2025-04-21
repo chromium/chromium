@@ -474,7 +474,7 @@ bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
 
 bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
   if (auto link = GetLink(accept.v0()->source)) {
-    link->DispatchRelayedMessage(accept);
+    return link->DispatchRelayedMessage(accept);
   }
   return true;
 }
