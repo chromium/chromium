@@ -2316,16 +2316,15 @@ class GapAccumulator {
     for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
       const LayoutUnit mid_point =
           LayoutUnit(col_tracks[col_index] - (col_gutter_size / 2.0f));
-
-      columns[col_index - 1][0] = GapIntersection(mid_point, row_tracks[0]);
-      columns[col_index - 1][0].is_at_edge_of_container = true;
+      auto& column = columns[col_index - 1];
+      column[0] = GapIntersection(mid_point, row_tracks[0],
+                                  /*is_at_edge_of_container=*/true);
       for (wtf_size_t row_index = 1; row_index < row_count - 1; ++row_index) {
-        columns[col_index - 1][row_index] =
-            GapIntersection(mid_point, LayoutUnit());
+        column[row_index] = GapIntersection(mid_point, LayoutUnit());
       }
-      columns[col_index - 1][row_count - 1] =
-          GapIntersection(mid_point, row_tracks[row_count - 1]);
-      columns[col_index - 1][row_count - 1].is_at_edge_of_container = true;
+      column[row_count - 1] =
+          GapIntersection(mid_point, row_tracks[row_count - 1],
+                          /*is_at_edge_of_container=*/true);
     }
 
     // For rows, populate each row gap with intersection points. Since we
@@ -2338,16 +2337,16 @@ class GapAccumulator {
       const LayoutUnit mid_point =
           LayoutUnit(row_tracks[row_index] - (row_gutter_size / 2.0f));
 
-      rows[row_index - 1][0] = GapIntersection(col_tracks[0], mid_point);
-      rows[row_index - 1][0].is_at_edge_of_container = true;
+      auto& row = rows[row_index - 1];
+      row[0] = GapIntersection(col_tracks[0], mid_point,
+                               /*is_at_edge_of_container=*/true);
       for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
-        rows[row_index - 1][col_index] =
-            GapIntersection(columns[col_index - 1][0].inline_offset, mid_point);
-        columns[col_index - 1][row_index].block_offset = mid_point;
+        auto& column = columns[col_index - 1];
+        row[col_index] = GapIntersection(column[0].inline_offset, mid_point);
+        column[row_index].block_offset = mid_point;
       }
-      rows[row_index - 1][col_count - 1] =
-          GapIntersection(col_tracks[col_count - 1], mid_point);
-      rows[row_index - 1][col_count - 1].is_at_edge_of_container = true;
+      row[col_count - 1] = GapIntersection(col_tracks[col_count - 1], mid_point,
+                                           /*is_at_edge_of_container=*/true);
     }
 
     gap_geometry_->SetGapIntersections(kForColumns, std::move(columns));
