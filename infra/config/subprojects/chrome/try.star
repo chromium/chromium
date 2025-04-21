@@ -187,15 +187,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "fuchsia-ava-nelson-npi",
-)
-
-chrome_internal_verifier(
     builder = "fuchsia-ava-sherlock",
-)
-
-chrome_internal_verifier(
-    builder = "fuchsia-ava-sherlock-npi",
 )
 
 chrome_internal_verifier(
