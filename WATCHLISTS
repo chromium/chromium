@@ -698,13 +698,6 @@
     'browser_compositor': {
       'filepath': 'ui/compositor/'
     },
-    'browser_manager': {
-      'filepath': 'chrome/browser/ash/crosapi/browser_manager' \
-                  '|chrome/browser/ash/crosapi/browser_loader' \
-                  '|chrome/browser/ash/crosapi/lacros_selection_loader' \
-                  '|chrome/browser/ash/crosapi/rootfs_lacros_loader' \
-                  '|chrome/browser/ash/crosapi/stateful_lacros_loader'
-    },
     'browser_scheduler': {
       'filepath': 'content/browser/scheduler'
     },
@@ -1021,9 +1014,6 @@
     'crosapi': {
       'filepath': 'chromeos/crosapi/'\
                   '|chrome/browser/ash/crosapi/',
-    },
-    'crosapi_mojom': {
-      'filepath': 'chromeos/crosapi/mojom/crosapi.mojom',
     },
     'crostini': {
       'filepath': 'cicerone'\
@@ -2764,7 +2754,6 @@
     'bound_session_credentials': ['drubery+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
-    'browser_manager': ['elkurin+watch@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
@@ -2894,7 +2883,6 @@
     'cros_commercial_policy_proto': ['vsavu+watch@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'crosapi': ['ffred+watch@chromium.org', 'tluk+watch@chromium.org'],
-    'crosapi_mojom': ['elkurin+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],
