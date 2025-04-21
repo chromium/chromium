@@ -5492,6 +5492,9 @@
         <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL" translateable="false" desc="Validation check found that device components are NOT approved for this device.">
           <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> detected. If you choose to confirm this has been installed, please do so now.
         </message>
+        <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SKIP" translateable="false" desc="Validation check is skipped.">
+          Component validation has been skipped.
+        </message>
         <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" translateable="false" desc="The label for the button to start the RMA process.">
           Get started
         </message>

@@ -3746,16 +3746,14 @@ class FakeHardwareVerificationStatusObserver
     : public mojom::HardwareVerificationStatusObserver {
  public:
   struct Observation {
-    bool is_compliant;
-    std::string error_message;
+    mojom::HardwareVerificationResultPtr result;
   };
 
-  void OnHardwareVerificationResult(bool is_compliant,
-                                    const std::string& error_message) override {
+  void OnHardwareVerificationResult(
+      mojom::HardwareVerificationResultPtr result) override {
     Observation observation;
-    observation.is_compliant = is_compliant;
-    observation.error_message = error_message;
-    observations.push_back(observation);
+    observation.result = std::move(result);
+    observations.push_back(std::move(observation));
   }
 
   std::vector<Observation> observations;
@@ -3767,24 +3765,23 @@ TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerification) {
   shimless_rma_provider_->ObserveHardwareVerificationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "",
+                                                                    false);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+  EXPECT_TRUE(fake_observer.observations[0].result->is_pass_result());
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerificationAfterSignal) {
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true,
-                                                                    "also ok");
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "",
+                                                                    false);
   FakeHardwareVerificationStatusObserver fake_observer;
   shimless_rma_provider_->ObserveHardwareVerificationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "also ok");
+  EXPECT_TRUE(fake_observer.observations[0].result->is_pass_result());
 }
 
 class FakeFinalizationObserver : public mojom::FinalizationObserver {

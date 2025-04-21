@@ -101,6 +101,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SUCCESS},
       {"validatedComponentsFailText",
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL},
+      {"validatedComponentsSkipText",
+       IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SKIP},
       {"getStartedButtonLabel", IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL},
       {"unqualifiedComponentsTitle",
        IDS_SHIMLESS_RMA_UNQUALIFIED_COMPONENTS_TITLE},
@@ -437,6 +439,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(features::kShimlessRMAOsUpdate));
   html_source->AddBoolean("3pDiagnosticsEnabled",
                           features::IsShimlessRMA3pDiagnosticsEnabled());
+  html_source->AddBoolean(
+      "hardwareValidationSkipEnabled",
+      features::IsShimlessRMAHardwareValidationSkipEnabled());
 }
 
 }  // namespace

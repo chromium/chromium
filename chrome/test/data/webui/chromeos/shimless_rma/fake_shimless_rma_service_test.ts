@@ -1039,16 +1039,15 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
   // Verify the hardware verification status observer is triggered.
   test('ObserveHardwareVerificationStatus', async () => {
     const observer = {
-      onHardwareVerificationResult(isCompliant, errorMessage): void {
-        assertTrue(isCompliant);
-        assertEquals('ok', errorMessage);
+      onHardwareVerificationResult(result): void {
+        assertDeepEquals({passResult: {}}, result);
       },
     } as HardwareVerificationStatusObserverRemote;
 
     assert(service);
     service.observeHardwareVerificationStatus(observer);
     await service.triggerHardwareVerificationStatusObserver(
-        true, 'ok', /*delayMs=*/ 0);
+        {passResult: {}}, /*delayMs=*/ 0);
   });
 
   // Verify the finalization observer is triggered.

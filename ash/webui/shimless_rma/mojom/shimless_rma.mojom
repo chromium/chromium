@@ -444,6 +444,21 @@ enum Show3pDiagnosticsAppResult {
   kFailedToLoad = 2,
 };
 
+struct PassHardwareVerificationResult {};
+
+struct FailHardwareVerificationResult {
+  string component_info;
+};
+
+struct SkipHardwareVerificationResult {};
+
+// Union to hold data specific to the verification result type.
+union HardwareVerificationResult {
+  PassHardwareVerificationResult pass_result;
+  FailHardwareVerificationResult fail_result;
+  SkipHardwareVerificationResult skip_result;
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -511,9 +526,9 @@ interface ExternalDiskStateObserver {
 
 // Implemented by clients to receive status of hardware verification.
 interface HardwareVerificationStatusObserver {
-  // OnHardwareVerificationResult is called to report if hardware verification
-  // succeeded or failed. With an optional error message for failures.
-  OnHardwareVerificationResult(bool is_compliant, string error_message);
+  // OnHardwareVerificationResult is called to report that hardware verification
+  // succeeded, failed, or skipped.
+  OnHardwareVerificationResult(HardwareVerificationResult result);
 };
 
 // Implemented by clients to receive status of finalization progress.

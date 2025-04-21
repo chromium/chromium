@@ -180,7 +180,8 @@ class RmadClientTest : public testing::Test {
 
   // Passes a hardware verification status signal to |client_|.
   void EmitHardwareVerificationResultSignal(bool is_compliant,
-                                            std::string error_message) {
+                                            std::string error_message,
+                                            bool is_skipped) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kHardwareVerificationResultSignal);
     dbus::MessageWriter writer(&signal);
@@ -188,6 +189,7 @@ class RmadClientTest : public testing::Test {
     writer.OpenStruct(&struct_writer);
     struct_writer.AppendBool(is_compliant);
     struct_writer.AppendString(error_message);
+    struct_writer.AppendBool(is_skipped);
     writer.CloseContainer(&struct_writer);
     EmitSignal(&signal);
   }
@@ -1041,16 +1043,18 @@ TEST_F(RmadClientTest, ExternalDiskState) {
 TEST_F(RmadClientTest, HardwareVerificationResult) {
   TestObserver observer_1(client_);
 
-  EmitHardwareVerificationResultSignal(false, "fatal error");
+  EmitHardwareVerificationResultSignal(false, "fatal error", false);
   EXPECT_EQ(observer_1.num_hardware_verification_result(), 1);
   EXPECT_FALSE(observer_1.last_hardware_verification_result().is_compliant());
   EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(),
             "fatal error");
+  EXPECT_FALSE(observer_1.last_hardware_verification_result().is_skipped());
 
-  EmitHardwareVerificationResultSignal(true, "ok");
+  EmitHardwareVerificationResultSignal(true, "ok", false);
   EXPECT_EQ(observer_1.num_hardware_verification_result(), 2);
   EXPECT_TRUE(observer_1.last_hardware_verification_result().is_compliant());
   EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(), "ok");
+  EXPECT_FALSE(observer_1.last_hardware_verification_result().is_skipped());
 }
 
 // Tests that synchronous observers are notified about finalization status.

@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_update_page.html.js';
 import type {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
-import {HardwareVerificationStatusObserverReceiver, OsUpdateObserverReceiver, OsUpdateOperation, UpdateErrorCode} from './shimless_rma.mojom-webui.js';
+import {HardwareVerificationResult, HardwareVerificationStatusObserverReceiver, OsUpdateObserverReceiver, OsUpdateOperation, UpdateErrorCode} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, enableAllButtons, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -218,14 +218,14 @@ export class OnboardingUpdatePageElement extends
    * Implements
    * HardwareVerificationStatusObserver.onHardwareVerificationResult()
    */
-  onHardwareVerificationResult(isCompliant: boolean, errorMessage: string): void {
+  onHardwareVerificationResult(result: HardwareVerificationResult): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.isCompliant = isCompliant;
+    this.isCompliant = result.passResult !== undefined;
 
     if (!this.isCompliant) {
-      this.unqualifiedComponentsText = errorMessage;
+      this.unqualifiedComponentsText = result.failResult!.componentInfo;
       this.setVerificationFailedMessage();
     }
   }
