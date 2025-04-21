@@ -52,6 +52,8 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // `kApproved` enumerate different reasons the request was rejected.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(RequestResult)
   enum class RequestResult {
     kApproved = 0,
     kInsufficientSmallerScopeBudget = 1,
@@ -62,6 +64,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kBadValuesOnDisk = 6,
     kMaxValue = kBadValuesOnDisk,
   };
+  // LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_budgeter.cc:ComputeOverallRequestResult)
 
   // For a single contribution, whether the budgeter approved its budget usage
   // (including provisionally) or denied it.
@@ -94,6 +97,8 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
 
     Lock(const Lock&) = delete;
     Lock& operator=(const Lock&) = delete;
+
+    static Lock CreateForTesting() { return Lock(); }
 
    private:
     friend PrivateAggregationBudgeter;
@@ -270,7 +275,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   //
   // Note: can only be used if `kPrivateAggregationApiErrorReporting` is
   // enabled.
-  void InspectBudgetAndLock(
+  virtual void InspectBudgetAndLock(
       const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
           contributions,
       const PrivateAggregationBudgetKey& budget_key,
@@ -299,7 +304,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   //
   // Note: can only be used if `kPrivateAggregationApiErrorReporting` is
   // enabled.
-  void ConsumeBudget(
+  virtual void ConsumeBudget(
       Lock lock,
       const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
           contributions,
@@ -330,6 +335,12 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // reporting origin in the data key.
   virtual void DeleteByDataKey(const PrivateAggregationDataModel::DataKey& key,
                                base::OnceClosure callback);
+
+  // Combines the results from sequential queries to `InspectBudgetAndLock()`
+  // and `ConsumeBudget()`.
+  static RequestResult CombineRequestResults(
+      RequestResult inspect_budget_result,
+      RequestResult consume_budget_result);
 
  protected:
   // Should only be used for testing/mocking to avoid creating the underlying

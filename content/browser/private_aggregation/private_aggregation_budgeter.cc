@@ -1057,4 +1057,15 @@ bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() const {
   }
 }
 
+// LINT.IfChange(ComputeOverallRequestResult)
+RequestResult PrivateAggregationBudgeter::CombineRequestResults(
+    RequestResult inspect_budget_result,
+    RequestResult consume_budget_result) {
+  // We can combine the results by simply taking the maximum as any fatal error
+  // can only occur once (and should be the final result) and any insufficient
+  // budget value should override a `kApproved` result.
+  return std::max(inspect_budget_result, consume_budget_result);
+}
+// LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_budgeter.h:RequestResult)
+
 }  // namespace content

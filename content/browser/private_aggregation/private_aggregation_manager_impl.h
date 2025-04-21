@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -112,6 +113,9 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationHost::NullReportBehavior null_report_behavior);
 
  private:
+  struct InProgressBudgetRequest;
+  using BudgetRequestId = base::StrongAlias<class BudgetRequestIdTag, int64_t>;
+
   // Called when the `budgeter_` has responded to a `ConsumeBudget()` call.
   // Virtual for testing.
   virtual void OnConsumeBudgetReturned(
@@ -121,6 +125,17 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationCallerApi caller_api,
       PrivateAggregationHost::NullReportBehavior null_report_behavior,
       PrivateAggregationBudgeter::RequestResult request_result);
+
+  void OnTestBudgetAndLockReturned(
+      BudgetRequestId budget_request_id,
+      PrivateAggregationBudgeter::InspectBudgetCallResult result);
+
+  // TODO(crbug.com/381788013): Remove `WithLock` naming once
+  // `kPrivateAggregationApiErrorReporting` is fully launched and the flag is
+  // removed.
+  void OnConsumeBudgetWithLockReturned(
+      BudgetRequestId budget_request_id,
+      PrivateAggregationBudgeter::BudgetQueryResult result);
 
   virtual void OnContributionsFinalized(
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
@@ -134,6 +149,16 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
 
   std::unique_ptr<PrivateAggregationBudgeter> budgeter_;
   std::unique_ptr<PrivateAggregationHost> host_;
+
+  // Used to track associated information for requests to the `budgeter_` that
+  // have not had their callbacks called yet. Only populated if
+  // `kPrivateAggregationApiErrorReporting` is enabled.
+  std::map<BudgetRequestId, InProgressBudgetRequest>
+      in_progress_budget_requests_;
+
+  // Used to vend keys for `in_progress_budget_requests_`. Only used if
+  // `kPrivateAggregationApiErrorReporting` is enabled.
+  int64_t num_requests_processed_ = 0;
 
   // Can be nullptr in unit tests.
   raw_ptr<StoragePartitionImpl> storage_partition_;

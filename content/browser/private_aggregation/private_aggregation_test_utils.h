@@ -51,6 +51,22 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               (override));
 
   MOCK_METHOD(void,
+              InspectBudgetAndLock,
+              (const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(InspectBudgetCallResult)>),
+              (override));
+  MOCK_METHOD(void,
+              ConsumeBudget,
+              (Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(BudgetQueryResult)>),
+              (override));
+
+  MOCK_METHOD(void,
               ClearData,
               (base::Time,
                base::Time,
