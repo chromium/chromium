@@ -1584,12 +1584,13 @@ GraphBuilderTflite::TrySerializeQuantizedOutput(size_t quantize_op_idx) {
     return std::nullopt;
   }
 
-  quantize_ops_to_skip_.insert(quantize_op_idx);
   auto output = SerializeOutputTensorInfo(quantize_linear.output_operand_id,
                                           *quantize_params);
   if (!output.has_value()) {
     return std::nullopt;
   }
+
+  quantize_ops_to_skip_.insert(quantize_op_idx);
   return output.value();
 }
 
