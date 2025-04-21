@@ -2625,6 +2625,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_tabindexWithLinkChildren() {
+        performHtmlTest("tabindex-with-link-children.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_tableFocusableSections() {
         performHtmlTest("table-focusable-sections.html");
     }
