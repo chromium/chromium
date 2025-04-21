@@ -18,14 +18,9 @@ class MockNoticeStorage : public NoticeStorage {
 
   MOCK_METHOD(void,
               RecordEvent,
-              (std::string_view notice,
-               notice::mojom::PrivacySandboxNoticeEvent event),
-              (override));
-
-  MOCK_METHOD(void,
-              RecordEventWithNoticeId,
               ((std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>),
-               notice::mojom::PrivacySandboxNoticeEvent));
+               notice::mojom::PrivacySandboxNoticeEvent),
+              (override));
 
   MOCK_METHOD(std::optional<PrivacySandboxNoticeData>,
               ReadNoticeData,
@@ -37,9 +32,8 @@ class MockNoticeStorage : public NoticeStorage {
               (std::string_view notice),
               (const, override));
 
-  void RecordEvent(
-      std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,
-      notice::mojom::PrivacySandboxNoticeEvent event) override;
+  void RecordEvent(std::string_view notice,
+                   notice::mojom::PrivacySandboxNoticeEvent event) override {}
 };
 
 }  // namespace privacy_sandbox

@@ -44,18 +44,13 @@ void PrivacySandboxNoticeService::Shutdown() {
 void PrivacySandboxNoticeService::EventOccurred(
     NoticeId notice_id,
     PrivacySandboxNoticeEvent event) {
-  // Crash if notice_id could not be found.
-  auto it = catalog_->GetNoticeMap().find(notice_id);
-  CHECK(it != catalog_->GetNoticeMap().end())
-      << "EventOccurred on unregistered notice id for noticeId "
-      << notice_id.first << " and surfaceType "
-      << static_cast<int>(notice_id.second);
+  GetNoticeStorage()->RecordEvent(notice_id, event);
 
-  Notice* notice = it->second.get();
+  auto notice_ptr = catalog_->GetNoticeMap().find(notice_id);
+  CHECK(notice_ptr != catalog_->GetNoticeMap().end());
+  CHECK(notice_ptr->second != nullptr);
 
-  GetNoticeStorage()->RecordEvent(notice->GetStorageName(), event);
-
-  notice->UpdateTargetApiResults(event);
+  notice_ptr->second->UpdateTargetApiResults(event);
 }
 
 // TODO(crbug.com/392612108): Implement this function.

@@ -144,7 +144,8 @@ TEST_F(PrivacySandboxNoticeServiceTest,
 
   // 4. Set expectations on the storage mock.
   EXPECT_CALL(*mock_storage(),
-              RecordEvent(StrEq("TestFeatureA"), Eq(Event::kAck)))
+              RecordEvent(Eq(NoticeId{kThreeAdsApisNotice, kDesktopNewTab}),
+                          Eq(Event::kAck)))
       .Times(1);
 
   // 5. Execute
