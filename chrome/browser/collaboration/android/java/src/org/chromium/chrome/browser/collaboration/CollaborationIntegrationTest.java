@@ -35,11 +35,10 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateBridge;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateTestImpl;
 import org.chromium.components.data_sharing.DataSharingServiceImpl;
@@ -68,10 +67,7 @@ public class CollaborationIntegrationTest {
     private static final String TEST_COLLABORATION_ID = "collaboration_id";
 
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
-
-    @Rule(order = 1)
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public SyncTestRule mActivityTestRule = new SyncTestRule();
 
     private FakeDataSharingUIDelegateImpl mDataSharingUIDelegate;
     private DataSharingSDKDelegateTestImpl mDataSharingSDKDelegate;
@@ -90,9 +86,7 @@ public class CollaborationIntegrationTest {
         mDataSharingSDKDelegate = new DataSharingSDKDelegateTestImpl();
         DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
         DataSharingSDKDelegateBridge.setForTesting(mDataSharingSDKDelegate);
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.waitForActivityCompletelyLoaded();
+        mActivityTestRule.getSigninTestRule().addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
@@ -168,7 +162,8 @@ public class CollaborationIntegrationTest {
         onViewWaiting(withId(R.id.button_secondary)).perform(click());
 
         // The user is signed out.
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(
+                mActivityTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
