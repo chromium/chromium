@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
@@ -164,14 +163,8 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
 
   const extensions::ManagementPolicy* policy =
       extensions::ExtensionSystem::Get(profile())->management_policy();
-  // `policy` may be null in unit tests.
-  if (policy) {
-    app->allow_uninstall = policy->UserMayModifySettings(extension, nullptr) &&
-                           !policy->MustRemainInstalled(extension, nullptr);
-  } else {
-    CHECK_IS_TEST();
-    app->allow_uninstall = true;
-  }
+  app->allow_uninstall = policy->UserMayModifySettings(extension, nullptr) &&
+                         !policy->MustRemainInstalled(extension, nullptr);
   app->allow_close = true;
   return app;
 }
