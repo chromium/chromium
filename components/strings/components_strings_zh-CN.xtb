@@ -1393,7 +1393,7 @@
 <translation id="3433111389595862568">协作与会议软件</translation>
 <translation id="3433144818443565002">语音与视频聊天</translation>
 <translation id="3434025015623587566">Google 密码管理工具需要更多访问权限</translation>
-<translation id="3434346831962601311">没有被屏蔽的主题</translation>
+<translation id="3434346831962601311">未屏蔽任何主题</translation>
 <translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
@@ -2250,6 +2250,7 @@
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4901952598169637881">休闲鞋</translation>
 <translation id="4905659621780993806">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 自动重启您的设备。请在设备重启前保存所有已打开的内容。</translation>
+<translation id="4913083239887436582">Web 应用安装</translation>
 <translation id="4913987521957242411">打孔（左上角）</translation>
 <translation id="4914727764832832057">蓝色 1</translation>
 <translation id="4916389289686916969">电视真人秀</translation>
@@ -2580,6 +2581,7 @@
 <translation id="5483838506518938965">一切都已就绪</translation>
 <translation id="5485100387355669506">超粗</translation>
 <translation id="5485973315555778056">云端设备</translation>
+<translation id="5488367146069768854">Web 应用安装</translation>
 <translation id="5488590678320979185">“创建记事”按钮，激活它即可在 Google Keep 中快速创建新记事</translation>
 <translation id="5490432419156082418">地址和其他信息</translation>
 <translation id="5492298309214877701">这个位于公司、组织或学校内网中的网站使用的网址与某个外部网站的网址相同。

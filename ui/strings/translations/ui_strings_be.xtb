@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрачытанае апавяшчэнне}one{# непрачытанае апавяшчэнне}few{# непрачытаныя апавяшчэнні}many{# непрачытаных апавяшчэнняў}other{# непрачытанага апавяшчэння}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Уключыце наступнае пашырэнне ў рэжыме інкогніта:}one{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}few{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}many{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}other{Уключыце наступныя пашырэнні ў рэжыме інкогніта:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 месяц таму}one{# месяц таму}few{# месяцы таму}many{# месяцаў таму}other{# месяца таму}}</translation>
+<translation id="4277033906326892359">Слупок "<ph name="COLUMN_NAME" />" адсартаваны па ўзрастанні</translation>
 <translation id="4289300219472526559">Пачаць галасавы ўвод</translation>
 <translation id="4289540628985791613">Агляд</translation>
 <translation id="4491109536499578614">Відарыс</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Блакіраваць усе апавяшчэнні</translation>
 <translation id="6620110761915583480">Захаваць файл</translation>
 <translation id="6699343763173986273">Мультымедыйная клавіша "Наступны трэк"</translation>
+<translation id="6807086321996342431">Слупок "<ph name="COLUMN_NAME" />"</translation>
 <translation id="6808150112686056157">Спыніць мультымедыя</translation>
 <translation id="6845383723252244143">Выбраць папку</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Засталася 1 гадзіна}one{Засталася # гадзіна}few{Засталося # гадзіны}many{Засталося # гадзін}other{Засталося # гадзіны}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Засталася 1 с}one{Засталася # с}few{Засталося # с}many{Засталося # с}other{Засталося # с}}</translation>
 <translation id="8134065097954893699">Гэта старонка перазагружаецца</translation>
+<translation id="813785873406874127">Слупок "<ph name="COLUMN_NAME" />" не адсартаваны</translation>
 <translation id="815598010540052116">Прагартаць уніз</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8394908167088220973">Прайграць або прыпыніць медыяфайл</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1г}one{#г}few{#г}many{#г}other{#г}}</translation>
+<translation id="8582972250170726813">Слупок "<ph name="COLUMN_NAME" />" адсартаваны па ўбыванні</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Файл <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>

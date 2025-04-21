@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 წაუკითხავი შეტყობინება}other{# წაუკითხავი შეტყობინება}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{ინკოგნიტო რეჟიმში ჩართეთ შემდეგი გაფართოება:}other{ინკოგნიტო რეჟიმში ჩართეთ შემდეგი გაფართოებები:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 თვის წინ}other{# თვის წინ}}</translation>
+<translation id="4277033906326892359">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია ზრდადი მიმდევრობით</translation>
 <translation id="4289300219472526559">დაიწყეთ ლაპარაკი</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4491109536499578614">გამოსახულება</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">ყველა შეტყობინების დაბლოკვა</translation>
 <translation id="6620110761915583480">ფაილის შენახვა</translation>
 <translation id="6699343763173986273">შემდეგი მედია ჩანაწერი</translation>
+<translation id="6807086321996342431">სვეტი <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">მედიის შეწყვეტა</translation>
 <translation id="6845383723252244143">აირჩიეთ საქაღალდე</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{დარჩენილია 1 საათი}other{დარჩენილია # საათი}}</translation>
@@ -207,6 +209,7 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 საათის წინ}other{# საათის წინ}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{დარჩენილია 1 წმ}other{დარჩენილია # წმ}}</translation>
 <translation id="8134065097954893699">ამ გვერდის ხელახლა ჩატვირთვა</translation>
+<translation id="813785873406874127">სვეტის <ph name="COLUMN_NAME" /> დალაგება გაუქმდა</translation>
 <translation id="815598010540052116">გადაადგილება ქვემოთ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">ერთი გვერდით ქვემოთ</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">შეტყობინების გაგზავნა</translation>
 <translation id="8394908167088220973">მედიის დაკვრა/პაუზა</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 წ.}other{# წ.}}</translation>
+<translation id="8582972250170726813">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია კლებადი მიმდევრობით</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ფაილი (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> კბ/წ</translation>

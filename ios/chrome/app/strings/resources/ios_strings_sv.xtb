@@ -282,6 +282,7 @@
 <translation id="2119636449201577317">Öppna i …</translation>
 <translation id="2120553909046681540">Organisationen har inaktiverat privat surfning.</translation>
 <translation id="2122754583996902531">Din webbläsare hanteras. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="2139692631842690197">Genom att logga in med det hanterade kontot kan du skilja på webbinformationen som är kopplad till organisationen, till exempel flikar, lösenord och historik.</translation>
 <translation id="2139867232736819575">Sök efter kopierad text</translation>
 <translation id="2147127444698817042">Endast tillgängligt på iPhone</translation>
 <translation id="2148799636999124959">Logga snabbt in på webbplatser och i appar med dina sparade lösenord.</translation>
@@ -511,6 +512,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="310900540163454140">Vill du radera lösenordet för <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3119874402040566234">Du loggas ut och webbinformationen rensas</translation>
+<translation id="3119915634508614502">Befintlig webbinformation flyttas inte till ditt jobbkonto. Du kan fortfarande använda den genom att logga ut från ditt hanterade konto.</translation>
 <translation id="3124568093781685165">Dela dina lösenord med familjen</translation>
 <translation id="3130863904455712965">Historik med mera</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
@@ -1289,6 +1291,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6410005280995367944">Lösenord i andra appar</translation>
 <translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig kod eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
 <translation id="6410883413783534063">Öppna flikar för att besöka olika sidor samtidigt</translation>
+<translation id="6415646765510136">Välj vad du vill göra med befintlig webbinformation på den här enheten.</translation>
 <translation id="6416807286621280684">Dina spårade paket och uppdateringar av leveranser.</translation>
 <translation id="6418346271604475326">Förbereder PDF</translation>
 <translation id="6421038304268477484">Översatt text</translation>
