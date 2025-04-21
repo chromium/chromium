@@ -345,8 +345,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 1, 1);
 }
 
+// TODO(crbug.com/409238041): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout \
+  DISABLED_LogsFailureWhenAutoTabGroupsButtonTimeout
+#else
+#define MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout \
+  LogsFailureWhenAutoTabGroupsButtonTimeout
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsFailureWhenAutoTabGroupsButtonTimeout) {
+                       MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
