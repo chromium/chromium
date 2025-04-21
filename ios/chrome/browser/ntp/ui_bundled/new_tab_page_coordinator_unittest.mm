@@ -15,6 +15,7 @@
 #import "components/variations/service/variations_service_client.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
@@ -233,6 +234,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     } else {
       browser_ = std::make_unique<TestBrowser>(GetProfile());
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
+      BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(
+          browser_.get());
       // Create non-NTP WebState
       browser_.get()->GetWebStateList()->InsertWebState(
           CreateWebState("http://chromium.org"),

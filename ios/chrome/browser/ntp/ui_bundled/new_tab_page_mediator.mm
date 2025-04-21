@@ -17,6 +17,8 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer_bridge.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -56,7 +58,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@interface NewTabPageMediator () <IdentityManagerObserverBridgeDelegate,
+@interface NewTabPageMediator () <BrowserViewVisibilityObserving,
+                                  IdentityManagerObserverBridgeDelegate,
                                   PrefObserverDelegate,
                                   SearchEngineObserving,
                                   SyncObserverModelBridge>
@@ -79,6 +82,11 @@
   // Observes changes in identity and updates the Identity Disc.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
+  // Observes changes of the browser view visibility state.
+  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
+      _browserViewVisibilityNotifierBrowserAgent;
+  std::unique_ptr<BrowserViewVisibilityObserverBridge>
+      _browserViewVisibilityObserverBridge;
   // Used to load URLs.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   raw_ptr<PrefService> _prefService;
@@ -104,20 +112,23 @@
 @synthesize scrollPositionToSave = _scrollPositionToSave;
 
 - (instancetype)
-     initWithTemplateURLService:(TemplateURLService*)templateURLService
-                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                    authService:(AuthenticationService*)authService
-                identityManager:(signin::IdentityManager*)identityManager
-          accountManagerService:
-              (ChromeAccountManagerService*)accountManagerService
-       identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-            discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                    prefService:(PrefService*)prefService
-                    syncService:(syncer::SyncService*)syncService
-    regionalCapabilitiesService:
-        (regional_capabilities::RegionalCapabilitiesService*)
-            regionalCapabilitiesService
-                     isSafeMode:(BOOL)isSafeMode {
+       initWithTemplateURLService:(TemplateURLService*)templateURLService
+                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                      authService:(AuthenticationService*)authService
+                  identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
+         identityDiscImageUpdater:
+             (id<UserAccountImageUpdateDelegate>)imageUpdater
+              discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+      regionalCapabilitiesService:
+          (regional_capabilities::RegionalCapabilitiesService*)
+              regionalCapabilitiesService
+    browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
+                                      browserViewVisibilityNotifierBrowserAgent
+                       isSafeMode:(BOOL)isSafeMode {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -131,6 +142,10 @@
     _identityObserverBridge =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    _browserViewVisibilityNotifierBrowserAgent =
+        browserViewVisibilityNotifierBrowserAgent;
+    _browserViewVisibilityObserverBridge =
+        std::make_unique<BrowserViewVisibilityObserverBridge>(self);
     // Listen for default search engine changes.
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
@@ -158,11 +173,16 @@
   [self updateAccountImage];
   [self updateAccountErrorBadge];
   [self startObservingPrefs];
+  _browserViewVisibilityNotifierBrowserAgent->AddObserver(
+      _browserViewVisibilityObserverBridge.get());
 }
 
 - (void)shutdown {
+  _browserViewVisibilityNotifierBrowserAgent->RemoveObserver(
+      _browserViewVisibilityObserverBridge.get());
   _searchEngineObserver.reset();
   _identityObserverBridge.reset();
+  _browserViewVisibilityObserverBridge.reset();
   self.accountManagerService = nil;
   self.discoverFeedService = nullptr;
   _prefChangeRegistrar.reset();
@@ -199,6 +219,18 @@
     NewTabPageTabHelper::FromWebState(webState)->SetNTPState(NTPState);
   } else {
     [self.consumer restoreScrollPosition:NTPState.scrollPosition];
+  }
+}
+
+#pragma mark - BrowserViewVisibilityObserving
+
+- (void)browserViewDidChangeToVisibilityState:
+            (BrowserViewVisibilityState)currentState
+                                    fromState:(BrowserViewVisibilityState)
+                                                  previousState {
+  if (self.discoverFeedService && self.NTPVisible && self.feedHeaderVisible) {
+    self.discoverFeedService->UpdateFeedViewVisibilityState(
+        self.contentCollectionView, currentState, previousState);
   }
 }
 

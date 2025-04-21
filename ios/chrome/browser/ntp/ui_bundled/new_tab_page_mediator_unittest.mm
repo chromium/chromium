@@ -18,6 +18,9 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
@@ -34,6 +37,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -46,6 +50,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -86,35 +91,39 @@ class NewTabPageMediatorTest : public PlatformTest {
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    browser_view_visibility_notifier_ =
+        BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get());
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_updater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
-    DiscoverFeedService* discover_feed_service =
-        DiscoverFeedServiceFactory::GetForProfile(profile_.get());
-    PrefService* prefs = profile_->GetPrefs();
+    test_discover_feed_service_ = static_cast<TestDiscoverFeedService*>(
+        DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
+    prefs_ = profile_->GetPrefs();
     mediator_ = [[NewTabPageMediator alloc]
-         initWithTemplateURLService:ios::TemplateURLServiceFactory::
-                                        GetForProfile(profile_.get())
-                          URLLoader:url_loader_
-                        authService:auth_service_
-                    identityManager:identity_manager_
-              accountManagerService:account_manager_service
-           identityDiscImageUpdater:image_updater_
-                discoverFeedService:discover_feed_service
-                        prefService:prefs
-                        syncService:&test_sync_service_
-        regionalCapabilitiesService:ios::RegionalCapabilitiesServiceFactory::
-                                        GetForProfile(profile_.get())
-                         isSafeMode:NO];
+           initWithTemplateURLService:ios::TemplateURLServiceFactory::
+                                          GetForProfile(profile_.get())
+                            URLLoader:url_loader_
+                          authService:auth_service_
+                      identityManager:identity_manager_
+                accountManagerService:account_manager_service
+             identityDiscImageUpdater:image_updater_
+                  discoverFeedService:test_discover_feed_service_
+                          prefService:prefs_
+                          syncService:&test_sync_service_
+          regionalCapabilitiesService:ios::RegionalCapabilitiesServiceFactory::
+                                          GetForProfile(profile_.get())
+        browserViewVisibilityNotifier:browser_view_visibility_notifier_
+                           isSafeMode:NO];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(profile_.get());
     feed_metrics_recorder_ =
-        [[FeedMetricsRecorder alloc] initWithPrefService:prefs
+        [[FeedMetricsRecorder alloc] initWithPrefService:prefs_
                                 featureEngagementTracker:tracker];
     mediator_.feedMetricsRecorder = feed_metrics_recorder_;
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -169,6 +178,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> initial_web_state_;
+  raw_ptr<PrefService> prefs_;
   id header_consumer_;
   id image_updater_;
   id logo_vendor_;
@@ -176,9 +186,12 @@ class NewTabPageMediatorTest : public PlatformTest {
   NewTabPageMediator* mediator_;
   raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
+  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
+      browser_view_visibility_notifier_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   syncer::TestSyncService test_sync_service_;
+  raw_ptr<TestDiscoverFeedService> test_discover_feed_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -223,4 +236,47 @@ TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoiceTargeted) {
   SetCustomSearchEngine();
   EXPECT_TRUE(mediator_.feedHeaderVisible);
   EXPECT_OCMOCK_VERIFY(feed_control_delegate);
+}
+
+// Tests that the mediator updates the Discover feed with the visibility state
+// of the feed.
+TEST_F(NewTabPageMediatorTest, TestUpdateVisibilityStateOfFeed) {
+  using enum BrowserViewVisibilityState;
+
+  [mediator_ setUp];
+
+  UICollectionView* collection_view = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[[UICollectionViewLayout alloc] init]];
+  mediator_.contentCollectionView = collection_view;
+
+  id<BrowserViewVisibilityAudience> audience =
+      browser_view_visibility_notifier_->GetBrowserViewVisibilityAudience();
+
+  // User is on new tab page.
+  mediator_.NTPVisible = YES;
+  [audience browserViewDidTransitionToVisibilityState:kAppearing
+                                            fromState:kNotInViewHierarchy];
+  EXPECT_EQ(test_discover_feed_service_->collection_view(), collection_view);
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
+
+  // User turns off the feed.
+  prefs_->SetBoolean(prefs::kArticlesForYouEnabled, false);
+  [audience browserViewDidTransitionToVisibilityState:kVisible
+                                            fromState:kAppearing];
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(), kAppearing);
+
+  // User turns the feed back on.
+  prefs_->SetBoolean(prefs::kArticlesForYouEnabled, true);
+  [audience browserViewDidTransitionToVisibilityState:kCoveredByOmniboxPopup
+                                            fromState:kVisible];
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(),
+            kCoveredByOmniboxPopup);
+
+  // User has navigated away.
+  mediator_.NTPVisible = NO;
+  [audience browserViewDidTransitionToVisibilityState:kVisible
+                                            fromState:kCoveredByOmniboxPopup];
+  EXPECT_EQ(test_discover_feed_service_->visibility_state(),
+            kCoveredByOmniboxPopup);
 }

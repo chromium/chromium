@@ -1627,6 +1627,8 @@
 
   self.NTPViewController.feedWrapperViewController =
       self.feedWrapperViewController;
+  self.NTPMediator.contentCollectionView =
+      self.feedWrapperViewController.contentCollectionView;
 
   [self.NTPViewController layoutContentInParentCollectionView];
 
@@ -1679,6 +1681,7 @@
 
   self.visible = visible;
   self.NTPViewController.NTPVisible = visible;
+  self.NTPMediator.NTPVisible = visible;
 
   if (!self.isOffTheRecord) {
     if (visible) {

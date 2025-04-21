@@ -23,6 +23,7 @@ class WebState;
 }  // namespace web
 
 class AuthenticationService;
+class BrowserViewVisibilityNotifierBrowserAgent;
 class ChromeAccountManagerService;
 class DiscoverFeedService;
 @protocol FeedControlDelegate;
@@ -41,20 +42,23 @@ class UrlLoadingBrowserAgent;
 @interface NewTabPageMediator : NSObject <NewTabPageMutator>
 
 - (instancetype)
-     initWithTemplateURLService:(TemplateURLService*)templateURLService
-                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                    authService:(AuthenticationService*)authService
-                identityManager:(signin::IdentityManager*)identityManager
-          accountManagerService:
-              (ChromeAccountManagerService*)accountManagerService
-       identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-            discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                    prefService:(PrefService*)prefService
-                    syncService:(syncer::SyncService*)syncService
-    regionalCapabilitiesService:
-        (regional_capabilities::RegionalCapabilitiesService*)
-            regionalCapabilitiesService
-                     isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
+       initWithTemplateURLService:(TemplateURLService*)templateURLService
+                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                      authService:(AuthenticationService*)authService
+                  identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
+         identityDiscImageUpdater:
+             (id<UserAccountImageUpdateDelegate>)imageUpdater
+              discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+      regionalCapabilitiesService:
+          (regional_capabilities::RegionalCapabilitiesService*)
+              regionalCapabilitiesService
+    browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
+                                      browserViewVisibilityNotifierBrowserAgent
+                       isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -68,6 +72,11 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
+// Indicates that the new tab page is visible.
+@property(nonatomic, assign) BOOL NTPVisible;
+// A pointer to the collection view that currently embeds all the contents on
+// the new tab page.
+@property(nonatomic, weak) UICollectionView* contentCollectionView;
 // Indicates whether the feed header should be visible.
 @property(nonatomic, readonly, getter=isFeedHeaderVisible)
     BOOL feedHeaderVisible;

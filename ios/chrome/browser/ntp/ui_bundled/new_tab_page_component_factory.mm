@@ -12,6 +12,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -127,18 +128,21 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   BOOL isSafeMode =
       [browser->GetSceneState().profileState.appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
-       initWithTemplateURLService:templateURLService
-                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
-                      authService:authService
-                  identityManager:IdentityManagerFactory::GetForProfile(profile)
-            accountManagerService:ChromeAccountManagerServiceFactory::
-                                      GetForProfile(profile)
-         identityDiscImageUpdater:imageUpdater
-              discoverFeedService:discoverFeedService
-                      prefService:prefService
-                      syncService:syncService
-      regionalCapabilitiesService:regionalCapabilitiesService
-                       isSafeMode:isSafeMode];
+         initWithTemplateURLService:templateURLService
+                          URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
+                        authService:authService
+                    identityManager:IdentityManagerFactory::GetForProfile(
+                                        profile)
+              accountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForProfile(profile)
+           identityDiscImageUpdater:imageUpdater
+                discoverFeedService:discoverFeedService
+                        prefService:prefService
+                        syncService:syncService
+        regionalCapabilitiesService:regionalCapabilitiesService
+      browserViewVisibilityNotifier:BrowserViewVisibilityNotifierBrowserAgent::
+                                        FromBrowser(browser)
+                         isSafeMode:isSafeMode];
 }
 
 - (NewTabPageViewController*)NTPViewController {
