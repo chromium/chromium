@@ -740,6 +740,10 @@ PhysicalRect LayoutText::LocalCaretRect(int caret_offset) const {
 
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
+  if (text_.empty()) {
+    return true;
+  }
+
   const ComputedStyle& style = StyleRef();
   return WTF::VisitCharacters(text_, [&style](auto chars) {
     return std::ranges::all_of(
