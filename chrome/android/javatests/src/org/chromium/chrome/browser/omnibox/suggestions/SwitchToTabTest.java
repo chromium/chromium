@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -55,6 +57,7 @@ import org.chromium.net.test.ServerCertificate;
 import java.util.List;
 
 /** Tests of the Switch To Tab feature. */
+@Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SwitchToTabTest {
