@@ -57,6 +57,18 @@ source_set("impl") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_contextual_cueing_service.cc",
+    "mock_contextual_cueing_service.h",
+  ]
+  deps = [
+    ":contextual_cueing",
+    "//chrome/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -68,6 +80,7 @@ source_set("unit_tests") {
   deps = [
     ":contextual_cueing",
     ":impl",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/content_extraction",

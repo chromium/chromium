@@ -360,6 +360,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
+    "//chrome/browser/contextual_cueing:test_support",
     "//chrome/browser/permissions:test_support",
     "//chrome/browser/ui",
     "//chrome/common",

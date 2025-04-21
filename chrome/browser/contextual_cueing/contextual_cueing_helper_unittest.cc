@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -41,13 +42,7 @@ std::unique_ptr<KeyedService> CreatePageContentExtractionService(
 
 std::unique_ptr<KeyedService> CreateContextualCueingService(
     content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<ContextualCueingService>(
-      page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(profile),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      /*loading_predictor=*/nullptr, profile->GetPrefs(),
-      /*template_url_service=*/nullptr);
+  return std::make_unique<MockContextualCueingService>();
 }
 
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
