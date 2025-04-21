@@ -1009,8 +1009,10 @@ ServiceWorkerTaskQueue::GetCurrentActivationToken(
   return iter->second;
 }
 
-void ServiceWorkerTaskQueue::OnRegistrationStored(int64_t registration_id,
-                                                  const GURL& scope) {
+void ServiceWorkerTaskQueue::OnRegistrationStored(
+    int64_t registration_id,
+    const GURL& scope,
+    const content::ServiceWorkerRegistrationInformation& service_worker_info) {
   const ExtensionId extension_id = scope.host();
   auto iter = pending_storage_registrations_.find(extension_id);
   if (iter == pending_storage_registrations_.end()) {

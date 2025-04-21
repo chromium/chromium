@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CONTEXT_CORE_OBSERVER_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,6 +15,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
@@ -100,9 +102,11 @@ class ServiceWorkerContextCoreObserver {
   // This happens after OnRegistrationCompleted(). The implementation can assume
   // that ServiceWorkerContextCore will find the registration, and can safely
   // add user data to the registration.
-  virtual void OnRegistrationStored(int64_t registration_id,
-                                    const GURL& scope,
-                                    const blink::StorageKey& key) {}
+  virtual void OnRegistrationStored(
+      int64_t registration_id,
+      const GURL& scope,
+      const blink::StorageKey& key,
+      const ServiceWorkerRegistrationInformation& service_worker_info) {}
 
   // Called after a task has been posted to delete a registration from storage.
   // This is roughly equivalent to the same time that the promise for

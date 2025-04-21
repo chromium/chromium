@@ -132,7 +132,8 @@ void TestServiceWorkerContextObserver::OnRegistrationCompleted(
 
 void TestServiceWorkerContextObserver::OnRegistrationStored(
     int64_t registration_id,
-    const GURL& scope) {
+    const GURL& scope,
+    const content::ServiceWorkerRegistrationInformation& service_worker_info) {
   if (scope.SchemeIs(kExtensionScheme)) {
     registration_stored_ = true;
     if (stored_quit_closure_) {

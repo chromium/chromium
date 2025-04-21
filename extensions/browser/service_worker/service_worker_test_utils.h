@@ -87,7 +87,9 @@ class TestServiceWorkerContextObserver
   // ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& scope) override;
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override;
+                            const GURL& scope,
+                            const content::ServiceWorkerRegistrationInformation&
+                                service_worker_info) override;
   void OnVersionStartedRunning(
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& running_info) override;

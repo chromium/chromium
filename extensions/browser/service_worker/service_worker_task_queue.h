@@ -301,7 +301,9 @@ class ServiceWorkerTaskQueue
   // ServiceWorkerContextObserverSynchronous.
   // content::ServiceWorkerContextObserver:
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override;
+                            const GURL& scope,
+                            const content::ServiceWorkerRegistrationInformation&
+                                service_worker_info) override;
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
                               const content::ConsoleMessage& message) override;

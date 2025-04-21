@@ -134,9 +134,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void OnRegistrationCompleted(int64_t registration_id,
                                const GURL& scope,
                                const blink::StorageKey& key) override;
-  void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope,
-                            const blink::StorageKey& key) override;
+  void OnRegistrationStored(
+      int64_t registration_id,
+      const GURL& scope,
+      const blink::StorageKey& key,
+      const ServiceWorkerRegistrationInformation& service_worker_info) override;
   void OnAllRegistrationsDeletedForStorageKey(
       const blink::StorageKey& key) override;
   void OnErrorReported(

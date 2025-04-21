@@ -50,6 +50,7 @@
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/common/url_utils.h"
 #include "ipc/ipc_message.h"
@@ -1138,14 +1139,36 @@ void ServiceWorkerContextCore::NotifyWillCreateURLLoaderFactory(
 }
 
 void ServiceWorkerContextCore::NotifyRegistrationStored(
-    int64_t registration_id,
+    const int64_t registration_id,
     const GURL& scope,
-    const blink::StorageKey& key) {
+    const blink::StorageKey& key,
+    uint64_t stored_resources_total_size_bytes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      GetLiveRegistration(registration_id);
+  ServiceWorkerRegistrationInformation service_worker_info;
+
+  if (registration) {
+    registration->SetStored();
+    registration->set_resources_total_size_bytes(
+        stored_resources_total_size_bytes);
+
+    ServiceWorkerVersion* version = registration->GetNewestVersion();
+    content::ServiceWorkerRegistry::ResourceList resources;
+    if (version) {
+      resources = version->script_cache_map()->GetResources();
+    }
+    for (const auto& resource : resources) {
+      service_worker_info.resources.push_back(resource->url);
+    }
+  }
+
   registered_storage_keys_.insert(key);
+
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationStored,
-      registration_id, scope, key);
+      registration_id, scope, key, service_worker_info);
 }
 
 void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
