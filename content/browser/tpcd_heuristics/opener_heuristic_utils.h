@@ -5,12 +5,17 @@
 #ifndef CONTENT_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_UTILS_H_
 #define CONTENT_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_UTILS_H_
 
+#include <map>
+
+#include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/cookie_access_details.h"
 
 class GURL;
 
 namespace content {
+
+class BtmRedirectContext;
+struct CookieAccessDetails;
 
 // Common identity providers that open pop-ups, to help estimate the impact of
 // third-party cookie blocking and prioritize mitigations. These values are
@@ -39,6 +44,18 @@ inline OptionalBool ToOptionalBool(bool b) {
 // is false and the override is not set regardless.
 CONTENT_EXPORT OptionalBool
 IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details);
+
+// Returns a map of (site, (url, has_current_interaction)) for all URLs in the
+// current redirect chain that satisfy the redirect heuristic. This performs
+// all checks except for the presence of a past interaction, which should be
+// checked by the caller using the BTM database. If `allowed_sites` is present,
+// only sites in `allowed_sites` should be included.
+CONTENT_EXPORT std::map<std::string, std::pair<GURL, bool>>
+GetRedirectHeuristicURLs(
+    const BtmRedirectContext& committed_redirect_context,
+    const GURL& first_party_url,
+    base::optional_ref<std::set<std::string>> allowed_sites,
+    bool require_current_interaction);
 
 }  // namespace content
 

@@ -161,16 +161,6 @@ class CONTENT_EXPORT BtmRedirectContext {
   // Return all sites that had an interaction in the current redirect context.
   std::set<std::string> AllSitesWithUserActivationOrAuthn() const;
 
-  // Returns a map of (site, (url, has_current_interaction)) for all URLs in the
-  // current redirect chain that satisfy the redirect heuristic. This performs
-  // all checks except for the presence of a past interaction, which should be
-  // checked by the caller using the DIPS db. If `allowed_sites` is present,
-  // only sites in `allowed_sites` should be included.
-  std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
-      const GURL& first_party_url,
-      base::optional_ref<std::set<std::string>> allowed_sites,
-      bool require_current_interaction) const;
-
   // Returns the server redirects from the last navigation. Note that due to
   // limitations in C++ the BtmRedirectInfo objects are unavoidably mutable.
   // Clients must not modify them.

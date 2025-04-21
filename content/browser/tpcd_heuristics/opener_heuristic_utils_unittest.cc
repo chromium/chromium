@@ -5,10 +5,67 @@
 #include "content/browser/tpcd_heuristics/opener_heuristic_utils.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/common/features.h"
+#include "content/browser/btm/btm_bounce_detector.h"
+#include "content/public/browser/btm_redirect_info.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace {
+
+using content::BtmDataAccessType;
+using content::BtmRedirectChainInfoPtr;
+using content::BtmRedirectInfo;
+using content::BtmRedirectInfoPtr;
+using content::UrlAndSourceId;
+
+UrlAndSourceId MakeUrlAndId(std::string_view url) {
+  return UrlAndSourceId(GURL(url), ukm::AssignNewSourceId());
+}
+
+using ChainPair =
+    std::pair<BtmRedirectChainInfoPtr, std::vector<BtmRedirectInfoPtr>>;
+
+void AppendChainPair(std::vector<ChainPair>& vec,
+                     std::vector<BtmRedirectInfoPtr> redirects,
+                     BtmRedirectChainInfoPtr chain) {
+  vec.emplace_back(std::move(chain), std::move(redirects));
+}
+
+std::vector<BtmRedirectInfoPtr> MakeServerRedirects(
+    std::vector<std::string> urls,
+    BtmDataAccessType access_type = BtmDataAccessType::kReadWrite) {
+  std::vector<BtmRedirectInfoPtr> redirects;
+  for (const auto& url : urls) {
+    redirects.push_back(BtmRedirectInfo::CreateForServer(
+        /*url=*/MakeUrlAndId(url),
+        /*access_type=*/access_type,
+        /*time=*/base::Time::Now(),
+        /*was_response_cached=*/false,
+        /*response_code=*/net::HTTP_FOUND,
+        /*server_bounce_delay=*/base::TimeDelta()));
+  }
+  return redirects;
+}
+
+BtmRedirectInfoPtr MakeClientRedirect(
+    std::string url,
+    BtmDataAccessType access_type = BtmDataAccessType::kReadWrite,
+    bool has_sticky_activation = false,
+    bool has_web_authn_assertion = false) {
+  return BtmRedirectInfo::CreateForClient(
+      /*url=*/MakeUrlAndId(url),
+      /*access_type=*/access_type,
+      /*time=*/base::Time::Now(),
+      /*client_bounce_delay=*/base::Seconds(1),
+      /*has_sticky_activation=*/has_sticky_activation,
+      /*web_authn_assertion_request_succeeded*/ has_web_authn_assertion);
+}
+}  // namespace
 
 namespace content {
 
@@ -65,6 +122,118 @@ TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentParam) {
   details.cookie_setting_overrides.Put(
       net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
   EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+}
+
+TEST(BtmRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      content_settings::features::kTpcdHeuristicsGrants,
+      {{"TpcdRedirectHeuristicRequireABAFlow", "false"}});
+
+  UrlAndSourceId first_party_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId current_interaction_url = MakeUrlAndId("http://b.test/");
+  GURL no_current_interaction_url("http://c.test/");
+
+  std::vector<ChainPair> chains;
+  BtmRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+
+  context.AppendCommitted(first_party_url,
+                          {MakeServerRedirects({"http://c.test"})},
+                          current_interaction_url, false);
+  context.AppendCommitted(
+      MakeClientRedirect("http://b.test/", BtmDataAccessType::kNone,
+                         /*has_sticky_activation=*/true),
+      {}, first_party_url, false);
+
+  ASSERT_EQ(context.size(), 2u);
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          GetRedirectHeuristicURLs(context, first_party_url.url, std::nullopt,
+                                   /*require_current_interaction=*/false);
+  EXPECT_THAT(
+      sites_to_url_and_current_interaction,
+      testing::UnorderedElementsAre(
+          std::pair<std::string, std::pair<GURL, bool>>(
+              "b.test", std::make_pair(current_interaction_url.url, true)),
+          std::pair<std::string, std::pair<GURL, bool>>(
+              "c.test", std::make_pair(no_current_interaction_url, false))));
+}
+
+TEST(BtmRedirectContextTest, GetRedirectHeuristicURLs_RequireABAFlow) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      content_settings::features::kTpcdHeuristicsGrants,
+      {{"TpcdRedirectHeuristicRequireABAFlow", "true"}});
+
+  UrlAndSourceId first_party_url = MakeUrlAndId("http://a.test/");
+  GURL aba_url("http://b.test/");
+  GURL no_aba_url("http://c.test/");
+
+  std::vector<ChainPair> chains;
+  BtmRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+
+  context.AppendCommitted(
+      first_party_url,
+      {MakeServerRedirects({"http://b.test", "http://c.test"})},
+      first_party_url, false);
+
+  ASSERT_EQ(context.size(), 2u);
+
+  std::set<std::string> allowed_sites = {GetSiteForBtm(aba_url)};
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          GetRedirectHeuristicURLs(context, first_party_url.url, allowed_sites,
+                                   /*require_current_interaction=*/false);
+  EXPECT_THAT(sites_to_url_and_current_interaction,
+              testing::UnorderedElementsAre(
+                  std::pair<std::string, std::pair<GURL, bool>>(
+                      "b.test", std::make_pair(aba_url, false))));
+}
+
+TEST(BtmRedirectContextTest,
+     GetRedirectHeuristicURLs_RequireCurrentInteraction) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      content_settings::features::kTpcdHeuristicsGrants,
+      {{"TpcdRedirectHeuristicRequireABAFlow", "false"}});
+
+  UrlAndSourceId first_party_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId current_interaction_url = MakeUrlAndId("http://b.test/");
+  GURL no_current_interaction_url("http://c.test/");
+
+  std::vector<ChainPair> chains;
+  BtmRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+
+  context.AppendCommitted(first_party_url,
+                          {MakeServerRedirects({"http://c.test"})},
+                          current_interaction_url, false);
+  context.AppendCommitted(
+      MakeClientRedirect("http://b.test/", BtmDataAccessType::kNone,
+                         /*has_sticky_activation=*/false, true),
+      {}, first_party_url, false);
+
+  ASSERT_EQ(context.size(), 2u);
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          GetRedirectHeuristicURLs(context, first_party_url.url, std::nullopt,
+                                   /*require_current_interaction=*/true);
+  EXPECT_THAT(
+      sites_to_url_and_current_interaction,
+      testing::UnorderedElementsAre(
+          std::pair<std::string, std::pair<GURL, bool>>(
+              "b.test", std::make_pair(current_interaction_url.url, true))));
 }
 
 }  // namespace content
