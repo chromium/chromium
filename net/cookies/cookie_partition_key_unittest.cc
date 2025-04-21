@@ -143,62 +143,19 @@ TEST(CookiePartitionKeyTest, Serialization) {
       {CookiePartitionKey::FromURLForTesting(GURL()), std::nullopt},
       // AncestorChain::kSameSite
       {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
-                                             kSameSite, std::nullopt),
+                                             kSameSite),
        Output{"https://toplevelsite.com", false}},
       // AncestorChain::kCrossSite
       {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
-                                             kCrossSite, std::nullopt),
+                                             kCrossSite),
        Output{"https://toplevelsite.com", true}},
       // With nonce
-      {CookiePartitionKey::FromNetworkIsolationKey(
-           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
-                               SchemefulSite(GURL("https://cookiesite.com")),
-                               nonce),
-           SiteForCookies(), SchemefulSite(GURL("https://toplevelsite.com")),
-           /*main_frame_navigation=*/false),
+      {CookiePartitionKey::FromURLForTesting(GURL("https://cookiesite.com"),
+                                             kCrossSite, nonce),
        std::nullopt},
-      // Same site no nonce from NIK
-      {CookiePartitionKey::FromNetworkIsolationKey(
-           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
-                               SchemefulSite(GURL("https://toplevelsite.com"))),
-           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
-           SchemefulSite(GURL("https://toplevelsite.com")),
-           /*main_frame_navigation=*/false),
-       Output{"https://toplevelsite.com", false}},
-      // Different request_site results in cross site ancestor
-      {CookiePartitionKey::FromNetworkIsolationKey(
-           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
-                               SchemefulSite(GURL("https://toplevelsite.com"))),
-           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
-           SchemefulSite(GURL("https://differentOrigin.com")),
-           /*main_frame_navigation=*/false),
-       Output{"https://toplevelsite.com", true}},
-      // Different request_site but main_frame_navigation=true results in same
-      // site ancestor
-      {CookiePartitionKey::FromNetworkIsolationKey(
-           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
-                               SchemefulSite(GURL("https://toplevelsite.com"))),
-           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
-           SchemefulSite(GURL("https://differentOrigin.com")),
-           /*main_frame_navigation=*/true),
-       Output{"https://toplevelsite.com", false}},
-      // Different request_site  and null site_for_cookies but
-      // main_frame_navigation=true results in same
-      // site ancestor
-      {CookiePartitionKey::FromNetworkIsolationKey(
-           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
-                               SchemefulSite(GURL("https://toplevelsite.com"))),
-           SiteForCookies(), SchemefulSite(GURL("https://differentOrigin.com")),
-           /*main_frame_navigation=*/true),
-       Output{"https://toplevelsite.com", false}},
-      // Same site with nonce from NIK
-      {CookiePartitionKey::FromNetworkIsolationKey(
-           NetworkIsolationKey(SchemefulSite(GURL("https://toplevelsite.com")),
-                               SchemefulSite(GURL("https://toplevelsite.com")),
-                               nonce),
-           SiteForCookies::FromUrl(GURL("https://toplevelsite.com")),
-           SchemefulSite(GURL("https://toplevelsite.com")),
-           /*main_frame_navigation=*/false),
+      // Same site w/ nonce
+      {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
+                                             kSameSite, nonce),
        std::nullopt},
       // Invalid partition key
       {std::make_optional(
@@ -291,6 +248,23 @@ TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
                                              std::nullopt),
        SiteForCookies(), kLocalhost,
        /*main_frame_navigation=*/false},
+      // Different request_site results in cross site ancestor
+      {"DifferentRequestSite",
+       NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
+       CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(),
+                                             kCrossSite),
+       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kCookieSite,
+       /*main_frame_navigation=*/false},
+      {"DifferentRequestSiteMainFrameNavigation",
+       NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
+       CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kSameSite),
+       SiteForCookies::FromUrl(kTopLevelSite.GetURL()), kCookieSite,
+       /*main_frame_navigation=*/true},
+      {"DifferentRequestSiteMainFrameNavigationNullSiteForCookies",
+       NetworkIsolationKey(kTopLevelSite, kTopLevelSite),
+       CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kSameSite),
+       SiteForCookies(), kCookieSite,
+       /*main_frame_navigation=*/true},
   };
 
   for (const auto& test_case : test_cases) {
