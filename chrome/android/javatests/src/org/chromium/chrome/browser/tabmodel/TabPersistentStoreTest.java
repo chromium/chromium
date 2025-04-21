@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
@@ -390,6 +391,11 @@ public class TabPersistentStoreTest {
 
                                 @Override
                                 protected LaunchCauseMetrics createLaunchCauseMetrics() {
+                                    return null;
+                                }
+
+                                @Override
+                                public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
                                     return null;
                                 }
 

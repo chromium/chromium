@@ -101,7 +101,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 decorView,
                 null,
                 bookmarkModelSupplier,
-                null,
                 readAloudControllerSupplier);
         mVerifier = verifier;
         mUiType = uiType;
