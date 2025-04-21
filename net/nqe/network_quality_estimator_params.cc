@@ -13,6 +13,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -141,7 +142,7 @@ const char* GetNameForConnectionTypeInternal(
 // other information.
 void ObtainDefaultObservations(
     const std::map<std::string, std::string>& params,
-    nqe::internal::NetworkQuality default_observations[]) {
+    base::span<nqe::internal::NetworkQuality> default_observations) {
   for (size_t i = 0; i < NetworkChangeNotifier::CONNECTION_LAST; ++i) {
     DCHECK_EQ(nqe::internal::InvalidRTT(), default_observations[i].http_rtt());
     DCHECK_EQ(nqe::internal::InvalidRTT(),
@@ -253,7 +254,7 @@ const std::array<int32_t, net::EFFECTIVE_CONNECTION_TYPE_LAST>
 // effective connection types.
 void ObtainTypicalNetworkQualities(
     const std::map<std::string, std::string>& params,
-    nqe::internal::NetworkQuality typical_network_quality[]) {
+    base::span<nqe::internal::NetworkQuality> typical_network_quality) {
   for (size_t i = 0; i < EFFECTIVE_CONNECTION_TYPE_LAST; ++i) {
     DCHECK_EQ(nqe::internal::InvalidRTT(),
               typical_network_quality[i].http_rtt());
@@ -311,7 +312,7 @@ void ObtainTypicalNetworkQualities(
 // |connection_thresholds|.
 void ObtainConnectionThresholds(
     const std::map<std::string, std::string>& params,
-    nqe::internal::NetworkQuality connection_thresholds[]) {
+    base::span<nqe::internal::NetworkQuality> connection_thresholds) {
   // First set the default thresholds.
   std::array<nqe::internal::NetworkQuality,
              EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST>

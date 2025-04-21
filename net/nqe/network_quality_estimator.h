@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -552,8 +553,8 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // entries in the nqe::internal:ObservationCategory enum.
   // Each observation buffer in |rtt_ms_observations_| stores RTT observations
   // in milliseconds. Within a buffer, the observations are sorted by timestamp.
-  ObservationBuffer
-      rtt_ms_observations_[nqe::internal::OBSERVATION_CATEGORY_COUNT];
+  std::array<ObservationBuffer, nqe::internal::OBSERVATION_CATEGORY_COUNT>
+      rtt_ms_observations_;
 
   // Observer lists for round trip times and throughput measurements.
   base::ObserverList<RTTObserver>::Unchecked rtt_observer_list_;

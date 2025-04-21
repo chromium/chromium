@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/privacy_mode.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -12,6 +11,7 @@
 
 #include <sys/types.h>
 
+#include <array>
 #include <memory>
 #include <ostream>
 #include <set>
@@ -41,6 +41,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
@@ -1257,9 +1258,12 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
-  const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
-      kNetworkAnonymizationKey1, kNetworkAnonymizationKey2,
-      NetworkAnonymizationKey()};
+  const auto kNetworkAnonymizationKeys =
+      std::to_array<NetworkAnonymizationKey>({
+          kNetworkAnonymizationKey1,
+          kNetworkAnonymizationKey2,
+          NetworkAnonymizationKey(),
+      });
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

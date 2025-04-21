@@ -302,19 +302,22 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   bool use_small_responses_ = false;
 
   // Default network quality observations obtained from |params_|.
-  nqe::internal::NetworkQuality
-      default_observations_[NetworkChangeNotifier::CONNECTION_LAST + 1];
+  std::array<nqe::internal::NetworkQuality,
+             NetworkChangeNotifier::CONNECTION_LAST + 1>
+      default_observations_;
 
   // Typical network quality for different effective connection types obtained
   // from |params_|.
-  nqe::internal::NetworkQuality typical_network_quality_
-      [EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST];
+  std::array<nqe::internal::NetworkQuality,
+             EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST>
+      typical_network_quality_;
 
   // Thresholds for different effective connection types obtained from
   // |params_|. These thresholds encode how different connection types behave
   // in general.
-  nqe::internal::NetworkQuality connection_thresholds_
-      [EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST];
+  std::array<nqe::internal::NetworkQuality,
+             EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST>
+      connection_thresholds_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

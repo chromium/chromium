@@ -319,7 +319,8 @@ class ReadHandler {
 
   int pending_result_ = net::OK;
 
-  scoped_refptr<net::IOBuffer> read_buffers_[kMaxParallelOperations];
+  std::array<scoped_refptr<net::IOBuffer>, kMaxParallelOperations>
+      read_buffers_;
 };
 
 void ReadHandler::Run() {

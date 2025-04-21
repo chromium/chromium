@@ -5,6 +5,7 @@
 #ifndef NET_SPDY_SPDY_WRITE_QUEUE_H_
 #define NET_SPDY_SPDY_WRITE_QUEUE_H_
 
+#include <array>
 #include <memory>
 
 #include "base/containers/circular_deque.h"
@@ -112,7 +113,7 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
   int num_queued_capped_frames_ = 0;
 
   // The actual write queue, binned by priority.
-  base::circular_deque<PendingWrite> queue_[NUM_PRIORITIES];
+  std::array<base::circular_deque<PendingWrite>, NUM_PRIORITIES> queue_;
 };
 
 }  // namespace net

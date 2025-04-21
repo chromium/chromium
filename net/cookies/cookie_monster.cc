@@ -45,6 +45,7 @@
 #include "net/cookies/cookie_monster.h"
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <list>
 #include <map>
@@ -320,7 +321,7 @@ typedef struct ChangeCausePair_struct {
   CookieChangeCause cause;
   bool notify;
 } ChangeCausePair;
-const ChangeCausePair kChangeCauseMapping[] = {
+const auto kChangeCauseMapping = std::to_array<ChangeCausePair>({
     // DELETE_COOKIE_EXPLICIT
     {CookieChangeCause::EXPLICIT, true},
     // DELETE_COOKIE_OVERWRITE
@@ -352,7 +353,8 @@ const ChangeCausePair kChangeCauseMapping[] = {
     // DELETE_COOKIE_ALIAS
     {CookieChangeCause::EVICTED, false},
     // DELETE_COOKIE_LAST_ENTRY
-    {CookieChangeCause::EXPLICIT, false}};
+    {CookieChangeCause::EXPLICIT, false},
+});
 
 bool IsCookieEligibleForEviction(CookiePriority current_priority_level,
                                  bool protect_secure_cookies,

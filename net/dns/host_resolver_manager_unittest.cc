@@ -10,6 +10,7 @@
 #include "net/dns/host_resolver_manager_unittest.h"
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <limits>
 #include <optional>
@@ -4145,11 +4146,11 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
     const char* cached_ip_address;
   };
 
-  const CacheEntry kCacheEntries[] = {
+  const auto kCacheEntries = std::to_array<CacheEntry>({
       {NetworkAnonymizationKey(), "192.168.1.42"},
       {kNetworkAnonymizationKey1, "192.168.1.43"},
       {kNetworkAnonymizationKey2, "192.168.1.44"},
-  };
+  });
 
   // Add entries to cache for the empty NAK, NAK1, and NAK2. Only the
   // HostResolverManager obeys network state partitioning, so this is fine to do
