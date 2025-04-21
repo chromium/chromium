@@ -353,13 +353,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 menutype = AppMenuItemType.TITLE_BUTTON;
             } else if (item.getItemId() == R.id.icon_row_menu_id) {
                 int viewCount = item.getSubMenu().size();
-                if (viewCount == 3) {
-                    menutype = AppMenuItemType.THREE_BUTTON_ROW;
-                } else if (viewCount == 4) {
-                    menutype = AppMenuItemType.FOUR_BUTTON_ROW;
-                } else if (viewCount == 5) {
-                    menutype = AppMenuItemType.FIVE_BUTTON_ROW;
-                }
+                menutype = AppMenuItemType.BUTTON_ROW;
+                assert viewCount <= 5 : "At most 5 buttons currently supported.";
             } else {
                 // Could be standard items or custom items.
                 int customType = customItemViewTypeProvider.fromMenuItemId(item.getItemId());

@@ -462,15 +462,7 @@ class AppMenuHandlerImpl
                 new LayoutViewBuilder(R.layout.title_button_menu_item),
                 AppMenuItemViewBinder::bindTitleButtonItem);
         adapter.registerType(
-                AppMenuItemType.THREE_BUTTON_ROW,
-                new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                AppMenuItemViewBinder::bindIconRowItem);
-        adapter.registerType(
-                AppMenuItemType.FOUR_BUTTON_ROW,
-                new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                AppMenuItemViewBinder::bindIconRowItem);
-        adapter.registerType(
-                AppMenuItemType.FIVE_BUTTON_ROW,
+                AppMenuItemType.BUTTON_ROW,
                 new LayoutViewBuilder(R.layout.icon_row_menu_item),
                 AppMenuItemViewBinder::bindIconRowItem);
 

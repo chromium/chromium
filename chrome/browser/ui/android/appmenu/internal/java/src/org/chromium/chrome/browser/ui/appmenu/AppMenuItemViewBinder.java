@@ -10,7 +10,6 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -191,22 +190,21 @@ class AppMenuItemViewBinder {
         if (key == AppMenuItemProperties.SUBMENU) {
             ModelList iconList = model.get(AppMenuItemProperties.SUBMENU);
 
-            int numItems = iconList.size();
-            ImageButton[] buttons = new ImageButton[numItems];
-            // Save references to all the buttons.
-            for (int i = 0; i < numItems; i++) {
-                buttons[i] = (ImageButton) view.findViewById(BUTTON_IDS[i]);
-            }
-
-            // Remove unused menu items.
-            for (int i = numItems; i < 5; i++) {
-                ((ViewGroup) view).removeView(view.findViewById(BUTTON_IDS[i]));
-            }
-
             AppMenuClickHandler appMenuClickHandler =
                     model.get(AppMenuItemProperties.CLICK_HANDLER);
-            for (int i = 0; i < numItems; i++) {
-                setupImageButton(buttons[i], iconList.get(i).model, appMenuClickHandler);
+
+            int numItems = iconList.size();
+            ImageButton[] buttons = new ImageButton[numItems];
+            for (int i = 0; i < 5; i++) {
+                ImageButton button = view.findViewById(BUTTON_IDS[i]);
+                if (i < numItems) {
+                    buttons[i] = button;
+                    button.setVisibility(View.VISIBLE);
+                    setupImageButton(button, iconList.get(i).model, appMenuClickHandler);
+                } else {
+                    button.setVisibility(View.GONE);
+                    button.setImageDrawable(null);
+                }
             }
 
             boolean isMenuIconAtStart = model.get(AppMenuItemProperties.MENU_ICON_AT_START);
