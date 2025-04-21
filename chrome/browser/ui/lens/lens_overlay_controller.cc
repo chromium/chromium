@@ -76,6 +76,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -150,29 +151,6 @@ inline constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
 
 // The url query param key for the lens request id.
 inline constexpr char kLensRequestQueryParameter[] = "vsrid";
-
-// Allows lookup of a LensOverlayController from a WebContents associated with a
-// tab.
-class LensOverlayControllerTabLookup
-    : public content::WebContentsUserData<LensOverlayControllerTabLookup> {
- public:
-  ~LensOverlayControllerTabLookup() override = default;
-
-  LensOverlayController* controller() { return controller_; }
-
- private:
-  friend WebContentsUserData;
-  LensOverlayControllerTabLookup(content::WebContents* contents,
-                                 LensOverlayController* controller)
-      : content::WebContentsUserData<LensOverlayControllerTabLookup>(*contents),
-        controller_(controller) {}
-
-  // Semantically owns this class.
-  raw_ptr<LensOverlayController> controller_;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerTabLookup);
 
 // Copy the objects of a vector into another without transferring
 // ownership.
@@ -380,6 +358,13 @@ lens::mojom::PageContentType StringMimeTypeToMojoPageContentType(
   return lens::mojom::PageContentType::kUnknown;
 }
 
+LensOverlayController* GetLensOverlayControllerFromTabInterface(
+    tabs::TabInterface* tab_interface) {
+  return tab_interface
+             ? tab_interface->GetTabFeatures()->lens_overlay_controller()
+             : nullptr;
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -397,9 +382,6 @@ LensOverlayController::LensOverlayController(
       theme_service_(theme_service),
       gen204_controller_(
           std::make_unique<lens::LensOverlayGen204Controller>()) {
-  LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
-                                                       this);
-
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(base::BindRepeating(
       &LensOverlayController::TabForegrounded, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
@@ -422,9 +404,6 @@ LensOverlayController::LensOverlayController(
 
 LensOverlayController::~LensOverlayController() {
   tab_contents_observer_.reset();
-  tab_->GetContents()->RemoveUserData(
-      LensOverlayControllerTabLookup::UserDataKey());
-
   state_ = State::kOff;
 }
 
@@ -469,12 +448,17 @@ LensOverlayController::SearchQuery::operator=(
 LensOverlayController::SearchQuery::~SearchQuery() = default;
 
 // static.
-LensOverlayController* LensOverlayController::GetController(
-    content::WebContents* webui_contents) {
-  auto* tab_interface = webui::GetTabInterface(webui_contents);
-  return tab_interface
-             ? tab_interface->GetTabFeatures()->lens_overlay_controller()
-             : nullptr;
+LensOverlayController* LensOverlayController::FromWebUIWebContents(
+    content::WebContents* webui_web_contents) {
+  return GetLensOverlayControllerFromTabInterface(
+      webui::GetTabInterface(webui_web_contents));
+}
+
+// static.
+LensOverlayController* LensOverlayController::FromTabWebContents(
+    content::WebContents* tab_web_contents) {
+  return GetLensOverlayControllerFromTabInterface(
+      tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
 void LensOverlayController::IssueContextualSearchRequest(
@@ -3145,8 +3129,6 @@ void LensOverlayController::WillDiscardContents(
     content::WebContents* new_contents) {
   // Background tab contents discarded.
   CloseUISync(lens::LensOverlayDismissalSource::kTabContentsDiscarded);
-  old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
-  LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
 }
 
 void LensOverlayController::WillDetach(

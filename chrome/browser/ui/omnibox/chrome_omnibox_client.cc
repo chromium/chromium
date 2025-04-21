@@ -354,18 +354,20 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
     // keyword mode is exited, lens should be closed.
     return;
   }
+
+  TemplateURL* template_url =
+      GetTemplateURLService()->GetTemplateURLForKeyword(keyword);
+  if (!template_url ||
+      template_url->starter_pack_id() != TemplateURLStarterPackData::kPage) {
+    return;
+  }
+
   if (content::WebContents* web_contents = location_bar_->GetWebContents()) {
     if (LensOverlayController* lens_controller =
-            LensOverlayController::GetController(web_contents)) {
-      if (TemplateURL* template_url =
-              GetTemplateURLService()->GetTemplateURLForKeyword(keyword)) {
-        if (template_url->starter_pack_id() ==
-            TemplateURLStarterPackData::kPage) {
-          // TODO(crbug.com/408073216): Create and use new dismissal source.
-          lens_controller->CloseUIAsync(
-              lens::LensOverlayDismissalSource::kEscapeKeyPress);
-        }
-      }
+            LensOverlayController::FromTabWebContents(web_contents)) {
+      // TODO(crbug.com/408073216): Create and use new dismissal source.
+      lens_controller->CloseUIAsync(
+          lens::LensOverlayDismissalSource::kEscapeKeyPress);
     }
   }
 }
@@ -731,7 +733,7 @@ ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
     return std::nullopt;
   }
   LensSearchboxClient* client =
-      LensOverlayController::GetController(web_contents);
+      LensOverlayController::FromTabWebContents(web_contents);
   if (!client) {
     return std::nullopt;
   }

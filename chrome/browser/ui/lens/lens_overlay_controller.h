@@ -188,9 +188,18 @@ class LensOverlayController : public LensSearchboxClient,
   };
 
   // A simple utility that gets the the LensOverlayController TabFeature set by
-  // the embedding context of a lens WebUI hosted in `webui_contents`.
-  static LensOverlayController* GetController(
-      content::WebContents* webui_contents);
+  // the embedding tab of a lens WebUI hosted in `webui_web_contents`.
+  // May return nullptr if no LensOverlayController TabFeature is associated
+  // with `webui_web_contents`.
+  static LensOverlayController* FromWebUIWebContents(
+      content::WebContents* webui_web_contents);
+
+  // A simple utility that gets the the LensOverlayController TabFeature set by
+  // the instances of WebContents associated with a tab.
+  // May return nullptr if no LensOverlayController TabFeature is associated
+  // with `tab_web_contents`.
+  static LensOverlayController* FromTabWebContents(
+      content::WebContents* tab_web_contents);
 
   // Issues a contextual search request for Lens to fulfill.
   // No-op if the Lens Overlay is off or closing. If the Lens Overlay is in the

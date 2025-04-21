@@ -2332,7 +2332,7 @@ void ExecLensOverlay(Browser* browser) {
   CHECK(web_contents);
 
   LensOverlayController* const controller =
-      LensOverlayController::GetController(web_contents);
+      LensOverlayController::FromTabWebContents(web_contents);
   CHECK(controller);
   controller->ShowUI(lens::LensOverlayInvocationSource::kAppMenu);
   browser->window()->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);

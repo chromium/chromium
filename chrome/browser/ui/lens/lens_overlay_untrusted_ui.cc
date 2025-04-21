@@ -323,7 +323,7 @@ void LensOverlayUntrustedUI::BindInterface(
 
 LensOverlayController& LensOverlayUntrustedUI::GetLensOverlayController() {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui()->GetWebContents());
+      LensOverlayController::FromWebUIWebContents(web_ui()->GetWebContents());
   CHECK(controller);
   return *controller;
 }
