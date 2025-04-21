@@ -43,10 +43,16 @@ class MockPrivacySandboxService : public PrivacySandboxService {
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               PromptOpenedForBrowser,
-              (Browser*, views::Widget*),
+              (BrowserWindowInterface*, views::Widget*),
               (override));
-  MOCK_METHOD(void, PromptClosedForBrowser, (Browser*), (override));
-  MOCK_METHOD(bool, IsPromptOpenForBrowser, (Browser*), (override));
+  MOCK_METHOD(void,
+              PromptClosedForBrowser,
+              (BrowserWindowInterface*),
+              (override));
+  MOCK_METHOD(bool,
+              IsPromptOpenForBrowser,
+              (BrowserWindowInterface*),
+              (override));
   MOCK_METHOD(privacy_sandbox::PrivacySandboxQueueManager&,
               GetPrivacySandboxNoticeQueueManager,
               (),

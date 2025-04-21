@@ -78,8 +78,7 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
     if (auto* privacy_sandbox_service =
             PrivacySandboxServiceFactory::GetForProfile(
                 browser_->GetProfile())) {
-      privacy_sandbox_service->PromptClosedForBrowser(
-          browser_->GetBrowserForMigrationOnly());
+      privacy_sandbox_service->PromptClosedForBrowser(browser_);
     }
   }
 

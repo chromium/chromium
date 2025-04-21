@@ -32,7 +32,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class Browser;
+class BrowserWindowInterface;
 class PrefService;
 
 namespace content {
@@ -75,9 +75,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void PromptActionOccurred(PromptAction action,
                             SurfaceType surface_type) override;
 #if !BUILDFLAG(IS_ANDROID)
-  void PromptOpenedForBrowser(Browser* browser, views::Widget* widget) override;
-  void PromptClosedForBrowser(Browser* browser) override;
-  bool IsPromptOpenForBrowser(Browser* browser) override;
+  void PromptOpenedForBrowser(BrowserWindowInterface* browser,
+                              views::Widget* widget) override;
+  void PromptClosedForBrowser(BrowserWindowInterface* browser) override;
+  bool IsPromptOpenForBrowser(BrowserWindowInterface* browser) override;
   privacy_sandbox::PrivacySandboxQueueManager&
   GetPrivacySandboxNoticeQueueManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -350,7 +351,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 #if !BUILDFLAG(IS_ANDROID)
   // A map of Browser windows which have an open Privacy Sandbox prompt,
   // to the Widget for that prompt.
-  std::map<Browser*, raw_ptr<views::Widget, CtnExperimental>>
+  std::map<BrowserWindowInterface*, raw_ptr<views::Widget, CtnExperimental>>
       browsers_to_open_prompts_;
   // Instance of queue manager used to manage queue states.
   std::unique_ptr<privacy_sandbox::PrivacySandboxQueueManager> queue_manager_;

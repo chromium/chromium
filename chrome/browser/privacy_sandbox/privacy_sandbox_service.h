@@ -26,7 +26,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Widget;
@@ -247,15 +247,14 @@ class PrivacySandboxService : public KeyedService {
   // across multiple browser windows. Only relevant for Desktop.
 
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/408016824): Look into changing the mapping to store
-  // BrowserWindowInterface instead of Browser. Informs the service that a
-  // Privacy Sandbox prompt has been opened or closed for |browser|.
-  virtual void PromptOpenedForBrowser(Browser* browser,
+  // Informs the service that a Privacy Sandbox prompt has been opened
+  // or closed for |browser|.
+  virtual void PromptOpenedForBrowser(BrowserWindowInterface* browser,
                                       views::Widget* widget) = 0;
-  virtual void PromptClosedForBrowser(Browser* browser) = 0;
+  virtual void PromptClosedForBrowser(BrowserWindowInterface* browser) = 0;
 
   // Returns whether a Privacy Sandbox prompt is currently open for |browser|.
-  virtual bool IsPromptOpenForBrowser(Browser* browser) = 0;
+  virtual bool IsPromptOpenForBrowser(BrowserWindowInterface* browser) = 0;
 
   virtual privacy_sandbox::PrivacySandboxQueueManager&
   GetPrivacySandboxNoticeQueueManager() = 0;

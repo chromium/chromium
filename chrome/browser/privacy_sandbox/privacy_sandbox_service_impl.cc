@@ -1005,18 +1005,21 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void PrivacySandboxServiceImpl::PromptOpenedForBrowser(Browser* browser,
-                                                       views::Widget* widget) {
+void PrivacySandboxServiceImpl::PromptOpenedForBrowser(
+    BrowserWindowInterface* browser,
+    views::Widget* widget) {
   DCHECK(!browsers_to_open_prompts_.count(browser));
   browsers_to_open_prompts_[browser] = widget;
 }
 
-void PrivacySandboxServiceImpl::PromptClosedForBrowser(Browser* browser) {
+void PrivacySandboxServiceImpl::PromptClosedForBrowser(
+    BrowserWindowInterface* browser) {
   DCHECK(browsers_to_open_prompts_.count(browser));
   browsers_to_open_prompts_.erase(browser);
 }
 
-bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(Browser* browser) {
+bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(
+    BrowserWindowInterface* browser) {
   return browsers_to_open_prompts_.count(browser);
 }
 
