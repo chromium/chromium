@@ -932,14 +932,6 @@ BASE_FEATURE(kListWebAppsSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, emails links directly instead of going through the macOS share
-// extension system. Speculative fix for https://crbug.com/356643975.
-BASE_FEATURE(kMacDirectEmailShare,
-             "DirectEmailShare",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether to show the Hidden toggle in Settings, allowing users to toggle
 // whether to treat a WiFi network as having a hidden ssid.
