@@ -7,9 +7,6 @@ import {exceptionFromTransferable, newTransferableException} from './request_typ
 
 // This file contains helpers to send and receive messages over postMessage.
 
-// TODO(crbug.com/379684723): Make sure that request IDs cannot be duplicated,
-// even if the web client is recreated.
-
 // Requests sent over postMessage have this structure.
 declare interface RequestMessage {
   // Unique ID of the sender.
