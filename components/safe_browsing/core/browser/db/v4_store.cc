@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/to_address.h"
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 #include "components/safe_browsing/core/browser/db/v4_rice.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
@@ -990,10 +991,35 @@ bool V4Store::VerifyChecksum() {
   std::unique_ptr<crypto::SecureHash> checksum_ctx(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   while (has_unmerged) {
+#if DCHECK_IS_ON()
     // This is expensive (see https://crbug.com/373928217), but it's
     // useful to validate that the DB hasn't changed to debug
     // https://crbug.com/390144275
-    DCHECK_EQ(map_view.size(), hash_prefix_map_->view().size());
+    const HashPrefixMapView recomputed_map_view = hash_prefix_map_->view();
+
+    for (const auto& iterator_pair : iterator_map) {
+      PrefixSize prefix_size = iterator_pair.first;
+      HashPrefixesView::const_iterator start = iterator_pair.second;
+
+      HashPrefixesView hash_prefixes = map_view.at(prefix_size);
+      HashPrefixesView recomputed_hash_prefixes =
+          recomputed_map_view.at(prefix_size);
+
+      // Both regions should be the same.
+      DCHECK_EQ(hash_prefixes.data(), recomputed_hash_prefixes.data());
+      DCHECK_EQ(hash_prefixes.size(), recomputed_hash_prefixes.size());
+
+      // And the iterator map should be pointing into the region and
+      // properly aligned.
+      DCHECK_LE(base::to_address(recomputed_hash_prefixes.begin()),
+                base::to_address(start));
+      DCHECK_LE(base::to_address(start),
+                base::to_address(recomputed_hash_prefixes.end()));
+      DCHECK_EQ(
+          std::distance(recomputed_hash_prefixes.begin(), start) % prefix_size,
+          0u);
+    }
+#endif
 
     PrefixSize next_smallest_prefix_size = next_smallest_prefix.size();
 
