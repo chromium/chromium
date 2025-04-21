@@ -118,6 +118,7 @@ browser_exposed_mojom_targets = [
   "//components/optimization_guide/content/mojom:mojo_interfaces",
   "//components/optimization_guide/core:interfaces",
   "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
+  "//components/optimization_guide/public/mojom:mojom",
   "//components/os_crypt/async/common:algorithm_mojom",
   "//components/os_crypt/async/common:common_mojom",
   "//components/page_image_service/mojom:mojo_bindings",

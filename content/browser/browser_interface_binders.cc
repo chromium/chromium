@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/language_detection/content/common/language_detection.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/viz/host/gpu_client.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
@@ -1315,6 +1316,8 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::StorageAccessHandle>(
       base::BindRepeating(&StorageAccessHandle::Create));
 
+  map->Add<optimization_guide::mojom::ModelBroker>(base::BindRepeating(
+      &EmptyBinderForFrame<optimization_guide::mojom::ModelBroker>));
   if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));

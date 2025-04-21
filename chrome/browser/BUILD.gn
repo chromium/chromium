@@ -2232,6 +2232,7 @@ static_library("browser") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/optimization_guide_internals/webui",
+    "//components/optimization_guide/public/mojom",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
     "//components/os_crypt/async/browser",

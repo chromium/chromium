@@ -214,6 +214,10 @@ BASE_FEATURE(kOptimizationGuideIconView,
              "OptimizationGuideIconView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBrokerModelSessionsForUntrustedProcesses,
+             "BrokerModelSessionsForUntrustedProcesses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {

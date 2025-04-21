@@ -239,6 +239,25 @@ OptimizationGuideKeyedService::~OptimizationGuideKeyedService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
+void OptimizationGuideKeyedService::BindModelBroker(
+    mojo::PendingReceiver<optimization_guide::mojom::ModelBroker> receiver) {
+  if (!base::FeatureList::IsEnabled(
+          optimization_guide::features::
+              kBrokerModelSessionsForUntrustedProcesses)) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
+    return;
+  }
+  GetOnDeviceModelServiceController(on_device_component_manager_->GetWeakPtr())
+      ->BindBroker(std::move(receiver));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 OptimizationGuideKeyedService::GetJavaObject() {
