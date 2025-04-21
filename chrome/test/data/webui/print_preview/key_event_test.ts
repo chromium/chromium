@@ -70,7 +70,7 @@ suite('KeyEventTest', function() {
     const whenPrintCalled = nativeLayer.whenCalled('doPrint');
     keyEventOn(
         page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-            .querySelector('print-preview-copies-settings')!.shadowRoot!
+            .querySelector('print-preview-copies-settings')!.shadowRoot
             .querySelector('print-preview-number-settings-section')!.shadowRoot!
             .querySelector('cr-input')!.inputElement,
         'keydown', 0, [], 'Enter');
