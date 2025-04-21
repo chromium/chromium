@@ -588,6 +588,7 @@
                 {
                     "name": "CreateByDefault_AfterLoading",
                     "params": {
+                        "kill_when_backgrounded": "true",
                         "lowest-ranking": "false",
                         "not-perceptible-binding": "true",
                         "spare_renderer_creation_timing": "after-loading",

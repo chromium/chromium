@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
   <variant name="NotYetCreated"/>
   <variant name="NotYetCreatedAfterWarmup"/>
   <variant name="NotYetCreatedFirstLaunch"/>
+  <variant name="OnceBackgrounded"/>
   <variant name="ProcessExited"/>
   <variant name="ProcessHostDestroyed"/>
   <variant name="ProcessLimit"/>

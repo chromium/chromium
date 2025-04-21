@@ -67,6 +67,11 @@ const base::FeatureParam<int> kAndroidSpareRendererMemoryThreshold{
     &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_memory_threshold",
     1077};
 
+// Kill the spare renderer when the browser goes to the background to free
+// resources.
+const base::FeatureParam<bool> kAndroidSpareRendererKillWhenBackgrounded{
+    &kAndroidWarmUpSpareRendererWithTimeout, "kill_when_backgrounded", false};
+
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",

@@ -96,6 +96,8 @@ content::NoSpareRendererReason MapToNoSpareRendererReason(
       return content::NoSpareRendererReason::kProcessHostDestroyed;
     case content::SpareRendererDispatchResult::kMemoryPressure:
       return content::NoSpareRendererReason::kMemoryPressure;
+    case content::SpareRendererDispatchResult::kKillAfterBackgrounded:
+      return content::NoSpareRendererReason::kOnceBackgrounded;
   }
 }
 
@@ -151,6 +153,8 @@ std::string_view GetNoSpareRendererReasonName(NoSpareRendererReason reason) {
       return "NotYetCreatedFirstLaunch";
     case NoSpareRendererReason::kNotYetCreatedAfterWarmup:
       return "NotYetCreatedAfterWarmup";
+    case NoSpareRendererReason::kOnceBackgrounded:
+      return "OnceBackgrounded";
   }
 }
 
@@ -307,7 +311,15 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
           base::Minutes(2),
           base::BindRepeating(
               &SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired,
-              base::Unretained(this))) {
+              base::Unretained(this)))
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      app_status_listener_(
+          base::android::ApplicationStatusListener::New(base::BindRepeating(
+              &SpareRenderProcessHostManagerImpl::OnApplicationStateChange,
+              base::Unretained(this))))
+#endif
+{
   metrics_heartbeat_timer_.Reset();
 
   // Immediately start the timer if the system is already under memory pressure.
@@ -329,6 +341,10 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
             ->load(std::memory_order_relaxed) ==
         LoadingScenario::kNoPageLoading;
   }
+#if BUILDFLAG(IS_ANDROID)
+  OnApplicationStateChange(
+      base::android::ApplicationStatusListener::GetState());
+#endif
 }
 
 SpareRenderProcessHostManagerImpl::~SpareRenderProcessHostManagerImpl() =
@@ -468,6 +484,14 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
     no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (features::kAndroidSpareRendererKillWhenBackgrounded.Get() &&
+      is_app_backgroud_) {
+    no_spare_renderer_reason_ = NoSpareRendererReason::kOnceBackgrounded;
+    return;
+  }
+#endif
 
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
 
@@ -960,5 +984,30 @@ void SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired() {
   base::UmaHistogramCounts100("BrowserRenderProcessHost.SpareCount",
                               spare_rphs_.size());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SpareRenderProcessHostManagerImpl::OnApplicationStateChange(
+    base::android::ApplicationState state) {
+  if (!features::kAndroidSpareRendererKillWhenBackgrounded.Get()) {
+    return;
+  }
+  using ApplicationState = base::android::ApplicationState;
+  switch (state) {
+    case ApplicationState::APPLICATION_STATE_UNKNOWN:
+      return;
+    case ApplicationState::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
+    case ApplicationState::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
+      is_app_backgroud_ = false;
+      return;
+    case ApplicationState::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
+    case ApplicationState::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
+      if (!is_app_backgroud_) {
+        CleanupSpares(SpareRendererDispatchResult::kKillAfterBackgrounded);
+      }
+      is_app_backgroud_ = true;
+      return;
+  }
+}
+#endif
 
 }  // namespace content

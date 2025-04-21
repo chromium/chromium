@@ -905,6 +905,35 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       true, 1);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+using AndroidSpareRendererProcessHostManagerTest =
+    SpareRenderProcessHostManagerTestBase;
+
+IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
+                       KillSpareRendererWhenAppBackgrounded) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  // Notify a foreground state to start the test as foreground.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::ApplicationState::
+          APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  spare_manager.WarmupSpare(browser_context);
+  EXPECT_EQ(spare_manager.GetSpares().size(), 1u);
+  RenderProcessHost* rph = spare_manager.GetSpares().back();
+
+  // Send backgrounded event
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::ApplicationState::
+          APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  RenderProcessHostWatcher process_watcher(
+      rph, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+  process_watcher.Wait();
+  EXPECT_TRUE(spare_manager.GetSpares().empty());
+}
+#endif
+
 class ExtraSpareRenderProcessHostManagerTest
     : public SpareRenderProcessHostManagerTest {
  public:
