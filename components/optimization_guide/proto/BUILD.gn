@@ -77,7 +77,7 @@ proto_library("optimization_guide_proto") {
 
   # These are required to import system_profile.proto in
   # model_quality_metadata.proto.
-  proto_deps = [ "//third_party/metrics_proto:metrics_proto" ]
+  deps = [ "//third_party/metrics_proto:metrics_proto" ]
   import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
@@ -98,7 +98,7 @@ proto_library("optimization_guide_proto_descriptors") {
   proto_in_dir = "//"
   proto_out_dir = "components/optimization_guide/proto"
   sources = [ "features/feature_proto_registry.proto" ]
-  proto_deps = [
+  deps = [
     ":optimization_guide_proto",
     "//third_party/metrics_proto:metrics_proto",
   ]
