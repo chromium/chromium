@@ -158,9 +158,14 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   // to a GdkRectangle relative to the client window.
   aura::Window* window = static_cast<aura::Window*>(key_event.target());
   gfx::Rect caret_bounds;
-  if (gtk_context == gtk_context_)
+  if (gtk_context == gtk_context_) {
     caret_bounds = last_caret_bounds_;
-  caret_bounds -= window->GetBoundsInScreen().OffsetFromOrigin();
+  }
+  // Use absolute coordinates on GTK4 since a dummy context window is provided
+  // to GTK at position (0, 0).
+  if (!GtkCheckVersion(4)) {
+    caret_bounds -= window->GetBoundsInScreen().OffsetFromOrigin();
+  }
 
   // Chrome's DIPs may be different from GTK's DIPs if
   // --force-device-scale-factor is used.
