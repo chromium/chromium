@@ -616,20 +616,23 @@ bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
 bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
   switch (t_url->policy_origin()) {
     case TemplateURLData::PolicyOrigin::kNoPolicy:
-      // Hide if the preferred search engine for the keyword is created by
-      // policy. The call to `GetTemplateURLForKeyword` already ensure
+      // Hide if another engine (e.g., one set by policy) takes precedence for
+      // the same keyword. `GetTemplateURLForKeyword` already ensures
       // prioritization of search engines, so there is no need to replicate the
       // logic here.
-      return GetTemplateURLForKeyword(t_url->keyword())->CreatedByPolicy();
+      return t_url != GetTemplateURLForKeyword(t_url->keyword());
 
     case TemplateURLData::PolicyOrigin::kDefaultSearchProvider:
       return false;
 
     case TemplateURLData::PolicyOrigin::kSiteSearch:
     case TemplateURLData::PolicyOrigin::kSearchAggregator: {
-      // Always show featured Enterprise site search engines.
-      if (t_url->featured_by_policy()) {
-        return false;
+      // Hide if another engine (e.g., one set by the user) takes precedence for
+      // the same keyword. `GetTemplateURLForKeyword` already ensures
+      // prioritization of search engines, so there is no need to replicate the
+      // logic here.
+      if (t_url != GetTemplateURLForKeyword(t_url->keyword())) {
+        return true;
       }
 
       // A featured site search engine with keyword "work" is represented by two
@@ -640,11 +643,6 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
       // In the settings page, we want to show only one entry with both keywords
       // separated by a comma ("@work, work"). The logic below hides the one
       // that doesn't start with the "@" symbol.
-      //
-      // It also handles one corner case when the user explicitly created a site
-      // search engine with keyword "work", which overrides the one with the
-      // same keyword created by policy. In that case, we want to show both the
-      // Enterprise one with keyword "@work" and the user-defined one.
       const TemplateURL* t_url_with_at =
           GetTemplateURLForKeyword(u"@" + t_url->keyword());
       return t_url_with_at &&
