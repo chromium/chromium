@@ -5,13 +5,13 @@
 #ifndef PARTITION_ALLOC_SPINNING_MUTEX_H_
 #define PARTITION_ALLOC_SPINNING_MUTEX_H_
 
-#include <algorithm>
 #include <atomic>
 #include <cstdint>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_alloc_check.h"

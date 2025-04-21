@@ -138,11 +138,13 @@ using PartitionAllocWithAdvancedChecksFunctions =
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // `PartitionAllocFunctions` in instantiated in cc file.
-extern template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
     PartitionAllocFunctionsInternal<partition_alloc::AllocFlags::kNoHooks,
                                     partition_alloc::FreeFlags::kNoHooks>;
 // `PartitionAllocWithAdvancedChecksFunctions` in instantiated in cc file.
-extern template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |

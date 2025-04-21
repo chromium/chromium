@@ -14,6 +14,10 @@
 #include "partition_alloc/partition_alloc_base/log_message.h"
 #include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
+#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#endif  // PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+
 #define PA_STRINGIFY_IMPL(s) #s
 #define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
 
@@ -226,6 +230,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
       ::partition_alloc::internal::logging::RawCheckFailure( \
           "Check failed: " #condition "\n");                 \
   } while (0)
+
+#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+template <typename... Args>
+[[noreturn]] void RawCheckFailureFormat(const char* fmt, Args... args) {
+  constexpr size_t kRawCheckFailureFormatBufferSize = 256u;
+  char buffer[kRawCheckFailureFormatBufferSize];
+  (void)::partition_alloc::internal::base::strings::SafeSPrintf(buffer, fmt,
+                                                                args...);
+  ::partition_alloc::internal::logging::RawCheckFailure(buffer);
+}
+#endif  // PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
 
 }  // namespace partition_alloc::internal::logging
 

@@ -248,6 +248,12 @@ errno_t _dupenv_s(char** buffer,
   if (number_of_elements) {
     *number_of_elements = size;
   }
+  // If `varname` is not found, return 0 with *buffer=nullptr and
+  // *number_of_elements=0.
+  if (size == 0) {
+    *buffer = nullptr;
+    return 0;
+  }
   *buffer = static_cast<char*>(malloc(size));
   return getenv_s(&size, *buffer, size, varname);
 }
@@ -270,6 +276,12 @@ errno_t _wdupenv_s(wchar_t** buffer,
   }
   if (number_of_elements) {
     *number_of_elements = size;
+  }
+  // If `varname` is not found, return 0 with *buffer=nullptr and
+  // *number_of_elements=0.
+  if (size == 0) {
+    *buffer = nullptr;
+    return 0;
   }
   *buffer = static_cast<wchar_t*>(malloc(sizeof(wchar_t) * size));
   return _wgetenv_s(&size, *buffer, size, varname);

@@ -563,11 +563,11 @@ void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 // Explicitly instantiate `PartitionAllocFunctions`.
-template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
     PartitionAllocFunctionsInternal<partition_alloc::AllocFlags::kNoHooks,
                                     partition_alloc::FreeFlags::kNoHooks>;
 // Explicitly instantiate `PartitionAllocWithAdvancedChecksFunctions`.
-template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
         partition_alloc::FreeFlags::kNoHooks |

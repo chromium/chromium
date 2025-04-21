@@ -30,12 +30,10 @@
 //   might be placed into a 4096-byte bucket. Bucket sizes are chosen to try and
 //   keep worst-case waste to ~10%.
 
-#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <optional>
 #include <utility>
 
 #include "partition_alloc/address_pool_manager_types.h"
@@ -52,6 +50,8 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/optional.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"

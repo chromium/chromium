@@ -23,7 +23,7 @@ void* DefaultWinHeapCallocImpl(size_t n, size_t elem_size, void* context) {
     return nullptr;
   }
 
-  void* result = DefaultWinHeapMallocImpl(self, size, context);
+  void* result = DefaultWinHeapMallocImpl(size, context);
   if (result) {
     memset(result, 0, size);
   }

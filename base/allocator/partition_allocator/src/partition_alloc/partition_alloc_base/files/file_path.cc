@@ -4,10 +4,10 @@
 
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 
-#include <algorithm>
 #include <cstring>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
 #if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>

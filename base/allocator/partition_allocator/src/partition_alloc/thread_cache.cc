@@ -6,7 +6,6 @@
 
 #include <sys/types.h>
 
-#include <algorithm>
 #include <atomic>
 #include <cstdint>
 
@@ -15,6 +14,7 @@
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #include "partition_alloc/partition_alloc_check.h"

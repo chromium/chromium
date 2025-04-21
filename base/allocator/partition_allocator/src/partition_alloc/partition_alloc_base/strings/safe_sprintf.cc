@@ -4,13 +4,13 @@
 
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
-#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <limits>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
 #if PA_BUILDFLAG(IS_DEBUG)
 // In debug builds, we use RAW_CHECK() to print useful error messages, if
