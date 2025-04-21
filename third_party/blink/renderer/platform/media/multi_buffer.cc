@@ -365,13 +365,6 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
     }
   }
 
-  // When kMultiBufferNeverDefer is enabled, providers will submit themselves
-  // for cleanup after being deferred for too long.
-  if (base::FeatureList::IsEnabled(media::kMultiBufferNeverDefer)) {
-    return is_stale && RangeSupported() ? ProviderStateDead
-                                        : ProviderStateDefer;
-  }
-
   MultiBufferBlockId previous_reader_pos =
       ClosestPreviousEntry(readers_, pos - 1);
   if (previous_reader_pos != std::numeric_limits<MultiBufferBlockId>::min() &&
@@ -380,7 +373,15 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
     MultiBufferBlockId previous_writer_pos =
         ClosestPreviousEntry(writer_index_, pos - 1);
     if (previous_writer_pos < previous_reader_pos) {
-      return ProviderStateDefer;
+      // When kMultiBufferNeverDefer is enabled, providers will submit
+      // themselves for cleanup after being deferred for too long.
+      //
+      // See https://crbug.com/409117400 for notes on why we don't also include
+      // the ProviderStateDead case below in this feature.
+      return is_stale &&
+                     base::FeatureList::IsEnabled(media::kMultiBufferNeverDefer)
+                 ? ProviderStateDead
+                 : ProviderStateDefer;
     }
   }
 

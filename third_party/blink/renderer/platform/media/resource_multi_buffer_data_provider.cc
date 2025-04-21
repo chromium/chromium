@@ -174,9 +174,7 @@ void ResourceMultiBufferDataProvider::SetDeferred(bool deferred) {
 
   if (deferred) {
     if (!cleanup_timer_.IsRunning()) {
-      // Note: Timeout chosen based on Slow 4G dev tools speed preset to ensure
-      // that preloading a paused ~3mb 720p video (tulip2.vp9.webm) opens only
-      // two network connections instead of 3.
+      // Note: Timeout chosen based arbitrarily.
       cleanup_timer_.Start(
           FROM_HERE, base::Seconds(1),
           WTF::BindOnce(&ResourceMultiBufferDataProvider::SetStale,
