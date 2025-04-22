@@ -1957,11 +1957,6 @@ config("default_warnings") {
     }
   }
 
-  if (is_win && is_clang) {
-    # This warning is enabled by -Wall on windows only
-    cflags_cc += [ "-Wno-padded" ]
-  }
-
   if (is_clang) {
     cflags += [
       "-Wloop-analysis",
