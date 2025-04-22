@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class ConditionStatus {
 
-    private static final int TRUNCATE_STATUS_UPDATE = 1000;
+    private static final int TRUNCATE_STATUS_UPDATE = 20000;
 
     /** Lifecycle phases of ConditionalState. */
     @IntDef({
