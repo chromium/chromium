@@ -55,9 +55,11 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -78,6 +80,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
+import java.util.Set;
 
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
@@ -153,7 +156,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final Runnable mOnTabGroupCreation;
     private final Callback<TabGroupModelFilter> mOnFilterChange = this::onFilterChange;
-    private @Nullable TabContextMenuCoordinator mContextMenuCoordinator;
+    private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
     /** Lazily initialized when shown. */
@@ -288,7 +291,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 actionConfirmationManager,
                                                 mModalDialogManager,
                                                 desktopWindowStateManager,
-                                                undoBarThrottle);
+                                                undoBarThrottle,
+                                                tabBookmarkerSupplier,
+                                                shareDelegateSupplier);
                                 mTabGridDialogCoordinator.setPageKeyEvent(
                                         event ->
                                                 onPageKeyEvent(
@@ -534,9 +539,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Returns whether the TabListEditor needs a clean up. */
     public boolean doesTabListEditorNeedCleanup() {
-        @Nullable
-        TabListEditorCoordinator.TabListEditorController controller =
-                mMediator.getTabListEditorController();
+        @Nullable TabListEditorController controller = mMediator.getTabListEditorController();
         return controller != null && controller.needsCleanUp();
     }
 
@@ -654,7 +657,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     @VisibleForTesting
     CancelLongPressTabItemEventListener onLongPressOnTabCard(
-            TabContextMenuCoordinator contextMenuCoordinator, int tabId, @Nullable View cardView) {
+            TabGridContextMenuCoordinator contextMenuCoordinator,
+            int tabId,
+            @Nullable View cardView) {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         @Nullable Tab tab = filter.getTabModel().getTabById(tabId);
         if (tab != null && tab.getTabGroupId() == null && cardView != null) {
@@ -807,14 +812,23 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         /* destroyOnHide= */ false);
 
         TabBookmarker tabBookmarker = mTabBookmarkerSupplier.get();
+        ShowTabListEditor showTabListEditor =
+                tabId -> {
+                    mTabListEditorManager.showTabListEditor();
+                    TabListEditorController tabListEditorController =
+                            mTabListEditorManager.getControllerSupplier().get();
+                    if (tabListEditorController != null) {
+                        tabListEditorController.selectTabs(Set.of(tabId));
+                    }
+                };
         mContextMenuCoordinator =
-                TabContextMenuCoordinator.createContextMenuCoordinator(
+                TabGridContextMenuCoordinator.createContextMenuCoordinator(
                         mActivity,
                         tabBookmarker,
                         filter,
                         mTabGroupListBottomSheetCoordinator,
                         tabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        showTabListEditor);
     }
 }

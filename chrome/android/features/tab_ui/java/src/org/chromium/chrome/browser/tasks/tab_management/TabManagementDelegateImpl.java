@@ -72,7 +72,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull ThemeColorProvider themeColorProvider,
-            UndoBarThrottle undoBarThrottle) {
+            UndoBarThrottle undoBarThrottle,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
         return new TabGroupUiCoordinator(
                 activity,
                 parentView,
@@ -87,7 +89,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 layoutStateProviderSupplier,
                 modalDialogManager,
                 themeColorProvider,
-                undoBarThrottle);
+                undoBarThrottle,
+                tabBookmarkerSupplier,
+                shareDelegateSupplier);
     }
 
     @Override

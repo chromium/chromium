@@ -89,6 +89,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
+     * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param undoBarThrottle Used to throttle the undo bar.
      */
     TabSwitcherPaneCoordinatorFactory(

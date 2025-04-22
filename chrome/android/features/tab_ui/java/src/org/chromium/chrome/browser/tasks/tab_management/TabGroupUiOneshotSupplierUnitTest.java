@@ -28,14 +28,18 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -73,6 +77,8 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private TabManagementDelegate mTabManagementDelegate;
     @Mock private TabGroupUi mTabGroupUi;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
@@ -107,10 +113,12 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
                         mThemeColorProvider,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mTabBookmarkerSupplier,
+                        mShareDelegateSupplier);
         when(mTabManagementDelegate.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                        any(), any(), any()))
+                        any(), any(), any(), any(), any()))
                 .thenReturn(mTabGroupUi);
         TabManagementDelegateProvider.setTabManagementDelegateForTesting(mTabManagementDelegate);
 
@@ -153,7 +161,9 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
                         mThemeColorProvider,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mTabBookmarkerSupplier,
+                        mShareDelegateSupplier);
         assertNotNull(mTabGroupUiOneshotSupplier.get());
     }
 
@@ -183,7 +193,9 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mLayoutStateProviderSupplier,
                         mModalDialogManager,
                         mThemeColorProvider,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mTabBookmarkerSupplier,
+                        mShareDelegateSupplier);
         assertNotNull(mTabGroupUiOneshotSupplier.get());
     }
 }

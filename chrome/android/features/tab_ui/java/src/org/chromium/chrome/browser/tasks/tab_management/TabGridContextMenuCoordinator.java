@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
@@ -39,20 +38,30 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * A coordinator for the context menu accessed by long-pressing on a tab. It is responsible for
  * creating a list of menu items, setting up the menu, and displaying the menu.
  */
 @NullMarked
-public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId Integer> {
+public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId Integer> {
+    /** An interface to show the TabListEditor. */
+    @FunctionalInterface
+    public interface ShowTabListEditor {
+        /**
+         * Show the TabListEditor.
+         *
+         * @param tabId The tab ID of the tab that the context menu was shown for.
+         */
+        void show(@TabId int tabId);
+    }
+
     private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.ContextMenu";
     private final Activity mActivity;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final BookmarkModel mBookmarkModel;
 
-    TabContextMenuCoordinator(
+    TabGridContextMenuCoordinator(
             Activity activity,
             TabBookmarker tabBookmarker,
             Profile profile,
@@ -62,7 +71,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            TabListEditorManager tabListEditorManager) {
+            ShowTabListEditor showTabListEditor) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
@@ -71,7 +80,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId
                         tabGroupListBottomSheetCoordinator,
                         tabGroupCreationDialogManager,
                         shareDelegateSupplier,
-                        tabListEditorManager),
+                        showTabListEditor),
                 tabGroupModelFilter::getTabModel,
                 tabGroupSyncService,
                 collaborationService,
@@ -90,23 +99,23 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId
      * @param tabGroupCreationDialogManager The manager for the dialog showed on tab group creation.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
-     * @param tabListEditorManager Manages the Tab List Editor.
+     * @param showTabListEditor Shows the Tab List Editor.
      */
-    public static TabContextMenuCoordinator createContextMenuCoordinator(
+    public static TabGridContextMenuCoordinator createContextMenuCoordinator(
             Activity activity,
             TabBookmarker tabBookmarker,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            TabListEditorManager tabListEditorManager) {
+            ShowTabListEditor showTabListEditor) {
         Profile profile = assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
 
-        return new TabContextMenuCoordinator(
+        return new TabGridContextMenuCoordinator(
                 activity,
                 tabBookmarker,
                 profile,
@@ -116,7 +125,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId
                 shareDelegateSupplier,
                 tabGroupSyncService,
                 collaborationService,
-                tabListEditorManager);
+                showTabListEditor);
     }
 
     /**
@@ -146,7 +155,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId
             TabGroupListBottomSheetCoordinator coordinator,
             TabGroupCreationDialogManager dialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            TabListEditorManager tabListEditorManager) {
+            ShowTabListEditor showTabListEditor) {
         return (menuId, tabId, collaborationId) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
             TabModel tabModel = tabGroupModelFilter.getTabModel();
@@ -173,12 +182,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId
                 tabBookmarker.addOrEditBookmark(tab);
                 recordUserActionWithPrefix("AddBookmark");
             } else if (menuId == R.id.select_tabs) {
-                tabListEditorManager.showTabListEditor();
-                TabListEditorController tabListEditorController =
-                        tabListEditorManager.getControllerSupplier().get();
-                if (tabListEditorController != null) {
-                    tabListEditorController.selectTabs(Set.of(tab.getId()));
-                }
+                showTabListEditor.show(tab.getId());
                 recordUserActionWithPrefix("SelectTabs");
             } else if (menuId == R.id.close_tab) {
                 tabModel.getTabRemover()

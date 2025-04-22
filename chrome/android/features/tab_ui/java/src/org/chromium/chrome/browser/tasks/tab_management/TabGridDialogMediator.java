@@ -31,6 +31,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -40,8 +41,10 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -55,7 +58,9 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -92,6 +97,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,6 +106,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * A mediator for the TabGridDialog component, responsible for communicating with the components'
@@ -230,9 +237,11 @@ public class TabGridDialogMediator
     private final Runnable mScrimClickRunnable;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
+    private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
+    private @Nullable TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     private boolean mTabListEditorSetup;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     private boolean mIsUpdatingTitle;
@@ -255,7 +264,9 @@ public class TabGridDialogMediator
             Runnable showColorPickerPopupRunnable,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         mActivity = activity;
         mDialogController = dialogController;
         mModel = model;
@@ -538,6 +549,52 @@ public class TabGridDialogMediator
             mDesktopWindowStateManager.addObserver(this);
             if (mDesktopWindowStateManager.getAppHeaderState() != null) {
                 onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
+            }
+        }
+
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            Profile profile = filter.getTabModel().getProfile();
+            if (profile != null && modalDialogManager != null) {
+                TabGroupCreationDialogManager tabGroupCreationDialogManager =
+                        new TabGroupCreationDialogManager(activity, modalDialogManager, null);
+                TabGroupCreationCallback tabGroupCreationCallback =
+                        groupId -> {
+                            tabGroupCreationDialogManager.showDialog(groupId, filter);
+                        };
+                mTabGroupListBottomSheetCoordinator =
+                        new TabGroupListBottomSheetCoordinator(
+                                activity,
+                                profile,
+                                tabGroupCreationCallback,
+                                filter,
+                                bottomSheetController,
+                                true,
+                                false);
+
+                CollaborationService collaborationService =
+                        CollaborationServiceFactory.getForProfile(profile);
+                ShowTabListEditor showTabListEditor =
+                        tabId -> {
+                            setupAndShowTabListEditor(mCurrentTabId);
+                            TabListEditorController tabListEditorController =
+                                    mTabListEditorControllerSupplier.get();
+                            if (tabListEditorController != null) {
+                                tabListEditorController.selectTabs(Set.of(tabId));
+                            }
+                        };
+                mTabGridContextMenuCoordinator =
+                        new TabGridContextMenuCoordinator(
+                                activity,
+                                tabBookmarkerSupplier.get(),
+                                profile,
+                                filter,
+                                mTabGroupListBottomSheetCoordinator,
+                                tabGroupCreationDialogManager,
+                                shareDelegateSupplier,
+                                mTabGroupSyncService,
+                                collaborationService,
+                                showTabListEditor);
             }
         }
     }
@@ -1246,7 +1303,21 @@ public class TabGridDialogMediator
     // OnLongPressTabItemEventListener implementation
     @Override
     public @Nullable CancelLongPressTabItemEventListener onLongPressEvent(
-            int tabId, @Nullable View cardView) {
+            @TabId int tabId, @Nullable View cardView) {
+        return onLongPressEvent(tabId, cardView, mTabGridContextMenuCoordinator);
+    }
+
+    @VisibleForTesting
+    @Nullable
+    CancelLongPressTabItemEventListener onLongPressEvent(
+            @TabId int tabId,
+            @Nullable View cardView,
+            @Nullable TabGridContextMenuCoordinator tabGridContextMenuCoordinator) {
+        if (tabGridContextMenuCoordinator != null && cardView != null) {
+            tabGridContextMenuCoordinator.showMenu(
+                    new ViewRectProvider(cardView, TabGridViewRectUpdater::new), tabId);
+            return tabGridContextMenuCoordinator::dismiss;
+        }
         return null;
     }
 

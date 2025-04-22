@@ -466,7 +466,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureDisabled() {
-        TabContextMenuCoordinator contextMenuCoordinator = mock();
+        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
         mCoordinator.onLongPressOnTabCard(contextMenuCoordinator, 1, cardView);
 
@@ -476,7 +476,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureEnabled_NotGrouped() {
-        TabContextMenuCoordinator contextMenuCoordinator = mock();
+        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
 
         @TabId int tabId = 1;
@@ -491,7 +491,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureEnabled_Grouped() {
-        TabContextMenuCoordinator contextMenuCoordinator = mock();
+        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
 
         @TabId int tabId = 1;
@@ -507,7 +507,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureEnabled_NullCardView() {
-        TabContextMenuCoordinator contextMenuCoordinator = mock();
+        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
 
         @TabId int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);

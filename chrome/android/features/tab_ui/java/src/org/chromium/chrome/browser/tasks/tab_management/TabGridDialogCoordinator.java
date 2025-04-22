@@ -28,6 +28,8 @@ import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -120,7 +123,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            UndoBarThrottle undoBarThrottle) {
+            UndoBarThrottle undoBarThrottle,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             mActivity = activity;
             mComponentName =
@@ -215,7 +220,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             showColorPickerPopupRunnable,
                             actionConfirmationManager,
                             modalDialogManager,
-                            desktopWindowStateManager);
+                            desktopWindowStateManager,
+                            tabBookmarkerSupplier,
+                            shareDelegateSupplier);
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.

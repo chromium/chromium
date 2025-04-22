@@ -98,7 +98,7 @@ class TabListEditorCoordinator {
     }
 
     /** An interface to control the TabListEditor. */
-    interface TabListEditorController extends BackPressHandler {
+    public interface TabListEditorController extends BackPressHandler {
         /**
          * Shows the TabListEditor with the given {@Link Tab}s.
          *

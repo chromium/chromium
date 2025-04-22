@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.back_press.BackPressMetrics.NavigationDirecti
 import org.chromium.chrome.browser.back_press.BackPressMetrics.PredictiveGestureNavPhase;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -286,6 +287,7 @@ public class ToolbarManager
     private final TabContentManager mTabContentManager;
     private final TabCreatorManager mTabCreatorManager;
     private final TabObscuringHandler mTabObscuringHandler;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final BackPressHandler mBackPressHandler;
     private final BackPressManager mBackPressManager;
@@ -327,6 +329,7 @@ public class ToolbarManager
 
     private @Nullable TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
 
+    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
 
@@ -663,7 +666,9 @@ public class ToolbarManager
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
-     * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new windows
+     * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new
+     *     windows.
+     * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -710,7 +715,8 @@ public class ToolbarManager
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            @Nullable MultiInstanceManager multiInstanceManager,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -738,11 +744,13 @@ public class ToolbarManager
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
         mTabObscuringHandler = tabObscuringHandler;
+        mShareDelegateSupplier = shareDelegateSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
         mDesktopWindowStateManager = desktopWindowStateManager;
         mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
         mMultiInstanceManager = multiInstanceManager;
+        mTabBookmarkerSupplier = tabBookmarkerSupplier;
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -1854,7 +1862,9 @@ public class ToolbarManager
                         mLayoutStateProviderSupplier,
                         mModalDialogManagerSupplier.get(),
                         bottomUiThemeColorProvider,
-                        mUndoBarThrottle);
+                        mUndoBarThrottle,
+                        mTabBookmarkerSupplier,
+                        mShareDelegateSupplier);
         var bottomControlsContentDelegateSupplier =
                 (OneshotSupplier<BottomControlsContentDelegate>)
                         ((OneshotSupplier<? extends BottomControlsContentDelegate>)

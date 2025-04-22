@@ -69,6 +69,9 @@ public interface TabManagementDelegate {
      * @param modalDialogManager Used to show confirmation dialogs.
      * @param themeColorProvider Used to provide the theme.
      * @param undoBarThrottle Used to suppress the undo bar.
+     * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
+     *     the tab's URL when the user selects the "Share" option.
+     * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @return The {@link TabGroupUi}.
      */
     TabGroupUi createTabGroupUi(
@@ -85,7 +88,9 @@ public interface TabManagementDelegate {
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull ThemeColorProvider themeColorProvider,
-            UndoBarThrottle undoBarThrottle);
+            UndoBarThrottle undoBarThrottle,
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier);
 
     /**
      * Create a {@link TabSwitcher} and {@link Pane} for the Hub.

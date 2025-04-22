@@ -15,12 +15,15 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -134,6 +137,9 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
      * @param modalDialogManager Used to show confirmation dialogs.
      * @param undoBarThrottle Used to suppress the undo bar.
+     * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
+     *     the tab's URL when the user selects the "Share" option.
+     * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      */
     public TabGroupUiOneshotSupplier(
             ActivityTabProvider activityTabProvider,
@@ -150,7 +156,9 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ModalDialogManager modalDialogManager,
             ThemeColorProvider themeColorProvider,
-            UndoBarThrottle undoBarThrottle) {
+            UndoBarThrottle undoBarThrottle,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         Runnable setter =
                 () -> {
                     var tabGroupUi =
@@ -169,7 +177,9 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                                             layoutStateProviderSupplier,
                                             modalDialogManager,
                                             themeColorProvider,
-                                            undoBarThrottle);
+                                            undoBarThrottle,
+                                            tabBookmarkerSupplier,
+                                            shareDelegateSupplier);
                     set(tabGroupUi);
                     maybeDestroyTabGroupUiCreationController();
                 };

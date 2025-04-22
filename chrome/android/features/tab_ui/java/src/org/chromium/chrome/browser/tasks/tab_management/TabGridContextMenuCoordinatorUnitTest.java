@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -58,12 +59,11 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.Set;
 
-/** Unit tests for {@link TabContextMenuCoordinator}. */
+/** Unit tests for {@link TabGridContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
-public class TabContextMenuCoordinatorUnitTest {
+public class TabGridContextMenuCoordinatorUnitTest {
     private static @TabId final int TAB_ID = 1;
     private static final int MENU_WIDTH = 300;
     private static final String LOCALHOST_URL = "localhost://";
@@ -92,8 +92,9 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Resources mResources;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private ShowTabListEditor mShowTabListEditor;
 
-    private TabContextMenuCoordinator mCoordinator;
+    private TabGridContextMenuCoordinator mCoordinator;
     private ModelList mMenuItemList;
     private Activity mActivity;
     private GURL mUrl;
@@ -117,9 +118,8 @@ public class TabContextMenuCoordinatorUnitTest {
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-
         mCoordinator =
-                new TabContextMenuCoordinator(
+                new TabGridContextMenuCoordinator(
                         mActivity,
                         mTabBookmarker,
                         mProfile,
@@ -129,7 +129,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mTabGroupSyncService,
                         mCollaborationService,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
         mMenuItemList = new ModelList();
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -168,14 +168,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_shareTab() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.share_tab, TAB_ID, null);
         verify(mShareDelegate).share(mTab, false, TAB_STRIP_CONTEXT_MENU);
@@ -183,14 +183,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToTabGroup() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.add_to_tab_group, TAB_ID, null);
         verify(mTabGroupListBottomSheetCoordinator).showBottomSheet(List.of(mTab));
@@ -198,14 +198,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToNewTabGroup() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.add_to_new_tab_group, TAB_ID, null);
         verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabGroupModelFilter);
@@ -213,14 +213,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToBookmarks() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.add_to_bookmarks, TAB_ID, null);
         verify(mTabBookmarker).addOrEditBookmark(mTab);
@@ -228,14 +228,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_editBookmark() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.edit_bookmark, TAB_ID, null);
         verify(mTabBookmarker).addOrEditBookmark(mTab);
@@ -243,44 +243,43 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_selectTabs() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.select_tabs, TAB_ID, null);
-        verify(mTabListEditorManager).showTabListEditor();
-        verify(mTabListEditorController).selectTabs(Set.of(TAB_ID));
+        verify(mShowTabListEditor).show(TAB_ID);
     }
 
     @Test
     public void testGetMenuItemClickedCallback_closeTab() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
         callback.onClick(R.id.close_tab, TAB_ID, null);
         verify(mTabRemover).closeTabs(any(), eq(true));
     }
 
     @Test
     public void testGetMenuItemClickedCallback_invalidTabId() {
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.share_tab, Tab.INVALID_TAB_ID, null);
         verify(mShareDelegate, never()).share(any(), anyBoolean(), anyInt());
@@ -289,14 +288,14 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     public void testGetMenuItemClickedCallback_tabNotFound() {
         when(mTabModel.getTabById(anyInt())).thenReturn(null);
-        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabContextMenuCoordinator.getMenuItemClickedCallback(
+        TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
-                        mTabListEditorManager);
+                        mShowTabListEditor);
 
         callback.onClick(R.id.share_tab, TAB_ID, null);
         verify(mShareDelegate, never()).share(any(), anyBoolean(), anyInt());

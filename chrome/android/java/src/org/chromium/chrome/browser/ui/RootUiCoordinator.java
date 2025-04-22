@@ -1485,7 +1485,8 @@ public class RootUiCoordinator
                             mOverviewColorSupplier,
                             mReadAloudControllerSupplier,
                             getDesktopWindowStateManager(),
-                            getMultiInstanceManager());
+                            getMultiInstanceManager(),
+                            mTabBookmarkerSupplier);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
