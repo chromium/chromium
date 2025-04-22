@@ -304,11 +304,6 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);
 
-enum EnterpriseRealTimeUrlCheckMode {
-  REAL_TIME_CHECK_DISABLED = 0,
-  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
-};
-
 // Helper enum to get the corresponding regional url in service provider config
 // for data region setting policy.
 // LINT.IfChange(DataRegion)

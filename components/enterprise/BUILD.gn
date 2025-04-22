@@ -82,6 +82,7 @@ static_library("enterprise") {
 
   deps = [
     "//base",
+    "//components/device_signals/core/browser:browser",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/proto",
@@ -172,6 +173,7 @@ source_set("unit_tests") {
     ":reporting_test_support",
     "common/proto:connectors_proto",
     "//base/test:test_support",
+    "//components/device_signals/core/browser:test_support",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
     "//components/enterprise/signin:unit_tests",

@@ -153,6 +153,11 @@ inline constexpr char kKeyNetErrorCode[] = "netErrorCode";
 inline constexpr char kKeyUserName[] = "userName";
 inline constexpr char kKeyIsPhishingUrl[] = "isPhishingUrl";
 
+enum EnterpriseRealTimeUrlCheckMode {
+  REAL_TIME_CHECK_DISABLED = 0,
+  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
+};
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_

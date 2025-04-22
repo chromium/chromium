@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/common_types.h"
-#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(IS_WIN)

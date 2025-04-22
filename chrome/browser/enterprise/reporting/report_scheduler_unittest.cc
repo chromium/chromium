@@ -137,7 +137,7 @@ class MockChromeProfileRequestGenerator : public ChromeProfileRequestGenerator {
       : ChromeProfileRequestGenerator(/*profile_path=*/base::FilePath(),
                                       delegate_factory) {
   }
-  void Generate(ReportGenerationConfig generation_request,
+  void Generate(ReportGenerationConfig generation_config,
                 ReportCallback callback) override {
     OnGenerate(callback);
   }
