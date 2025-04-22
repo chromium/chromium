@@ -155,6 +155,9 @@
   E_CPONLY(kColorExtensionsMenuContainerBackground) \
   E_CPONLY(kColorExtensionsMenuText) \
   E_CPONLY(kColorExtensionsMenuSecondaryText) \
+  /* Feature first run dialog colors. */ \
+  E_CPONLY(kColorFeatureFirstRunInfoContainerBackground) \
+  E_CPONLY(kColorFeatureFirstRunIconColor) \
   /* Feature Promo bubble colors. */ \
   E_CPONLY(kColorFeaturePromoBubbleBackground) \
   E_CPONLY(kColorFeaturePromoBubbleButtonBorder) \

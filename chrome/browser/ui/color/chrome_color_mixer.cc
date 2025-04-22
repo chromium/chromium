@@ -216,6 +216,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionMenuPinButtonIconDisabled] = ui::SetAlpha(
       kColorExtensionMenuPinButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorExtensionsMenuContainerBackground] = {ui::kColorSysSurface3};
+  mixer[kColorFeatureFirstRunInfoContainerBackground] = {ui::kColorSysSurface3};
+  mixer[kColorFeatureFirstRunIconColor] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorFeaturePromoBubbleBackground] = {gfx::kGoogleBlue700};
   mixer[kColorFeaturePromoBubbleButtonBorder] = {gfx::kGoogleGrey300};
   mixer[kColorFeaturePromoBubbleCloseButtonInkDrop] = {gfx::kGoogleBlue300};

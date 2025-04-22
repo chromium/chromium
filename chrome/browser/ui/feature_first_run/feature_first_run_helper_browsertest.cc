@@ -4,11 +4,22 @@
 
 #include "chrome/browser/ui/feature_first_run/feature_first_run_helper.h"
 
+#include <memory>
+
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -16,16 +27,6 @@
 namespace feature_first_run {
 
 using FeatureFirstRunDialogHelperBrowserTest = InProcessBrowserTest;
-
-// class FeatureFirstRunDialogHelperBrowserTest : public InProcessBrowserTest {
-//  public:
-//   FeatureFirstRunDialogHelperBrowserTest() = default;
-//   ~FeatureFirstRunDialogHelperBrowserTest() override = default;
-
-//   content::WebContents* GetActiveWebContents() {
-//     return browser()->tab_strip_model()->GetActiveWebContents();
-//   }
-// };
 
 IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
                        DialogConstructedFromParams) {
@@ -36,6 +37,36 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
 
   EXPECT_TRUE(dialog_widget->IsVisible());
   EXPECT_EQ(title, dialog_widget_delegate->GetWindowTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
+                       InfoBoxConstructedFromParams) {
+  const std::u16string title = u"Test Title";
+  // TODO(crbug.com/409520456): Test that the description is passed correctly.
+  // RichControlsContainerView currently doesn't expose secondary labels or
+  // store a pointer to them.
+  const std::u16string description = u"Test Description";
+  const gfx::VectorIcon& icon = kTextAnalysisIcon;
+  const int radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS);
+
+  auto info_box_start =
+      CreateInfoBoxContainer(title, description, icon, InfoBoxPosition::kStart);
+
+  EXPECT_EQ(title, info_box_start->GetTitleForTesting());
+  EXPECT_EQ(&icon,
+            info_box_start->GetIconForTesting().GetVectorIcon().vector_icon());
+  EXPECT_EQ(gfx::RoundedCornersF(radius, radius, 0, 0),
+            info_box_start->GetBackground()->GetRoundedCornerRadii());
+
+  auto info_box_middle = CreateInfoBoxContainer(title, description, icon,
+                                                InfoBoxPosition::kMiddle);
+  EXPECT_FALSE(info_box_middle->GetBackground()->GetRoundedCornerRadii());
+
+  auto info_box_end =
+      CreateInfoBoxContainer(title, description, icon, InfoBoxPosition::kEnd);
+  EXPECT_EQ(gfx::RoundedCornersF(0, 0, radius, radius),
+            info_box_end->GetBackground()->GetRoundedCornerRadii());
 }
 
 }  // namespace feature_first_run
