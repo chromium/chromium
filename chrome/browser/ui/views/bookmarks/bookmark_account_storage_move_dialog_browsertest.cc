@@ -60,8 +60,9 @@ class BookmarkAccountStorageMoveDialogPixelTest : public DialogBrowserTest {
     ASSERT_TRUE(node_) << "Must call set_node() before showing the dialog";
     ASSERT_TRUE(target_folder_)
         << "Must call set_target_folder() before showing the dialog";
-    ShowBookmarkAccountStorageMoveDialog(browser(), node_, target_folder_,
-                                         /*index=*/0);
+    ShowBookmarkAccountStorageMoveDialog(
+        browser(), node_, target_folder_,
+        /*index=*/0, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload);
   }
 
  private:
@@ -170,7 +171,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
       bookmark_model->AddFolder(target_folder, 1, u"Last");
   base::test::TestFuture<void> closed_waiter;
   ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder, /*index=*/1, closed_waiter.GetCallback());
+      browser(), node, target_folder,
+      /*index=*/1, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload,
+      closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton));
 
@@ -198,7 +201,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
       bookmark_model->AddFolder(target_folder, 1, u"Last");
   base::test::TestFuture<void> closed_waiter;
   ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder, /*index=*/1, closed_waiter.GetCallback());
+      browser(), node, target_folder,
+      /*index=*/1, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload,
+      closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
 

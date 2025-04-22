@@ -38,8 +38,8 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
 
   ui::DialogModel::Builder builder;
   builder.SetInternalName("UploadExtensionToAccountDialog")
-      .SetTitle(l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_TITLE))
+      .SetTitle(
+          l10n_util::GetStringUTF16(IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE))
       .OverrideShowCloseButton(false)
       .SetSubtitle(l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,

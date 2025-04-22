@@ -9015,10 +9015,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Save to a folder in your Google Account?
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
-        This bookmark is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>, this bookmark will also be saved in your account.
+        This bookmark is saved only to this device. If you save it to “<ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>”, this bookmark will also be saved in your account.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark folder from their device to their signed-in account.">
-        This folder is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>, this folder will also be saved in your account.
+        This folder is saved only to this device. If you save it to “<ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>”, this folder will also be saved in your account.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="OK button label for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
         Save in account
@@ -9027,10 +9027,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Save to a folder only on this device?
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
-        <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph> is saved only to this device. If you move this bookmark to <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>, you’ll no longer get it on your other devices.
+        “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>” is saved only to this device. If you move this bookmark to “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>”, you’ll no longer get it on your other devices.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_FOLDER_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark folder from their signed-in account to their device.">
-        <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph> is saved only to this device. If you move this folder to <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>, you’ll no longer get it on your other devices.
+        “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>” is saved only to this device. If you move this folder to “<ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>”, you’ll no longer get it on your other devices.
       </message>
       <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_OK_BUTTON_LABEL" desc="OK button label for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
         Save to device
@@ -12894,15 +12894,21 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Learn more about access requests.
         </message>
 
-        <!-- Extension upload to account dialog -->
-        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title of the dialog triggers the upload of a local extension to the signed in user's account.">
-          Save this extension in your Google Account?
+        <!-- Upload to account dialog -->
+        <message name="IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that offers the user to move a piece of data from their device to their signed-in account.">
+          Save in your Google Account?
         </message>
         <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle of the dialog triggers the upload of a local extension to the signed in user's account.">
           "<ph name="NAME">$1<ex>Google Cast</ex></ph>" is saved only to this device. To use it on your other devices, save it in your account.
         </message>
+        <message name="IDS_BOOKMARK_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle for the upload dialog that offers the user to move a bookmark from their device to their signed-in account.">
+          "<ph name="LOCAL_BOOKMARK">$1<ex>Local Bookmark</ex></ph>" is saved only to this device. To use it on your other devices, save it in your account.
+        </message>
         <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="Text of the button that triggers the upload of a local extension to the signed in user's account in the extension upload dialog.">
           Save in account
+        </message>
+        <message name="IDS_BOOKMARK_MOVE_TO_ACCOUNT_ICON_TOOLTIP" desc="Button shown against a bookmark or bookmark folder that’s saved only to the user’s device. The user can click the button to save this item in their signed-in Google Account.">
+          Save in your Google Account
         </message>
 
         <!-- Reset Profile Settings strings -->
