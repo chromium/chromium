@@ -39,9 +39,11 @@ source_set("lens") {
     "lens_overlay_side_panel_coordinator.h",
     "lens_overlay_side_panel_web_view.h",
     "lens_overlay_theme_utils.h",
+    "lens_overlay_translate_options.h",
     "lens_overlay_url_builder.h",
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.h",
+    "page_content_type_conversions.h",
     "ref_counted_lens_overlay_client_logs.h",
   ]
 
@@ -96,6 +98,7 @@ source_set("impl") {
     "lens_preselection_bubble.cc",
     "lens_search_controller.cc",
     "lens_side_panel_untrusted_ui.cc",
+    "page_content_type_conversions.cc",
   ]
 
   public_deps = []
@@ -189,6 +192,8 @@ source_set("test_support") {
     "test_lens_overlay_controller.h",
     "test_lens_overlay_query_controller.cc",
     "test_lens_overlay_query_controller.h",
+    "test_lens_overlay_side_panel_coordinator.cc",
+    "test_lens_overlay_side_panel_coordinator.h",
     "test_lens_search_controller.cc",
     "test_lens_search_controller.h",
   ]
