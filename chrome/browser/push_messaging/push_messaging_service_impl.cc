@@ -1473,7 +1473,10 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
 
   std::vector<PushMessagingUnsubscribedEntry> unsubscribed_entries;
   if (base::FeatureList::IsEnabled(
-          features::kPushSubscriptionChangeEventOnResubscribe)) {
+          features::kPushSubscriptionChangeEventOnResubscribe) &&
+      // We don't want to trigger the event to possibly multiple service workers
+      // and origins if the user changed a wildcard setting.
+      primary_pattern.MatchesSingleOrigin()) {
     unsubscribed_entries = PushMessagingUnsubscribedEntry::GetAll(profile_);
   }
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
