@@ -662,9 +662,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
   const FragmentItems* ComputeItemsAddress() const {
     DCHECK(HasItems());
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    // SAFETY: FragmentItems is placed just after this object. So `this + 1`
+    // is valid. See Create() and AdditionalByteSize().
     return reinterpret_cast<const FragmentItems*>(base::bits::AlignUp(
-        reinterpret_cast<const uint8_t*>(UNSAFE_TODO(this + 1)),
+        reinterpret_cast<const uint8_t*>(UNSAFE_BUFFERS(this + 1)),
         alignof(FragmentItems)));
   }
 

@@ -29,15 +29,15 @@ class LineInfoList {
   // max_lines_`.
   LineInfo& operator[](wtf_size_t index) {
     DCHECK_LT(index, Size());
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    return UNSAFE_TODO(line_infos_[(start_index_ + index) % max_lines_]);
+    // SAFETY: The size of line_infos_ is max_lines_.
+    return UNSAFE_BUFFERS(line_infos_[(start_index_ + index) % max_lines_]);
   }
   // Out-of-bounds `index` will hit `DCHECK` and returns the value at `index %
   // max_lines_`.
   const LineInfo& operator[](wtf_size_t index) const {
     DCHECK_LT(index, Size());
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    return UNSAFE_TODO(line_infos_[(start_index_ + index) % max_lines_]);
+    // SAFETY: The size of line_infos_ is max_lines_.
+    return UNSAFE_BUFFERS(line_infos_[(start_index_ + index) % max_lines_]);
   }
   // If empty, this will hit `DCHECK`.
   LineInfo& Front() { return (*this)[0]; }
