@@ -204,7 +204,7 @@ const getTypedArrayData = (type, size, data) => {
     for (let i = 0; i < data.length; i++) {
       outData[i] = toHalf(data[i]);
     }
-  } else if (type === 'int64') {
+  } else if (type === 'int64' || type === 'uint64') {
     if (typeof (data) === 'number' && size > 1) {
       return new TypedArrayDict[type](size).fill(BigInt(data));
     }
