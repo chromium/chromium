@@ -11,6 +11,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/base/constants.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
@@ -58,14 +59,6 @@ mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
 }
 
 }  // namespace
-
-#if BUILDFLAG(IS_LINUX)
-
-// static
-constexpr char
-    ChromotingHostServicesClient::kChromeRemoteDesktopSessionEnvVar[];
-
-#endif
 
 ChromotingHostServicesClient::ChromotingHostServicesClient()
     : ChromotingHostServicesClient(GetChromotingHostServicesServerName()) {}

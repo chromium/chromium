@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/chromoting_host_services_provider.h"
@@ -55,11 +54,6 @@ class ChromotingHostServicesClient final
 
   using ConnectToServerCallback = base::RepeatingCallback<
       mojo::PendingRemote<mojom::ChromotingHostServices>()>;
-
-#if BUILDFLAG(IS_LINUX)
-  static constexpr char kChromeRemoteDesktopSessionEnvVar[] =
-      "CHROME_REMOTE_DESKTOP_SESSION";
-#endif
 
   ChromotingHostServicesClient(std::unique_ptr<base::Environment> environment,
                                ConnectToServerCallback connect_to_server);

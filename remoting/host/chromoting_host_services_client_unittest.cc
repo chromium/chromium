@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
+#include "remoting/base/constants.h"
 #include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,11 +85,9 @@ void ChromotingHostServicesClientTest::SetChromeRemoteDesktopSessionEnvVar(
     bool is_crd_session) {
 #if BUILDFLAG(IS_LINUX)
   if (is_crd_session) {
-    environment_->SetVar(
-        ChromotingHostServicesClient::kChromeRemoteDesktopSessionEnvVar, "1");
+    environment_->SetVar(kChromeRemoteDesktopSessionEnvVar, "1");
   } else {
-    environment_->UnSetVar(
-        ChromotingHostServicesClient::kChromeRemoteDesktopSessionEnvVar);
+    environment_->UnSetVar(kChromeRemoteDesktopSessionEnvVar);
   }
 #endif
   // No-op on other platforms.
