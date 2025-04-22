@@ -59,8 +59,8 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
 
   // Callback functions for WebGpuDevice.
   void OnDeviceCreated(wgpu::Device device);
-  void OnDeviceError(WebGpuDevice::Error error, std::string_view msg);
-  void OnDeviceLost(wgpu::DeviceLostReason reason, std::string_view msg);
+  void OnDeviceError(WebGpuDevice::Error error, std::string msg);
+  void OnDeviceLost(wgpu::DeviceLostReason reason, std::string msg);
 
   // Finishes creation of pending effects processors in `pending_processors_`.
   void FinishCreatingEffectsProcessors();

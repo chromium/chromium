@@ -5,7 +5,7 @@
 #include "services/video_effects/video_effects_service_impl.h"
 
 #include <memory>
-#include <string_view>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -133,7 +133,7 @@ void VideoEffectsServiceImpl::OnDeviceCreated(wgpu::Device device) {
 }
 
 void VideoEffectsServiceImpl::OnDeviceError(WebGpuDevice::Error error,
-                                            std::string_view msg) {
+                                            std::string msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!device_);
   LOG(WARNING) << "Unable to create wgpu::Device; error = "
@@ -142,7 +142,7 @@ void VideoEffectsServiceImpl::OnDeviceError(WebGpuDevice::Error error,
 }
 
 void VideoEffectsServiceImpl::OnDeviceLost(wgpu::DeviceLostReason reason,
-                                           std::string_view msg) {
+                                           std::string msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "wgpu::Device was lost; reason = "
              << base::to_underlying(reason) << ": " << msg;
