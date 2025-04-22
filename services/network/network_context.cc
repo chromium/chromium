@@ -1016,7 +1016,9 @@ void NetworkContext::ResetURLLoaderFactories() {
   std::vector<PrefetchMatchingURLLoaderFactory*> factories;
   factories.reserve(url_loader_factories_.size());
   for (const auto& factory : url_loader_factories_) {
-    factories.push_back(factory.get());
+    if (!factory->ShouldIgnoreFactoryReset()) {
+      factories.push_back(factory.get());
+    }
   }
   for (auto* factory : factories) {
     factory->ClearBindings();

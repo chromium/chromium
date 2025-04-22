@@ -24,7 +24,8 @@ PrefetchMatchingURLLoaderFactory::PrefetchMatchingURLLoaderFactory(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
     const cors::OriginAccessList* origin_access_list,
     PrefetchCache* cache)
-    : next_(std::make_unique<cors::CorsURLLoaderFactory>(
+    : ignore_factory_reset_(params->ignore_factory_reset),
+      next_(std::make_unique<cors::CorsURLLoaderFactory>(
           context,
           std::move(params),
           std::move(resource_scheduler_client),
@@ -135,6 +136,10 @@ void PrefetchMatchingURLLoaderFactory::DestroyURLLoaderFactory(
 
 bool PrefetchMatchingURLLoaderFactory::HasAdditionalReferences() const {
   return !receivers_.empty();
+}
+
+bool PrefetchMatchingURLLoaderFactory::ShouldIgnoreFactoryReset() const {
+  return ignore_factory_reset_;
 }
 
 cors::CorsURLLoaderFactory*

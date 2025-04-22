@@ -926,6 +926,10 @@ struct URLLoaderFactoryParams {
   // For context on usage see:
   // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
   bool require_cross_site_request_for_cookies = false;
+
+  // If this is true, this URLLoaderFactory should not be reset when
+  // calling `ResetURLLoaderFactories()`.
+  bool ignore_factory_reset = false;
 };
 
 // Represents a distinct context for making network requests, with its own
@@ -959,8 +963,6 @@ interface NetworkContext {
       URLLoaderFactoryParams params);
 
   // Destroys all URLLoaderFactory bindings, which should then be regenerated.
-  // This should be called if there is a change to the proxies which should be
-  // used on URLLoaders.
   ResetURLLoaderFactories();
 
   // Uses Oblivious HTTP to indirectly perform the request. Specification at

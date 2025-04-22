@@ -7628,16 +7628,17 @@ class URLLoaderFactoriesResetWaiter : public WebRequestAPI::TestObserver {
   base::RunLoop url_loader_factory_reset_runloop_;
 };
 
-class ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories
+class ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories
     : public ManifestV3WebRequestApiTest,
       public testing::WithParamInterface<bool> {
  public:
-  ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories() {
+  ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories() {
     feature_list_.InitWithFeatureState(
-        extensions_features::kDeferResetURLLoaderFactories, GetParam());
+        extensions_features::kSkipResetServiceWorkerURLLoaderFactories,
+        GetParam());
   }
-  ~ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories() override =
-      default;
+  ~ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories()
+      override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -7647,7 +7648,7 @@ class ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories
 // doesn't break the registration process of other extensions.
 // Regression test for https://crbug.com/394523691.
 IN_PROC_BROWSER_TEST_P(
-    ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories,
+    ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories,
     ResetURLLoaderFactoryDoesntBreakRegistration) {
   // Skip if the proxy is forced since factories will not be reset in that case.
   if (base::FeatureList::IsEnabled(
@@ -7720,15 +7721,17 @@ IN_PROC_BROWSER_TEST_P(
   // `ResetURLLoaderFactories()`. Because the extension is still in the early
   // phases of starting its worker here, this would break its registration
   // before it has a chance of being completed and stored.
-  // Instead, the call to `ResetURLLoaderFactories()` will be deferred.
-  // NOTE: We simulate the call to `ResetURLLoaderFactories()` rather
-  // than loading an extension with WebRequestAPI permissions, as that
-  // would take too long and won't trigger the bug in all cases.
+  // Instead, `ResetURLLoaderFactories()` will skip resetting extension service
+  // worker URLLoaderFactories used for fetching scripts and sub-resources.
+  // NOTE: We simulate the call to `ResetURLLoaderFactories()` rather than
+  // loading an extension with WebRequestAPI permissions, as that would take too
+  // long and won't trigger the bug in all cases.
   web_request_api->ForceProxyForTesting();
 
   if (feature_enabled) {
-    // DeferResetURLLoaderFactories feature enabled: expect successful
-    // execution. Check that the worker is still running and functional.
+    // SkipResetServiceWorkerURLLoaderFactories feature enabled: expect
+    // successful execution. Check that the worker is still running and
+    // functional.
     registration_observer.WaitForWorkerStarted();
     std::optional<WorkerId> worker_id = GetWorkerIdForExtension(extension_id);
     EXPECT_TRUE(worker_id);
@@ -7736,14 +7739,13 @@ IN_PROC_BROWSER_TEST_P(
         "Waiting for extension background to signal that it can send messages");
     ASSERT_TRUE(will_receive_listener.WaitUntilSatisfied());
     will_receive_listener.Reply("go");
-    // Check `ResetURLLoaderFactories()` is called after registration is stored.
-    registration_observer.WaitForRegistrationStored();
     url_loader_factories_reset_waiter.WaitForResetURLLoaderFactoriesCalled();
+    registration_observer.WaitForRegistrationStored();
   } else {
-    // DeferResetURLLoaderFactories feature disabled: expect worker registration
-    // to fail. We have observed that the registration can fail with either
-    // `kErrorStartWorkerFailed` or `kErrorNetwork` depending on when exactly
-    // it's interrupted.
+    // SkipResetServiceWorkerURLLoaderFactories feature disabled: expect worker
+    // registration to fail. We have observed that the registration can fail
+    // with either `kErrorStartWorkerFailed` or `kErrorNetwork` depending on
+    // when exactly it's interrupted.
     auto status_code =
         worker_failure_observer.WaitForWorkerRegistrationFailure();
     EXPECT_NE(status_code, blink::ServiceWorkerStatusCode::kOk);
@@ -7752,7 +7754,7 @@ IN_PROC_BROWSER_TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories,
+    ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories,
     testing::Bool());
 
 #endif  // !BUILDFLAG(IS_ANDROID)

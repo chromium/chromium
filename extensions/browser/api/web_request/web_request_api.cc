@@ -741,10 +741,6 @@ void WebRequestAPI::UpdateMayHaveProxies() {
       // can cause network service failures in other extensions' registrations.
       // See https://crbug.com/394523691.
       deferred_reset_url_loader_factories_ = true;
-      // TODO(crbug.com/408312299): avoid deferring all factory resets here.
-      // Strictly speaking, we only need to defer factories for the loading
-      // extension. Other extensions's factories and web content factories
-      // can be reset safely.
     } else {
       // Otherwise, we can safely call it now.
       ResetURLLoaderFactories();
