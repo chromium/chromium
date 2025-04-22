@@ -23,7 +23,7 @@ steps:
       - name: ssh
         path: "/root/.ssh"
 
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'prepare'
     waitFor: [ 'sshkey' ]
     entrypoint: 'bash'
@@ -50,7 +50,7 @@ steps:
     args: ['clone', 'https://chromium.googlesource.com/chromium/tools/depot_tools.git', '/workspace/depot_tools']
 
   # 3. Fetch the Code
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'configure-gclient'
     waitFor: [ 'clone-depot-tools' ]
     entrypoint: 'bash'
@@ -65,7 +65,7 @@ steps:
             --custom-var checkout_pgo_profiles=True \
             git@github.com:protectednet/hopium.git
 
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'sync-deps'
     waitFor: [ 'configure-gclient' ]
     entrypoint: 'bash'
@@ -79,7 +79,7 @@ steps:
       - name: ssh
         path: "/root/.ssh"
 
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'checkout-branch'
     waitFor: [ 'sync-deps' ]
     entrypoint: 'bash'
@@ -95,7 +95,7 @@ steps:
         path: "/root/.ssh"
 
   # 4. Configure & Build
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'configure-build'
     waitFor: [ 'checkout-branch' ]
     entrypoint: 'bash'
@@ -126,7 +126,7 @@ steps:
             enable_media_foundation=true
             EOF
 
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'branding-script'
     waitFor: [ 'configure-build' ]
     entrypoint: 'bash'
@@ -137,7 +137,7 @@ steps:
             cd /workspace/hopium/src
             python3 hopium/tsec_branding/pre_rebrand.py -b totalbrowser
 
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'build-browser'
     waitFor: [ 'branding-script' ]
     entrypoint: 'bash'
@@ -149,7 +149,7 @@ steps:
             /workspace/depot_tools/autoninja -C out/Debug chrome -j 32
 
   # 5. Post-Build Verification
-  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.6'
+  - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.7'
     id: 'verify-binary'
     waitFor: [ 'build-browser' ]
     entrypoint: 'bash'
