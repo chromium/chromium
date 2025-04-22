@@ -35,6 +35,13 @@ struct ClipboardFiles {
   string? file_system_id;
 };
 
+// Interface for listening to clipboard data changes.
+// Implemented by clients that want to be notified when the clipboard contents change.
+interface ClipboardListener {
+  // Called when the clipboard data has changed.
+  OnClipboardDataChanged();
+};
+
 // Implemented by the browser to allow the renderer to use the system clipboard.
 // Individual operations are atomic, but successive operations are not.
 // Therefore, it's possible that one may see text available from
@@ -177,4 +184,8 @@ interface ClipboardHost {
 
   [EnableIf=is_mac]
   WriteStringToFindPboard(mojo_base.mojom.String16 text);
+
+  // Registers a clipboard listener to be notified when the clipboard contents change.
+  // Previously registered listener would be disconnected upon registering a new one.
+  RegisterClipboardListener(pending_remote<ClipboardListener> listener);
 };
