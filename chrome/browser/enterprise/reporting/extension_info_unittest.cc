@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -67,7 +68,7 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
       extensionBuilder.AddFlags(extensions::Extension::FROM_WEBSTORE);
     }
     auto extension = extensionBuilder.Build();
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     return extension;
   }
 };
