@@ -153,7 +153,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final Runnable mOnTabGroupCreation;
     private final Callback<TabGroupModelFilter> mOnFilterChange = this::onFilterChange;
-    private @Nullable TabSwitcherContextMenuCoordinator mContextMenuCoordinator;
+    private @Nullable TabContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
     /** Lazily initialized when shown. */
@@ -654,9 +654,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     @VisibleForTesting
     CancelLongPressTabItemEventListener onLongPressOnTabCard(
-            TabSwitcherContextMenuCoordinator contextMenuCoordinator,
-            int tabId,
-            @Nullable View cardView) {
+            TabContextMenuCoordinator contextMenuCoordinator, int tabId, @Nullable View cardView) {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         @Nullable Tab tab = filter.getTabModel().getTabById(tabId);
         if (tab != null && tab.getTabGroupId() == null && cardView != null) {
@@ -810,7 +808,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
         TabBookmarker tabBookmarker = mTabBookmarkerSupplier.get();
         mContextMenuCoordinator =
-                TabSwitcherContextMenuCoordinator.createContextMenuCoordinator(
+                TabContextMenuCoordinator.createContextMenuCoordinator(
                         mActivity,
                         tabBookmarker,
                         filter,

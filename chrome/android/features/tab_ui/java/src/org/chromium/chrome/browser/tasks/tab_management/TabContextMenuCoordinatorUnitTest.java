@@ -60,10 +60,10 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.Set;
 
-/** Unit tests for {@link TabSwitcherContextMenuCoordinator}. */
+/** Unit tests for {@link TabContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
-public class TabSwitcherContextMenuCoordinatorUnitTest {
+public class TabContextMenuCoordinatorUnitTest {
     private static @TabId final int TAB_ID = 1;
     private static final int MENU_WIDTH = 300;
     private static final String LOCALHOST_URL = "localhost://";
@@ -93,7 +93,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     @Mock private Resources mResources;
     @Mock private BookmarkModel mBookmarkModel;
 
-    private TabSwitcherContextMenuCoordinator mCoordinator;
+    private TabContextMenuCoordinator mCoordinator;
     private ModelList mMenuItemList;
     private Activity mActivity;
     private GURL mUrl;
@@ -119,7 +119,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mCoordinator =
-                new TabSwitcherContextMenuCoordinator(
+                new TabContextMenuCoordinator(
                         mActivity,
                         mTabBookmarker,
                         mProfile,
@@ -168,8 +168,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_shareTab() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -183,8 +183,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToTabGroup() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -198,8 +198,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToNewTabGroup() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -213,8 +213,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_addToBookmarks() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -228,8 +228,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_editBookmark() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -243,8 +243,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_selectTabs() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -259,8 +259,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_closeTab() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -273,8 +273,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuItemClickedCallback_invalidTabId() {
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
@@ -289,8 +289,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     @Test
     public void testGetMenuItemClickedCallback_tabNotFound() {
         when(mTabModel.getTabById(anyInt())).thenReturn(null);
-        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
-                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+        TabContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,

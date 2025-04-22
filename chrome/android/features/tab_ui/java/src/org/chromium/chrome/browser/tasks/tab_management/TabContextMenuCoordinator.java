@@ -42,17 +42,17 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A coordinator for the context menu in the tab switcher accessed by long-pressing on a tab. It is
- * responsible for creating a list of menu items, setting up the menu, and displaying the menu.
+ * A coordinator for the context menu accessed by long-pressing on a tab. It is responsible for
+ * creating a list of menu items, setting up the menu, and displaying the menu.
  */
 @NullMarked
-public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId Integer> {
+public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId Integer> {
     private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.ContextMenu";
     private final Activity mActivity;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final BookmarkModel mBookmarkModel;
 
-    TabSwitcherContextMenuCoordinator(
+    TabContextMenuCoordinator(
             Activity activity,
             TabBookmarker tabBookmarker,
             Profile profile,
@@ -92,7 +92,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
      *     the tab's URL when the user selects the "Share" option.
      * @param tabListEditorManager Manages the Tab List Editor.
      */
-    public static TabSwitcherContextMenuCoordinator createContextMenuCoordinator(
+    public static TabContextMenuCoordinator createContextMenuCoordinator(
             Activity activity,
             TabBookmarker tabBookmarker,
             TabGroupModelFilter tabGroupModelFilter,
@@ -106,7 +106,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
 
-        return new TabSwitcherContextMenuCoordinator(
+        return new TabContextMenuCoordinator(
                 activity,
                 tabBookmarker,
                 profile,
