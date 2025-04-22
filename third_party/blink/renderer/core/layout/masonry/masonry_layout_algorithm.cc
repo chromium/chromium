@@ -270,8 +270,8 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   };
 
   const auto& available_size = ChildAvailableSize();
-  GridSizingTrackCollection track_collection(BuildRanges(),
-                                             grid_axis_direction);
+  GridSizingTrackCollection track_collection(
+      BuildRanges(), /*must_create_baselines=*/false, grid_axis_direction);
   track_collection.BuildSets(style, available_size);
 
   if (track_collection.HasNonDefiniteTrack()) {
@@ -345,11 +345,10 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item) const {
   auto containing_size = ChildAvailableSize();
-
-  (Style().MasonryTrackSizingDirection() == kForColumns)
-      ? containing_size.inline_size = kIndefiniteSize
-      : containing_size.block_size = kIndefiniteSize;
-
+  // This method is only used for passing a constraint space into
+  // `ComputeMinAndMaxContentContributionForSelf`, and the inline size should
+  // always be indefinite in that case to allow for text flow.
+  containing_size.inline_size = kIndefiniteSize;
   return CreateConstraintSpace(masonry_item, containing_size,
                                LayoutResultCacheSlot::kMeasure);
 }

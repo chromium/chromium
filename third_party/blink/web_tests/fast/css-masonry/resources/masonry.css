@@ -45,3 +45,8 @@
     width: 50px;
     background-color: lightblue;
 }
+
+.square-100x100 {
+  width: 100px;
+  height: 100px;
+}
