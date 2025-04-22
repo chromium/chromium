@@ -90,10 +90,10 @@ struct SameSizeAsShapeResultCharacterData {
 ASSERT_SIZE(ShapeResultCharacterData, SameSizeAsShapeResultCharacterData);
 
 struct SameSizeAsShapeResult {
-  float width;
-  UntracedMember<void*> deprecated_ink_bounds_;
-  Vector<int> runs_;
   Vector<int> character_position_;
+  Vector<UntracedMember<void*>, 1> runs_;
+  UntracedMember<void*> deprecated_ink_bounds_;
+  float width;
   unsigned start_index_;
   unsigned num_characters_;
   unsigned bitfields : 32;
@@ -1629,7 +1629,7 @@ void ShapeResult::ReorderRtlRuns(unsigned run_size_before) {
 
   // |push_front| is O(n) that we should not call it multiple times.
   // Create a new list in the correct order and swap it.
-  HeapVector<Member<ShapeResultRun>> new_runs;
+  HeapVector<Member<ShapeResultRun>, 1> new_runs;
   new_runs.ReserveInitialCapacity(runs_.size());
   for (unsigned i = run_size_before; i < runs_.size(); i++)
     new_runs.push_back(runs_[i]);

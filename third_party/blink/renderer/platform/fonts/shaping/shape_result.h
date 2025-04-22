@@ -488,22 +488,10 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 #endif  // defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
 
   // Common signatures with ShapeResultView, to templatize algorithms.
-  const HeapVector<Member<ShapeResultRun>>& RunsOrParts() const {
+  const HeapVector<Member<ShapeResultRun>, 1>& RunsOrParts() const {
     return runs_;
   }
   unsigned StartIndexOffsetForRun() const { return 0; }
-
-  // The total width. This is the sum of `ShapeResultRun::width_`.
-  // It's mutable because `RecalcCharacterPositions()` recalculates this.
-  // This should be in sync with `CharacterPositionData::width_`.
-  mutable float width_ = 0;
-
-  // Only used by CachingWordShapeIterator and stored here for memory reduction
-  // reasons. See https://crbug.com/955776
-  // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
-  Member<DeprecatedInkBounds> deprecated_ink_bounds_ = nullptr;
-
-  HeapVector<Member<ShapeResultRun>> runs_;
 
   // Stores x-positions for quick mapping between offsets and x-positions.
   // Unlike the ShapeResultRun and GlyphData, which operates in glyph order,
@@ -512,6 +500,18 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // index to x-position and O(log n) time, using binary search, from
   // x-position to character index.
   mutable HeapVector<ShapeResultCharacterData> character_position_;
+
+  HeapVector<Member<ShapeResultRun>, 1> runs_;
+
+  // Only used by CachingWordShapeIterator and stored here for memory reduction
+  // reasons. See https://crbug.com/955776
+  // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
+  Member<DeprecatedInkBounds> deprecated_ink_bounds_ = nullptr;
+
+  // The total width. This is the sum of `ShapeResultRun::width_`.
+  // It's mutable because `RecalcCharacterPositions()` recalculates this.
+  // This should be in sync with `CharacterPositionData::width_`.
+  mutable float width_ = 0;
 
   unsigned start_index_ = 0;
   unsigned num_characters_ = 0;
