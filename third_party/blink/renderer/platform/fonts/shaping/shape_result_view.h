@@ -125,7 +125,6 @@ class PLATFORM_EXPORT ShapeResultView final
   unsigned StartIndex() const { return start_index_ + char_index_offset_; }
   unsigned EndIndex() const { return StartIndex() + num_characters_; }
   unsigned NumCharacters() const { return num_characters_; }
-  unsigned NumGlyphs() const { return num_glyphs_; }
   float Width() const { return width_; }
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
   TextDirection Direction() const {
@@ -134,6 +133,8 @@ class PLATFORM_EXPORT ShapeResultView final
   bool IsLtr() const { return blink::IsLtr(Direction()); }
   bool IsRtl() const { return blink::IsRtl(Direction()); }
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
+
+  unsigned NumGlyphs() const;
   HeapHashSet<Member<const SimpleFontData>> UsedFonts() const;
 
   unsigned PreviousSafeToBreakOffset(unsigned index) const;
@@ -273,8 +274,8 @@ class PLATFORM_EXPORT ShapeResultView final
  private:
   void PopulateRunInfoParts(const Segment& segment);
 
-  // Populates |parts_[]| and accumulates |num_characters_|, |num_glyphs_| and
-  // |width_| from runs in |result|.
+  // Populates `parts_` and accumulates `num_characters_`, and `width_` from
+  // runs in `result`.
   template <class ShapeResultType>
   void PopulateRunInfoParts(const ShapeResultType& result,
                             const Segment& segment);
@@ -306,11 +307,9 @@ class PLATFORM_EXPORT ShapeResultView final
 
   const unsigned start_index_;
 
-  // Note: Once |RunInfoPart| populated, |num_characters_|, |num_glyphs_| and
-  // |width_| are immutable.
+  // Once `parts_` is populated `width_` and `num_characters_` are immutable.
   float width_ = 0;
-  unsigned num_characters_ = 0;
-  unsigned num_glyphs_ : 30;
+  unsigned num_characters_ : 30 = 0;
 
   // Overall direction for the TextRun, dictates which order each individual
   // sub run (represented by RunInfo structs in the m_runs vector) can

@@ -176,7 +176,6 @@ struct ShapeResultView::InitData {
 
 ShapeResultView::ShapeResultView(const InitData& data)
     : start_index_(data.start_index),
-      num_glyphs_(0),
       direction_(static_cast<unsigned>(data.direction)),
       has_vertical_offsets_(data.has_vertical_offsets),
       char_index_offset_(data.char_index_offset) {}
@@ -185,6 +184,7 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
   ShapeResult* new_result = MakeGarbageCollected<ShapeResult>(
       start_index_ + char_index_offset_, num_characters_, Direction());
   new_result->runs_.ReserveInitialCapacity(parts_.size());
+  unsigned num_glyphs = 0u;
   for (const auto& part : RunsOrParts()) {
     auto* new_run = MakeGarbageCollected<ShapeResultRun>(
         part.run_->font_data_.Get(), part.run_->HbDirection(),
@@ -202,9 +202,10 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
     new_run->num_characters_ = part.num_characters_;
     new_run->CheckConsistency();
     new_result->runs_.push_back(new_run);
+    num_glyphs += part.NumGlyphs();
   }
 
-  new_result->num_glyphs_ = num_glyphs_;
+  new_result->num_glyphs_ = num_glyphs;
   new_result->has_vertical_offsets_ = has_vertical_offsets_;
   new_result->width_ = width_;
 
@@ -262,14 +263,13 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
           });
     }
 
+    width_ += part_width;
+
     // Adjust start_index for runs to be continuous.
     const unsigned part_start_index = run_start + range_start + index_diff;
     const unsigned part_offset = range_start;
     parts_.emplace_back(run->GetRunInfo(), range, part_start_index, part_offset,
                         part_characters, part_width);
-
-    num_glyphs_ += range.size();
-    width_ += part_width;
   }
 }
 
@@ -292,7 +292,6 @@ ShapeResultView* ShapeResultView::Create(base::span<const Segment> segments) {
 
   ShapeResultView* out = MakeGarbageCollected<ShapeResultView>(data);
   DCHECK_EQ(out->num_characters_, 0u);
-  DCHECK_EQ(out->num_glyphs_, 0u);
   DCHECK_EQ(out->width_, 0);
   out->parts_.ReserveInitialCapacity(data.num_parts);
 
@@ -331,7 +330,6 @@ ShapeResultView* ShapeResultView::Create(const ShapeResult* result) {
 
   ShapeResultView* out = MakeGarbageCollected<ShapeResultView>(data);
   DCHECK_EQ(out->num_characters_, 0u);
-  DCHECK_EQ(out->num_glyphs_, 0u);
   DCHECK_EQ(out->width_, 0);
   out->parts_.ReserveInitialCapacity(data.num_parts);
 
@@ -371,6 +369,14 @@ void ShapeResultView::GetRunFontData(
         {part.run_->font_data_.Get(),
          static_cast<wtf_size_t>(part.end() - part.begin())}));
   }
+}
+
+unsigned ShapeResultView::NumGlyphs() const {
+  unsigned num_glyphs = 0u;
+  for (const auto& part : RunsOrParts()) {
+    num_glyphs += part.NumGlyphs();
+  }
+  return num_glyphs;
 }
 
 HeapHashSet<Member<const SimpleFontData>> ShapeResultView::UsedFonts() const {

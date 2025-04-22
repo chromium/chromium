@@ -14,14 +14,12 @@
 namespace blink {
 
 GlyphDataRange::GlyphDataRange(const ShapeResultRun& run)
-    : run_(&run),
-      size_(run.glyph_data_.size()),
-      has_offsets_(run.glyph_data_.HasNonZeroOffsets()) {}
+    : run_(&run), size_(run.glyph_data_.size()) {}
 
 GlyphDataRange::GlyphDataRange(const GlyphDataRange& range,
                                const_iterator begin_glyph,
                                const_iterator end_glyph)
-    : run_(range.run_), has_offsets_(range.HasOffsets()) {
+    : run_(range.run_) {
   DCHECK(run_);
   CHECK_GE(begin_glyph, run_->glyph_data_.begin());
   index_ = begin_glyph - run_->glyph_data_.begin();
@@ -45,8 +43,12 @@ GlyphDataRange::const_iterator GlyphDataRange::end() const {
   return run_ ? run_->glyph_data_.begin() + index_ + size_ : nullptr;
 }
 
+bool GlyphDataRange::HasOffsets() const {
+  return run_ && run_->glyph_data_.HasNonZeroOffsets();
+}
+
 base::span<const GlyphOffset> GlyphDataRange::Offsets() const {
-  if (HasOffsets() && run_) [[unlikely]] {
+  if (HasOffsets()) [[unlikely]] {
     return run_->glyph_data_.Offsets().subspan(index_, size_);
   }
   return base::span<const GlyphOffset>{};

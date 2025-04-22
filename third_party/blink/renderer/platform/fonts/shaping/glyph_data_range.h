@@ -38,7 +38,7 @@ class PLATFORM_EXPORT GlyphDataRange {
   const_iterator begin() const;
   const_iterator end() const;
 
-  bool HasOffsets() const { return has_offsets_; }
+  bool HasOffsets() const;
   // The `span` of `GlyphOffset` if `HasOffsets()`, or an empty span.
   base::span<const GlyphOffset> Offsets() const;
   const GlyphOffset* Offset() const { return Offsets().data(); }
@@ -57,7 +57,6 @@ class PLATFORM_EXPORT GlyphDataRange {
   Member<const ShapeResultRun> run_;
   wtf_size_t index_ = 0;
   wtf_size_t size_ = 0;
-  bool has_offsets_ = false;
 };
 
 }  // namespace blink
