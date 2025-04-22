@@ -102,7 +102,6 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         this::collectNonDraggableAreas,
-                        this::isPendingLayout,
                         headerMinHeight);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
@@ -149,10 +148,6 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         return areas;
     }
 
-    private boolean isPendingLayout() {
-        return mView != null && (mView.isInLayout() || mView.isLayoutRequested());
-    }
-
     // TODO(vkorotkevich): Move to the Mediator
     @VisibleForTesting
     void refreshTab(boolean ignoreCache) {
@@ -174,6 +169,10 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
      */
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
+
+        if (mView != null) {
+            mView.destroy();
+        }
 
         if (mMediator != null) {
             mMediator.destroy();
