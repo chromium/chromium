@@ -6170,6 +6170,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5543" label="RoleAttributeTree"/>
   <int value="5544" label="RoleAttributeTreegrid"/>
   <int value="5545" label="RoleAttributeTreeitem"/>
+  <int value="5546" label="InputParsedParentSelect"/>
+  <int value="5547" label="InputParsedAncestorSelect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

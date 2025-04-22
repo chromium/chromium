@@ -1,0 +1,6 @@
+CONSOLE WARNING: A input tag was parsed inside of a <select> which caused a </select> to be inserted before this tag. This is not valid HTML and the behavior may be changed in future versions of chrome.
+This is a testharness.js-based test.
+[FAIL] UseCounters for <input> in <select>
+  assert_true: parent <select> use counter should be hit after parsing <select><input>. expected true got false
+Harness: the test ran to completion.
+
