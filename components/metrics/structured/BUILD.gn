@@ -107,8 +107,7 @@ proto_library("proto") {
   # which means protos can't be referred to by absolute paths from within other
   # protos.
   import_dirs = [ "//third_party/metrics_proto" ]
-  proto_deps = [ "//third_party/metrics_proto" ]
-  link_deps = [ "//third_party/metrics_proto" ]
+  deps = [ "//third_party/metrics_proto" ]
 }
 
 # Sources used by all source sets in this BUILD file.
