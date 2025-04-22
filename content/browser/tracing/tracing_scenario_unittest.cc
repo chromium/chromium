@@ -719,6 +719,52 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   }
 }
 
+TEST_F(TracingScenarioTest, NestedStopUpload) {
+  TracingScenarioForTesting tracing_scenario(
+      ParseScenarioConfigFromText(kDefaultConfig), &delegate);
+
+  tracing_scenario.Enable();
+  EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
+      .WillOnce(testing::Return(true));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
+    run_loop.Run();
+  }
+  EXPECT_EQ(TracingScenario::State::kRecording,
+            tracing_scenario.current_state());
+
+  {
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_stop_trigger"));
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioCloned(&tracing_scenario))
+        .WillOnce(testing::Return(true));
+    EXPECT_CALL(delegate, SaveTrace(&tracing_scenario,
+                                    TestTracingSession::kClonedSessionId, _,
+                                    std::string("this is a trace")))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_upload_trigger"));
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_EQ(TracingScenario::State::kRecording,
+              tracing_scenario.current_state());
+
+    EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
+        .WillOnce([&run_loop]() {
+          run_loop.Quit();
+          return true;
+        });
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+    run_loop.Run();
+  }
+}
+
 TEST_F(NestedTracingScenarioTest, Disabled) {
   NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);
