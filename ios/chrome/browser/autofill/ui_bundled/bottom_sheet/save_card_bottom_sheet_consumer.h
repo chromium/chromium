@@ -39,6 +39,10 @@
                          andCardIcon:(UIImage*)issuerIcon
            andCardAccessibilityLabel:(NSString*)accessibilityLabel;
 
+// Updates bottomsheet to show card upload is in progress and sets accessibility
+// label for the accept button to indicate loading.
+- (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_CONSUMER_H_

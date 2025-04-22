@@ -30,6 +30,7 @@ TEST_F(SaveCardBottomSheetModelFieldsTest,
   std::u16string card_sub_label = std::u16string(u"01/29");
   std::u16string card_description = std::u16string(u"Card description");
   int issuer_icon_id = IDR_AUTOFILL_METADATA_CC_VISA;
+  std::u16string loading_description = std::u16string(u"Loading description");
 
   autofill::AutofillSaveCardUiInfo ui_info = autofill::AutofillSaveCardUiInfo();
   ui_info.logo_icon_id = logo_icon_id;
@@ -42,6 +43,7 @@ TEST_F(SaveCardBottomSheetModelFieldsTest,
   ui_info.card_sub_label = card_sub_label;
   ui_info.card_description = card_description;
   ui_info.issuer_icon_id = issuer_icon_id;
+  ui_info.loading_description = loading_description;
 
   std::unique_ptr<SaveCardBottomSheetModel> model = std::make_unique<
       SaveCardBottomSheetModel>(
@@ -60,6 +62,7 @@ TEST_F(SaveCardBottomSheetModelFieldsTest,
   EXPECT_EQ(model->card_expiry_date(), card_sub_label);
   EXPECT_EQ(model->card_accessibility_description(), card_description);
   EXPECT_EQ(model->issuer_icon_id(), issuer_icon_id);
+  EXPECT_EQ(model->loading_accessibility_description(), loading_description);
 }
 
 class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {

@@ -101,6 +101,12 @@ CGFloat const kGooglePayLogoHeight = 32;
   [self reloadTableViewData];
 }
 
+- (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel {
+  self.primaryActionButton.accessibilityLabel = accessibilityLabel;
+  self.isLoading = YES;
+  self.isConfirmed = NO;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView*)tableView

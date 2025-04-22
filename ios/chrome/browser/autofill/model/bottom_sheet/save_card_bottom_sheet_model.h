@@ -77,6 +77,12 @@ class SaveCardBottomSheetModel {
     return ui_info_.card_description;
   }
 
+  // Accessibility description announced when loading is shown to indicate card
+  // upload is in progress.
+  inline const std::u16string& loading_accessibility_description() const {
+    return ui_info_.loading_description;
+  }
+
   // Card's issuer icon displayed in the bottomsheet for the card to be saved.
   inline int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
 

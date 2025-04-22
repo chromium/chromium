@@ -23,6 +23,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -41,6 +42,7 @@ autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
   ui_info.card_sub_label = std::u16string(u"MM/YY");
   ui_info.card_description = std::u16string(u"Card description");
   ui_info.issuer_icon_id = IDR_AUTOFILL_METADATA_CC_VISA;
+  ui_info.loading_description = std::u16string(u"Loading description");
   return ui_info;
 }
 
@@ -72,6 +74,9 @@ autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
   self.expiryDate = subLabel;
   self.issuerIcon = issuerIcon;
   self.cardAccessibilityLabel = accessibilityLabel;
+}
+
+- (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel {
 }
 
 @end
@@ -140,6 +145,24 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnAccept) {
   EXPECT_CALL(*model_, OnAccepted());
   EXPECT_CALL(*model_, OnCanceled()).Times(0);
   [mediator_ didAccept];
+}
+
+// Test that pushing accept button calls the consumer to show the loading state.
+TEST_F(SaveCardBottomSheetMediatorTest, OnAcceptShowLoadingState) {
+  id<SaveCardBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(SaveCardBottomSheetConsumer));
+  mediator_.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer
+      showLoadingStateWithAccessibilityLabel:[OCMArg checkWithBlock:^BOOL(
+                                                         NSString* label) {
+        EXPECT_NSEQ(label, @"Loading description");
+        return YES;
+      }]]);
+
+  [mediator_ didAccept];
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
 }
 
 // Test that `OnCanceled` is called on the model and bottomsheet is dismissed

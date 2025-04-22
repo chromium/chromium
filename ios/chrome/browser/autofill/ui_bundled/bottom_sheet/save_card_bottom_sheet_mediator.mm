@@ -73,8 +73,11 @@
 #pragma mark - SaveCardBottomSheetMutator
 
 - (void)didAccept {
-  // TODO(crbug.com/407776335): Show loading state when accept button is pushed.
   _saveCardBottomSheetModel->OnAccepted();
+  [_consumer
+      showLoadingStateWithAccessibilityLabel:
+          base::SysUTF16ToNSString(
+              _saveCardBottomSheetModel->loading_accessibility_description())];
 }
 
 - (void)didCancel {
