@@ -19,11 +19,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_angle.h"
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -205,37 +200,44 @@ void SVGAngle::SetValue(float value) {
 }
 
 template <typename CharType>
-static SVGAngle::SVGAngleType StringToAngleType(const CharType*& ptr,
-                                                const CharType* end) {
+static SVGAngle::SVGAngleType StringToAngleType(
+    base::span<const CharType>& type_string) {
   // If there's no unit given, the angle type is unspecified.
-  if (ptr == end)
+  if (type_string.empty()) {
     return SVGAngle::kSvgAngletypeUnspecified;
+  }
 
+  size_t skip = 0;
   SVGAngle::SVGAngleType type = SVGAngle::kSvgAngletypeUnknown;
-  if (IsHTMLSpace<CharType>(ptr[0])) {
+  if (IsHTMLSpace<CharType>(type_string[0])) {
     type = SVGAngle::kSvgAngletypeUnspecified;
-    ptr++;
-  } else if (end - ptr >= 3) {
-    if (ptr[0] == 'd' && ptr[1] == 'e' && ptr[2] == 'g') {
+    skip++;
+  } else if (type_string.size() >= 3) {
+    if (type_string[0] == 'd' && type_string[1] == 'e' &&
+        type_string[2] == 'g') {
       type = SVGAngle::kSvgAngletypeDeg;
-      ptr += 3;
-    } else if (ptr[0] == 'r' && ptr[1] == 'a' && ptr[2] == 'd') {
+      skip += 3;
+    } else if (type_string[0] == 'r' && type_string[1] == 'a' &&
+               type_string[2] == 'd') {
       type = SVGAngle::kSvgAngletypeRad;
-      ptr += 3;
-    } else if (end - ptr >= 4) {
-      if (ptr[0] == 'g' && ptr[1] == 'r' && ptr[2] == 'a' && ptr[3] == 'd') {
+      skip += 3;
+    } else if (type_string.size() >= 4) {
+      if (type_string[0] == 'g' && type_string[1] == 'r' &&
+          type_string[2] == 'a' && type_string[3] == 'd') {
         type = SVGAngle::kSvgAngletypeGrad;
-        ptr += 4;
-      } else if (ptr[0] == 't' && ptr[1] == 'u' && ptr[2] == 'r' &&
-                 ptr[3] == 'n') {
+        skip += 4;
+      } else if (type_string[0] == 't' && type_string[1] == 'u' &&
+                 type_string[2] == 'r' && type_string[3] == 'n') {
         type = SVGAngle::kSvgAngletypeTurn;
-        ptr += 4;
+        skip += 4;
       }
     }
   }
 
-  if (!SkipOptionalSVGSpaces(ptr, end))
+  type_string = type_string.subspan(skip);
+  if (!SkipOptionalSVGSpaces(type_string)) {
     return type;
+  }
 
   return SVGAngle::kSvgAngletypeUnknown;
 }
@@ -266,17 +268,18 @@ String SVGAngle::ValueAsString() const {
 }
 
 template <typename CharType>
-static SVGParsingError ParseValue(const CharType* start,
-                                  const CharType* end,
+static SVGParsingError ParseValue(base::span<const CharType> span,
                                   float& value_in_specified_units,
                                   SVGAngle::SVGAngleType& unit_type) {
-  const CharType* ptr = start;
-  if (!ParseNumber(ptr, end, value_in_specified_units, kAllowLeadingWhitespace))
-    return SVGParsingError(SVGParseStatus::kExpectedAngle, ptr - start);
+  const size_t size = span.size();
+  if (!ParseNumber(span, value_in_specified_units, kAllowLeadingWhitespace)) {
+    return SVGParsingError(SVGParseStatus::kExpectedAngle, size - span.size());
+  }
 
-  unit_type = StringToAngleType(ptr, end);
-  if (unit_type == SVGAngle::kSvgAngletypeUnknown)
-    return SVGParsingError(SVGParseStatus::kExpectedAngle, ptr - start);
+  unit_type = StringToAngleType(span);
+  if (unit_type == SVGAngle::kSvgAngletypeUnknown) {
+    return SVGParsingError(SVGParseStatus::kExpectedAngle, size - span.size());
+  }
 
   return SVGParseStatus::kNoError;
 }
@@ -302,11 +305,11 @@ SVGParsingError SVGAngle::SetValueAsString(const String& value) {
   SVGAngleType unit_type = kSvgAngletypeUnknown;
 
   SVGParsingError error = WTF::VisitCharacters(value, [&](auto chars) {
-    return ParseValue(chars.data(), chars.data() + chars.size(),
-                      value_in_specified_units, unit_type);
+    return ParseValue(chars, value_in_specified_units, unit_type);
   });
-  if (error != SVGParseStatus::kNoError)
+  if (error != SVGParseStatus::kNoError) {
     return error;
+  }
 
   NewValueSpecifiedUnits(unit_type, value_in_specified_units);
   return SVGParseStatus::kNoError;
@@ -333,8 +336,9 @@ void SVGAngle::Add(const SVGPropertyBase* other, const SVGElement*) {
 
   // Only respect by animations, if from and by are both specified in angles
   // (and not, for example, 'auto').
-  if (!IsNumeric() || !other_angle->IsNumeric())
+  if (!IsNumeric() || !other_angle->IsNumeric()) {
     return;
+  }
 
   SetValue(Value() + other_angle->Value());
 }
@@ -369,8 +373,9 @@ void SVGAngle::CalculateAnimatedValue(
   float result = ComputeAnimatedNumber(
       parameters, percentage, repeat_count, from_angle->Value(),
       to_angle->Value(), To<SVGAngle>(to_at_end_of_duration)->Value());
-  if (parameters.is_additive)
+  if (parameters.is_additive) {
     result += Value();
+  }
 
   SetValue(result);
 }
@@ -381,8 +386,9 @@ float SVGAngle::CalculateDistance(const SVGPropertyBase* other,
 }
 
 void SVGAngle::OrientTypeChanged() {
-  if (IsNumeric())
+  if (IsNumeric()) {
     return;
+  }
   unit_type_ = kSvgAngletypeUnspecified;
   value_in_specified_units_ = 0;
 }
