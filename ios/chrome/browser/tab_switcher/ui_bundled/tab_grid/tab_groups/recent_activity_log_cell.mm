@@ -15,6 +15,8 @@
 namespace {
 // The size for the default avatar symbol.
 constexpr CGFloat kDefaultAvatarSize = 20;
+// Alpha of the no-avatar background.
+constexpr CGFloat kDefaultAvatarAlpha = 0.2;
 }  // namespace
 
 @implementation RecentActivityLogCell {
@@ -117,11 +119,12 @@ constexpr CGFloat kDefaultAvatarSize = 20;
         initWithImage:DefaultSymbolWithPointSize(kPersonFillSymbol,
                                                  kDefaultAvatarSize)];
     defaultAvatarImage.translatesAutoresizingMaskIntoConstraints = NO;
-    defaultAvatarImage.tintColor = [UIColor colorNamed:kBlue900Color];
+    defaultAvatarImage.tintColor = [UIColor colorNamed:kSolidWhiteColor];
 
     avatar = [[UIView alloc] init];
     avatar.translatesAutoresizingMaskIntoConstraints = NO;
-    avatar.backgroundColor = [UIColor colorNamed:kBlue100Color];
+    avatar.backgroundColor = [[UIColor colorNamed:kTextPrimaryColor]
+        colorWithAlphaComponent:kDefaultAvatarAlpha];
     avatar.layer.cornerRadius = kRecentActivityLogAvatarSize / 2;
     [NSLayoutConstraint activateConstraints:@[
       [avatar.heightAnchor
