@@ -8,7 +8,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_CXX_WRAPPER_ALGORITHM_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_CXX_WRAPPER_ALGORITHM_H_
 
-#include "partition_alloc/buildflags.h"
+#include "partition_alloc/build_config.h"
 
 #if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
 #include "partition_alloc/partition_alloc_base/check.h"
