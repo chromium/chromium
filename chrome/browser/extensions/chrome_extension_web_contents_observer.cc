@@ -85,8 +85,7 @@ void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
   //            extensions. It seems to be fast enough, but there is a race.
   //            We should delay loading until the extension has reloaded.
   if (registry->terminated_extensions().GetByID(extension_id)) {
-    auto* registrar = ExtensionRegistrar::Get(browser_context());
-    registrar->ReloadExtension(extension_id);
+    ExtensionRegistrar::Get(browser_context())->ReloadExtension(extension_id);
   }
 }
 

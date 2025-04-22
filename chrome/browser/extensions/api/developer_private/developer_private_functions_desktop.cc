@@ -33,7 +33,6 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -76,6 +75,7 @@
 #include "extensions/browser/error_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/file_highlighter.h"
 #include "extensions/browser/management_policy.h"
@@ -121,10 +121,6 @@ namespace developer = api::developer_private;
 
 namespace {
 constexpr char kUnpackedAppsFolder[] = "apps_target";
-
-ExtensionService* GetExtensionService(content::BrowserContext* context) {
-  return ExtensionSystem::Get(context)->extension_service();
-}
 
 // TODO(crbug.com/392777363): Remove this function moving all its usage to
 // shared.cc.
@@ -224,11 +220,11 @@ ExtensionFunction::ResponseAction DeveloperPrivateReloadFunction::Run() {
                           Manifest::IsUnpackedLocation(extension->location());
   }
 
-  ExtensionService* service = GetExtensionService(browser_context());
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
   if (fail_quietly) {
-    service->ReloadExtensionWithQuietFailure(params->extension_id);
+    registrar->ReloadExtensionWithQuietFailure(params->extension_id);
   } else {
-    service->ReloadExtension(params->extension_id);
+    registrar->ReloadExtension(params->extension_id);
   }
 
   if (!wait_for_completion) {
@@ -285,7 +281,7 @@ void DeveloperPrivateReloadFunction::OnGotManifestError(
   // reloading through developerPrivate.loadUnpacked().
   // TODO(devlin): This is weird. Really, we should allow retrying through this
   // function instead of through loadUnpacked(), but
-  // ExtensionService::ReloadExtension doesn't behave well with an extension
+  // ExtensionRegistrar::ReloadExtension doesn't behave well with an extension
   // that failed to reload, and untangling that mess is quite significant.
   // See https://crbug.com/792277.
   Respond(WithArguments(

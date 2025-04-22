@@ -428,15 +428,6 @@ void ExtensionService::LoadSigninProfileTestExtension(const std::string& path) {
 }
 #endif
 
-void ExtensionService::ReloadExtension(const std::string& extension_id) {
-  extension_registrar_->ReloadExtension(extension_id);
-}
-
-void ExtensionService::ReloadExtensionWithQuietFailure(
-    const std::string& extension_id) {
-  extension_registrar_->ReloadExtensionWithQuietFailure(extension_id);
-}
-
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {
@@ -456,7 +447,6 @@ void ExtensionService::PerformActionBasedOnExtensionTelemetryServiceVerdicts(
       blocklist_state_map);
   error_controller_->ShowErrorIfNeeded();
 }
-
 
 void ExtensionService::EnableExtension(const std::string& extension_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));

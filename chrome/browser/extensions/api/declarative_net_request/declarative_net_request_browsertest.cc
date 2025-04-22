@@ -984,7 +984,7 @@ class DeclarativeNetRequestBrowserTest
             // Force a reload of the extension to complete the delayed update.
             // This invalidates the existing `extension` pointer so it needs to
             // be set again after the reload.
-            extension_service()->ReloadExtension(extension_id);
+            extension_registrar()->ReloadExtension(extension_id);
             extension =
                 ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
                     extension_id);
@@ -1851,7 +1851,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     // Don't use ExtensionBrowserTest::ReloadExtension since it waits for the
     // extension to be loaded again. But we need to use our custom waiting logic
     // below.
-    extension_service()->ReloadExtension(extension_id);
+    extension_registrar()->ReloadExtension(extension_id);
     WaitForExtensionsWithRulesetsCount(0);
     WaitForExtensionsWithRulesetsCount(1);
     test_extension_enabled(true);

@@ -1241,7 +1241,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
 
   // Reload the extension, and verify that the installed version does not
   // change.
-  service()->ReloadExtension(id);
+  registrar()->ReloadExtension(id);
   EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
   EXPECT_EQ(id, reload_observer.last_extension_loaded);
   EXPECT_EQ(id, reload_observer.last_extension_unloaded);
@@ -2750,7 +2750,7 @@ TEST_F(ExtensionServiceTest,
   std::string extension_id = loaded_extensions()[0]->id();
 
   // Reload the extension.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   task_environment()->RunUntilIdle();
 
   // An error is generated.
@@ -2768,7 +2768,7 @@ TEST_F(ExtensionServiceTest,
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   // Reload the extension.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   task_environment()->RunUntilIdle();
 
   // No new error is generated. Since the error generated above is still there,
@@ -3975,8 +3975,8 @@ TEST_F(ExtensionServiceTest, ReloadBlocklistedExtension) {
   EXPECT_EQ(StringSet(good1, good2),
             registry()->blocklisted_extensions().GetIDs());
 
-  service()->ReloadExtension(good1);
-  service()->ReloadExtension(good2);
+  registrar()->ReloadExtension(good1);
+  registrar()->ReloadExtension(good2);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(StringSet(good0), registry()->enabled_extensions().GetIDs());
@@ -5319,7 +5319,7 @@ TEST_F(ExtensionServiceTest, ReloadExtension) {
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ(0u, registry()->disabled_extensions().size());
 
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
 
   // Extension should be disabled now, waiting to be reloaded.
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
@@ -5328,7 +5328,7 @@ TEST_F(ExtensionServiceTest, ReloadExtension) {
               testing::UnorderedElementsAre(disable_reason::DISABLE_RELOAD));
 
   // Reloading again should not crash.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
 
   // Finish reloading
   task_environment()->RunUntilIdle();
@@ -8223,7 +8223,7 @@ TEST_F(ExtensionServiceTest, ReloadAndReEnableExtension) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtensionId));
 
   // Begin the reload process.
-  service()->ReloadExtension(extension->id());
+  registrar()->ReloadExtension(extension->id());
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kExtensionId));
 
   // While the extension is reloading, try to re-enable it. This is the flow
@@ -8263,7 +8263,7 @@ TEST_F(ExtensionServiceTest, ReloadSharedModule) {
 
   // Reload the extension and wait for it to complete. This previously crashed
   // (see crbug.com/676815).
-  service()->ReloadExtension(kExtensionId);
+  registrar()->ReloadExtension(kExtensionId);
   task_environment()->RunUntilIdle();
   // The shared module should be enabled.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtensionId));

@@ -72,6 +72,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
@@ -1477,8 +1478,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 
   std::string id;
 
-  ExtensionService* const extension_service =
-      ExtensionSystem::Get(profile())->extension_service();
+  ExtensionRegistrar* const extension_registrar =
+      ExtensionRegistrar::Get(profile());
   scoped_refptr<UnpackedInstaller> installer =
       UnpackedInstaller::Create(profile());
 
@@ -1515,7 +1516,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
     ExtensionTestMessageListener ready_listener("ready2");
     ExtensionTestMessageListener on_installed_listener("onInstalled");
 
-    extension_service->ReloadExtension(id);
+    extension_registrar->ReloadExtension(id);
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
     EXPECT_TRUE(on_installed_listener.WaitUntilSatisfied());
   }
@@ -1529,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
     ExtensionTestMessageListener ready_listener("ready3");
     ExtensionTestMessageListener on_installed_listener("onInstalled");
 
-    extension_service->ReloadExtension(id);
+    extension_registrar->ReloadExtension(id);
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
     EXPECT_TRUE(on_installed_listener.WaitUntilSatisfied());
   }

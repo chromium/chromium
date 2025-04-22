@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/browser/warning_service.h"
@@ -218,12 +219,10 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     // We can't call ReloadExtension directly, since when this method finishes
     // it tries to decrease the reference count for the extension, which fails
     // if the extension has already been reloaded; so instead we post a task.
-    extensions::ExtensionService* service =
-      ExtensionSystem::Get(browser_context_)->extension_service();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&extensions::ExtensionService::ReloadExtension,
-                       service->AsExtensionServiceWeakPtr(), extension_id));
+        base::BindOnce(&extensions::ExtensionRegistrar::ReloadExtension,
+                       registrar->GetWeakPtr(), extension_id));
   }
 }
 

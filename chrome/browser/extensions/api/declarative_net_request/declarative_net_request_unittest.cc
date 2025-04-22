@@ -3094,7 +3094,7 @@ TEST_P(MultipleRulesetsTest_Unpacked, UpdateAllocationOnReload) {
   // Reload the extension. For unpacked extensions this is functionally
   // equivalent to uninstalling the extension then installing it again based on
   // the contents of the extension's directory.
-  service()->ReloadExtension(extension_id);
+  registrar()->ReloadExtension(extension_id);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   // File changes to the extension's ruleset should take effect after it is

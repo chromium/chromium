@@ -328,7 +328,7 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
 
   // Reload the extension, causing the delayed update to v2 to happen, then do
   // another update check - we should get a no_update instead of throttled.
-  service()->ReloadExtension(id);
+  registrar()->ReloadExtension(id);
   const Extension* current =
       ExtensionRegistry::Get(browser_context())->GetInstalledExtension(id);
   ASSERT_NE(nullptr, current);
