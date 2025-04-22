@@ -198,6 +198,14 @@ static_library("video_player") {
     "//media/gpu",
     "//testing/gtest:gtest",
   ]
+
+  if (use_vaapi || use_v4l2_codec) {
+    sources += [
+      "video_player/gmb_video_frame_converter.cc",
+      "video_player/gmb_video_frame_converter.h",
+    ]
+    deps += [ "//media/gpu/chromeos:common" ]
+  }
 }
 
 static_library("video_test_environment") {

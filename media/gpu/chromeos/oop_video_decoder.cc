@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -90,58 +91,20 @@ namespace {
 constexpr size_t kTimestampCacheSize = 128;
 
 scoped_refptr<FrameResource> CreateDecodedFrameResource(
-    gfx::GpuMemoryBufferHandle gmb_handle,
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
+    const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
+    std::vector<base::ScopedFD> dmabuf_fds,
     base::TimeDelta timestamp,
     const VideoFrameMetadata& metadata,
     const gfx::ColorSpace& color_space,
     const std::optional<gfx::HDRMetadata>& hdr_metadata) {
-  if (metadata.protected_video && metadata.needs_detiling &&
-      format == PIXEL_FORMAT_P010LE) {
-    // This is a tiled, protected MTK format that is true 10bpp so it will
-    // not pass the tests in VerifyGpuMemoryBufferHandle for P010. Instead just
-    // do the basic tests that would be done in that call here. This is safe to
-    // do because the buffers for this will only go into the secure video
-    // decoder which will fail on invalid buffer parameters.
-
-    // We've validated the type of the GpuMemoryBufferHandle before.
-    CHECK_EQ(gmb_handle.type, gfx::NATIVE_PIXMAP);
-
-    // The media::VideoFrame traits guarantee this.
-    CHECK(VideoFrame::IsValidCodedSize(coded_size));
-
-    constexpr size_t kNumP010Planes = 2;
-    if (kNumP010Planes != gmb_handle.native_pixmap_handle.planes.size()) {
-      VLOGF(1) << "Invalid number of dmabuf planes passed: "
-               << gmb_handle.native_pixmap_handle.planes.size()
-               << ", expected: 2";
-      return nullptr;
-    }
-  } else {
-    if (!VerifyGpuMemoryBufferHandle(format, coded_size, gmb_handle)) {
-      VLOGF(2) << "Received an invalid GpuMemoryBufferHandle";
-      return nullptr;
-    }
-  }
-
-  std::optional<gfx::BufferFormat> buffer_format =
-      VideoPixelFormatToGfxBufferFormat(format);
-  if (!buffer_format) {
-    VLOGF(2) << "Could not convert the incoming frame's format to a "
-                "gfx::BufferFormat";
-    return nullptr;
-  }
+  // The VideoFrame mojo traits already perform an extensive validation of the
+  // frame. No additional validations need to take place.
 
   scoped_refptr<media::NativePixmapFrameResource> native_pixmap_frame =
-      NativePixmapFrameResource::Create(
-          visible_rect, natural_size, timestamp,
-          gfx::BufferUsage::SCANOUT_VDA_WRITE,
-          base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-              coded_size, *buffer_format,
-              std::move(gmb_handle.native_pixmap_handle)));
+      NativePixmapFrameResource::Create(layout, visible_rect, natural_size,
+                                        std::move(dmabuf_fds), timestamp);
   if (!native_pixmap_frame) {
     VLOGF(2) << "Could not create a NativePixmap-backed FrameResource";
     return nullptr;
@@ -1011,7 +974,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     return;
   }
 
-  if (frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "Received a frame with an unexpected storage type";
     Stop();
     return;
@@ -1020,22 +983,27 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   // The mojo traits guarantee this.
   CHECK(gfx::Rect(frame->coded_size()).Contains(frame->visible_rect()));
 
-  gfx::GpuMemoryBufferHandle gmb_handle = frame->GetGpuMemoryBufferHandle();
-  if (gmb_handle.type != gfx::NATIVE_PIXMAP ||
-      gmb_handle.native_pixmap_handle.planes.empty()) {
-    VLOGF(2) << "Received an invalid GpuMemoryBufferHandle";
+  const size_t num_fds = frame->NumDmabufFds();
+  if (0 == num_fds) {
+    VLOGF(2) << "Received a frame with zero DMA buffer FD's";
     Stop();
     return;
   }
 
-  if (!std::all_of(gmb_handle.native_pixmap_handle.planes.cbegin(),
-                   gmb_handle.native_pixmap_handle.planes.cend(),
-                   [](const gfx::NativePixmapPlane& plane) {
-                     return plane.fd.is_valid();
-                   })) {
-    VLOGF(2) << "Received at least one invalid FD";
-    Stop();
-    return;
+  std::vector<base::ScopedFD> duped_fds;
+  duped_fds.reserve(num_fds);
+  for (size_t i = 0; i < num_fds; ++i) {
+    if (frame->GetDmabufFd(i) < 0) {
+      VLOGF(2) << "Received at least one invalid FD";
+      Stop();
+      return;
+    }
+    duped_fds.emplace_back(HANDLE_EINTR(dup(frame->GetDmabufFd(i))));
+    if (!duped_fds.back().is_valid()) {
+      VLOGF(2) << "Failed to dup() an FD";
+      Stop();
+      return;
+    }
   }
 
   const base::TimeDelta fake_timestamp = frame->timestamp();
@@ -1137,8 +1105,8 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
   } else {
     scoped_refptr<FrameResource> native_pixmap_frame =
-        CreateDecodedFrameResource(std::move(gmb_handle), format, coded_size,
-                                   visible_rect, natural_size, fake_timestamp,
+        CreateDecodedFrameResource(frame->layout(), visible_rect, natural_size,
+                                   std::move(duped_fds), fake_timestamp,
                                    metadata, color_space, hdr_metadata);
     if (!native_pixmap_frame) {
       Stop();
