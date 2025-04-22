@@ -94,7 +94,6 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
      *
      * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
-     * @param stripTabs The list of {@link StripLayoutTab}.
      * @param interactingTab The tab to move out of group.
      * @param groupTitleToAnimate The title of the group the interacting tab is attempting to move
      *     out of.Used for animation. Null if animation is not needed.
@@ -332,8 +331,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutView interactingView,
             List<Animator> animationList) {
-
-        // 2. Animate offsets back to 0, reattach the container, and clear the margins.
+        // Animate offsets back to 0, reattach the container, and clear the margins.
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         // interactingView may be null if reordering for external view drag drop.
         if (interactingView != null) {
