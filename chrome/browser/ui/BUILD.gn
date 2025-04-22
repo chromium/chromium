@@ -5303,6 +5303,8 @@ static_library("ui") {
       "toolbar/toolbar_actions_model.h",
       "toolbar/toolbar_actions_model_factory.cc",
       "toolbar/toolbar_actions_model_factory.h",
+      "webui/extensions/extension_icon_source.cc",
+      "webui/extensions/extension_icon_source.h",
       "webui/extensions/extensions_ui.cc",
       "webui/extensions/extensions_ui.h",
       "webui/favicon_source.cc",
@@ -5464,8 +5466,6 @@ static_library("ui") {
       "web_applications/webui_web_app_navigation_throttle.h",
       "webui/extensions/extension_basic_info.cc",
       "webui/extensions/extension_basic_info.h",
-      "webui/extensions/extension_icon_source.cc",
-      "webui/extensions/extension_icon_source.h",
     ]
 
     if (is_mac) {

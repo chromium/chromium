@@ -6524,13 +6524,14 @@ void InitializeFileURLLoaderFactoryForExtension(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void AddChromeSchemeFactories(
     int render_process_id,
     content::RenderFrameHost* frame_host,
     content::WebContents* web_contents,
     const extensions::Extension* extension,
     ChromeContentBrowserClient::NonNetworkURLLoaderFactoryMap* factories) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   InstantService* instant_service =
@@ -6548,6 +6549,7 @@ void AddChromeSchemeFactories(
                            frame_host, chrome::kChromeSearchScheme,
                            /*allowed_hosts=*/base::flat_set<std::string>()));
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   extensions::ExtensionWebContentsObserver* web_observer =
       extensions::ExtensionWebContentsObserver::GetForWebContents(web_contents);
@@ -6586,7 +6588,7 @@ void AddChromeSchemeFactories(
                            std::move(allowed_webui_hosts)));
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }  // namespace
 
 void ChromeContentBrowserClient::
@@ -6595,12 +6597,12 @@ void ChromeContentBrowserClient::
         int render_frame_id,
         const std::optional<url::Origin>& request_initiator_origin,
         NonNetworkURLLoaderFactoryMap* factories) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS_CORE) || \
     !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* frame_host =
       RenderFrameHost::FromID(render_process_id, render_frame_id);
   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS_CORE) || \
         // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -6643,8 +6645,9 @@ void ChromeContentBrowserClient::
       content::RenderProcessHost::FromID(render_process_id)
           ->GetBrowserContext();
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
-          browser_context))
+          browser_context)) {
     return;
+  }
 
   factories->emplace(extensions::kExtensionScheme,
                      extensions::CreateExtensionURLLoaderFactory(
@@ -6670,14 +6673,12 @@ void ChromeContentBrowserClient::
         render_process_id, browser_context, extension, factories);
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // This logic should match
   // ChromeExtensionWebContentsObserver::RenderFrameCreated.
   if (web_contents) {
     AddChromeSchemeFactories(render_process_id, frame_host, web_contents,
                              extension, factories);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 

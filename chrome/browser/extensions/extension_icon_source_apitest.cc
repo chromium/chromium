@@ -4,16 +4,10 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/switches.h"
-#include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 
 using ExtensionIconSourceTest = extensions::ExtensionApiTest;
@@ -25,35 +19,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoaded) {
 
   // Test that the icons are loaded and that the chrome://extension-icon
   // parameters work correctly.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
       GURL("chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/index.html")));
-  EXPECT_EQ(
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.title"),
-      "Loaded");
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_EQ(content::EvalJs(web_contents, "document.title"), "Loaded");
 
   // Verify that the an extension can't load chrome://extension-icon icons
   // without the management permission.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
       GURL("chrome-extension://apocjbpjpkghdepdngjlknfpmabcmlao/index.html")));
-  EXPECT_EQ(
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.title"),
-      "Not Loaded");
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_EQ(content::EvalJs(web_contents, "document.title"), "Not Loaded");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, InvalidURL) {
   // Test that navigation to an invalid url works.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome://extension-icon/invalid")));
+  ASSERT_TRUE(NavigateToURL(GURL("chrome://extension-icon/invalid")));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
-  EXPECT_EQ(
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.title"),
-      "invalid (96\xC3\x97"
-      "96)");
+  EXPECT_EQ(content::EvalJs(web_contents, "document.title"),
+            "invalid (96\xC3\x97"
+            "96)");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoadedIncognito) {
@@ -65,21 +53,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoadedIncognito) {
 
   // Test that the icons are loaded and that the chrome://extension-icon
   // parameters work correctly.
-  Browser* otr_browser = OpenURLOffTheRecord(
-      browser()->profile(),
+  auto* web_contents = PlatformOpenURLOffTheRecord(
+      profile(),
       GURL("chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/index.html"));
-  EXPECT_EQ(
-      content::EvalJs(otr_browser->tab_strip_model()->GetActiveWebContents(),
-                      "document.title"),
-      "Loaded");
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_EQ(content::EvalJs(web_contents, "document.title"), "Loaded");
 
   // Verify that the an extension can't load chrome://extension-icon icons
   // without the management permission.
-  OpenURLOffTheRecord(
-      browser()->profile(),
+  web_contents = PlatformOpenURLOffTheRecord(
+      profile(),
       GURL("chrome-extension://apocjbpjpkghdepdngjlknfpmabcmlao/index.html"));
-  EXPECT_EQ(
-      content::EvalJs(otr_browser->tab_strip_model()->GetActiveWebContents(),
-                      "document.title"),
-      "Not Loaded");
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_EQ(content::EvalJs(web_contents, "document.title"), "Not Loaded");
 }

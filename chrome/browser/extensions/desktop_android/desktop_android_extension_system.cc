@@ -18,11 +18,13 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/url_data_source.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/extension_prefs.h"
@@ -188,6 +190,15 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
       std::make_unique<ServiceWorkerManager>(browser_context_);
   quota_service_ = std::make_unique<QuotaService>();
   user_script_manager_ = std::make_unique<UserScriptManager>(browser_context_);
+
+  if (!browser_context_->IsOffTheRecord()) {
+    // Make the chrome://extension-icon/ resource available. Only do this for
+    // non-incognito profiles because OffTheRecordProfileImpl adds its own.
+    // Also, this mimics the behavior of ChromeExtensionSystem.
+    Profile* profile = Profile::FromBrowserContext(browser_context_);
+    content::URLDataSource::Add(browser_context_,
+                                std::make_unique<ExtensionIconSource>(profile));
+  }
 
   ready_.Signal();
 }

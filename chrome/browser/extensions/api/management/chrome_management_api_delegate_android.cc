@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registrar.h"
@@ -142,8 +143,8 @@ GURL ChromeManagementAPIDelegate::GetIconURL(const Extension* extension,
                                              int icon_size,
                                              ExtensionIconSet::Match match,
                                              bool grayscale) const {
-  NOTIMPLEMENTED();
-  return GURL();
+  return ExtensionIconSource::GetIconURL(extension, icon_size, match,
+                                         grayscale);
 }
 
 GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(

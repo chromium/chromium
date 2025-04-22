@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
@@ -50,7 +51,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #endif
 
 namespace extensions::util {
@@ -255,9 +255,6 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 base::Value::Dict GetExtensionInfo(const Extension* extension) {
   DCHECK(extension);
   base::Value::Dict dict;
@@ -273,7 +270,6 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
 
   return dict;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
@@ -286,6 +282,8 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
   return extension->permissions_data()->active_permissions().Clone();
 }
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(
     Profile* profile,

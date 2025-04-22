@@ -52,7 +52,6 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_otr_delegate.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
@@ -106,9 +105,13 @@
 #include "chromeos/constants/pref_names.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/extension_pref_store.h"
@@ -205,11 +208,13 @@ void OffTheRecordProfileImpl::Init() {
   ChromePluginServiceFilter::GetInstance()->RegisterProfile(this);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Make the chrome//extension-icon/ resource available.
   content::URLDataSource::Add(
       this, std::make_unique<extensions::ExtensionIconSource>(profile_));
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::WebRequestEventRouter::OnOTRBrowserContextCreated(profile_, this);
 #endif
 
@@ -462,7 +467,7 @@ content::BrowserPluginGuestManager* OffTheRecordProfileImpl::GetGuestManager() {
 
 storage::SpecialStoragePolicy*
 OffTheRecordProfileImpl::GetSpecialStoragePolicy() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return GetExtensionSpecialStoragePolicy();
 #else
   return NULL;
