@@ -19,6 +19,7 @@ mojom("mojom") {
     "auction_shared_storage_host.mojom",
     "auction_worklet_service.mojom",
     "bidder_worklet.mojom",
+    "in_progress_auction_download.mojom",
     "private_aggregation_request.mojom",
     "real_time_reporting.mojom",
     "reject_reason.mojom",

@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -71,45 +72,6 @@ network::mojom::URLResponseHeadPtr CreateResponseHead() {
       "HTTP/1.1 200 OK\r\n"
       "Ad-Auction-Allowed: true\r\n");
   return response_head;
-}
-
-network::mojom::URLLoaderClientEndpointsPtr StartLoad(
-    network::TestURLLoaderFactory& url_loader_factory,
-    const GURL& url,
-    AuctionDownloader::MimeType mime_type,
-    std::string_view request_id,
-    std::optional<std::string>& post_body,
-    std::optional<std::string>& content_type,
-    bool support_async_revalidation_for_in_progress_load,
-    AuctionDownloader::NetworkEventsDelegate* network_events_delegate) {
-  auto url_loader_client_endpoints =
-      network::mojom::URLLoaderClientEndpoints::New();
-  std::unique_ptr<network::ResourceRequest> resource_request =
-      AuctionDownloader::MakeResourceRequest(
-          url, mime_type, /*post=*/post_body.has_value(),
-          support_async_revalidation_for_in_progress_load,
-          /*request_initiator=*/std::nullopt,
-          /*trusted_params=*/std::nullopt,
-          /*request_id=*/request_id);
-  if (post_body.has_value() && content_type.has_value()) {
-    resource_request->request_body =
-        network::ResourceRequestBody::CreateFromCopyOfBytes(
-            base::as_byte_span(std::move(post_body.value())));
-    resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                        content_type.value());
-  }
-  if (network_events_delegate) {
-    network_events_delegate->OnNetworkSendRequest(*resource_request);
-  }
-  url_loader_factory.CreateLoaderAndStart(
-      url_loader_client_endpoints->url_loader.InitWithNewPipeAndPassReceiver(),
-      /*request_id=*/0, /*options=*/0, *resource_request,
-      url_loader_client_endpoints->url_loader_client
-          .InitWithNewPipeAndPassRemote(),
-      net::MutableNetworkTrafficAnnotationTag(
-          AuctionDownloader::NetworkTrafficAnnotation()));
-
-  return url_loader_client_endpoints;
 }
 
 enum class ConstructorChoice {
@@ -195,24 +157,23 @@ class AuctionDownloaderTest
 
   std::unique_ptr<AuctionDownloader> MakeDownloader(
       std::optional<std::string> post_body = std::nullopt,
-      std::optional<std::string> content_type = std::nullopt,
-      bool support_async_revalidation_for_in_progress_load = false) {
+      std::optional<std::string> content_type = std::nullopt) {
+    auto test_network_events_delegate = std::make_unique<TestDelegate>(
+        observed_completion_status_, observed_response_url_,
+        observed_request_id_, observed_request_url_, observed_response_head_);
     std::unique_ptr<AuctionDownloader> downloader;
     switch (constructor_choice()) {
       case ConstructorChoice::kAdoptInProgressLoad: {
-        std::string request_id = base::UnguessableToken::Create().ToString();
-        auto url_loader_client_endpoints = StartLoad(
-            url_loader_factory_, url_, mime_type_, request_id, post_body,
-            content_type, support_async_revalidation_for_in_progress_load,
-            test_network_events_delegate_.get());
+        auto in_progress_load = AuctionDownloader::StartDownload(
+            url_loader_factory_, url_, mime_type_,
+            *test_network_events_delegate, post_body, content_type);
         downloader = std::make_unique<AuctionDownloader>(
-            &url_loader_factory_, url_, download_mode(), mime_type_,
-            std::move(url_loader_client_endpoints), std::move(request_id),
-            num_igs_for_trusted_bidding_signals_kvv1_,
+            &url_loader_factory_, std::move(in_progress_load), download_mode(),
+            mime_type_, num_igs_for_trusted_bidding_signals_kvv1_,
             response_started_callback_,
             base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                            base::Unretained(this)),
-            std::move(test_network_events_delegate_));
+            std::move(test_network_events_delegate));
         break;
       }
       case ConstructorChoice::kStartLoadInWorklet: {
@@ -223,7 +184,7 @@ class AuctionDownloaderTest
             response_started_callback_,
             base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                            base::Unretained(this)),
-            std::move(test_network_events_delegate_));
+            std::move(test_network_events_delegate));
         break;
       }
       case ConstructorChoice::kStartLoadInBrowser: {
@@ -237,7 +198,7 @@ class AuctionDownloaderTest
             TrustedParams(),
             base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                            base::Unretained(this)),
-            std::move(test_network_events_delegate_));
+            std::move(test_network_events_delegate));
       }
     }
     return downloader;
@@ -259,10 +220,6 @@ class AuctionDownloaderTest
     observed_completion_status_ =
         network::URLLoaderCompletionStatus(net::Error());
     observed_response_head_ = std::nullopt;
-
-    test_network_events_delegate_ = std::make_unique<TestDelegate>(
-        observed_completion_status_, observed_response_url_,
-        observed_request_id_, observed_request_url_, observed_response_head_);
 
     url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [this](const network::ResourceRequest& request) {
@@ -354,8 +311,6 @@ class AuctionDownloaderTest
   std::optional<GURL> observed_response_url_;
   std::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
   network::URLLoaderCompletionStatus observed_completion_status_;
-
-  std::unique_ptr<TestDelegate> test_network_events_delegate_;
 
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
       response_started_callback_;
@@ -1105,10 +1060,7 @@ TEST_P(AuctionDownloaderTest, StaleWhileRevalidate) {
 
   url_loader_factory_.ClearResponses();
   run_loop_ = std::make_unique<base::RunLoop>();
-  std::unique_ptr<AuctionDownloader> downloader =
-      MakeDownloader(/*post_body=*/std::nullopt,
-                     /*content_type=*/std::nullopt,
-                     /*support_async_revalidation_for_in_progress_load=*/true);
+  std::unique_ptr<AuctionDownloader> downloader = MakeDownloader();
 
   EXPECT_EQ(url_loader_factory_.total_requests(), 1u);
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
@@ -1148,8 +1100,7 @@ TEST_P(AuctionDownloaderTest, DoNotSupportRevalidateOnPostRequest) {
   url_loader_factory_.ClearResponses();
   run_loop_ = std::make_unique<base::RunLoop>();
   std::unique_ptr<AuctionDownloader> downloader =
-      MakeDownloader("post_body", "text/javascript",
-                     /*support_async_revalidation_for_in_progress_load=*/true);
+      MakeDownloader("post_body", "text/javascript");
 
   // The LOAD_SUPPORT_ASYNC_REVALIDATION flag was not used.
   EXPECT_EQ(url_loader_factory_.total_requests(), 1u);
