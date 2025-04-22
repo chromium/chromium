@@ -35,11 +35,24 @@ struct UrlAndUuid {
   base::Uuid uuid;
 };
 
+struct UrlAndTitleAndPath {
+  auto operator<=>(const UrlAndTitleAndPath&) const = default;
+
+  GURL url;
+  std::u16string title;
+  // Ancestor folder titles concatenated with '/'.
+  std::u16string path;
+};
+
 // Test-only functions to verify the logic related to extracting local data.
 base::flat_set<UrlAndTitle> ExtractUniqueLocalNodesByUrlAndTitleForTesting(
     const BookmarkModelView& all_local_data,
     SubtreeSelection subtree_selection);
 base::flat_set<UrlAndUuid> ExtractUniqueLocalNodesByUrlAndUuidForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection);
+base::flat_set<UrlAndTitleAndPath>
+ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
     const BookmarkModelView& all_local_data,
     SubtreeSelection subtree_selection);
 
@@ -48,6 +61,10 @@ base::flat_set<UrlAndTitle> ExtractUniqueAccountNodesByUrlAndTitleForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection);
 base::flat_set<UrlAndUuid> ExtractUniqueAccountNodesByUrlAndUuidForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection);
+base::flat_set<UrlAndTitleAndPath>
+ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection);
 

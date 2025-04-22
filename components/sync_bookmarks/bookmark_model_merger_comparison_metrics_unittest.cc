@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -35,6 +36,11 @@ void PrintTo(const UrlAndUuid& value, std::ostream* os) {
   *os << "{\"" << value.url << "\", \"" << value.uuid << "\"}";
 }
 
+void PrintTo(const UrlAndTitleAndPath& value, std::ostream* os) {
+  *os << "{\"" << value.url << "\", \"" << base::UTF16ToUTF8(value.title)
+      << "\", \"" << base::UTF16ToUTF8(value.path) << "\"}";
+}
+
 namespace {
 
 using RemoteTreeNode = BookmarkModelMerger::RemoteTreeNode;
@@ -45,6 +51,11 @@ using testing::UnorderedElementsAre;
 const char kBookmarkBarTag[] = "bookmark_bar";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 const char kOtherBookmarksTag[] = "other_bookmarks";
+
+// Forked from bookmark_model_merger_comparison_metrics.cc.
+constexpr char16_t kBookmarkBarFolderName[] = u"__Bookmarks bar__";
+constexpr char16_t kOtherBookmarksFolderName[] = u"__Other bookmarks__";
+constexpr char16_t kMobileBookmarksFolderName[] = u"__Mobile bookmarks__";
 
 // Test class to build bookmark URLs conveniently and compactly in tests.
 class UrlBookmarkBuilder {
@@ -293,6 +304,32 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractLocalNodes) {
                   SubtreeSelection::kUnderBookmarkBar),
               UnorderedElementsAre(UrlAndUuid{kUrl1, kUrl1Uuid},
                                    UrlAndUuid{kUrl2, kUrl2Uuid}));
+
+  // By URL, title and path.
+  EXPECT_THAT(
+      ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
+          BookmarkModelViewUsingLocalOrSyncableNodes(model_.get()),
+          SubtreeSelection::kConsideringAllBookmarks),
+      UnorderedElementsAre(
+          UrlAndTitleAndPath{kUrl1, kUrl1Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName})},
+          UrlAndTitleAndPath{kUrl2, kUrl2Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName, u"/",
+                                           kFolder1Title})},
+          UrlAndTitleAndPath{kUrl3, kUrl3Title,
+                             base::StrCat({u"/", kMobileBookmarksFolderName})},
+          UrlAndTitleAndPath{kUrl4, kUrl4Title,
+                             base::StrCat({u"/", kOtherBookmarksFolderName})}));
+  EXPECT_THAT(
+      ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
+          BookmarkModelViewUsingLocalOrSyncableNodes(model_.get()),
+          SubtreeSelection::kUnderBookmarkBar),
+      UnorderedElementsAre(
+          UrlAndTitleAndPath{kUrl1, kUrl1Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName})},
+          UrlAndTitleAndPath{kUrl2, kUrl2Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName, u"/",
+                                           kFolder1Title})}));
 }
 
 TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractAccountNodes) {
@@ -357,6 +394,30 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractAccountNodes) {
                   account_data, SubtreeSelection::kUnderBookmarkBar),
               UnorderedElementsAre(UrlAndUuid{kUrl1, kUrl1Uuid},
                                    UrlAndUuid{kUrl2, kUrl2Uuid}));
+
+  // By URL, title and path.
+  EXPECT_THAT(
+      ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
+          account_data, SubtreeSelection::kConsideringAllBookmarks),
+      UnorderedElementsAre(
+          UrlAndTitleAndPath{kUrl1, kUrl1Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName})},
+          UrlAndTitleAndPath{kUrl2, kUrl2Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName, u"/",
+                                           kFolder1Title})},
+          UrlAndTitleAndPath{kUrl3, kUrl3Title,
+                             base::StrCat({u"/", kMobileBookmarksFolderName})},
+          UrlAndTitleAndPath{kUrl4, kUrl4Title,
+                             base::StrCat({u"/", kOtherBookmarksFolderName})}));
+  EXPECT_THAT(
+      ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
+          account_data, SubtreeSelection::kUnderBookmarkBar),
+      UnorderedElementsAre(
+          UrlAndTitleAndPath{kUrl1, kUrl1Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName})},
+          UrlAndTitleAndPath{kUrl2, kUrl2Title,
+                             base::StrCat({u"/", kBookmarkBarFolderName, u"/",
+                                           kFolder1Title})}));
 }
 
 }  // namespace
