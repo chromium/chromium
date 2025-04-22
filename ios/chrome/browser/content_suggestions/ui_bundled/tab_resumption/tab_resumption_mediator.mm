@@ -972,6 +972,9 @@ class TabResumptionMediatorProxy {
   item.commandHandler = self;
   item.delegate = self;
   item.shouldShowSeeMore = true;
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    item.shouldShowSeeMore = false;
+  }
   [self fetchShopCardDataForItemIfApplicable:item url:tab->virtual_url];
 }
 
