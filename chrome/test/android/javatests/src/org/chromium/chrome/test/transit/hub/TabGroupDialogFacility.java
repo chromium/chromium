@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
@@ -29,7 +30,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
-import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
@@ -101,9 +101,11 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
                         .getTabModelSelector()
                         .getModel(mIsIncognito)
                         .getProfile();
-        CollaborationService collaborationService =
-                CollaborationServiceFactory.getForProfile(profile);
-        return collaborationService.getServiceStatus().isAllowedToCreate();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        CollaborationServiceFactory.getForProfile(profile)
+                                .getServiceStatus()
+                                .isAllowedToCreate());
     }
 
     @Override
