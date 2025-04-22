@@ -15,27 +15,14 @@
 
 namespace blink {
 
-enum class CanvasNoiseReason {
-  kAllConditionsMet = 0,
-  kNoRenderContext = 1,
-  kNoTrigger = 2,
-  kNo2d = 4,
-  kNoGpu = 8,
-  kNotEnabledInMode = 16,
-  kNoExecutionContext = 32,
-  kMaxValue = kNoExecutionContext
-};
-
-inline constexpr CanvasNoiseReason operator|(CanvasNoiseReason a,
-                                             CanvasNoiseReason b) {
-  return static_cast<CanvasNoiseReason>(static_cast<int>(a) |
-                                        static_cast<int>(b));
-}
-inline constexpr CanvasNoiseReason& operator|=(CanvasNoiseReason& a,
-                                               CanvasNoiseReason b) {
-  a = a | b;
-  return a;
-}
+inline constexpr std::string_view kNoiseReasonMetricName =
+    "FingerprintingProtection.CanvasNoise.InterventionReason";
+inline constexpr std::string_view kNoiseDurationMetricName =
+    "FingerprintingProtection.CanvasNoise.NoiseDuration";
+inline constexpr std::string_view kCanvasSizeMetricName =
+    "FingerprintingProtection.CanvasNoise.NoisedCanvasSize";
+inline constexpr std::string_view kCanvasOperationMetricName =
+    "FingerprintingProtection.CanvasNoise.OperationTriggered";
 
 class CORE_EXPORT CanvasInterventionsHelper
     : public GarbageCollected<CanvasInterventionsHelper>,

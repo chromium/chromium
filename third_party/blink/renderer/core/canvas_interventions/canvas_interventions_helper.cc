@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -78,12 +79,11 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
   }
 
   // When all conditions are met, none of the other reasons are possible.
-  static constexpr int exclusive_max =
-      static_cast<int>(CanvasNoiseReason::kMaxValue) << 1;
+  constexpr int exclusive_max = static_cast<int>(CanvasNoiseReason::kMaxValue)
+                                << 1;
 
-  UMA_HISTOGRAM_EXACT_LINEAR(
-      "FingerprintingProtection.CanvasNoise.InterventionReason",
-      static_cast<int>(noise_reason), exclusive_max);
+  UMA_HISTOGRAM_EXACT_LINEAR(kNoiseReasonMetricName,
+                             static_cast<int>(noise_reason), exclusive_max);
 
   return noise_reason == CanvasNoiseReason::kAllConditionsMet;
 }
@@ -171,6 +171,13 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   snapshot = blink::UnacceleratedStaticBitmapImage::Create(
       std::move(noised_image), snapshot->CurrentFrameOrientation());
 
+  constexpr int canvas_op_exclusive_max =
+      static_cast<int>(CanvasOperationType::kMaxValue) << 1;
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      kCanvasOperationMetricName,
+      static_cast<int>(rendering_context->GetCanvasTriggerOperations()),
+      canvas_op_exclusive_max);
+
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kIntervention,
       mojom::blink::ConsoleMessageLevel::kInfo,
@@ -181,12 +188,11 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
 
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "FingerprintingProtection.CanvasNoise.NoiseDuration", elapsed_time,
-      base::Microseconds(50), base::Milliseconds(10), 50);
-  UMA_HISTOGRAM_COUNTS_1M(
-      "FingerprintingProtection.CanvasNoise.NoisedCanvasSize",
-      pixmap_to_noise.width() * pixmap_to_noise.height());
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(kNoiseDurationMetricName,
+                                          elapsed_time, base::Microseconds(50),
+                                          base::Milliseconds(10), 50);
+  UMA_HISTOGRAM_COUNTS_1M(kCanvasSizeMetricName,
+                          pixmap_to_noise.width() * pixmap_to_noise.height());
   UseCounter::Count(execution_context, WebFeature::kCanvasReadbackNoise);
   auto* helper = CanvasInterventionsHelper::From(execution_context);
   helper->IncrementNoisedCanvasReadbacks();

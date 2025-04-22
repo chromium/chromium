@@ -46,6 +46,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
@@ -479,7 +480,7 @@ void CanvasPath::arc(double double_x,
         CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
         double_end_angle, anticlockwise);
   }
-  SetTriggerForCanvasIntervention();
+  AddTriggersForCanvasIntervention(CanvasOperationType::kArc);
 
   if (!radius || start_angle == end_angle) [[unlikely]] {
     // The arc is empty but we still need to draw the connecting line.
@@ -565,7 +566,7 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  SetTriggerForCanvasIntervention();
+  AddTriggersForCanvasIntervention(CanvasOperationType::kEllipse);
   path_builder_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation,
                            start_angle, adjusted_end_angle);
 }

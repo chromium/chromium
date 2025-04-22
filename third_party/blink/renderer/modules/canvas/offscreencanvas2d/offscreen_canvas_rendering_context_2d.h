@@ -7,6 +7,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -135,6 +136,10 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   bool ShouldTriggerIntervention() const override {
     return HasTriggerForIntervention();
+  }
+
+  CanvasOperationType GetCanvasTriggerOperations() const override {
+    return GetTriggersForIntervention();
   }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;

@@ -35,6 +35,7 @@
 #include "base/compiler_specific.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
@@ -182,7 +183,11 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   gfx::RectF BoundingRect() const;
 
   bool HasTriggerForIntervention() const {
-    return has_trigger_for_intervention_;
+    return triggers_for_intervention_ != CanvasOperationType::kNone;
+  }
+
+  CanvasOperationType GetTriggersForIntervention() const {
+    return triggers_for_intervention_;
   }
 
   void Trace(Visitor*) const override;
@@ -209,8 +214,8 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   // Called when a canvas operation is made that would trigger a canvas
   // intervention.
-  void SetTriggerForCanvasIntervention() {
-    has_trigger_for_intervention_ = true;
+  void AddTriggersForCanvasIntervention(CanvasOperationType type) {
+    triggers_for_intervention_ |= type;
   }
 
   // This mirrors state that is stored in CanvasRenderingContext2DState.  We
@@ -222,7 +227,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   IdentifiabilityStudyHelper identifiability_study_helper_;
 
-  bool has_trigger_for_intervention_ = false;
+  CanvasOperationType triggers_for_intervention_ = CanvasOperationType::kNone;
 
  private:
   // Used to build up a line.

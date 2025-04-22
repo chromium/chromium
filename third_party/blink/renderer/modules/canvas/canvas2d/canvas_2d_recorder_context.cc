@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -1306,7 +1307,7 @@ void Canvas2DRecorderContext::setShadowBlur(double blur) {
                                                 blur);
   }
   if (blur > 0) {
-    SetTriggerForCanvasIntervention();
+    AddTriggersForCanvasIntervention(CanvasOperationType::kSetShadowBlur);
   }
   state.SetShadowBlur(ClampTo<float>(blur));
 }
@@ -1331,7 +1332,7 @@ void Canvas2DRecorderContext::setShadowColor(const String& color_string) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowColor,
                                                 color.Rgb());
   }
-  SetTriggerForCanvasIntervention();
+  AddTriggersForCanvasIntervention(CanvasOperationType::kSetShadowColor);
   state.SetShadowColor(color);
 }
 
@@ -1413,7 +1414,8 @@ void Canvas2DRecorderContext::setGlobalCompositeOperation(
         CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
   }
   if (op != kCompositeSourceOver || blend_mode != BlendMode::kNormal) {
-    SetTriggerForCanvasIntervention();
+    AddTriggersForCanvasIntervention(
+        CanvasOperationType::kGlobalCompositionOperation);
   }
   state.SetGlobalComposite(sk_blend_mode);
 }
@@ -1843,9 +1845,7 @@ void Canvas2DRecorderContext::FillPathImpl(Path2D* dom_path,
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
   }
-  if (dom_path->HasTriggerForIntervention()) {
-    SetTriggerForCanvasIntervention();
-  }
+  AddTriggersForCanvasIntervention(dom_path->GetTriggersForIntervention());
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, path2d_use_paint_cache_);
 }
@@ -1863,9 +1863,7 @@ void Canvas2DRecorderContext::stroke(Path2D* dom_path) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
   }
-  if (dom_path->HasTriggerForIntervention()) {
-    SetTriggerForCanvasIntervention();
-  }
+  AddTriggersForCanvasIntervention(dom_path->GetTriggersForIntervention());
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);
 }
