@@ -25406,6 +25406,25 @@
             ]
         }
     ],
+    "V8DiscardMemoryPoolBeforeMemoryPressureGcs": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_discard_memory_pool_before_memory_pressure_gcs"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8EfficiencyModeTiering": [
         {
             "platforms": [
