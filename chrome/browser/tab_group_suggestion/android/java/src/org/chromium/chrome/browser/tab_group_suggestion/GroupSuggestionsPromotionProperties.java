@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.tab_group_suggestion;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Model properties for a GroupSuggestions promotion UI. */
+@NullMarked
 public class GroupSuggestionsPromotionProperties {
     public static final WritableObjectPropertyKey<String> PROMO_HEADER =
             new WritableObjectPropertyKey<>();
