@@ -81,6 +81,15 @@ class TwoWayMap<K, V> extends Map<K, V> {
     super.clear();
     this.#reverseMap.clear();
   }
+  override delete(key: K): boolean {
+    const v = this.get(key);
+    let wasReverseDeleted = false;
+    if (v) {
+      wasReverseDeleted = this.#reverseMap.delete(v);
+    }
+
+    return wasReverseDeleted && super.delete(key);
+  }
 }
 
 export enum PauseActionSource {
@@ -538,6 +547,10 @@ export class AppElement extends AppElementBase {
 
     chrome.readingMode.onTtsEngineInstalled = () => {
       this.onTtsEngineInstalled();
+    };
+
+    chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
+      this.onNodeWillBeDeleted(nodeId);
     };
   }
 
@@ -2816,6 +2829,19 @@ export class AppElement extends AppElementBase {
 
   onTtsEngineInstalled() {
     this.waitingForNewEngine_ = true;
+  }
+
+  onNodeWillBeDeleted(nodeId: number) {
+    const deletedNode = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as ChildNode;
+    if (deletedNode) {
+      this.domNodeToAxNodeIdMap_.delete(deletedNode);
+      deletedNode.remove();
+    }
+    const root = this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.rootId);
+    if (this.hasContent_ && !root?.textContent) {
+      this.hasContent_ = false;
+      chrome.readingMode.onNoTextContent();
+    }
   }
 
   languageChanged() {
