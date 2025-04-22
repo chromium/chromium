@@ -244,8 +244,7 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
     }
     const size_t label_length = offsets[i] - label_start;
     if (label_length > 0) {
-      AddChildView(std::make_unique<views::Label>(
-          label_text.substr(label_start, label_length)));
+      AddLabel(label_text.substr(label_start, label_length));
     }
     AddButton(info.endpoint_infos[i]);
     label_start = offsets[i] + replacements[i].size();
@@ -255,13 +254,17 @@ void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
   // label covers the entire string.
   const size_t label_length = label_text.size() - label_start;
   if (label_length > 0) {
-    AddChildView(std::make_unique<views::Label>(
-        label_text.substr(label_start, label_length)));
+    AddLabel(label_text.substr(label_start, label_length));
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   SetAccessibleName(label_text);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+}
+
+void TabSharingStatusMessageView::AddLabel(const std::u16string& text) {
+  AddChildView(std::make_unique<views::Label>(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT));
 }
 
 void TabSharingStatusMessageView::AddButton(const EndpointInfo& endpoint_info) {

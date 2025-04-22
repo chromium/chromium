@@ -66,6 +66,7 @@ class TabSharingStatusMessageView : public views::View {
 
  private:
   void SetupMessage(MessageInfo info);
+  void AddLabel(const std::u16string& text);
   void AddButton(const EndpointInfo& endpoint_info);
 };
 
