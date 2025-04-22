@@ -1838,8 +1838,8 @@ export class AppElement extends AppElementBase {
       // ending punctuation.
       if (isInvalidHighlightForWordHighlighting(
               utteranceTextForWordBoundary.trim())) {
-        chrome.readingMode.movePositionToNextGranularity();
-        return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
+        this.resetToDefaultWordBoundaryState();
+        return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
       } else {
         this.playText(utteranceTextForWordBoundary);
       }
