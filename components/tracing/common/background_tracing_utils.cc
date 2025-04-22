@@ -115,6 +115,10 @@ bool SetupPresetTracingFromFieldTrial() {
   }
 
   auto& config = BackgroundTracingStateManager::GetInstance();
+  const auto& enabled_scenarios = config.enabled_scenarios();
+  if (enabled_scenarios.empty()) {
+    return false;
+  }
   auto& manager = content::BackgroundTracingManager::GetInstance();
   auto tracing_scenarios_config = GetPresetTracingScenariosConfig();
   if (tracing_scenarios_config) {
@@ -124,11 +128,7 @@ bool SetupPresetTracingFromFieldTrial() {
             : content::BackgroundTracingManager::NO_DATA_FILTERING;
     manager.AddPresetScenarios(std::move(*tracing_scenarios_config),
                                data_filtering);
-    const auto& enabled_scenarios = config.enabled_scenarios();
-    if (!enabled_scenarios.empty()) {
-      return manager.SetEnabledScenarios(enabled_scenarios);
-    }
-    return true;
+    return manager.SetEnabledScenarios(enabled_scenarios);
   }
   return false;
 }
@@ -168,14 +168,17 @@ bool SetupFieldTracingFromFieldTrial() {
   }
 
   if (local_scenarios) {
+    auto& config = BackgroundTracingStateManager::GetInstance();
     content::BackgroundTracingManager::DataFiltering data_filtering =
-        tracing::BackgroundTracingStateManager::GetInstance()
-                .privacy_filter_enabled()
+        config.privacy_filter_enabled()
             ? content::BackgroundTracingManager::ANONYMIZE_DATA
             : content::BackgroundTracingManager::NO_DATA_FILTERING;
-    auto enabled_scenarios = manager.AddPresetScenarios(
+    auto scenarios = manager.AddPresetScenarios(
         std::move(*tracing_scenarios_config), data_filtering);
-    return manager.SetEnabledScenarios(enabled_scenarios);
+    if (config.enabled_scenarios().empty()) {
+      return manager.SetEnabledScenarios(scenarios);
+    }
+    return false;
   }
   return manager.InitializeFieldScenarios(
       std::move(*tracing_scenarios_config),

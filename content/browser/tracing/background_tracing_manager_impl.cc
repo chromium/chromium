@@ -562,6 +562,19 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
 std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
     DataFiltering data_filtering) {
+  return AddPresetScenariosImpl(config, data_filtering, false);
+}
+
+std::vector<std::string> BackgroundTracingManagerImpl::OverwritePresetScenarios(
+    const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+    DataFiltering data_filtering) {
+  return AddPresetScenariosImpl(config, data_filtering, true);
+}
+
+std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenariosImpl(
+    const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+    DataFiltering data_filtering,
+    bool overwrite_conflicts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   bool enable_privacy_filter = (data_filtering != NO_DATA_FILTERING);
@@ -571,18 +584,11 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
   std::vector<std::string> added_scenarios;
   std::set<raw_ptr<TracingScenario>> conflicting_scenarios;
   for (const auto& scenario_config : config.scenarios()) {
-    auto scenario = TracingScenario::Create(
-        scenario_config, enable_privacy_filter, /*is_local_scenario=*/true,
-        enable_package_name_filter, true, this);
-    if (!scenario) {
-      base::UmaHistogramSparse(
-          "Tracing.Background.Scenario.Invalid",
-          variations::HashName(scenario_config.scenario_name()));
-      continue;
-    }
-
-    if (auto it = preset_scenarios_.find(scenario->scenario_name());
+    if (auto it = preset_scenarios_.find(scenario_config.scenario_name());
         it != preset_scenarios_.end()) {
+      if (!overwrite_conflicts) {
+        continue;
+      }
       if (active_scenario_ == it->second.get()) {
         active_scenario_->Abort();
         conflicting_scenarios.insert(it->second.get());
@@ -591,6 +597,16 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
         it->second->Disable();
         conflicting_scenarios.insert(it->second.get());
       }
+    }
+
+    auto scenario = TracingScenario::Create(
+        scenario_config, enable_privacy_filter, /*is_local_scenario=*/true,
+        enable_package_name_filter, true, this);
+    if (!scenario) {
+      base::UmaHistogramSparse(
+          "Tracing.Background.Scenario.Invalid",
+          variations::HashName(scenario_config.scenario_name()));
+      continue;
     }
 
     added_scenarios.push_back(scenario->scenario_name());

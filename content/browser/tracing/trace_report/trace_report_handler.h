@@ -78,6 +78,7 @@ class CONTENT_EXPORT TraceReportHandler
                                    std::vector<ClientTraceReport> results);
   bool SetScenariosConfig(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config);
+  void MaybeSetupPresetTracingFromFieldTrial();
 
   mojo::Receiver<trace_report::mojom::PageHandler> receiver_;
   mojo::PendingRemote<trace_report::mojom::Page> page_;

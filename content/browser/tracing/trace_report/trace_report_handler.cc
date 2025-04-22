@@ -46,6 +46,7 @@ TraceReportHandler::TraceReportHandler(
       tracing_delegate_(
           BackgroundTracingManagerImpl::GetInstance().tracing_delegate()) {
   trace_upload_list_->OpenDatabaseIfExists();
+  MaybeSetupPresetTracingFromFieldTrial();
 }
 
 TraceReportHandler::TraceReportHandler(
@@ -60,6 +61,7 @@ TraceReportHandler::TraceReportHandler(
       background_tracing_manager_(background_tracing_manager),
       tracing_delegate_(tracing_delegate) {
   trace_upload_list_->OpenDatabaseIfExists();
+  MaybeSetupPresetTracingFromFieldTrial();
 }
 
 TraceReportHandler::~TraceReportHandler() = default;
@@ -184,14 +186,31 @@ bool TraceReportHandler::SetScenariosConfig(
               .privacy_filter_enabled()
           ? content::BackgroundTracingManager::ANONYMIZE_DATA
           : content::BackgroundTracingManager::NO_DATA_FILTERING;
-  background_tracing_manager_->AddPresetScenarios(std::move(config),
-                                                  data_filtering);
+  background_tracing_manager_->OverwritePresetScenarios(std::move(config),
+                                                        data_filtering);
   const auto& enabled_scenarios =
       tracing::BackgroundTracingStateManager::GetInstance().enabled_scenarios();
   if (!enabled_scenarios.empty()) {
     background_tracing_manager_->SetEnabledScenarios(enabled_scenarios);
   }
   return true;
+}
+
+void TraceReportHandler::MaybeSetupPresetTracingFromFieldTrial() {
+  if (tracing::IsBackgroundTracingEnabledFromCommandLine()) {
+    return;
+  }
+  auto tracing_scenarios_config = tracing::GetPresetTracingScenariosConfig();
+  if (!tracing_scenarios_config) {
+    return;
+  }
+  auto& config = tracing::BackgroundTracingStateManager::GetInstance();
+  content::BackgroundTracingManager::DataFiltering data_filtering =
+      config.privacy_filter_enabled()
+          ? content::BackgroundTracingManager::ANONYMIZE_DATA
+          : content::BackgroundTracingManager::NO_DATA_FILTERING;
+  background_tracing_manager_->AddPresetScenarios(
+      std::move(*tracing_scenarios_config), data_filtering);
 }
 
 #if BUILDFLAG(IS_WIN)
