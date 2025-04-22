@@ -1119,6 +1119,9 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
   EXPECT_TRUE(IsSuspended());
   EXPECT_TRUE(ShouldCancelUponDefer());
 
+  // Wait until we reach the have current data state.
+  WaitForReadyStateHaveCurrentData();
+
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
@@ -1198,6 +1201,9 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   EXPECT_TRUE(IsSuspended());
   EXPECT_TRUE(wmpi_->DidLazyLoad());
   EXPECT_FALSE(ShouldCancelUponDefer());
+
+  // Wait until we reach the have current data state.
+  WaitForReadyStateHaveCurrentData();
 
   // The data source contains the entire file, so subtract it from the memory
   // usage to ensure there's no other memory usage.
