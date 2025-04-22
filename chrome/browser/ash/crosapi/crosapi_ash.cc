@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
@@ -113,7 +112,6 @@ CrosapiAsh::CrosapiAsh()
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
       chrome_app_kiosk_service_ash_(
           std::make_unique<ChromeAppKioskServiceAsh>()),
-      clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
@@ -203,11 +201,6 @@ void CrosapiAsh::BindChapsService(
 void CrosapiAsh::BindChromeAppKioskService(
     mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
   chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindClipboardHistory(
-    mojo::PendingReceiver<mojom::ClipboardHistory> receiver) {
-  clipboard_history_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCrosDisplayConfigController(

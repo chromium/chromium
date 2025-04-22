@@ -20,8 +20,6 @@ static_library("crosapi") {
     "chaps_service_ash.h",
     "chrome_app_kiosk_service_ash.cc",
     "chrome_app_kiosk_service_ash.h",
-    "clipboard_history_ash.cc",
-    "clipboard_history_ash.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
     "crosapi_id.h",
@@ -383,7 +381,6 @@ source_set("unit_tests") {
   sources = [
     "cert_provisioning_ash_unittest.cc",
     "chaps_service_ash_unittest.cc",
-    "clipboard_history_ash_unittest.cc",
     "crosapi_util_unittest.cc",
     "device_attributes_ash_unittest.cc",
     "device_oauth2_token_service_ash_unittest.cc",

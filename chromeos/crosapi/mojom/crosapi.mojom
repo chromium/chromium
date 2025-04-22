@@ -111,16 +111,9 @@ interface Crosapi {
       pending_receiver<ChapsService> receiver);
 
   // BindChromeAppPublisher@43 was removed.
-
   // BindChromeAppWindowTracker@49 was removed.
-
   // BindClipboard@15 was removed.
-
-  // Bind the ClipboardHistory interface to allow lacros-chrome to show
-  // ClipboardHistory.
-  [MinVersion=23] BindClipboardHistory@28(
-      pending_receiver<ClipboardHistory> receiver);
-
+  // BindClipboardHistory@28 was removed.
   // BindContentProtection@31 was removed.
 
   // Binds the CrosDisplayConfigController interface for querying display info.
