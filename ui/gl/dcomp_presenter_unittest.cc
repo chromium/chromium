@@ -308,6 +308,8 @@ class DCompPresenterTestBase : public testing::Test {
     params.z_order = 0;
     params.quad_rect = gfx::Rect(window_size);
     params.overlay_image = CreateDCompSurface(window_size, initial_color);
+    params.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+        gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
     ScheduleOverlay(std::move(params));
   }
 
@@ -2763,7 +2765,7 @@ TEST_P(DCompPresenterSkiaGoldTest, EdgeAANoSeamsOnSameLayerComplexTransform) {
   ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
       base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
         // All on the same layer.
-        overlay.layer_id = gfx::OverlayLayerId::MakeForVizInternal(1);
+        overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(1);
       })));
 
   PresentAndCheckScreenshot();
@@ -2780,7 +2782,7 @@ TEST_P(DCompPresenterSkiaGoldTest, EdgeAASeamsOnNotSameLayerComplexTransform) {
       base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
         // Reuse layer IDs but have no two adjacent overlays have the same ID.
         overlay.layer_id =
-            gfx::OverlayLayerId::MakeForVizInternal((x + y * 4) % 2 + 1);
+            gfx::OverlayLayerId::MakeForTesting((x + y * 4) % 2 + 1);
       })));
 
   PresentAndCheckScreenshot();

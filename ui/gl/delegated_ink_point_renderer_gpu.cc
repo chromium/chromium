@@ -481,6 +481,8 @@ DelegatedInkPointRendererGpu::MakeDelegatedInkOverlay(
       metadata->presentation_area().OffsetFromOrigin());
   ink_layer.overlay_image = DCLayerOverlayImage(presentation_area_enclosed_size,
                                                 delegated_ink_trail_);
+  ink_layer.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+      gfx::OverlayLayerId::VizInternalId::kDelegatedInkTrail);
   SetDelegatedInkTrailStartPoint(std::move(metadata));
   return ink_layer;
 }

@@ -1090,6 +1090,10 @@ void SkiaRenderer::FinishDrawingFrame() {
     surface_candidate.damage_rect =
         use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
                           : gfx::RectF(surface_plane.resource_size);
+#if BUILDFLAG(IS_WIN)
+    surface_candidate.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+        gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+#endif
 #if BUILDFLAG(IS_OZONE)
     // Ozone DRM needs the primary plane as the first overlay when overlay
     // testing.
