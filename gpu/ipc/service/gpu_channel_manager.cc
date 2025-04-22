@@ -799,7 +799,7 @@ void GpuChannelManager::OnBackgroundCleanup() {
 
   SkGraphics::PurgeAllCaches();
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void GpuChannelManager::OnApplicationBackgrounded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -866,11 +866,18 @@ void GpuChannelManager::HandleMemoryPressure(
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
 
-  if (gr_shader_cache_)
+  if (gr_shader_cache_) {
     gr_shader_cache_->PurgeMemory(memory_pressure_level);
+  }
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  if (dawn_caching_interface_factory()) {
+    dawn_caching_interface_factory()->PurgeMemory(memory_pressure_level);
+  }
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+
 #if BUILDFLAG(IS_WIN)
   TrimD3DResources(shared_context_state_);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(

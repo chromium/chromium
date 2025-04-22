@@ -388,4 +388,37 @@ uint32_t GetTextureTargetForIOSurfaces() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+size_t UpdateShaderCacheSizeOnMemoryPressure(
+    size_t max_cache_size,
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  switch (memory_pressure_level) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      return max_cache_size;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      if (base::FeatureList::IsEnabled(
+              ::features::kAggressiveShaderCacheLimits)) {
+        // Ignore moderate memory pressure.
+      } else {
+        max_cache_size /= 4;
+      }
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      if (base::FeatureList::IsEnabled(
+              ::features::kAggressiveShaderCacheLimits)) {
+#if BUILDFLAG(IS_ANDROID)
+        // On Android, critical memory pressure notifications are very common,
+        // and not necessarily tied to actual critical memory pressure. Ignore.
+        break;
+#else
+        max_cache_size /= 4;
+#endif
+      } else {
+        max_cache_size = 0;
+      }
+      break;
+  }
+
+  return max_cache_size;
+}
+
 }  // namespace gpu
