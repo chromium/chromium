@@ -220,8 +220,8 @@ class AppMenuModelExtensionsInteractiveTest
         {
           "name": "an extension",
           "version": "1.0",
-          "manifest_version": 2,
-          "browser_action": {}
+          "manifest_version": 3,
+          "action": {}
         }
       )";
       extensions::TestExtensionDir dir;
