@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
@@ -613,11 +612,6 @@ void ExtensionFunction::OnResponseAck() {
   // Derived classes must override this if they require and implement an
   // ACK from the renderer.
   NOTREACHED();
-}
-
-void ExtensionFunction::preserve_results_for_testing() {
-  CHECK_IS_TEST();
-  preserve_results_for_testing_ = true;
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {

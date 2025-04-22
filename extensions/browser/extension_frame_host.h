@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_FRAME_HOST_H_
 #define EXTENSIONS_BROWSER_EXTENSION_FRAME_HOST_H_
 
-#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "extensions/common/extension_id.h"
@@ -39,7 +38,6 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
 
   content::RenderFrameHostReceiverSet<mojom::LocalFrameHost>&
   receivers_for_testing() {
-    CHECK_IS_TEST();
     return receivers_;
   }
 

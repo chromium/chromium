@@ -62,8 +62,8 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   views::Widget* widget() { return widget_; }
   const views::Widget* widget() const { return widget_; }
 
-  void set_window_for_testing(views::Widget* window);
-  void set_web_view_for_testing(views::WebView* view);
+  void set_window_for_testing(views::Widget* window) { widget_ = window; }
+  void set_web_view_for_testing(views::WebView* view) { web_view_ = view; }
 
  protected:
   // Initializes |widget_| for |app_window|.

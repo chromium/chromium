@@ -122,7 +122,9 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   size_t GetNumberOfUsedRuleIdentifiersForTesting() const;
 
   // Returns the RulesCacheDelegate. This is used for testing.
-  RulesCacheDelegate* rules_cache_delegate_for_testing() const;
+  RulesCacheDelegate* rules_cache_delegate_for_testing() const {
+    return cache_delegate_.get();
+  }
 
   // Returns the context where the rules registry lives.
   content::BrowserContext* browser_context() const { return browser_context_; }

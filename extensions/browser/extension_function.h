@@ -455,7 +455,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   }
   bool should_ignore_did_respond_for_testing = false;
 
-  void preserve_results_for_testing();
+  void preserve_results_for_testing() { preserve_results_for_testing_ = true; }
 
   // Same as above, but global. Yuck. Do not add any more uses of this.
   static bool ignore_all_did_respond_for_testing_do_not_use;

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -189,20 +188,13 @@ std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
 }
 
 std::vector<WorkerId> WorkerIdSet::GetAllForTesting() const {
-  CHECK_IS_TEST();
   return std::vector<WorkerId>(workers_.begin(), workers_.end());
 }
 
 // static
 base::AutoReset<bool>
 WorkerIdSet::AllowMultipleWorkersPerExtensionForTesting() {
-  CHECK_IS_TEST();
   return base::AutoReset<bool>(&g_allow_multiple_workers_per_extension, true);
-}
-
-size_t WorkerIdSet::count_for_testing() const {
-  CHECK_IS_TEST();
-  return workers_.size();
 }
 
 namespace debug {

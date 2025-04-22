@@ -4,7 +4,6 @@
 
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/observer_list_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -78,16 +77,6 @@ NativeAppWindowViews::~NativeAppWindowViews() {
 
 void NativeAppWindowViews::OnCanHaveAlphaEnabledChanged() {
   app_window_->OnNativeWindowChanged();
-}
-
-void NativeAppWindowViews::set_window_for_testing(views::Widget* window) {
-  CHECK_IS_TEST();
-  widget_ = window;
-}
-
-void NativeAppWindowViews::set_web_view_for_testing(views::WebView* view) {
-  CHECK_IS_TEST();
-  web_view_ = view;
 }
 
 void NativeAppWindowViews::InitializeWindow(

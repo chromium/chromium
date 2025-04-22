@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -469,12 +468,6 @@ void RuntimeAPI::OnDelayedRestartTimerTimeout() {
 
 void RuntimeAPI::AllowNonKioskAppsInRestartAfterDelayForTesting() {
   allow_non_kiosk_apps_restart_api_for_test = true;
-}
-
-void RuntimeAPI::set_min_duration_between_restarts_for_testing(
-    base::TimeDelta delta) {
-  CHECK_IS_TEST();
-  minimum_duration_between_restarts_ = delta;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -114,7 +114,9 @@ class APIRequestHandler {
 
   APILastError* last_error() { return &last_error_; }
   int last_sent_request_id() const { return last_sent_request_id_; }
-  bool has_response_validator_for_testing() const;
+  bool has_response_validator_for_testing() const {
+    return response_validator_.get() != nullptr;
+  }
 
   std::set<int> GetPendingRequestIdsForTesting() const;
 

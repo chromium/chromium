@@ -7,7 +7,6 @@
 #include <cstring>
 #include <string_view>
 
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -133,11 +132,6 @@ void GinPort::SetSender(v8::Local<v8::Context> context,
       v8::Private::ForApi(isolate, gin::StringToSymbol(isolate, kSenderKey));
   v8::Maybe<bool> set_result = wrapper->SetPrivate(context, key, sender);
   DCHECK(set_result.IsJust() && set_result.FromJust());
-}
-
-bool GinPort::is_closed_for_testing() const {
-  CHECK_IS_TEST();
-  return state_ == State::kDisconnected;
 }
 
 void GinPort::DisconnectHandler(gin::Arguments* arguments) {

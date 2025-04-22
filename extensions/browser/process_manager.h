@@ -281,7 +281,9 @@ class ProcessManager : public KeyedService,
   GetServiceWorkerKeepaliveDataForRecords(
       const ExtensionId& extension_id) const;
 
-  bool startup_background_hosts_created_for_test() const;
+  bool startup_background_hosts_created_for_test() const {
+    return startup_background_hosts_created_;
+  }
 
   std::vector<WorkerId> GetAllWorkersIdsForTesting();
 

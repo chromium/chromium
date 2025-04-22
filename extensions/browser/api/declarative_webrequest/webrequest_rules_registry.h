@@ -108,7 +108,9 @@ class WebRequestRulesRegistry : public RulesRegistry {
   virtual void ClearCacheOnNavigation();
 
   const std::set<raw_ptr<const WebRequestRule, SetExperimental>>&
-  rules_with_untriggered_conditions_for_test() const;
+  rules_with_untriggered_conditions_for_test() const {
+    return rules_with_untriggered_conditions_;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebRequestRulesRegistrySimpleTest, StageChecker);

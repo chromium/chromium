@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/listener_tracker.h"
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/not_fatal_until.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/value_counter.h"
@@ -88,11 +87,6 @@ std::set<int> ListenerTracker::GetMatchingFilteredListeners(
     int routing_id) {
   DCHECK(!filter.is_null());
   return event_filter_.MatchEvent(event_name, *filter, routing_id);
-}
-
-EventFilter* ListenerTracker::event_filter_for_testing() {
-  CHECK_IS_TEST();
-  return &event_filter_;
 }
 
 }  // namespace extensions
