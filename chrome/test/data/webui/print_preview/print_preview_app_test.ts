@@ -33,7 +33,6 @@ suite('PrintPreviewAppTest', function() {
     serializedDefaultDestinationSelectionRulesStr: null,
     pdfPrinterDisabled: false,
     destinationsManaged: false,
-    previewIsFromArc: false,
     uiLocale: 'en-us',
   };
 

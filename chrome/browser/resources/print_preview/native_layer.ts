@@ -70,7 +70,6 @@ export interface NativeInitialSettings {
   decimalDelimiter: string;
   unitType: MeasurementSystemUnitType;
   previewModifiable: boolean;
-  previewIsFromArc: boolean;
   documentTitle: string;
   documentHasSelection: boolean;
   shouldPrintSelectionOnly: boolean;

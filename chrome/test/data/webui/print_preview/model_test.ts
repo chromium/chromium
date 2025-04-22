@@ -213,7 +213,6 @@ suite('ModelTest', function() {
       isScalingDisabled: false,
       fitToPageScaling: 100,
       pageCount: 3,
-      isFromArc: false,
       title: 'title',
     };
     model.pageSize = new Size(612, 792);

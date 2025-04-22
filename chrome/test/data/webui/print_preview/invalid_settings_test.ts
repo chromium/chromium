@@ -26,7 +26,6 @@ suite('InvalidSettingsTest', function() {
     unitType: MeasurementSystemUnitType.IMPERIAL,
     previewModifiable: true,
     destinationsManaged: false,
-    previewIsFromArc: false,
     documentTitle: 'title',
     documentHasSelection: true,
     shouldPrintSelectionOnly: false,
@@ -59,7 +58,7 @@ suite('InvalidSettingsTest', function() {
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
-    page.$.documentInfo.init(true, false, 'title', false);
+    page.$.documentInfo.init(true, 'title', false);
   }
 
   // Tests that when a printer cannot be communicated with correctly the
