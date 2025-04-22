@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/base/tracing.h"
 #include "net/log/net_log.h"
+#include "net/log/net_log_capture_mode.h"
 
 namespace net {
 
@@ -19,7 +20,13 @@ class NET_EXPORT TraceNetLogObserver
     : public NetLog::ThreadSafeObserver,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
-  TraceNetLogObserver();
+  struct Options final {
+    // Work around https://bugs.llvm.org/show_bug.cgi?id=36684
+    static Options Default() { return {}; }
+
+    NetLogCaptureMode capture_mode = NetLogCaptureMode::kDefault;
+  };
+  explicit TraceNetLogObserver(Options options = Options::Default());
 
   TraceNetLogObserver(const TraceNetLogObserver&) = delete;
   TraceNetLogObserver& operator=(const TraceNetLogObserver&) = delete;
@@ -44,6 +51,7 @@ class NET_EXPORT TraceNetLogObserver
   void OnTraceLogDisabled() override;
 
  private:
+  const NetLogCaptureMode capture_mode_;
   raw_ptr<NetLog> net_log_to_watch_ = nullptr;
   base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
 };

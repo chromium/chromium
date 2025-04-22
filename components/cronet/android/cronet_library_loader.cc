@@ -42,6 +42,8 @@
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
+#include "net/log/net_log.h"
+#include "net/log/trace_net_log_observer.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -185,6 +187,18 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(
   DCHECK(!g_init_task_executor);
   g_init_task_executor =
       new base::SingleThreadTaskExecutor(base::MessagePumpType::JAVA);
+
+  static base::NoDestructor<net::TraceNetLogObserver> trace_net_log_observer(
+      net::TraceNetLogObserver::Options{
+          // TODO: https://crbug.com/410018349 - make it possible to select a
+          // a different capture mode, if running in a debug scenario.
+          .capture_mode = net::NetLogCaptureMode::kHeavilyRedacted,
+      });
+  // Note we do this on the init thread, as opposed to a user thread, because
+  // this eventually calls
+  // base::trace_event::TraceLog::AddAsyncEnabledStateObserver(), which
+  // schedules its callbacks on the sequenced task runner it was called from.
+  trace_net_log_observer->WatchForTraceStart(net::NetLog::Get());
 
   DCHECK(!g_network_change_notifier);
 
