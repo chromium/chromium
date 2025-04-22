@@ -250,6 +250,11 @@ void WriteTrustAnchors(
           constraint_params.push_back("{}");
         }
 
+        constraint_params.push_back(
+            constraint.enforce_anchor_expiry() ? "true" : "false");
+        constraint_params.push_back(
+            constraint.enforce_anchor_constraints() ? "true" : "false");
+
         constraint_strings.push_back(
             base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
 

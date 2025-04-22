@@ -33,6 +33,11 @@ struct StaticChromeRootCertConstraints {
   std::optional<std::string_view> max_version_exclusive;
 
   base::span<const std::string_view> permitted_dns_names;
+
+  bool enforce_anchor_expiry = false;
+  // True if the certificate verifier should enforce X.509 constraints encoded
+  // in the certificate.
+  bool enforce_anchor_constraints = false;
 };
 
 struct ChromeRootCertInfo {
@@ -46,7 +51,9 @@ struct NET_EXPORT ChromeRootCertConstraints {
                             std::optional<base::Time> sct_all_after,
                             std::optional<base::Version> min_version,
                             std::optional<base::Version> max_version_exclusive,
-                            std::vector<std::string> permitted_dns_names);
+                            std::vector<std::string> permitted_dns_names,
+                            bool enforce_anchor_expiry,
+                            bool enforce_anchor_constraints);
   explicit ChromeRootCertConstraints(
       const StaticChromeRootCertConstraints& constraints);
   ~ChromeRootCertConstraints();
@@ -62,6 +69,11 @@ struct NET_EXPORT ChromeRootCertConstraints {
   std::optional<base::Version> max_version_exclusive;
 
   std::vector<std::string> permitted_dns_names;
+
+  bool enforce_anchor_expiry = false;
+  // True if the certificate verifier should enforce X.509 constraints encoded
+  // in the certificate.
+  bool enforce_anchor_constraints = false;
 };
 
 // ChromeRootStoreData is a container class that stores all of the Chrome Root

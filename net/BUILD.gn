@@ -3093,6 +3093,7 @@ target(_test_target_type, "net_unittests") {
     "//crypto:test_support",
     "//net/base/registry_controlled_domains",
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
+    "//net/cert:root_store_proto_lite",
     "//net/dns:tests",
     "//net/dns/public:tests",
     "//net/http:transport_security_state_unittest_data",
