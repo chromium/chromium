@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -19,7 +17,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -29,8 +26,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -43,16 +38,12 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -96,9 +87,7 @@ public class HubCoordinatorUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
-    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private HubColorMixer mHubColorMixer;
-    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterArgumentCaptor;
     private final ObservableSupplierImpl<Integer> mColorOverviewSupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
@@ -310,44 +299,5 @@ public class HubCoordinatorUnitTest {
         int tabId = 5;
         mHubCoordinator.selectTabAndHideHub(tabId);
         verify(mHubLayoutController).selectTabAndHideHubLayout(tabId);
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.FLOATING_SNACKBAR,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
-    public void testEdgeToEdgePadAdjuster() {
-        // Register the pad adjuster with the mock controller.
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        // Verify that the pad adjuster was registered and capture it.
-        verify(mEdgeToEdgeController)
-                .registerAdjuster(mEdgeToEdgePadAdjusterArgumentCaptor.capture());
-        // Get the value of the pad adjuster from the argument captor.
-        EdgeToEdgePadAdjuster padAdjuster = mEdgeToEdgePadAdjusterArgumentCaptor.getValue();
-        assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
-        ViewGroup snackbarContainer = mHubCoordinator.getSnackbarContainer();
-
-        int bottomInset = 63;
-        padAdjuster.overrideBottomInset(bottomInset);
-        assertEquals(bottomInset, snackbarContainer.getPaddingBottom());
-        assertTrue("clipToPadding should not change.", snackbarContainer.getClipToPadding());
-
-        padAdjuster.overrideBottomInset(0);
-        assertEquals(0, snackbarContainer.getPaddingBottom());
-        assertTrue("clipToPadding should not change.", snackbarContainer.getClipToPadding());
-    }
-
-    @Test
-    @DisableFeatures({
-        ChromeFeatureList.FLOATING_SNACKBAR,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
-    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        // Verify that the pad adjuster was never registered.
-        verify(mEdgeToEdgeController, never()).registerAdjuster(any());
     }
 }

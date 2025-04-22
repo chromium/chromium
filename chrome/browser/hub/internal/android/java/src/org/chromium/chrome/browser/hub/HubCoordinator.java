@@ -25,9 +25,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -139,13 +136,6 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         updateHandleBackPressSupplier();
 
         mHubSearchBoxBackgroundCoordinator = new HubSearchBoxBackgroundCoordinator(mContainerView);
-
-        if (SnackbarManager.isFloatingSnackbarEnabled()
-                && EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            mEdgeToEdgePadAdjuster =
-                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                            getSnackbarContainer(), edgeToEdgeSupplier);
-        }
     }
 
     /** Removes the hub from the layout tree and cleans up resources. */

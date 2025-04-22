@@ -26,7 +26,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -112,7 +112,7 @@ public class SnackbarManager
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
 
-    private @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeSupplier;
     private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
@@ -288,7 +288,7 @@ public class SnackbarManager
      * @param supplier The supplier publishes the changes of the edge-to-edge state and the expected
      *     bottom paddings when edge-to-edge is on.
      */
-    public void setEdgeToEdgeSupplier(@Nullable EdgeToEdgeSupplier supplier) {
+    public void setEdgeToEdgeSupplier(@Nullable EdgeToEdgeController supplier) {
         mEdgeToEdgeSupplier = supplier;
     }
 

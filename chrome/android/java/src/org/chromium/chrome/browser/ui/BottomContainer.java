@@ -90,7 +90,7 @@ public class BottomContainer extends FrameLayout
                             : 0;
 
             // The floating snackbar shouldn't scroll into the bottom inset.
-            super.setTranslationY(Math.min(mBaseYOffset + offsetFromControls, -bottomInset));
+            super.setTranslationY(Math.min(mBaseYOffset + offsetFromControls + bottomInset, 0));
         } else {
             // Sit on top of either the bottom sheet or the bottom toolbar depending on which is
             // larger (offsets are negative).

@@ -30,10 +30,10 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.InsetObserver;
@@ -58,7 +58,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final ImageView mProfileImageView;
     private final int mAnimationDuration;
     private final boolean mIsTablet;
-    private final @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
+    private final @Nullable EdgeToEdgeController mEdgeToEdgeSupplier;
     private final @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private ViewGroup mOriginalParent;
     protected ViewGroup mParent;
@@ -127,7 +127,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
-            @Nullable EdgeToEdgeSupplier edgeToEdgeSupplier,
+            @Nullable EdgeToEdgeController edgeToEdgeSupplier,
             boolean isTablet) {
         mIsTablet = isTablet;
         mOriginalParent = parentView;
@@ -157,6 +157,15 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
+            // Add bottom margin to extend the snackbar view into the bottom window inset. This
+            // margin has to be applied to the snackbar view itself to avoid weird visual clipping
+            // in its dismissal animation.
+            FrameLayout.LayoutParams lp = getLayoutParams();
+            int bottomInsetPx =
+                    edgeToEdgeSupplier != null ? edgeToEdgeSupplier.getBottomInsetPx() : 0;
+            lp.bottomMargin = lp.bottomMargin + bottomInsetPx;
+            mContainerView.setLayoutParams(lp);
+
             mEdgeToEdgePadAdjuster = null;
         } else {
             mEdgeToEdgePadAdjuster =
