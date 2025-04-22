@@ -423,6 +423,17 @@ void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
   Finish(Error(kFileSelectionCanceled));
 }
 
+void DeveloperPrivateLoadUnpackedFunction::set_accept_dialog_for_testing(
+    bool accept) {
+  CHECK_IS_TEST();
+  accept_dialog_for_testing_ = accept;
+}
+void DeveloperPrivateLoadUnpackedFunction::set_selected_file_for_testing(
+    const ui::SelectedFileInfo& file) {
+  CHECK_IS_TEST();
+  selected_file_for_testing_ = file;
+}
+
 void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
     const base::FilePath file_path) {
   scoped_refptr<UnpackedInstaller> installer(
@@ -930,6 +941,12 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::
 DeveloperPrivateRemoveMultipleExtensionsFunction::
     ~DeveloperPrivateRemoveMultipleExtensionsFunction() = default;
 
+void DeveloperPrivateRemoveMultipleExtensionsFunction::
+    accept_bubble_for_testing(bool accept_bubble) {
+  CHECK_IS_TEST();
+  accept_bubble_for_testing_ = accept_bubble;
+}
+
 ExtensionFunction::ResponseAction
 DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
   std::optional<developer::RemoveMultipleExtensions::Params> params =
@@ -1017,6 +1034,12 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
 DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
     ~DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() =
         default;
+
+void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+    accept_bubble_for_testing(bool accept_bubble) {
+  CHECK_IS_TEST();
+  accept_bubble_for_testing_ = accept_bubble;
+}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
@@ -1131,6 +1154,12 @@ DeveloperPrivateUploadExtensionToAccountFunction::
     DeveloperPrivateUploadExtensionToAccountFunction() = default;
 DeveloperPrivateUploadExtensionToAccountFunction::
     ~DeveloperPrivateUploadExtensionToAccountFunction() = default;
+
+void DeveloperPrivateUploadExtensionToAccountFunction::
+    accept_bubble_for_testing(bool accept_bubble) {
+  CHECK_IS_TEST();
+  accept_bubble_for_testing_ = accept_bubble;
+}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUploadExtensionToAccountFunction::Run() {

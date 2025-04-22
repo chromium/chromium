@@ -431,12 +431,8 @@ class DeveloperPrivateChoosePathFunction
   void FileSelectionCanceled() override;
 
   // For testing:
-  void set_accept_dialog_for_testing(bool accept) {
-    accept_dialog_for_testing_ = accept;
-  }
-  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
-    selected_file_for_testing_ = file;
-  }
+  void set_accept_dialog_for_testing(bool accept);
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file);
 
  protected:
   ~DeveloperPrivateChoosePathFunction() override;
