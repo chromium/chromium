@@ -1417,6 +1417,8 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   // lead to unexpected behavior in touch sequence handling. Do not modify the
   // position of this check without careful consideration.
   if (event.GetAction() == ui::MotionEventAndroid::Action::DOWN) {
+    // Reset this every time we start a new scroll sequence.
+    is_sequence_overscrolling_ = false;
     // If this event has been generated due to input handling being transferred
     // back to browser from the VizCompositorThread mid-sequence, we drop the
     // event.
@@ -1474,6 +1476,12 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   }
 
   if (overscroll_controller_ && overscroll_controller_->OnTouchEvent(event)) {
+    // Call ResetGestureDetection when OverscrollController consumes first input
+    // event to reset the state on browser and renderer's input handling stack.
+    if (!is_sequence_overscrolling_) {
+      ResetGestureDetection();
+    }
+    is_sequence_overscrolling_ = true;
     return true;
   }
 
