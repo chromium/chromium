@@ -1493,13 +1493,13 @@ See your search engine’s instructions for deleting your search history, if app
           This card shows price drops across the web on products that you currently track
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS" desc="Text for Price Tracking ShopCard in Customize Cards in Magic Stack">
-          Price Tracking
+          Price tracking
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE" desc="Subtitle for Price Tracking ShopCard in Customize Cards in Magic Stack">
           Get price drop alerts for products you track
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE" desc="Button text indicating price tracking ShopCard module can be removed from Magic Stack">
-          Hide "Price Tracking"
+          Hide "Price tracking"
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE_ACCESSIBILITY_LABEL" desc="Accessibility label to hide price tracking ShopCard">
           Hide price tracking card
