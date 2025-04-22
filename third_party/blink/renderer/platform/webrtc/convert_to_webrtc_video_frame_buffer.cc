@@ -156,8 +156,8 @@ class NV12FrameAdapter : public webrtc::NV12BufferInterface {
     return frame_->stride(media::VideoFrame::Plane::kUV);
   }
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
-    rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer;
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+    webrtc::scoped_refptr<webrtc::I420Buffer> i420_buffer;
     i420_buffer = webrtc::I420Buffer::Create(width(), height());
     libyuv::NV12ToI420(DataY(), StrideY(), DataUV(), StrideUV(),
                        i420_buffer->MutableDataY(), i420_buffer->StrideY(),
@@ -171,18 +171,21 @@ class NV12FrameAdapter : public webrtc::NV12BufferInterface {
   scoped_refptr<media::VideoFrame> frame_;
 };
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
+webrtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
     scoped_refptr<media::VideoFrame> video_frame) {
   switch (video_frame->format()) {
     case media::PIXEL_FORMAT_I420:
-      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
-          new rtc::RefCountedObject<I420FrameAdapter>(std::move(video_frame)));
+      return webrtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new webrtc::RefCountedObject<I420FrameAdapter>(
+              std::move(video_frame)));
     case media::PIXEL_FORMAT_I420A:
-      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
-          new rtc::RefCountedObject<I420AFrameAdapter>(std::move(video_frame)));
+      return webrtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new webrtc::RefCountedObject<I420AFrameAdapter>(
+              std::move(video_frame)));
     case media::PIXEL_FORMAT_NV12:
-      return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
-          new rtc::RefCountedObject<NV12FrameAdapter>(std::move(video_frame)));
+      return webrtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+          new webrtc::RefCountedObject<NV12FrameAdapter>(
+              std::move(video_frame)));
     default:
       NOTREACHED();
   }
@@ -288,7 +291,7 @@ GetPixelFormatsMappableToWebRtcVideoFrameBuffer() {
   return base::span(kGetPixelFormatsMappableToWebRtcVideoFrameBuffer);
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
+webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
     scoped_refptr<media::VideoFrame> video_frame,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources) {
   DCHECK(CanConvertToWebRtcVideoFrameBuffer(video_frame.get()))
@@ -339,7 +342,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
 }
 
 scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
     base::TimeDelta timestamp) {
   RTC_DCHECK(buffer->type() != webrtc::VideoFrameBuffer::Type::kNative);
   const gfx::Size size(buffer->width(), buffer->height());

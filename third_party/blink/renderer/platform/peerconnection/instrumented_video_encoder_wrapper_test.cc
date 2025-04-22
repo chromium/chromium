@@ -103,7 +103,7 @@ webrtc::VideoFrame CreateFrame(int width = kWidth,
                                int height = kHeight,
                                uint64_t timestamp_us = kTimestamp) {
   auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(width, height));
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));

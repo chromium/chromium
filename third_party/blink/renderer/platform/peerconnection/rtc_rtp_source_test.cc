@@ -42,11 +42,11 @@ TEST(RtcRtpSource, BasicPropertiesAreSetAndReturned) {
 }
 
 // The Timestamp() function relies on the fact that Base::TimeTicks() and
-// rtc::TimeMicros() share the same implementation.
+// webrtc::TimeMicros() share the same implementation.
 TEST(RtcRtpSource, BaseTimeTicksAndRtcMicrosAreTheSame) {
   base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
   base::TimeTicks webrtc_timestamp =
-      ConvertToBaseTimeTicks(webrtc::Timestamp::Micros(rtc::TimeMicros()));
+      ConvertToBaseTimeTicks(webrtc::Timestamp::Micros(webrtc::TimeMicros()));
   base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
 
   // Test that the timestamps are correctly ordered, which they can only be if

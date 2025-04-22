@@ -65,10 +65,10 @@ uint8_t idr_h264[] = {
 
 using ::testing::ElementsAreArray;
 
-rtc::ArrayView<const uint8_t> Bitstream(
+webrtc::ArrayView<const uint8_t> Bitstream(
     const H265ParameterSetsTracker::FixedBitstream& fixed) {
-  return rtc::ArrayView<const uint8_t>(fixed.bitstream->data(),
-                                       fixed.bitstream->size());
+  return webrtc::ArrayView<const uint8_t>(fixed.bitstream->data(),
+                                          fixed.bitstream->size());
 }
 
 }  // namespace

@@ -43,7 +43,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   class PLATFORM_EXPORT Broker : public WTF::ThreadSafeRefCounted<Broker> {
    public:
     void RegisterTransformedFrameCallback(
-        rtc::scoped_refptr<webrtc::TransformedFrameCallback>
+        webrtc::scoped_refptr<webrtc::TransformedFrameCallback>
             send_frame_to_sink_callback);
 
     void UnregisterTransformedFrameCallback();
@@ -81,7 +81,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // transformed frames to the WebRTC decoder. Runs on the thread which
   // created this object. The callback can run on any thread.
   void RegisterTransformedFrameCallback(
-      rtc::scoped_refptr<webrtc::TransformedFrameCallback>);
+      webrtc::scoped_refptr<webrtc::TransformedFrameCallback>);
 
   // Called by WebRTC to let us know that any reference to the callback object
   // reported by RegisterTransformedFrameCallback() should be released since
@@ -113,7 +113,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // Threadsafe.
   bool HasTransformedFrameCallback() const;
 
-  rtc::scoped_refptr<webrtc::FrameTransformerInterface> Delegate();
+  webrtc::scoped_refptr<webrtc::FrameTransformerInterface> Delegate();
 
   // Set the TaskRunner used for the Source side - to deliver frames up to the
   // UnderlyingSource. Is threadsafe.
@@ -126,9 +126,9 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
 
  private:
   const scoped_refptr<Broker> broker_;
-  const rtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
+  const webrtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
   mutable base::Lock sink_lock_;
-  rtc::scoped_refptr<webrtc::TransformedFrameCallback> send_frame_to_sink_cb_
+  webrtc::scoped_refptr<webrtc::TransformedFrameCallback> send_frame_to_sink_cb_
       GUARDED_BY(sink_lock_);
   base::Lock source_lock_;
   TransformerCallback transformer_callback_ GUARDED_BY(source_lock_);

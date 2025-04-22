@@ -29,7 +29,7 @@
 
 namespace webrtc {
 
-// ThreadWrapper implements rtc::Thread interface on top of
+// ThreadWrapper implements webrtc::Thread interface on top of
 // Chromium's SingleThreadTaskRunner interface. Currently only the bare minimum
 // that is used by P2P part of libjingle is implemented. There are two ways to
 // create this object:
@@ -41,7 +41,7 @@ namespace webrtc {
 //   must pass a valid task runner for the current thread and also delete the
 //   wrapper later.
 class ThreadWrapper : public base::CurrentThread::DestructionObserver,
-                      public rtc::Thread {
+                      public webrtc::Thread {
  public:
   // A repeating callback whose TimeDelta argument indicates a duration sample.
   // What the duration represents is contextual.
@@ -70,7 +70,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   //   it begins running.
   // * task duration is defined as the duration between the moment the
   //   ThreadWrapper begins running a task and the moment it ends
-  //   executing it. It only measures durations of tasks posted to rtc::Thread.
+  //   executing it. It only measures durations of tasks posted to
+  //   webrtc::Thread.
   // The passed callbacks are called in the ThreadWrapper's task runner
   // context.
   void SetLatencyAndTaskDurationCallbacks(
@@ -89,7 +90,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // need to call BlockingCall() for other threads.
   void set_send_allowed(bool allowed) { send_allowed_ = allowed; }
 
-  rtc::SocketServer* SocketServer();
+  webrtc::SocketServer* SocketServer();
 
   // CurrentThread::DestructionObserver implementation.
   void WillDestroyCurrentMessageLoop() override;
@@ -103,7 +104,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   void Restart() override;
   int GetDelay() override;
 
-  // rtc::Thread overrides.
+  // webrtc::Thread overrides.
   void Stop() override;
   void Run() override;
 
@@ -114,8 +115,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   explicit ThreadWrapper(
       ::scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // rtc::Thread overrides.
-  void BlockingCallImpl(rtc::FunctionView<void()> functor,
+  // webrtc::Thread overrides.
+  void BlockingCallImpl(webrtc::FunctionView<void()> functor,
                         const webrtc::Location& location) override;
   // TaskQueueBase overrides.
   void PostTaskImpl(absl::AnyInvocable<void() &&> task,

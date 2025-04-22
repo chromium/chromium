@@ -98,7 +98,7 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
     // not allow profile mismatch when only software encoder factory is used for
     // creating the simulcast encoder adapter.
     if (base::EqualsCaseInsensitiveASCII(format.name.c_str(),
-                                         cricket::kH264CodecName) &&
+                                         webrtc::kH264CodecName) &&
         supported_in_hardware) {
       allow_h264_profile_fallback = IsFormatSupported(
           &software_encoder_factory_,

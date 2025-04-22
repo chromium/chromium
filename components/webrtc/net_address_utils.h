@@ -19,13 +19,13 @@ namespace webrtc {
 // following two functions are used to convert addresses from one
 // representation to another.
 bool IPEndPointToSocketAddress(const net::IPEndPoint& ip_endpoint,
-                               rtc::SocketAddress* address);
-bool SocketAddressToIPEndPoint(const rtc::SocketAddress& address,
+                               webrtc::SocketAddress* address);
+bool SocketAddressToIPEndPoint(const webrtc::SocketAddress& address,
                                net::IPEndPoint* ip_endpoint);
 
-rtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address);
+webrtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address);
 
-net::IPAddress RtcIPAddressToNetIPAddress(const rtc::IPAddress& ip_address);
+net::IPAddress RtcIPAddressToNetIPAddress(const webrtc::IPAddress& ip_address);
 
 }  // namespace webrtc
 

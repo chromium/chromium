@@ -85,7 +85,7 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
       const bool video_spatial_scalability,
       const CodecSupport support) {
     auto video_decoder_factory = std::make_unique<MockVideoDecoderFactory>();
-    rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory =
+    webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory =
         blink::CreateWebrtcAudioDecoderFactory();
     if (sdp_video_format) {
       ON_CALL(*video_decoder_factory, QueryCodecSupport)

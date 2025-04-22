@@ -53,11 +53,11 @@ size_t RTCStatsReportPlatform::Size() const {
   return stats_report_->size();
 }
 
-rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
+webrtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
 CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCStatsReportCallback callback) {
-  return rtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(
+  return webrtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(
       new webrtc::RefCountedObject<RTCStatsCollectorCallbackImpl>(
           std::move(main_thread), std::move(callback)));
 }
@@ -72,16 +72,16 @@ RTCStatsCollectorCallbackImpl::~RTCStatsCollectorCallbackImpl() {
 }
 
 void RTCStatsCollectorCallbackImpl::OnStatsDelivered(
-    const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
+    const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
   PostCrossThreadTask(
       *main_thread_.get(), FROM_HERE,
       CrossThreadBindOnce(
           &RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread,
-          rtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(this), report));
+          webrtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(this), report));
 }
 
 void RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread(
-    rtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
+    webrtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(report);
   DCHECK(callback_);

@@ -18,7 +18,7 @@ namespace media {
 VideoCaptureErrorOrDevice VideoCaptureDeviceWebRtc::Create(
     webrtc::VideoCaptureOptions* options,
     const VideoCaptureDeviceDescriptor& device_descriptor) {
-  rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module =
+  webrtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module =
       webrtc::VideoCaptureFactory::Create(options,
                                           device_descriptor.device_id.c_str());
 
@@ -32,7 +32,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceWebRtc::Create(
 
 VideoCaptureDeviceWebRtc::VideoCaptureDeviceWebRtc(
     webrtc::VideoCaptureOptions* options,
-    rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module) {
+    webrtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module) {
   options_ = options;
   capture_module_ = capture_module;
   capture_module_->RegisterCaptureDataCallback(this);

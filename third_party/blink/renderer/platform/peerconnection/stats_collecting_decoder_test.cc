@@ -42,8 +42,8 @@ class MockVideoFrameBuffer : public webrtc::VideoFrameBuffer {
   int width() const override { return width_; }
   int height() const override { return height_; }
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
-    rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+    webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(width_, height_);
     webrtc::I420Buffer::SetBlack(buffer.get());
     return buffer;
@@ -57,7 +57,7 @@ class MockVideoFrameBuffer : public webrtc::VideoFrameBuffer {
 webrtc::VideoFrame CreateMockFrame(int width, int height, uint32_t timestamp) {
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(
-          rtc::make_ref_counted<MockVideoFrameBuffer>(width, height))
+          webrtc::make_ref_counted<MockVideoFrameBuffer>(width, height))
       .set_rtp_timestamp(timestamp)
       .build();
 }

@@ -20,14 +20,14 @@ PLATFORM_EXPORT bool CanConvertToWebRtcVideoFrameBuffer(
 PLATFORM_EXPORT base::span<const media::VideoPixelFormat>
 GetPixelFormatsMappableToWebRtcVideoFrameBuffer();
 
-PLATFORM_EXPORT rtc::scoped_refptr<webrtc::VideoFrameBuffer>
+PLATFORM_EXPORT webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
 ConvertToWebRtcVideoFrameBuffer(
     scoped_refptr<media::VideoFrame> video_frame,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources);
 
 PLATFORM_EXPORT scoped_refptr<media::VideoFrame>
 ConvertFromMappedWebRtcVideoFrameBuffer(
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
     base::TimeDelta timestamp);
 
 }  // namespace blink

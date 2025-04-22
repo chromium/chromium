@@ -247,8 +247,8 @@ class H264ResolutionMonitor : public ResolutionMonitor {
 
     std::optional<gfx::Size> resolution;
     auto buffer_span = base::span(buffer);
-    rtc::ArrayView<const uint8_t> webrtc_buffer(buffer_span.data(),
-                                                buffer_span.size());
+    webrtc::ArrayView<const uint8_t> webrtc_buffer(buffer_span.data(),
+                                                   buffer_span.size());
     std::vector<webrtc::H264::NaluIndex> nalu_indices =
         webrtc::H264::FindNaluIndices(webrtc_buffer);
     for (const auto& nalu_index : nalu_indices) {

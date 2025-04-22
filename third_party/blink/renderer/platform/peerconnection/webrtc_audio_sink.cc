@@ -226,12 +226,12 @@ int WebRtcAudioSink::Adapter::DeliverPCMToWebRtcSinks(
   if (base::FeatureList::IsEnabled(
           features::kWebRtcAudioSinkUseTimestampAligner)) {
     // This use |timestamp_aligner_| to transform |estimated_capture_timestamp|
-    // to rtc::TimeMicros(). See the comment at UpdateTimestampAligner() for
+    // to webrtc::TimeMicros(). See the comment at UpdateTimestampAligner() for
     // more details.
     capture_timestamp_ms =
         timestamp_aligner_.TranslateTimestamp(
             estimated_capture_time.since_origin().InMicroseconds()) /
-        rtc::kNumMicrosecsPerMillisec;
+        webrtc::kNumMicrosecsPerMillisec;
   }
 
   int num_preferred_channels = -1;
@@ -300,11 +300,11 @@ bool WebRtcAudioSink::Adapter::GetSignalLevel(int* level) {
   return true;
 }
 
-rtc::scoped_refptr<webrtc::AudioProcessorInterface>
+webrtc::scoped_refptr<webrtc::AudioProcessorInterface>
 WebRtcAudioSink::Adapter::GetAudioProcessor() {
   DCHECK(!signaling_task_runner_ ||
          signaling_task_runner_->RunsTasksInCurrentSequence());
-  return rtc::scoped_refptr<webrtc::AudioProcessorInterface>(
+  return webrtc::scoped_refptr<webrtc::AudioProcessorInterface>(
       audio_processor_.get());
 }
 
@@ -317,13 +317,13 @@ webrtc::AudioSourceInterface* WebRtcAudioSink::Adapter::GetSource() const {
 void WebRtcAudioSink::Adapter::UpdateTimestampAligner(
     base::TimeTicks capture_time) {
   // The |timestamp_aligner_| stamps an audio frame as if it is captured 'now',
-  // taking rtc::TimeMicros as the reference clock. It does not provide the time
-  // that the frame was originally captured, Using |timestamp_aligner_| rather
-  // than calling rtc::TimeMicros is to take the advantage that it aligns its
-  // output timestamps such that the time spacing in the |capture_time| is
-  // maintained.
+  // taking webrtc::TimeMicros as the reference clock. It does not provide the
+  // time that the frame was originally captured, Using |timestamp_aligner_|
+  // rather than calling webrtc::TimeMicros is to take the advantage that it
+  // aligns its output timestamps such that the time spacing in the
+  // |capture_time| is maintained.
   timestamp_aligner_.TranslateTimestamp(
-      capture_time.since_origin().InMicroseconds(), rtc::TimeMicros());
+      capture_time.since_origin().InMicroseconds(), webrtc::TimeMicros());
 }
 
 }  // namespace blink

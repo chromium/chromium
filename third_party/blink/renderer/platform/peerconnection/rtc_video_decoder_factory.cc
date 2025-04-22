@@ -76,11 +76,11 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
   switch (config.codec()) {
     case media::VideoCodec::kAV1:
       if (base::FeatureList::IsEnabled(kWebRtcHwAv1Decoding)) {
-        return webrtc::SdpVideoFormat(cricket::kAv1CodecName);
+        return webrtc::SdpVideoFormat(webrtc::kAv1CodecName);
       }
       return std::nullopt;
     case media::VideoCodec::kVP8:
-      return webrtc::SdpVideoFormat(cricket::kVp8CodecName);
+      return webrtc::SdpVideoFormat(webrtc::kVp8CodecName);
     case media::VideoCodec::kVP9: {
       webrtc::VP9Profile vp9_profile;
       switch (config.profile()) {
@@ -98,8 +98,8 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           return std::nullopt;
       }
       return webrtc::SdpVideoFormat(
-          cricket::kVp9CodecName, {{webrtc::kVP9FmtpProfileId,
-                                    webrtc::VP9ProfileToString(vp9_profile)}});
+          webrtc::kVp9CodecName, {{webrtc::kVP9FmtpProfileId,
+                                   webrtc::VP9ProfileToString(vp9_profile)}});
     }
     case media::VideoCodec::kH264: {
       webrtc::H264Profile h264_profile;
@@ -135,10 +135,10 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
         return std::nullopt;
       }
 
-      webrtc::SdpVideoFormat format(cricket::kH264CodecName);
+      webrtc::SdpVideoFormat format(webrtc::kH264CodecName);
       format.parameters = {
-          {cricket::kH264FmtpProfileLevelId, *h264_profile_level_string},
-          {cricket::kH264FmtpLevelAsymmetryAllowed, "1"}};
+          {webrtc::kH264FmtpProfileLevelId, *h264_profile_level_string},
+          {webrtc::kH264FmtpLevelAsymmetryAllowed, "1"}};
       return format;
     }
     case media::VideoCodec::kHEVC: {
@@ -169,15 +169,15 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           h265_profile, webrtc::H265Tier::kTier0,
           h265_level.value_or(webrtc::H265Level::kLevel1));
 
-      webrtc::SdpVideoFormat format(cricket::kH265CodecName);
+      webrtc::SdpVideoFormat format(webrtc::kH265CodecName);
       format.parameters = {
-          {cricket::kH265FmtpProfileId,
+          {webrtc::kH265FmtpProfileId,
            webrtc::H265ProfileToString(profile_tier_level.profile)},
-          {cricket::kH265FmtpTierFlag,
+          {webrtc::kH265FmtpTierFlag,
            webrtc::H265TierToString(profile_tier_level.tier)},
-          {cricket::kH265FmtpLevelId,
+          {webrtc::kH265FmtpLevelId,
            webrtc::H265LevelToString(profile_tier_level.level)},
-          {cricket::kH265FmtpTxMode, "SRST"}};
+          {webrtc::kH265FmtpTxMode, "SRST"}};
       return format;
 #else
       return std::nullopt;
@@ -292,7 +292,7 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
         const std::array<std::string, 2> kH264PacketizationModes = {{"1", "0"}};
         for (const auto& mode : kH264PacketizationModes) {
           webrtc::SdpVideoFormat h264_format = *format;
-          h264_format.parameters[cricket::kH264FmtpPacketizationMode] = mode;
+          h264_format.parameters[webrtc::kH264FmtpPacketizationMode] = mode;
           supported_formats.push_back(h264_format);
         }
       } else {
@@ -306,7 +306,7 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
   // of BP, we can report support for both. It is safe to do so when SW fallback
   // is available.
   // TODO(emircan): Remove this when the bug referred above is fixed.
-  cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
+  webrtc::AddH264ConstrainedBaselineProfileToSupportedFormats(
       &supported_formats);
 
 #if BUILDFLAG(RTC_USE_H265)
