@@ -527,8 +527,7 @@ void HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole(
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::UpdateRenditionManifest",
                                   this);
 
-  renditions_[role]->UpdatePlaylist(std::move(maybe_playlist).value(),
-                                    std::nullopt);
+  renditions_[role]->UpdatePlaylist(std::move(maybe_playlist).value());
   std::move(cb).Run(OkStatus());
 }
 
@@ -824,7 +823,8 @@ void HlsManifestDemuxerEngine::OnMediaPlaylist(
   // assume the codecs are the same.
   auto maybe_exists = renditions_.find(parse_info.role);
   if (maybe_exists != renditions_.end()) {
-    maybe_exists->second->UpdatePlaylist(std::move(playlist), parse_info.uri);
+    maybe_exists->second->UpdatePlaylistURI(parse_info.uri);
+    maybe_exists->second->UpdatePlaylist(std::move(playlist));
     TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::LoadPlaylist", this);
     std::move(parse_complete_cb).Run(OkStatus());
     return;

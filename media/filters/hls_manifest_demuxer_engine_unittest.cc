@@ -309,7 +309,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     InitializeEngine();
     task_environment_.RunUntilIdle();
 
-    auto rendition = std::make_unique<StrictMock<MockHlsRendition>>();
+    auto rendition = std::make_unique<StrictMock<MockHlsRendition>>(
+        GURL("http://example.com/hi.m3u8"));
     EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(base::Seconds(30)));
     auto* rendition_ptr = rendition.get();
     engine_->AddRenditionForTesting("primary", std::move(rendition));
@@ -386,11 +387,12 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     task_environment_.RunUntilIdle();
     CHECK(continue_adaptation);
     return base::BindOnce(
-        [](MockHlsRendition* rendition_ptr, base::OnceClosure cb) {
-          EXPECT_CALL(*rendition_ptr, UpdatePlaylist(_, _));
+        [](MockHlsRendition* rendition_ptr, base::OnceClosure cb, GURL uri) {
+          EXPECT_CALL(*rendition_ptr, UpdatePlaylist(_));
+          EXPECT_CALL(*rendition_ptr, MockUpdatePlaylistURI(uri));
           std::move(cb).Run();
         },
-        rendition_ptr, std::move(continue_adaptation));
+        rendition_ptr, std::move(continue_adaptation), GURL(url));
   }
 
  public:
@@ -728,6 +730,8 @@ TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   auto* rendition_ptr = SetUpInterruptTest();
+  EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
+            GURL("http://example.com/hi.m3u8"));
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
@@ -757,6 +761,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
 
   // Finish the adaptation, seek should complete.
   std::move(continue_adaptation).Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
+            GURL("http://example.com/low.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
@@ -790,6 +797,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringTimeUpdate) {
 
   // Finish the update, seek should complete.
   std::move(continue_update).Run();
+  EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
+            GURL("http://example.com/hi.m3u8"));
   task_environment_.RunUntilIdle();
 }
 
