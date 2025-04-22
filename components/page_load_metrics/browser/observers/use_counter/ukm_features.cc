@@ -469,6 +469,9 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kLanguageModel_Prompt_Input_Image,
           WebFeature::kLanguageModel_Prompt_Input_Audio,
           WebFeature::kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
+          WebFeature::kCredentialManagerCreateFederatedCredential,
+          WebFeature::kCredentialManagerStoreFederatedCredential,
+          WebFeature::kCredentialManagerGetLegacyFederatedCredential,
           // NOTE: before adding new use counters here, verify in UMA that their
           // emissions are very rare, e.g. <1% of page loads.
       }));
