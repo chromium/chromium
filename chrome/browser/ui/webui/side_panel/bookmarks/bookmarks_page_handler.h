@@ -17,6 +17,10 @@ class BookmarksSidePanelUI;
 class BookmarkMergedSurfaceService;
 class BrowserWindowInterface;
 
+namespace content {
+class WebUI;
+}
+
 class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
                              public BookmarkMergedSurfaceServiceObserver {
  public:
@@ -25,8 +29,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
       mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
       BookmarksSidePanelUI* bookmarks_ui,
-      BookmarkMergedSurfaceService* bookmark_merged_surface,
-      BrowserWindowInterface* browser_window);
+      content::WebUI* web_ui);
   BookmarksPageHandler(const BookmarksPageHandler&) = delete;
   BookmarksPageHandler& operator=(const BookmarksPageHandler&) = delete;
   ~BookmarksPageHandler() override;
@@ -107,9 +110,10 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
 
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::BookmarksPage> page_;
+  const raw_ptr<content::WebUI> web_ui_;
   raw_ptr<BookmarksSidePanelUI> bookmarks_ui_ = nullptr;
   raw_ptr<BookmarkMergedSurfaceService> bookmark_merged_surface_ = nullptr;
-  raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
   // This value is needed when the request from the Ui comes in before the
   // bookmarks are loaded. The callback will be executed upon bookmark load in

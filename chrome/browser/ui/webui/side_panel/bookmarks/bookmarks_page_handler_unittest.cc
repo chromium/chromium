@@ -14,12 +14,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -29,6 +31,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -172,9 +175,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
   bookmarks::ManagedBookmarkService* managed_bookmark_service() {
     return managed_bookmark_service_.get();
   }
-  BookmarkMergedSurfaceService* service() {
-    return bookmark_merged_service_.get();
-  }
+  BookmarkMergedSurfaceService* service() { return bookmark_merged_service_; }
   testing::NiceMock<MockBookmarksPage>& mock_bookmarks_page() {
     return mock_bookmarks_page_;
   }
@@ -193,8 +194,19 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
         std::make_unique<TestBookmarkClientWithManagedService>(
             managed_bookmark_service_.get()));
 
-    bookmark_merged_service_ = std::make_unique<BookmarkMergedSurfaceService>(
-        bookmark_model_.get(), managed_bookmark_service_.get());
+    auto bookmark_merged_service =
+        std::make_unique<BookmarkMergedSurfaceService>(
+            bookmark_model_.get(), managed_bookmark_service_.get());
+    bookmark_merged_service_ = bookmark_merged_service.get();
+
+    BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(
+                       [](BookmarkMergedSurfaceService* service,
+                          content::BrowserContext* context)
+                           -> std::unique_ptr<KeyedService> {
+                         return base::WrapUnique(service);
+                       },
+                       bookmark_merged_service.release()));
 
     // This is not the actual side panel web contents, but random contents
     // created in order to attach them to the `bookmarks_ui_`.
@@ -202,6 +214,9 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
         content::WebContentsTester::CreateTestWebContents(
             profile(), content::SiteInstance::Create(profile()));
     web_ui_.set_web_contents(fake_side_panel_web_contents_.get());
+    webui::SetBrowserWindowInterface(fake_side_panel_web_contents_.get(),
+                                     browser());
+
     bookmarks_ui_ = std::make_unique<BookmarksSidePanelUI>(&web_ui_);
 
     extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
@@ -210,8 +225,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<BookmarksPageHandler>(
         mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler>(),
         mock_bookmarks_page_.BindAndGetRemote(),
-        /*bookmarks_ui=*/bookmarks_ui_.get(), bookmark_merged_service_.get(),
-        browser());
+        /*bookmarks_ui=*/bookmarks_ui_.get(), &web_ui_);
   }
 
   void LoadBookmarkModel() {
@@ -225,7 +239,9 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
     bookmarks_ui_.reset();
     web_ui_.set_web_contents(nullptr);
     fake_side_panel_web_contents_.reset();
-    bookmark_merged_service_.reset();
+    bookmark_merged_service_ = nullptr;
+    BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), {});
     bookmark_model_.reset();
     managed_bookmark_service_.reset();
     prefs_.reset();
@@ -242,7 +258,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  std::unique_ptr<BookmarkMergedSurfaceService> bookmark_merged_service_;
+  raw_ptr<BookmarkMergedSurfaceService> bookmark_merged_service_;
   std::unique_ptr<BookmarksSidePanelUI> bookmarks_ui_;
   std::unique_ptr<content::WebContents> fake_side_panel_web_contents_;
   content::TestWebUI web_ui_;

@@ -23,6 +23,7 @@ class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class CookieControlsBubbleCoordinator;
 class HistorySidePanelCoordinator;
+class BookmarksSidePanelCoordinator;
 class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
@@ -131,6 +132,10 @@ class BrowserWindowFeatures {
 
   HistorySidePanelCoordinator* history_side_panel_coordinator() {
     return history_side_panel_coordinator_.get();
+  }
+
+  BookmarksSidePanelCoordinator* bookmarks_side_panel_coordinator() {
+    return bookmarks_side_panel_coordinator_.get();
   }
 
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
@@ -250,6 +255,9 @@ class BrowserWindowFeatures {
       memory_saver_opt_in_iph_controller_;
 
   std::unique_ptr<HistorySidePanelCoordinator> history_side_panel_coordinator_;
+
+  std::unique_ptr<BookmarksSidePanelCoordinator>
+      bookmarks_side_panel_coordinator_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 

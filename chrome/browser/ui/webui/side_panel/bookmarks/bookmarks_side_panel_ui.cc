@@ -300,14 +300,8 @@ BookmarksSidePanelUI::GetShoppingListContextMenuController() {
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(
     mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
-  if (!browser_window_) {
-    CHECK_IS_TEST();
-  }
   bookmarks_page_handler_ = std::make_unique<BookmarksPageHandler>(
-      std::move(receiver), std::move(page), this,
-      BookmarkMergedSurfaceServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui())),
-      browser_window_);
+      std::move(receiver), std::move(page), this, web_ui());
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(
@@ -349,8 +343,4 @@ bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   return prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability) ==
          static_cast<int>(policy::IncognitoModeAvailability::kEnabled);
-}
-
-void BookmarksSidePanelUI::Initialize(BrowserWindowInterface& browser_window) {
-  browser_window_ = &browser_window;
 }
