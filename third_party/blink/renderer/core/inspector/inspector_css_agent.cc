@@ -2195,11 +2195,6 @@ protocol::Response InspectorCSSAgent::resolveValues(
     return protocol::Response::ServerError("Node is not an element.");
   }
 
-  if (!element->GetComputedStyle()) {
-    return protocol::Response::ServerError(
-        "Computed style of element is null.");
-  }
-
   Document& document = element->GetDocument();
   document.UpdateStyleAndLayoutForNode(element,
                                        DocumentUpdateReason::kInspector);
@@ -2218,6 +2213,11 @@ protocol::Response InspectorCSSAgent::resolveValues(
       return protocol::Response::ServerError(
           "Could not retrieve pseudo element.");
     }
+  }
+
+  if (!element->GetComputedStyle()) {
+    return protocol::Response::ServerError(
+        "Computed style of element is null.");
   }
 
   const AtomicString custom_property_name(
