@@ -2225,10 +2225,6 @@
       base_feature: "none",
     },
     {
-      name: "FluentScrollbarUsesNinePatchTrack",
-      status: "stable",
-    },
-    {
       name: "Focusgroup",
       status: "experimental",
       base_feature: "none",
