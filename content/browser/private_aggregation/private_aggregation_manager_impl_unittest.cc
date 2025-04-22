@@ -63,8 +63,6 @@ using testing::_;
 using testing::Invoke;
 using testing::Return;
 
-using Checkpoint = testing::MockFunction<void(int step)>;
-
 constexpr auto kExampleTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
@@ -234,10 +232,8 @@ TEST_P(PrivateAggregationManagerImplTest,
             AggregatableReportSharedInfo::DebugMode::kDisabled);
   EXPECT_CALL(*aggregation_service_, AssembleAndSendReport).Times(0);
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     if (GetErrorReportingEnabledParam()) {
       EXPECT_CALL(*budgeter_,
@@ -245,39 +241,33 @@ TEST_P(PrivateAggregationManagerImplTest,
                       expected_request.payload_contents().contributions,
                       example_key, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  const std::vector<
-                      blink::mojom::AggregatableReportHistogramContribution>&,
-                  const PrivateAggregationBudgetKey&,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                      on_done) {
-                checkpoint.Call(1);
+              [](const std::vector<
+                     blink::mojom::AggregatableReportHistogramContribution>&,
+                 const PrivateAggregationBudgetKey&,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                     on_done) {
                 std::move(on_done).Run(InspectBudgetCallResult(
                     BudgetQueryResult(RequestResult::kApproved,
                                       {ResultForContribution::kApproved}),
                     PrivateAggregationBudgeter::Lock::CreateForTesting(),
                     PendingReportLimitResult::kNotAtLimit));
               }));
-      EXPECT_CALL(checkpoint, Call(1));
       EXPECT_CALL(
           *budgeter_,
           ConsumeBudget(_, expected_request.payload_contents().contributions,
                         example_key, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  PrivateAggregationBudgeter::Lock,
-                  const std::vector<
-                      blink::mojom::AggregatableReportHistogramContribution>&,
-                  const PrivateAggregationBudgetKey&,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-                checkpoint.Call(2);
+              [](PrivateAggregationBudgeter::Lock,
+                 const std::vector<
+                     blink::mojom::AggregatableReportHistogramContribution>&,
+                 const PrivateAggregationBudgetKey&,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
                 std::move(on_done).Run(
                     BudgetQueryResult(RequestResult::kApproved,
                                       {ResultForContribution::kApproved}));
               }));
-      EXPECT_CALL(checkpoint, Call(2));
     } else {
       EXPECT_CALL(
           *budgeter_,
@@ -286,15 +276,12 @@ TEST_P(PrivateAggregationManagerImplTest,
               example_key,
               expected_request.payload_contents().contributions[0].value, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  int, const PrivateAggregationBudgetKey&, int,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::RequestResult)> on_done) {
-                checkpoint.Call(1);
+              [](int, const PrivateAggregationBudgetKey&, int,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::RequestResult)> on_done) {
                 std::move(on_done).Run(
                     PrivateAggregationBudgeter::RequestResult::kApproved);
               }));
-      EXPECT_CALL(checkpoint, Call(1));
     }
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
@@ -304,8 +291,6 @@ TEST_P(PrivateAggregationManagerImplTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
@@ -357,10 +342,8 @@ TEST_P(PrivateAggregationManagerImplTest,
                                         example_request.shared_info().Clone())
           .value();
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     if (GetErrorReportingEnabledParam()) {
       EXPECT_CALL(*budgeter_,
@@ -368,14 +351,12 @@ TEST_P(PrivateAggregationManagerImplTest,
                       expected_request.payload_contents().contributions,
                       example_key, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  const std::vector<
-                      blink::mojom::AggregatableReportHistogramContribution>&,
-                  const PrivateAggregationBudgetKey&,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                      on_done) {
-                checkpoint.Call(1);
+              [](const std::vector<
+                     blink::mojom::AggregatableReportHistogramContribution>&,
+                 const PrivateAggregationBudgetKey&,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                     on_done) {
                 std::move(on_done).Run(InspectBudgetCallResult(
                     BudgetQueryResult(RequestResult::kApproved,
                                       std::vector<ResultForContribution>(
@@ -383,39 +364,32 @@ TEST_P(PrivateAggregationManagerImplTest,
                     PrivateAggregationBudgeter::Lock::CreateForTesting(),
                     PendingReportLimitResult::kNotAtLimit));
               }));
-      EXPECT_CALL(checkpoint, Call(1));
       EXPECT_CALL(
           *budgeter_,
           ConsumeBudget(_, expected_request.payload_contents().contributions,
                         example_key, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  PrivateAggregationBudgeter::Lock,
-                  const std::vector<
-                      blink::mojom::AggregatableReportHistogramContribution>&,
-                  const PrivateAggregationBudgetKey&,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-                checkpoint.Call(2);
+              [](PrivateAggregationBudgeter::Lock,
+                 const std::vector<
+                     blink::mojom::AggregatableReportHistogramContribution>&,
+                 const PrivateAggregationBudgetKey&,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
                 std::move(on_done).Run(BudgetQueryResult(
                     RequestResult::kApproved,
                     std::vector<ResultForContribution>(
                         3, ResultForContribution::kApproved)));
               }));
-      EXPECT_CALL(checkpoint, Call(2));
     } else {
       EXPECT_CALL(*budgeter_, ConsumeBudget(/*budget=*/125, example_key,
                                             /*minimum_value_for_metrics=*/5, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  int, const PrivateAggregationBudgetKey&, int,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::RequestResult)> on_done) {
-                checkpoint.Call(1);
+              [](int, const PrivateAggregationBudgetKey&, int,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::RequestResult)> on_done) {
                 std::move(on_done).Run(
                     PrivateAggregationBudgeter::RequestResult::kApproved);
               }));
-      EXPECT_CALL(checkpoint, Call(1));
     }
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
@@ -425,8 +399,6 @@ TEST_P(PrivateAggregationManagerImplTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
@@ -459,11 +431,8 @@ TEST_P(PrivateAggregationManagerImplTest,
       aggregation_service::CreateExampleRequest();
   ASSERT_EQ(expected_request.payload_contents().contributions.size(), 1u);
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-
-    EXPECT_CALL(checkpoint, Call(0));
 
     if (GetErrorReportingEnabledParam()) {
       EXPECT_CALL(*budgeter_,
@@ -471,14 +440,12 @@ TEST_P(PrivateAggregationManagerImplTest,
                       expected_request.payload_contents().contributions,
                       example_key, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  const std::vector<
-                      blink::mojom::AggregatableReportHistogramContribution>&,
-                  const PrivateAggregationBudgetKey&,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                      on_done) {
-                checkpoint.Call(1);
+              [](const std::vector<
+                     blink::mojom::AggregatableReportHistogramContribution>&,
+                 const PrivateAggregationBudgetKey&,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                     on_done) {
                 std::move(on_done).Run(InspectBudgetCallResult(
                     BudgetQueryResult(
                         RequestResult::kInsufficientSmallerScopeBudget,
@@ -486,22 +453,18 @@ TEST_P(PrivateAggregationManagerImplTest,
                     PrivateAggregationBudgeter::Lock::CreateForTesting(),
                     PendingReportLimitResult::kNotAtLimit));
               }));
-      EXPECT_CALL(checkpoint, Call(1));
       EXPECT_CALL(*budgeter_,
                   ConsumeBudget(_, testing::IsEmpty(), example_key, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  PrivateAggregationBudgeter::Lock,
-                  const std::vector<
-                      blink::mojom::AggregatableReportHistogramContribution>&,
-                  const PrivateAggregationBudgetKey&,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-                checkpoint.Call(2);
+              [](PrivateAggregationBudgeter::Lock,
+                 const std::vector<
+                     blink::mojom::AggregatableReportHistogramContribution>&,
+                 const PrivateAggregationBudgetKey&,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
                 std::move(on_done).Run(
                     BudgetQueryResult(RequestResult::kApproved, {}));
               }));
-      EXPECT_CALL(checkpoint, Call(2));
     } else {
       EXPECT_CALL(
           *budgeter_,
@@ -510,22 +473,17 @@ TEST_P(PrivateAggregationManagerImplTest,
               example_key,
               expected_request.payload_contents().contributions[0].value, _))
           .WillOnce(Invoke(
-              [&checkpoint](
-                  int, const PrivateAggregationBudgetKey&, int,
-                  base::OnceCallback<void(
-                      PrivateAggregationBudgeter::RequestResult)> on_done) {
-                checkpoint.Call(1);
+              [](int, const PrivateAggregationBudgetKey&, int,
+                 base::OnceCallback<void(
+                     PrivateAggregationBudgeter::RequestResult)> on_done) {
                 std::move(on_done).Run(
                     PrivateAggregationBudgeter::RequestResult::
                         kInsufficientSmallerScopeBudget);
               }));
-      EXPECT_CALL(checkpoint, Call(1));
     }
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
   }
-
-  checkpoint.Call(0);
 
   auto [generator, contributions] = CloneAndSplitOutGenerator(expected_request);
   manager_.OnReportRequestDetailsReceivedFromHost(
@@ -587,8 +545,6 @@ TEST_P(PrivateAggregationManagerImplTest,
                                         example_request.shared_info().Clone())
           .value();
 
-  Checkpoint checkpoint;
-
   // When the feature is disabled, the query is rejected without a request. When
   // enabled, per-contribution budgeting occurs.
   if (GetErrorReportingEnabledParam()) {
@@ -599,14 +555,12 @@ TEST_P(PrivateAggregationManagerImplTest,
                     large_budget_request.payload_contents().contributions,
                     example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(
                       RequestResult::kRequestedMoreThanTotalBudget,
@@ -615,18 +569,15 @@ TEST_P(PrivateAggregationManagerImplTest,
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*budgeter_, ConsumeBudget(_, _, example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&
-                    contributions,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&
+                   contributions,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               EXPECT_THAT(
                   contributions,
                   testing::ElementsAre(
@@ -638,7 +589,6 @@ TEST_P(PrivateAggregationManagerImplTest,
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
             [&expected_request](AggregatableReportRequest report_request) {
@@ -700,7 +650,7 @@ TEST_P(PrivateAggregationManagerImplTest,
   ASSERT_TRUE(expected_debug_request.has_value());
   ASSERT_FALSE(standard_request->payload_contents().contributions.empty());
 
-  Checkpoint checkpoint;
+  testing::Expectation consume_budget_call;
 
   if (GetErrorReportingEnabledParam()) {
     testing::InSequence seq;
@@ -710,53 +660,54 @@ TEST_P(PrivateAggregationManagerImplTest,
         InspectBudgetAndLock(standard_request->payload_contents().contributions,
                              example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}),
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(
-        *budgeter_,
-        ConsumeBudget(_, standard_request->payload_contents().contributions,
-                      example_key, _))
-        .WillOnce(Invoke(
-            [](PrivateAggregationBudgeter::Lock,
-               const std::vector<
-                   blink::mojom::AggregatableReportHistogramContribution>&,
-               const PrivateAggregationBudgetKey&,
-               base::OnceCallback<void(
-                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              std::move(on_done).Run(
-                  BudgetQueryResult(RequestResult::kApproved,
-                                    {ResultForContribution::kApproved}));
-            }));
+    consume_budget_call =
+        EXPECT_CALL(
+            *budgeter_,
+            ConsumeBudget(_, standard_request->payload_contents().contributions,
+                          example_key, _))
+            .WillOnce(Invoke(
+                [](PrivateAggregationBudgeter::Lock,
+                   const std::vector<
+                       blink::mojom::AggregatableReportHistogramContribution>&,
+                   const PrivateAggregationBudgetKey&,
+                   base::OnceCallback<void(
+                       PrivateAggregationBudgeter::BudgetQueryResult)>
+                       on_done) {
+                  std::move(on_done).Run(
+                      BudgetQueryResult(RequestResult::kApproved,
+                                        {ResultForContribution::kApproved}));
+                }));
   } else {
-    EXPECT_CALL(
-        *budgeter_,
-        ConsumeBudget(
-            standard_request->payload_contents().contributions[0].value,
-            example_key,
-            standard_request->payload_contents().contributions[0].value, _))
-        .WillOnce(
-            Invoke([](int, const PrivateAggregationBudgetKey&, int,
-                      base::OnceCallback<void(
-                          PrivateAggregationBudgeter::RequestResult)> on_done) {
-              std::move(on_done).Run(
-                  PrivateAggregationBudgeter::RequestResult::kApproved);
-            }));
+    consume_budget_call =
+        EXPECT_CALL(
+            *budgeter_,
+            ConsumeBudget(
+                standard_request->payload_contents().contributions[0].value,
+                example_key,
+                standard_request->payload_contents().contributions[0].value, _))
+            .WillOnce(Invoke(
+                [](int, const PrivateAggregationBudgetKey&, int,
+                   base::OnceCallback<void(
+                       PrivateAggregationBudgeter::RequestResult)> on_done) {
+                  std::move(on_done).Run(
+                      PrivateAggregationBudgeter::RequestResult::kApproved);
+                }));
   }
 
   EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
+      .After(consume_budget_call)
       .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
             report_request, expected_debug_request.value()));
@@ -764,6 +715,7 @@ TEST_P(PrivateAggregationManagerImplTest,
 
   // Still triggers the standard (non-debug) report.
   EXPECT_CALL(*aggregation_service_, ScheduleReport)
+      .After(consume_budget_call)
       .WillOnce(
           Invoke([&standard_request](AggregatableReportRequest report_request) {
             EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
@@ -820,7 +772,7 @@ TEST_P(PrivateAggregationManagerImplTest,
   ASSERT_TRUE(expected_debug_request.has_value());
   ASSERT_FALSE(standard_request->payload_contents().contributions.empty());
 
-  Checkpoint checkpoint;
+  testing::Expectation consume_budget_call;
 
   if (GetErrorReportingEnabledParam()) {
     testing::InSequence seq;
@@ -830,48 +782,49 @@ TEST_P(PrivateAggregationManagerImplTest,
         InspectBudgetAndLock(standard_request->payload_contents().contributions,
                              example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}),
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(
-        *budgeter_,
-        ConsumeBudget(_, standard_request->payload_contents().contributions,
-                      example_key, _))
-        .WillOnce(Invoke(
-            [](PrivateAggregationBudgeter::Lock,
-               const std::vector<
-                   blink::mojom::AggregatableReportHistogramContribution>&,
-               const PrivateAggregationBudgetKey&,
-               base::OnceCallback<void(
-                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              std::move(on_done).Run(
-                  BudgetQueryResult(RequestResult::kApproved,
-                                    {ResultForContribution::kApproved}));
-            }));
+    consume_budget_call =
+        EXPECT_CALL(
+            *budgeter_,
+            ConsumeBudget(_, standard_request->payload_contents().contributions,
+                          example_key, _))
+            .WillOnce(Invoke(
+                [](PrivateAggregationBudgeter::Lock,
+                   const std::vector<
+                       blink::mojom::AggregatableReportHistogramContribution>&,
+                   const PrivateAggregationBudgetKey&,
+                   base::OnceCallback<void(
+                       PrivateAggregationBudgeter::BudgetQueryResult)>
+                       on_done) {
+                  std::move(on_done).Run(
+                      BudgetQueryResult(RequestResult::kApproved,
+                                        {ResultForContribution::kApproved}));
+                }));
   } else {
-    EXPECT_CALL(
-        *budgeter_,
-        ConsumeBudget(
-            standard_request->payload_contents().contributions[0].value,
-            example_key,
-            standard_request->payload_contents().contributions[0].value, _))
-        .WillOnce(base::test::RunOnceCallback<3>(
-            PrivateAggregationBudgeter::RequestResult::kApproved));
+    consume_budget_call =
+        EXPECT_CALL(
+            *budgeter_,
+            ConsumeBudget(
+                standard_request->payload_contents().contributions[0].value,
+                example_key,
+                standard_request->payload_contents().contributions[0].value, _))
+            .WillOnce(base::test::RunOnceCallback<3>(
+                PrivateAggregationBudgeter::RequestResult::kApproved));
   }
 
   EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
+      .After(consume_budget_call)
       .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
             report_request, expected_debug_request.value()));
@@ -879,6 +832,7 @@ TEST_P(PrivateAggregationManagerImplTest,
 
   // Still triggers the standard (non-debug) report.
   EXPECT_CALL(*aggregation_service_, ScheduleReport)
+      .After(consume_budget_call)
       .WillOnce(
           Invoke([&standard_request](AggregatableReportRequest report_request) {
             EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
@@ -927,7 +881,7 @@ TEST_P(PrivateAggregationManagerImplTest, DebugReportingPath) {
           PrivateAggregationCallerApi::kSharedStorage)
           .value();
 
-  Checkpoint checkpoint;
+  testing::MockFunction<void(int step)> checkpoint;
   {
     testing::InSequence seq;
 
@@ -1591,22 +1545,18 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
               /*value=*/100,
               /*filtering_id=*/std::nullopt)};
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     EXPECT_CALL(*budgeter_, InspectBudgetAndLock(unconditional_contributions,
                                                  example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     std::vector<ResultForContribution>(
@@ -1614,26 +1564,22 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(
         *budgeter_,
         ConsumeBudget(_, expected_request.payload_contents().contributions,
                       example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               std::move(on_done).Run(
                   BudgetQueryResult(RequestResult::kApproved,
                                     std::vector<ResultForContribution>(
                                         3, ResultForContribution::kApproved)));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -1642,8 +1588,6 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   PrivateAggregationPendingContributions::Wrapper wrapper =
       PrivateAggregationPendingContributions::Wrapper(
@@ -1714,46 +1658,38 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       conditional_contributions = {unmerged_contributions[0]};
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     EXPECT_CALL(*budgeter_, InspectBudgetAndLock(unconditional_contributions,
                                                  example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}),
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*budgeter_,
                 ConsumeBudget(_, unmerged_contributions, example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               std::move(on_done).Run(
                   BudgetQueryResult(RequestResult::kApproved,
                                     std::vector<ResultForContribution>(
                                         2, ResultForContribution::kApproved)));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -1762,8 +1698,6 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   PrivateAggregationPendingContributions::Wrapper wrapper =
       PrivateAggregationPendingContributions::Wrapper(
@@ -1830,46 +1764,38 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                                         example_request.shared_info().Clone())
           .value();
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     EXPECT_CALL(*budgeter_, InspectBudgetAndLock(unconditional_contributions,
                                                  example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}),
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*budgeter_,
                 ConsumeBudget(_, unmerged_contributions, example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               std::move(on_done).Run(BudgetQueryResult(
                   RequestResult::kInsufficientSmallerScopeBudget,
                   {ResultForContribution::kDenied,
                    ResultForContribution::kApproved}));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -1878,8 +1804,6 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   PrivateAggregationPendingContributions::Wrapper wrapper =
       PrivateAggregationPendingContributions::Wrapper(
@@ -1948,22 +1872,18 @@ TEST_F(
                                         example_request.shared_info().Clone())
           .value();
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     EXPECT_CALL(*budgeter_, InspectBudgetAndLock(unconditional_contributions,
                                                  example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(
                       RequestResult::kInsufficientLargerScopeBudget,
@@ -1971,23 +1891,19 @@ TEST_F(
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*budgeter_,
                 ConsumeBudget(_, conditional_contributions, example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               std::move(on_done).Run(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -1996,8 +1912,6 @@ TEST_F(
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   PrivateAggregationPendingContributions::Wrapper wrapper =
       PrivateAggregationPendingContributions::Wrapper(
@@ -2065,45 +1979,37 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                                         example_request.shared_info().Clone())
           .value();
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     EXPECT_CALL(*budgeter_, InspectBudgetAndLock(unconditional_contributions,
                                                  example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}),
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kNotAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*budgeter_,
                 ConsumeBudget(_, unconditional_contributions, example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               std::move(on_done).Run(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -2112,8 +2018,6 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   PrivateAggregationPendingContributions::Wrapper wrapper =
       PrivateAggregationPendingContributions::Wrapper(
@@ -2184,46 +2088,38 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                                         example_request.shared_info().Clone())
           .value();
 
-  Checkpoint checkpoint;
   {
     testing::InSequence seq;
-    EXPECT_CALL(checkpoint, Call(0));
 
     EXPECT_CALL(*budgeter_, InspectBudgetAndLock(unconditional_contributions,
                                                  example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::InspectBudgetCallResult)>
-                    on_done) {
-              checkpoint.Call(1);
+            [](const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::InspectBudgetCallResult)>
+                   on_done) {
               std::move(on_done).Run(InspectBudgetCallResult(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved}),
                   PrivateAggregationBudgeter::Lock::CreateForTesting(),
                   PendingReportLimitResult::kAtLimit));
             }));
-    EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*budgeter_,
                 ConsumeBudget(_, unmerged_contributions, example_key, _))
         .WillOnce(Invoke(
-            [&checkpoint](
-                PrivateAggregationBudgeter::Lock,
-                const std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>&,
-                const PrivateAggregationBudgetKey&,
-                base::OnceCallback<void(
-                    PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
-              checkpoint.Call(2);
+            [](PrivateAggregationBudgeter::Lock,
+               const std::vector<
+                   blink::mojom::AggregatableReportHistogramContribution>&,
+               const PrivateAggregationBudgetKey&,
+               base::OnceCallback<void(
+                   PrivateAggregationBudgeter::BudgetQueryResult)> on_done) {
               std::move(on_done).Run(
                   BudgetQueryResult(RequestResult::kApproved,
                                     {ResultForContribution::kApproved,
                                      ResultForContribution::kApproved}));
             }));
-    EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*aggregation_service_, ScheduleReport)
         .WillOnce(Invoke(
@@ -2232,8 +2128,6 @@ TEST_F(PrivateAggregationManagerImplErrorReportingEnabledTest,
                   report_request, expected_request));
             }));
   }
-
-  checkpoint.Call(0);
 
   PrivateAggregationPendingContributions::Wrapper wrapper =
       PrivateAggregationPendingContributions::Wrapper(
