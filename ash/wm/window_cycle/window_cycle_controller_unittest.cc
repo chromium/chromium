@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -918,10 +914,10 @@ TEST_F(WindowCycleControllerTest, CycleShowsAllDesksWindows) {
 TEST_F(WindowCycleControllerTest, FrameThrottling) {
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
-  const int window_count = 5;
+  constexpr int window_count = 5;
   std::vector<viz::FrameSinkId> ids{
       {1u, 1u}, {2u, 2u}, {3u, 3u}, {4u, 4u}, {5u, 5u}};
-  std::unique_ptr<aura::Window> windows[window_count];
+  std::array<std::unique_ptr<aura::Window>, window_count> windows;
   for (int i = 0; i < window_count; ++i) {
     windows[i] = CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
     windows[i]->SetEmbedFrameSinkId(ids[i]);
