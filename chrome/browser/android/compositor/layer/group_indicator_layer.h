@@ -8,11 +8,17 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/android/resources/resource_manager.h"
 
 namespace cc::slim {
 class Layer;
+class NinePatchLayer;
 class SolidColorLayer;
 }  // namespace cc::slim
+
+namespace ui {
+class NinePatchResource;
+}
 
 namespace android {
 
@@ -50,7 +56,12 @@ class GroupIndicatorLayer : public Layer {
                      float bottom_indicator_height,
                      float bubble_padding,
                      float bubble_size,
-                     float tab_strip_height);
+                     float tab_strip_height,
+                     bool is_keyboard_focused,
+                     ui::NinePatchResource* keyboard_focus_ring_drawable,
+                     int keyboard_focus_ring_offset,
+                     int keyboard_focus_ring_width);
+
   bool foreground();
   scoped_refptr<cc::slim::Layer> layer() override;
 
@@ -72,6 +83,7 @@ class GroupIndicatorLayer : public Layer {
   scoped_refptr<cc::slim::SolidColorLayer> group_indicator_;
   scoped_refptr<cc::slim::SolidColorLayer> bottom_outline_;
   scoped_refptr<cc::slim::SolidColorLayer> notification_bubble_;
+  scoped_refptr<cc::slim::NinePatchLayer> keyboard_focus_ring_;
   scoped_refptr<cc::slim::Layer> title_layer_;
 
   bool foreground_;

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/android/compositor/layer/group_indicator_layer.h"
 
+#include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/decoration_icon_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "ui/android/resources/nine_patch_resource.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
 namespace android {
@@ -55,7 +57,11 @@ void GroupIndicatorLayer::SetProperties(
     float bottom_indicator_height,
     float bubble_padding,
     float bubble_size,
-    float tab_strip_height) {
+    float tab_strip_height,
+    bool is_keyboard_focused,
+    ui::NinePatchResource* keyboard_focus_ring_drawable,
+    int keyboard_focus_ring_offset,
+    int keyboard_focus_ring_width) {
   // Update group indicator properties.
   foreground_ = foreground;
   group_indicator_->SetPosition(gfx::PointF(x, y));
@@ -173,6 +179,25 @@ void GroupIndicatorLayer::SetProperties(
   } else {
     reorder_background_->SetIsDrawable(false);
   }
+
+  // Show keyboard focus ring if needed.
+  if (is_keyboard_focused) {
+    float offset = keyboard_focus_ring_offset + keyboard_focus_ring_width;
+    keyboard_focus_ring_->SetIsDrawable(true);
+    keyboard_focus_ring_->SetUIResourceId(
+        keyboard_focus_ring_drawable->ui_resource()->id());
+    keyboard_focus_ring_->SetAperture(keyboard_focus_ring_drawable->aperture());
+    keyboard_focus_ring_->SetPosition(gfx::PointF(x - offset, y - offset));
+    keyboard_focus_ring_->SetBounds(
+        gfx::Size(width + offset * 2, height + offset * 2));
+    keyboard_focus_ring_->SetFillCenter(true);
+    keyboard_focus_ring_->SetBorder(
+        keyboard_focus_ring_drawable->Border(keyboard_focus_ring_->bounds()));
+  } else {
+    // Clean up the keyboard focus ring if it was previously showing but
+    // shouldn't be showing now.
+    keyboard_focus_ring_->SetIsDrawable(false);
+  }
 }
 
 bool GroupIndicatorLayer::foreground() {
@@ -190,10 +215,12 @@ GroupIndicatorLayer::GroupIndicatorLayer(LayerTitleCache* layer_title_cache)
       group_indicator_(cc::slim::SolidColorLayer::Create()),
       bottom_outline_(cc::slim::SolidColorLayer::Create()),
       notification_bubble_(cc::slim::SolidColorLayer::Create()),
+      keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
       foreground_(false) {
   reorder_background_->SetIsDrawable(false);
   group_indicator_->SetIsDrawable(true);
   bottom_outline_->SetIsDrawable(true);
+  keyboard_focus_ring_->SetIsDrawable(false);
   notification_bubble_->SetIsDrawable(false);
 
   int corner_radius = GroupIndicatorLayer::reorder_background_corner_radius_;
@@ -203,6 +230,7 @@ GroupIndicatorLayer::GroupIndicatorLayer(LayerTitleCache* layer_title_cache)
   layer_->AddChild(reorder_background_);
   layer_->AddChild(group_indicator_);
   layer_->AddChild(bottom_outline_);
+  layer_->AddChild(keyboard_focus_ring_);
   group_indicator_->AddChild(notification_bubble_);
 }
 

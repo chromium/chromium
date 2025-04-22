@@ -127,6 +127,8 @@ class TabStripSceneLayer : public SceneLayer {
       jint id,
       jint close_resource_id,
       jint close_hover_bg_resource_id,
+      jboolean is_close_keyboard_focused,
+      jint close_keyboard_focus_ring_resource_id,
       jint divider_resource_id,
       jint handle_resource_id,
       jint handle_outline_resource_id,
@@ -154,6 +156,12 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean is_loading,
       jfloat spinner_rotation,
       jfloat opacity,
+      jboolean is_keyboard_focused,
+      jint keyboard_focus_ring_resource_id,
+      jint keyboard_focus_ring_color,
+      jint keyboard_focus_ring_offset,
+      jint stroke_width,
+      jfloat folio_foot_length,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
@@ -179,7 +187,13 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat bottom_indicator_height,
       jfloat bubble_padding,
       jfloat bubble_size,
-      const base::android::JavaParamRef<jobject>& jlayer_title_cache);
+      jboolean is_keyboard_focused,
+      jint keyboard_focus_ring_resource_id,
+      jint keyboard_focus_ring_color,
+      jint keyboard_focus_ring_offset,
+      jint keyboard_focus_ring_width,
+      const base::android::JavaParamRef<jobject>& jlayer_title_cache,
+      const base::android::JavaParamRef<jobject>& jresource_manager);
 
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;

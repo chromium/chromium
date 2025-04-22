@@ -9,8 +9,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 
 import java.util.List;
 
@@ -92,6 +95,7 @@ public abstract class StripLayoutView implements VirtualView {
 
     // State variables.
     private boolean mVisible = true;
+    private boolean mKeyboardFocused;
     private boolean mCollapsed;
     private boolean mIsIncognito;
     private boolean mIsForegrounded;
@@ -421,5 +425,20 @@ public abstract class StripLayoutView implements VirtualView {
         outTarget.right -= mTouchTargetInsetRight;
         outTarget.top += mTouchTargetInsetTop;
         outTarget.bottom -= mTouchTargetInsetBottom;
+    }
+
+    @Override
+    public void setKeyboardFocused(boolean keyboardFocused) {
+        mKeyboardFocused = keyboardFocused;
+    }
+
+    @Override
+    public boolean isKeyboardFocused() {
+        return mKeyboardFocused;
+    }
+
+    /** {@return The {@link ColorInt} of the keyboard focus ring color} */
+    public @ColorInt int getKeyboardFocusRingColor() {
+        return ChromeColors.getKeyboardFocusRingColor(mContext, isIncognito());
     }
 }

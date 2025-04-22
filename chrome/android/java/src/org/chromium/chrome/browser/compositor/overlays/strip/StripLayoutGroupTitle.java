@@ -507,4 +507,16 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     public ViewResourceAdapter getAvatarResourceForTesting() {
         return mAvatarResource;
     }
+
+    /**
+     * {@return The keyboard focus ring's offset (how far it is outside the group indicator) in px}
+     */
+    public int getKeyboardFocusRingOffset() {
+        return TabUiThemeUtil.getFocusRingOffset(mContext);
+    }
+
+    /** {@return The width of the keyboard focus ring stroke in px} */
+    public int getKeyboardFocusRingWidth() {
+        return TabUiThemeUtil.getLineWidth(mContext);
+    }
 }

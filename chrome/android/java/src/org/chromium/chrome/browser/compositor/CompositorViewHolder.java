@@ -1660,16 +1660,24 @@ public class CompositorViewHolder extends FrameLayout
     // KeyListener and VirtualView management.
 
     @Override
+    public void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+        // Clear focus ring indicators.
+        if (!gainFocus) resetKeyboardFocus();
+    }
+
+    @Override
     public void resetKeyboardFocus() {
+        mKeyboardFocusIndex = Integer.MIN_VALUE;
+        updateKeyboardFocus(getVirtualViewsForCurrentSceneOverlay());
         mSceneOverlay = null;
-        mKeyboardFocusIndex = 0;
     }
 
     @Override
     public void requestKeyboardFocus(@NonNull SceneOverlay sceneOverlay) {
         mSceneOverlay = sceneOverlay;
         mKeyboardFocusIndex = 0;
-        updateKeyboardFocus();
+        updateKeyboardFocus(getVirtualViewsForCurrentSceneOverlay());
     }
 
     @Override
@@ -1697,7 +1705,7 @@ public class CompositorViewHolder extends FrameLayout
             if (mKeyboardFocusIndex >= keyboardFocusableViewCount) {
                 mKeyboardFocusIndex = 0;
             }
-            updateKeyboardFocus();
+            updateKeyboardFocus(keyboardFocusableViews);
             return true;
         }
         if (isMoveFocusBackward(event)) {
@@ -1705,7 +1713,7 @@ public class CompositorViewHolder extends FrameLayout
             if (mKeyboardFocusIndex < 0) {
                 mKeyboardFocusIndex = keyboardFocusableViewCount - 1;
             }
-            updateKeyboardFocus();
+            updateKeyboardFocus(keyboardFocusableViews);
             return true;
         }
         if (isButtonActivate(event)
@@ -1718,7 +1726,14 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /** Requests keyboard focus for the {@link VirtualView} at mKeyboardFocusIndex. */
-    private void updateKeyboardFocus() {
+    private void updateKeyboardFocus(List<VirtualView> virtualViews) {
+        // Always update the rendering of the virtual views.
+        for (int i = 0; i < virtualViews.size(); i++) {
+            virtualViews.get(i).setKeyboardFocused(i == mKeyboardFocusIndex);
+        }
+        requestRender();
+        // If index is invalid, return early.
+        if (mKeyboardFocusIndex < 0 || virtualViews.size() <= mKeyboardFocusIndex) return;
         if (isA11ySetUp()) {
             // If a11y is set up, mAccessibilityView needs to hold keyboard focus.
             // mNodeProvider.requestKeyboardFocusForVirtualView will fail otherwise.

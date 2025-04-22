@@ -23,6 +23,7 @@ import org.chromium.ui.util.ColorUtils;
  */
 @NullMarked
 public class TabUiThemeUtil {
+    public static final float FOLIO_FOOT_LENGTH_DP = 16.f;
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
     private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
 
@@ -209,5 +210,35 @@ public class TabUiThemeUtil {
         }
 
         return SemanticColorUtils.getDividerLineBgColor(context);
+    }
+
+    /** {@return The {@link DrawableRes} for the keyboard focus ring for tabs} */
+    public static @DrawableRes int getTabKeyboardFocusDrawableRes() {
+        return R.drawable.tabstrip_keyfocus_8dp;
+    }
+
+    /** {@return The {@link DrawableRes} for the keyboard focus ring for selected tab w/ outline} */
+    public static @DrawableRes int getSelectedTabInTabGroupKeyboardFocusDrawableRes() {
+        return R.drawable.tabstrip_keyfocus_10dp;
+    }
+
+    /** {@return The {@link DrawableRes} for the tab group indicator keyboard focus ring} */
+    public static @DrawableRes int getTabGroupIndicatorKeyboardFocusDrawableRes() {
+        return R.drawable.tabstrip_keyfocus_11dp;
+    }
+
+    /** {@return The {@link DrawableRes} for the close button keyboard focus ring} */
+    public static @DrawableRes int getCloseButtonKeyboardFocusDrawableRes() {
+        return R.drawable.close_button_keyfocus;
+    }
+
+    /** {@return The keyboard focus ring's offset in px} */
+    public static int getFocusRingOffset(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_keyfocus_offset);
+    }
+
+    /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
+    public static int getLineWidth(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_strokewidth);
     }
 }

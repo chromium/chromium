@@ -185,4 +185,11 @@ public class ChromeColors {
         return SemanticColorUtils.getColorSurfaceContainerHighest(context);
     }
     // LINT.ThenChange(//components/browser_ui/widget/android/java/res/drawable/drag_handlebar.xml)
+
+    /** {@return The {@link ColorInt} keyboard focus ring color} */
+    public static @ColorInt int getKeyboardFocusRingColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.baseline_neutral_90)
+                : SemanticColorUtils.getDefaultControlColorActive(context);
+    }
 }
