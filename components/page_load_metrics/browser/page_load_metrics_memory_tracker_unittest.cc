@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
@@ -62,8 +63,9 @@ class TestPageLoadMetricsEmbedder
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override {
-    if (!base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring))
+    if (!base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
       return nullptr;
+    }
 
     return &memory_tracker_;
   }
@@ -93,10 +95,11 @@ class TestMestricsWebContentsObserver : public MetricsWebContentsObserver {
 
       int routing_id = update.routing_id.frame_routing_id;
       auto it = last_memory_deltas_received_.find(routing_id);
-      if (it == last_memory_deltas_received_.end())
+      if (it == last_memory_deltas_received_.end()) {
         last_memory_deltas_received_[routing_id] = update.delta_bytes;
-      else
+      } else {
         it->second = update.delta_bytes;
+      }
     }
   }
 
@@ -175,8 +178,9 @@ class PageLoadMetricsMemoryTrackerTest
   void SimulateMemoryMeasurementUpdate(
       content::RenderFrameHost* render_frame_host,
       uint64_t bytes) {
-    if (!render_frame_host || !render_frame_host->GetProcess())
+    if (!render_frame_host || !render_frame_host->GetProcess()) {
       return;
+    }
 
     base::WeakPtr<performance_manager::FrameNode> frame_node =
         performance_manager::PerformanceManager::GetFrameNodeForRenderFrameHost(

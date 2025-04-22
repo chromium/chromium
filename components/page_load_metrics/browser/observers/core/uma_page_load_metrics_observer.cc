@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/metrics/metrics_data_validation.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -712,8 +713,9 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
         extra_request_complete_info) {
   const net::LoadTimingInfo& timing_info =
       *extra_request_complete_info.load_timing_info;
-  if (timing_info.receive_headers_end.is_null())
+  if (timing_info.receive_headers_end.is_null()) {
     return;
+  }
 
   std::string_view destination =
       network::RequestDestinationToStringForHistogram(
@@ -741,8 +743,9 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
   total_subresource_load_time_ += delta;
 
   // Rest of the method only logs metrics for the first subresource load.
-  if (received_first_subresource_load_)
+  if (received_first_subresource_load_) {
     return;
+  }
 
   received_first_subresource_load_ = true;
   PAGE_LOAD_HISTOGRAM(
@@ -767,8 +770,9 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
 void UmaPageLoadMetricsObserver::OnUserInput(
     const blink::WebInputEvent& event,
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (first_paint_.is_null())
+  if (first_paint_.is_null()) {
     return;
+  }
 
   // Track clicks after first paint for possible click burst.
   click_tracker_.OnUserInput(event);
@@ -1014,8 +1018,9 @@ void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
   std::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
                                                       app_background_time);
-  if (!foreground_duration)
+  if (!foreground_duration) {
     return;
+  }
 
   if (GetDelegate().DidCommit()) {
     PAGE_LOAD_LONG_HISTOGRAM(internal::kHistogramPageTimingForegroundDuration,
@@ -1096,7 +1101,8 @@ void UmaPageLoadMetricsObserver::OnRestoreFromBackForwardCache(
 
 void UmaPageLoadMetricsObserver::OnV8MemoryChanged(
     const std::vector<page_load_metrics::MemoryUpdate>& memory_updates) {
-  DCHECK(base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring));
+  DCHECK(base::FeatureList::IsEnabled(
+      page_load_metrics::features::kV8PerFrameMemoryMonitoring));
 
   for (const auto& update : memory_updates) {
     memory_update_received_ = true;
@@ -1104,8 +1110,9 @@ void UmaPageLoadMetricsObserver::OnV8MemoryChanged(
     content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromID(update.routing_id);
 
-    if (!render_frame_host)
+    if (!render_frame_host) {
       continue;
+    }
 
     if (!render_frame_host->GetParentOrOuterDocument()) {
       // |render_frame_host| is the outermost main frame.
@@ -1119,7 +1126,8 @@ void UmaPageLoadMetricsObserver::OnV8MemoryChanged(
 }
 
 void UmaPageLoadMetricsObserver::RecordV8MemoryHistograms() {
-  if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
+  if (base::FeatureList::IsEnabled(
+          page_load_metrics::features::kV8PerFrameMemoryMonitoring)) {
     PAGE_BYTES_HISTOGRAM(internal::kHistogramMemoryMainframe,
                          main_frame_memory_usage_.max_bytes_used());
     PAGE_BYTES_HISTOGRAM(internal::kHistogramMemorySubframeAggregate,

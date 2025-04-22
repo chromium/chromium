@@ -7,6 +7,7 @@
 #include "android_webview/browser/page_load_metrics/aw_gws_page_load_metrics_observer.h"
 #include "android_webview/browser/page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h"
 #include "android_webview/browser/page_load_metrics/service_level_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
@@ -92,8 +93,10 @@ bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
 page_load_metrics::PageLoadMetricsMemoryTracker*
 PageLoadMetricsEmbedder::GetMemoryTrackerForBrowserContext(
     content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring))
+  if (!base::FeatureList::IsEnabled(
+          page_load_metrics::features::kV8PerFrameMemoryMonitoring)) {
     return nullptr;
+  }
 
   return AwPageLoadMetricsMemoryTrackerFactory::GetForBrowserContext(
       browser_context);

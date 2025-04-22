@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 
 namespace page_load_metrics::features {
+
 // Whether to send continuous events - kTouchMove, kGestureScrollUpdate,
 // kGesturePinchUpdate, to page load tracker observers.
 BASE_FEATURE(kSendContinuousInputEventsToObservers,
@@ -28,4 +29,17 @@ BASE_FEATURE_PARAM(std::string,
                    &kBeaconLeakageLogging,
                    "category_prefix",
                    /*default_value=*/"");
+
+BASE_FEATURE(kV8PerFrameMemoryMonitoring,
+             "V8PerFrameMemoryMonitoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics,
+             "BackForwardCacheEmitZeroSamplesForKeyMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClickInputTracker,
+             "ClickInputTracker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace page_load_metrics::features
