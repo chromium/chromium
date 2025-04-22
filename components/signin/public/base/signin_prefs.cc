@@ -92,6 +92,13 @@ constexpr std::string_view kSyncPromoIdentityPillShownCount =
 constexpr std::string_view kSyncPromoIdentityPillUsedCount =
     "ChromeSigninSyncPromoIdentityPillUsedCount";
 
+// Number of times the Bookmark Batch Upload promo was dismissed.
+constexpr std::string_view kBookmarkBatchUploadPromoDismissCount =
+    "BookmarkBatchUploadPromoDismissCount";
+// The time at which the last Bookmark Batch Upload promo was dismissed.
+constexpr std::string_view kBookmarkBatchUploadPromoLastDismissTime =
+    "BookmarkBatchUploadPromoLastDismissTime";
+
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
@@ -364,6 +371,20 @@ void SigninPrefs::IncrementSyncPromoIdentityPillUsedCount(
 int SigninPrefs::GetSyncPromoIdentityPillUsedCount(
     const GaiaId& gaia_id) const {
   return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
+}
+
+void SigninPrefs::IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kBookmarkBatchUploadPromoDismissCount);
+  SetTimePref(base::Time::Now(), gaia_id,
+              kBookmarkBatchUploadPromoLastDismissTime);
+}
+
+std::pair<int, std::optional<base::Time>>
+SigninPrefs::GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+    const GaiaId& gaia_id) {
+  return {GetIntPrefForAccount(gaia_id, kBookmarkBatchUploadPromoDismissCount),
+          GetTimePref(gaia_id, kBookmarkBatchUploadPromoLastDismissTime)};
 }
 
 void SigninPrefs::SetTimePref(base::Time time,
