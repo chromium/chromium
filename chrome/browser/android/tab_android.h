@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
@@ -44,6 +45,7 @@ class WebContents;
 }  // namespace content
 
 namespace tabs {
+class TabCollection;
 class TabFeatures;
 }  // namespace tabs
 
@@ -238,6 +240,11 @@ class TabAndroid : public tabs::TabInterface,
   bool IsSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
   std::optional<split_tabs::SplitTabId> GetSplit() const override;
+  tabs::TabCollection* GetParentCollection(
+      base::PassKey<tabs::TabCollection>) const override;
+  void OnReparented(tabs::TabCollection* parent,
+                    base::PassKey<tabs::TabCollection>) override;
+  void OnAncestorChanged(base::PassKey<tabs::TabCollection>) override;
 
  private:
   // This constructor bypassing JVM setup is for CreateForTesting only.

@@ -87,25 +87,11 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // context of a tab strip.
   void DestroyTabFeatures();
 
-  // Returns a pointer to the parent TabCollection. This method is specifically
-  // designed to be accessible only within the collection tree that has the
-  // kTabStripCollectionStorage flag enabled.
-  TabCollection* GetParentCollection(base::PassKey<TabCollection>) const;
-
   // Provides access to the parent_collection_ for testing purposes. This method
   // bypasses the PassKey mechanism, allowing tests to simulate scenarios and
   // inspect the state without needing to replicate complex authorization
   // mechanisms.
   TabCollection* GetParentCollectionForTesting() { return parent_collection_; }
-
-  // Updates the parent collection of the TabModel in response to structural
-  // changes such as pinning, grouping, or moving the tab between collections.
-  // This method ensures the TabModel remains correctly associated within the
-  // tab hierarchy, maintaining consistent organization.
-  void OnReparented(TabCollection* parent, base::PassKey<TabCollection>);
-
-  // Must be called whenever any of this tab's ancestors change.
-  void OnAncestorChanged(base::PassKey<TabCollection>);
 
   // Called by TabStripModel when a tab is going to be backgrounded (any
   // operation that makes the tab no longer visible, including removal from the
@@ -155,8 +141,13 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   tabs::TabFeatures* GetTabFeatures() override;
   bool IsPinned() const override;
   bool IsSplit() const override;
-  std::optional<split_tabs::SplitTabId> GetSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
+  std::optional<split_tabs::SplitTabId> GetSplit() const override;
+  TabCollection* GetParentCollection(
+      base::PassKey<TabCollection>) const override;
+  void OnReparented(TabCollection* parent,
+                    base::PassKey<TabCollection>) override;
+  void OnAncestorChanged(base::PassKey<TabCollection>) override;
   void Close() override;
 
  private:

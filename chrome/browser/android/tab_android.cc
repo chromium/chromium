@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/android_autofill_provider.h"
@@ -696,6 +697,24 @@ std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
 std::optional<split_tabs::SplitTabId> TabAndroid::GetSplit() const {
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+// TODO(crbug.com/409366905): Finish implementing TabInterface.
+tabs::TabCollection* TabAndroid::GetParentCollection(
+    base::PassKey<tabs::TabCollection>) const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+// TODO(crbug.com/409366905): Finish implementing TabInterface.
+void TabAndroid::OnReparented(tabs::TabCollection* parent,
+                              base::PassKey<tabs::TabCollection>) {
+  NOTIMPLEMENTED();
+}
+
+// TODO(crbug.com/409366905): Finish implementing TabInterface.
+void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
+  NOTIMPLEMENTED();
 }
 
 TabAndroid::TabAndroid(Profile* profile, int tab_id)

@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -29,6 +30,7 @@ class SplitTabId;
 
 namespace tabs {
 
+class TabCollection;
 class TabFeatures;
 
 // A feature which wants to show tab-modal UI should call
@@ -214,6 +216,22 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // Returns the id of the split tab this tab belongs to, or nullopt if the tab
   // is not part of a split tab.
   virtual std::optional<split_tabs::SplitTabId> GetSplit() const = 0;
+
+  // Returns a pointer to the parent TabCollection. This method is specifically
+  // designed to be accessible only within the collection tree that has the
+  // kTabStripCollectionStorage flag enabled.
+  virtual TabCollection* GetParentCollection(
+      base::PassKey<TabCollection>) const = 0;
+
+  // Updates the parent collection of the TabModel in response to structural
+  // changes such as pinning, grouping, or moving the tab between collections.
+  // This method ensures the TabModel remains correctly associated within the
+  // tab hierarchy, maintaining consistent organization.
+  virtual void OnReparented(TabCollection* parent,
+                            base::PassKey<TabCollection>) = 0;
+
+  // Must be called whenever any of this tab's ancestor collections change.
+  virtual void OnAncestorChanged(base::PassKey<TabCollection>) = 0;
 };
 
 using TabHandle = TabInterface::Handle;

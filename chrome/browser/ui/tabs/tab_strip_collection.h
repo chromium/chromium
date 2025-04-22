@@ -16,7 +16,7 @@
 
 namespace tabs {
 
-class TabModel;
+class TabInterface;
 class UnpinnedTabCollection;
 class PinnedTabCollection;
 class TabGroupTabCollection;
@@ -41,7 +41,7 @@ class TabStripCollection : public TabCollection {
   // calls to the appropriate parent collection (currently supports pinned,
   // unpinned, and group collections). If the inputs are incorrect this method
   // will fail and hit a CHECK.
-  void AddTabRecursive(std::unique_ptr<TabModel> tab_model,
+  void AddTabRecursive(std::unique_ptr<TabInterface> tab,
                        size_t index,
                        std::optional<tab_groups::TabGroupId> new_group_id,
                        bool new_pinned_state);
@@ -58,19 +58,19 @@ class TabStripCollection : public TabCollection {
   // Removes the tab present at a recursive index in the collection and
   // returns the unique_ptr to the tab model. If there is no tab present
   // due to bad input then CHECK.
-  std::unique_ptr<TabModel> RemoveTabAtIndexRecursive(size_t index);
+  std::unique_ptr<TabInterface> RemoveTabAtIndexRecursive(size_t index);
 
   // Removes the tab from the collection. If `close_empty_group_collection` is
   // true then group collection is closed when the last tab is removed from
   // the group collection.
-  std::unique_ptr<TabModel> RemoveTabRecursive(
-      TabModel* tab,
+  std::unique_ptr<TabInterface> RemoveTabRecursive(
+      TabInterface* tab,
       bool close_empty_group_collection = true);
 
   // TabCollection:
   // Tabs and Collections are not allowed to be removed from TabStripCollection.
   // `MaybeRemoveTab` and `MaybeRemoveCollection` will return nullptr.
-  std::unique_ptr<TabModel> MaybeRemoveTab(TabModel* tab_model) override;
+  std::unique_ptr<TabInterface> MaybeRemoveTab(TabInterface* tab) override;
   std::unique_ptr<TabCollection> MaybeRemoveCollection(
       TabCollection* collection) override;
 
@@ -103,7 +103,7 @@ class TabStripCollection : public TabCollection {
   // Split tab operations.
   SplitTabCollection* GetSplitTabCollection(split_tabs::SplitTabId split_id);
   void CreateSplit(split_tabs::SplitTabId split_id,
-                   const std::vector<TabModel*>& tabs,
+                   const std::vector<TabInterface*>& tabs,
                    split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
 

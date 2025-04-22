@@ -22,7 +22,6 @@
 
 class TabStripModel;
 namespace tabs {
-class TabModel;
 class TabGroupTabCollection;
 }  // namespace tabs
 
@@ -300,7 +299,7 @@ struct TabGroupChange {
     ~CreateChange() override;
 
     TabGroupCreationReason reason() const { return reason_; }
-    std::vector<tabs::TabModel*> GetDetachedTabs() const;
+    std::vector<tabs::TabInterface*> GetDetachedTabs() const;
 
    private:
     TabGroupCreationReason reason_;
@@ -313,7 +312,7 @@ struct TabGroupChange {
     ~CloseChange() override;
 
     TabGroupClosureReason reason() const { return reason_; }
-    std::vector<tabs::TabModel*> GetDetachedTabs() const;
+    std::vector<tabs::TabInterface*> GetDetachedTabs() const;
 
    private:
     TabGroupClosureReason reason_;

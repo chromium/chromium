@@ -21,15 +21,12 @@
 namespace tabs {
 
 class TabInterface;
-class TabModel;
 
 // This is an interface that representing the hierarchical storage of tabs.
 // This can be used to access and manipulate tabs and the state of the tabstrip.
 // Different types of collections should implement this base class based on how
 // their feature works. For example, a pinned collection can implement tab
 // collection that does not store any collection.
-// TODO(crbug.com/392950857): Use TabInterface instead of TabModel here and in
-// collections inheriting from this.
 class TabCollection {
  public:
   // Iterator provides a way to traverse all tab objects within this
@@ -42,7 +39,7 @@ class TabCollection {
 
    public:
     using iterator_category = std::forward_iterator_tag;
-    using value_type = const tabs::TabModel*;
+    using value_type = const tabs::TabInterface*;
     using difference_type = ptrdiff_t;
     using pointer = value_type;
     using reference = value_type;
@@ -85,7 +82,7 @@ class TabCollection {
     };
 
     // Points to the currently accessed tab during iteration.
-    raw_ptr<const tabs::TabModel> cur_;
+    raw_ptr<const tabs::TabInterface> cur_;
 
     // Points to the root tab collection that the iterator is traversing.
     raw_ptr<const tabs::TabCollection> root_;
@@ -126,13 +123,13 @@ class TabCollection {
   std::optional<size_t> GetIndexOfTabRecursive(const TabInterface* tab) const;
 
   // Recursively get the tab at the index.
-  TabModel* GetTabAtIndexRecursive(size_t index) const;
+  TabInterface* GetTabAtIndexRecursive(size_t index) const;
 
   // Returns a flattened list of all tabs in this collection and its
   // subcollections. Prefer using the result of this function instead of looping
   // over an index and using GetTabAtIndexRecursive, as this function will only
   // do one pass over the subcollections.
-  std::vector<TabModel*> GetTabsRecursive() const;
+  std::vector<TabInterface*> GetTabsRecursive() const;
 
   // Non-recursively get the index of a collection.
   std::optional<size_t> GetIndexOfCollection(TabCollection* collection) const;
@@ -162,13 +159,14 @@ class TabCollection {
   void OnTabRemovedFromTree();
 
   // Manipulate direct child tabs.
-  TabModel* AddTab(std::unique_ptr<TabModel> tab_model, size_t index);
-  void MoveTab(TabModel* tab_model, size_t index);
+  TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
+  void MoveTab(TabInterface* tab, size_t index);
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
   // crash. This may overridden to return nullptr if the collection does not
   // support removing tabs.
-  [[nodiscard]] virtual std::unique_ptr<TabModel> MaybeRemoveTab(TabModel* tab);
+  [[nodiscard]] virtual std::unique_ptr<TabInterface> MaybeRemoveTab(
+      TabInterface* tab);
 
   // Manipulate direct child collections.
   // Adds a collection as a direct child of this collection. If this succeeds it
@@ -211,7 +209,7 @@ class TabCollection {
 
   // Helper function for GetTabsRecursive that uses std::list, in order to take
   // advantage of constant-time concatenation.
-  std::list<TabModel*> GetTabsRecursiveAsList() const;
+  std::list<TabInterface*> GetTabsRecursiveAsList() const;
 
   const ChildrenVector& GetChildren() const { return impl_->GetChildren(); }
 

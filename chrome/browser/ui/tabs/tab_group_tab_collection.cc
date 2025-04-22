@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace tabs {

@@ -20,12 +20,12 @@ SplitTabData::SplitTabData(tabs::SplitTabCollection* controller,
 
 SplitTabData::~SplitTabData() = default;
 
-std::vector<tabs::TabModel*> SplitTabData::ListTabs() const {
+std::vector<tabs::TabInterface*> SplitTabData::ListTabs() const {
   return controller_->GetTabsRecursive();
 }
 
 SplitTabActiveLocation SplitTabData::GetActiveTabLocation() {
-  std::vector<tabs::TabModel*> tabs_in_split = ListTabs();
+  std::vector<tabs::TabInterface*> tabs_in_split = ListTabs();
   CHECK_EQ(tabs_in_split.size(), 2U);
 
   const bool first_tab_activated = tabs_in_split[0]->IsActivated();

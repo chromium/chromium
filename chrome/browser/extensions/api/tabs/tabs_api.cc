@@ -1602,7 +1602,7 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
       continue;
     }
     // All the tabs in a split should be contiguous.
-    std::vector<::tabs::TabModel*> split_tabs =
+    std::vector<::tabs::TabInterface*> split_tabs =
         tab_strip_model->GetSplitData(split_id.value())->ListTabs();
     size_t start = tab_strip_model->GetIndexOfTab(split_tabs[0]);
     selection.AddIndexRangeToSelection(start, start + split_tabs.size() - 1);

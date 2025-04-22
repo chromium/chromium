@@ -1306,7 +1306,7 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
 
   const split_tabs::SplitTabData* split_data =
       tab_strip_model->GetSplitData(split_id);
-  const std::vector<tabs::TabModel*> tabs_in_split = split_data->ListTabs();
+  const std::vector<tabs::TabInterface*> tabs_in_split = split_data->ListTabs();
   EXPECT_EQ(tabs_in_split.size(), 2u);
   EXPECT_EQ(kTabUrl3, tabs_in_split[0]->GetContents()->GetURL().spec());
   EXPECT_EQ(kTabUrl2, tabs_in_split[1]->GetContents()->GetURL().spec());
@@ -1318,7 +1318,7 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
 
   const split_tabs::SplitTabData* split_data_after_replacement =
       tab_strip_model->GetSplitData(split_id);
-  const std::vector<tabs::TabModel*> tabs_in_split_after_replacement =
+  const std::vector<tabs::TabInterface*> tabs_in_split_after_replacement =
       split_data_after_replacement->ListTabs();
   EXPECT_EQ(tabs_in_split_after_replacement.size(), 2u);
   EXPECT_EQ(kTabUrl1,

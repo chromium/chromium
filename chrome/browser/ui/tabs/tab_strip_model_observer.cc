@@ -191,13 +191,13 @@ const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
   return static_cast<const CreateChange*>(delta.get());
 }
 
-std::vector<tabs::TabModel*> TabGroupChange::CreateChange::GetDetachedTabs()
+std::vector<tabs::TabInterface*> TabGroupChange::CreateChange::GetDetachedTabs()
     const {
   CHECK(detached_group_);
   return detached_group_->GetTabsRecursive();
 }
 
-std::vector<tabs::TabModel*> TabGroupChange::CloseChange::GetDetachedTabs()
+std::vector<tabs::TabInterface*> TabGroupChange::CloseChange::GetDetachedTabs()
     const {
   CHECK(detached_group_);
   return detached_group_->GetTabsRecursive();

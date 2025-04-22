@@ -1475,9 +1475,9 @@ void BrowserView::ShowSplitView() {
   split_tabs::SplitTabData* split_data =
       browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
 
-  std::vector<tabs::TabModel*> split_tabs = split_data->ListTabs();
+  std::vector<tabs::TabInterface*> split_tabs = split_data->ListTabs();
 
-  for (size_t i = 0; tabs::TabModel* tab : split_tabs) {
+  for (size_t i = 0; tabs::TabInterface* tab : split_tabs) {
     multi_contents_view_->SetWebContentsAtIndex(tab->GetContents(), i++);
   }
   const int first_split_tab_index =

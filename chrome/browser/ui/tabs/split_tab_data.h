@@ -33,7 +33,7 @@ class SplitTabData {
 
   SplitTabVisualData* visual_data() { return &visual_data_; }
 
-  std::vector<tabs::TabModel*> ListTabs() const;
+  std::vector<tabs::TabInterface*> ListTabs() const;
 
   SplitTabActiveLocation GetActiveTabLocation();
 

@@ -9,15 +9,16 @@
 #include <optional>
 
 #include "base/containers/adapters.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
 
@@ -39,11 +40,11 @@ size_t TabStripCollection::IndexOfFirstNonPinnedTab() const {
 }
 
 void TabStripCollection::AddTabRecursive(
-    std::unique_ptr<TabModel> tab_model,
+    std::unique_ptr<TabInterface> tab,
     size_t index,
     std::optional<tab_groups::TabGroupId> new_group_id,
     bool new_pinned_state) {
-  CHECK(tab_model);
+  CHECK(tab);
   // `index` can be equal to the tab count as at this point the tab has not yet
   // been added.
   CHECK(index >= 0 && index <= TabCountRecursive());
@@ -60,8 +61,7 @@ void TabStripCollection::AddTabRecursive(
 
       // New empty group was attached, append tab to the group.
       CHECK(group_collection->ChildCount() == 0);
-      TabModel* inserted_tab =
-          group_collection->AddTab(std::move(tab_model), 0);
+      TabInterface* inserted_tab = group_collection->AddTab(std::move(tab), 0);
       CHECK(GetIndexOfTabRecursive(inserted_tab) == index);
       return;
     }
@@ -72,13 +72,13 @@ void TabStripCollection::AddTabRecursive(
         GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
             .value();
     CHECK(index >= offset);
-    group_collection->AddTab(std::move(tab_model),
+    group_collection->AddTab(std::move(tab),
                              group_collection->ToDirectIndex(index - offset));
     return;
   }
 
   if (new_pinned_state) {
-    pinned_collection_->AddTab(std::move(tab_model),
+    pinned_collection_->AddTab(std::move(tab),
                                pinned_collection_->ToDirectIndex(index));
     return;
   }
@@ -86,8 +86,7 @@ void TabStripCollection::AddTabRecursive(
   size_t offset = pinned_collection_->TabCountRecursive();
   CHECK(index >= offset);
   unpinned_collection_->AddTab(
-      std::move(tab_model),
-      unpinned_collection_->ToDirectIndex(index - offset));
+      std::move(tab), unpinned_collection_->ToDirectIndex(index - offset));
 }
 
 void TabStripCollection::MoveTabRecursive(
@@ -97,8 +96,8 @@ void TabStripCollection::MoveTabRecursive(
     bool new_pinned_state) {
   CHECK(initial_index >= 0 && final_index >= 0);
 
-  TabModel* tab_model = GetTabAtIndexRecursive(initial_index);
-  const std::optional<tab_groups::TabGroupId> old_group = tab_model->group();
+  TabInterface* tab = GetTabAtIndexRecursive(initial_index);
+  const std::optional<tab_groups::TabGroupId> old_group = tab->GetGroup();
   TabGroupTabCollection* old_group_collection =
       old_group.has_value() ? GetTabGroupCollection(old_group.value())
                             : nullptr;
@@ -111,8 +110,8 @@ void TabStripCollection::MoveTabRecursive(
         final_index - pinned_collection_->TabCountRecursive(),
         old_group_collection);
   } else {
-    std::unique_ptr<tabs::TabModel> moved_data =
-        RemoveTabRecursive(tab_model, old_group != new_group_id);
+    std::unique_ptr<tabs::TabInterface> moved_data =
+        RemoveTabRecursive(tab, old_group != new_group_id);
     AddTabRecursive(std::move(moved_data), final_index, new_group_id,
                     new_pinned_state);
   }
@@ -125,10 +124,10 @@ void TabStripCollection::MoveTabsRecursive(
     bool new_pinned_state) {
   CHECK(destination_index >= 0);
 
-  std::vector<std::unique_ptr<tabs::TabModel>> moved_datas;
+  std::vector<std::unique_ptr<tabs::TabInterface>> moved_datas;
   // Remove all the tabs from the model.
   for (int tab_index : base::Reversed(tab_indices)) {
-    std::unique_ptr<tabs::TabModel> moved_data =
+    std::unique_ptr<tabs::TabInterface> moved_data =
         RemoveTabAtIndexRecursive(tab_index);
     moved_datas.insert(moved_datas.begin(), std::move(moved_data));
   }
@@ -189,21 +188,21 @@ void TabStripCollection::InsertTabGroupAt(
   AddTabGroup(std::move(group_collection), index);
 }
 
-std::unique_ptr<TabModel> TabStripCollection::RemoveTabAtIndexRecursive(
+std::unique_ptr<TabInterface> TabStripCollection::RemoveTabAtIndexRecursive(
     size_t index) {
-  TabModel* tab_to_be_removed = GetTabAtIndexRecursive(index);
+  TabInterface* tab_to_be_removed = GetTabAtIndexRecursive(index);
   return RemoveTabRecursive(tab_to_be_removed);
 }
 
-std::unique_ptr<TabModel> TabStripCollection::RemoveTabRecursive(
-    TabModel* tab,
+std::unique_ptr<TabInterface> TabStripCollection::RemoveTabRecursive(
+    TabInterface* tab,
     bool close_empty_group_collection) {
   CHECK(tab);
 
   TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
-  const std::optional<tab_groups::TabGroupId> group = tab->group();
+  const std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
 
-  std::unique_ptr<TabModel> removed_tab =
+  std::unique_ptr<TabInterface> removed_tab =
       parent_collection->MaybeRemoveTab(tab);
 
   CHECK(removed_tab);
@@ -215,9 +214,9 @@ std::unique_ptr<TabModel> TabStripCollection::RemoveTabRecursive(
   return removed_tab;
 }
 
-std::unique_ptr<TabModel> TabStripCollection::MaybeRemoveTab(
-    TabModel* tab_model) {
-  CHECK(tab_model);
+std::unique_ptr<TabInterface> TabStripCollection::MaybeRemoveTab(
+    TabInterface* tab) {
+  CHECK(tab);
   return nullptr;
 }
 
@@ -248,7 +247,7 @@ SplitTabCollection* TabStripCollection::GetSplitTabCollection(
 
 void TabStripCollection::CreateSplit(
     split_tabs::SplitTabId split_id,
-    const std::vector<TabModel*>& tabs,
+    const std::vector<TabInterface*>& tabs,
     split_tabs::SplitTabVisualData visual_data) {
   CHECK(tabs.size() >= 2);
   TabCollection* parent_collection = tabs[0]->GetParentCollection(GetPassKey());
@@ -262,7 +261,7 @@ void TabStripCollection::CreateSplit(
   // Move tabs from parent to new split.
   std::unique_ptr<SplitTabCollection> split =
       std::make_unique<SplitTabCollection>(split_id, visual_data);
-  for (TabModel* tab : tabs) {
+  for (TabInterface* tab : tabs) {
     split->AddTab(parent_collection->MaybeRemoveTab(tab), split->ChildCount());
   }
 
@@ -283,8 +282,8 @@ void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
   // the index of the insertion point.
   TabCollection* parent_collection = split->GetParentCollection();
   size_t dst_index = parent_collection->GetIndexOfCollection(split).value();
-  for (std::vector<TabModel*> tabs = split->GetTabsRecursive();
-       TabModel* tab : base::Reversed(tabs)) {
+  for (std::vector<TabInterface*> tabs = split->GetTabsRecursive();
+       TabInterface* tab : base::Reversed(tabs)) {
     parent_collection->AddTab(split->MaybeRemoveTab(tab), dst_index);
   }
 
