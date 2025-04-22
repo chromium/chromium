@@ -3129,6 +3129,10 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
 
   histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
 
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
@@ -3203,6 +3207,10 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
 
   histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
 
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
@@ -3276,6 +3284,10 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
 
   histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
 
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
@@ -3360,6 +3372,10 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
 
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));

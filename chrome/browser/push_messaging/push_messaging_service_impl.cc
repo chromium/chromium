@@ -1511,6 +1511,7 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
   base::UmaHistogramCounts1000("PushMessaging.NumUnsubscribedEntries",
                                unsubscribed_entries.size());
 
+  int num_fired = 0;
   for (const PushMessagingUnsubscribedEntry& unsubscribed_entry :
        unsubscribed_entries) {
     if (!primary_pattern.Matches(unsubscribed_entry.origin())) {
@@ -1526,11 +1527,18 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
       barrier_closure.Run();
       continue;
     }
+
     FirePushSubscriptionChange(
         unsubscribed_entry.origin(),
         unsubscribed_entry.service_worker_registration_id(), barrier_closure,
         nullptr, nullptr);
+    ++num_fired;
   }
+
+  base::UmaHistogramCounts100(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      num_fired);
 }
 
 void PushMessagingServiceImpl::UnexpectedUnsubscribe(

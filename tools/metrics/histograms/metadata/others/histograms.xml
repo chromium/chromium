@@ -7912,6 +7912,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PushMessaging.PushSubscriptionChangeForNotificationPermissionChangeFired"
+    units="count" expires_after="2026-04-11">
+  <owner>peter@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    When processing a content setting change for notifications, this reports how
+    many times (i.e. for how many service workers) the pushsubscriptionchange
+    event is fired.
+  </summary>
+</histogram>
+
 <histogram name="PushMessaging.RegistrationStatus"
     enum="PushRegistrationStatus" expires_after="2024-02-04">
   <owner>peter@chromium.org</owner>
