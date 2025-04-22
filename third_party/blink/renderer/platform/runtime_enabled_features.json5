@@ -322,7 +322,7 @@
     {
       name: "AIPromptAPI",
       public: true,
-      status: "test",
+      status: "experimental",
       implied_by: ["AIPromptAPIForWebPlatform", "AIPromptAPIMultimodalInput", "AIPromptAPIStructuredOutput"],
     },
     {
@@ -330,34 +330,34 @@
       public: true,
       origin_trial_feature_name: "AIPromptAPIForExtension",
       origin_trial_allows_third_party: true,
-      status: "test",
+      status: "experimental",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
     {
       name: "AIPromptAPIForWebPlatform",
       public: true,
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AIPromptAPIMultimodalInput",
       public: true,
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AIPromptAPIStructuredOutput",
       public: true,
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AIRewriterAPI",
       public: true,
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AISummarizationAPI",
       public: true,
-      status: "test",
+      status: "experimental",
       origin_trial_feature_name: "AISummarizationAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
@@ -366,7 +366,7 @@
     {
       name: "AIWriterAPI",
       public: true,
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
@@ -652,7 +652,7 @@
     },
     {
       name: "BuiltInAIAPI",
-      status: "test",
+      status: "experimental",
       base_feature_status: "enabled",
       // A origin trial is feature is required for the build to success.
       // The feature reuses the AISummarizationAPI. Any other origin trial
@@ -4654,7 +4654,7 @@
     },
     {
       name: "TranslationAPI",
-      status: "test",
+      status: "experimental",
       origin_trial_feature_name: "TranslationAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
@@ -4663,7 +4663,7 @@
     },
     {
       name: "TranslationAPIV1",
-      status: "test",
+      status: "experimental",
       copied_from_base_feature_if: "overridden",
     },
     {
