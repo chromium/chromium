@@ -318,10 +318,11 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
   if (url_suggestions_on_focus_config.enabled &&
       url_suggestions_on_focus_config.directly_query_history_service) {
-    CHECK(url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled() ||
-          cached_sites_.empty());
-    // If there are cached results, use them.
-    if (!cached_sites_.empty()) {
+    bool prefetching_enabled =
+        url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled();
+    CHECK(prefetching_enabled || cached_sites_.empty());
+    // Used cached sites if prefetching is enabled.
+    if (prefetching_enabled) {
       OnMostVisitedUrlsAvailable(input, cached_sites_);
     }
     // Queries the HistoryService for sites. If prefetching is enabled, this
