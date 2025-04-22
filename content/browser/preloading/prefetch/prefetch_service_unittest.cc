@@ -8124,7 +8124,7 @@ TEST_P(PrefetchServiceTest,
       "NoEmbedderSuffix",
       0, 1);
   histogram_tester.ExpectUniqueSample(
-      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccesfully."
+      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully."
       "Embedder.NoEmbedderSuffix",
       kHeaderLatency, 1);
   histogram_tester.ExpectUniqueSample(

@@ -2311,7 +2311,7 @@ void PrefetchContainer::RecordDurationFromAdded() {
 
   base::UmaHistogramTimes(base::StrCat({
                               "Prefetch.PrefetchContainer."
-                              "AddedToHeaderDeterminedSuccesfully.",
+                              "AddedToHeaderDeterminedSuccessfully.",
                               GetMetricsSuffixTriggerTypeAndEagerness(),
                               ".NoEmbedderSuffix",
                           }),
