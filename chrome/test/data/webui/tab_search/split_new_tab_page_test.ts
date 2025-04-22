@@ -89,6 +89,69 @@ suite('SplitNewTabPageTest', () => {
     assertEquals(1, tabSearchItems.length);
   });
 
+  test('Updates on tab updated', async () => {
+    await splitNewTabPageSetup();
+    const initialTabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(1, initialTabSearchItems.length);
+    assertEquals('Facebook', initialTabSearchItems[0]!.data.tab.title);
+
+    const windowData = createWindowData();
+    const tab = windowData[0]!.tabs[2]!;
+    tab.title = 'New Title';
+    const tabUpdateInfo = {
+      inActiveWindow: true,
+      tab: tab,
+    };
+    testApiProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    await microtasksFinished();
+
+    const updatedTabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(1, updatedTabSearchItems.length);
+    assertEquals('New Title', updatedTabSearchItems[0]!.data.tab.title);
+  });
+
+  test('Updates on tabs changed', async () => {
+    await splitNewTabPageSetup();
+    assertEquals(
+        1,
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
+
+    const windowData = createWindowData();
+    windowData[0]!.tabs.push(createTab({
+      index: 3,
+      tabId: 7,
+      title: 'YouTube',
+      url: {url: 'https://www.youtube.com'},
+    }));
+    testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+      windows: windowData,
+    }));
+    await microtasksFinished();
+
+    assertEquals(
+        2,
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
+  });
+
+  test('Updates on tabs removed', async () => {
+    await splitNewTabPageSetup();
+    assertEquals(
+        1,
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
+
+    testApiProxy.getCallbackRouterRemote().tabsRemoved({
+      tabIds: [6],
+      recentlyClosedTabs: [],
+    });
+    await microtasksFinished();
+
+    assertEquals(
+        0,
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
+  });
+
   test('Closes current tab', async () => {
     await splitNewTabPageSetup();
     assertEquals(0, testApiProxy.getCallCount('closeTab'));

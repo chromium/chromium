@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
-import type {ProfileData, Tab} from '../tab_search.mojom-webui.js';
+import type {ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 import type {TabSearchItemElement} from '../tab_search_item.js';
@@ -41,6 +41,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   protected accessor openTabs_: TabData[] = [];
   protected accessor mediaTabs_: TabData[] = [];
+  private allInvisibleTabs_: TabData[] = [];
   private activeTabId_: number = -1;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -60,8 +61,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
-        callbackRouter.tabsChanged.addListener(this.onTabsChanged_.bind(this)));
-    this.listenerIds_.push(
+        callbackRouter.tabsChanged.addListener(this.onTabsChanged_.bind(this)),
+        callbackRouter.tabUpdated.addListener(this.onTabUpdated_.bind(this)),
+        callbackRouter.tabsRemoved.addListener(this.onTabsRemoved_.bind(this)),
         callbackRouter.tabUnsplit.addListener(this.redirectToNtp_.bind(this)));
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
@@ -92,12 +94,49 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   private onTabsChanged_(profileData: ProfileData) {
     const activeWindow = profileData.windows.find(({active}) => active)!;
     this.activeTabId_ = activeWindow.tabs.find((tab) => tab.active)!.tabId;
-    const allInvisibleTabs: TabData[] =
+    this.allInvisibleTabs_ =
         activeWindow.tabs.filter(tab => !tab.visible)
             .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
-    this.mediaTabs_ = allInvisibleTabs.filter(
+    this.updateFilteredTabs_();
+  }
+
+  private onTabUpdated_(tabUpdateInfo: TabUpdateInfo) {
+    const {tab, inActiveWindow} = tabUpdateInfo;
+    if (!inActiveWindow) {
+      return;
+    }
+
+    const tabData = this.getTabData_(tab, inActiveWindow, TabItemType.OPEN_TAB);
+    const tabIndex =
+        this.allInvisibleTabs_.findIndex(el => el.tab.tabId === tab.tabId);
+    if (tabIndex >= 0) {
+      this.allInvisibleTabs_[tabIndex] = tabData;
+    } else {
+      this.allInvisibleTabs_.push(tabData);
+    }
+    this.updateFilteredTabs_();
+  }
+
+  private onTabsRemoved_(tabsRemovedInfo: TabsRemovedInfo) {
+    if (this.allInvisibleTabs_.length === 0) {
+      return;
+    }
+
+    const ids = new Set(tabsRemovedInfo.tabIds);
+    // Splicing in descending index order to avoid affecting preceding indices
+    // that are to be removed.
+    for (let i = this.allInvisibleTabs_.length - 1; i >= 0; i--) {
+      if (ids.has(this.allInvisibleTabs_[i]!.tab.tabId)) {
+        this.allInvisibleTabs_.splice(i, 1);
+      }
+    }
+    this.updateFilteredTabs_();
+  }
+
+  private updateFilteredTabs_() {
+    this.mediaTabs_ = this.allInvisibleTabs_.filter(
         tabData => tabHasMediaAlerts(tabData.tab as Tab));
-    this.openTabs_ = allInvisibleTabs.filter(
+    this.openTabs_ = this.allInvisibleTabs_.filter(
         tabData => !tabHasMediaAlerts(tabData.tab as Tab));
   }
 
