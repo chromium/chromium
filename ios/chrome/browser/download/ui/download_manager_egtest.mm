@@ -5,6 +5,7 @@
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/download/model/download_app_interface.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -320,6 +321,12 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
+
+  // Clear the already downloaded file in downloads directory.
+  [DownloadAppInterface
+      deleteDownloadsDirectoryFileWithName:@"download-example"];
+  base::test::ios::SpinRunLoopWithMinDelay(
+      base::test::ios::kWaitForFileOperationTimeout);
 
   // Create a download A task in one tab.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
