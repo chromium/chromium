@@ -319,6 +319,8 @@ public class TabDragSource implements View.OnDragListener {
                         mBrowserControlStateProvider,
                         mTabContentManagerSupplier.get(),
                         mCurrentTabGroupModelFilterSupplier);
+        mMultiThumbnailCardProvider.initWithNative(
+                mTabModelSelector.getModel(/* incognito= */ false).getProfile());
 
         // Inflate/attach the shadow view. Initialize with the required dependencies.
         View rootView =

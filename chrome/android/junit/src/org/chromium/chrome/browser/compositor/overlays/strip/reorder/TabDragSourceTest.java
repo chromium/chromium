@@ -92,6 +92,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -138,6 +140,7 @@ public class TabDragSourceTest {
     @Mock private MultiWindowUtils mMultiWindowUtils;
     @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
 
     // Instances that differ for source and destination for invocations and verifications.
     @Mock private StripLayoutHelper mSourceStripLayoutHelper;
@@ -202,7 +205,12 @@ public class TabDragSourceTest {
 
         when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
 
+        when(mFaviconHelperJniMock.init()).thenReturn(1L);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
+
+        when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.getTabGroupModelFilterProvider())
                 .thenReturn(mTabGroupModelFilterProvider);
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
@@ -1226,6 +1234,7 @@ public class TabDragSourceTest {
         // Destination tab model is incognito.
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         TabModel standardModelDestination = mock(TabModel.class);
+        when(standardModelDestination.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
         when(standardModelDestination.getCount()).thenReturn(5);
 
