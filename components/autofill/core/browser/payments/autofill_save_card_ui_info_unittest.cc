@@ -244,6 +244,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
   EXPECT_EQ(ui_info.is_google_pay_branding_enabled, is_gpay_branded());
 }
 
+#if BUILDFLAG(IS_IOS)
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
 // upload-card-only-save infobar.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
@@ -254,13 +255,11 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 
   EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
                                                     : IDR_INFOBAR_AUTOFILL_CC);
-#if BUILDFLAG(IS_IOS)
   EXPECT_EQ(ui_info.logo_icon_description,
             is_gpay_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
                 : u"");
-#endif
   EXPECT_EQ(
       ui_info.title_text,
       l10n_util::GetStringUTF16(
@@ -274,6 +273,38 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-card-only-save bottomsheet.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCardSaveOnlyBottomsheet) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillSaveCardBottomSheet);
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
+      is_gpay_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
+                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_description,
+            is_gpay_branded()
+                ? l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
+                : u"");
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_gpay_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            is_gpay_branded()
+                ? l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
+                : u"");
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
