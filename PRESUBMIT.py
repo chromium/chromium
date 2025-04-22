@@ -7637,7 +7637,7 @@ def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
 
     if missing_annotation_errors:
         results.append(
-            output_api.PresubmitPromptWarning(
+            output_api.PresubmitError(
                 """
 Please add @NullMarked and fix the NullAway warnings in the following files
 (see https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/nullaway.md):

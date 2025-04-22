@@ -5214,7 +5214,7 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         self.assertEqual(2, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
         self.assertIn('FourMissing.java', results[0].items[1])
@@ -5231,7 +5231,7 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         self.assertEqual(1, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
 
@@ -5247,7 +5247,7 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         self.assertEqual(1, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
 
