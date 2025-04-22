@@ -17,6 +17,7 @@ import argparse
 import contextlib
 import hashlib
 import multiprocessing.dummy
+import json
 import os
 import pathlib
 import string
@@ -173,16 +174,42 @@ def _gen_boringssl(import_channel: str):
   cronet_utils.run(cmd, shell=True)
 
 
+def _wait_and_fail_if_not_presubmit_verified(change_id: str):
+  gerrit_client_path = os.path.join(REPOSITORY_ROOT, 'third_party',
+                                    'depot_tools', 'gerrit_client.py')
+  while True:
+    with tempfile.NamedTemporaryFile(mode="w+", encoding='utf-8',
+                                     delete=True) as gerrit_change_labels_file:
+      cronet_utils.run([
+          gerrit_client_path, 'changes',
+          '--host=https://googleplex-android-review.googlesource.com',
+          '--project=platform/external/cronet', f'--query={change_id}', '-o',
+          'LABELS', f'--json={gerrit_change_labels_file.name}'
+      ])
+      cronet_change_labels = json.loads(
+          cronet_utils.read_file(gerrit_change_labels_file.name))
+      presubmit_verified_entries = cronet_change_labels[0]['labels'][
+          'Presubmit-Verified']
+      for key in presubmit_verified_entries:
+        if key in ('rejected', 'disliked'):
+          raise RuntimeError(
+              'Presubmit failed, check the Android CL for more info')
+        if key in ('approved', 'recommended'):
+          return
+      print(
+          f'Still waiting for Presubmit-Verified: {presubmit_verified_entries}')
+      time.sleep(60 * 5)  # 5 mins
+
+
 def _run_copybara_to_aosp(config: str, copybara_binary: str,
                           git_url_and_branch: Optional[Tuple[str, str]],
                           regenerate_consistency_file: bool,
-                          import_channel: str):
+                          import_channel: str,
+                          wait_for_presubmit_verified: bool):
   """Run Copybara CLI to generate an AOSP Gerrit CL with the generated files.
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
   """
-  # TODO(crbug.com/349099325): Generate gerrit change id until
-  # --gerrit-new-change flag is fixed.
   msg = f'gn2bp{time.time_ns()}'
   change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
   print(f'Generated {change_id=}')
@@ -277,6 +304,10 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
       REPOSITORY_ROOT
   ] + additional_parameters)
 
+  if wait_for_presubmit_verified and not git_url_and_branch:
+    _wait_and_fail_if_not_presubmit_verified(change_id)
+
+
 
 def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
   # gn desc behaves completely differently when the output
@@ -293,7 +324,6 @@ def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
     cronet_utils.gn(gn_out_dir,
                     ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
     _write_desc_json(gn_out_dir, desc_file)
-
 
 
 def main():
@@ -346,6 +376,11 @@ def main():
                       type=str,
                       choices=['tot', 'stable'],
                       default='tot')
+  parser.add_argument(
+      '--wait-for-presubmit-verified',
+      help=
+      'Whether the script should wait for presubmit verified after uploading a CL to Android',
+      action='store_true')
   args = parser.parse_args()
   delete_temporary_files = not args.keep_temporary_files
 
@@ -388,7 +423,8 @@ def main():
           copybara_binary=args.copybara,
           git_url_and_branch=args.git_url_and_branch,
           regenerate_consistency_file=args.regenerate_consistency_file,
-          import_channel=args.channel)
+          import_channel=args.channel,
+          wait_for_presubmit_verified=args.wait_for_presubmit_verified)
 
   finally:
     for file in arch_to_desc_file.values():

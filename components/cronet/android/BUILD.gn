@@ -2063,6 +2063,7 @@ action("cronet_gn2bp_aosp_feedback_loop") {
             ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [
+    "--wait-for-presubmit-verified",
     "--stamp",
     rebase_path(_stamp_path, root_build_dir),
   ]
