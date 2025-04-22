@@ -311,7 +311,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
         assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
         assertEquals(R.string.share, getMenuItemTitleId(2));
-        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(3));
+        assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
 
@@ -326,7 +326,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         assertEquals(R.string.menu_add_to_new_group, getMenuItemTitleId(0));
         assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
         assertEquals(R.string.share, getMenuItemTitleId(2));
-        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(3));
+        assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
 
@@ -343,7 +343,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         assertEquals(R.string.menu_add_to_new_group, getMenuItemTitleId(0));
         assertEquals(R.string.edit_bookmark, getMenuItemTitleId(1));
         assertEquals(R.string.share, getMenuItemTitleId(2));
-        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(3));
+        assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
 
@@ -356,7 +356,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         assertEquals(4, mMenuItemList.size());
         assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
         assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
-        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(2));
+        assertEquals(R.string.select_tab, getMenuItemTitleId(2));
         assertEquals(R.string.close_tab, getMenuItemTitleId(3));
     }
 

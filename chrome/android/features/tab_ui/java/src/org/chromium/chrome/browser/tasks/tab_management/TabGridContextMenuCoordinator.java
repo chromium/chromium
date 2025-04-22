@@ -233,7 +233,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.menu_select_tabs, R.id.select_tabs, R.drawable.ic_edit_24dp));
+                        R.string.select_tab, R.id.select_tabs, R.drawable.ic_edit_24dp));
 
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
