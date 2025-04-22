@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -145,6 +146,9 @@ class TestAutofillClientTemplate : public T {
   }
 
   ValuablesDataManager* GetValuablesDataManager() override {
+    if (!valuables_data_manager_) {
+      valuables_data_manager_ = std::make_unique<TestValuablesDataManager>();
+    }
     return valuables_data_manager_.get();
   }
 

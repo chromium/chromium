@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,6 +49,8 @@ class ValuablesDataManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   raw_ptr<ValuablesTable> valuables_table_;
   std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kSyncAutofillLoyaltyCard};
 };
 
 // Tests that the `ValuablesDataManager` correctly loads loyalty cards from the

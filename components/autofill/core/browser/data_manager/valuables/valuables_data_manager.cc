@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/sync/base/features.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
@@ -15,7 +16,9 @@ ValuablesDataManager::ValuablesDataManager(
     : webdata_service_(std::move(webdata_service)) {
   CHECK(webdata_service_);
   webdata_service_observer_.Observe(webdata_service_.get());
-  LoadLoyaltyCards();
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    LoadLoyaltyCards();
+  }
 }
 
 ValuablesDataManager::~ValuablesDataManager() = default;
