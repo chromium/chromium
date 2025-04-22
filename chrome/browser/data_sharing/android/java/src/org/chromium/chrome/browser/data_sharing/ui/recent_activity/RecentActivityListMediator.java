@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
@@ -21,6 +22,10 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
+import org.chromium.components.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,14 +43,30 @@ class RecentActivityListMediator {
     private final PropertyModel mPropertyModel;
     private final ModelList mModelList;
     private final MessagingBackendService mMessagingBackendService;
+    private final TabGroupSyncService mTabGroupSyncService;
     private final FaviconProvider mFaviconProvider;
     private final AvatarProvider mAvatarProvider;
     private final RecentActivityActionHandler mRecentActivityActionHandler;
     private final Runnable mCloseBottomSheetCallback;
+    private final String mCollaborationId;
+
+    private final TabGroupSyncService.Observer mTabGroupSyncObserver =
+            new Observer() {
+                @Override
+                public void onTabGroupRemoved(String syncTabGroupId, int source) {
+                    @Nullable SavedTabGroup savedTabGroup =
+                            TabGroupSyncUtils.getTabGroupForCollabIdFromSync(
+                                    mCollaborationId, mTabGroupSyncService);
+                    if (savedTabGroup == null) {
+                        mCloseBottomSheetCallback.run();
+                    }
+                }
+            };
 
     /**
      * Constructor.
      *
+     * @param collaborationId The collaboration ID for which recent activities are to be shown.
      * @param context The activity context.
      * @param propertyModel The property model of the recent activity list container view.
      * @param modelList The {@link ModelList} that will be filled with the list items to be shown.
@@ -56,18 +77,23 @@ class RecentActivityListMediator {
      * @param closeBottomSheetCallback Callback to invoke when bottom sheet is to be closed.
      */
     public RecentActivityListMediator(
+            String collaborationId,
             Context context,
             PropertyModel propertyModel,
             ModelList modelList,
             MessagingBackendService messagingBackendService,
+            TabGroupSyncService tabGroupSyncService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
             RecentActivityActionHandler recentActivityActionHandler,
             Runnable closeBottomSheetCallback) {
+        assert !TextUtils.isEmpty(collaborationId);
+        mCollaborationId = collaborationId;
         mContext = context;
         mPropertyModel = propertyModel;
         mModelList = modelList;
         mMessagingBackendService = messagingBackendService;
+        mTabGroupSyncService = tabGroupSyncService;
         mFaviconProvider = faviconProvider;
         mAvatarProvider = avatarProvider;
         mRecentActivityActionHandler = recentActivityActionHandler;
@@ -80,22 +106,23 @@ class RecentActivityListMediator {
     /**
      * Called to start the UI creation. Populates the {@link ModelList} and notifies coordinator.
      *
-     * @param collaborationId The associated collaboration ID.
      * @param callback The callback to run after populating the list.
      */
-    void requestShowUI(String collaborationId, Runnable callback) {
+    void requestShowUI(Runnable callback) {
         ActivityLogQueryParams activityLogQueryParams = new ActivityLogQueryParams();
-        activityLogQueryParams.collaborationId = collaborationId;
+        activityLogQueryParams.collaborationId = mCollaborationId;
         List<ActivityLogItem> activityLogItems =
                 mMessagingBackendService.getActivityLog(activityLogQueryParams);
         mPropertyModel.set(
                 RecentActivityContainerProperties.EMPTY_STATE_VISIBLE, activityLogItems.isEmpty());
         updateModelList(activityLogItems);
+        mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
         callback.run();
     }
 
     /** Called to clear the model when the bottom sheet is closed. */
     void onBottomSheetClosed() {
+        mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
         mModelList.clear();
     }
 

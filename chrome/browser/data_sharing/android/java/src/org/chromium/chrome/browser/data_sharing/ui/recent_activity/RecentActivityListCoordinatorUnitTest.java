@@ -39,6 +39,7 @@ import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class RecentActivityListCoordinatorUnitTest {
     @Captor private ArgumentCaptor<BottomSheetContent> mBottomSheetContentCaptor;
 
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private FaviconProvider mFaviconProvider;
     @Mock private AvatarProvider mAvatarProvider;
@@ -83,9 +85,11 @@ public class RecentActivityListCoordinatorUnitTest {
 
         mCoordinator =
                 new RecentActivityListCoordinator(
+                        TEST_COLLABORATION_ID1,
                         mActivity,
                         mBottomSheetController,
                         mMessagingBackendService,
+                        mTabGroupSyncService,
                         mFaviconProvider,
                         mAvatarProvider,
                         mRecentActivityActionHandler);
@@ -116,22 +120,23 @@ public class RecentActivityListCoordinatorUnitTest {
 
     @Test
     public void testOpenBottomSheet() {
-        mCoordinator.requestShowUI(TEST_COLLABORATION_ID1);
+        mCoordinator.requestShowUI();
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
 
     @Test
     public void testCloseBottomSheetRemovesBottomSheetObserver() {
-        mCoordinator.requestShowUI(TEST_COLLABORATION_ID1);
+        mCoordinator.requestShowUI();
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         mBottomSheetObserverCaptor.getValue().onSheetClosed(0);
         verify(mBottomSheetController).removeObserver(any());
+        verify(mTabGroupSyncService).removeObserver(any());
     }
 
     @Test
     public void testEmptyState_Shown() {
         when(mMessagingBackendService.getActivityLog(any())).thenReturn(new ArrayList<>());
-        mCoordinator.requestShowUI(TEST_COLLABORATION_ID1);
+        mCoordinator.requestShowUI();
         View emptyView =
                 mBottomSheetContentCaptor
                         .getValue()
@@ -151,7 +156,7 @@ public class RecentActivityListCoordinatorUnitTest {
         List<ActivityLogItem> logItems = new ArrayList<>();
         logItems.add(createLog1());
         when(mMessagingBackendService.getActivityLog(any())).thenReturn(logItems);
-        mCoordinator.requestShowUI(TEST_COLLABORATION_ID1);
+        mCoordinator.requestShowUI();
         View emptyView =
                 mBottomSheetContentCaptor
                         .getValue()

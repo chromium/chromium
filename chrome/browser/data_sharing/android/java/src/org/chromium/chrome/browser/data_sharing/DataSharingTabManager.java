@@ -888,13 +888,15 @@ public class DataSharingTabManager {
                         manageSharingCallback);
         RecentActivityListCoordinator recentActivityListCoordinator =
                 new RecentActivityListCoordinator(
+                        collaborationId,
                         activity,
                         mBottomSheetControllerSupplier.get(),
                         mMessagingBackendService,
+                        tabGroupSyncService,
                         new DataSharingFaviconProvider(activity, mProfile, mBulkFaviconUtil),
                         avatarProvider,
                         recentActivityActionHandler);
-        recentActivityListCoordinator.requestShowUI(collaborationId);
+        recentActivityListCoordinator.requestShowUI();
     }
 
     /**

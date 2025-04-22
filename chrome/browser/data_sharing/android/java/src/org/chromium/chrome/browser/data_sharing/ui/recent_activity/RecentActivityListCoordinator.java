@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -73,6 +74,7 @@ public class RecentActivityListCoordinator {
     /**
      * Constructor.
      *
+     * @param collaborationId The collaboration ID for which recent activities are to be shown.
      * @param context The context for creating views and loading resources.
      * @param bottomSheetController The controller for showing bottom sheet.
      * @param messagingBackendService The backend for providing the recent activity list.
@@ -81,9 +83,11 @@ public class RecentActivityListCoordinator {
      * @param recentActivityActionHandler Click event handler for activity rows.
      */
     public RecentActivityListCoordinator(
+            String collaborationId,
             Context context,
             BottomSheetController bottomSheetController,
             MessagingBackendService messagingBackendService,
+            TabGroupSyncService tabGroupSyncService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
             RecentActivityActionHandler recentActivityActionHandler) {
@@ -118,10 +122,12 @@ public class RecentActivityListCoordinator {
 
         mMediator =
                 new RecentActivityListMediator(
+                        collaborationId,
                         context,
                         propertyModel,
                         mModelList,
                         messagingBackendService,
+                        tabGroupSyncService,
                         faviconProvider,
                         avatarProvider,
                         recentActivityActionHandler,
@@ -131,11 +137,9 @@ public class RecentActivityListCoordinator {
     /**
      * Called to create the UI creation. Builds the list UI and after the list is created pulls up
      * the bottom sheet UI.
-     *
-     * @param collaborationId The collaboration ID for which recent activities are to be shown.
      */
-    public void requestShowUI(String collaborationId) {
-        mMediator.requestShowUI(collaborationId, this::showBottomSheet);
+    public void requestShowUI() {
+        mMediator.requestShowUI(this::showBottomSheet);
     }
 
     private void showBottomSheet() {

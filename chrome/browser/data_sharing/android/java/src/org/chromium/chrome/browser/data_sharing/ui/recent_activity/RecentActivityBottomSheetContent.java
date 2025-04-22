@@ -47,6 +47,15 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
     public void destroy() {}
 
     @Override
+    public boolean hasCustomLifecycle() {
+        // This bottom sheet should stay open during sync initiated page navigations in the tab in
+        // the background. This is fine because the bottom sheet shows up over the tab group modal
+        // dialog which shows up over the tab view. The sheet dismisses during any outside touch
+        // interaction on the screen.
+        return true;
+    }
+
+    @Override
     public int getPriority() {
         return ContentPriority.HIGH;
     }

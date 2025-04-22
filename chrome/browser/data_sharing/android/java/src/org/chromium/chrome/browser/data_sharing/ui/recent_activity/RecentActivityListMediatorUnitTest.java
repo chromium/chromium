@@ -41,6 +41,8 @@ import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -63,10 +65,12 @@ public class RecentActivityListMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private FaviconProvider mFaviconProvider;
     @Mock private AvatarProvider mAvatarProvider;
     @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconResponseCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Drawable>> mAvatarResponseCallbackCaptor;
+    @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
     @Mock private RecentActivityActionHandler mRecentActivityActionHandler;
     @Mock private Drawable mDrawable;
     @Mock private Runnable mCloseBottomSheetRunnable;
@@ -82,12 +86,14 @@ public class RecentActivityListMediatorUnitTest {
     public void setup() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mMessagingBackendService.getActivityLog(any())).thenReturn(mTestItems);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         doNothing()
                 .when(mFaviconProvider)
                 .fetchFavicon(any(), mFaviconResponseCallbackCaptor.capture());
         doNothing()
                 .when(mAvatarProvider)
                 .getAvatarBitmap(any(), mAvatarResponseCallbackCaptor.capture());
+        doNothing().when(mTabGroupSyncService).addObserver(mTabGroupSyncObserverCaptor.capture());
 
         mPropertyModel =
                 new PropertyModel.Builder(RecentActivityContainerProperties.ALL_KEYS).build();
@@ -95,10 +101,12 @@ public class RecentActivityListMediatorUnitTest {
         mModelList = new ModelList();
         mMediator =
                 new RecentActivityListMediator(
+                        TEST_COLLABORATION_ID1,
                         mContext,
                         mPropertyModel,
                         mModelList,
                         mMessagingBackendService,
+                        mTabGroupSyncService,
                         mFaviconProvider,
                         mAvatarProvider,
                         mRecentActivityActionHandler,
@@ -144,7 +152,7 @@ public class RecentActivityListMediatorUnitTest {
         mTestItems.add(createLog2(CollaborationEvent.TAB_REMOVED));
 
         // Show UI and verify.
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         Assert.assertEquals(2, mModelList.size());
 
         String titleText1 = mModelList.get(0).model.get(RecentActivityListProperties.TITLE_TEXT);
@@ -174,7 +182,7 @@ public class RecentActivityListMediatorUnitTest {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_UPDATED);
         mTestItems.add(logItem);
 
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         mModelList
                 .get(0)
                 .model
@@ -192,7 +200,7 @@ public class RecentActivityListMediatorUnitTest {
         logItem.showFavicon = true;
         mTestItems.add(logItem);
 
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         mModelList
                 .get(0)
                 .model
@@ -209,7 +217,7 @@ public class RecentActivityListMediatorUnitTest {
         logItem.showFavicon = false;
         mTestItems.add(logItem);
 
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         Assert.assertNull(
                 mModelList.get(0).model.get(RecentActivityListProperties.FAVICON_PROVIDER));
     }
@@ -219,7 +227,7 @@ public class RecentActivityListMediatorUnitTest {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_UPDATED);
         logItem.action = RecentActivityAction.FOCUS_TAB;
         mTestItems.add(logItem);
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
@@ -231,7 +239,7 @@ public class RecentActivityListMediatorUnitTest {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_REMOVED);
         logItem.action = RecentActivityAction.REOPEN_TAB;
         mTestItems.add(logItem);
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
@@ -243,7 +251,7 @@ public class RecentActivityListMediatorUnitTest {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_GROUP_COLOR_UPDATED);
         logItem.action = RecentActivityAction.OPEN_TAB_GROUP_EDIT_DIALOG;
         mTestItems.add(logItem);
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
@@ -255,7 +263,7 @@ public class RecentActivityListMediatorUnitTest {
         ActivityLogItem logItem = createLog1(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         logItem.action = RecentActivityAction.MANAGE_SHARING;
         mTestItems.add(logItem);
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
@@ -264,7 +272,7 @@ public class RecentActivityListMediatorUnitTest {
 
     @Test
     public void testCallbackIsRunAtTheEnd() {
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
+        mMediator.requestShowUI(mCallback1);
         verify(mCallback1).run();
     }
 
@@ -272,5 +280,15 @@ public class RecentActivityListMediatorUnitTest {
     public void testOnBottomSheetClosed() {
         mMediator.onBottomSheetClosed();
         Assert.assertEquals(0, mModelList.size());
+        verify(mTabGroupSyncService).removeObserver(any());
+    }
+
+    @Test
+    public void testTabGroupRemovedClosesBottomSheet() {
+        mMediator.requestShowUI(mCallback1);
+        Assert.assertNotNull(mTabGroupSyncObserverCaptor.getValue());
+
+        mTabGroupSyncObserverCaptor.getValue().onTabGroupRemoved("someId", TriggerSource.REMOTE);
+        verify(mCloseBottomSheetRunnable).run();
     }
 }
