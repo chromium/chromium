@@ -7,9 +7,12 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -61,7 +64,8 @@ class WebContentVisibilityManager {
 // Preconnects are made by |this| if the browser app is likely in foreground.
 class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
                                  public WebContentVisibilityManager,
-                                 public KeyedService {
+                                 public KeyedService,
+                                 public network::mojom::ReconnectEventObserver {
  public:
   static bool ShouldBeEnabledAsKeyedService();
   static bool ShouldBeEnabledForOffTheRecord();
@@ -87,6 +91,11 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   void PreconnectFinished(
       std::unique_ptr<predictors::PreconnectStats> stats) override {}
 
+  // network::mojom::ReconnectEventObserver
+  void OnSessionClosed() override;
+  void OnNetworkEvent(net::NetworkChangeEvent event) override;
+  void OnConnectionFailed() override;
+
   // Lazily creates the PreconnectManager instance.
   predictors::PreconnectManager& GetPreconnectManager();
 
@@ -95,6 +104,23 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   // `WebContentVisibilityManager` and not override them.
   void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
                                       bool is_in_foreground) override;
+
+  // Calculate the backoff multiplier to exponentially backoff when preconnects
+  // are consecutively failing. The returned value should be within the range
+  // of int32_t's binary digits.
+  int32_t CalculateBackoffMultiplier() const;
+
+  void SetConsecutiveFailureForTesting(int consecutive_failure) {
+    consecutive_connection_failure_ = consecutive_failure;
+  }
+
+  int GetConsecutiveConnectionFailureForTesting() {
+    return consecutive_connection_failure_;
+  }
+
+  void SetIsShortSessionForTesting(bool is_short_session) {
+    is_short_session_for_testing_ = is_short_session;
+  }
 
  private:
   // Preconnects to the default search engine synchronously. Preconnects in
@@ -108,6 +134,11 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   GURL GetDefaultSearchEngineOriginURL() const;
 
   base::TimeDelta GetPreconnectInterval() const;
+
+  // Determines if the closed session was short. This is used to calculate
+  // whether we need to backoff a bit more when a session is closed to avoid
+  // back-to-back connections.
+  bool IsShortSession() const;
 
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -123,6 +154,15 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   base::OneShotTimer timer_;
 
   std::unique_ptr<predictors::PreconnectManager> preconnect_manager_;
+
+  std::optional<base::TimeTicks> last_preconnect_attempt_time_;
+
+  // How many times the connection has consecutively failed. This is used for
+  // exponential backoff the preconnect retries.
+  base::ClampedNumeric<int32_t> consecutive_connection_failure_ = 0;
+
+  // Used for testing. Override the short session value.
+  std::optional<bool> is_short_session_for_testing_ = std::nullopt;
 
   base::WeakPtrFactory<SearchEnginePreconnector> weak_factory_{this};
 };

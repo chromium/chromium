@@ -642,6 +642,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   const net::HttpAuthPreferences* GetHttpAuthPreferences() const;
 
+  // Remove the `observer` from `connection_change_observers_`.
+  void RemoveConnectionChangeObserver(
+      const net::ConnectionChangeNotifier::Observer* observer);
+
   size_t NumOpenWebTransports() const;
 
   size_t num_url_loader_factories_for_testing() const {
@@ -1033,6 +1037,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::set<std::unique_ptr<PrefetchMatchingURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories_;
+
+  // Keep track of the existing `ConnectionChangeNotifiers`. These will be later
+  // passed on to the corresponding session pools so that we can notify the
+  // observers about reconnect events.
+  std::set<std::unique_ptr<net::ConnectionChangeNotifier::Observer>,
+           base::UniquePtrComparator>
+      connection_change_observers_;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 

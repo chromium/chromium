@@ -193,6 +193,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 // Enables a more efficient SearchEnginePreconnector
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnect2);
 
+// The maximum time for the SearchEnginePreconnector2 to be considered as short.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kShortSessionThreshold);
+
 // The maximum time to backoff when attempting preconnect retry for
 // SearchEnginePreconnector2.
 NET_EXPORT extern const base::FeatureParam<int> kMaxPreconnectRetryInterval;

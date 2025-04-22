@@ -153,6 +153,12 @@ BASE_FEATURE(kSearchEnginePreconnect2,
              "SearchEnginePreconnect2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kShortSessionThreshold,
+                   &kSearchEnginePreconnect2,
+                   "MaxShortSessionThreashold",
+                   base::Seconds(30));
+
 extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
     &kSearchEnginePreconnect2,
     "MaxPreconnectRetryInterval",

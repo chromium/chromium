@@ -1913,6 +1913,10 @@ mojom("mojom") {
           mojom = "network.mojom.ConnectionKeepAliveConfig"
           cpp = "::net::ConnectionKeepAliveConfig"
         },
+        {
+          mojom = "network.mojom.NetworkChangeEvent"
+          cpp = "::net::NetworkChangeEvent"
+        },
       ]
       traits_headers = [
         "//services/network/public/cpp/reconnect_event_observer_mojom_traits.h",

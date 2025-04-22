@@ -4,9 +4,12 @@
 
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 
+#include <limits>
+
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -190,6 +193,8 @@ void SearchEnginePreconnector::PreconnectDSE() {
   if (!SearchEnginePreconnect2Enabled()) {
     StartPreconnectWithDelay(GetPreconnectInterval());
   }
+
+  last_preconnect_attempt_time_ = base::TimeTicks::Now();
 }
 
 GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {
@@ -215,8 +220,34 @@ base::TimeDelta SearchEnginePreconnector::GetPreconnectInterval() const {
            base::Milliseconds(kPreconnectRetryDelayMs);
   }
 
-  // TODO(crbug.com/406022435): Update the logic to use exponential backoff.
-  return base::Seconds(net::features::kMaxPreconnectRetryInterval.Get());
+  // If this is the first time failing, we should instantly retry, but we wait
+  // a very small amount of time since a closed connection would likely mean
+  // that there were something wrong in the connection.
+  // Otherwise, we backoff `kPreconnectRetryDelayMs` (currently 50 ms) * 2^n for
+  // the next preconnect attempt.
+  return std::min(
+      base::Milliseconds(kPreconnectRetryDelayMs) *
+          CalculateBackoffMultiplier(),
+      base::Seconds(net::features::kMaxPreconnectRetryInterval.Get()));
+}
+
+int32_t SearchEnginePreconnector::CalculateBackoffMultiplier() const {
+  return 1 << std::min(static_cast<int>(consecutive_connection_failure_),
+                       std::numeric_limits<int32_t>::digits - 1);
+}
+
+bool SearchEnginePreconnector::IsShortSession() const {
+  CHECK(last_preconnect_attempt_time_.has_value());
+  if (is_short_session_for_testing_.has_value()) {
+    return is_short_session_for_testing_.value();
+  }
+
+  base::TimeDelta session_time =
+      base::TimeTicks::Now() - last_preconnect_attempt_time_.value();
+
+  // If the current session duration is shorter than the idle timeout, we
+  // consider the session to be short.
+  return session_time < net::features::kShortSessionThreshold.Get();
 }
 
 void SearchEnginePreconnector::StartPreconnectWithDelay(base::TimeDelta delay) {
@@ -259,4 +290,33 @@ void SearchEnginePreconnector::OnWebContentsVisibilityChanged(
   // Attempt reconnect again in case the visibility has changed after the last
   // preconnect attempt so that we will preconnect sooner.
   PreconnectDSE();
+}
+
+void SearchEnginePreconnector::OnSessionClosed() {
+  if (IsShortSession()) {
+    // If we have a short session, we consider that the session was closed due
+    // to an error, and will consider as a failed connection as well.
+    consecutive_connection_failure_++;
+  } else {
+    // If the last session was not short, then it must mean that the connection
+    // was successful. Reset the failure count.
+    //
+    // TODO(crbug.com/406022435): Collect histograms here to determine how many
+    // consecutive_connection_failure_ we usually see.
+    consecutive_connection_failure_ = 0;
+  }
+  StartPreconnectWithDelay(GetPreconnectInterval());
+}
+
+void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
+  // If the network event is `Connected`, we attempt preconnect. Otherwise,
+  // we will ignore the events for now.
+  if (event == net::NetworkChangeEvent::kConnected) {
+    StartPreconnectWithDelay(base::Milliseconds(kPreconnectRetryDelayMs));
+  }
+}
+
+void SearchEnginePreconnector::OnConnectionFailed() {
+  consecutive_connection_failure_++;
+  StartPreconnectWithDelay(GetPreconnectInterval());
 }
