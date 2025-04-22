@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -131,7 +132,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                 tabId,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
-                /* animStyle= */ R.style.TabSwitcherContextMenuAnimation,
+                /* animStyle= */ ResourcesCompat.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 mActivity,
                 /* isIncognito= */ false);
