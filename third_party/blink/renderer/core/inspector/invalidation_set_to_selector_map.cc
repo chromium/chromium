@@ -125,9 +125,12 @@ void InvalidationSetToSelectorMap::BeginSelector(StyleRule* style_rule,
   instance->current_selector_ =
       MakeGarbageCollected<IndexedSelector>(style_rule, selector_index);
 
-  CHECK(instance->current_style_sheet_contents_ != nullptr);
-  instance->style_rule_to_sheet_map_->Add(
-      style_rule, instance->current_style_sheet_contents_);
+  // Some StyleRules, such as those created for speculation rules, do not exist
+  // in a style sheet.
+  if (instance->current_style_sheet_contents_ != nullptr) {
+    instance->style_rule_to_sheet_map_->Add(
+        style_rule, instance->current_style_sheet_contents_);
+  }
 }
 
 // static

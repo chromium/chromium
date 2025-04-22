@@ -13,6 +13,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -365,6 +368,28 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
     }
   }
   EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, SpeculationRule) {
+  // All we expect from this test is not to crash.
+  // https://crbug.com/411163926
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(<a></a>)HTML");
+  StartTracing();
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      GetDocument(), GetDocument().GetStyleEngine());
+  EXPECT_NE(GetInstance(), nullptr);
+
+  HTMLElement* script_element =
+      To<HTMLElement>(GetDocument().CreateRawElement(html_names::kScriptTag));
+  script_element->setAttribute(html_names::kTypeAttr,
+                               AtomicString("speculationrules"));
+  script_element->setInnerText(
+      String("{\"prerender\": [ {\"where\":"
+             "{\"not\": {\"selector_matches\": \".no-prerender\"}}}]}"));
+  GetDocument().head()->appendChild(script_element);
+  UpdateAllLifecyclePhasesForTest();
+  StopTracing();
 }
 
 TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
