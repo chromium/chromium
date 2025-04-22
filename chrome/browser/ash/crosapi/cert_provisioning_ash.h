@@ -57,9 +57,7 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
   void OnObserverDisconnected(mojo::RemoteSetElementId);
 
   // Start/stop observing cert provisioning schedulers. This class only observes
-  // them when it itself has active observers. Lacros cannot survive across
-  // sign-in/sign-out (unlike this class), so the observing of the user
-  // scheduler will be reset automatically.
+  // them when it itself has active observers.
   void ObserveSchedulers();
   void StopObservingSchedulers();
 
