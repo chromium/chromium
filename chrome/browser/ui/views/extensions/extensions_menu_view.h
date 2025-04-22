@@ -88,13 +88,10 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // For testing.
   base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
-  extensions_menu_items_for_testing() {
-    return extensions_menu_items_;
-  }
-  views::Button* manage_extensions_button_for_testing() {
-    return manage_extensions_button_;
-  }
+  extensions_menu_items_for_testing();
+  views::Button* manage_extensions_button_for_testing();
   // Returns a scoped object allowing test dialogs to be created (i.e.,
   // instances of the ExtensionsMenuView that are not created through
   // ShowBubble()).
