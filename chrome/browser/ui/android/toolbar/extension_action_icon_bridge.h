@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_TOOLBAR_TOOLBAR_ACTION_ICON_BRIDGE_H_
-#define CHROME_BROWSER_UI_ANDROID_TOOLBAR_TOOLBAR_ACTION_ICON_BRIDGE_H_
+#ifndef CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTION_ICON_BRIDGE_H_
+#define CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTION_ICON_BRIDGE_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -14,16 +14,17 @@ class Extension;
 class ExtensionAction;
 }  // namespace extensions
 
-class ToolbarActionIconBridge
+class ExtensionActionIconBridge
     : public extensions::ExtensionActionIconFactory::Observer {
  public:
-  ToolbarActionIconBridge(
+  ExtensionActionIconBridge(
       const extensions::Extension& extension,
       extensions::ExtensionAction& action,
       const base::android::JavaParamRef<jobject>& java_object);
-  ToolbarActionIconBridge(const ToolbarActionIconBridge&) = delete;
-  ToolbarActionIconBridge& operator=(const ToolbarActionIconBridge&) = delete;
-  ~ToolbarActionIconBridge() override;
+  ExtensionActionIconBridge(const ExtensionActionIconBridge&) = delete;
+  ExtensionActionIconBridge& operator=(const ExtensionActionIconBridge&) =
+      delete;
+  ~ExtensionActionIconBridge() override;
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
@@ -37,4 +38,4 @@ class ToolbarActionIconBridge
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_TOOLBAR_ACTION_ICON_BRIDGE_H_
+#endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTION_ICON_BRIDGE_H_

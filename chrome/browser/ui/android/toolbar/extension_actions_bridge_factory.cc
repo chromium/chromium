@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/toolbar/toolbar_actions_bridge_factory.h"
+#include "chrome/browser/ui/android/toolbar/extension_actions_bridge_factory.h"
 
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/toolbar/toolbar_actions_bridge.h"
+#include "chrome/browser/ui/android/toolbar/extension_actions_bridge.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -16,21 +16,21 @@ using extensions::ExtensionActionManager;
 using extensions::ExtensionRegistryFactory;
 
 // static
-ToolbarActionsBridge* ToolbarActionsBridgeFactory::GetForProfile(
+ExtensionActionsBridge* ExtensionActionsBridgeFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<ToolbarActionsBridge*>(
+  return static_cast<ExtensionActionsBridge*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
-ToolbarActionsBridgeFactory* ToolbarActionsBridgeFactory::GetInstance() {
-  static base::NoDestructor<ToolbarActionsBridgeFactory> instance;
+ExtensionActionsBridgeFactory* ExtensionActionsBridgeFactory::GetInstance() {
+  static base::NoDestructor<ExtensionActionsBridgeFactory> instance;
   return instance.get();
 }
 
-ToolbarActionsBridgeFactory::ToolbarActionsBridgeFactory()
+ExtensionActionsBridgeFactory::ExtensionActionsBridgeFactory()
     : ProfileKeyedServiceFactory(
-          "ToolbarActionsBridge",
+          "ExtensionActionsBridge",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
@@ -40,19 +40,19 @@ ToolbarActionsBridgeFactory::ToolbarActionsBridgeFactory()
   DependsOn(ToolbarActionsModelFactory::GetInstance());
 }
 
-ToolbarActionsBridgeFactory::~ToolbarActionsBridgeFactory() = default;
+ExtensionActionsBridgeFactory::~ExtensionActionsBridgeFactory() = default;
 
 std::unique_ptr<KeyedService>
-ToolbarActionsBridgeFactory::BuildServiceInstanceForBrowserContext(
+ExtensionActionsBridgeFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ToolbarActionsBridge>(
+  return std::make_unique<ExtensionActionsBridge>(
       Profile::FromBrowserContext(context));
 }
 
-bool ToolbarActionsBridgeFactory::ServiceIsCreatedWithBrowserContext() const {
+bool ExtensionActionsBridgeFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-bool ToolbarActionsBridgeFactory::ServiceIsNULLWhileTesting() const {
+bool ExtensionActionsBridgeFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

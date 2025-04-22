@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/toolbar/toolbar_action_icon_bridge.h"
+#include "chrome/browser/ui/android/toolbar/extension_action_icon_bridge.h"
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,7 +13,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/toolbar/jni_headers/ToolbarActionIconBridge_jni.h"
+#include "chrome/browser/ui/android/toolbar/jni_headers/ExtensionActionIconBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -23,34 +23,35 @@ using extensions::ExtensionAction;
 using extensions::ExtensionActionManager;
 using extensions::ExtensionRegistry;
 
-ToolbarActionIconBridge::ToolbarActionIconBridge(
+ExtensionActionIconBridge::ExtensionActionIconBridge(
     const extensions::Extension& extension,
     extensions::ExtensionAction& action,
     const JavaParamRef<jobject>& java_object)
     : icon_factory_(&extension, &action, this), java_object_(java_object) {}
 
-ToolbarActionIconBridge::~ToolbarActionIconBridge() = default;
+ExtensionActionIconBridge::~ExtensionActionIconBridge() = default;
 
-void ToolbarActionIconBridge::Destroy(JNIEnv* env) {
+void ExtensionActionIconBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-base::android::ScopedJavaLocalRef<jobject> ToolbarActionIconBridge::GetIcon(
+base::android::ScopedJavaLocalRef<jobject> ExtensionActionIconBridge::GetIcon(
     JNIEnv* env,
     jint tab_id) {
   gfx::Image image = icon_factory_.GetIcon(static_cast<int>(tab_id));
   return gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
 }
 
-void ToolbarActionIconBridge::OnIconUpdated() {
-  Java_ToolbarActionIconBridge_onIconUpdated(AttachCurrentThread(),
-                                             java_object_);
+void ExtensionActionIconBridge::OnIconUpdated() {
+  Java_ExtensionActionIconBridge_onIconUpdated(AttachCurrentThread(),
+                                               java_object_);
 }
 
-jlong JNI_ToolbarActionIconBridge_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& java_object,
-                                       Profile* profile,
-                                       std::string& action_id) {
+jlong JNI_ExtensionActionIconBridge_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_object,
+    Profile* profile,
+    std::string& action_id) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   DCHECK(registry);
 
@@ -69,5 +70,5 @@ jlong JNI_ToolbarActionIconBridge_Init(JNIEnv* env,
   }
 
   return reinterpret_cast<jlong>(
-      new ToolbarActionIconBridge(*extension, *action, java_object));
+      new ExtensionActionIconBridge(*extension, *action, java_object));
 }

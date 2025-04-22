@@ -217,9 +217,9 @@ android_library("java") {
 
   if (enable_extensions_core) {
     sources += [
-      "java/src/org/chromium/chrome/browser/toolbar/ToolbarAction.java",
-      "java/src/org/chromium/chrome/browser/toolbar/ToolbarActionIconBridge.java",
-      "java/src/org/chromium/chrome/browser/toolbar/ToolbarActionsBridge.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionIconBridge.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
     ]
   }
 }
@@ -235,9 +235,9 @@ generate_jni("jni_headers") {
 
   if (enable_extensions_core) {
     sources += [
-      "java/src/org/chromium/chrome/browser/toolbar/ToolbarAction.java",
-      "java/src/org/chromium/chrome/browser/toolbar/ToolbarActionIconBridge.java",
-      "java/src/org/chromium/chrome/browser/toolbar/ToolbarActionsBridge.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionIconBridge.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
     ]
   }
 }

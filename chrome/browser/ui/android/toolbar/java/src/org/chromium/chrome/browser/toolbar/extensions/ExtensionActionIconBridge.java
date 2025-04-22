@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.graphics.Bitmap;
 
@@ -16,9 +16,9 @@ import org.chromium.base.LifetimeAssert;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/** A JNI bridge providing access to toolbar action icons. */
-public class ToolbarActionIconBridge implements Destroyable {
-    private long mNativeToolbarActionIconBridge;
+/** A JNI bridge providing access to extension action icons. */
+public class ExtensionActionIconBridge implements Destroyable {
+    private long mNativeExtensionActionIconBridge;
     @NonNull private final Observer mObserver;
 
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
@@ -28,21 +28,21 @@ public class ToolbarActionIconBridge implements Destroyable {
      *
      * <p>An instance must be destroyed with {@link #destroy()} when you are done with it.
      */
-    public ToolbarActionIconBridge(
+    public ExtensionActionIconBridge(
             @NonNull Profile profile, @NonNull String actionId, @NonNull Observer observer) {
         mObserver = observer;
-        mNativeToolbarActionIconBridge =
-                ToolbarActionIconBridgeJni.get().init(this, profile, actionId);
-        assert mNativeToolbarActionIconBridge != 0;
+        mNativeExtensionActionIconBridge =
+                ExtensionActionIconBridgeJni.get().init(this, profile, actionId);
+        assert mNativeExtensionActionIconBridge != 0;
     }
 
     /** Destroys this bridge. */
     @Override
     public void destroy() {
-        assert mNativeToolbarActionIconBridge != 0;
+        assert mNativeExtensionActionIconBridge != 0;
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
-        ToolbarActionIconBridgeJni.get().destroy(mNativeToolbarActionIconBridge);
-        mNativeToolbarActionIconBridge = 0;
+        ExtensionActionIconBridgeJni.get().destroy(mNativeExtensionActionIconBridge);
+        mNativeExtensionActionIconBridge = 0;
     }
 
     /**
@@ -51,30 +51,30 @@ public class ToolbarActionIconBridge implements Destroyable {
      * <p>While loading the icon, this method returns a transparent icon.
      */
     public Bitmap getIcon(int tabId) {
-        assert mNativeToolbarActionIconBridge != 0;
-        return ToolbarActionIconBridgeJni.get().getIcon(mNativeToolbarActionIconBridge, tabId);
+        assert mNativeExtensionActionIconBridge != 0;
+        return ExtensionActionIconBridgeJni.get().getIcon(mNativeExtensionActionIconBridge, tabId);
     }
 
     @CalledByNative
     private void onIconUpdated() {
-        assert mNativeToolbarActionIconBridge != 0;
+        assert mNativeExtensionActionIconBridge != 0;
         mObserver.onIconUpdated(this);
     }
 
     public interface Observer {
         /** Notifies that the icon has been updated. */
-        void onIconUpdated(ToolbarActionIconBridge bridge);
+        void onIconUpdated(ExtensionActionIconBridge bridge);
     }
 
     @NativeMethods
     public interface Natives {
         long init(
-                ToolbarActionIconBridge self,
+                ExtensionActionIconBridge self,
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String actionId);
 
-        void destroy(long nativeToolbarActionIconBridge);
+        void destroy(long nativeExtensionActionIconBridge);
 
-        Bitmap getIcon(long nativeToolbarActionIconBridge, int tabId);
+        Bitmap getIcon(long nativeExtensionActionIconBridge, int tabId);
     }
 }

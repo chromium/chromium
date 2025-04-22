@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.toolbar.extensions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,26 +14,26 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/** A JNI bridge providing access to information of actions in the toolbar. */
-public class ToolbarActionsBridge {
-    private long mNativeToolbarActionsBridge;
+/** A JNI bridge providing access to information of extension actions in the toolbar. */
+public class ExtensionActionsBridge {
+    private long mNativeExtensionActionsBridge;
     @NonNull private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     @CalledByNative
-    private ToolbarActionsBridge(long nativeToolbarActionsBridge) {
-        mNativeToolbarActionsBridge = nativeToolbarActionsBridge;
+    private ExtensionActionsBridge(long nativeExtensionActionsBridge) {
+        mNativeExtensionActionsBridge = nativeExtensionActionsBridge;
     }
 
     /** Returns an instance for the given profile. */
     @NonNull
-    public static ToolbarActionsBridge get(@NonNull Profile profile) {
-        return ToolbarActionsBridgeJni.get().get(profile);
+    public static ExtensionActionsBridge get(@NonNull Profile profile) {
+        return ExtensionActionsBridgeJni.get().get(profile);
     }
 
     @CalledByNative
     private void destroy() {
-        assert mNativeToolbarActionsBridge != 0;
-        mNativeToolbarActionsBridge = 0;
+        assert mNativeExtensionActionsBridge != 0;
+        mNativeExtensionActionsBridge = 0;
     }
 
     public void addObserver(@NonNull Observer observer) {
@@ -50,54 +50,54 @@ public class ToolbarActionsBridge {
      * <p>If it returns false, you can install an observer to wait for initialization.
      */
     public boolean areActionsInitialized() {
-        return ToolbarActionsBridgeJni.get().areActionsInitialized(mNativeToolbarActionsBridge);
+        return ExtensionActionsBridgeJni.get().areActionsInitialized(mNativeExtensionActionsBridge);
     }
 
     /** Returns a sorted list of enabled action IDs. */
     @NonNull
     public String[] getActionIds() {
-        return ToolbarActionsBridgeJni.get().getActionIds(mNativeToolbarActionsBridge);
+        return ExtensionActionsBridgeJni.get().getActionIds(mNativeExtensionActionsBridge);
     }
 
     /** Returns the state of an action for a particular tab. */
     @Nullable
-    public ToolbarAction getAction(@NonNull String actionId, int tabId) {
-        return ToolbarActionsBridgeJni.get()
-                .getAction(mNativeToolbarActionsBridge, actionId, tabId);
+    public ExtensionAction getAction(@NonNull String actionId, int tabId) {
+        return ExtensionActionsBridgeJni.get()
+                .getAction(mNativeExtensionActionsBridge, actionId, tabId);
     }
 
     @CalledByNative
-    private void onToolbarActionAdded(@JniType("std::string") String actionId) {
+    private void onActionAdded(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
-            observer.onToolbarActionAdded(actionId);
+            observer.onActionAdded(actionId);
         }
     }
 
     @CalledByNative
-    private void onToolbarActionRemoved(@JniType("std::string") String actionId) {
+    private void onActionRemoved(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
-            observer.onToolbarActionRemoved(actionId);
+            observer.onActionRemoved(actionId);
         }
     }
 
     @CalledByNative
-    private void onToolbarActionUpdated(@JniType("std::string") String actionId) {
+    private void onActionUpdated(@JniType("std::string") String actionId) {
         for (Observer observer : mObservers) {
-            observer.onToolbarActionUpdated(actionId);
+            observer.onActionUpdated(actionId);
         }
     }
 
     @CalledByNative
-    private void onToolbarModelInitialized() {
+    private void onActionModelInitialized() {
         for (Observer observer : mObservers) {
-            observer.onToolbarModelInitialized();
+            observer.onActionModelInitialized();
         }
     }
 
     @CalledByNative
-    private void onToolbarPinnedActionsChanged() {
+    private void onPinnedActionsChanged() {
         for (Observer observer : mObservers) {
-            observer.onToolbarPinnedActionsChanged();
+            observer.onPinnedActionsChanged();
         }
     }
 
@@ -107,38 +107,38 @@ public class ToolbarActionsBridge {
          * Signals that actionId has been added to the toolbar. This will only be called after the
          * toolbar model has been initialized.
          */
-        void onToolbarActionAdded(@NonNull String actionId);
+        void onActionAdded(@NonNull String actionId);
 
         /** Signals that the given action with actionId has been removed from the toolbar. */
-        void onToolbarActionRemoved(@NonNull String actionId);
+        void onActionRemoved(@NonNull String actionId);
 
         /**
          * Signals that the browser action with actionId has been updated. This method covers lots
          * of different extension updates.
          */
-        void onToolbarActionUpdated(@NonNull String actionId);
+        void onActionUpdated(@NonNull String actionId);
 
         /**
          * Signals that the toolbar model has been initialized, so that if any observers were
          * postponing animation during the initialization stage, they can catch up.
          */
-        void onToolbarModelInitialized();
+        void onActionModelInitialized();
 
         /** Called whenever the pinned actions change. */
-        void onToolbarPinnedActionsChanged();
+        void onPinnedActionsChanged();
     }
 
     @NativeMethods
     public interface Natives {
-        ToolbarActionsBridge get(@JniType("Profile*") Profile profile);
+        ExtensionActionsBridge get(@JniType("Profile*") Profile profile);
 
-        boolean areActionsInitialized(long nativeToolbarActionsBridge);
+        boolean areActionsInitialized(long nativeExtensionActionsBridge);
 
         @JniType("std::vector<std::string>")
-        String[] getActionIds(long nativeToolbarActionsBridge);
+        String[] getActionIds(long nativeExtensionActionsBridge);
 
-        ToolbarAction getAction(
-                long nativeToolbarActionsBridge,
+        ExtensionAction getAction(
+                long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
                 int tabId);
     }

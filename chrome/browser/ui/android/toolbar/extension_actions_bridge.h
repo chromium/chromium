@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_TOOLBAR_TOOLBAR_ACTIONS_BRIDGE_H_
-#define CHROME_BROWSER_UI_ANDROID_TOOLBAR_TOOLBAR_ACTIONS_BRIDGE_H_
+#ifndef CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTIONS_BRIDGE_H_
+#define CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTIONS_BRIDGE_H_
 
 #include <string>
 #include <vector>
@@ -15,16 +15,16 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class ToolbarActionsBridge : public ToolbarActionsModel::Observer,
-                             public KeyedService {
+class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
+                               public KeyedService {
  public:
-  explicit ToolbarActionsBridge(Profile* profile);
-  ToolbarActionsBridge(const ToolbarActionsBridge&) = delete;
-  ToolbarActionsBridge& operator=(const ToolbarActionsBridge&) = delete;
-  ~ToolbarActionsBridge() override;
+  explicit ExtensionActionsBridge(Profile* profile);
+  ExtensionActionsBridge(const ExtensionActionsBridge&) = delete;
+  ExtensionActionsBridge& operator=(const ExtensionActionsBridge&) = delete;
+  ~ExtensionActionsBridge() override;
 
-  // Convenience function to get the ToolbarActionsBridge for a Profile.
-  static ToolbarActionsBridge* Get(Profile* profile);
+  // Convenience function to get the ExtensionActionsBridge for a Profile.
+  static ExtensionActionsBridge* Get(Profile* profile);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -49,4 +49,4 @@ class ToolbarActionsBridge : public ToolbarActionsModel::Observer,
       model_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_TOOLBAR_ACTIONS_BRIDGE_H_
+#endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTIONS_BRIDGE_H_
