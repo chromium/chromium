@@ -175,10 +175,10 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     collaboration_status_.sync_status = SyncStatus::kSyncWithoutTabGroup;
   }
 
-  // Init the delegate for a flow.
-  void InitDelegate() {
+  // Init the delegate for a `flow_type` flow.
+  void InitDelegate(FlowType flow_type) {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
-        browser_.get(), base_view_controller_, tab_group_service_);
+        browser_.get(), base_view_controller_, tab_group_service_, flow_type);
   }
 
   // Sign in in the authentication service with a fake identity.
@@ -272,7 +272,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kShareOrManage);
   base::MockCallback<
       CollaborationControllerDelegate::ResultWithGroupTokenCallback>
       mock_callback;
@@ -295,7 +295,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kShareOrManage);
 
   tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
 
@@ -318,7 +318,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogAccept) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kJoin);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
   EXPECT_CALL(mock_callback,
@@ -341,7 +341,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogCancel) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kShareOrManage);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
   EXPECT_CALL(mock_callback,
@@ -364,7 +364,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogAccept) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kShareOrManage);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
   EXPECT_CALL(mock_callback,
@@ -387,7 +387,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogCancel) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kShareOrManage);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
   EXPECT_CALL(mock_callback,
@@ -411,7 +411,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kJoin);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
 
@@ -438,7 +438,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kJoin);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
 
@@ -465,7 +465,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kJoin);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
 
@@ -493,7 +493,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
     return;
   }
   SignIn();
-  InitDelegate();
+  InitDelegate(FlowType::kJoin);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
 
@@ -521,7 +521,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
     // Disabled on iPadOS 16.
     return;
   }
-  InitDelegate();
+  InitDelegate(FlowType::kShareOrManage);
   delegate_->NotifySignInAndSyncStatusChange();
 }
 

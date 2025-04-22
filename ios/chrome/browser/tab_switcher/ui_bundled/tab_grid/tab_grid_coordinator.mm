@@ -14,6 +14,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -140,6 +141,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using collaboration::CollaborationServiceShareOrManageEntryPoint;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
 
 namespace {
 
@@ -825,10 +828,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return;
   }
 
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(browser->GetProfile()));
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
+          FlowType::kShareOrManage);
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }

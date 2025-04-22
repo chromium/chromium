@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/group_data.h"
@@ -50,6 +51,8 @@
 #import "ui/base/device_form_factor.h"
 
 using collaboration::CollaborationServiceShareOrManageEntryPoint;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
 
 namespace {
 constexpr CGFloat kTabGroupPresentationDuration = 0.3;
@@ -413,10 +416,11 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     return;
   }
 
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(self.profile));
+          TabGroupServiceFactory::GetForProfile(self.profile),
+          FlowType::kShareOrManage);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
   CollaborationServiceShareOrManageEntryPoint entryPoint =

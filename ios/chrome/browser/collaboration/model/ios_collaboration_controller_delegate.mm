@@ -8,6 +8,7 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/service_status.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
@@ -87,8 +88,10 @@ constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(15);
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     Browser* browser,
     UIViewController* base_view_controller,
-    TabGroupService* tab_group_service)
+    TabGroupService* tab_group_service,
+    FlowType flow_type)
     : browser_(browser),
+      flow_type_(flow_type),
       base_view_controller_(base_view_controller),
       tab_group_service_(tab_group_service) {
   CHECK(browser_);
@@ -114,6 +117,15 @@ IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 void IOSCollaborationControllerDelegate::PrepareFlowUI(
     base::OnceCallback<void()> exit_callback,
     ResultCallback result) {
+  // TODO(crbug.com/393073658): Update spinner behaviour according to the
+  // `flow_type_`.
+  switch (flow_type_) {
+    case FlowType::kJoin:
+    case FlowType::kShareOrManage:
+    case FlowType::kLeaveOrDelete:
+      break;
+  }
+
   // TODO(crbug.com/399584431): Improve the design of the spinner/scrim.
   scrim_view_ = [[UIView alloc] init];
   scrim_view_.backgroundColor = [UIColor colorWithWhite:0 alpha:kScrimOpacity];

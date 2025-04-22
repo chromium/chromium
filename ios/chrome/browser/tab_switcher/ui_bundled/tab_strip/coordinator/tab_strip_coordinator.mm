@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -54,6 +55,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using collaboration::CollaborationServiceShareOrManageEntryPoint;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
 using ResultCallback =
     collaboration::CollaborationControllerDelegate::ResultCallback;
 using collaboration::CollaborationControllerDelegate;
@@ -393,10 +396,11 @@ using collaboration::CollaborationControllerDelegate;
     return;
   }
 
-  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(browser->GetProfile()));
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
+          FlowType::kLeaveOrDelete);
   delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
 
   collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
@@ -518,10 +522,11 @@ using collaboration::CollaborationControllerDelegate;
     return;
   }
 
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+  std::unique_ptr<CollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(self.profile));
+          TabGroupServiceFactory::GetForProfile(self.profile),
+          FlowType::kShareOrManage);
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }

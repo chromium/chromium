@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
+#import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -33,6 +34,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 
 using collaboration::CollaborationServiceFactory;
+using collaboration::FlowType;
+using collaboration::IOSCollaborationControllerDelegate;
 using collaboration::messaging::MessagingBackendServiceFactory;
 using ResultCallback =
     collaboration::CollaborationControllerDelegate::ResultCallback;
@@ -230,10 +233,11 @@ using collaboration::CollaborationControllerDelegate;
     return;
   }
 
-  std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+  std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
+      std::make_unique<IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(browser->GetProfile()));
+          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
+          FlowType::kLeaveOrDelete);
   delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
 
   collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =

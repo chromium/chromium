@@ -25,13 +25,16 @@ class TabGroupService;
 
 namespace collaboration {
 
+enum class FlowType;
+
 // iOS implementation of CollaborationControllerDelegate.
 class IOSCollaborationControllerDelegate
     : public CollaborationControllerDelegate {
  public:
   IOSCollaborationControllerDelegate(Browser* browser,
                                      UIViewController* base_view_controller,
-                                     TabGroupService* tab_group_service);
+                                     TabGroupService* tab_group_service,
+                                     FlowType flow_type);
 
   IOSCollaborationControllerDelegate(
       const IOSCollaborationControllerDelegate&) = delete;
@@ -139,6 +142,9 @@ class IOSCollaborationControllerDelegate
   raw_ptr<FaviconLoader> favicon_loader_;
   raw_ptr<Browser> browser_;
   std::unique_ptr<TabGroupFaviconsGridConfigurator> favicons_grid_configurator_;
+
+  // Collaboration flow that initiated this delegate.
+  FlowType flow_type_;
 
   __weak UIViewController* base_view_controller_;
   NSString* session_id_ = nil;
