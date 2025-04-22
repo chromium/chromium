@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
@@ -138,20 +137,7 @@
   [_identityChooserCoordinator start];
 }
 
-- (void)stop {
-  CHECK(!_addAccountSigninCoordinator);
-  CHECK(!_activityOverlayCoordinator);
-  CHECK(!_identityChooserCoordinator);
-  _signinLogger = nil;
-  [_mediator disconnect];
-  _mediator.delegate = nil;
-  _mediator = nil;
-  [super stop];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
+- (void)stopAnimated:(BOOL)animated {
   if (_addAccountSigninCoordinator) {
     CHECK(!_identityChooserCoordinator);
     CHECK(!_activityOverlayCoordinator);
@@ -163,10 +149,14 @@
   } else {
     [self stopActivityOverlay];
   }
+  CHECK(!_addAccountSigninCoordinator, base::NotFatalUntil::M145);
+  CHECK(!_activityOverlayCoordinator, base::NotFatalUntil::M145);
+  CHECK(!_identityChooserCoordinator, base::NotFatalUntil::M145);
+  _signinLogger = nil;
+  [_mediator disconnect];
   _mediator.delegate = nil;
-  [_mediator interrupt];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
+  _mediator = nil;
+  [super stopAnimated:animated];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate

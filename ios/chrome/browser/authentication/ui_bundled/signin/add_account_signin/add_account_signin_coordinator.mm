@@ -44,7 +44,7 @@ using signin_metrics::PromoAction;
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // Coordinator to handle additional steps after the identity is added, i.e.
 // after `addAccountSigninManager` does its job.
-@property(nonatomic, strong) SigninCoordinator<InterruptibleChromeCoordinator>*
+@property(nonatomic, strong) SigninCoordinator<StopAnimatedChromeCoordinator>*
     postSigninManagerCoordinator;
 // Coordinator for history sync opt-in.
 @property(nonatomic, strong)
@@ -128,7 +128,7 @@ using signin_metrics::PromoAction;
   // This callback is in charge to call `[self
   // runCompletionWithSigninResult: completionIdentity:]`.
 
-  [self stopPostSigninManagerCoordinator];
+  [self stopPostSigninManagerCoordinatorAnimated:animated];
   [self interruptAddAccountSigninManager:animated];
 
   _accountManagerService = nullptr;
@@ -229,8 +229,8 @@ using signin_metrics::PromoAction;
   self.historySyncPopupCoordinator = nil;
 }
 
-- (void)stopPostSigninManagerCoordinator {
-  [self.postSigninManagerCoordinator stop];
+- (void)stopPostSigninManagerCoordinatorAnimated:(BOOL)animated {
+  [self.postSigninManagerCoordinator stopAnimated:animated];
   self.postSigninManagerCoordinator = nil;
 }
 
@@ -338,7 +338,7 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)result
                           signinCompletionIdentity:
                               (id<SystemIdentity>)resultIdentity {
-  [self stopPostSigninManagerCoordinator];
+  [self stopPostSigninManagerCoordinatorAnimated:NO];
   if (result != SigninCoordinatorResultSuccess) {
     [self addAccountDoneWithSigninResult:result identity:resultIdentity];
     return;

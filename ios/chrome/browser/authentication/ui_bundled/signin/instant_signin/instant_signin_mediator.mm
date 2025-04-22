@@ -48,11 +48,6 @@ using signin_metrics::PromoAction;
 }
 
 - (void)disconnect {
-  CHECK(!_authenticationFlow, base::NotFatalUntil::M138);
-}
-
-- (void)interrupt {
-  CHECK(_authenticationFlow);
   [_authenticationFlow interrupt];
 }
 

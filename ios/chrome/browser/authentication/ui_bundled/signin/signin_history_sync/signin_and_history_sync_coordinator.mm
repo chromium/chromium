@@ -244,7 +244,7 @@ enum class SignInHistorySyncStep {
     }
     case SignInHistorySyncStep::kInstantSignin: {
       // TODO(crbug.com/375605572) Sends an actual continuation.
-      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
+      SigninCoordinator<StopAnimatedChromeCoordinator>* coordinator =
           [[InstantSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
