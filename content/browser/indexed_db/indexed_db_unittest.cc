@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <inttypes.h>
 
 #include <cstdint>
@@ -891,12 +886,9 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
       blink::mojom::IDBBlobInfo::New(std::move(blob), std::u16string(), 100,
                                      nullptr)));
 
-  std::string value = "hello";
-  const char* value_data = value.data();
-  std::vector<uint8_t> value_vector(value_data, value_data + value.length());
-
   auto new_value = blink::mojom::IDBValue::New();
-  new_value->bits = std::move(value_vector);
+  auto value = base::span_from_cstring("hello");
+  new_value->bits.assign(value.begin(), value.end());
   new_value->external_objects = std::move(external_objects);
 
   connection->version_change_transaction->Put(
@@ -1211,12 +1203,9 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   connection1->version_change_transaction->CreateObjectStore(
       kObjectStoreId, kObjectStoreName, blink::IndexedDBKeyPath(), false);
 
-  std::string value = "value";
-  const char* value_data = value.data();
-  std::vector<uint8_t> value_vector(value_data, value_data + value.length());
-
   auto new_value = blink::mojom::IDBValue::New();
-  new_value->bits = std::move(value_vector);
+  auto value = base::span_from_cstring("value");
+  new_value->bits.assign(value.begin(), value.end());
 
   connection1->version_change_transaction->Put(
       kObjectStoreId, std::move(new_value), IndexedDBKey(u"key"),
