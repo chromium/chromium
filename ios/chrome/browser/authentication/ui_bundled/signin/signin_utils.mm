@@ -6,6 +6,7 @@
 
 #import "base/barrier_closure.h"
 #import "base/command_line.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "net/base/network_change_notifier.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 
@@ -151,6 +153,15 @@ void SwitchToPersonalProfile(Browser* browser,
   CHECK(profile_manager->HasProfileWithName(personal_profile_name));
 
   SwitchToProfile(browser, personal_profile_name, std::move(continuation));
+}
+
+syncer::DataTypeSet DataCountsMapToDataTypeSet(
+    absl::flat_hash_map<syncer::DataType, size_t> type_counts) {
+  syncer::DataTypeSet types;
+  for (const auto& [type, count] : type_counts) {
+    types.Put(type);
+  }
+  return types;
 }
 
 }  // namespace
@@ -549,8 +560,9 @@ void FetchUnsyncedDataForSignOutOrProfileSwitching(
     UnsyncedDataForSignoutOrProfileSwitchingCallback callback) {
   constexpr syncer::DataTypeSet kDataTypesToQuery =
       syncer::TypesRequiringUnsyncedDataCheckOnSignout();
-  sync_service->GetTypesWithUnsyncedData(kDataTypesToQuery,
-                                         std::move(callback));
+  sync_service->GetTypesWithUnsyncedData(
+      kDataTypesToQuery,
+      base::BindOnce(&DataCountsMapToDataTypeSet).Then(std::move(callback)));
 }
 
 }  // namespace signin

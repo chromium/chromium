@@ -236,9 +236,9 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldIncrementSequenceNumberWhenPut) {
 TEST_F(NigoriDataTypeProcessorTest, ShouldGetEmptyLocalChanges) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
   CommitRequestDataList commit_request;
   processor()->GetLocalChanges(
@@ -251,9 +251,9 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -263,9 +263,9 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   processor()->Put(std::move(entity_data));
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(true));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(1));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   CommitRequestDataList commit_request;
@@ -281,9 +281,9 @@ TEST_F(NigoriDataTypeProcessorTest,
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -293,9 +293,9 @@ TEST_F(NigoriDataTypeProcessorTest,
   processor()->Put(std::move(entity_data));
 
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(true));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(1));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
 
   CommitRequestDataList commit_request_list;
@@ -321,9 +321,9 @@ TEST_F(NigoriDataTypeProcessorTest,
 
   // There should be no more local changes.
   {
-    base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
-    EXPECT_CALL(has_unsynced_data_cb, Run(false));
-    processor()->HasUnsyncedData(has_unsynced_data_cb.Get());
+    base::MockOnceCallback<void(size_t)> get_unsynced_data_cb;
+    EXPECT_CALL(get_unsynced_data_cb, Run(0));
+    processor()->GetUnsyncedDataCount(get_unsynced_data_cb.Get());
   }
   commit_response_list.clear();
   processor()->GetLocalChanges(

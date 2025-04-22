@@ -86,7 +86,11 @@ ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
 void NativeGetTypesWithUnsyncedDataCallback(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
-    DataTypeSet types) {
+    absl::flat_hash_map<DataType, size_t> type_counts) {
+  DataTypeSet types;
+  for (const auto& [type, count] : type_counts) {
+    types.Put(type);
+  }
   Java_SyncServiceImpl_onGetTypesWithUnsyncedDataResult(
       env, callback, DataTypeSetToJavaIntArray(env, types));
 }

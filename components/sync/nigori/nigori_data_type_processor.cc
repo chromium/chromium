@@ -257,9 +257,10 @@ void NigoriDataTypeProcessor::OnSyncStopping(
   }
 }
 
-void NigoriDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(entity_ && entity_->RequiresCommitRequest());
+void NigoriDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(/*count=*/static_cast<size_t>(
+      entity_ && entity_->RequiresCommitRequest()));
 }
 
 void NigoriDataTypeProcessor::GetAllNodesForDebugging(

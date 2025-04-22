@@ -896,14 +896,16 @@ DataTypeSet DataTypeManagerImpl::GetActiveProxyDataTypes() const {
 
 void DataTypeManagerImpl::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
-    base::OnceCallback<void(DataTypeSet)> callback) const {
+    base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
+    const {
   // NIGORI currently isn't supported, because its controller isn't managed by
   // DataTypeManager. If needed, support could be added via SyncEngine.
   CHECK(!requested_types.Has(NIGORI));
 
   if (requested_types.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), DataTypeSet()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  absl::flat_hash_map<DataType, size_t>()));
     return;
   }
 
@@ -920,7 +922,7 @@ void DataTypeManagerImpl::GetTypesWithUnsyncedData(
       continue;
     }
     DataTypeController* controller = it->second.get();
-    controller->HasUnsyncedData(base::BindOnce(
+    controller->GetUnsyncedDataCount(base::BindOnce(
         &GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType,
         helper, type));
   }

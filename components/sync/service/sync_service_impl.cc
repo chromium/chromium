@@ -2301,15 +2301,16 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
 
 void SyncServiceImpl::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
-    base::OnceCallback<void(DataTypeSet)> callback) const {
+    base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This should only be called in transport-only mode.
   CHECK(!IsSyncFeatureEnabled(), base::NotFatalUntil::M138);
   // TODO(crbug.com/40901755): Consider changing this to always guarantee an
   // asynchronous behavior, rather than invoking the callback synchronously in
   // rare cases.
-  return data_type_manager_->GetTypesWithUnsyncedData(requested_types,
-                                                      std::move(callback));
+  data_type_manager_->GetTypesWithUnsyncedData(requested_types,
+                                               std::move(callback));
 }
 
 void SyncServiceImpl::GetLocalDataDescriptions(

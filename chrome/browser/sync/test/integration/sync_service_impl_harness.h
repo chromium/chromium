@@ -18,6 +18,7 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;
 
@@ -189,8 +190,8 @@ class SyncServiceImplHarness {
 
   // Returns a TestFuture that will be resolved with the set of data types that
   // have unsynced data.
-  base::test::TestFuture<syncer::DataTypeSet> GetTypesWithUnsyncedData(
-      syncer::DataTypeSet requested_types) const;
+  base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
+  GetTypesWithUnsyncedData(syncer::DataTypeSet requested_types) const;
 
  private:
   SyncServiceImplHarness(Profile* profile,

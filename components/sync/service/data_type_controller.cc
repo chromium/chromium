@@ -270,17 +270,17 @@ bool DataTypeController::ShouldRunInTransportOnlyMode() const {
   return delegate_map_.count(SyncMode::kTransportOnly) != 0;
 }
 
-void DataTypeController::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void DataTypeController::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
   auto it = delegate_map_.find(SyncMode::kTransportOnly);
   if (it == delegate_map_.end()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*count=*/0);
     return;
   }
   CHECK(it->second);
   // This should only be triggered for transport-only mode.
   CHECK(!delegate_ || delegate_ == it->second.get(), base::NotFatalUntil::M138);
-  it->second->HasUnsyncedData(std::move(callback));
+  it->second->GetUnsyncedDataCount(std::move(callback));
 }
 
 void DataTypeController::GetAllNodesForDebugging(AllNodesCallback callback) {

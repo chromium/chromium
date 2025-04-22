@@ -109,8 +109,8 @@ class ProcessorEntityTracker {
   // `HasUnsyncedChanges()`, else rename it to something more accurate.
   bool HasLocalChanges() const;
 
-  // Returns true if there are any entities with unsynced changes.
-  bool HasUnsyncedChanges() const;
+  // Returns the count of entities with unsynced changes.
+  size_t GetUnsyncedDataCount() const;
 
   const sync_pb::DataTypeState& data_type_state() const {
     return data_type_state_;

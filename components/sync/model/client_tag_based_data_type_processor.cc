@@ -41,6 +41,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 namespace {
@@ -115,15 +116,9 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
 void RecordDataTypeNumUnsyncedEntitiesOnModelReady(
     DataType data_type,
     const ProcessorEntityTracker& entity_tracker) {
-  size_t num_unsynced_entities = 0;
-  for (const auto* entity :
-       entity_tracker.GetAllEntitiesIncludingTombstones()) {
-    if (entity->IsUnsynced()) {
-      num_unsynced_entities++;
-    }
-  }
-  SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(data_type,
-                                                    num_unsynced_entities);
+  SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+      UnsyncedDataRecordingEvent::kOnModelReady,
+      {{data_type, entity_tracker.GetUnsyncedDataCount()}});
 }
 
 // Returns true if the unique position for the `target_entity` should be reused.
@@ -1337,12 +1332,16 @@ void ClientTagBasedDataTypeProcessor::ResetState(
   }
 }
 
-void ClientTagBasedDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
+void ClientTagBasedDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  size_t num_unsynced_entities = 0;
+
   // Note that if there's a `model_error_`, there might be unsynced data that
   // remains unsynced indefinitely (at least until the next browser restart).
-  std::move(callback).Run(entity_tracker_ &&
-                          entity_tracker_->HasUnsyncedChanges());
+  if (entity_tracker_) {
+    num_unsynced_entities = entity_tracker_->GetUnsyncedDataCount();
+  }
+  std::move(callback).Run(num_unsynced_entities);
 }
 
 void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(

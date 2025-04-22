@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_
 
 #include "components/sync/base/data_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -22,6 +23,18 @@ enum class UpdateDropReason {
   // This should effectively replace kCannotGenerateStorageKey in the long run.
   kDroppedByBridge
 };
+
+// LINT.IfChange(UnsyncedDataRecordingEvent)
+enum class UnsyncedDataRecordingEvent {
+  // Upon `DataTypeLocalChangeProcessor::ModelReadyToSync()` call.
+  kOnModelReady,
+  // When the user initiates a signout flow (but has not confirmed yet).
+  // And is in pending state.
+  kOnSignoutConfirmationFromPendingState,
+  // And is not in pending state.
+  kOnSignoutConfirmation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/histograms.xml:UnsyncedDataRecordingEventVariants)
 
 // Records that a remote update of an entity of type `type` got dropped into a
 // `reason` related histogram.
@@ -43,11 +56,10 @@ void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
                                            size_t specifics_bytes,
                                            size_t total_bytes);
 
-// Records the amount of unsynced entities for the given `data_type` upon
-// DataTypeLocalChangeProcessor::ModelReadyToSync() call.
-void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
-    DataType data_type,
-    size_t num_unsynced_entities);
+// Records the amount of unsynced entities for the given `unsynced_data`.
+void SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+    UnsyncedDataRecordingEvent event,
+    absl::flat_hash_map<DataType, size_t> unsynced_data);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

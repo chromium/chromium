@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -39,6 +40,7 @@
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
@@ -114,14 +116,9 @@ size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
 
 void RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
     const SyncedBookmarkTracker& tracker) {
-  size_t num_unsynced_entities = 0;
-  for (const auto* entity : tracker.GetAllEntities()) {
-    if (entity->IsUnsynced()) {
-      num_unsynced_entities++;
-    }
-  }
-  syncer::SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
-      syncer::BOOKMARKS, num_unsynced_entities);
+  syncer::SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+      syncer::UnsyncedDataRecordingEvent::kOnModelReady,
+      {{syncer::BOOKMARKS, tracker.GetUnsyncedDataCount()}});
 }
 
 // Gaia-ID-related metrics should not be recorded on mobile platforms, where
@@ -658,10 +655,10 @@ void BookmarkDataTypeProcessor::StartTrackingMetadata() {
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
 }
 
-void BookmarkDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(bookmark_tracker_ &&
-                          bookmark_tracker_->HasLocalChanges());
+void BookmarkDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(
+      bookmark_tracker_ ? bookmark_tracker_->GetUnsyncedDataCount() : 0);
 }
 
 void BookmarkDataTypeProcessor::GetAllNodesForDebugging(

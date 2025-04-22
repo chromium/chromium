@@ -25,8 +25,8 @@ class MockDataTypeControllerDelegate : public DataTypeControllerDelegate {
               (SyncStopMetadataFate metadata_fate),
               (override));
   MOCK_METHOD(void,
-              HasUnsyncedData,
-              (base::OnceCallback<void(bool)> callback),
+              GetUnsyncedDataCount,
+              (base::OnceCallback<void(size_t)> callback),
               (override));
   MOCK_METHOD(void,
               GetAllNodesForDebugging,

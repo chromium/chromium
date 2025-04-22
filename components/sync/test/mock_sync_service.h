@@ -147,7 +147,8 @@ class MockSyncService : public SyncService {
               (const override));
   MOCK_METHOD(void,
               GetTypesWithUnsyncedData,
-              (DataTypeSet, base::OnceCallback<void(DataTypeSet)>),
+              (DataTypeSet,
+               base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)>),
               (const override));
   MOCK_METHOD(
       void,

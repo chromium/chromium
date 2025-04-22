@@ -20,6 +20,7 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/type_status_map_for_debugging.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -443,7 +444,8 @@ class SyncService : public KeyedService {
   // called in transport-only mode.
   virtual void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
-      base::OnceCallback<void(DataTypeSet)> callback) const = 0;
+      base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
+      const = 0;
 
   // Queries the count and description/preview of existing local data for
   // `types` data types. This is an asynchronous method which returns the result

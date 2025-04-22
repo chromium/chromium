@@ -98,9 +98,9 @@ void FakeDataTypeControllerDelegate::OnSyncStopping(
   sync_started_ = false;
 }
 
-void FakeDataTypeControllerDelegate::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
+void FakeDataTypeControllerDelegate::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(/*count=*/0);
 }
 
 void FakeDataTypeControllerDelegate::GetAllNodesForDebugging(

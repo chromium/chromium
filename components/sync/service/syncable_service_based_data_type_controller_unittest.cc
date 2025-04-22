@@ -43,7 +43,7 @@ TEST_F(SyncableServiceBasedDataTypeControllerTest, HandlesNullService) {
   // nothing, but not crash.
   controller.GetPreconditionState();
   controller.LoadModels(configure_context, base::DoNothing());
-  controller.HasUnsyncedData(base::DoNothing());
+  controller.GetUnsyncedDataCount(base::DoNothing());
   controller.GetTypeEntitiesCount(base::DoNothing());
   controller.Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
 }

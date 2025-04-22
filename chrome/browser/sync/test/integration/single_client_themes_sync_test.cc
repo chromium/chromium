@@ -702,7 +702,7 @@ class SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState
     return GetClient(0)
         ->GetTypesWithUnsyncedData({syncer::THEMES})
         .Get()
-        .Has(syncer::THEMES);
+        .contains(syncer::THEMES);
   }
 
  private:

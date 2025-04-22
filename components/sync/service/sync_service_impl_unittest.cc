@@ -2319,8 +2319,10 @@ TEST_F(SyncServiceImplTest,
 
 TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
   InitializeService();
-  base::MockCallback<base::OnceCallback<void(DataTypeSet)>> cb;
-  EXPECT_CALL(cb, Run(DataTypeSet()));
+  base::MockCallback<
+      base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)>>
+      cb;
+  EXPECT_CALL(cb, Run(absl::flat_hash_map<DataType, size_t>()));
   service()->GetTypesWithUnsyncedData(syncer::UserTypes(), cb.Get());
 }
 

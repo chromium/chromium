@@ -4,6 +4,7 @@
 
 #include "components/sync/model/processor_entity_tracker.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
@@ -257,13 +258,9 @@ bool ProcessorEntityTracker::HasLocalChanges() const {
   return false;
 }
 
-bool ProcessorEntityTracker::HasUnsyncedChanges() const {
-  for (const auto& [client_tag_hash, entity] : entities_) {
-    if (entity->IsUnsynced()) {
-      return true;
-    }
-  }
-  return false;
+size_t ProcessorEntityTracker::GetUnsyncedDataCount() const {
+  return std::ranges::count_if(
+      entities_, [](const auto& pair) { return pair.second->IsUnsynced(); });
 }
 
 size_t ProcessorEntityTracker::size() const {
