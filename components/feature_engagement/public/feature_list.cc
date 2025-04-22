@@ -185,6 +185,7 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     &kEsbDownloadRowPromoFeature,
 #endif
+    &kIPHAutofillEnableLoyaltyCardsFeature,
     &kIPHBatterySaverModeFeature,
     &kIPHCompanionSidePanelFeature,
     &kIPHCompanionSidePanelRegionSearchFeature,

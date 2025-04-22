@@ -81,6 +81,9 @@ chromium-metrics-reviews@google.com.
       summary="message shown along with a disabled and grayed-out virtual
                card suggestion in the autofill suggestion list indicating
                that the merchant has opted-out of accepting virtual cards."/>
+  <variant name="IPH_AutofillEnableLoyaltyCards"
+      summary="toast educating users about the possibility of autofilling
+               loyalty cards"/>
   <variant name="IPH_AutofillExternalAccountProfileSuggestion"
       summary="message shown along with the externally created (e.g. in
                Google Pay) profile suggestion option in the Autofill dropdown"/>

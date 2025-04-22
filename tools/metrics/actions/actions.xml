@@ -48278,6 +48278,8 @@ should be able to be added at any place in this file.
       label="For Autofill credit card benefit message."/>
   <suffix name="AutofillDisabledVirtualCardSuggestion"
       label="For AutofillDisabledVirtualCardSuggestion feature."/>
+  <suffix name="AutofillEnableLoyaltyCards"
+      label="For AutofillEnableLoyaltyCards feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
   <suffix name="AutofillHomeWorkProfileSuggestion"

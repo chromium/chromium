@@ -583,6 +583,15 @@
     <message name="IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_ADDRESS" desc="This is the body text of a confirmation message and means that the address was only saved locally to the user's device (not in their Google Account). It appears when the user was signed in to Chrome but their sign-in credentials have expired; now, they need to sign back in to Chrome. The string is after the 'Address saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
     To get this address on all your devices, verify it's you
     </message>
+    <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_TITLE" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
+    Autofill loyalty cards from Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_BODY" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
+    Manage in payment methods settings
+    </message>
+    <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
+    Autofill loyalty cards from Google Wallet
+  </message>
   </if>
 
   <!-- Autofill Address Edit Dialog -->

@@ -389,6 +389,21 @@ void MaybeRegisterChromeFeaturePromos(
               131, "jkeitel@google.com",
               "Triggered after first creation of a plus address on Desktop.")));
 
+  // TODO(crbug.com/404437008): Update with final IPH strings.
+  // kIPHAutofillEnableLoyaltyCardsFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature,
+          autofill::PopupViewViews::kAutofillEnableLoyaltyCardsElementId,
+          IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_BODY,
+          IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleTitleText(IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(
+              137, "vizcay@google.com",
+              "Triggered after loyalty card autofill suggestions are shown.")));
+
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
       std::move(user_education::FeaturePromoSpecification::CreateForLegacyPromo(
