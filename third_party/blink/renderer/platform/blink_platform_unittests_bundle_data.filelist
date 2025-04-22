@@ -631,6 +631,10 @@
 ../../web_tests/third_party/gsubtest/gsubtest-lookup3.otf
 image-decoders/testing/bad-code.gif
 image-decoders/testing/bad-initial-code.gif
+image-decoders/testing/basn3p01-based-long-plte.png
+image-decoders/testing/basn3p01-based-long-trns.png
+image-decoders/testing/basn3p01-based-long2-trns.png
+image-decoders/testing/basn3p01-based-ok.png
 image-decoders/testing/broken.gif
 image-decoders/testing/error_frame.gif
 image-decoders/testing/first-frame-has-greater-size-than-screen-size.gif
