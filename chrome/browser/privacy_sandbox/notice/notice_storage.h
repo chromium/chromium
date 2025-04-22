@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/json/json_value_converter.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
@@ -90,6 +91,10 @@ enum class NoticeActionBehavior {
 
 struct NoticeEventTimestampPair {
   bool operator==(const NoticeEventTimestampPair& other) const = default;
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<NoticeEventTimestampPair>* converter);
+
   notice::mojom::PrivacySandboxNoticeEvent event;
   base::Time timestamp;
 };
@@ -135,6 +140,9 @@ class PrivacySandboxNoticeData {
   base::Time notice_first_shown_;
   base::Time notice_last_shown_;
   base::TimeDelta notice_shown_duration_;
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<PrivacySandboxNoticeData>* converter);
 
  private:
   int schema_version_ = 0;
