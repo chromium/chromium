@@ -475,6 +475,9 @@ const char* DataTypeToStableLowerCaseString(DataType data_type);
 std::string DataTypeSetToDebugString(DataTypeSet data_types);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
+std::ostream& operator<<(std::ostream& out, DataType data_type);
+
+// Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
 
 // Returns a string corresponding to the root tag as exposed in the sync
