@@ -405,14 +405,6 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   OnBeforePossibleChange();
 }
 
-void OmniboxViewIOS::WillPaste() {
-  if (model()) {
-    model()->OnPaste();
-  }
-
-  [field_ exitPreEditState];
-}
-
 void OmniboxViewIOS::OnDeleteBackward() {
   if (field_.text.length == 0) {
     // If the user taps backspace while the pre-edit text is showing,

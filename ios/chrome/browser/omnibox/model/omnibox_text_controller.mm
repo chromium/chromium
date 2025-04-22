@@ -283,9 +283,11 @@
 }
 
 - (void)willPaste {
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->WillPaste();
+  if (_omniboxEditModel) {
+    _omniboxEditModel->OnPaste();
   }
+
+  [self.textField exitPreEditState];
 }
 
 - (void)onDeleteBackward {
