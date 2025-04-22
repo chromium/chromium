@@ -88,6 +88,7 @@ class SyncService;
                         segmentationService
      deviceSwitcherResultDispatcher:
          (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
+               priceTrackingEnabled:(BOOL)priceTrackingEnabled
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -513,7 +513,8 @@ using segmentation_platform::TipIdentifier;
                             sceneState:self.browser->GetSceneState()
                  isDefaultSearchEngine:isDefaultSearchEngine
                    segmentationService:_segmentationService
-        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher
+                  priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
     if (IsSegmentedDefaultBrowserPromoEnabled()) {
       [_setUpListMediator retrieveUserSegment];
     }

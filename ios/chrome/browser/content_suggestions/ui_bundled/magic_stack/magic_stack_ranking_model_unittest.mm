@@ -300,7 +300,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                             sceneState:scene_state_
                  isDefaultSearchEngine:NO
                    segmentationService:nullptr
-        deviceSwitcherResultDispatcher:nullptr];
+        deviceSwitcherResultDispatcher:nullptr
+                  priceTrackingEnabled:NO];
     _setUpListMediator.shouldShowSetUpList = YES;
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
               initWithLocalState:GetLocalState()

@@ -5808,15 +5808,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_COLLAPSE" desc="Accessibility label for the button to expand the Set Up List.">
         Collapse list
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Keep up with news, sports, and more based on your interests.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION" desc="Short description for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Keep up with news, sports, and more.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Get content notifications
-      </message>
       <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set Chrome as their default browser.">
         Easily open links in other apps.
       </message>
@@ -5831,9 +5822,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SET_UP_LIST_MENU" desc="Accessibility label for the Set Up List menu button.">
         Options
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome notifications.">
-        Keep up with the latest news, price tracking updates and more.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get notifications

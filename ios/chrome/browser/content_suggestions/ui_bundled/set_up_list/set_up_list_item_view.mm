@@ -84,15 +84,10 @@ struct ViewConfig {
   if (self) {
     _type = data.type;
     _complete = data.complete;
-
     if (data.compactLayout) {
       // ViewConfig for a compact layout.
       int syncString =
           IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_SYNC;
-      int notificationsString =
-          IsIOSTipsNotificationsEnabled()
-              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION
-              : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION;
       int defaultBrowserString =
           IsSegmentedDefaultBrowserPromoEnabled()
               ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
@@ -103,17 +98,13 @@ struct ViewConfig {
           syncString,
           defaultBrowserString,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
-          notificationsString,
+          IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION,
           UIFontTextStyleFootnote,
           UIFontTextStyleCaption2,
           kCompactTextSpacing,
       };
     } else if (data.heroCellMagicStackLayout) {
       int syncString = IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL;
-      int notificationsString =
-          IsIOSTipsNotificationsEnabled()
-              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
-              : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
       int defaultBrowserString =
           IsSegmentedDefaultBrowserPromoEnabled()
               ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
@@ -124,7 +115,7 @@ struct ViewConfig {
           syncString,
           defaultBrowserString,
           IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
-          notificationsString,
+          IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
           kTextSpacing,
@@ -132,10 +123,6 @@ struct ViewConfig {
     } else {
       // Normal ViewConfig.
       int syncString = IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL;
-      int notificationsString =
-          IsIOSTipsNotificationsEnabled()
-              ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
-              : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
       int defaultBrowserString =
           IsSegmentedDefaultBrowserPromoEnabled()
               ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
@@ -146,7 +133,7 @@ struct ViewConfig {
           syncString,
           defaultBrowserString,
           IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
-          notificationsString,
+          IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
           kTextSpacing,
@@ -363,11 +350,7 @@ struct ViewConfig {
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
     case SetUpListItemType::kNotifications:
-      return IsIOSTipsNotificationsEnabled()
-                 ? l10n_util::GetNSString(
-                       IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE)
-                 : l10n_util::GetNSString(
-                       IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE);
     case SetUpListItemType::kDocking:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DOCK_CHROME_TITLE);
     case SetUpListItemType::kAddressBar:
