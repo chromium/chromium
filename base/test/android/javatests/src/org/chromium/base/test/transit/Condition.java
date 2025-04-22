@@ -321,6 +321,16 @@ public abstract class Condition {
         return fulfilledOrAwaiting(isFulfilled, String.format(message, args));
     }
 
+    /** Waits for one or more Conditions using a Transition. */
+    public static CarryOn waitFor(Condition... conditions) {
+        return waitFor(TransitionOptions.DEFAULT, conditions);
+    }
+
+    /** Waits for one or more Conditions using a Transition with {@link TransitionOptions}. */
+    public static CarryOn waitFor(TransitionOptions options, Condition... conditions) {
+        return CarryOn.pickUp(CarryOn.fromConditions(conditions), options, /* trigger= */ null);
+    }
+
     /** Runs |trigger| and waits for one or more Conditions using a Transition. */
     public static CarryOn runAndWaitFor(Trigger trigger, Condition... conditions) {
         return runAndWaitFor(TransitionOptions.DEFAULT, trigger, conditions);

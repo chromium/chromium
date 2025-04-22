@@ -117,8 +117,7 @@ public class Journeys {
             currentPage = currentPage.loadPageProgrammatically(url, pageStationFactory.get());
             boolean tryToFixThumbnail = false;
             try {
-                Condition.runAndWaitFor(
-                        null,
+                Condition.waitFor(
                         TabThumbnailCondition.etc1(tabModelSelector, previousTab),
                         TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             } catch (TravelException e) {
@@ -138,8 +137,7 @@ public class Journeys {
                         currentPage.selectTabFast(previousTab, PageStation::newGenericBuilder);
                 currentPage = previousPageAgain.selectTabFast(tabToComeBackTo, pageStationFactory);
 
-                Condition.runAndWaitFor(
-                        null,
+                Condition.waitFor(
                         TabThumbnailCondition.etc1(tabModelSelector, previousTab),
                         TabThumbnailCondition.jpeg(tabModelSelector, previousTab));
             }
