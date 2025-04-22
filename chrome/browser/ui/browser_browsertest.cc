@@ -2948,7 +2948,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Successfully navigate to `url1`.
   got_slow_request = content::SlowHttpResponse::FinishResponseImmediately();
-  EXPECT_TRUE(NavigateToURL(wc, url1));
+  EXPECT_TRUE(content::NavigateToURL(wc, url1));
 
   // Kill the renderer for the tab.
   {
@@ -3028,8 +3028,8 @@ IN_PROC_BROWSER_TEST_F(
   // Successfully navigate to `url1`, then do a same-document navigation to
   // `url2`.
   got_slow_request = content::SlowHttpResponse::FinishResponseImmediately();
-  EXPECT_TRUE(NavigateToURL(wc, url1));
-  EXPECT_TRUE(NavigateToURL(wc, url2));
+  EXPECT_TRUE(content::NavigateToURL(wc, url1));
+  EXPECT_TRUE(content::NavigateToURL(wc, url2));
 
   // Kill the renderer for the tab.
   {

@@ -89,48 +89,6 @@ class DesktopAndroidExtensionSystemFactory : public ExtensionSystemProvider {
   bool ServiceIsCreatedWithBrowserContext() const override { return true; }
 };
 
-// A version of ChromeExtensionRegistrarDelegate that works around the current
-// lack of support for UnpackedInstaller on Android.
-//
-// TODO(crbug.com/398299722): Delete this class when UnpackedInstaller is ported
-// to Android, because then unpacked extensions will be supported by
-// ChromeExtensionRegistrarDelegate::LoadExtensionForReload().
-class DesktopAndroidExtensionRegistrarDelegate
-    : public ChromeExtensionRegistrarDelegate {
- public:
-  explicit DesktopAndroidExtensionRegistrarDelegate(
-      content::BrowserContext* browser_context)
-      : ChromeExtensionRegistrarDelegate(
-            Profile::FromBrowserContext(browser_context)) {}
-  ~DesktopAndroidExtensionRegistrarDelegate() override = default;
-
-  void DoLoadExtensionForReload(const ExtensionId& extension_id,
-                                const base::FilePath& path,
-                                bool load_error_behavior_noisy) {
-    CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
-                            "unknown extension with no path";
-    auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
-        ExtensionSystem::Get(profile()));
-    DCHECK(android_system);
-    scoped_refptr<const Extension> extension =
-        android_system->LoadExtensionFromDirectory(path);
-    DCHECK(extension);
-    DCHECK_EQ(extension->id(), extension_id);
-  }
-
-  // ExtensionRegistrar::Delegate:
-  void LoadExtensionForReload(const ExtensionId& extension_id,
-                              const base::FilePath& path) override {
-    DoLoadExtensionForReload(extension_id, path, true);
-  }
-
-  void LoadExtensionForReloadWithQuietFailure(
-      const ExtensionId& extension_id,
-      const base::FilePath& path) override {
-    DoLoadExtensionForReload(extension_id, path, false);
-  }
-};
-
 }  // namespace
 
 DesktopAndroidExtensionSystem::DesktopAndroidExtensionSystem(
@@ -216,9 +174,8 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
       !command_line->HasSwitch(::switches::kNoErrorDialogs);
   LoadErrorReporter::Init(allow_noisy_errors);
 
-  registrar_delegate_ =
-      std::make_unique<DesktopAndroidExtensionRegistrarDelegate>(
-          browser_context_);
+  registrar_delegate_ = std::make_unique<ChromeExtensionRegistrarDelegate>(
+      Profile::FromBrowserContext(browser_context_));
   registrar_ = ExtensionRegistrar::Get(browser_context_);
   registrar_->Init(
       registrar_delegate_.get(), extensions_enabled,

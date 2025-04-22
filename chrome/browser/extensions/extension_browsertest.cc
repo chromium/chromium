@@ -25,6 +25,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
@@ -815,6 +816,17 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
     return base::FilePath();
   }
   return crx_path;
+}
+
+bool ExtensionBrowserTest::NavigateToURL(const GURL& url) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::TestNavigationObserver observer(web_contents);
+  // The return value is ignored because some tests load URLs that cause
+  // redirects, or are blocked URLs, which make NavigateToURL return false.
+  (void)content::NavigateToURL(web_contents, url);
+  // Ensure the navigation happened.
+  observer.Wait();
+  return observer.last_navigation_succeeded();
 }
 
 content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(

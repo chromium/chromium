@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/profile_util.h"
+#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -48,11 +49,6 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/unpacked_installer.h"
-#include "chrome/browser/ui/webui/theme_source.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "content/public/browser/storage_partition.h"
@@ -62,6 +58,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
 using extensions::mojom::ManifestLocation;
@@ -272,7 +269,6 @@ void ChromeExtensionRegistrarDelegate::DoLoadExtensionForReload(
   if (installed_extension && installed_extension->extension_manifest.get()) {
     InstalledLoader(profile_).Load(*installed_extension, false);
   } else {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Otherwise, the extension is unpacked (location LOAD). We must load it
     // from the path.
     CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
@@ -284,10 +280,6 @@ void ChromeExtensionRegistrarDelegate::DoLoadExtensionForReload(
         &ChromeExtensionRegistrarDelegate::OnUnpackedReloadFailure,
         weak_factory_.GetWeakPtr()));
     unpacked_installer->Load(path);
-#else
-    // TODO(crbug.com/398299722): Port UnpackedInstaller to desktop Android.
-    NOTIMPLEMENTED() << "UnpackedInstaller not yet supported on Android";
-#endif
   }
 }
 void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(

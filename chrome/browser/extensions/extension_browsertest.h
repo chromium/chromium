@@ -233,6 +233,10 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
       const base::FilePath& pem_out_path,
       int extra_run_flags = ExtensionCreator::kNoRunFlags);
 
+  // Navigates to a `url` in the active web contents and waits until the
+  // navigation finishes. Returns true on success.
+  [[nodiscard]] bool NavigateToURL(const GURL& url);
+
   // Opens `url` in an incognito browser window with the incognito profile of
   // `profile`, blocking until the navigation finishes. Returns the WebContents
   // for `url`.

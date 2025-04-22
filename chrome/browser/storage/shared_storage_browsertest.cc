@@ -527,7 +527,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     main_url_ = https_server()->GetURL(kMainHost, kSimplePagePath);
     SetThirdPartyCookieSetting(main_url_);
     MaybeEnrollMainHost(main_url_);
-    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url_));
+    EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), main_url_));
   }
 
   void
@@ -540,7 +540,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     }
     SetThirdPartyCookieSetting(main_url_);
     SetAttestationsMap(MakeSharedStoragePrivacySandboxAttestationsMap(urls));
-    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url_));
+    EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), main_url_));
   }
 
   void SetSiteException(const GURL& url, ContentSetting content_setting) {
@@ -4251,7 +4251,7 @@ class SharedStorageFencedFrameChromeBrowserTest
     SetAttestationsMap(
         MakeSharedStoragePrivacySandboxAttestationsMap(std::vector<GURL>(
             {main_url_, iframe_url_, new_page_url1_, new_page_url2_})));
-    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url_));
+    EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), main_url_));
   }
 
   content::RenderFrameHost* SelectURLAndCreateFencedFrame(
@@ -5254,7 +5254,7 @@ class SharedStorageExtensionBrowserTest
     privacy_sandbox::PrivacySandboxAttestations::GetInstance()
         ->SetAttestationsForTesting(
             MakeSharedStoragePrivacySandboxAttestationsMap(urls));
-    EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url_));
+    EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), main_url_));
   }
 
  protected:
