@@ -229,6 +229,9 @@
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the address accessory sheet.">
         Show saved addresses
       </message>
+      <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_CONTENT_DESCRIPTION" desc="Accessibility label for the individual payment method container.">
+        Payment methods
+      </message>
       <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the payment method accessory sheet, where users' saved payment methods (e.g., credit cards) are shown for use when filling web forms.">
         Show saved payment methods
       </message>
