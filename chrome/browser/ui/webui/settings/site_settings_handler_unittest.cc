@@ -43,7 +43,6 @@
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
@@ -980,10 +979,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void UnloadExtension(std::string extension_id) {
-    auto* extension_service =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    ASSERT_TRUE(extension_service);
-    extension_service->UnloadExtension(
+    extensions::ExtensionRegistrar::Get(profile())->RemoveExtension(
         extension_id, extensions::UnloadedExtensionReason::DISABLE);
   }
 

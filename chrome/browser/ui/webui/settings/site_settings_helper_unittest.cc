@@ -47,6 +47,7 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
@@ -59,7 +60,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -1550,10 +1550,7 @@ class SiteSettingsHelperExtensionTest
   }
 
   void UnloadExtension(std::string extension_id) {
-    auto* extension_service =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    ASSERT_TRUE(extension_service);
-    extension_service->UnloadExtension(
+    extensions::ExtensionRegistrar::Get(profile())->RemoveExtension(
         extension_id, extensions::UnloadedExtensionReason::DISABLE);
   }
 };
