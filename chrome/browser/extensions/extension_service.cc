@@ -778,11 +778,6 @@ const Extension* ExtensionService::GetPendingExtensionUpdate(
   return delayed_install_manager_->GetPendingExtensionUpdate(id);
 }
 
-void ExtensionService::DidCreateMainFrameForBackgroundPage(
-    ExtensionHost* host) {
-  extension_registrar_->DidCreateMainFrameForBackgroundPage(host);
-}
-
 void ExtensionService::OnExtensionHostRenderProcessGone(
     content::BrowserContext* browser_context,
     ExtensionHost* extension_host) {

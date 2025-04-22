@@ -214,10 +214,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // |was_installed_by_default| flag.
   void DisableUserExtensionsExcept(const std::vector<std::string>& except_ids);
 
-  // ExtensionHost of background page calls this method right after its renderer
-  // main frame has been created.
-  void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
-
   // Returns whether a user is able to disable a given extension or if that is
   // not possible (for instance, extension was enabled by policy).
   bool UserCanDisableInstalledExtension(
