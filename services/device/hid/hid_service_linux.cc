@@ -219,6 +219,9 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
                            scoped_refptr<base::SequencedTaskRunner> task_runner)
       : service_(std::move(service)), task_runner_(std::move(task_runner)) {
     watcher_ = UdevWatcher::StartWatching(this);
+    if (!watcher_) {
+      return;
+    }
     watcher_->EnumerateExistingDevices();
     task_runner_->PostTask(
         FROM_HERE,
