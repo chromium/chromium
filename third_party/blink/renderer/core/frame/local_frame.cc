@@ -1970,11 +1970,15 @@ LocalFrame::LocalFrame(
 
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
+  std::vector<AdScriptIdentifier> ad_script_ancestry;
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
-      ad_tracker_->IsAdScriptInStack(
-          AdTracker::StackType::kBottomAndTop,
-          /*out_ad_script=*/&ad_script_from_frame_creation_stack_);
+      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
+                                     &ad_script_ancestry);
+  if (!ad_script_ancestry.empty()) {
+    DCHECK(is_frame_created_by_ad_script_);
+    ad_script_from_frame_creation_stack_ = ad_script_ancestry[0];
+  }
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
