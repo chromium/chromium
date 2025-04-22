@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -67,7 +68,7 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
   void OnResponseStarted(int response_code, int64_t content_length);
 
   void OnNetworkFetcherComplete(const GURL& original_url,
-                                std::unique_ptr<std::string> response_body,
+                                std::optional<std::string> response_body,
                                 int net_error,
                                 const std::string& header_etag,
                                 const std::string& xheader_cup_server_proof,

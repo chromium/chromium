@@ -63,8 +63,7 @@ class PostRequestObserverImpl : public mojom::PostRequestObserver {
         << __func__ << " is called without a valid callback. Was " << __func__
         << " called mulitple times?";
     std::move(post_request_complete_callback_)
-        .Run(std::make_unique<std::string>(response_body), net_error,
-             header_etag, header_x_cup_server_proof,
+        .Run(response_body, net_error, header_etag, header_x_cup_server_proof,
              xheader_retry_after_sec
                  ? ToSignedIntegral(*xheader_retry_after_sec)
                  : -1);

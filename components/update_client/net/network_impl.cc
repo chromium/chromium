@@ -144,7 +144,7 @@ void NetworkFetcherImpl::PostRequest(
       base::BindOnce(
           [](std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
              PostRequestCompleteCallback post_request_complete_callback,
-             std::unique_ptr<std::string> response_body) {
+             std::optional<std::string> response_body) {
             std::move(post_request_complete_callback)
                 .Run(std::move(response_body), simple_url_loader->NetError(),
                      GetStringHeader(simple_url_loader.get(), kHeaderEtag),

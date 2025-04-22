@@ -4,6 +4,7 @@
 
 #include "components/update_client/request_sender.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -174,7 +175,7 @@ void RequestSender::OnResponseStarted(int response_code,
 
 void RequestSender::OnNetworkFetcherComplete(
     const GURL& original_url,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     int net_error,
     const std::string& header_etag,
     const std::string& xheader_cup_server_proof,
@@ -200,7 +201,7 @@ void RequestSender::OnNetworkFetcherComplete(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RequestSender::SendInternalComplete, this, error,
-                     response_body ? *response_body : std::string(),
+                     std::move(response_body).value_or(std::string()),
                      header_etag, xheader_cup_server_proof, retry_after_sec));
 }
 
