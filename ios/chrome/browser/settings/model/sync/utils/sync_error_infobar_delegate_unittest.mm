@@ -200,4 +200,38 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarCreatedAgainAfterTimeout) {
                                                profile_.get(), presenter));
 }
 
+// Tests that after the infobar is ignored by the user and dismissed by timeout,
+// the separate timeout kicks in to not display infobar for a defined period.
+TEST_F(SyncErrorInfobarDelegateTest, InfobarTimeoutActiveAfterIgnoredByUser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kSyncTrustedVaultInfobarImprovements);
+
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::
+                                kNeedsTrustedVaultKeyForPasswords));
+
+  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+  [[presenter expect]
+      showTrustedVaultReauthForFetchKeysWithTrigger:
+          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
+      new SyncErrorInfoBarDelegate(profile_.get(), presenter));
+
+  // Inform delegate that the infobar was dismissed through its timeout.
+  delegate->InfoBarDismissedByTimeout();
+
+  // Advance the time right before `kSyncErrorInfobarTimeout` runs out and check
+  // that infobar is not created.
+  scoped_clock_.Advance(kSyncErrorInfobarTimeout - base::Minutes(1));
+  EXPECT_FALSE(SyncErrorInfoBarDelegate::Create(infobar_manager(),
+                                                profile_.get(), presenter));
+
+  // Advance the time past the `kSyncErrorInfobarTimeout`. Confirm that infobar
+  // is created now.
+  scoped_clock_.Advance(base::Minutes(2));
+  EXPECT_TRUE(SyncErrorInfoBarDelegate::Create(infobar_manager(),
+                                               profile_.get(), presenter));
+}
+
 }  // namespace

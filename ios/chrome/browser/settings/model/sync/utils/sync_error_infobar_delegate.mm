@@ -188,3 +188,11 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
     }
   }
 }
+
+void SyncErrorInfoBarDelegate::InfoBarDismissedByTimeout() const {
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultInfobarImprovements)) {
+    profile_->GetPrefs()->SetTime(
+        prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
+  }
+}

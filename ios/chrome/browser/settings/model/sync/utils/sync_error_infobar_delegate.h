@@ -54,6 +54,9 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
 
+  // Called when the infobar is dismissed through timing out.
+  void InfoBarDismissedByTimeout() const;
+
  private:
   raw_ptr<ProfileIOS> profile_;
   syncer::SyncService::UserActionableError error_state_;
