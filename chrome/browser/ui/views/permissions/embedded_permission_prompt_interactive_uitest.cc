@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -891,6 +892,52 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       // Now that both system permissions changed to allowed, clicking the "open
       // settings" button means the prompt progresses to the next screen.
       InAnyContext(WaitForShow(EmbeddedPermissionPromptAskView::kAllowId)));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       CrossOriginZoomAffectsValidation) {
+  StateChange done_visible;
+  done_visible.where = DeepQuery{"#done"};
+  done_visible.type = StateChange::Type::kExists;
+  done_visible.event = kDoneVisibleEvent;
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(
+          kWebContentsElementId,
+          https_server()->GetURL(
+              "b.test", "/permissions/permission_element_embedder.html")));
+  content::WebContentsConsoleObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  RunTestSequence(
+      ExecuteJs(kWebContentsElementId,
+                content::JsReplace("() => { insertIframe($1, $2); }", GetURL(),
+                                   "zoom5")));
+  // Wait until getting the message that the permission element's font is
+  // too large.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& message : observer.messages()) {
+      if (message.message ==
+          u"Font size of the permission element 'camera' is too large") {
+        return true;
+      }
+    }
+
+    return false;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       BrowserZoomDoesNotAffectValidation) {
+  zoom::ZoomController* zoom_controller = zoom::ZoomController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  zoom_controller->SetZoomLevel(10);
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)));
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest

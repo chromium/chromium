@@ -437,8 +437,11 @@ class CORE_EXPORT LocalFrame final
   float LayoutZoomFactor() const { return layout_zoom_factor_; }
   void SetTextZoomFactor(float);
   float TextZoomFactor() const { return text_zoom_factor_; }
-  void SetLayoutAndTextZoomFactors(float layout_zoom_factor,
-                                   float text_zoom_factor);
+  void SetCssZoomFactor(float);
+  float CssZoomFactor() const { return css_zoom_factor_; }
+  void SetZoomFactors(float layout_zoom_factor,
+                      float text_zoom_factor,
+                      float css_zoom_factor);
 
   double DevicePixelRatio() const;
 
@@ -1095,6 +1098,7 @@ class CORE_EXPORT LocalFrame final
 
   float layout_zoom_factor_;
   float text_zoom_factor_;
+  float css_zoom_factor_;
 
   Member<CoreProbeSink> probe_sink_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;

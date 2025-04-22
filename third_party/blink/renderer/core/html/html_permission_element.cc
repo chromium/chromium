@@ -1487,27 +1487,29 @@ bool HTMLPermissionElement::IsStyleValid() {
 
   // Compute the font size but reverse browser zoom as it should not affect font
   // size validation. The same font size value should always pass regardless of
-  // what the user's browser zoom is.
-  // TODO(crbug.com/352046941): This does not currently distinguish between
-  // browser zoom and cross-origin iframe zoom (set via CSS).
-  float font_size_dip = GetComputedStyle()->ComputedFontSize() /
-                        GetComputedStyle()->EffectiveZoom();
+  // what the user's browser zoom is or the device-level viewport zoom.
+  //
+  // However critically css zoom should still be part of the final computed font
+  // size (as that is controlled by the site) so we cancel the css zoom factor
+  // out of the layout zoom factor.
 
-  float css_zoom_factor =
-      GetComputedStyle()->EffectiveZoom() /
-      GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor();
+  float non_css_layout_zoom_factor =
+      GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor() /
+      GetDocument().GetFrame()->LocalFrameRoot().CssZoomFactor();
+
+  float font_size_dip =
+      GetComputedStyle()->ComputedFontSize() / non_css_layout_zoom_factor;
 
   bool is_font_monospace =
       GetComputedStyle()->GetFontDescription().IsMonospace();
 
   // The min size is what `font-size:small` looks like when rendered in the
-  // document element of the local root frame, without any intervening CSS
+  // document element of the local root frame, without any intervening
   // zoom factors applied.
   float min_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
       is_font_monospace);
-  if (font_size_dip <
-      std::min(min_font_size_dip, kDefaultSmallFontSize) / css_zoom_factor) {
+  if (font_size_dip < std::min(min_font_size_dip, kDefaultSmallFontSize)) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too small",
                        GetType().Utf8().c_str()));
@@ -1517,13 +1519,12 @@ bool HTMLPermissionElement::IsStyleValid() {
   }
 
   // The max size is what `font-size:xxxlarge` looks like when rendered in the
-  // document element of the local root frame, without any intervening CSS
+  // document element of the local root frame, without any intervening
   // zoom factors applied.
   float max_font_size_dip = FontSizeFunctions::FontSizeForKeyword(
       &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
       is_font_monospace);
-  if (font_size_dip >
-      std::max(max_font_size_dip, kDefaultXxxLargeFontSize) / css_zoom_factor) {
+  if (font_size_dip > std::max(max_font_size_dip, kDefaultXxxLargeFontSize)) {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too large",
                        GetType().Utf8().c_str()));
