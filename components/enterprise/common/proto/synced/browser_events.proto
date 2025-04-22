@@ -1296,3 +1296,20 @@ message SuspiciousURLEvent {
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 5;
 }
+
+message TelomereEvent {
+  message TelomereLog {
+    // The event log_type if it needs to be specified.
+    string log_type = 1;
+
+    // The event log_message that will be forwarded to partners as is.
+    string log_data = 2
+        // copybara:datapol_begin
+        // [(datapol.semantic_type) = ST_USER_CONTENT]
+        // copybara:datapol_begin
+        ;
+  }
+
+  // List of telomere events.
+  repeated TelomereLog logs = 1;
+}
