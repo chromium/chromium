@@ -140,4 +140,4 @@ void AudioDeviceThread::ThreadMain() {
   }
 }
 
-}  // namespace media.
+}  // namespace media
