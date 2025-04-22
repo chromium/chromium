@@ -132,6 +132,7 @@ class LanguageDetectorCreateTask
       if (!expected_input_languages.has_value()) {
         resolver_->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kUnknownError, "Language not available"));
+        Cleanup();
         return;
       }
     }
@@ -147,12 +148,25 @@ class LanguageDetectorCreateTask
       return;
     }
     if (monitor_) {
+      // Zero must be sent.
+      monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
+
+      // Abort may have been triggered by `OnDownloadProgressUpdate`.
+      if (!resolver_) {
+        return;
+      }
+
       // Ensure that a download completion event is sent.
       monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
                                          kNormalizedDownloadProgressMax);
+
+      // Abort may have been triggered by `OnDownloadProgressUpdate`.
+      if (!resolver_) {
+        return;
+      }
     }
     resolver_->Resolve(MakeGarbageCollected<LanguageDetector>(
-        GetScriptState(), maybe_model.value(), options_->getSignalOr(nullptr),
+        GetScriptState(), maybe_model.value(), GetAbortSignal(),
         std::move(expected_input_languages), task_runner_));
     Cleanup();
   }

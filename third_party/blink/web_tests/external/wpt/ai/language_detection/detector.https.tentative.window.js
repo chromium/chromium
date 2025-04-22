@@ -173,3 +173,7 @@ promise_test(async () => {
   assert_array_equals(detector.expectedInputLanguages, expectedInputLanguages);
   assert_true(Object.isFrozen(detector.expectedInputLanguages));
 }, 'Creating LanguageDetector with expectedInputLanguages');
+
+promise_test(async t => {
+  await testCreateMonitorWithAbort(t, LanguageDetector.create);
+}, 'Progress events are not emitted after aborted.');
