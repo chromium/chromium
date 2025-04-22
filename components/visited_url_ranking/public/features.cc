@@ -93,7 +93,7 @@ constexpr base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes{
         &kVisitedURLRankingDeduplication,
         /*name=*/"url_deduplication_excluded_prefixes",
-        /*default_value=*/"www."};
+        /*default_value=*/"www.; login.corp.; myaccount.; accounts.;"};
 
 BASE_FEATURE(kVisitedURLRankingDecorations,
              "VisitedURLRankingDecorations",
