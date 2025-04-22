@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 
 #include <cmath>
 #include <memory>
@@ -32,23 +32,22 @@ std::unique_ptr<ui::Layer> CreateLayer() {
 }
 
 using BoundsWithRoundedCorners = std::pair<gfx::Rect, gfx::RoundedCornersF>;
-using UpdatingScopedLayerTreeSynchronizerTestParam =
+using UpdatingLayerTreeSynchronizerTestParam =
     std::tuple</*root_layer_bounds=*/BoundsWithRoundedCorners,
                /*child_layer_bounds=*/BoundsWithRoundedCorners,
                /*expected_child_layer_radii=*/gfx::RoundedCornersF>;
 
-class UpdatingScopedLayerTreeSynchronizerTest
-    : public testing::TestWithParam<
-          UpdatingScopedLayerTreeSynchronizerTestParam> {
+class UpdatingLayerTreeSynchronizerTest
+    : public testing::TestWithParam<UpdatingLayerTreeSynchronizerTestParam> {
  public:
-  UpdatingScopedLayerTreeSynchronizerTest() = default;
+  UpdatingLayerTreeSynchronizerTest() = default;
 
-  UpdatingScopedLayerTreeSynchronizerTest(
-      const UpdatingScopedLayerTreeSynchronizerTest&) = delete;
-  UpdatingScopedLayerTreeSynchronizerTest& operator=(
-      const UpdatingScopedLayerTreeSynchronizerTest&) = delete;
+  UpdatingLayerTreeSynchronizerTest(const UpdatingLayerTreeSynchronizerTest&) =
+      delete;
+  UpdatingLayerTreeSynchronizerTest& operator=(
+      const UpdatingLayerTreeSynchronizerTest&) = delete;
 
-  ~UpdatingScopedLayerTreeSynchronizerTest() override = default;
+  ~UpdatingLayerTreeSynchronizerTest() override = default;
 
  protected:
   gfx::Rect root_layer_bounds() const { return std::get<0>(GetParam()).first; }
@@ -65,7 +64,7 @@ class UpdatingScopedLayerTreeSynchronizerTest
   }
 };
 
-TEST_P(UpdatingScopedLayerTreeSynchronizerTest, OverlappingCorners) {
+TEST_P(UpdatingLayerTreeSynchronizerTest, OverlappingCorners) {
   // Layer Tree:
   // +root
   // +--child_layer
@@ -86,7 +85,7 @@ TEST_P(UpdatingScopedLayerTreeSynchronizerTest, OverlappingCorners) {
   child_layer->SetRoundedCornerRadius(child_layer_radii());
   child_layer->SetIsFastRoundedCorner(true);
 
-  auto layer_tree_synchronizer = std::make_unique<ScopedLayerTreeSynchronizer>(
+  auto layer_tree_synchronizer = std::make_unique<LayerTreeSynchronizer>(
       root.get(), /*restore_tree=*/false);
 
   ASSERT_EQ(child_layer->rounded_corner_radii(), child_layer_radii());
@@ -101,7 +100,7 @@ TEST_P(UpdatingScopedLayerTreeSynchronizerTest, OverlappingCorners) {
   EXPECT_EQ(child_layer->rounded_corner_radii(), expected_child_layer_radii());
 }
 
-UpdatingScopedLayerTreeSynchronizerTestParam MakeTestParams(
+UpdatingLayerTreeSynchronizerTestParam MakeTestParams(
     const gfx::Rect& root_layer_bounds,
     const gfx::RoundedCornersF& root_layer_radii,
     const gfx::Rect& child_layer_bounds,
@@ -112,32 +111,25 @@ UpdatingScopedLayerTreeSynchronizerTestParam MakeTestParams(
                          expected_child_layer_radii);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    SanityTests,
-    UpdatingScopedLayerTreeSynchronizerTest,
-    testing::Values(
-        // Child layer has zero bounds.
-        MakeTestParams(kRootBounds,
-                       kZeroRadii,
-                       gfx::Rect(),
-                       kZeroRadii,
-                       kZeroRadii),
-        // Parent layer has zero bounds.
-        MakeTestParams(gfx::Rect(),
-                       kZeroRadii,
-                       gfx::Rect(5, 5, 10, 10),
-                       kZeroRadii,
-                       kZeroRadii),
-        // If child layer has no rounded corners, we do not update those layers.
-        MakeTestParams(kRootBounds,
-                       gfx::RoundedCornersF(5),
-                       gfx::Rect(0, 0, 50, 50),
-                       kZeroRadii,
-                       kZeroRadii)));
+INSTANTIATE_TEST_SUITE_P(SanityTests,
+                         UpdatingLayerTreeSynchronizerTest,
+                         testing::Values(
+                             // Child layer has zero bounds.
+                             MakeTestParams(kRootBounds,
+                                            kZeroRadii,
+                                            gfx::Rect(),
+                                            kZeroRadii,
+                                            kZeroRadii),
+                             // Parent layer has zero bounds.
+                             MakeTestParams(gfx::Rect(),
+                                            kZeroRadii,
+                                            gfx::Rect(5, 5, 10, 10),
+                                            kZeroRadii,
+                                            kZeroRadii)));
 
 INSTANTIATE_TEST_SUITE_P(
     RootLayerHasNoRoundedCorners,
-    UpdatingScopedLayerTreeSynchronizerTest,
+    UpdatingLayerTreeSynchronizerTest,
     testing::Values(
         // Child layer is the same size as the root layer.
         MakeTestParams(kRootBounds,
@@ -159,8 +151,22 @@ INSTANTIATE_TEST_SUITE_P(
                        gfx::RoundedCornersF(5))));
 
 INSTANTIATE_TEST_SUITE_P(
+    ChildLayerHasNoRoundedCorners,
+    UpdatingLayerTreeSynchronizerTest,
+    testing::Values(MakeTestParams(kRootBounds,
+                                   gfx::RoundedCornersF(10),
+                                   gfx::Rect(0, 0, 50, 50),
+                                   kZeroRadii,
+                                   gfx::RoundedCornersF(10)),
+                    MakeTestParams(kRootBounds,
+                                   gfx::RoundedCornersF(10),
+                                   gfx::Rect(0, 0, 30, 50),
+                                   kZeroRadii,
+                                   gfx::RoundedCornersF(10, 0, 0, 10))));
+
+INSTANTIATE_TEST_SUITE_P(
     RootLayerAndChildLayerHaveRoundedCorners,
-    UpdatingScopedLayerTreeSynchronizerTest,
+    UpdatingLayerTreeSynchronizerTest,
     testing::Values(
         // Root and child layer overlaps completely.
         MakeTestParams(kRootBounds,
@@ -201,22 +207,21 @@ INSTANTIATE_TEST_SUITE_P(
                        gfx::RoundedCornersF(5),
                        gfx::RoundedCornersF(5, 20, 20, 5))));
 
-class ScopedLayerTreeSynchronizerTest : public testing::TestWithParam<bool> {
+class LayerTreeSynchronizerTest : public testing::TestWithParam<bool> {
  public:
-  ScopedLayerTreeSynchronizerTest() = default;
+  LayerTreeSynchronizerTest() = default;
 
-  ScopedLayerTreeSynchronizerTest(const ScopedLayerTreeSynchronizerTest&) =
+  LayerTreeSynchronizerTest(const LayerTreeSynchronizerTest&) = delete;
+  LayerTreeSynchronizerTest& operator=(const LayerTreeSynchronizerTest&) =
       delete;
-  ScopedLayerTreeSynchronizerTest& operator=(
-      const ScopedLayerTreeSynchronizerTest&) = delete;
 
-  ~ScopedLayerTreeSynchronizerTest() override = default;
+  ~LayerTreeSynchronizerTest() override = default;
 
  protected:
   bool restore_layer_tree() const { return GetParam(); }
 };
 
-TEST_P(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
+TEST_P(LayerTreeSynchronizerTest, UpdatingLayerTree) {
   // Layer Tree:
   // +root         (has rounded corners)
   // +--layer1     (has intersecting rounded corners with root)
@@ -266,8 +271,8 @@ TEST_P(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
   layer_3->SetRoundedCornerRadius(kLayer3Radii);
   layer_3->SetIsFastRoundedCorner(true);
 
-  auto layer_tree_synchronizer = std::make_unique<ScopedLayerTreeSynchronizer>(
-      root.get(), restore_layer_tree());
+  auto layer_tree_synchronizer =
+      std::make_unique<LayerTreeSynchronizer>(root.get(), restore_layer_tree());
   layer_tree_synchronizer->SynchronizeRoundedCorners(
       root.get(), gfx::RRectF(gfx::RectF(kRootBounds), kRootLayerRadii));
 
@@ -291,12 +296,12 @@ TEST_P(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         ScopedLayerTreeSynchronizerTest,
+                         LayerTreeSynchronizerTest,
                          testing::Bool());
 
-using ScopedWindowTreeSynchronizerTest = AshTestBase;
+using WindowTreeSynchronizerTest = AshTestBase;
 
-TEST_F(ScopedWindowTreeSynchronizerTest, Basics) {
+TEST_F(WindowTreeSynchronizerTest, Basics) {
   // root
   // +---transient_parent
   // +------child_window
@@ -328,14 +333,13 @@ TEST_F(ScopedWindowTreeSynchronizerTest, Basics) {
   transient_window_2->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF());
 
   auto window_tree_synchronizer =
-      std::make_unique<ScopedWindowTreeSynchronizer>(root.get(),
-                                                     /*restore_tree=*/true);
+      std::make_unique<WindowTreeSynchronizer>(root.get(),
+                                               /*restore_tree=*/true);
 
   gfx::RRectF reference_bounds(gfx::RectF(0, 0, 1000, 500),
                                gfx::RoundedCornersF(10));
   window_tree_synchronizer->SynchronizeRoundedCorners(
-      transient_parent.get(), /*consider_curvature=*/true, reference_bounds,
-      base::NullCallback());
+      transient_parent.get(), reference_bounds, base::NullCallback());
 
   // All the windows rooted at `transient_parent`(including transient windows)
   // should be synchronized again `reference_bounds`.
@@ -351,8 +355,7 @@ TEST_F(ScopedWindowTreeSynchronizerTest, Basics) {
   gfx::RRectF updated_reference_bounds(gfx::RectF(0, 0, 1000, 500),
                                        gfx::RoundedCornersF(15));
   window_tree_synchronizer->SynchronizeRoundedCorners(
-      transient_parent.get(), /*consider_curvature=*/true,
-      updated_reference_bounds, base::NullCallback());
+      transient_parent.get(), updated_reference_bounds, base::NullCallback());
 
   // All the windows rooted at `transient_parent` should now have new rounded
   // corners based on `updated_reference_bounds`.

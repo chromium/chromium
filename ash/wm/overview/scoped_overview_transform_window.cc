@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -20,7 +21,6 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -236,7 +236,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // Note: windows in the overview belong to different containers. For instance,
   // normal windows belong to a desk container, floated windows to a float
   // container, and always-on-top windows to their respective container.
-  window_tree_synchronizer_ = std::make_unique<ScopedWindowTreeSynchronizer>(
+  window_tree_synchronizer_ = std::make_unique<WindowTreeSynchronizer>(
       window_->GetRootWindow(), /*restore_tree=*/true);
 }
 
@@ -583,7 +583,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   //   ensuring that all four corners of the WindowMiniView appear rounded.
   //   See b/325635179.
   window_tree_synchronizer_->SynchronizeRoundedCorners(
-      window(), /*consider_curvature=*/false, rounded_contents_bounds,
+      window(), rounded_contents_bounds,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);

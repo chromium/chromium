@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -295,13 +295,11 @@ gfx::PointF GetCornerCoordinates(const gfx::RectF& rectf, Corner corner) {
 }
 
 // Determine whether the corner radius of `rect` should be overridden to match
-// the corner radius of `containing_rect`. If `consider_curvature` is true,
-// the curvature of `rect` is taken into account.
+// the corner radius of `containing_rect`.
 bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
                                 const gfx::RRectF& containing_rect,
-                                Corner corner,
-                                bool consider_curvature) {
-  if (!rect.HasRoundedCorners() || !containing_rect.HasRoundedCorners()) {
+                                Corner corner) {
+  if (!containing_rect.HasRoundedCorners()) {
     return false;
   }
 
@@ -336,12 +334,6 @@ bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
     return !CheckCornerContainment(rect_corner_coordinates, containing_rect);
   }
 
-  if (!consider_curvature) {
-    const gfx::PointF containing_rect_corner_coordinates =
-        GetCornerCoordinates(containing_rect.rect(), corner);
-    return rect_corner_coordinates == containing_rect_corner_coordinates;
-  }
-
   const CircularArc arc = GetArcForCorner(rect, corner);
   const CircularArc other_arc = GetArcForCorner(containing_rect, corner);
 
@@ -359,14 +351,12 @@ using Corners = base::flat_set<gfx::RRectF::Corner>;
 // Returns the set of corners of rect that need to have their radius match the
 // corner radius of containing_rect.
 Corners FindCornersToOverrideRadius(const gfx::RRectF& rect,
-                                    const gfx::RRectF& containing_rect,
-                                    bool consider_curvature) {
+                                    const gfx::RRectF& containing_rect) {
   Corners corners;
 
   for (auto corner : {Corner::kUpperLeft, Corner::kUpperRight,
                       Corner::kLowerRight, Corner::kLowerLeft}) {
-    if (ShouldOverrideCornerRadius(rect, containing_rect, corner,
-                                   consider_curvature)) {
+    if (ShouldOverrideCornerRadius(rect, containing_rect, corner)) {
       corners.insert(corner);
     }
   }
@@ -401,24 +391,22 @@ gfx::Transform AccumulateTargetTransform(const ui::Layer* layer,
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// ScopedLayerTreeSynchronizerBase:
+// LayerTreeSynchronizerBase:
 
-ScopedLayerTreeSynchronizerBase::ScopedLayerTreeSynchronizerBase(
-    ui::Layer* root_layer,
-    bool restore_tree)
+LayerTreeSynchronizerBase::LayerTreeSynchronizerBase(ui::Layer* root_layer,
+                                                     bool restore_tree)
     : root_layer_(root_layer), restore_tree_(restore_tree) {
   CHECK(root_layer);
 }
 
-ScopedLayerTreeSynchronizerBase::~ScopedLayerTreeSynchronizerBase() = default;
+LayerTreeSynchronizerBase::~LayerTreeSynchronizerBase() = default;
 
-void ScopedLayerTreeSynchronizerBase::ResetCachedLayerInfo() {
+void LayerTreeSynchronizerBase::ResetCachedLayerInfo() {
   original_layers_info_.clear();
 }
 
-bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
+bool LayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
     ui::Layer* layer,
-    bool consider_curvature,
     const gfx::RRectF& reference_bounds) {
   CHECK(root_layer_->Contains(layer));
   if (reference_bounds.IsEmpty() ||
@@ -429,24 +417,24 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
   gfx::Transform transform;
   layer->GetTargetTransformRelativeTo(root_layer_, &transform);
 
-  return SynchronizeLayerTreeRoundedCornersImpl(layer, consider_curvature,
-                                                reference_bounds, transform);
+  return SynchronizeLayerTreeRoundedCornersImpl(layer, reference_bounds,
+                                                transform);
 }
 
-bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
+bool LayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     ui::Layer* layer,
-    bool consider_curvature,
     const gfx::RRectF& reference_bounds,
     const gfx::Transform& transform) {
   CHECK(layer);
 
+  bool layer_altered = false;
+
   // Currently, cc does not support rounded corners for layer whose transform
   // does not preserve 2d-axis alignment and ignores the radii.
   // (See `cc::Layer::SetRoundedCornerRadius()` comment).
-  const bool ignore_layer = !transform.Preserves2dAxisAlignment();
-
-  bool layer_altered = false;
-  if (!ignore_layer && !layer->rounded_corner_radii().IsEmpty()) {
+  const bool ignore_layer =
+      !transform.Preserves2dAxisAlignment() || !layer->visible();
+  if (!ignore_layer) {
     // Get the `layer` bounds in the `root_layer_` coordinate space.
     // `transform` accounts for layer offset from its parent.
     const gfx::RRectF layer_rrectf(gfx::RectF(layer->bounds().size()),
@@ -458,8 +446,8 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     // of the `reference_bounds` or are drawn outside the curvature (if any) of
     // the reference_bounds rounded corners. The function considers the
     // curvature (if any) of the layer corners as well.
-    const Corners corners_to_update = FindCornersToOverrideRadius(
-        layer_bounds_in_root, reference_bounds, consider_curvature);
+    const Corners corners_to_update =
+        FindCornersToOverrideRadius(layer_bounds_in_root, reference_bounds);
 
     if (!corners_to_update.empty()) {
       // The inverse transform coverts from the coordinate space of
@@ -505,14 +493,13 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
   bool subtree_altered = false;
   for (ui::Layer* child : layer->children()) {
     subtree_altered |= SynchronizeLayerTreeRoundedCornersImpl(
-        child, consider_curvature, reference_bounds,
-        AccumulateTargetTransform(child, transform));
+        child, reference_bounds, AccumulateTargetTransform(child, transform));
   }
 
   return subtree_altered || layer_altered;
 }
 
-void ScopedLayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
+void LayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
   if (original_layers_info_.empty()) {
     return;
   }
@@ -520,7 +507,7 @@ void ScopedLayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
   RestoreLayerTreeImpl(layer);
 }
 
-void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
+void LayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
   if (original_layers_info_.contains(layer)) {
     const auto& info = original_layers_info_.at(layer);
     layer->SetRoundedCornerRadius(info.first);
@@ -533,48 +520,41 @@ void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ScopedLayerTreeSynchronizer:
+// LayerTreeSynchronizer:
 
-ScopedLayerTreeSynchronizer::ScopedLayerTreeSynchronizer(ui::Layer* root_layer,
-                                                         bool restore_tree)
-    : ScopedLayerTreeSynchronizerBase(root_layer, restore_tree) {}
+LayerTreeSynchronizer::LayerTreeSynchronizer(ui::Layer* root_layer,
+                                             bool restore_tree)
+    : LayerTreeSynchronizerBase(root_layer, restore_tree) {}
 
-ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() {
-  Restore();
-}
+LayerTreeSynchronizer::~LayerTreeSynchronizer() = default;
 
-void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
+void LayerTreeSynchronizer::SynchronizeRoundedCorners(
     ui::Layer* layer,
     const gfx::RRectF& reference_bounds) {
-  SynchronizeLayerTreeRoundedCorners(layer, /*consider_curvature=*/true,
-                                     reference_bounds);
+  SynchronizeLayerTreeRoundedCorners(layer, reference_bounds);
 }
 
-void ScopedLayerTreeSynchronizer::Restore() {
+void LayerTreeSynchronizer::Restore() {
   RestoreLayerTree(root_layer());
   ResetCachedLayerInfo();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ScopedWindowTreeSynchronizer:
+// WindowTreeSynchronizer:
 
-ScopedWindowTreeSynchronizer::ScopedWindowTreeSynchronizer(
-    aura::Window* root_window,
-    bool restore_tree)
-    : ScopedLayerTreeSynchronizerBase(root_window->layer(), restore_tree) {}
+WindowTreeSynchronizer::WindowTreeSynchronizer(aura::Window* root_window,
+                                               bool restore_tree)
+    : LayerTreeSynchronizerBase(root_window->layer(), restore_tree) {}
 
-ScopedWindowTreeSynchronizer::~ScopedWindowTreeSynchronizer() {
-  Restore();
-}
+WindowTreeSynchronizer::~WindowTreeSynchronizer() = default;
 
-void ScopedWindowTreeSynchronizer::SynchronizeRoundedCorners(
+void WindowTreeSynchronizer::SynchronizeRoundedCorners(
     aura::Window* window,
-    bool consider_curvature,
     const gfx::RRectF& reference_bounds,
     TransientTreeIgnorePredicate ignore_predicate) {
   for (auto* window_iter : GetTransientTreeIterator(window, ignore_predicate)) {
     const bool altered = SynchronizeLayerTreeRoundedCorners(
-        window_iter->layer(), consider_curvature, reference_bounds);
+        window_iter->layer(), reference_bounds);
     if (altered &&
         !altered_window_observations_.IsObservingSource(window_iter)) {
       altered_window_observations_.AddObservation(window_iter);
@@ -582,7 +562,7 @@ void ScopedWindowTreeSynchronizer::SynchronizeRoundedCorners(
   }
 }
 
-void ScopedWindowTreeSynchronizer::Restore() {
+void WindowTreeSynchronizer::Restore() {
   for (aura::Window* window : altered_window_observations_.sources()) {
     RestoreLayerTree(window->layer());
   }
@@ -591,7 +571,7 @@ void ScopedWindowTreeSynchronizer::Restore() {
   altered_window_observations_.RemoveAllObservations();
 }
 
-void ScopedWindowTreeSynchronizer::OnWindowDestroying(aura::Window* window) {
+void WindowTreeSynchronizer::OnWindowDestroying(aura::Window* window) {
   altered_window_observations_.RemoveObservation(window);
 }
 

@@ -82,6 +82,9 @@ WindowCycleItemView::WindowCycleItemView(aura::Window* window)
   // to make this a layer.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+
+  layer_tree_synchronizer_ =
+      std::make_unique<LayerTreeSynchronizer>(layer(), /*restore_tree=*/false);
 }
 
 WindowCycleItemView::~WindowCycleItemView() = default;
@@ -140,11 +143,6 @@ void WindowCycleItemView::Layout(PassKey) {
   const gfx::Rect preview_area_bounds = preview_view()->bounds();
   SetBackdropVisibility(preview_max_bounds.size() !=
                         preview_area_bounds.size());
-
-  if (!layer_tree_synchronizer_) {
-    layer_tree_synchronizer_ = std::make_unique<ScopedLayerTreeSynchronizer>(
-        layer(), /*restore_tree=*/false);
-  }
 
   // In order to draw the final result without requiring the rendering of
   // surfaces, the rounded corners bounds of the layer tree, that is rooted at

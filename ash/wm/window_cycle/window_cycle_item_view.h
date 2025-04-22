@@ -6,7 +6,7 @@
 #define ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -58,7 +58,7 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   void RefreshItemVisuals() override;
 
  private:
-  std::unique_ptr<ScopedLayerTreeSynchronizer> layer_tree_synchronizer_;
+  std::unique_ptr<LayerTreeSynchronizer> layer_tree_synchronizer_;
   const raw_ptr<WindowCycleController> window_cycle_controller_;
 };
 
