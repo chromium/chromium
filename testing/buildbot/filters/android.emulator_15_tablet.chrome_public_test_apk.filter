@@ -56,8 +56,5 @@
 # crbug.com/409145689
 -org.chromium.chrome.browser.settings.MainSettingsFragmentTest.testPlusAddressesEnabled
 
-# crbug.com/409579286
--org.chromium.chrome.browser.video.VideoTest.testLoadMediaUrl
-
 # crbug.com/409581327
 -org.chromium.chrome.browser.webid.DigitalCredentialProviderTest.testRequestMDoc
