@@ -135,6 +135,9 @@ struct ExecuteTestOptions {
 class GlicApiTest : public test::InteractiveGlicTest {
  public:
   GlicApiTest() {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &GlicApiTest::SorryPageRequestHandler, base::Unretained(this)));
+
     add_mock_glic_query_param(
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
@@ -220,8 +223,8 @@ class GlicApiTest : public test::InteractiveGlicTest {
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
       run_loop.Run();
     }
-    FAIL() << "Timed out waiting for guest frame. Has guest frame: "
-           << (frame != nullptr);
+    FAIL() << "Timed out waiting for guest frame. Guest frame: "
+           << (frame ? frame->GetLastCommittedURL().spec() : "not found");
   }
 
   void WaitForWebUiState(mojom::WebUiState state) {
@@ -232,6 +235,20 @@ class GlicApiTest : public test::InteractiveGlicTest {
   const std::optional<base::Value>& step_data() const { return step_data_; }
 
  private:
+  // Just an error page at a specific /sorry/... URL.
+  std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.method != net::test_server::METHOD_GET ||
+        !base::StartsWith(request.relative_url, "/sorry/index.html")) {
+      return nullptr;
+    }
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_code(net::HttpStatusCode::HTTP_OK);
+    result->set_content_type("text/html");
+    result->set_content("Sorry!");
+    return result;
+  }
+
   void ProcessTestResult(const ExecuteTestOptions& options,
                          const content::EvalJsResult& result) {
     if (options.expect_guest_frame_destroyed) {
@@ -446,6 +463,54 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
           base::Value::Dict().Set("failWith", "reloadAfterInitialize")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+  });
+}
+
+// The client navigates to the 'sorry' page before it finishes initialize().
+// Chrome should show this page.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageBeforeInitialize) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(&window_controller());
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set(
+          "failWith", "navigateToSorryPageBeforeInitialize")),
+  });
+  listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
+  RunTestSequence(CheckControllerShowing(true));
+
+  // Simulate completing a captcha, navigating back.
+  ASSERT_EQ(true,
+            content::EvalJs(FindGlicGuestMainFrame(),
+                            std::string("(()=>{window.location = '") +
+                                GetGuestURL().spec() + "'; return true;})()"));
+
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+  });
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testSorryPageAfterInitialize) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  WebUIStateListener listener(&window_controller());
+  ExecuteJsTest({
+      .params = base::Value(base::Value::Dict().Set(
+          "failWith", "navigateToSorryPageAfterInitialize")),
+  });
+  listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
+  RunTestSequence(CheckControllerShowing(true));
+
+  // Simulate completing a captcha, navigating back.
+  ASSERT_EQ(true,
+            content::EvalJs(FindGlicGuestMainFrame(),
+                            std::string("(()=>{window.location = '") +
+                                GetGuestURL().spec() + "'; return true;})()"));
+
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set("failWith", "none")),

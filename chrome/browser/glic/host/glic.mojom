@@ -70,6 +70,8 @@ enum WebUiState {
   kUnresponsive = 9,
   // Sign in panel is displayed.
   kSignIn = 10,
+  // Web view is displayed, but it is an error page.
+  kGuestError = 11,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
 

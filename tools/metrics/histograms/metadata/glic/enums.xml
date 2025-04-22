@@ -212,9 +212,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="'Something went wrong' error panel is displayed"/>
   <int value="6" label="Connection offline panel is displayed"/>
   <int value="7" label="Glic is not available for profile"/>
-  <int value="8" label="Web view is displayed"/>
+  <int value="8" label="Web view is displaying the application"/>
   <int value="9" label="The panel is unresponsive"/>
   <int value="10" label="The sign-in panel is displayed"/>
+  <int value="11"
+      label="Web view is displayed, but it is displaying an error page"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->

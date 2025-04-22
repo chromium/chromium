@@ -16,7 +16,9 @@ export type PageType =
     // A login page.
     'login'
     // A page that should be displayed.
-    |'regular';
+    |'regular'
+    // A error page that should be displayed.
+    |'guestError';
 
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
@@ -206,10 +208,9 @@ export class WebviewController {
     if (!isTopLevel) {
       return;
     }
-    if (this.getWebClientState().getCurrentValue() ===
-        WebClientState.RESPONSIVE) {
-      this.persistentState.onCommitAfterConnect(url);
-    }
+    const wasResponsive = this.getWebClientState().getCurrentValue() ===
+        WebClientState.RESPONSIVE;
+
     this.destroyHost(WebClientState.UNINITIALIZED);
 
     if (this.webview.contentWindow) {
@@ -230,7 +231,12 @@ export class WebviewController {
         url.startsWith('https://accounts.google.com/') ||
         url.startsWith('https://gaiastaging.corp.google.com/')) {
       this.delegate.webviewPageCommit('login');
+    } else if (new URL(url).pathname.startsWith('/sorry/')) {
+      this.delegate.webviewPageCommit('guestError');
     } else {
+      if (wasResponsive) {
+        this.persistentState.onCommitAfterConnect(url);
+      }
       this.delegate.webviewPageCommit('regular');
     }
   }

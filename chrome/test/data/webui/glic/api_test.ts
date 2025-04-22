@@ -753,7 +753,8 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
   }
 }
 
-type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize';
+type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|
+    'navigateToSorryPageBeforeInitialize'|'navigateToSorryPageAfterInitialize';
 
 // A web client that can fail initialize.
 class WebClientThatFailsInitialize extends WebClient {
@@ -771,6 +772,15 @@ class WebClientThatFailsInitialize extends WebClient {
     }
     if (this.failWith === 'reloadAfterInitialize') {
       sleep(500).then(() => location.reload());
+    }
+    if (this.failWith === 'navigateToSorryPageBeforeInitialize') {
+      location.href = '/sorry/index.html';
+      return sleep(5000);
+    }
+    if (this.failWith === 'navigateToSorryPageAfterInitialize') {
+      sleep(500).then(() => {
+        location.href = '/sorry/index.html';
+      });
     }
     return super.initialize(glicBrowserHost);
   }
@@ -812,6 +822,14 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
     // Second run. Client should initialize and be opened.
     await super.setUpClient();
     await this.client.waitForFirstOpen();
+  }
+
+  async testSorryPageBeforeInitialize() {
+    sleep(100).then(() => super.setUpClient());
+  }
+
+  async testSorryPageAfterInitialize() {
+    sleep(100).then(() => super.setUpClient());
   }
 
   async testInitializeFailsAfterReload() {
