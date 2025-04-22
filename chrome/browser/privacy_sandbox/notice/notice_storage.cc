@@ -205,6 +205,28 @@ void PopulateV2NoticeData(PrefService* pref_service,
   }
 }
 
+std::optional<PrivacySandboxNoticeData> ConvertToNoticeData(
+    const base::Value::Dict* notice_dict) {
+  if (!notice_dict) {
+    return std::nullopt;
+  }
+  base::JSONValueConverter<PrivacySandboxNoticeData> converter;
+  PrivacySandboxNoticeData notice_data;
+  if (converter.Convert(*notice_dict, &notice_data)) {
+    return notice_data;
+  } else {
+    return std::nullopt;
+  }
+}
+
+std::optional<PrivacySandboxNoticeData> ConvertToNoticeData(
+    const base::Value* notice_dict) {
+  if (!notice_dict) {
+    return std::nullopt;
+  }
+  return ConvertToNoticeData(notice_dict->GetIfDict());
+}
+
 }  // namespace
 
 void NoticeEventTimestampPair::RegisterJSONConverter(
@@ -422,52 +444,48 @@ PrivacySandboxNoticeStorage::PrivacySandboxNoticeStorage(
 
 PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
 
-void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
-    std::string_view notice) const {
-  CheckNoticeNameEligibility(notice);
-  auto notice_data = ReadNoticeData(notice);
+void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
+  for (const auto [notice, notice_value] :
+       pref_service_->GetDict(kPrivacySandboxNoticeDataPath)) {
+    auto notice_data = ConvertToNoticeData(&notice_value);
 
-  NoticeStartupState startup_state;
+    NoticeStartupState startup_state;
 
-  // If the notice entry doesn't exist, we don't emit any histograms.
-  if (!pref_service_->GetDict(kPrivacySandboxNoticeDataPath).contains(notice)) {
-    return;
-  }
-
-  if (!notice_data.has_value() || notice_data->GetNoticeEvents().empty() ||
-      (notice_data->GetNoticeFirstShownFromEvents() == std::nullopt &&
-       notice_data->GetNoticeActionTakenForFirstShownFromEvents() ==
-           std::nullopt)) {
-    startup_state = NoticeStartupState::kPromptNotShown;
-  } else if (notice_data->GetNoticeFirstShownFromEvents() == std::nullopt ||
-             *notice_data->GetNoticeFirstShownFromEvents() == base::Time()) {
-    // E.g. UnknownActionPreMigration && no first shown time set.
-    startup_state = NoticeStartupState::kUnknownState;
-  } else {  // Notice has been shown, action handling below.
-    switch (notice_data->GetNoticeEvents().back().get()->event) {
-      case PrivacySandboxNoticeEvent::kShown:
-        startup_state = NoticeStartupState::kPromptWaiting;
-        break;
-      case PrivacySandboxNoticeEvent::kOptIn:
-        startup_state = NoticeStartupState::kFlowCompletedWithOptIn;
-        break;
-      case PrivacySandboxNoticeEvent::kOptOut:
-        startup_state = NoticeStartupState::kFlowCompletedWithOptOut;
-        break;
-      case PrivacySandboxNoticeEvent::kAck:
-      case PrivacySandboxNoticeEvent::kClosed:
-      case PrivacySandboxNoticeEvent::kSettings:
-        startup_state = NoticeStartupState::kFlowCompleted;
-        break;
+    if (!notice_data.has_value() || notice_data->GetNoticeEvents().empty() ||
+        (notice_data->GetNoticeFirstShownFromEvents() == std::nullopt &&
+         notice_data->GetNoticeActionTakenForFirstShownFromEvents() ==
+             std::nullopt)) {
+      startup_state = NoticeStartupState::kPromptNotShown;
+    } else if (notice_data->GetNoticeFirstShownFromEvents() == std::nullopt ||
+               *notice_data->GetNoticeFirstShownFromEvents() == base::Time()) {
+      // E.g. UnknownActionPreMigration && no first shown time set.
+      startup_state = NoticeStartupState::kUnknownState;
+    } else {  // Notice has been shown, action handling below.
+      switch (notice_data->GetNoticeEvents().back().get()->event) {
+        case PrivacySandboxNoticeEvent::kShown:
+          startup_state = NoticeStartupState::kPromptWaiting;
+          break;
+        case PrivacySandboxNoticeEvent::kOptIn:
+          startup_state = NoticeStartupState::kFlowCompletedWithOptIn;
+          break;
+        case PrivacySandboxNoticeEvent::kOptOut:
+          startup_state = NoticeStartupState::kFlowCompletedWithOptOut;
+          break;
+        case PrivacySandboxNoticeEvent::kAck:
+        case PrivacySandboxNoticeEvent::kClosed:
+        case PrivacySandboxNoticeEvent::kSettings:
+          startup_state = NoticeStartupState::kFlowCompleted;
+          break;
+      }
     }
+    base::UmaHistogramEnumeration(
+        base::StrCat({"PrivacySandbox.Notice.NoticeStartupState2.", notice}),
+        startup_state);
+    // TODO(chrstne): Deprecate existing histogram.
+    base::UmaHistogramEnumeration(
+        base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.", notice}),
+        startup_state);
   }
-  base::UmaHistogramEnumeration(
-      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState2.", notice}),
-      startup_state);
-  // TODO(chrstne): Deprecate existing histogram.
-  base::UmaHistogramEnumeration(
-      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.", notice}),
-      startup_state);
 }
 
 std::optional<PrivacySandboxNoticeData>
@@ -475,17 +493,7 @@ PrivacySandboxNoticeStorage::ReadNoticeData(std::string_view notice) const {
   CheckNoticeNameEligibility(notice);
   const base::Value::Dict& pref_data =
       pref_service_->GetDict(kPrivacySandboxNoticeDataPath);
-  const base::Value::Dict* notice_dict = pref_data.FindDict(notice);
-  if (!notice_dict) {
-    return std::nullopt;
-  }
-  base::JSONValueConverter<PrivacySandboxNoticeData> converter;
-  PrivacySandboxNoticeData notice_data;
-  if (converter.Convert(*notice_dict, &notice_data)) {
-    return notice_data;
-  } else {
-    return std::nullopt;
-  }
+  return ConvertToNoticeData(pref_data.FindDict(notice));
 }
 
 void PrivacySandboxNoticeStorage::RecordEvent(

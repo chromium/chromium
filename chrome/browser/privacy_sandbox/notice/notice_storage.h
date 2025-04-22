@@ -170,8 +170,8 @@ class NoticeStorage {
   virtual std::optional<PrivacySandboxNoticeData> ReadNoticeData(
       std::string_view notice) const = 0;
 
-  // Records histograms tracking the state of notice flow on startup.
-  virtual void RecordHistogramsOnStartup(std::string_view notice) const = 0;
+  // Records histograms tracking the state of all notices.
+  virtual void RecordStartupHistograms() const = 0;
 
   // Records a Notice Event.
   virtual void RecordEvent(
@@ -190,7 +190,7 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
   std::optional<PrivacySandboxNoticeData> ReadNoticeData(
       std::string_view notice) const override;
 
-  void RecordHistogramsOnStartup(std::string_view notice) const override;
+  void RecordStartupHistograms() const override;
 
   void RecordEvent(
       std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType> notice_id,

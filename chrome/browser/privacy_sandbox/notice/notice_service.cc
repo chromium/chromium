@@ -73,9 +73,7 @@ NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
 }
 
 void PrivacySandboxNoticeService::EmitStartupHistograms() {
-  for (const auto& [notice_id, notice] : catalog_->GetNoticeMap()) {
-    GetNoticeStorage()->RecordHistogramsOnStartup(notice->GetStorageName());
-  }
+  GetNoticeStorage()->RecordStartupHistograms();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -40,7 +40,6 @@ using enum PrivacySandboxNotice;
 using enum SurfaceType;
 
 BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::unique_ptr<Notice> MakeNoticeWithFeature(NoticeId id,
                                               const base::Feature& feature) {
@@ -93,34 +92,14 @@ class PrivacySandboxNoticeServiceTest : public Test {
   raw_ptr<MockNoticeCatalog> mock_catalog_ = nullptr;
 };
 
-TEST_F(PrivacySandboxNoticeServiceTest,
-       Construction_EmitsStartupHistogramsForEachNotice) {
-  // 1. Prepare the NoticeMap
-  NoticeMap test_notice_map;
-  NoticeId notice_id_a = {kThreeAdsApisNotice, kDesktopNewTab};
-  NoticeId notice_id_b = {kTopicsConsentNotice, kDesktopNewTab};
+TEST_F(PrivacySandboxNoticeServiceTest, Construction_EmitsStartupHistograms) {
+  // 1. Set expectations on Storage: RecordStartupHistograms called once.
+  EXPECT_CALL(*mock_storage(), RecordStartupHistograms()).Times(1);
 
-  test_notice_map[notice_id_a] =
-      MakeNoticeWithFeature(notice_id_a, kTestFeatureA);
-  test_notice_map[notice_id_b] =
-      MakeNoticeWithFeature(notice_id_b, kTestFeatureB);
-
-  // 2. Set expectation on Catalog: GetNoticeMap called during construction.
-  EXPECT_CALL(*mock_catalog(), GetNoticeMap())
-      .WillOnce(ReturnRef(test_notice_map));
-
-  // 3. Set expectations on Storage: RecordHistogramsOnStartup called for each
-  // notice.
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(StrEq("TestFeatureA")))
-      .Times(1);
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(StrEq("TestFeatureB")))
-      .Times(1);
-
-  // 4. Execute: Create the service, which should trigger the histogram calls.
+  // 2. Execute: Create the service, which should trigger the histogram calls.
   CreateNoticeService();
 
-  // 5. Verify: Ensure mock expectations were met.
-  Mock::VerifyAndClearExpectations(mock_catalog());
+  // 3. Verify: Ensure mock expectations were met.
   Mock::VerifyAndClearExpectations(mock_storage());
 }
 
@@ -139,7 +118,7 @@ TEST_F(PrivacySandboxNoticeServiceTest,
       .WillRepeatedly(ReturnRef(test_notice_map));
 
   // Ignore constructor histogram calls
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(_))
+  EXPECT_CALL(*mock_storage(), RecordStartupHistograms())
       .Times(testing::AnyNumber());
 
   // 4. Set expectations on the storage mock.
@@ -168,7 +147,7 @@ TEST_F(PrivacySandboxNoticeServiceTest, EventOccurred_NoticeNotFound_Crashes) {
           ReturnRef(empty_notice_map));  // Called on construction and event
 
   // Ignore constructor histogram calls
-  EXPECT_CALL(*mock_storage(), RecordHistogramsOnStartup(_))
+  EXPECT_CALL(*mock_storage(), RecordStartupHistograms())
       .Times(testing::AnyNumber());
 
   // Create the service

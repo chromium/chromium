@@ -27,10 +27,7 @@ class MockNoticeStorage : public NoticeStorage {
               (std::string_view notice),
               (const, override));
 
-  MOCK_METHOD(void,
-              RecordHistogramsOnStartup,
-              (std::string_view notice),
-              (const, override));
+  MOCK_METHOD(void, RecordStartupHistograms, (), (const, override));
 };
 
 }  // namespace privacy_sandbox

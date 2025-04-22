@@ -156,7 +156,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateDoesNotExist) {
-  notice_storage()->RecordHistogramsOnStartup(kTopicsConsentModal);
+  notice_storage()->RecordStartupHistograms();
   const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms, testing::Not(testing::AnyOf(
                               "PrivacySandbox.Notice.NoticeStartupState."
@@ -174,7 +174,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeNameExpectCrash) {
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsPromptWaiting) {
   notice_storage()->RecordEvent(kNotice1InCatalog, kShown);
 
-  notice_storage()->RecordHistogramsOnStartup(kTopicsConsentModal);
+  notice_storage()->RecordStartupHistograms();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
       NoticeStartupState::kPromptWaiting, 1);
@@ -197,7 +197,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsUnknownState) {
       base::TimeToValue(base::Time::FromMillisecondsSinceUnixEpoch(200)));
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  notice_storage()->RecordHistogramsOnStartup(notice);
+  notice_storage()->RecordStartupHistograms();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
       NoticeStartupState::kUnknownState, 1);
@@ -227,7 +227,7 @@ TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
     task_env_.AdvanceClock(base::Milliseconds(10));
   }
 
-  notice_storage()->RecordHistogramsOnStartup(kTopicsConsentModal);
+  notice_storage()->RecordStartupHistograms();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.TopicsConsentDesktopModal",
       std::get<1>(GetParam()), 1);
