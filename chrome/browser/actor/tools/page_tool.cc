@@ -46,7 +46,10 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
       click->type = actor::mojom::ClickAction::Type::kRight;
       break;
     default:
-      return false;
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      click->type = actor::mojom::ClickAction::Type::kLeft;
+      break;
+      // return false;
   }
   switch (action_info.click().click_count()) {
     case ClickAction_ClickCount::ClickAction_ClickCount_SINGLE:
@@ -56,7 +59,10 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
       click->count = actor::mojom::ClickAction::Count::kDouble;
       break;
     default:
-      return false;
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      click->count = actor::mojom::ClickAction::Count::kSingle;
+      break;
+      // return false;
   }
   return true;
 }
@@ -90,9 +96,12 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
       break;
     case TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE:
     default:
-      DLOG(ERROR) << "TypeAction proto type mode not supported"
-                  << action_info.type().mode();
-      return false;
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
+      break;
+      //      DLOG(ERROR) << "TypeAction proto type mode not supported"
+      //                  << action_info.type().mode();
+      //      return false;
   }
 
   return true;
@@ -117,7 +126,10 @@ bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
       scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
       break;
     default:
-      return false;
+      // TODO(issuetracker.google.com/412700289): Revert once this is set.
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
+      break;
+      //      return false;
   }
   scroll->distance = action_info.scroll().distance();
   return true;
