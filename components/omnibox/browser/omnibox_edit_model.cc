@@ -1175,7 +1175,7 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
           Get()
               .enabled) {
     controller_->client()->MaybeShowOnFocusHatsSurvey(
-        autocomplete_controller()->autocomplete_provider_client(), GetText());
+        autocomplete_controller()->autocomplete_provider_client());
   }
 }
 

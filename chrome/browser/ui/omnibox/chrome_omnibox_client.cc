@@ -345,17 +345,21 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
 }
 
 void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
-    AutocompleteProviderClient* client,
-    std::u16string text) {
+    AutocompleteProviderClient* client) {
   if (!g_browser_process ||
       !base::StartsWith(g_browser_process->GetApplicationLocale(), "en")) {
     return;
   }
+
   // Check zero-suggest eligibility criteria.
   auto classification = GetPageClassification(/*is_prefetch=*/false);
-  AutocompleteInput input(text, classification, GetSchemeClassifier());
-  input.set_current_url(GetNavigationEntryURL());
+  AutocompleteInput input(
+      GetNavigationEntryURL().IsAboutBlank()
+          ? u""
+          : base::UTF8ToUTF16(GetNavigationEntryURL().spec()),
+      classification, GetSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  input.set_current_url(GetNavigationEntryURL());
   if (!ZeroSuggestProvider::GetResultTypeAndEligibility(client, input).second ||
       !MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(client,
                                                                   input)) {

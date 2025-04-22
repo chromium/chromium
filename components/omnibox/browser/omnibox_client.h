@@ -185,8 +185,7 @@ class OmniboxClient {
                               OmniboxFocusChangeReason reason) {}
 
   // Called to show HaTS survey if the proper criteria is met.
-  virtual void MaybeShowOnFocusHatsSurvey(AutocompleteProviderClient* client,
-                                          std::u16string text) {}
+  virtual void MaybeShowOnFocusHatsSurvey(AutocompleteProviderClient* client) {}
 
   // Called to notify the clients that the user has pasted into the omnibox, and
   // the resulting string in the omnibox is a valid URL.
