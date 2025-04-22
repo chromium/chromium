@@ -5783,3 +5783,73 @@ TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
   EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
   EXPECT_EQ(tabstrip.selection_model().size(), 1u);
 }
+
+TEST_F(TabStripModelTest, IteratorTest) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Get the iterator without any tabs being present.
+  TabStripModel::TabIterator it = tabstrip.begin();
+  EXPECT_EQ(*it, nullptr);
+  EXPECT_EQ(it, tabstrip.end());
+
+  // Add only one unpinned tab
+  PrepareTabstripForSelectionTest(&tabstrip, 1, 0, {"0"});
+  it = tabstrip.begin();
+  EXPECT_EQ(*it, tabstrip.GetTabAtIndex(0));
+  EXPECT_EQ(++it, tabstrip.end());
+
+  // Add 4 tabs to the tabstrip model. Tabs 0 and 1 are in a split view.
+  PrepareTabstripForSelectionTest(&tabstrip, 50, 10, {"0"});
+
+  tabstrip.AddToNewGroup({15, 16});
+  tabstrip.AddToNewGroup({25, 26});
+  tabstrip.AddToNewGroup({40});
+
+  it = tabstrip.begin();
+  int i = 0;
+  while (it != tabstrip.end()) {
+    EXPECT_EQ(*it, tabstrip.GetTabAtIndex(i++));
+    it++;
+  }
+  EXPECT_EQ(i, tabstrip.count());
+}
+
+TEST_F(TabStripModelTest, IteratorTestPinnedTab) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add only one unpinned tab
+  PrepareTabstripForSelectionTest(&tabstrip, 10, 10, {"0"});
+
+  TabStripModel::TabIterator it = tabstrip.begin();
+  int i = 0;
+  while (it != tabstrip.end()) {
+    EXPECT_EQ(*it, tabstrip.GetTabAtIndex(i++));
+    it++;
+  }
+  EXPECT_EQ(i, tabstrip.count());
+}
+
+TEST_F(TabStripModelTest, IteratorTestGroupOnlyTabs) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add only one unpinned tab
+  PrepareTabstripForSelectionTest(&tabstrip, 5, 0, {"0"});
+  tabstrip.AddToNewGroup({0, 1, 2, 3, 4});
+
+  TabStripModel::TabIterator it = tabstrip.begin();
+  int i = 0;
+  while (it != tabstrip.end()) {
+    EXPECT_EQ(*it, tabstrip.GetTabAtIndex(i++));
+    it++;
+  }
+  EXPECT_EQ(i, tabstrip.count());
+}

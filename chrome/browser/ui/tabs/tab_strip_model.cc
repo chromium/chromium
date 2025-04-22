@@ -1875,6 +1875,13 @@ int TabStripModel::GetTabCount() const {
   return contents_data_->TabCountRecursive();
 }
 
+TabStripModel::TabIterator TabStripModel::begin() const {
+  return contents_data_->begin();
+}
+TabStripModel::TabIterator TabStripModel::end() const {
+  return contents_data_->end();
+}
+
 // Context menu functions.
 bool TabStripModel::IsContextMenuCommandEnabled(
     int context_index,

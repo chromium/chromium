@@ -10,6 +10,53 @@
 
 namespace tabs {
 
+// This does not create a useful iterator, but providing a default constructor
+// is required for forward iterators by the C++ spec.
+TabCollection::Iterator::Iterator() : Iterator(nullptr, true) {}
+
+TabCollection::Iterator::Iterator(base::PassKey<TabCollection>,
+                                  const TabCollection* root,
+                                  bool is_end)
+    : Iterator(root, is_end) {}
+
+TabCollection::Iterator::Iterator(const tabs::TabCollection* root, bool is_end)
+    : cur_(nullptr), root_(root) {
+  if (!is_end && root) {
+    stack_.push({root, 0});
+    Next();
+  }
+}
+
+TabCollection::Iterator::Iterator(const Iterator& iterator) = default;
+
+TabCollection::Iterator::~Iterator() = default;
+
+void TabCollection::Iterator::Next() {
+  DCHECK(cur_ || !stack_.empty()) << "Trying to advance past the end";
+  cur_ = nullptr;
+  while (!stack_.empty()) {
+    // Copy by reference to update the index below.
+    Frame& frame = stack_.top();
+    const TabCollection* collection = frame.collection;
+
+    const auto& children = collection->GetChildren();
+
+    if (frame.index < children.size()) {
+      auto& child = children[frame.index++];
+      if (std::holds_alternative<std::unique_ptr<TabModel>>(child)) {
+        cur_ = std::get<std::unique_ptr<TabModel>>(child).get();
+        return;
+      } else {
+        TabCollection* child_collection =
+            std::get<std::unique_ptr<TabCollection>>(child).get();
+        stack_.push({child_collection, 0});
+      }
+    } else {
+      stack_.pop();
+    }
+  }
+}
+
 TabCollection::TabCollection(
     Type type,
     std::unordered_set<Type> supported_child_collections,

@@ -23,7 +23,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
@@ -170,6 +170,8 @@ class ScopedTabStripModalUI {
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModel : public TabGroupController {
  public:
+  using TabIterator = tabs::TabCollection::Iterator;
+
   // TODO(crbug.com/40881446): Remove this, and use std::optional<size_t> (or at
   // least std::optional<int>) in its place.
   static constexpr int kNoTab = -1;
@@ -631,6 +633,10 @@ class TabStripModel : public TabGroupController {
   std::u16string GetTitleAt(int index) const override;
   // The same as count(), but overridden for TabGroup to access.
   int GetTabCount() const override;
+
+  // Returns iterators for traversing through all the tabs in the tabstrip.
+  TabIterator begin() const;
+  TabIterator end() const;
 
   // View API //////////////////////////////////////////////////////////////////
 
