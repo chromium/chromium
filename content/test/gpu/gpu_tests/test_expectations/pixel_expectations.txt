@@ -481,6 +481,9 @@ crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ F
 crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
 crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
 
+# Failure on Mac ARM
+crbug.com/412679361 [ mac mac-arm64 ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
