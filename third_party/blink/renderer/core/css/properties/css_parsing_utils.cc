@@ -4300,7 +4300,7 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream& stream,
   list->Append(*range_name);
   CSSValue* percentage =
       ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
-  if (!percentage) {
+  if (!percentage || !percentage->IsNumericLiteralValue()) {
     return nullptr;
   }
   list->Append(*percentage);
