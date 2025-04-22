@@ -73,6 +73,8 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   // appeared in the manifest.
   const std::list<Rendition>& GetRenditions() const { return renditions_; }
 
+  const std::vector<MediaTrack>& GetTracks() const { return tracks_; }
+
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
   const std::optional<RenditionTrack> GetDefaultRendition() const {
     return default_rendition_;
@@ -88,6 +90,9 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   // manifest. Using a `std::list` as opposed to a `std::vector` to ensure
   // pointer stability.
   std::list<Rendition> renditions_;
+
+  // The list of media tracks associated with our renditions.
+  std::vector<MediaTrack> tracks_;
 
   base::flat_map<MediaTrack::Id, RenditionTrack> renditions_map_;
 

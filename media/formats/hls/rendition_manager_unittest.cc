@@ -112,16 +112,17 @@ class HlsRenditionManagerTest : public testing::Test {
   MOCK_METHOD(void, VariantSelected, (std::string, std::string), ());
 
   void _VariantSelected(AdaptationReason,
-                        const VariantStream* vs,
-                        const Rendition* ar) {
+                        const VariantStream*,
+                        std::optional<RenditionGroup::RenditionTrack> vr,
+                        std::optional<RenditionGroup::RenditionTrack> ar) {
     std::string variant_path = "NONE";
     std::string rendition_path = "NONE";
-    if (vs) {
-      variant_path = vs->GetPrimaryRenditionUri().path();
+    if (vr.has_value()) {
+      variant_path = std::get<1>(*vr)->GetUri().value().path();
     }
     if (ar) {
-      CHECK(ar->GetUri().has_value());
-      rendition_path = ar->GetUri()->path();
+      CHECK(ar.has_value());
+      rendition_path = std::get<1>(*ar)->GetUri().value().path();
     }
     VariantSelected(variant_path, rendition_path);
   }
@@ -626,10 +627,47 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
                                      "/audio/stereo/de/128kbit.m3u8"));
   rm.UpdateNetworkSpeed(831280);
 
-  // Unselect a preferred rendition, which switches back to english.
-  EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
-                                     "/audio/stereo/en/128kbit.m3u8"));
+  // Unselect a preferred rendition, which does not switch tracks.
+  EXPECT_CALL(*this, VariantSelected(_, _)).Times(0);
   rm.SetPreferredExtraRendition(std::nullopt);
+}
+
+TEST_F(HlsRenditionManagerTest, AudioOnlyRenditionSelectionOverrides) {
+  {
+    auto rm = GetRenditionManager(
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"A\",URI=\"A.m3u8\"",
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"B\",URI=\"B.m3u8\"",
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"C\",URI=\"C.m3u8\"",
+        "#EXT-X-STREAM-INF:BANDWIDTH=100,CODECS=\"audio.codec\",AUDIO=\"G\"",
+        "100.m3u8",
+        "#EXT-X-STREAM-INF:BANDWIDTH=200,CODECS=\"audio.codec\",AUDIO=\"G\"",
+        "200.m3u8");
+
+    // Nothing is auto-selectable
+    EXPECT_CALL(*this, VariantSelected("/200.m3u8", "NONE"));
+    rm.Reselect(GetVariantCb());
+
+    // The user has selected B explicitly, so we use B as the primary rendition.
+    const auto renditions = rm.GetSelectableExtraRenditions();
+    EXPECT_CALL(*this, VariantSelected("/B.m3u8", "NONE"));
+    rm.SetPreferredExtraRendition(renditions[1].track_id());
+  }
+  {
+    auto rm = GetRenditionManager(
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"A\",URI=\"A.m3u8\","
+        "AUTOSELECT=YES",
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"B\",URI=\"B.m3u8\"",
+        "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"G\",NAME=\"C\",URI=\"C.m3u8\"",
+        "#EXT-X-STREAM-INF:BANDWIDTH=100,CODECS=\"audio.codec\",AUDIO=\"G\"",
+        "100.m3u8",
+        "#EXT-X-STREAM-INF:BANDWIDTH=200,CODECS=\"audio.codec\",AUDIO=\"G\"",
+        "200.m3u8");
+
+    // All variants are playable, so the best one selected. The default audio
+    // override is also selected.
+    EXPECT_CALL(*this, VariantSelected("/A.m3u8", "NONE"));
+    rm.Reselect(GetVariantCb());
+  }
 }
 
 TEST_F(HlsRenditionManagerTest, VariantNames) {

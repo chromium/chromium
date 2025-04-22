@@ -109,11 +109,12 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
           .autoselect = std::move(tag.autoselect),
       });
 
+  tracks_.push_back(*track);
   renditions_map_.emplace(track->track_id(),
                           std::make_tuple(*track, &rendition));
 
   if (tag.is_default) {
-    if (!default_rendition_) {
+    if (!default_rendition_.has_value()) {
       default_rendition_ = std::make_tuple(*track, &rendition);
     } else if (!HLSQuirks::AllowMultipleDefaultRenditionsInGroup()) {
       return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;

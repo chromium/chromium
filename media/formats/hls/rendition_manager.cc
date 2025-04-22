@@ -37,147 +37,203 @@ RenditionManager::CodecSupportType VariantTypeSupported(
   return mp2t;
 }
 
-std::string GetVariantDisplayString(
-    RenditionManager::VariantID id,
-    const std::vector<VariantStream::FormatComponent>& components,
-    const VariantStream* variant) {
-  return variant->Format(components, id.value());
+std::vector<raw_ptr<const VariantStream>> FilterVariants(
+    const MultivariantPlaylist* playlist,
+    bool* is_audio_only,
+    RenditionManager::IsTypeSupportedCallback support_cb) {
+  std::vector<raw_ptr<const VariantStream>> supported_variants;
+  *is_audio_only = true;
+  for (const VariantStream& variant : playlist->GetVariants()) {
+    switch (VariantTypeSupported(support_cb, variant)) {
+      case RenditionManager::CodecSupportType::kSupportedAudioVideo:
+      case RenditionManager::CodecSupportType::kSupportedVideoOnly: {
+        if (*is_audio_only) {
+          supported_variants.clear();
+        }
+        *is_audio_only = false;
+        break;
+      }
+      case RenditionManager::CodecSupportType::kSupportedAudioOnly: {
+        if (!*is_audio_only) {
+          continue;
+        }
+        break;
+      }
+      case RenditionManager::CodecSupportType::kUnsupported: {
+        continue;
+      }
+    }
+    // This variant is supported and possible to select (IE, it is not an
+    // audio-only variant in a stream with video-present variants).
+    supported_variants.push_back(&variant);
+  }
+
+  constexpr auto compare = [](raw_ptr<const VariantStream>& lhs,
+                              raw_ptr<const VariantStream>& rhs) {
+    // First compare by bandwidth
+    if (lhs->GetBandwidth() != rhs->GetBandwidth()) {
+      return lhs->GetBandwidth() < rhs->GetBandwidth();
+    }
+
+    // Then compare by the HLS SCORE property, if available.
+    if (lhs->GetScore().has_value() && rhs->GetScore().has_value()) {
+      return *lhs->GetScore() < *rhs->GetScore();
+    }
+
+    // Prefer the side which has a score, otherwise, consider LHS better.
+    return rhs->GetScore().has_value();
+  };
+
+  std::ranges::sort(supported_variants, compare);
+  return supported_variants;
 }
 
-std::string GetAudioRenditionDisplayString(const Rendition* rendition) {
-  // TODO(crbug.com/40057824): Consider displaying characteristics / channels /
-  // language and other things rather than just the name.
-  return rendition->GetName();
+bool IsSameRendition(std::optional<hls::RenditionGroup::RenditionTrack> a,
+                     std::optional<hls::RenditionGroup::RenditionTrack> b) {
+  if (!a.has_value() && !b.has_value()) {
+    return true;
+  }
+  if (!a.has_value() || !b.has_value()) {
+    return false;
+  }
+  return std::get<0>(*a).stream_id() == std::get<0>(*b).stream_id();
 }
 
 }  // namespace
 
-RenditionManager::UpdatedSelections::~UpdatedSelections() = default;
-RenditionManager::UpdatedSelections::UpdatedSelections() = default;
-RenditionManager::UpdatedSelections::UpdatedSelections(
-    const UpdatedSelections&) = default;
-
-RenditionManager::VariantMetadata::~VariantMetadata() = default;
-RenditionManager::VariantMetadata::VariantMetadata(const VariantMetadata&) =
-    default;
-RenditionManager::VariantMetadata::VariantMetadata(const VariantStream* stream,
-                                                   const RenditionGroup* group)
-    : track_id(""), stream(stream), audio_rendition_group(group) {}
-
-RenditionManager::RenditionMetadata::~RenditionMetadata() = default;
-RenditionManager::RenditionMetadata::RenditionMetadata(
-    const RenditionMetadata&) = default;
-RenditionManager::RenditionMetadata::RenditionMetadata(
-    const Rendition* rendition)
-    : track_id(""), rendition(rendition) {}
-
 RenditionManager::~RenditionManager() = default;
 RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
-                                   SelectedCB on_variant_selected,
+                                   SelectedCB reselect_cb,
                                    IsTypeSupportedCallback is_type_supported_cb)
-    : playlist_(std::move(playlist)),
-      on_variant_selected_(std::move(on_variant_selected)) {
-  InitializeVariantMaps(std::move(is_type_supported_cb));
+    : playlist_(std::move(playlist)), reselect_cb_(std::move(reselect_cb)) {
+  selectable_variants_ = FilterVariants(playlist_.get(), &audio_only_,
+                                        std::move(is_type_supported_cb));
+  for (const auto& variant : selectable_variants_) {
+    selectable_variant_tracks_.push_back(
+        std::get<0>(variant->GetImplicitRendition()));
+  }
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectablePrimaryRenditions()
-    const {
-  std::vector<MediaTrack> result;
-  for (const auto& [_, metadata] : selectable_variants_) {
-    result.push_back(track_map_.at(metadata.track_id));
+const VariantStream* RenditionManager::SelectBestVariant() const {
+  // TODO(crbug.com/361853710): This implementation is exclusively based on
+  // player parameters, like network speed and player dimensions. Users can't
+  // select a preferred variant.
+  if (selectable_variants_.empty()) {
+    return nullptr;
   }
-  return result;
+
+  const VariantStream* best = *selectable_variants_.begin();
+
+  for (const VariantStream* option : selectable_variants_) {
+    if (option->GetResolution().has_value()) {
+      if (player_resolution_.Area64() < option->GetResolution()->Area()) {
+        // This variant is too large to even fit in the player area, so don't
+        // consider it.
+        return best;
+      }
+    }
+
+    if (network_bps_ < option->GetBandwidth()) {
+      // This variant is predicted to have a bandwidth requirement greater than
+      // the connection speed to the host, so don't consider it.
+      return best;
+    }
+
+    best = option;
+  }
+
+  return best;
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectableExtraRenditions() const {
-  std::vector<MediaTrack> result;
-  if (!selected_variant_.has_value()) {
-    // We can't select an audio rendition if the variant hasn't been selected
-    return result;
-  }
-  const auto& variant_metadata = selectable_variants_.at(*selected_variant_);
-  for (auto id : variant_metadata.audio_renditions) {
-    auto rendition_metadata = selectable_renditions_.at(id);
-    result.push_back(track_map_.at(rendition_metadata.track_id));
-  }
-  return result;
-}
-
-void RenditionManager::Reselect(SelectedCallonce callback) {
-  auto selections = GetUpdatedSelectionIds();
-  if (!selections.variant.has_value() &&
-      !selections.audio_rendition.has_value()) {
-    std::move(callback).Run(nullptr, nullptr);
+void RenditionManager::Reselect(SelectedCallonce cb) {
+  const VariantStream* variant = SelectBestVariant();
+  if (variant == nullptr) {
+    std::move(cb).Run(nullptr, std::nullopt, std::nullopt);
     return;
   }
 
-  bool variant_change = false;
-  bool rendition_change = false;
-  if (selections.variant != selected_variant_) {
-    variant_change = true;
-    selected_variant_ = selections.variant;
-  }
-  if (selections.audio_rendition != selected_audio_rendition_) {
-    rendition_change = true;
-    selected_audio_rendition_ = selections.audio_rendition;
+  bool variant_changed = false;
+  std::optional<RenditionGroup::RenditionTrack> extra_rendition;
+
+  if (active_variant_ != variant) {
+    // Either this is initial selection or the active variant is changing due
+    // to stream constraints.
+    selected_primary_ = variant->GetImplicitRendition();
+    active_variant_ = variant;
+    variant_changed = true;
   }
 
-  if (!(variant_change || rendition_change)) {
-    // No changes, so do not run the callback.
-    return;
-  }
-
-  CHECK(selections.variant.has_value());
-  const VariantStream* selected_variant =
-      selectable_variants_.at(*selected_variant_).stream;
-  const Rendition* audio_override = nullptr;
-  if (selected_audio_rendition_.has_value()) {
-    audio_override =
-        selectable_renditions_.at(selected_audio_rendition_.value()).rendition;
-    if (!audio_override->GetUri().has_value()) {
-      // An audio rendition with no uri just plays the content from the
-      // selected variant. See section 4.4.6.2.1 of the HLS spec for details.
-      // The URI attribute is OPTIONAL unless the TYPE is CLOSED-CAPTIONS, in
-      // which case the URI attribute must not be present.
-      audio_override = nullptr;
+  // The extra rendition is always sourced from the audio groups, since nobody
+  // really uses video renditions right now. If the whole stream is audio-only,
+  // this extra rendition replaces the primary rendition. This selection is
+  // based primarily on user preference, but if no preference is set, it
+  // attempts to select based on the following order:
+  // 1. Similarity to previously selected rendition
+  // 2. Group default
+  // 3. Declaration order in manifest
+  // It's possible that none of the renditions are marked for auto-selection
+  // though, so we may get back nothing.
+  if (auto audio_renditions = variant->GetAudioRenditionGroup()) {
+    if (preferred_extra_rendition_.has_value()) {
+      extra_rendition =
+          audio_renditions->MostSimilar(preferred_extra_rendition_);
+    }
+    if (!extra_rendition.has_value()) {
+      extra_rendition = audio_renditions->MostSimilar(selected_extra_);
     }
   }
 
-  if (variant_change || (rendition_change && audio_override)) {
-    std::move(callback).Run(selected_variant, audio_override);
+  if (!IsSameRendition(extra_rendition, selected_extra_)) {
+    selected_extra_ = extra_rendition;
+    if (audio_only_) {
+      std::move(cb).Run(variant, extra_rendition, std::nullopt);
+      return;
+    }
+
+    std::move(cb).Run(variant, selected_primary_, extra_rendition);
+    return;
+  }
+
+  if (variant_changed) {
+    selected_extra_ = extra_rendition;
+    std::move(cb).Run(variant, selected_primary_, selected_extra_);
   }
 }
 
 void RenditionManager::SetPreferredExtraRendition(
-    std::optional<MediaTrack::Id> rendition_id) {
-  if (rendition_id.has_value()) {
-    auto track = track_map_.at(rendition_id);
-    CHECK(track.type() == MediaTrack::Type::kAudio);
-    preferred_audio_rendition_ = RenditionID(track.stream_id());
-  } else {
-    preferred_audio_rendition_ = std::nullopt;
+    std::optional<MediaTrack::Id> track_id) {
+  if (!active_variant_) {
+    // Track ID's are only unique across a RenditionGroup - so if we don't have
+    // access to the current rendition group, we can't actually have any
+    // preferred renditions.
+    return;
   }
-  Reselect(
-      base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
+
+  if (!track_id.has_value()) {
+    // The user has elected to deselect all audio tracks - The chunk demuxer
+    // we wrap to do content demuxing has already disabled it's DemuxerStream
+    // objects, so no audio will play.
+    // While we can unset the preferences object here, we don't want to unset
+    // the `selected_extra_` field, since when re-enabling audio, we don't want
+    // to trigger a rendition update if the same rendition is still playing.
+    preferred_extra_rendition_ = std::nullopt;
+    return;
+  }
+
+  preferred_extra_rendition_ =
+      active_variant_->GetAudioRenditionGroup()->GetRenditionById(*track_id);
+  Reselect(base::BindOnce(reselect_cb_, AdaptationReason::kUserSelection));
 }
 
 void RenditionManager::SetPreferredPrimaryRendition(
-    std::optional<MediaTrack::Id> variant_id) {
-  if (variant_id.has_value()) {
-    auto track = track_map_.at(variant_id);
-    CHECK(track.type() == MediaTrack::Type::kVideo);
-    preferred_variant_ = VariantID(track.stream_id());
-  } else {
-    preferred_variant_ = std::nullopt;
-  }
-  Reselect(
-      base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
+    std::optional<MediaTrack::Id> track_id) {
+  // Primary (video) rendition selection is not supported.
+  NOTREACHED();
 }
 
 void RenditionManager::UpdatePlayerResolution(const gfx::Size& resolution) {
   player_resolution_ = resolution;
-  Reselect(base::BindOnce(on_variant_selected_,
-                          AdaptationReason::kResolutionChange));
+  Reselect(base::BindOnce(reselect_cb_, AdaptationReason::kResolutionChange));
 }
 
 void RenditionManager::UpdateNetworkSpeed(uint64_t network_bps) {
@@ -185,293 +241,19 @@ void RenditionManager::UpdateNetworkSpeed(uint64_t network_bps) {
                                 ? AdaptationReason::kNetworkDowngrade
                                 : AdaptationReason::kNetworkUpgrade;
   network_bps_ = network_bps;
-  Reselect(base::BindOnce(on_variant_selected_, reason));
+  Reselect(base::BindOnce(reselect_cb_, reason));
 }
 
-void RenditionManager::InitializeVariantMaps(
-    IsTypeSupportedCallback is_type_supported_cb) {
-  bool was_audio_only = false;
-  bool has_video = false;
-  std::vector<VariantMetadata> variant_ordering;
-
-  // From the spec:
-  //   The EXT-X-STREAM-INF tag specifies a Variant Stream, which is a set of
-  //   Renditions that can be combined to play the presentation.
-  // This player does _not_ support alternative video renditions for variants
-  // which only have audio content. If we find any variants with video after
-  // finding any audio-only variants, drop all the audio-specific variants and
-  // renditions. If we find any audio-only variants after a video variant, do
-  // not consider it.
-  // TODO(crbug.com/40057824): Is this correct? The spec does not say anything
-  // about playlists which have audio-only variants next to variants with video.
-  // It might be used in the wild to play only video if the network is truly in
-  // bad shape, but it's not clear. I've not run into any playlists in the wild
-  // which have this.
-  for (const VariantStream& variant : playlist_->GetVariants()) {
-    switch (VariantTypeSupported(is_type_supported_cb, variant)) {
-      case CodecSupportType::kSupportedAudioVideo:
-      case CodecSupportType::kSupportedVideoOnly: {
-        has_video = true;
-        if (was_audio_only) {
-          variant_ordering.clear();
-          selectable_variants_.clear();
-          selectable_renditions_.clear();
-          was_audio_only = false;
-        }
-        break;
-      }
-      case CodecSupportType::kSupportedAudioOnly: {
-        if (has_video) {
-          // Don't add this variant.
-          continue;
-        }
-        was_audio_only = true;
-        break;
-      }
-      case CodecSupportType::kUnsupported: {
-        continue;
-      }
-    }
-    VariantMetadata stats{&variant, variant.GetAudioRenditionGroup().get()};
-    if (auto group = variant.GetAudioRenditionGroup()) {
-      // If there is an audio rendition group associated, then get all of its
-      // renditions, ID them, and track them in the selectable variant.
-      for (auto& rendition : group->GetRenditions()) {
-        auto rendition_id = LookupRendition(&rendition);
-        if (!rendition_id.has_value()) {
-          rendition_id = rendition_id_gen_.GenerateNextId();
-          selectable_renditions_.try_emplace(*rendition_id,
-                                             RenditionMetadata(&rendition));
-        }
-        stats.audio_renditions.insert(*rendition_id);
-      }
-    }
-    variant_ordering.push_back(std::move(stats));
+std::vector<MediaTrack> RenditionManager::GetSelectableExtraRenditions() const {
+  if (active_variant_) {
+    return active_variant_->GetAudioRenditionGroup()->GetTracks();
   }
-
-  constexpr auto compare = [](const VariantMetadata& lhs,
-                              const VariantMetadata& rhs) {
-    // First compare by bandwidth
-    if (lhs.stream->GetBandwidth() != rhs.stream->GetBandwidth()) {
-      return lhs.stream->GetBandwidth() < rhs.stream->GetBandwidth();
-    }
-
-    // Then compare by the HLS SCORE property, if available.
-    if (lhs.stream->GetScore().has_value() &&
-        rhs.stream->GetScore().has_value()) {
-      return *lhs.stream->GetScore() < *rhs.stream->GetScore();
-    }
-
-    // Prefer the side which has a score, otherwise, consider LHS better.
-    return rhs.stream->GetScore().has_value();
-  };
-
-  // All variants are now added, and should be sorted.
-  std::ranges::sort(variant_ordering, compare);
-  for (const VariantMetadata& stats : std::move(variant_ordering)) {
-    selectable_variants_.try_emplace(variant_id_gen_.GenerateNextId(), stats);
-  }
-
-  // Use the narrowed down variant set to determine the smallest set of data
-  // that can be used to uniquely identify a variant.
-  auto format_components =
-      VariantStream::OptimalFormatForCollection(playlist_->GetVariants());
-
-  for (auto& [variant_id, metadata] : selectable_variants_) {
-    auto track = MediaTrack::CreateVideoTrack(
-        base::StringPrintf("Video.%d", variant_id.value()),
-        MediaTrack::VideoKind::kMain,
-        GetVariantDisplayString(variant_id, format_components, metadata.stream),
-        /*language=*/"",
-        /*enabled=*/false, variant_id.value());
-    metadata.track_id = track.track_id();
-    track_map_.try_emplace(metadata.track_id, std::move(track));
-  }
-
-  for (auto& [rendition_id, metadata] : selectable_renditions_) {
-    auto track = MediaTrack::CreateAudioTrack(
-        base::StringPrintf("Audio.%d", rendition_id.value()),
-        MediaTrack::AudioKind::kMain,
-        GetAudioRenditionDisplayString(metadata.rendition),
-        metadata.rendition->GetLanguage().value_or(""),
-        selected_audio_rendition_ == rendition_id, rendition_id.value(), true);
-    metadata.track_id = track.track_id();
-    track_map_.try_emplace(metadata.track_id, std::move(track));
-  }
+  return {};
 }
 
-RenditionManager::UpdatedSelections RenditionManager::GetUpdatedSelectionIds() {
-  UpdatedSelections selections;
-  selections.variant = preferred_variant_;
-  selections.audio_rendition = preferred_audio_rendition_;
-
-  if (!selections.variant.has_value()) {
-    // If the user did not specify a video variant, select the "best" one
-    // ourselves.
-    selections.variant = SelectBestVariant();
-  }
-
-  if (!selections.variant.has_value()) {
-    // Only when there are no valid variants to play can selections.variant be
-    // nullopt at this point. If that is the case, then we should select nothing
-    // return both nullopts, and let whoever is responsible for loading the
-    // content report an error.
-    return selections;
-  }
-
-  // The user may have selected a preferece for rendition that was present in a
-  // different variant - for example the user may have been playing a stereo
-  // rendition for some variant, but then decided to change to a variant which
-  // only has audio from a 5.1 surround stream. In this case, we want to select
-  // a rendition that is most similar to the user provided one.
-  selections.audio_rendition =
-      SelectBestRendition(*selections.variant, selections.audio_rendition);
-
-  return selections;
-}
-
-std::optional<RenditionManager::VariantID>
-RenditionManager::SelectBestVariant() {
-  std::optional<VariantID> best = std::nullopt;
-  if (selectable_variants_.size()) {
-    // If there is at least one thing in the list, then consider the lowest
-    // quality entry to be selectable, even if poor performance would otherwise
-    // preclude it from selection.
-    best = std::get<0>(*selectable_variants_.begin());
-  }
-
-  for (auto& [variant_id, stats] : selectable_variants_) {
-    const auto& variant_resolution = stats.stream->GetResolution();
-    if (variant_resolution.has_value() &&
-        variant_resolution->Area() > player_resolution_.Area64()) {
-      // This resolution is too large, so return the previous one.
-      return best;
-    }
-
-    const auto& variant_bps = stats.stream->GetBandwidth();
-    if (network_bps_ < variant_bps) {
-      // The network is likely not able to keep up with the download rate, so
-      // return the previous one.
-      return best;
-    }
-
-    // This variant is selectable, but keep checking for better ones.
-    best = variant_id;
-  }
-
-  return best;
-}
-
-std::optional<RenditionManager::RenditionID>
-RenditionManager::SelectRenditionBasedOnLanguage(
-    const VariantMetadata& variant,
-    std::optional<std::string> language,
-    bool only_autoselect) {
-  // Check to see if the default rendition exists and matches the language, if
-  // the language is specified. If language is specified but the default does
-  // not specify a language at all, consider it a match.
-  const auto rendition = variant.audio_rendition_group->GetDefaultRendition();
-  if (rendition.has_value()) {
-    // The rendition is guaranteed to be present.
-    RenditionID id = LookupRendition(std::get<1>(*rendition)).value();
-    if (!language.has_value()) {
-      return id;
-    }
-
-    auto default_lang = std::get<1>(*rendition)->GetLanguage();
-    if (!default_lang.has_value() || *default_lang == *language) {
-      return id;
-    }
-  }
-
-  // Check the remaining renditions - on this pass, they must be auto-selectable
-  // and match the language if it is specified. Return the first match.
-  for (const auto id : variant.audio_renditions) {
-    if (only_autoselect &&
-        !selectable_renditions_.at(id).rendition->MayAutoSelect()) {
-      continue;
-    }
-    const auto& rendition_lang =
-        selectable_renditions_.at(id).rendition->GetLanguage();
-    if (!language.has_value() || rendition_lang == language) {
-      return id;
-    }
-  }
-
-  if (rendition.has_value()) {
-    // Nothing acceptable matched our language, so select the default, if it
-    // exists. The default rendition is guaranteed to exist in the map.
-    return LookupRendition(std::get<1>(*rendition)).value();
-  }
-
-  // Select the first remotely acceptable rendition.
-  for (const auto id : variant.audio_renditions) {
-    if (only_autoselect &&
-        !selectable_renditions_.at(id).rendition->MayAutoSelect()) {
-      continue;
-    }
-    return id;
-  }
-
-  return std::nullopt;
-}
-
-std::optional<RenditionManager::RenditionID>
-RenditionManager::SelectBestRendition(
-    VariantID variant_id,
-    std::optional<RenditionID> maybe_rendition) {
-  const auto& variant = selectable_variants_.at(variant_id);
-
-  // If there are no renditions attached to this variant, then select nothing.
-  if (!variant.audio_renditions.size() || !variant.audio_rendition_group) {
-    return std::nullopt;
-  }
-
-  if (!maybe_rendition.has_value()) {
-    // The user did not select anything, so we first try to get a default from
-    // the group.
-
-    auto rendition = variant.audio_rendition_group->GetDefaultRendition();
-    if (rendition.has_value()) {
-      std::optional<RenditionID> id = LookupRendition(std::get<1>(*rendition));
-      if (id.has_value()) {
-        return id.value();
-      }
-    }
-
-    // Because there is no selected rendition, there is no language default
-    // to consider. This should change if we can get a system default language.
-    // Also, we should only be considering auto-selectable renditions.
-    return SelectRenditionBasedOnLanguage(variant, std::nullopt, true);
-  }
-
-  // The user did select a rendition, but it's possible that a user could, say
-  // select a stereo variant, then a german rendition, then a 5.1 surround
-  // variant. The german rendition is likely to be different in this new variant
-  // but we probably want to match it as closely as possible.
-  if (variant.audio_renditions.find(*maybe_rendition) !=
-      variant.audio_renditions.end()) {
-    // The user's rendition is still here, use it.
-    return maybe_rendition;
-  }
-
-  auto rendition_metadata = selectable_renditions_.at(*maybe_rendition);
-
-  // Use the language from the user's selected rendition (might be nullopt),
-  // and also don't consider only auto-selectable things, as the user has made
-  // a selection.
-  return SelectRenditionBasedOnLanguage(
-      variant, rendition_metadata.rendition->GetLanguage(), false);
-}
-
-std::optional<RenditionManager::RenditionID> RenditionManager::LookupRendition(
-    const Rendition* rendition) {
-  for (const auto& [id, metadata] : selectable_renditions_) {
-    if (metadata.rendition == rendition) {
-      return id;
-    }
-  }
-  return std::nullopt;
+std::vector<MediaTrack> RenditionManager::GetSelectablePrimaryRenditions()
+    const {
+  return selectable_variant_tracks_;
 }
 
 }  // namespace media::hls
