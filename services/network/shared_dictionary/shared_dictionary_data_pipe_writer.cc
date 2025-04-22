@@ -126,8 +126,7 @@ void SharedDictionaryDataPipeWriter::ContinueReadWrite(
     default:
       NOTREACHED();
   }
-  std::string_view chars = base::as_string_view(buffer);
-  writer_->Append(chars.data(), chars.size());
+  writer_->Append(buffer);
   consumer_handle_->EndReadData(buffer.size());
   consumer_watcher_.ArmOrNotify();
 }
