@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/settings/token_encryptor.h"
+#include "chrome/browser/device_identity/chromeos/token_encryptor.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -46,8 +46,9 @@ CryptohomeTokenEncryptor::~CryptohomeTokenEncryptor() {}
 std::string CryptohomeTokenEncryptor::EncryptWithSystemSalt(
     std::string_view token) {
   // Don't care about token encryption while debugging.
-  if (!base::SysInfo::IsRunningOnChromeOS())
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
     return std::string(token);
+  }
 
   std::array<uint8_t, kNonceSize> nonce;
   crypto::RandBytes(nonce);

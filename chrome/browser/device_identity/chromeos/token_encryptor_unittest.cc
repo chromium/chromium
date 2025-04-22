@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/settings/token_encryptor.h"
+#include "chrome/browser/device_identity/chromeos/token_encryptor.h"
 
 #include <string>
 

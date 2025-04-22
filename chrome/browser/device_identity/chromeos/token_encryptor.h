@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SETTINGS_TOKEN_ENCRYPTOR_H_
-#define CHROME_BROWSER_ASH_SETTINGS_TOKEN_ENCRYPTOR_H_
+#ifndef CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_TOKEN_ENCRYPTOR_H_
+#define CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_TOKEN_ENCRYPTOR_H_
 
 #include <array>
 #include <memory>
@@ -85,4 +85,4 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SETTINGS_TOKEN_ENCRYPTOR_H_
+#endif  // CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_TOKEN_ENCRYPTOR_H_

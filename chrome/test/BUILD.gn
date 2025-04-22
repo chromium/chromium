@@ -8393,6 +8393,7 @@ test("unit_tests") {
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
+      "../browser/device_identity/chromeos/token_encryptor_unittest.cc",
       "../browser/device_notifications/device_pinned_notification_unittest.cc",
       "../browser/device_notifications/device_pinned_notification_unittest.h",
       "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc",
