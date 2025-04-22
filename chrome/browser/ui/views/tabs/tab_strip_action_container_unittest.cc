@@ -126,6 +126,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
             ::testing::Return(tab_strip_->controller()->GetProfile()));
     ON_CALL(*browser_window_interface_, GetActiveTabInterface)
         .WillByDefault(::testing::Return(tab_interface_.get()));
+    ON_CALL(*browser_window_interface_, CanShowCallToAction)
+        .WillByDefault(::testing::Return(true));
     ON_CALL(*tab_interface_, GetContents)
         .WillByDefault(::testing::Return(web_contents_.get()));
 

@@ -36,7 +36,20 @@ void GlicNudgeController::UpdateNudgeLabel(
   auto* const tab_interface =
       browser_window_interface_->GetActiveTabInterface();
   if (tab_interface->GetContents() != web_contents) {
-    callback.Run(GlicNudgeActivity::kNudgeNotShownWebContents);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       GlicNudgeActivity::kNudgeNotShownWebContents));
+    return;
+  }
+  // Empty nudge labels close the nudge, allow those to bypass the
+  // CanShowCallToAction check.
+  if (!nudge_label.empty() &&
+      !browser_window_interface_->CanShowCallToAction()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       GlicNudgeActivity::kNudgeNotShownWindowCallToActionUI));
     return;
   }
 
@@ -73,6 +86,8 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
       glic_service->TryPreloadFre();
 #endif
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
+      scoped_window_call_to_action_ptr =
+          browser_window_interface_->ShowCallToAction();
       break;
     }
     case GlicNudgeActivity::kNudgeClicked:
@@ -81,8 +96,12 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
     case GlicNudgeActivity::kNudgeIgnoredNavigation:
       nudge_activity_callback_.Run(activity);
       nudge_activity_callback_.Reset();
+      scoped_window_call_to_action_ptr.reset();
+
       break;
     case GlicNudgeActivity::kNudgeNotShownWebContents:
+    case GlicNudgeActivity::kNudgeNotShownWindowCallToActionUI:
+      scoped_window_call_to_action_ptr.reset();
       nudge_activity_callback_.Reset();
       break;
   }

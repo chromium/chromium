@@ -229,6 +229,9 @@ void ContextualCueingService::OnNudgeActivity(
     case tabs::GlicNudgeActivity::kNudgeNotShownWebContents:
       interaction = NudgeInteraction::kNudgeNotShownWebContents;
       break;
+    case tabs::GlicNudgeActivity::kNudgeNotShownWindowCallToActionUI:
+      interaction = NudgeInteraction::kNudgeNotShownWindowCallToActionUI;
+      break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
       interaction = NudgeInteraction::kIgnoredTabChange;
       log_ukm = true;

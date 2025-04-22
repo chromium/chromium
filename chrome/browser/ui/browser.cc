@@ -1300,6 +1300,14 @@ bool Browser::IsTabModalPopup() const {
   return is_tab_modal_popup_;
 }
 
+bool Browser::CanShowCallToAction() const {
+  return !showing_call_to_action_;
+}
+
+std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
+  return std::make_unique<ScopedWindowCallToActionImpl>(this);
+}
+
 void Browser::DidBecomeActive() {
   if (!is_active_) {
     is_active_ = true;
@@ -3835,4 +3843,15 @@ BackgroundContents* Browser::CreateBackgroundContents(
       std::string());  // No extra headers.
 
   return contents;
+}
+
+Browser::ScopedWindowCallToActionImpl::ScopedWindowCallToActionImpl(
+    Browser* browser)
+    : browser_(browser->weak_factory_.GetWeakPtr()) {
+  DCHECK(!browser_->showing_call_to_action_);
+  browser_->showing_call_to_action_ = true;
+}
+
+Browser::ScopedWindowCallToActionImpl::~ScopedWindowCallToActionImpl() {
+  browser_->showing_call_to_action_ = false;
 }

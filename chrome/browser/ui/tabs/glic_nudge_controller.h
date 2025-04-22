@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
+class ScopedWindowCallToAction;
 
 namespace content {
 class WebContents;
@@ -26,6 +27,7 @@ enum class GlicNudgeActivity {
   kNudgeNotShownWebContents,
   kNudgeIgnoredActiveTabChanged,
   kNudgeIgnoredNavigation,
+  kNudgeNotShownWindowCallToActionUI,
 };
 
 // Controller that mediates Glic Nudges and ensures that only the active tab is
@@ -80,6 +82,7 @@ class GlicNudgeController {
   GlicNudgeActivityCallback nudge_activity_callback_;
 
   std::vector<base::CallbackListSubscription> browser_subscriptions_;
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr;
 };
 
 }  // namespace tabs

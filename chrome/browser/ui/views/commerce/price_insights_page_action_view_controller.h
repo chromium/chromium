@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ref.h"
 
+class ScopedWindowCallToAction;
+
 namespace tabs {
 class TabInterface;
 }
@@ -38,6 +40,8 @@ class PriceInsightsPageActionViewController {
   // Reference to the tab interface, which provides access to tab-specific
   // features.
   const raw_ref<tabs::TabInterface> tab_interface_;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 };
 
 }  // namespace commerce

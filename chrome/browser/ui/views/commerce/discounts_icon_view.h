@@ -18,6 +18,8 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
+class ScopedWindowCallToAction;
+
 class DiscountsIconView : public PageActionIconView {
   METADATA_HEADER(DiscountsIconView, PageActionIconView)
 
@@ -63,6 +65,8 @@ class DiscountsIconView : public PageActionIconView {
   base::OneShotTimer animate_out_timer_;
 
   bool is_label_expanded_;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 
   base::WeakPtrFactory<DiscountsIconView> weak_ptr_factory_{this};
 };

@@ -36,6 +36,7 @@ void PriceInsightsPageActionViewController::UpdatePageActionIcon() {
     // cleared.
     page_action_controller->HideSuggestionChip(kActionCommercePriceInsights);
     page_action_controller->Hide(kActionCommercePriceInsights);
+    scoped_window_call_to_action_ptr_.reset();
     return;
   }
 
@@ -45,6 +46,13 @@ void PriceInsightsPageActionViewController::UpdatePageActionIcon() {
           PageActionIconType::kPriceInsights)) {
     return;
   }
+
+  if (!tab_interface_->GetBrowserWindowInterface()->CanShowCallToAction()) {
+    return;
+  }
+
+  scoped_window_call_to_action_ptr_ =
+      tab_interface_->GetBrowserWindowInterface()->ShowCallToAction();
 
   PriceInsightsIconLabelType label_type =
       tab_helper->GetPriceInsightsIconLabelTypeForPage();
