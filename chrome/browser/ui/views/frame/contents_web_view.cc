@@ -6,7 +6,9 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -32,6 +34,12 @@ ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
   status_bubble_ = std::make_unique<StatusBubbleViews>(this);
   status_bubble_->Reposition();
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    new_tab_footer_ = std::make_unique<new_tab_footer::NewTabFooterWebView>(
+        browser_context, this);
+    new_tab_footer_->Reposition();
+  }
+
   web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(this);
 }
 
@@ -77,6 +85,9 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 void ContentsWebView::OnVisibleBoundsChanged() {
   if (status_bubble_) {
     status_bubble_->Reposition();
+  }
+  if (new_tab_footer_) {
+    new_tab_footer_->Reposition();
   }
 }
 
