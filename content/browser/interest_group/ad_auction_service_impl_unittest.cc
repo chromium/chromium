@@ -101,6 +101,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
@@ -837,6 +838,48 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
                                const url::Origin&)>
       check_coordinator_;
 };
+
+AggregatableReportRequest GenerateReportRequest(
+    PrivateAggregationHost::ReportRequestGenerator generator,
+    PrivateAggregationPendingContributions::Wrapper contributions) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)) {
+    return std::move(generator).Run(
+        std::move(contributions.GetContributionsVector()));
+  }
+
+  EXPECT_TRUE(
+      contributions.GetPendingContributions().are_contributions_finalized());
+
+  // This function should only be used for flows that don't call
+  // `PrivateAggregationHost::ContributeToHistogramOnEvent()`.
+  EXPECT_TRUE(contributions.GetPendingContributions()
+                  .GetConditionalContributionsForTesting()
+                  .empty());
+
+  std::vector<PrivateAggregationPendingContributions::BudgeterResult>
+      all_approved(
+          /*n=*/contributions.GetPendingContributions()
+              .unconditional_contributions()
+              .size(),
+          PrivateAggregationPendingContributions::BudgeterResult::kApproved);
+
+  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+      final_unmerged_contributions =
+          contributions.GetPendingContributions()
+              .CompileFinalUnmergedContributions(
+                  /*test_budgeter_results=*/all_approved,
+                  PrivateAggregationPendingContributions::
+                      PendingReportLimitResult::kNotAtLimit,
+                  PrivateAggregationPendingContributions::NullReportBehavior::
+                      kSendNullReport);
+
+  all_approved.resize(final_unmerged_contributions.size());
+
+  return std::move(generator).Run(
+      std::move(contributions.GetPendingContributions())
+          .TakeFinalContributions(all_approved));
+}
 
 }  // namespace
 
@@ -9972,8 +10015,9 @@ function scoreAd(
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request = std::move(generator).Run(
-                std::move(contributions.GetContributionsVector()));
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions));
+
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -10248,6 +10292,12 @@ function scoreAd(
                   main_rfh(),
                   blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
       .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting))
+      .Times(0);
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, std::nullopt);
@@ -10318,6 +10368,12 @@ function scoreAd(
                   main_rfh(),
                   blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
       .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting))
+      .Times(0);
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, std::nullopt);
@@ -10387,6 +10443,12 @@ function scoreAd(
               LogWebFeatureForCurrentPage(
                   main_rfh(),
                   blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
+      .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting))
       .Times(0);
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
@@ -10459,6 +10521,176 @@ function scoreAd(
       LogWebFeatureForCurrentPage(
           main_rfh(),
           blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting))
+      .Times(0);
+
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
+  InvokeCallbackForURN(*auction_result);
+}
+
+TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
+       PrivateAggregationErrorReportingUseCounterLogged) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  privateAggregation.enableDebugMode();
+  privateAggregation.contributeToHistogramOnEvent(
+      "reserved.report-success",
+      {bucket: 1n, value: 2, filteringId: 3n});
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  PrivateAggregationUseCounterContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(), blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(), blink::mojom::WebFeature::kPrivateAggregationApiFledge));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiFledgeExtensions));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting));
+
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
+  InvokeCallbackForURN(*auction_result);
+}
+
+TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
+       PrivateAggregationErrorReportingUseCounterNotLoggedIfFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiErrorReporting);
+
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  privateAggregation.enableDebugMode();
+  privateAggregation.contributeToHistogramOnEvent(
+      "reserved.report-success",
+      {bucket: 1n, value: 2, filteringId: 3n});
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  PrivateAggregationUseCounterContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(), blink::mojom::WebFeature::kPrivateAggregationApiAll))
+      .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(), blink::mojom::WebFeature::kPrivateAggregationApiFledge))
+      .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiFledgeExtensions))
+      .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode))
+      .Times(0);
+  EXPECT_CALL(browser_client,
+              LogWebFeatureForCurrentPage(
+                  main_rfh(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
+      .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting))
+      .Times(0);
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, std::nullopt);
@@ -10533,6 +10765,12 @@ function scoreAd(
                   main_rfh(),
                   blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
       .Times(0);
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting))
+      .Times(0);
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
 
   // There should've been a contributeToHistogram() error.
@@ -10543,6 +10781,9 @@ function scoreAd(
 // multiple times (and different functions are used).
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
        PrivateAggregationUseCountersLoggedOnlyOnce) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -10551,6 +10792,8 @@ function generateBid(
                                                   {bucket: 1n, value: 2});
   privateAggregation.contributeToHistogram(
       {bucket: 3n, value: 4, filteringId: 5n});
+  privateAggregation.contributeToHistogramOnEvent("reserved.report-success",
+                                                  {bucket: 6n, value: 7});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -10561,6 +10804,8 @@ function scoreAd(
   privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
   privateAggregation.contributeToHistogramOnEvent(
       "reserved.win", {bucket: 7n, value: 8, filteringId: 9n});
+  privateAggregation.contributeToHistogramOnEvent(
+      "reserved.report-success", {bucket: 10n, value: 11, filteringId: 12n});
   return bid;
 }
 )";
@@ -10604,6 +10849,11 @@ function scoreAd(
       LogWebFeatureForCurrentPage(
           main_rfh(),
           blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds));
+  EXPECT_CALL(
+      browser_client,
+      LogWebFeatureForCurrentPage(
+          main_rfh(),
+          blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting));
 
   std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, std::nullopt);
@@ -10659,8 +10909,8 @@ function reportResult() {}
                  PrivateAggregationBudgetKey budget_key,
                  PrivateAggregationHost::NullReportBehavior
                      null_report_behavior) {
-                AggregatableReportRequest request = std::move(generator).Run(
-                    std::move(contributions.GetContributionsVector()));
+                AggregatableReportRequest request = GenerateReportRequest(
+                    std::move(generator), std::move(contributions));
               }),
           /*browser_context=*/
           storage_partition_impl->browser_context());
@@ -14227,8 +14477,8 @@ function reportResult(auctionConfig, browserSignals) {
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request = std::move(generator).Run(
-                std::move(contributions.GetContributionsVector()));
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -14360,8 +14610,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request = std::move(generator).Run(
-                std::move(contributions.GetContributionsVector()));
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -14432,8 +14682,8 @@ function reportResult(auctionConfig, browserSignals) {
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
               PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request = std::move(generator).Run(
-                std::move(contributions.GetContributionsVector()));
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions));
             EXPECT_THAT(
                 request.payload_contents().contributions,
                 testing::UnorderedElementsAre(
@@ -18302,8 +18552,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                 PrivateAggregationBudgetKey budget_key,
                 PrivateAggregationHost::NullReportBehavior
                     null_report_behavior) {
-              AggregatableReportRequest request = std::move(generator).Run(
-                  contributions.GetContributionsVector());
+              AggregatableReportRequest request = GenerateReportRequest(
+                  std::move(generator), std::move(contributions));
               EXPECT_THAT(
                   request.payload_contents().contributions,
                   testing::UnorderedElementsAre(

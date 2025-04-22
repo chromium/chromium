@@ -549,8 +549,8 @@ void TakePrivateAggregationRequestsForBidState(
 
     for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
          requests) {
-      bool reserved_once = IsPrivateAggregationRequestReservedOnce(*request);
-      if (reserved_once && !is_reserved_once_rep) {
+      if (ShouldKeepRequestOnlyIfReservedOnceRep(*request) &&
+          !is_reserved_once_rep) {
         continue;
       }
       std::optional<PrivateAggregationRequestWithEventType> converted_request =
@@ -4181,7 +4181,8 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
               /*filtering_id=*/std::nullopt),
           // TODO(caraitto): Consider allowing this to be set.
           blink::mojom::AggregationServiceMode::kDefault,
-          std::move(debug_mode_details)));
+          std::move(debug_mode_details),
+          /*error_event=*/std::nullopt));
   return true;
 }
 

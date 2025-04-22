@@ -1105,6 +1105,24 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
         blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds);
   }
 
+  if (!has_logged_private_aggregation_error_reporting_web_feature_ &&
+      std::ranges::any_of(
+          private_aggregation_requests, [](const auto& request) {
+            auction_worklet::mojom::AggregatableReportContributionPtr&
+                contribution = request->contribution;
+            if (contribution->is_histogram_contribution()) {
+              return false;
+            }
+            CHECK(contribution->is_for_event_contribution());
+            return contribution->get_for_event_contribution()
+                ->event_type->is_reserved_error();
+          })) {
+    has_logged_private_aggregation_error_reporting_web_feature_ = true;
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &render_frame_host(),
+        blink::mojom::WebFeature::kPrivateAggregationApiErrorReporting);
+  }
+
   if (!has_logged_private_aggregation_enable_debug_mode_web_feature_ &&
       std::ranges::any_of(private_aggregation_requests,
                           [](const auto& request) {

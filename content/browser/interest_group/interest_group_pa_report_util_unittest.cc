@@ -16,7 +16,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-shared.h"
 
 namespace content {
 namespace {
@@ -29,7 +31,8 @@ const PrivateAggregationRequestWithEventType
                 /*value=*/45,
                 /*filtering_id=*/std::nullopt),
             blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New()),
+            blink::mojom::DebugModeDetails::New(),
+            /*error_event=*/std::nullopt),
         /*event_type=*/std::nullopt);
 
 auction_worklet::mojom::SignalBucketPtr CreateSignalBucket(
@@ -73,22 +76,28 @@ auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
 CreateFinalizedHistogramRequest(
     absl::uint128 bucket,
     int32_t value,
-    std::optional<uint64_t> filtering_id = std::nullopt) {
+    std::optional<uint64_t> filtering_id = std::nullopt,
+    std::optional<blink::mojom::PrivateAggregationErrorEvent> error_event =
+        std::nullopt) {
   return auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
       blink::mojom::AggregatableReportHistogramContribution::New(bucket, value,
                                                                  filtering_id),
       blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      blink::mojom::DebugModeDetails::New(), error_event);
 }
 
-// TODO(crbug.com/381788013): Expand tests for aggregate error reporting once
-// browser-side functionality is complete.
 using ReservedNonErrorEventType =
     auction_worklet::mojom::ReservedNonErrorEventType;
+using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
 
 auction_worklet::mojom::EventTypePtr ToEventTypePtr(
     ReservedNonErrorEventType reserved_event_type) {
   return auction_worklet::mojom::EventType::NewReservedNonError(
+      reserved_event_type);
+}
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedErrorEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReservedError(
       reserved_event_type);
 }
 
@@ -228,7 +237,8 @@ TEST_F(InterestGroupPaReportUtilTest, AggregationModeAndDebugMode) {
       blink::mojom::AggregationServiceMode::kExperimentalPoplar,
       blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
-          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)),
+      /*error_event=*/std::nullopt);
 
   PrivateAggregationRequestWithEventType request_with_event_type(
       expected_request.Clone(), /*event_type=*/std::nullopt);
@@ -490,7 +500,8 @@ TEST_F(InterestGroupPaReportUtilTest,
               /*bucket=*/6, /*value=*/45,
               /*filtering_id=*/std::nullopt),
           blink::mojom::AggregationServiceMode::kDefault,
-          blink::mojom::DebugModeDetails::New()),
+          blink::mojom::DebugModeDetails::New(),
+          /*error_event=*/std::nullopt),
       /*event_type=*/std::nullopt);
   EXPECT_EQ(
       std::move(expected_requests_with_event_type),
@@ -959,6 +970,41 @@ TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId) {
   }
 }
 
+TEST_F(InterestGroupPaReportUtilTest, ErrorEventContributionFilledInCorrectly) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+  EXPECT_EQ(
+      CreatePrivateAggregationRequestWithEventType(
+          CreateFinalizedHistogramRequest(
+              /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt,
+              blink::mojom::PrivateAggregationErrorEvent::kReportSuccess)),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess)),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
+          /*is_winner=*/true));
+
+  EXPECT_EQ(
+      CreatePrivateAggregationRequestWithEventType(
+          CreateFinalizedHistogramRequest(
+              /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt,
+              blink::mojom::PrivateAggregationErrorEvent::
+                  kAlreadyTriggeredExternalError)),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kUncaughtError)),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
+          /*is_winner=*/false));
+}
+
 TEST_F(InterestGroupPaReportUtilTest, IsPrivateAggregationRequestReservedOnce) {
   EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
       /*bucket=*/123, /*value=*/45,
@@ -973,6 +1019,36 @@ TEST_F(InterestGroupPaReportUtilTest, IsPrivateAggregationRequestReservedOnce) {
                              /*event_type=*/ToEventTypePtr("click"))));
   EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(
       *CreateHistogramRequest(/*bucket=*/123, /*value=*/45)));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/ToEventTypePtr(ReservedErrorEventType::kReportSuccess))));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedErrorEventType::kUncaughtError))));
+}
+
+TEST_F(InterestGroupPaReportUtilTest, ShouldKeepRequestOnlyIfReservedOnceRep) {
+  EXPECT_FALSE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways))));
+  EXPECT_TRUE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedNonErrorEventType::kReservedOnce))));
+  EXPECT_FALSE(ShouldKeepRequestOnlyIfReservedOnceRep(
+      *CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                             /*event_type=*/ToEventTypePtr("click"))));
+  EXPECT_FALSE(ShouldKeepRequestOnlyIfReservedOnceRep(
+      *CreateHistogramRequest(/*bucket=*/123, /*value=*/45)));
+  EXPECT_TRUE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/ToEventTypePtr(ReservedErrorEventType::kReportSuccess))));
+  EXPECT_TRUE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedErrorEventType::kUncaughtError))));
 }
 
 }  // namespace content

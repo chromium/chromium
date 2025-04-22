@@ -821,9 +821,10 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
       output.component_win_pagg_requests[agg_phase_key].emplace_back(
           std::move(request));
     } else {
+      std::optional<blink::mojom::PrivateAggregationErrorEvent> error_event;
       if (event_type->is_reserved_error()) {
-        // TODO(crbug.com/381788013): Handle error events.
-        return;
+        error_event =
+            ConvertErrorEventToPAggType(event_type->get_reserved_error());
       }
 
       // Server already filtered out not needed contributions based on final
@@ -836,7 +837,7 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
                   /*filtering_id=*/filtering_id),
               // TODO(qingxinwu): consider allowing this to be set
               blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              blink::mojom::DebugModeDetails::New(), error_event);
 
       if (event_type->is_non_reserved()) {
         output.server_filtered_pagg_requests_non_reserved[event_type_str]

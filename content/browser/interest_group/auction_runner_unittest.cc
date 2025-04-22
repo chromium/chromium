@@ -1598,14 +1598,18 @@ BuildPrivateAggregationRequest(
       std::move(debug_mode_details));
 }
 
-// TODO(crbug.com/381788013): Expand tests for aggregate error reporting once
-// browser-side functionality is complete.
 using ReservedNonErrorEventType =
     auction_worklet::mojom::ReservedNonErrorEventType;
+using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
 
 auction_worklet::mojom::EventTypePtr ToEventTypePtr(
     ReservedNonErrorEventType reserved_event_type) {
   return auction_worklet::mojom::EventType::NewReservedNonError(
+      reserved_event_type);
+}
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedErrorEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReservedError(
       reserved_event_type);
 }
 
@@ -1630,6 +1634,19 @@ BuildPrivateAggregationForEventRequest(
           NewForEventContribution(contribution.Clone()),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
+}
+
+auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+BuildFinalizedPrivateAggregationErrorEventRequest(
+    absl::uint128 bucket,
+    int value,
+    blink::mojom::PrivateAggregationErrorEvent error_event,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
+  return auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+      blink::mojom::AggregatableReportHistogramContribution::New(bucket, value,
+                                                                 filtering_id),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New(), error_event);
 }
 
 auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -17978,6 +17995,573 @@ TEST_F(AuctionRunnerTest,
                                     /*value=*/1, /*debug_mode_details=*/
                                     blink::mojom::DebugModeDetails::New(),
                                     /*filtering_id=*/1)))));
+}
+
+TEST_F(AuctionRunnerTest, PrivateAggregationRequestErrorReporting) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+
+  // Only one bidder participating the auction, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+
+  const char kBidScript[] = R"(
+    const bid = %d;
+
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success',
+          {
+            bucket: 123n,
+            value: 4,
+            filteringId: 1n,
+          });
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      privateAggregation.contributeToHistogram({
+        bucket: 456n,
+        value: 7,
+        filteringId: 2n,
+      });
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.insufficient-budget',
+          {
+            bucket: 123n,
+            value: 4,
+          });
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.pending-report-limit-reached',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 0n,
+          });
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.too-many-contributions',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 255n,
+          });
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(
+                  // generateBid().
+                  BuildFinalizedPrivateAggregationErrorEventRequest(
+                      /*bucket=*/123, /*value=*/4, /*error_event=*/
+                      blink::mojom::PrivateAggregationErrorEvent::
+                          kReportSuccess,
+                      /*filtering_id=*/1),
+                  // reportWin().
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/456, /*value=*/7, /*debug_mode_details=*/
+                      blink::mojom::DebugModeDetails::New(),
+                      /*filtering_id=*/2),
+                  BuildFinalizedPrivateAggregationErrorEventRequest(
+                      /*bucket=*/123, /*value=*/4, /*error_event=*/
+                      blink::mojom::PrivateAggregationErrorEvent::
+                          kInsufficientBudget,
+                      /*filtering_id=*/std::nullopt))),
+          testing::Pair(kSeller,
+                        ElementsAreRequests(
+                            // scoreAd().
+                            BuildFinalizedPrivateAggregationErrorEventRequest(
+                                /*bucket=*/234, /*value=*/5, /*error_event=*/
+                                blink::mojom::PrivateAggregationErrorEvent::
+                                    kPendingReportLimitReached,
+                                /*filtering_id=*/0),
+                            // reportResult().
+                            BuildFinalizedPrivateAggregationErrorEventRequest(
+                                /*bucket=*/234, /*value=*/5, /*error_event=*/
+                                blink::mojom::PrivateAggregationErrorEvent::
+                                    kTooManyContributions,
+                                /*filtering_id=*/255)))));
+  EXPECT_THAT(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kInsufficientBudget),
+              /*filtering_id=*/std::nullopt),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5,
+              /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kTooManyContributions),
+              /*filtering_id=*/255),
+          BuildPrivateAggregationRequest(
+              /*bucket=*/456, /*value=*/7,
+              /*debug_mode_details=*/blink::mojom::DebugModeDetails::New(),
+              /*filtering_id=*/2)));
+}
+
+TEST_F(AuctionRunnerTest,
+       PrivateAggregationRequestErrorReporting_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiErrorReporting);
+
+  // Only one bidder participating the auction, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+
+  const char kBidScript[] = R"(
+    const bid = %d;
+
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success',
+          {
+            bucket: 123n,
+            value: 4,
+            filteringId: 1n,
+          });
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      privateAggregation.contributeToHistogram({
+        bucket: 456n,
+        value: 7,
+        filteringId: 2n,
+      });
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.insufficient-budget',
+          {
+            bucket: 123n,
+            value: 4,
+          });
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.pending-report-limit-reached',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 0n,
+          });
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.too-many-contributions',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 255n,
+          });
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  // All error reporting calls should be ignored if the feature is disabled.
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(testing::Pair(
+          kBidder1, ElementsAreRequests(
+                        // generateBid().
+
+                        // reportWin().
+                        BuildPrivateAggregationRequest(
+                            /*bucket=*/456, /*value=*/7, /*debug_mode_details=*/
+                            blink::mojom::DebugModeDetails::New(),
+                            /*filtering_id=*/2)))));
+  EXPECT_THAT(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(BuildPrivateAggregationRequest(
+          /*bucket=*/456, /*value=*/7,
+          /*debug_mode_details=*/blink::mojom::DebugModeDetails::New(),
+          /*filtering_id=*/2)));
+}
+
+TEST_F(
+    AuctionRunnerTest,
+    PrivateAggregationRequestErrorReportingUncaughtError_OnlyKeptIfTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+
+  // Only one bidder participating the auction, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+
+  const char kBidScript[] = R"(
+    const bid = %d;
+
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+         browserSignals) {
+      privateAggregation.contributeToHistogram({
+        bucket: 456n,
+        value: 7,
+        filteringId: 2n,
+      });
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.uncaught-error',
+          {
+            bucket: 123n,
+            value: 4,
+            filteringId: 1n,
+          });
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.uncaught-error',
+          {
+            bucket: 123n,
+            value: 4,
+          });
+      undefinedVariable;
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.uncaught-error',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 0n,
+          });
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.uncaught-error',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 255n,
+          });
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(
+      result_.errors,
+      testing::UnorderedElementsAre(testing::HasSubstr(
+          "Uncaught ReferenceError: undefinedVariable is not defined.")));
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(testing::Pair(
+          kBidder1, ElementsAreRequests(
+                        // generateBid().
+                        BuildPrivateAggregationRequest(
+                            /*bucket=*/456, /*value=*/7, /*debug_mode_details=*/
+                            blink::mojom::DebugModeDetails::New(),
+                            /*filtering_id=*/2),
+                        // reportWin().
+                        BuildFinalizedPrivateAggregationErrorEventRequest(
+                            /*bucket=*/123, /*value=*/4, /*error_event=*/
+                            blink::mojom::PrivateAggregationErrorEvent::
+                                kAlreadyTriggeredExternalError,
+                            /*filtering_id=*/std::nullopt)))));
+  EXPECT_THAT(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kUncaughtError),
+              /*filtering_id=*/std::nullopt),
+          BuildPrivateAggregationRequest(
+              /*bucket=*/456, /*value=*/7,
+              /*debug_mode_details=*/blink::mojom::DebugModeDetails::New(),
+              /*filtering_id=*/2)));
+}
+
+TEST_F(
+    AuctionRunnerTest,
+    PrivateAggregationRequestErrorReportingMultipleBids_ErrorsKeptForOneBidPerReportingOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+
+  const char kBidScript[] = R"(
+    const bid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success',
+          {
+            bucket: 123n,
+            value: 4,
+            filteringId: 1n,
+          });
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      privateAggregation.contributeToHistogram({
+        bucket: 456n,
+        value: 7,
+        filteringId: 2n,
+      });
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.insufficient-budget',
+          {
+            bucket: 123n,
+            value: 4,
+          });
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.pending-report-limit-reached',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 0n,
+          });
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.too-many-contributions',
+          {
+            bucket: 234n,
+            value: 5,
+            filteringId: 255n,
+          });
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         base::StringPrintf(kBidScript, 2));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Add a bunch of bidders to each to test that we only report things once.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, "2", kBidder1Url, /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, "3", kBidder1Url, /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, "2", kBidder2Url, /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, "3", kBidder2Url, /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+
+  // Bidder 2 won the auction.
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  // We see a single copy of each set of contribution conditional on an error
+  // report per reporting origin (for generateBid() and scoreAd()).
+  // Unconditional contributions are passed along for each bid. Contributions
+  // are also always passed along in reporting functions.
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(kBidder1,
+                        ElementsAreRequests(
+                            // generateBid().
+                            BuildFinalizedPrivateAggregationErrorEventRequest(
+                                /*bucket=*/123, /*value=*/4, /*error_event=*/
+                                blink::mojom::PrivateAggregationErrorEvent::
+                                    kReportSuccess,
+                                /*filtering_id=*/1))),
+          // None for reportWin() as this bid didn't win.
+          testing::Pair(
+              kBidder2,
+              ElementsAreRequests(
+                  // generateBid().
+                  BuildFinalizedPrivateAggregationErrorEventRequest(
+                      /*bucket=*/123, /*value=*/4, /*error_event=*/
+                      blink::mojom::PrivateAggregationErrorEvent::
+                          kReportSuccess,
+                      /*filtering_id=*/1),
+                  // reportWin().
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/456, /*value=*/7, /*debug_mode_details=*/
+                      blink::mojom::DebugModeDetails::New(),
+                      /*filtering_id=*/2),
+                  BuildFinalizedPrivateAggregationErrorEventRequest(
+                      /*bucket=*/123, /*value=*/4, /*error_event=*/
+                      blink::mojom::PrivateAggregationErrorEvent::
+                          kInsufficientBudget,
+                      /*filtering_id=*/std::nullopt))),
+          testing::Pair(kSeller,
+                        ElementsAreRequests(
+                            // scoreAd().
+                            BuildFinalizedPrivateAggregationErrorEventRequest(
+                                /*bucket=*/234, /*value=*/5, /*error_event=*/
+                                blink::mojom::PrivateAggregationErrorEvent::
+                                    kPendingReportLimitReached,
+                                /*filtering_id=*/0),
+                            // reportResult().
+                            BuildFinalizedPrivateAggregationErrorEventRequest(
+                                /*bucket=*/234, /*value=*/5, /*error_event=*/
+                                blink::mojom::PrivateAggregationErrorEvent::
+                                    kTooManyContributions,
+                                /*filtering_id=*/255)))));
+
+  // Note that each attempted contribution is sent to this function, even if it
+  // is dropped by the reserved.once-like logic. (So, we have six copies of the
+  // contributions attempted in generateBid() and scoreAd().)
+  EXPECT_THAT(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4, /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4, /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4, /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4, /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4, /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4, /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess),
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5, /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5, /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5, /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5, /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5, /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5, /*event_type=*/
+              ToEventTypePtr(
+                  ReservedErrorEventType::kPendingReportLimitReached),
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kInsufficientBudget),
+              /*filtering_id=*/std::nullopt),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kTooManyContributions),
+              /*filtering_id=*/255),
+          BuildPrivateAggregationRequest(
+              /*bucket=*/456, /*value=*/7,
+              /*debug_mode_details=*/blink::mojom::DebugModeDetails::New(),
+              /*filtering_id=*/2)));
 }
 
 TEST_F(AuctionRunnerTest,
