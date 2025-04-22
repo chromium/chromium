@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,6 +52,8 @@ std::unique_ptr<views::View> CreateDialogContentView() {
 void ShowAutofillAiFirstRunDialog(content::WebContents* web_contents) {
   ShowFeatureFirstRunDialog(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE),
+      ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT),
+      ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT_DARK),
       CreateDialogContentView(), web_contents);
 }
 

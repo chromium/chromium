@@ -20,6 +20,10 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace views {
 class View;
 class Widget;
@@ -30,10 +34,12 @@ namespace feature_first_run {
 enum class InfoBoxPosition { kStart, kMiddle, kEnd };
 
 // Show a tab-modal dialog from the supplied params on the `web_contents`.
-// TODO(crbug.com/409520456): Add banner and button callbacks as params to
-// construct the dialog.
+// TODO(crbug.com/409520456): Add button callbacks as params to construct the
+// dialog.
 views::Widget* ShowFeatureFirstRunDialog(
     std::u16string title,
+    ui::ImageModel banner,
+    ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
     content::WebContents* web_contents);
 

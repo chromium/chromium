@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
@@ -36,9 +37,12 @@ namespace {
 // Builds a DialogModel for a generic FFR dialog.
 std::unique_ptr<ui::DialogModel> CreateGenericFeatureFirstRunDialogModel(
     std::u16string title,
+    ui::ImageModel banner,
+    ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view) {
   return ui::DialogModel::Builder()
       .SetTitle(std::move(title))
+      .SetBannerImage(std::move(banner), std::move(dark_mode_banner))
       .AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
               std::move(content_view),
@@ -148,6 +152,8 @@ std::unique_ptr<views::View> CreateDialogContentViewContainer() {
 
 views::Widget* ShowFeatureFirstRunDialog(
     std::u16string title,
+    ui::ImageModel banner,
+    ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
     content::WebContents* web_contents) {
   tabs::TabInterface* tab =
@@ -157,8 +163,9 @@ views::Widget* ShowFeatureFirstRunDialog(
   }
 
   return constrained_window::ShowWebModal(
-      CreateGenericFeatureFirstRunDialogModel(std::move(title),
-                                              std::move(content_view)),
+      CreateGenericFeatureFirstRunDialogModel(
+          std::move(title), std::move(banner), std::move(dark_mode_banner),
+          std::move(content_view)),
       web_contents);
 }
 
