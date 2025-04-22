@@ -41,6 +41,10 @@ namespace download {
 class BackgroundDownloadService;
 }  // namespace download
 
+namespace on_device_internals {
+class PageHandler;
+}
+
 namespace optimization_guide {
 class ChromeHintsManager;
 class ModelExecutionEnabledBrowserTest;
@@ -243,7 +247,7 @@ class OptimizationGuideKeyedService
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
-  friend class OnDeviceInternalsPageHandler;
+  friend class on_device_internals::PageHandler;
   friend class OptimizationGuideInternalsUI;
   friend class OptimizationGuideMessageHandler;
   friend class OptimizationGuideWebContentsObserver;

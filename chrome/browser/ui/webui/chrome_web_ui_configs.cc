@@ -305,7 +305,8 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<NewTabPageThirdPartyUIConfig>());
   map.AddWebUIConfig(std::make_unique<NewTabUIConfig>());
   map.AddWebUIConfig(std::make_unique<OmniboxPopupUIConfig>());
-  map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<on_device_internals::OnDeviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerUIConfig>());
   map.AddWebUIConfig(std::make_unique<PrivacySandboxDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<privacy_sandbox::BaseDialogUIConfig>());

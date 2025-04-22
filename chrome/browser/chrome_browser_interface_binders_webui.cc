@@ -1187,7 +1187,8 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     RegisterWebUIControllerInterfaceBinder<
-        ::mojom::OnDeviceInternalsPageHandlerFactory, OnDeviceInternalsUI>(map);
+        on_device_internals::mojom::PageHandlerFactory,
+        on_device_internals::OnDeviceInternalsUI>(map);
   }
 #endif
 

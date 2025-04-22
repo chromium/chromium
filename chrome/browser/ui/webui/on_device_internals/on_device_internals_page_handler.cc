@@ -27,6 +27,8 @@
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #endif
 
+namespace on_device_internals {
+
 namespace {
 
 using optimization_guide::model_execution::prefs::localstate::
@@ -86,9 +88,9 @@ base::flat_map<std::string, std::string> GetCriteria(
 
 }  // namespace
 
-OnDeviceInternalsPageHandler::OnDeviceInternalsPageHandler(
-    mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandler> receiver,
-    mojo::PendingRemote<mojom::OnDeviceInternalsPage> page,
+PageHandler::PageHandler(
+    mojo::PendingReceiver<mojom::PageHandler> receiver,
+    mojo::PendingRemote<mojom::Page> page,
     OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
@@ -100,13 +102,13 @@ OnDeviceInternalsPageHandler::OnDeviceInternalsPageHandler(
   }
 }
 
-OnDeviceInternalsPageHandler::~OnDeviceInternalsPageHandler() {
+PageHandler::~PageHandler() {
   if (optimization_guide_logger_) {
     optimization_guide_logger_->RemoveObserver(this);
   }
 }
 
-void OnDeviceInternalsPageHandler::LoadModel(
+void PageHandler::LoadModel(
     const base::FilePath& model_path,
     ml::ModelPerformanceHint performance_hint,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
@@ -134,14 +136,13 @@ void OnDeviceInternalsPageHandler::LoadModel(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&LoadModelAssets, model_path),
-      base::BindOnce(&OnDeviceInternalsPageHandler::OnModelAssetsLoaded,
+      base::BindOnce(&PageHandler::OnModelAssetsLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(model),
                      std::move(callback), performance_hint));
 #endif
 }
 
-OnDeviceInternalsPageHandler::Service&
-OnDeviceInternalsPageHandler::GetService() {
+PageHandler::Service& PageHandler::GetService() {
   if (!service_) {
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
     ash::mojo_service_manager::GetServiceManagerProxy()->Request(
@@ -161,7 +162,7 @@ OnDeviceInternalsPageHandler::GetService() {
 }
 
 #if !BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
-void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
+void PageHandler::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
     ml::ModelPerformanceHint performance_hint,
@@ -176,12 +177,12 @@ void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
   params->performance_hint = performance_hint;
   GetService().LoadModel(
       std::move(params), std::move(model),
-      base::BindOnce(&OnDeviceInternalsPageHandler::OnModelLoaded,
+      base::BindOnce(&PageHandler::OnModelLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(assets)));
 }
 
-void OnDeviceInternalsPageHandler::OnModelLoaded(
+void PageHandler::OnModelLoaded(
     LoadModelCallback callback,
     on_device_model::ModelAssets assets,
     on_device_model::mojom::LoadModelResult result) {
@@ -194,7 +195,7 @@ void OnDeviceInternalsPageHandler::OnModelLoaded(
 }
 #endif
 
-void OnDeviceInternalsPageHandler::GetEstimatedPerformanceClass(
+void PageHandler::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
   GetService().GetEstimatedPerformanceClass(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -202,7 +203,7 @@ void OnDeviceInternalsPageHandler::GetEstimatedPerformanceClass(
           on_device_model::mojom::PerformanceClass::kError));
 }
 
-void OnDeviceInternalsPageHandler::OnLogMessageAdded(
+void PageHandler::OnLogMessageAdded(
     base::Time event_time,
     optimization_guide_common::mojom::LogSource log_source,
     const std::string& source_file,
@@ -215,9 +216,8 @@ void OnDeviceInternalsPageHandler::OnLogMessageAdded(
   }
 }
 
-void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
-    OnDeviceInternalsPageHandler::GetOnDeviceInternalsDataCallback callback) {
-  auto data = mojom::OnDeviceInternalsData::New();
+void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
+  auto data = mojom::PageData::New();
   auto* component_manager =
       optimization_guide_keyed_service_->GetComponentManager();
   data->base_model_ready = component_manager->IsInstallerRegistered();
@@ -232,7 +232,7 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
       optimization_guide_keyed_service_->GetPredictionManager()
           ->GetOnDeviceSupplementaryModelsInfoForWebUI();
   for (const auto& it : supp_models) {
-    auto supp_model_mojom = mojom::OnDeviceSupplementaryModelInfo::New();
+    auto supp_model_mojom = mojom::SupplementaryModelInfo::New();
     supp_model_mojom->supp_model_name = it.first;
     supp_model_mojom->is_ready = it.second;
     data->supp_models.push_back(std::move(supp_model_mojom));
@@ -246,16 +246,17 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
   std::move(callback).Run(std::move(data));
 }
 
-void OnDeviceInternalsPageHandler::DecodeBitmap(
-    mojo_base::BigBuffer image_buffer,
-    DecodeBitmapCallback callback) {
+void PageHandler::DecodeBitmap(mojo_base::BigBuffer image_buffer,
+                               DecodeBitmapCallback callback) {
   data_decoder::DecodeImageIsolated(
       base::span(image_buffer), data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
 }
 
-void OnDeviceInternalsPageHandler::ResetModelCrashCount() {
+void PageHandler::ResetModelCrashCount() {
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetInteger(kOnDeviceModelCrashCount, 0);
 }
+
+}  // namespace on_device_internals
