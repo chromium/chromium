@@ -7,4 +7,6 @@ found in the LICENSE file.
 <resources>
     <dimen name="hub_search_box_height">40dp</dimen>
     <dimen name="hub_search_box_background_radius">50dp</dimen>
+    <dimen name="hub_xr_background_rounded_corner_radius">32dp</dimen>
+    <dimen name="hub_xr_vertical_gap_between_toolbar_and_host_pane">24dp</dimen>
 </resources>

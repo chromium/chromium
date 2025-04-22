@@ -93,6 +93,8 @@ android_resources("java_resources") {
     "android/res/layout/hub_layout.xml",
     "android/res/layout/hub_pane_host_layout.xml",
     "android/res/layout/hub_toolbar_layout.xml",
+    "android/res/layout/hub_xr_layout.xml",
+    "android/res/layout/hub_xr_toolbar_layout.xml",
     "android/res/values/dimens.xml",
   ]
 }

@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.util.XrUtils;
 
 /** Root coordinator of the Hub. */
 public class HubCoordinator implements PaneHubController, BackPressHandler {
@@ -96,7 +97,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                 castCallback(mBackPressStateChangeCallback));
 
         mContainerView = containerView;
-        mMainHubParent = LayoutInflater.from(context).inflate(R.layout.hub_layout, null);
+        int layoutId = XrUtils.isXrDevice() ? R.layout.hub_xr_layout : R.layout.hub_layout;
+        mMainHubParent = LayoutInflater.from(context).inflate(layoutId, null);
         mContainerView.addView(mMainHubParent);
 
         ProfileProvider profileProvider = profileProviderSupplier.get();
