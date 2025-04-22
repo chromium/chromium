@@ -14,6 +14,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   private profileData_?: ProfileData;
   private tabOrganizationSession_?: TabOrganizationSession;
   private unusedTabs_: UnusedTabInfo = {staleTabs: [], duplicateTabs: {}};
+  private isSplit_: boolean = false;
 
   constructor() {
     super([
@@ -35,6 +36,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'requestTabOrganization',
       'removeTabFromOrganization',
       'rejectSession',
+      'replaceActiveSplitTab',
       'restartSession',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
@@ -120,7 +122,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   getIsSplit() {
     this.methodCalled('getIsSplit');
-    return Promise.resolve({isSplit: false});
+    return Promise.resolve({isSplit: this.isSplit_});
   }
 
   openRecentlyClosedEntry(
@@ -142,6 +144,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   rejectSession() {
     this.methodCalled('rejectSession');
+  }
+
+  replaceActiveSplitTab(replacementTabId: number) {
+    this.methodCalled('replaceActiveSplitTab', [replacementTabId]);
   }
 
   restartSession() {
@@ -218,5 +224,9 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   setDuplicateTabs(tabs: {[key: string]: Tab[]}) {
     this.unusedTabs_.duplicateTabs = tabs;
+  }
+
+  setIsSplit(isSplit: boolean) {
+    this.isSplit_ = isSplit;
   }
 }

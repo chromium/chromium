@@ -65,6 +65,8 @@ export interface TabSearchApiProxy {
   removeTabFromOrganization(
       sessionId: number, organizationId: number, tab: Tab): void;
 
+  replaceActiveSplitTab(replacementTabId: number): void;
+
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
   setOrganizationFeature(feature: TabOrganizationFeature): void;
@@ -197,6 +199,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
   removeTabFromOrganization(
       sessionId: number, organizationId: number, tab: Tab) {
     this.handler.removeTabFromOrganization(sessionId, organizationId, tab);
+  }
+
+  replaceActiveSplitTab(replacementSplitTabId: number) {
+    this.handler.replaceActiveSplitTab(replacementSplitTabId);
   }
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {

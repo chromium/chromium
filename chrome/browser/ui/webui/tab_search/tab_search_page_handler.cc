@@ -886,6 +886,20 @@ void TabSearchPageHandler::RejectSession(int32_t session_id) {
       browser, TabOrganizationEntryPoint::kTabSearch, nullptr);
 }
 
+void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {
+  Browser* browser = chrome::FindLastActive();
+  std::optional<split_tabs::SplitTabId> split_id =
+      browser->GetActiveTabInterface()->GetSplit();
+  if (split_id.has_value()) {
+    const tabs::TabInterface* replacement_tab =
+        tabs::TabHandle(replacement_tab_id).Get();
+    const int32_t replacement_index =
+        browser->tab_strip_model()->GetIndexOfTab(replacement_tab);
+    browser->tab_strip_model()->ReplaceActiveTabInSplit(split_id.value(),
+                                                        replacement_index);
+  }
+}
+
 void TabSearchPageHandler::RestartSession() {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {

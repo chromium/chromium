@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 
+#include <stdint.h>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -122,6 +124,7 @@ class TabSearchPageHandler
                                  int32_t organization_id,
                                  tab_search::mojom::TabPtr tab) override;
   void RejectSession(int32_t session_id) override;
+  void ReplaceActiveSplitTab(int32_t replacement_tab_id) override;
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetOrganizationFeature(

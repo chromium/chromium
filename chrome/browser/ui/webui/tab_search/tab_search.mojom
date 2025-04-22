@@ -326,6 +326,9 @@ interface PageHandler {
   // Reject all tab organizations in the current session.
   RejectSession(int32 session_id);
 
+  // Within a split view, replace the current tab with the given tab.
+  ReplaceActiveSplitTab(int32 replacement_tab_id);
+
   // Clear the current tab organization session state and start a new request.
   RestartSession();
 

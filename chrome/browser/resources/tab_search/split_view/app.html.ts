@@ -26,20 +26,20 @@ ${
   ${
               this.mediaTabs_.length > 0 ? html`
     <div class="heading">$i18n{splitViewMediaHeading}</div>
-    ${getTabList(this.mediaTabs_)}
+    ${getTabList.bind(this)(this.mediaTabs_)}
   ` :
                                            html``}
   ${
               this.openTabs_.length > 0 ? html`
     <div class="heading">$i18n{splitViewOpenHeading}</div>
-    ${getTabList(this.openTabs_)}
+    ${getTabList.bind(this)(this.openTabs_)}
   ` :
                                           html``}`}
 </div>
 <!--_html_template_end_-->`;
 }
 
-function getTabList(tabDatas: TabData[]) {
+function getTabList(this: SplitNewTabPageAppElement, tabDatas: TabData[]) {
   return html`
     <div class="tab-list">
       ${tabDatas.map(data => html`
@@ -47,7 +47,8 @@ function getTabList(tabDatas: TabData[]) {
             hide-close-button
             hide-timestamp
             size="large"
-            .data="${data}">
+            .data="${data}"
+            @click="${this.onTabClick_}">
         </tab-search-item>
       `)}
     </div>
