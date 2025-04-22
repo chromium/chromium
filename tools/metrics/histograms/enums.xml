@@ -11152,6 +11152,8 @@ from previous Chrome versions.
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
+  <int value="-1218110631"
+      label="NtpMostRelevantTabResumptionModuleFallbackToHost:enabled"/>
   <int value="-1218063855" label="MediaAppAnnotation:disabled"/>
   <int value="-1217936232" label="HeuristicMemorySaver:disabled"/>
   <int value="-1217688364" label="NewTabPageCustomization:disabled"/>
@@ -19885,6 +19887,8 @@ from previous Chrome versions.
   <int value="2114221139" label="EnableHostnameSetting:disabled"/>
   <int value="2114843059" label="ContextualSuggestionsOptOut:enabled"/>
   <int value="2114894984" label="DelayCompetingLowPriorityRequests:enabled"/>
+  <int value="2115100351"
+      label="NtpMostRelevantTabResumptionModuleFallbackToHost:disabled"/>
   <int value="2116535245" label="PasswordEditDialogWithDetails:disabled"/>
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>

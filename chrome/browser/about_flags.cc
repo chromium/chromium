@@ -7151,6 +7151,14 @@ const FeatureEntry kFeatureEntries[] = {
          kNtpMostRelevantTabResumptionModuleVariations,
          "NtpMostRelevantTabResumptionModules")},
 
+    {"ntp-most-relevant-tab-resumption-module-fallback-to-host",
+     flag_descriptions::kNtpMostRelevantTabResumptionModuleFallbackToHostName,
+     flag_descriptions::
+         kNtpMostRelevantTabResumptionModuleFallbackToHostDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         ntp_features::kNtpMostRelevantTabResumptionModuleFallbackToHost)},
+
     {"ntp-ogb-async-bar-parts",
      flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName,
      flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName, kOsDesktop,

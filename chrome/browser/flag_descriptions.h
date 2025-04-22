@@ -3180,6 +3180,10 @@ extern const char kNtpMicrosoftAuthenticationModuleDescription[];
 extern const char kNtpMostRelevantTabResumptionModuleName[];
 extern const char kNtpMostRelevantTabResumptionModuleDescription[];
 
+extern const char kNtpMostRelevantTabResumptionModuleFallbackToHostName[];
+extern const char
+    kNtpMostRelevantTabResumptionModuleFallbackToHostDescription[];
+
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
 

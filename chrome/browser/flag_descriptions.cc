@@ -5427,6 +5427,12 @@ const char kNtpMostRelevantTabResumptionModuleName[] =
 const char kNtpMostRelevantTabResumptionModuleDescription[] =
     "Shows the Most Relevant Tab Resumption Module on the New Tab Page.";
 
+const char kNtpMostRelevantTabResumptionModuleFallbackToHostName[] =
+    "NTP Most Relevant Tab Resumption Module uses fallback to host for favicon";
+const char kNtpMostRelevantTabResumptionModuleFallbackToHostDescription[] =
+    "Shows the host fallback icon instead of server fallback on Most Relevant "
+    "Tab Resumption Module on the New Tab Page.";
+
 const char kNtpMiddleSlotPromoDismissalName[] =
     "NTP Middle Slot Promo Dismissal";
 const char kNtpMiddleSlotPromoDismissalDescription[] =
