@@ -741,6 +741,13 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
       ShellUtil::GetChromeDefaultProtocolClientState(base::UTF8ToWide(scheme)));
 }
 
+DefaultWebClientState IsDefaultHandlerForFileExtension(
+    const std::string& file_extension) {
+  return GetDefaultWebClientStateFromShellUtilDefaultState(
+      ShellUtil::GetChromeDefaultFileHandlerState(
+          base::UTF8ToWide(file_extension)));
+}
+
 namespace internal {
 
 DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
