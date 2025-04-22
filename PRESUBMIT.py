@@ -2052,6 +2052,14 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
+        pattern='#pragma allow_unsafe_buffers',
+        explanation=
+        ('Do not use allow_unsafe_buffers to write new unsafe code. Use only '
+         'when enabling unsafe buffers checks under a new uncovered path.',
+        ),
+        treat_as_error=False,
+    ),
+    BanRule(
         pattern=r'UNSAFE_BUFFERS(',
         explanation=
         ('Try to avoid using UNSAFE_BUFFERS() if at all possible. Otherwise, '
