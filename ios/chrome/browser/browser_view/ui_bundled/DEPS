@@ -121,12 +121,3 @@ include_rules = [
   "+ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h",
 ]
-
-specific_include_rules = {
-  "browser_view_controller_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-  "key_commands_provider_unittest\.mm": [
-    "+ios/web/find_in_page/java_script_find_in_page_manager_impl.h",
-  ],
-}

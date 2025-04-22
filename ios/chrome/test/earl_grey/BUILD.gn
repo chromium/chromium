@@ -125,6 +125,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/bring_android_tabs/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/browser_container/ui_bundled:eg_app_support+eg2",
+    "//ios/chrome/browser/browser_view/test:eg_app_support+eg2",
     "//ios/chrome/browser/content_settings/model:model",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",

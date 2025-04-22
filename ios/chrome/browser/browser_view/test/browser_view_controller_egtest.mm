@@ -7,33 +7,50 @@
 
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
+#import "ios/chrome/browser/browser_view/test/browser_view_visibility_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/html_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Urls and their content.
+const char kFirstURL[] = "/pony.html";
+const char kFirstURLText[] = "Anyone know any good pony jokes?";
+const char kSecondURL[] = "/destination.html";
+const char kSecondURLText[] = "You've arrived";
+
+}  // namespace
 
 // This test suite only tests javascript in the omnibox. Nothing to do with BVC
 // really, the name is a bit misleading.
-@interface BrowserViewControllerTestCase : WebHttpServerChromeTestCase
+@interface BrowserViewControllerTestCase : ChromeTestCase
 @end
 
 @implementation BrowserViewControllerTestCase
+
+- (void)setUp {
+  [super setUp];
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
 
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
@@ -49,11 +66,7 @@
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
   }
-  std::map<GURL, std::string> responses;
-  const GURL firstURL = web::test::HttpServer::MakeUrl("http://first");
-  responses[firstURL] = "First window";
-  web::test::SetUpSimpleHttpServer(responses);
-  [ChromeEarlGrey loadURL:firstURL];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kFirstURL)];
 
   // Scope for the synchronization disabled.
   {
@@ -81,7 +94,7 @@
                   @"%@%li",
                   kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                   faviconIndex])] performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]];
+  [ChromeEarlGrey waitForWebStateContainingText:kFirstURLText];
 
   [ChromeEarlGrey selectTabAtIndex:1];
 
@@ -92,7 +105,7 @@
                   @"%@%li",
                   kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                   faviconIndex])] performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]];
+  [ChromeEarlGrey waitForWebStateContainingText:kFirstURLText];
   [NewTabPageAppInterface resetSetUpListPrefs];
 }
 
@@ -107,27 +120,23 @@
 
   // Preps the http server with two URLs serving content.
   std::map<GURL, std::string> responses;
-  const GURL startURL = web::test::HttpServer::MakeUrl("http://origin");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
-  responses[startURL] = "Start";
-  responses[destinationURL] = "You've arrived!";
-  web::test::SetUpSimpleHttpServer(responses);
+  const GURL firstURL = self.testServer->GetURL(kFirstURL);
+  const GURL secondURL = self.testServer->GetURL(kSecondURL);
 
   // Just load the first URL.
-  [ChromeEarlGrey loadURL:startURL];
+  [ChromeEarlGrey loadURL:firstURL];
 
   // Waits for the page to load and check it is the expected content.
-  [ChromeEarlGrey waitForWebStateContainingText:responses[startURL]];
+  [ChromeEarlGrey waitForWebStateContainingText:kFirstURLText];
 
   // In the omnibox, the URL should be present, without the http:// prefix.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(startURL.GetContent())];
+      assertWithMatcher:chrome_test_util::OmniboxText(firstURL.GetContent())];
 
   // Types some javascript in the omnibox to trigger a navigation.
   NSString* script =
       [NSString stringWithFormat:@"javascript:location.href='%s'",
-                                 destinationURL.spec().c_str()];
+                                 secondURL.spec().c_str()];
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:script];
 
   // The omnibox popup may update multiple times.
@@ -139,15 +148,14 @@
 
   // In the omnibox, the new URL should be present, without the http:// prefix.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(
-                            destinationURL.GetContent())];
+      assertWithMatcher:chrome_test_util::OmniboxText(secondURL.GetContent())];
 
   // Verifies that the navigation to the destination page happened.
-  GREYAssertEqual(destinationURL, [ChromeEarlGrey webStateVisibleURL],
+  GREYAssertEqual(secondURL, [ChromeEarlGrey webStateVisibleURL],
                   @"Did not navigate to the destination url.");
 
   // Verifies that the destination page is shown.
-  [ChromeEarlGrey waitForWebStateContainingText:responses[destinationURL]];
+  [ChromeEarlGrey waitForWebStateContainingText:kSecondURLText];
 }
 
 // Tests the fix for the regression reported in https://crbug.com/801165.  The
@@ -157,11 +165,8 @@
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no action sheet on tablet)");
   }
 
-  std::map<GURL, std::string> responses;
-  const GURL testURL = web::test::HttpServer::MakeUrl("http://origin");
-  responses[testURL] = "File Picker Test <input id=\"file\" type=\"file\">";
-  web::test::SetUpSimpleHttpServer(responses);
-
+  const GURL testURL(base::StringPrintf(
+      "data:text/html, File Picker Test <input id=\"file\" type=\"file\">"));
   // Load the test page.
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:"File Picker Test"];
@@ -176,6 +181,50 @@
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Tests that browser visibility state updates correctly.
+- (void)testBrowserVisibilityState {
+  // Go to a web page first to make sure the omnibox popup would have content.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kFirstURL)];
+
+  // Starts observing visibility state.
+  [BrowserViewVisibilityAppInterface startObservingBrowserViewVisibilityState];
+
+  // Taps omnibox and checks visibility.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  GREYAssertEqual(BrowserViewVisibilityState::kCoveredByOmniboxPopup,
+                  [BrowserViewVisibilityAppInterface currentState],
+                  @"Browser visibility state is not accurate.");
+
+  // Cancels omnibox and check visibility.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Defocus omnibox by tapping the typing shield.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Typing Shield")]
+        performAction:grey_tap()];
+
+  } else {
+    id<GREYMatcher> cancel_button = grey_allOf(
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier),
+        grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:cancel_button]
+        performAction:grey_tap()];
+  }
+  GREYAssertEqual(BrowserViewVisibilityState::kVisible,
+                  [BrowserViewVisibilityAppInterface currentState],
+                  @"Browser visibility state is not accurate.");
+
+  // Goes to the tab grid and check visibility.
+  [ChromeEarlGreyUI openTabGrid];
+  GREYAssertEqual(BrowserViewVisibilityState::kNotInViewHierarchy,
+                  [BrowserViewVisibilityAppInterface currentState],
+                  @"Browser visibility state is not accurate.");
+
+  // TODO(crbug.com/406544789): Check settings, promos, and lens.
+  [BrowserViewVisibilityAppInterface stopObservingBrowserViewVisibilityState];
 }
 
 #pragma mark - Open URL
@@ -229,12 +278,8 @@
   }
 
   // Preps the http server with two URLs serving content.
-  std::map<GURL, std::string> responses;
-  const GURL firstURL = web::test::HttpServer::MakeUrl("http://first");
-  const GURL secondURL = web::test::HttpServer::MakeUrl("http://second");
-  responses[firstURL] = "First window";
-  responses[secondURL] = "Second window";
-  web::test::SetUpSimpleHttpServer(responses);
+  const GURL firstURL = self.testServer->GetURL(kFirstURL);
+  const GURL secondURL = self.testServer->GetURL(kSecondURL);
 
   // Loads url in first window.
   [ChromeEarlGrey loadURL:firstURL inWindowWithNumber:0];
@@ -246,16 +291,16 @@
   [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
 
   // Checks loads worked.
-  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]
+  [ChromeEarlGrey waitForWebStateContainingText:kFirstURLText
                              inWindowWithNumber:0];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+  [ChromeEarlGrey waitForWebStateContainingText:kSecondURLText
                              inWindowWithNumber:1];
 
-  // Closes first window and renumbers second window as first
+  // Closes first window and renumbers second window as first.
   [ChromeEarlGrey closeWindowWithNumber:0];
   [ChromeEarlGrey waitForForegroundWindowCount:1];
   [ChromeEarlGrey changeWindowWithNumber:1 toNewNumber:0];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+  [ChromeEarlGrey waitForWebStateContainingText:kSecondURLText
                              inWindowWithNumber:0];
 
   // Opens a 'new' second window.
@@ -266,9 +311,9 @@
   // Loads urls in both windows, and verifies.
   [ChromeEarlGrey loadURL:firstURL inWindowWithNumber:0];
   [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]
+  [ChromeEarlGrey waitForWebStateContainingText:kFirstURLText
                              inWindowWithNumber:0];
-  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+  [ChromeEarlGrey waitForWebStateContainingText:kSecondURLText
                              inWindowWithNumber:1];
 }
 

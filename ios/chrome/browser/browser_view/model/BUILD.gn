@@ -31,3 +31,18 @@ source_set("handler") {
   public_deps = [ ":audience" ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_view_visibility_observer_unittest.mm" ]
+  deps = [
+    ":audience",
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_view/public",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
