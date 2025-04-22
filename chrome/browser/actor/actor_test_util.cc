@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/values.h"
+#include "chrome/browser/actor/actor_coordinator.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 
@@ -171,6 +172,10 @@ std::optional<int> FindContentNodeId(content::RenderFrameHost& rfh,
   CHECK(dom_node_id.has_value());
 
   return dom_node_id;
+}
+
+void OverrideActionObservationDelay(const base::TimeDelta& delta) {
+  ActorCoordinator::SetActionObservationDelayForTesting(delta);
 }
 
 }  // namespace actor

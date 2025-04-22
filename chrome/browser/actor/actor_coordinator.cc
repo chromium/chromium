@@ -36,6 +36,9 @@ namespace actor {
 
 namespace {
 
+// TODO(crbug.com/409564704): Remove once this bug is resolved.
+constexpr base::TimeDelta kActionObservationDelay = base::Seconds(3);
+
 void PostTaskForStartCallback(ActorCoordinator::StartTaskCallback callback,
                               base::WeakPtr<tabs::TabInterface> tab) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -49,6 +52,18 @@ void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
 }
 
 }  // namespace
+
+base::TimeDelta ActorCoordinator::action_observation_delay_ =
+    kActionObservationDelay;
+
+void ActorCoordinator::SetActionObservationDelayForTesting(
+    const base::TimeDelta& delay) {
+  action_observation_delay_ = delay;
+}
+
+base::TimeDelta ActorCoordinator::GetActionObservationDelay() {
+  return action_observation_delay_;
+}
 
 // Waits for the navigation to complete to create a new tab.
 class ActorCoordinator::NewTabWebContentsObserver

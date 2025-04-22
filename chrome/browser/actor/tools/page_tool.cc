@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/page_tool.h"
 
+#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -150,6 +151,12 @@ void SetDragAndReleaseToolArgs(
                 drag_and_release->to_target);
 }
 
+void DelayedInvokeCallback(actor::Tool::InvokeCallback callback, bool success) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), success),
+      actor::ActorCoordinator::GetActionObservationDelay());
+}
+
 }  // namespace
 
 namespace actor {
@@ -222,7 +229,12 @@ void PageTool::Invoke(InvokeCallback callback) {
       NOTREACHED();
   }
 
-  chrome_render_frame_->InvokeTool(std::move(request), std::move(callback));
+  // TODO(crbug.com/409564704): Delay the callback to give the page a chance to
+  // react to the tool's effects. Temporary until we can do this more reliably
+  // in the renderer.
+  chrome_render_frame_->InvokeTool(
+      std::move(request),
+      base::BindOnce(DelayedInvokeCallback, std::move(callback)));
 }
 
 }  // namespace actor

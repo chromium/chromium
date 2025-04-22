@@ -46,6 +46,14 @@ class ActorCoordinator {
   ActorCoordinator& operator=(const ActorCoordinator&) = delete;
   ~ActorCoordinator();
 
+  // TODO(crbug.com/409564704): This is temporary. The action_observation_delay_
+  // is a temporary solution that simply waits a static amount of time after a
+  // tool is invoked before an observation is captured. In the future, the actor
+  // framework will be smarter about when an observation should be made but for
+  // now ensure the page is given some time to react to the tool invocation.
+  static void SetActionObservationDelayForTesting(const base::TimeDelta& delay);
+  static base::TimeDelta GetActionObservationDelay();
+
   static void RegisterWithProfile(Profile* profile);
 
   // Starts a new task.
@@ -97,6 +105,8 @@ class ActorCoordinator {
       bool may_act);
 
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
+
+  static base::TimeDelta action_observation_delay_;
 
   bool initializing_new_task_ = false;
   raw_ptr<Profile> profile_;

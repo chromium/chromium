@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -106,8 +107,12 @@ class ActorToolsTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    // TODO(crbug.com/409564704): Mock the delay so that tests can run at
+    // reasonable speed. Remove once there is a more permanent approach.
+    OverrideActionObservationDelay(base::Milliseconds(10));
+
     actor_coordinator_ =
-        std::make_unique<actor::ActorCoordinator>(browser()->profile());
+        std::make_unique<ActorCoordinator>(browser()->profile());
     actor_coordinator().StartTaskForTesting(browser()->GetActiveTabInterface());
   }
 

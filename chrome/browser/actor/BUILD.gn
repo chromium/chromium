@@ -58,6 +58,8 @@ source_set("test_support") {
     "actor_test_util.h",
   ]
 
+  deps = [ ":actor" ]
+
   public_deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",

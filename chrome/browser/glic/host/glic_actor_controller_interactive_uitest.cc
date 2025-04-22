@@ -42,6 +42,10 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
+
+    // TODO(crbug.com/409564704): Mock the delay so that tests can run at
+    // reasonable speed. Remove once there is a more permanent approach.
+    actor::OverrideActionObservationDelay(base::Milliseconds(10));
   }
 
   // Calls actInFocusedTab() and waits until the promise resolves and succeeds.
