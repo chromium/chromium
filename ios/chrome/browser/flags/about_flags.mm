@@ -2656,13 +2656,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReaderModeDistillerHeuristicName,
      flag_descriptions::kReaderModeDistillerHeuristicDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableReaderModeDistillerHeuristic,
-                                    kReaderModeDistillerHeuristicOptions,
-                                    "ReaderModeHeuristicSampling")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableReaderModeDistillerHeuristicForMetrics,
+         kReaderModeDistillerHeuristicOptions,
+         "ReaderModeHeuristicSampling")},
     {"reader-mode-distiller-enabled",
      flag_descriptions::kReaderModeDistillerName,
      flag_descriptions::kReaderModeDistillerDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableReaderModeDistiller)},
+     FEATURE_VALUE_TYPE(kEnableReaderModeDistillerForMetrics)},
     {"lens-overlay-navigation-history",
      flag_descriptions::kLensOverlayNavigationHistoryName,
      flag_descriptions::kLensOverlayNavigationHistoryDescription,
@@ -2716,6 +2717,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableFlatRateCardBenefitsFromCurinos)},
+    {"reader-mode-enabled", flag_descriptions::kReaderModeName,
+     flag_descriptions::kReaderModeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableReaderMode)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

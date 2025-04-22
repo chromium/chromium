@@ -1166,6 +1166,10 @@ const char kReaderModeDistillerHeuristicDescription[] =
     "Enables Reader Mode distillation heuristic that triggers Reader Mode UI "
     "entry point if available";
 
+const char kReaderModeName[] = "Enables Reader Mode";
+const char kReaderModeDescription[] =
+    "Enables Reader Mode UI and entry points.";
+
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";

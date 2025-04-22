@@ -438,7 +438,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());
 
-  if (base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
+  if (base::FeatureList::IsEnabled(
+          kEnableReaderModeDistillerHeuristicForMetrics) ||
+      IsReaderModeAvailable()) {
     features.push_back(ReaderModeJavaScriptFeature::GetInstance());
   }
 

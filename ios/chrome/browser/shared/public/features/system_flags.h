@@ -185,9 +185,6 @@ bool AlwaysShowTheFirstPartyIncognitoUI();
 // Enables the AI menu, which is a tool for debugging LLM queries.
 bool EnableAIPrototypingMenu();
 
-// Forces the Reader Mode HTML override for debugging.
-bool ShouldForceReaderModeDebugHTMLOverride();
-
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

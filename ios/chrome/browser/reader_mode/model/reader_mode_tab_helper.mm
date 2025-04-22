@@ -220,7 +220,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistiller) &&
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerForMetrics) &&
       !IsReaderModeAvailable()) {
     return;
   }
@@ -269,7 +269,8 @@ bool ReaderModeTabHelper::CanTriggerReaderModeHeuristic() {
   if (IsReaderModeAvailable()) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
+  if (!base::FeatureList::IsEnabled(
+          kEnableReaderModeDistillerHeuristicForMetrics)) {
     return false;
   }
   const double page_load_probability =
