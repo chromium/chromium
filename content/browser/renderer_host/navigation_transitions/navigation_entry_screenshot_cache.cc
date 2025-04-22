@@ -238,14 +238,15 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
   CHECK_GT(manager_->GetCurrentCacheSize(), manager_->GetMaxCacheSize());
 
   const int current_index = nav_controller_->GetLastCommittedEntryIndex();
-  NavigationTransitionData::UniqueId screenshot_id =
-      nav_controller_->GetEntryAtIndex(current_index)
-          ->navigation_transition_data()
-          .unique_id();
-  // It's impossible to have a screenshot for the current entry.
-  CHECK(!cached_screenshots_.contains(screenshot_id));
-  // Impossible to have just one entry (the current entry).
-  CHECK_GT(nav_controller_->GetEntryCount(), 1);
+  auto* current_entry = nav_controller_->GetEntryAtIndex(current_index);
+  CHECK(current_entry);
+  if (cached_screenshots_.contains(
+          current_entry->navigation_transition_data().unique_id())) {
+    // We shouldn't have a screenshot for the current entry.
+    // (crbug.com/409931137)
+    base::debug::DumpWithoutCrashing();
+    RemoveScreenshot(current_entry);
+  }
 
   int distance_to_leftmost = current_index;
   int distance_to_rightmost =
