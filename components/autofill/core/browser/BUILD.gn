@@ -568,6 +568,8 @@ static_library("browser") {
     "strike_databases/payments/cvc_storage_strike_database.cc",
     "strike_databases/payments/cvc_storage_strike_database.h",
     "strike_databases/payments/iban_save_strike_database.h",
+    "strike_databases/payments/save_and_fill_strike_database.cc",
+    "strike_databases/payments/save_and_fill_strike_database.h",
     "strike_databases/payments/virtual_card_enrollment_strike_database.cc",
     "strike_databases/payments/virtual_card_enrollment_strike_database.h",
     "strike_databases/simple_autofill_strike_database.h",
