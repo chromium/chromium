@@ -288,6 +288,19 @@ public abstract class DisplayUtil {
         return xrUiScaleFactor.getFloat();
     }
 
+    /** Returns the scaling factor for the current device. */
+    public static float getCurrentUiScalingFactor(Context context) {
+        if (!isUiScaled()) return 1;
+        if (BuildInfo.getInstance().isAutomotive) {
+            return sUiScalingFactorForAutomotiveOverride != null
+                    ? sUiScalingFactorForAutomotiveOverride
+                    : getTargetScalingFactorForAutomotive(context);
+        }
+        return sUiScalingFactorForXrOverride != null
+                ? sUiScalingFactorForXrOverride
+                : getUiScalingFactorForXrFromResource(context);
+    }
+
     /** Get the density base on the UI scaling factor on XR devices. */
     public static int getUiDensityForXr(Context context, int baseDensity) {
         float uiScalingFactor =
