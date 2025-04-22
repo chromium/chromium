@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/install_verifier.h"
@@ -56,7 +57,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
@@ -374,16 +374,12 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
 
       pending_extension_manager->Remove(id);
 
-// TODO(crbug.com/394876083): Enable the following code on desktop Android
-// when ExtensionManagement is ported to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       ExtensionManagement* management =
           ExtensionManagementFactory::GetForBrowserContext(profile_);
       LOG(WARNING) << "ShouldAllowInstall() returned false for " << id
                    << " of type " << extension->GetType() << " and update URL "
                    << management->GetEffectiveUpdateURL(*extension).spec()
                    << "; not installing";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
       // Delete the extension directory since we're not going to
       // load it.
@@ -419,9 +415,6 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
     disable_reasons.erase(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
   }
 
-// TODO(crbug.com/394876083): Enable the following code on desktop Android
-// when ExtensionManagement is ported to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Check if the extension was disabled because of the minimum version
   // requirements from enterprise policy, and satisfies it now.
   if (ExtensionManagementFactory::GetForBrowserContext(profile_)
@@ -429,7 +422,6 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
     // And remove the corresponding disable reason.
     disable_reasons.erase(disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (install_flags & kInstallFlagIsBlocklistedForMalware) {
     // Installation of a blocklisted extension can happen from sync, policy,
