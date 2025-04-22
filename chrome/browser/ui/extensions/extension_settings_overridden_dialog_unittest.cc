@@ -6,12 +6,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
@@ -58,7 +58,7 @@ class ExtensionSettingsOverriddenDialogUnitTest
       builder.AddAPIPermission("storage");
     }
     scoped_refptr<const extensions::Extension> extension = builder.Build();
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     return extension.get();
   }
 

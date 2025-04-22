@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
@@ -17,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 
 class SettingsOverriddenParamsProvidersUnitTest
@@ -55,7 +55,7 @@ class SettingsOverriddenParamsProvidersUnitTest
                             std::move(chrome_url_overrides))
             .Build();
 
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
                              GURL(chrome::kChromeUINewTabURL), profile()));
 
@@ -73,7 +73,7 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
   // still be no controlling extension.
   scoped_refptr<const extensions::Extension> regular_extension =
       extensions::ExtensionBuilder("regular").Build();
-  service()->AddExtension(regular_extension.get());
+  registrar()->AddExtension(regular_extension.get());
   EXPECT_EQ(std::nullopt,
             settings_overridden_params::GetNtpOverriddenParams(profile()));
 

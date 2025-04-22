@@ -37,10 +37,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -141,12 +141,12 @@ class NotificationPermissionContextTest
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(profile()));
 
-    extensions::ExtensionService* extension_service =
-        test_extension_system->CreateExtensionService(
-            &command_line, base::FilePath() /* install_directory */,
-            false /* autoupdate_enabled */);
+    test_extension_system->CreateExtensionService(
+        &command_line, base::FilePath() /* install_directory */,
+        false /* autoupdate_enabled */);
 
-    extension_service->AddExtension(extension.get());
+    extensions::ExtensionRegistrar::Get(profile())->AddExtension(
+        extension.get());
 
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile());

@@ -90,6 +90,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/process_manager.h"
@@ -142,7 +143,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -1919,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
                            "launch", base::Value::Dict().Set(
                                          "web_url", hosted_app_url.spec()))))
           .Build();
-  extension_service()->AddExtension(hosted_app.get());
+  extension_registrar()->AddExtension(hosted_app.get());
 
   ExtensionTestMessageListener listener1("main_frame");
   ExtensionTestMessageListener listener2("xmlhttprequest");
