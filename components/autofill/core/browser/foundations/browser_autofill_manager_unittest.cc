@@ -6994,8 +6994,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 // Tests that an Autofill profile is not imported into the address data manager
 // when the submitted form was imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest_AutofillAi,
-       ProfileNotImportedOnSuccessfulUserAnnotationsImport) {
-  using optimization_guide::proto::UserAnnotationsEntry;
+       ProfileNotImportedOnSuccessfulAutofillAiImport) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -7021,7 +7020,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 // Tests that an Autofill profile is imported into the address data manager when
 // the submitted form was not imported by AutofillAI.
 TEST_F(BrowserAutofillManagerTest_AutofillAi,
-       ProfileImportedOnFailedUserAnnotationsImport) {
+       ProfileImportedOnFailedAutofillAiImport) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
