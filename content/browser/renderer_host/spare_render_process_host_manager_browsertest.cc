@@ -918,8 +918,20 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
-using AndroidSpareRendererProcessHostManagerTest =
-    SpareRenderProcessHostManagerTestBase;
+class AndroidSpareRendererProcessHostManagerTest
+    : public SpareRenderProcessHostManagerTest {
+ public:
+  AndroidSpareRendererProcessHostManagerTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAndroidWarmUpSpareRendererWithTimeout,
+        {
+            {features::kAndroidSpareRendererKillWhenBackgrounded.name, "true"},
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
                        KillSpareRendererWhenAppBackgrounded) {
