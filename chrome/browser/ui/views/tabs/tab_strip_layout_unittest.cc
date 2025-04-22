@@ -6,12 +6,15 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -48,6 +51,7 @@ struct TestCase {
   int num_tabs = 0;
   int active_index = 0;
   int tabstrip_width = 0;
+  std::set<int> split_tabs;
 };
 
 constexpr int kStandardWidth = 256;
@@ -64,6 +68,9 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
   size_info.min_inactive_width = kMinInactiveWidth;
   size_info.standard_width = kStandardWidth;
 
+  std::optional<split_tabs::SplitTabId> split_tab_id =
+      split_tabs::SplitTabId::GenerateNew();
+
   std::vector<TabWidthConstraints> tab_states;
   for (int tab_index = 0; tab_index < test_case.num_tabs; tab_index++) {
     TabLayoutState ideal_animation_state = TabLayoutState(
@@ -71,7 +78,8 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
         tab_index < test_case.num_pinned_tabs ? TabPinned::kPinned
                                               : TabPinned::kUnpinned,
         tab_index == test_case.active_index ? TabActive::kActive
-                                            : TabActive::kInactive);
+                                            : TabActive::kInactive,
+        test_case.split_tabs.contains(tab_index) ? split_tab_id : std::nullopt);
     tab_states.emplace_back(ideal_animation_state, size_info);
   }
 
@@ -165,6 +173,17 @@ TEST(TabStripLayoutTest, MiddleWidthRoundedAndPinnedTab) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("64 187 186", TabWidthsAsString(bounds));
   EXPECT_EQ("0 46 215", TabXPositionsAsString(bounds));
+}
+
+TEST(TabStripLayoutTest, MiddleWidthRoundedAndSplitTab) {
+  TestCase test_case;
+  test_case.tabstrip_width = 600;
+  test_case.num_tabs = 4;
+  test_case.split_tabs = {0, 1};
+
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("164 163 164 163", TabWidthsAsString(bounds));
+  EXPECT_EQ("0 146 291 437", TabXPositionsAsString(bounds));
 }
 
 TEST(TabStripLayoutTest, BelowMinActiveWidthOneTab) {

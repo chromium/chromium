@@ -32,7 +32,8 @@ struct TabStripLayoutHelper::TabSlot {
     TabStripLayoutHelper::TabSlot slot;
     slot.type = view->GetTabSlotViewType();
     slot.view = view;
-    slot.state = TabLayoutState(TabOpen::kOpen, pinned, TabActive::kInactive);
+    slot.state = TabLayoutState(TabOpen::kOpen, pinned, TabActive::kInactive,
+                                view->split());
     return slot;
   }
 
@@ -265,7 +266,8 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     auto open = (slots_[i].state.IsClosed() || SlotIsCollapsedTab(i))
                     ? TabOpen::kClosed
                     : TabOpen::kOpen;
-    TabLayoutState state = TabLayoutState(open, pinned, active);
+    TabLayoutState state =
+        TabLayoutState(open, pinned, active, slots_[i].view->split());
     TabSizeInfo size_info = slots_[i].view->GetTabSizeInfo();
 
     tab_widths.emplace_back(state, size_info);

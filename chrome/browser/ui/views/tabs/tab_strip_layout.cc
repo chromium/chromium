@@ -7,8 +7,11 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
+#include <set>
 
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -112,18 +115,29 @@ void AllocateExtraSpace(std::vector<gfx::Rect>* bounds,
                         std::optional<int> extra_space,
                         TabSizer tab_sizer) {
   // Don't expand tabs if they are already at their preferred width.
-  if (tab_sizer.IsAlreadyPreferredWidth() || !extra_space.has_value()) {
+  if (tab_sizer.IsAlreadyPreferredWidth() || !extra_space.has_value() ||
+      extra_space.value() <= 0) {
     return;
   }
+
+  // Extra space will only be given to the first tab in a split encountered.
+  std::set<split_tabs::SplitTabId> splits_with_extra_space;
 
   int allocated_extra_space = 0;
   for (size_t i = 0; i < tabs.size(); i++) {
     const TabWidthConstraints& tab = tabs[i];
     bounds->at(i).set_x(bounds->at(i).x() + allocated_extra_space);
+    std::optional<split_tabs::SplitTabId> split_id = tab.get_state().split();
     if (allocated_extra_space < extra_space &&
-        tab_sizer.TabAcceptsExtraSpace(tab)) {
+        tab_sizer.TabAcceptsExtraSpace(tab) &&
+        (!split_id.has_value() ||
+         !splits_with_extra_space.contains(split_id.value()))) {
       allocated_extra_space++;
       bounds->at(i).set_width(bounds->at(i).width() + 1);
+
+      if (split_id.has_value()) {
+        splits_with_extra_space.emplace(split_id.value());
+      }
     }
   }
 }
