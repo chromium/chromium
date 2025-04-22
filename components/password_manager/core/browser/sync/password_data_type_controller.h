@@ -59,6 +59,8 @@ class PasswordDataTypeController : public syncer::DataTypeController,
   // IdentityManager::Observer overrides.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   const raw_ptr<PrefService> pref_service_;
