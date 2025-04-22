@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -99,6 +100,9 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -107,6 +111,7 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -137,6 +142,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private @Nullable EdgeToEdgeSupplier.ChangeObserver mEdgeToEdgeChangeObserver;
     private @NonNull Runnable mOpenInBrowserRunnable;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -176,6 +183,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param featureOverridesManagerSupplier Supplies the {@link CustomTabFeatureOverridesManager}.
      * @param openInBrowserRunnable Runnable opening the current tab in BrApp.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
+     * @param insetObserver The {@link InsetObserver}.
+     * @param savedInstanceState The saved bundle for the last recorded state.
      */
     public BaseCustomTabRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -213,7 +222,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier,
             @NonNull Supplier<CustomTabFeatureOverridesManager> featureOverridesManagerSupplier,
             @NonNull Runnable openInBrowserRunnable,
-            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
+            @NonNull EdgeToEdgeManager edgeToEdgeManager,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(
                 activity,
                 null,
@@ -257,6 +267,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator = customTabToolbarCoordinator;
         mIntentDataProvider = intentDataProvider;
         mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);
+        mDesktopWindowStateManager = desktopWindowStateManager;
 
         boolean isAuthTab = intentDataProvider.get().isAuthTab();
         if ((activityType == ActivityType.CUSTOM_TAB || isAuthTab)
@@ -649,6 +660,29 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mActivityTabProvider,
                         mProfileSupplier,
                         mIntentDataProvider.get());
+
+        final var intentDataProvider = mIntentDataProvider.get();
+        if (WebAppHeaderUtils.isMinimalUiEnabled(intentDataProvider)) {
+            final var desktopWindowStateManager = getDesktopWindowStateManager();
+            assert desktopWindowStateManager != null;
+
+            mWebAppHeaderLayoutCoordinator =
+                    new WebAppHeaderLayoutCoordinator(
+                            mActivity.findViewById(
+                                    org.chromium.chrome.browser.web_app_header.R.id
+                                            .web_app_header_layout),
+                            desktopWindowStateManager,
+                            mActivityTabProvider,
+                            getTopUiThemeColorProvider(),
+                            intentDataProvider,
+                            (tab) -> {});
+        }
+    }
+
+    @Nullable
+    @Override
+    public DesktopWindowStateManager getDesktopWindowStateManager() {
+        return mDesktopWindowStateManager;
     }
 
     @Override
@@ -758,6 +792,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mCustomTabHistoryIphController != null) {
             mCustomTabHistoryIphController.destroy();
             mCustomTabHistoryIphController = null;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && mWebAppHeaderLayoutCoordinator != null) {
+            mWebAppHeaderLayoutCoordinator.destroy();
+            mWebAppHeaderLayoutCoordinator = null;
         }
     }
 

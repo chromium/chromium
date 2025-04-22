@@ -13,16 +13,19 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutMediator.java",
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutProperties.java",
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderUtils.java",
   ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/desktop_windowing/android:java",
+    "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -32,6 +35,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/web_app_header_layout.xml",
+    "java/res/layout/web_app_main_layout.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
