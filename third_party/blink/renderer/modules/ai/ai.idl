@@ -7,8 +7,7 @@
 // TODO(crbug.com/381969447): remove this and use AIInterfaceProxy
 // for LanguageModel instead.
 [
-  Exposed=(Window,Worker),
-  SecureContext,
-  RuntimeEnabled=BuiltInAIAPI
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  SecureContext
 ]
 interface AI {};

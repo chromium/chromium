@@ -5,9 +5,8 @@
 // https://github.com/webmachinelearning/prompt-api
 
 [
-  Exposed=(Window,Worker),
-  SecureContext,
-  RuntimeEnabled=AIPromptAPI
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  SecureContext
 ]
 interface LanguageModelParams {
   readonly attribute unsigned long defaultTopK;

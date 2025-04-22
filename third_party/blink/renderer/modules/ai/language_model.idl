@@ -14,9 +14,8 @@ dictionary LanguageModelPromptOptions {
 };
 
 [
-  Exposed=(Window,Worker),
-  SecureContext,
-  RuntimeEnabled=AIPromptAPI
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  SecureContext
 ]
 interface LanguageModel : EventTarget {
   [
