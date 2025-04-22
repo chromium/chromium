@@ -30,8 +30,8 @@
 
 - (void)start {
   if (!self.findBarController) {
-    self.findBarController = [[FindBarControllerIOS alloc]
-        initWithIncognito:self.profile->IsOffTheRecord()];
+    self.findBarController =
+        [[FindBarControllerIOS alloc] initWithIncognito:self.isOffTheRecord];
 
     self.findBarController.commandHandler = self.findInPageCommandHandler;
   }
@@ -91,7 +91,7 @@
   }
   auto* helper = GetConcreteFindTabHelperFromWebState(self.currentWebState);
   DCHECK(helper && helper->IsFindUIActive());
-  if (!self.profile->IsOffTheRecord()) {
+  if (!self.isOffTheRecord) {
     helper->RestoreSearchTerm();
   }
   [self.presentationDelegate setHeadersForFindBarCoordinator:self];
