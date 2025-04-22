@@ -39,7 +39,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   const LayoutResult* LayoutInternal();
 
   void PlaceFlexItems(
-      HeapVector<FlexLine>* flex_lines,
+      FlexLineVector* flex_lines,
       HeapVector<Member<LayoutBox>>* oof_children,
       LayoutUnit* total_intrinsic_block_size,
       bool is_computing_multiline_column_intrinsic_size = false);
@@ -80,12 +80,12 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void ConstructAndAppendFlexItems(
       Phase phase,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
-  void ApplyReversals(HeapVector<FlexLine>* flex_lines);
+  void ApplyReversals(FlexLineVector* flex_lines);
   LayoutResult::EStatus GiveItemsFinalPositionAndSize(
-      HeapVector<FlexLine>* flex_lines,
+      FlexLineVector* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs);
   LayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
-      HeapVector<FlexLine>* flex_lines,
+      FlexLineVector* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
       LayoutUnit* total_intrinsic_block_size);
@@ -117,7 +117,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<Member<LayoutBox>>& oof_children);
 
   // Set reading flow so they can be accessed by LayoutBox.
-  void SetReadingFlowNodes(const HeapVector<FlexLine>& flex_lines);
+  void SetReadingFlowNodes(const FlexLineVector& flex_lines);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainer();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
@@ -181,7 +181,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // Add the amount an item expanded by to the item offset adjustment of the
   // flex line at the index directly after |flex_line_idx|, if there is one.
-  void AdjustOffsetForNextLine(HeapVector<FlexLine>* flex_lines,
+  void AdjustOffsetForNextLine(FlexLineVector* flex_lines,
                                wtf_size_t flex_line_idx,
                                LayoutUnit item_expansion) const;
 

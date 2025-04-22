@@ -331,7 +331,7 @@ class GapAccumulator {
   // - `cross_intersection_offset` is the cross axis offset of the main axis gap
   //    intersection point being computed for the current item.
   void BuildGapIntersectionPointsForCurrentItem(
-      const HeapVector<FlexLine>& flex_lines,
+      const FlexLineVector& flex_lines,
       size_t flex_line_index,
       wtf_size_t item_index_in_line,
       LogicalOffset item_offset) {
@@ -502,7 +502,7 @@ class GapAccumulator {
   }
 
   void PopulateGapIntersectionsForMiddleItem(
-      const HeapVector<FlexLine>& flex_lines,
+      const FlexLineVector& flex_lines,
       bool is_last_item_in_line,
       size_t flex_line_index,
       LayoutUnit main_intersection_offset,
@@ -1060,7 +1060,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
 }
 
 void FlexLayoutAlgorithm::SetReadingFlowNodes(
-    const HeapVector<FlexLine>& flex_lines) {
+    const FlexLineVector& flex_lines) {
   const auto& style = Style();
   const EReadingFlow reading_flow = style.ReadingFlow();
   if (reading_flow != EReadingFlow::kFlexVisual &&
@@ -1662,13 +1662,13 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   Vector<EBreakBetween> row_break_between_outputs;
-  HeapVector<FlexLine> flex_lines;
+  FlexLineVector flex_lines;
   HeapVector<Member<LayoutBox>> oof_children;
   FlexBreakTokenData::FlexBreakBeforeRow break_before_row =
       FlexBreakTokenData::kNotBreakBeforeRow;
   LayoutUnit total_intrinsic_block_size;
 
-  ClearCollectionScope<HeapVector<FlexLine>> scope(&flex_lines);
+  ClearCollectionScope<FlexLineVector> scope(&flex_lines);
 
   if (IsBreakInside(GetBreakToken())) {
     const auto* flex_data =
@@ -1791,7 +1791,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 }
 
 void FlexLayoutAlgorithm::PlaceFlexItems(
-    HeapVector<FlexLine>* flex_lines,
+    FlexLineVector* flex_lines,
     HeapVector<Member<LayoutBox>>* oof_children,
     LayoutUnit* total_intrinsic_block_size,
     bool is_computing_multiline_column_intrinsic_size) {
@@ -1949,7 +1949,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   }
 }
 
-void FlexLayoutAlgorithm::ApplyReversals(HeapVector<FlexLine>* flex_lines) {
+void FlexLayoutAlgorithm::ApplyReversals(FlexLineVector* flex_lines) {
   if (is_wrap_reverse_) {
     flex_lines->Reverse();
   }
@@ -2040,7 +2040,7 @@ LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
 }  // namespace
 
 LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
-    HeapVector<FlexLine>* flex_lines,
+    FlexLineVector* flex_lines,
     Vector<EBreakBetween>* row_break_between_outputs) {
   DCHECK(!IsBreakInside(GetBreakToken()));
 
@@ -2371,7 +2371,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
 LayoutResult::EStatus
 FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
-    HeapVector<FlexLine>* flex_lines,
+    FlexLineVector* flex_lines,
     Vector<EBreakBetween>* row_break_between_outputs,
     FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
     LayoutUnit* total_intrinsic_block_size) {
@@ -2965,7 +2965,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   // overridden available size, equal to the largest max-content width of any
   // item, when they are laid out. The container's max-content width is then
   // the farthest outer inline-end point of all the items.
-  HeapVector<FlexLine> flex_lines;
+  FlexLineVector flex_lines;
   PlaceFlexItems(&flex_lines, /* oof_children */ nullptr,
                  /* total_intrinsic_block_size */ nullptr,
                  /* is_computing_multiline_column_intrinsic_size */ true);
@@ -3311,7 +3311,7 @@ void FlexLayoutAlgorithm::AddColumnEarlyBreak(EarlyBreak* breakpoint,
 }
 
 void FlexLayoutAlgorithm::AdjustOffsetForNextLine(
-    HeapVector<FlexLine>* flex_lines,
+    FlexLineVector* flex_lines,
     wtf_size_t flex_line_idx,
     LayoutUnit item_expansion) const {
   DCHECK_LT(flex_line_idx, flex_lines->size());

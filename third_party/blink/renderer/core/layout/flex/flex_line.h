@@ -99,6 +99,9 @@ struct FlexLine {
   HeapVector<FlexItemData> line_items_data;
 };
 
+// Flex-layout usually has exactly one line.
+using FlexLineVector = HeapVector<FlexLine, 1>;
+
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexItemData)
