@@ -3013,6 +3013,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
         switches::kEnableNetBenchmarking,
         switches::kExtensionAiDataCollection,
+        switches::kExtensionExperimentalActor,
 #if BUILDFLAG(IS_CHROMEOS)
         chromeos::switches::
             kTelemetryExtensionPwaOriginOverrideForTesting,  // For tests only.

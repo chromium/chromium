@@ -41,6 +41,7 @@ if (enable_desktop_android_extensions) {
 if (enable_extensions) {
   schema_sources_ += [
     "accessibility_features.json",
+    "experimental_actor.idl",
     "experimental_ai_data.idl",
     "autofill_private.idl",
     "autotest_private.idl",

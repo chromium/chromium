@@ -29,10 +29,7 @@ ExperimentalAiDataApiFunction::~ExperimentalAiDataApiFunction() = default;
 
 bool ExperimentalAiDataApiFunction::PreRunValidation(std::string* error) {
   // Check the allowlist and return an error if extension is not allow listed.
-  std::vector<std::string> allowlisted_extensions =
-      AiDataKeyedService::GetAllowlistedExtensions();
-  if (std::find(allowlisted_extensions.begin(), allowlisted_extensions.end(),
-                extension_id()) == allowlisted_extensions.end()) {
+  if (!AiDataKeyedService::IsExtensionAllowlistedForData(extension_id())) {
     *error = "API access restricted for this extension.";
     return false;
   }

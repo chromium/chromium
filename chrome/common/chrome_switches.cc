@@ -295,6 +295,9 @@ const char kExtensionContentVerificationBootstrap[] = "bootstrap";
 const char kExtensionContentVerificationEnforce[] = "enforce";
 const char kExtensionContentVerificationEnforceStrict[] = "enforce_strict";
 
+// Name of the command line flag to allow the experimental actor API.
+const char kExtensionExperimentalActor[] = "enable-extension-actor-api";
+
 // Turns on extension install verification if it would not otherwise have been
 // turned on.
 const char kExtensionsInstallVerification[] = "extensions-install-verification";
