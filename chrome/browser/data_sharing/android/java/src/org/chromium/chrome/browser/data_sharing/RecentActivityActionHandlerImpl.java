@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -79,11 +80,8 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
     @Override
     public void openTabGroupEditDialog() {
         SavedTabGroup savedTabGroup = getSavedTabGroup();
-        assert savedTabGroup != null;
-        assert !savedTabGroup.savedTabs.isEmpty();
-        Integer tabId = savedTabGroup.savedTabs.get(0).localId;
-        assert tabId != null;
-        mDataSharingTabGroupsDelegate.openTabGroupWithTabId(tabId);
+        LocalTabGroupId localId = assumeNonNull(savedTabGroup).localId;
+        mDataSharingTabGroupsDelegate.openTabGroup(assumeNonNull(localId).tabGroupId);
     }
 
     @Override

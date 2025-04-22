@@ -8,7 +8,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** An interface to handle actions related to tab groups. */
@@ -17,9 +19,9 @@ public interface DataSharingTabGroupsDelegate {
     /**
      * Open the tab group dialog of the given tab group id.
      *
-     * @param tabId The tabId of the first tab in the group.
+     * @param tabGroupId The id of the group to open.
      */
-    void openTabGroupWithTabId(int tabId);
+    void openTabGroup(@Nullable Token tabGroupId);
 
     /**
      * Open url in the Chrome Custom Tab.

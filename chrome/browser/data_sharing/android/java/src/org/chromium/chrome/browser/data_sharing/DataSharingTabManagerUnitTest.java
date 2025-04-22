@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -19,7 +18,6 @@ import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABO
 import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -30,8 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -51,11 +47,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
@@ -81,7 +75,6 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -92,28 +85,14 @@ import java.util.List;
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DataSharingTabManagerUnitTest {
-    private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(Token.createRandom());
+    private static final Token GROUP_ID = Token.createRandom();
+    private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(GROUP_ID);
     private static final Integer TAB_ID = 456;
     private static final int TAB_GROUP_ROOT_ID = 148;
-    private static final String TITLE = "Title";
     private static final GURL TEST_URL = JUnitTestGURLs.URL_1;
-
-    private static final class JoinTestHelper {
-        /* package */ final Callback<Boolean> mOnJoinFinished = this::onJoinFinished;
-
-        private boolean mWasJoinFinished;
-
-        /* package */ JoinTestHelper() {}
-
-        private void onJoinFinished(boolean success) {
-            assertTrue(success);
-            mWasJoinFinished = true;
-        }
-    }
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
-    private final JoinTestHelper mJoinTestHelper = new JoinTestHelper();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -140,14 +119,8 @@ public class DataSharingTabManagerUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
-    @Mock private TabModel mTabModel;
     @Mock private FaviconHelper mFaviconHelper;
     @Mock private Tab mTab;
-
-    @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
-    @Captor private ArgumentCaptor<Callback<Bitmap>> mTabGroupPreviewCallbackCaptor;
-    @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
-    @Captor private ArgumentCaptor<ShareParams> mShareParamsCaptor;
 
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
@@ -360,7 +333,7 @@ public class DataSharingTabManagerUnitTest {
         setupTabGroupFilterForOpenGroupWithId();
 
         mDataSharingTabManager.promoteTabGroup(COLLABORATION_ID1);
-        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_GROUP_ROOT_ID);
+        verify(mDataSharingTabGroupsDelegate).openTabGroup(GROUP_ID);
     }
 
     private void setupActivityLogItemsOnTheBackend() {

@@ -436,18 +436,10 @@ public class DataSharingTabManager {
     /**
      * Switch the view to a currently opened tab group.
      *
-     * @param tabId The tab id of the first tab in the group.
+     * @param group The copy of the sync group. May not be part of the current tab model.
      */
     void switchToTabGroup(SavedTabGroup group) {
-        TabGroupModelFilter filter =
-                mTabModelSelectorSupplier
-                        .get()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(false);
-        assumeNonNull(filter);
-        int rootId = filter.getRootIdFromTabGroupId(assumeNonNull(group.localId).tabGroupId);
-        assert rootId != Tab.INVALID_TAB_ID;
-        mDataSharingTabGroupsDelegate.openTabGroupWithTabId(rootId);
+        mDataSharingTabGroupsDelegate.openTabGroup(assumeNonNull(group.localId).tabGroupId);
     }
 
     /**
