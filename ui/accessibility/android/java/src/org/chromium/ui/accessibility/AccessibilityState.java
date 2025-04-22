@@ -6,7 +6,6 @@ package org.chromium.ui.accessibility;
 
 import static android.accessibilityservice.AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES;
 import static android.accessibilityservice.AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION;
-import static android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_SPOKEN;
 import static android.accessibilityservice.AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
 import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
 import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
@@ -132,10 +131,6 @@ public class AccessibilityState {
         // returns true for isAccessibilityTool(). False otherwise.
         public final boolean isAccessibilityToolPresent;
 
-        // True when the user is running at least one service that requests the FEEDBACK_SPOKEN
-        // feedback type in AccessibilityServiceInfo. False otherwise.
-        public final boolean isSpokenFeedbackServicePresent;
-
         // True when the user has enabled the Android-OS privacy setting for showing passwords,
         // found in: Settings > Privacy > Show passwords. (Settings.System.TEXT_SHOW_PASSWORD).
         // False otherwise.
@@ -155,7 +150,6 @@ public class AccessibilityState {
                 boolean isPerformGesturesEnabled,
                 boolean isAnyAccessibilityServiceEnabled,
                 boolean isAccessibilityToolPresent,
-                boolean isSpokenFeedbackServicePresent,
                 boolean isTextShowPasswordEnabled,
                 boolean isOnlyAutofillRunning,
                 boolean isOnlyPasswordManagersEnabled) {
@@ -164,7 +158,6 @@ public class AccessibilityState {
             this.isPerformGesturesEnabled = isPerformGesturesEnabled;
             this.isAnyAccessibilityServiceEnabled = isAnyAccessibilityServiceEnabled;
             this.isAccessibilityToolPresent = isAccessibilityToolPresent;
-            this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
             this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
             this.isOnlyAutofillRunning = isOnlyAutofillRunning;
             this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
@@ -183,8 +176,6 @@ public class AccessibilityState {
                     + isAnyAccessibilityServiceEnabled
                     + ", isAccessibilityToolPresent="
                     + isAccessibilityToolPresent
-                    + ", isSpokenFeedbackServicePresent="
-                    + isSpokenFeedbackServicePresent
                     + ", isTextShowPasswordEnabled="
                     + isTextShowPasswordEnabled
                     + ", isOnlyAutofillRunning="
@@ -366,11 +357,6 @@ public class AccessibilityState {
     public static boolean isAccessibilityToolPresent() {
         if (!sInitialized) updateAccessibilityServices();
         return assumeNonNull(sState).isAccessibilityToolPresent;
-    }
-
-    public static boolean isSpokenFeedbackServicePresent() {
-        if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sState).isSpokenFeedbackServicePresent;
     }
 
     public static boolean isTextShowPasswordEnabled() {
@@ -611,7 +597,7 @@ public class AccessibilityState {
     protected static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false, false, false, false);
+            sState = new State(false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
         }
         sInitialized = true;
@@ -772,7 +758,6 @@ public class AccessibilityState {
         }
 
         // Calculate traditional state values.
-        boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
         boolean isTouchExplorationEnabled =
                 (0 != (sCapabilitiesMask & CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION))
                         && (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
@@ -801,7 +786,6 @@ public class AccessibilityState {
                         isPerformGesturesEnabled,
                         isAnyAccessibilityServiceEnabled,
                         isAccessibilityToolPresent,
-                        isSpokenFeedbackServicePresent,
                         isTextShowPasswordEnabled,
                         isOnlyAutofillRunning,
                         isOnlyPasswordManagersEnabled));
@@ -1123,7 +1107,6 @@ public class AccessibilityState {
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
@@ -1142,7 +1125,6 @@ public class AccessibilityState {
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
@@ -1161,7 +1143,6 @@ public class AccessibilityState {
                         enabled,
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
@@ -1180,7 +1161,6 @@ public class AccessibilityState {
                         oldState.isPerformGesturesEnabled,
                         enabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
@@ -1198,26 +1178,6 @@ public class AccessibilityState {
                         oldState.isTouchExplorationEnabled,
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
-                        enabled,
-                        oldState.isSpokenFeedbackServicePresent,
-                        oldState.isTextShowPasswordEnabled,
-                        oldState.isOnlyAutofillRunning,
-                        oldState.isOnlyPasswordManagersEnabled);
-
-        updateAndNotifyStateChange(newState);
-    }
-
-    public static void setIsSpokenFeedbackServicePresentForTesting(boolean enabled) {
-        if (!sInitialized) initializeForTesting();
-        State oldState = assumeNonNull(sState);
-
-        State newState =
-                new State(
-                        oldState.isScreenReaderEnabled,
-                        oldState.isTouchExplorationEnabled,
-                        oldState.isPerformGesturesEnabled,
-                        oldState.isAnyAccessibilityServiceEnabled,
-                        oldState.isAccessibilityToolPresent,
                         enabled,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
@@ -1237,7 +1197,6 @@ public class AccessibilityState {
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         enabled,
                         oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
@@ -1256,7 +1215,6 @@ public class AccessibilityState {
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
                         enabled,
                         oldState.isOnlyPasswordManagersEnabled);
@@ -1275,7 +1233,6 @@ public class AccessibilityState {
                         oldState.isPerformGesturesEnabled,
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
-                        oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
                         oldState.isOnlyAutofillRunning,
                         enabled);
@@ -1330,7 +1287,7 @@ public class AccessibilityState {
     }
 
     private static void initializeForTesting() {
-        sState = new State(false, false, false, false, false, false, false, false, false);
+        sState = new State(false, false, false, false, false, false, false, false);
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;
