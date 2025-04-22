@@ -2354,6 +2354,12 @@
       status: "test",
     },
     {
+      // Enables Skipping children for invisible select elements containing
+      // non-editable node while calculating end of paragraph.
+      name: "HandleDeletionAtStartAndEndBoundaryContainingHiddenElement",
+      status: "stable",
+    },
+    {
       name: "HandwritingRecognition",
       status: {
         "ChromeOS": "stable",
