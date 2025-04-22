@@ -361,7 +361,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
       autofill::TriggeringField(
           kElementId,
           autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds),
+          base::i18n::LEFT_TO_RIGHT, std::u16string(),
+          /*show_webauthn_credentials=*/false,
+          /*show_identity_credentials=*/false, element_bounds),
       form, 0, 0));
   autofill::AutofillSuggestionController* controller = nullptr;
   // Showing the Autofill Popup is an asynchronous task.
@@ -390,7 +392,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
       autofill::TriggeringField(
           kElementId,
           autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds),
+          base::i18n::LEFT_TO_RIGHT, std::u16string(),
+          /*show_webauthn_credentials=*/false,
+          /*show_identity_credentials=*/false, element_bounds),
       form, 0, 0));
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -416,7 +420,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
       autofill::TriggeringField(
           kElementId,
           autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds),
+          base::i18n::LEFT_TO_RIGHT, std::u16string(),
+          /*show_webauthn_credentials=*/false,
+          /*show_identity_credentials=*/false, element_bounds),
       form, 0, 0));
   // Showing the Autofill Popup is an asynchronous task.
   base::RunLoop().RunUntilIdle();

@@ -50,6 +50,7 @@ struct TriggeringField {
                   base::i18n::TextDirection text_direction,
                   const std::u16string& typed_username,
                   bool show_webauthn_credentials,
+                  bool show_identity_credentials,
                   const gfx::RectF& bounds);
   TriggeringField();
   TriggeringField(const TriggeringField&);
@@ -69,6 +70,9 @@ struct TriggeringField {
   std::u16string typed_username;
   // Specifies whether the field is suitable to show webauthn credentials.
   bool show_webauthn_credentials;
+  // Specifies whether the field is suitable to show federated identity
+  // credentials.
+  bool show_identity_credentials;
   // Location at which to display the popup.
   gfx::RectF bounds;
 };

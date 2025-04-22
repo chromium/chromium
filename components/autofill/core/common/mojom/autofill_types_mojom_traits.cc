@@ -640,6 +640,7 @@ bool StructTraits<autofill::mojom::TriggeringFieldDataView,
     Read(autofill::mojom::TriggeringFieldDataView data,
          autofill::TriggeringField* out) {
   out->show_webauthn_credentials = data.show_webauthn_credentials();
+  out->show_identity_credentials = data.show_identity_credentials();
 
   return data.ReadElementId(&out->element_id) &&
          data.ReadTriggerSource(&out->trigger_source) &&

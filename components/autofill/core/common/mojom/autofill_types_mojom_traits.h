@@ -745,6 +745,10 @@ struct StructTraits<autofill::mojom::TriggeringFieldDataView,
     return r.show_webauthn_credentials;
   }
 
+  static int show_identity_credentials(const autofill::TriggeringField& r) {
+    return r.show_identity_credentials;
+  }
+
   static const gfx::RectF& bounds(const autofill::TriggeringField& r) {
     return r.bounds;
   }

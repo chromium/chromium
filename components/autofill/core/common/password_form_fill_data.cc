@@ -31,6 +31,8 @@ TriggeringField::TriggeringField(const FormFieldData& field,
           field.text_direction(),
           typed_username,
           field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn,
+          field.parsed_autocomplete() &&
+              field.parsed_autocomplete()->webidentity,
           bounds) {}
 
 TriggeringField::TriggeringField(FieldRendererId element_id,
@@ -38,12 +40,14 @@ TriggeringField::TriggeringField(FieldRendererId element_id,
                                  base::i18n::TextDirection text_direction,
                                  const std::u16string& typed_username,
                                  bool show_webauthn_credentials,
+                                 bool show_identity_credentials,
                                  const gfx::RectF& bounds)
     : element_id(element_id),
       trigger_source(trigger_source),
       text_direction(text_direction),
       typed_username(typed_username),
       show_webauthn_credentials(show_webauthn_credentials),
+      show_identity_credentials(show_identity_credentials),
       bounds(bounds) {}
 
 TriggeringField::TriggeringField() = default;
