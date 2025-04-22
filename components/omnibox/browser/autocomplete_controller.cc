@@ -1967,16 +1967,14 @@ void AutocompleteController::UpdateShownInSession(AutocompleteResult* result) {
   }
 
   for (auto& match : *result) {
-    // TODO(crbug.com/402519775): Compute this based on the other "ZPS shown in
-    // session" data listed below.
-    match.zero_prefix_suggestions_shown_in_session =
-        result->num_zero_prefix_suggestions_shown_in_session() > 0;
-
     const auto [zero_prefix_search_shown, zero_prefix_url_shown] =
         result->suggestions_shown_in_session(/*is_zero_suggest=*/true);
     match.zero_prefix_search_suggestions_shown_in_session =
         zero_prefix_search_shown;
     match.zero_prefix_url_suggestions_shown_in_session = zero_prefix_url_shown;
+
+    match.zero_prefix_suggestions_shown_in_session =
+        zero_prefix_search_shown || zero_prefix_url_shown;
 
     const auto [typed_search_shown, typed_url_shown] =
         result->suggestions_shown_in_session(/*is_zero_suggest=*/false);
