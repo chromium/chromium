@@ -125,6 +125,13 @@ if (is_android && export_libcxxabi_from_executables) {
 
 if (use_explicit_libcxx_modules) {
   libcxx_prefix = "${root_gen_dir}/third_party/libc++/src"
+  libcxx_modulemap_in =
+      read_file("//third_party/libc++/src/include/module.modulemap.in",
+                "string")
+  libcxx_modulemap_out = string_replace(libcxx_modulemap_in,
+                                        "@LIBCXX_CONFIG_SITE_MODULE_ENTRY@",
+                                        "textual header \"__config_site\"")
+  write_file("${libcxx_prefix}/include/module.modulemap", libcxx_modulemap_out)
 } else {
   libcxx_prefix = "//third_party/libc++/src"
 }

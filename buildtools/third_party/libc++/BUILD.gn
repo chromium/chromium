@@ -126,17 +126,21 @@ configs_to_remove = [
 ]
 
 if (use_explicit_libcxx_modules) {
-  # We need to have libc++ headers and __assertion_handler in the same directory
-  # for clang modules build.
+  # We need to have libc++ headers, __assertion_handler and __config_site in the
+  # same directory for clang modules build.
   copy("copy_libcxx_headers") {
     sources = libcxx_headers
     outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
   }
 
-  copy("copy_assertion_handler") {
-    sources = [ "__assertion_handler" ]
-    outputs =
-        [ "${root_gen_dir}/third_party/libc++/src/include/__assertion_handler" ]
+  copy("copy_custom_headers") {
+    sources = [
+      "__assertion_handler",
+      "__config_site",
+    ]
+    outputs = [
+      "${root_gen_dir}/third_party/libc++/src/include/{{source_file_part}}",
+    ]
   }
 }
 
@@ -149,7 +153,7 @@ template("libcxx_modules") {
       sources =
           [ "${root_gen_dir}/third_party/libc++/src/include/module.modulemap" ]
       deps += [
-        ":copy_assertion_handler",
+        ":copy_custom_headers",
         ":copy_libcxx_headers",
       ]
     }
