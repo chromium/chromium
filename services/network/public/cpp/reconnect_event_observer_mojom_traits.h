@@ -26,12 +26,12 @@ template <>
 struct StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
                     net::ConnectionKeepAliveConfig> {
  public:
-  static bool idle_timeout_in_seconds(
+  static int32_t idle_timeout_in_seconds(
       const net::ConnectionKeepAliveConfig& keep_alive_config) {
     return keep_alive_config.idle_timeout_in_seconds;
   }
 
-  static bool ping_interval_in_seconds(
+  static int32_t ping_interval_in_seconds(
       const net::ConnectionKeepAliveConfig& keep_alive_config) {
     return keep_alive_config.ping_interval_in_seconds;
   }

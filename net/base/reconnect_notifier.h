@@ -102,13 +102,16 @@ struct NET_EXPORT ConnectionKeepAliveConfig {
       default;
 
   // Timeout for the session to be closed. Counted from the last successful
-  // PING.
-  uint32_t idle_timeout_in_seconds = 0;
+  // PING. This is kept as signed integer since it will be later passed as
+  // a time offset of the underlying time representation such as `QuicTime`.
+  int32_t idle_timeout_in_seconds = 0;
 
   // Interval between two pings. Counted from the last ping. This should be
   // reasonably shorter than `idle_timeout` so that a PING frame can be
-  // exchanged before the idle timeout.
-  uint32_t ping_interval_in_seconds = 0;
+  // exchanged before the idle timeout. This is kept as signed integer since it
+  // will be later passed as a time offset of the underlying time representation
+  // such as `QuicTime`.
+  int32_t ping_interval_in_seconds = 0;
 };
 
 // Keeps track of the connection management relevant information (e.g.

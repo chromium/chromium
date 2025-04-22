@@ -49,11 +49,11 @@ struct ConnectionKeepAliveConfig {
   // Timeout for the session to be closed in seconds. Counted from the last
   // successful PING. 32-bits is enough to hold a reasonable number of seconds
   // for a connection to stay alive.
-  uint32 idle_timeout_in_seconds = 0;
+  int32 idle_timeout_in_seconds = 0;
 
   // Interval between two pings. Counted from the last ping. This should be
   // reasonably shorter than `idle_timeout_sec` so that a PING frame can be
   // exchanged before the idle timeout. We choose a reasonable time in seconds
   // within the uint32 bounds.
-  uint32 ping_interval_in_seconds = 0;
+  int32 ping_interval_in_seconds = 0;
 };
