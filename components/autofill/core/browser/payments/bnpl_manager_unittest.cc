@@ -1604,7 +1604,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
 }
 
-// Tests that the `kBnplSuggestionAcceptedOnce` event is logged once when
+// Tests that the `kBnplSuggestionAccepted` event is logged once when
 // `InitBnplFlow()` is called.
 TEST_F(BnplManagerTest, InitBnplFlow_SuggestionAcceptedLogged) {
   base::HistogramTester histogram_tester;
@@ -1612,15 +1612,15 @@ TEST_F(BnplManagerTest, InitBnplFlow_SuggestionAcceptedLogged) {
   bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
 
-  // Test that `kBnplSuggestionAcceptedOnce` is logged only once even if
+  // Test that `kBnplSuggestionAccepted` is logged only once even if
   // `InitBnplFlow()` is called more than once on the same page.
   bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
 }
 

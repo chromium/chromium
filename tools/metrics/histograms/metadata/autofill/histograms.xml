@@ -3041,7 +3041,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     suggestions on credit card forms of BNPL-eligible merchant sites. It tracks
     when the BNPL suggestion is shown, selected, filled, and submitted. Each
     event log is emitted when the action occurs (suggestion shown, selected,
-    etc.)
+    etc.). Each BnplFormEvent metric can be recorded once per page load.
   </summary>
 </histogram>
 

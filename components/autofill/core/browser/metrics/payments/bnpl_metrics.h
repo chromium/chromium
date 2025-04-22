@@ -79,42 +79,40 @@ std::string ConvertBnplFlowResultToString(BnplFlowResult result);
 
 // LINT.IfChange(BnplFormEvent)
 
+// All BNPL Form Events are logged once per page load.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-//
-// TODO(crbug.com/409138442): Remove "Once" suffix from BNPL form event metrics
-// and instead add comment that these are all "Once" metrics. For now, it is
-// fine to leave as is to keep consistent with other in-progress CLs.
 enum class BnplFormEvent {
   // Payments autofill suggestions were shown on a BNPL-eligible merchant.
-  kSuggestionsShownOnce = 0,
+  kSuggestionsShown = 0,
 
   // The BNPL suggestion was added to the payments autofill dropdown and shown
   // to the user.
-  kBnplSuggestionShownOnce = 1,
+  kBnplSuggestionShown = 1,
 
   // A BNPL suggestion was accepted on the current page.
-  kBnplSuggestionAcceptedOnce = 2,
+  kBnplSuggestionAccepted = 2,
 
   // A form was filled with an Affirm VCN.
-  kFormFilledWithAffirmOnce = 3,
+  kFormFilledWithAffirm = 3,
 
   // A form was filled with a Zip VCN.
-  kFormFilledWithZipOnce = 4,
+  kFormFilledWithZip = 4,
 
   // A form was filled with an Afterpay VCN.
-  kFormFilledWithAfterpayOnce = 5,
+  kFormFilledWithAfterpay = 5,
 
   // A form was submitted with an Affirm VCN.
-  kFormSubmittedWithAffirmOnce = 6,
+  kFormSubmittedWithAffirm = 6,
 
   // A form was submitted with a Zip VCN.
-  kFormSubmittedWithZipOnce = 7,
+  kFormSubmittedWithZip = 7,
 
   // A form was submitted with an Afterpay VCN.
-  kFormSubmittedWithAfterpayOnce = 8,
+  kFormSubmittedWithAfterpay = 8,
 
-  kMaxValue = kFormSubmittedWithAfterpayOnce,
+  kMaxValue = kFormSubmittedWithAfterpay,
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplFormEvent)

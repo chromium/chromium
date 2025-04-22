@@ -48,7 +48,7 @@ CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
 void CreditCardFormEventLogger::OnBnplSuggestionShown() {
   if (!has_logged_bnpl_suggestion_shown_) {
-    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShownOnce);
+    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShown);
     has_logged_bnpl_suggestion_shown_ = true;
   }
 }
@@ -152,7 +152,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
       IsEligibleForBnpl(
           owner_->client().GetLastCommittedPrimaryMainFrameURL())) {
-    LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnce);
+    LogBnplFormEvent(BnplFormEvent::kSuggestionsShown);
     has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
   }
 }
@@ -590,7 +590,7 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
 
 void CreditCardFormEventLogger::OnDidAcceptBnplSuggestion() {
   if (!has_logged_bnpl_suggestion_accepted_) {
-    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAcceptedOnce);
+    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAccepted);
     has_logged_bnpl_suggestion_accepted_ = true;
   }
 }

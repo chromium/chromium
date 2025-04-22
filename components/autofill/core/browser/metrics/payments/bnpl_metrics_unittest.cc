@@ -145,11 +145,10 @@ TEST_P(BnplMetricsTest, LogBnplIssuerSelection) {
 TEST_F(BnplMetricsTest, LogBnplAddedOnUpdateSuggestion) {
   base::HistogramTester histogram_tester;
 
-  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShownOnce);
+  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShown);
 
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
-                                     BnplFormEvent::kBnplSuggestionShownOnce,
-                                     1);
+                                     BnplFormEvent::kBnplSuggestionShown, 1);
 }
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowShown) {
@@ -320,14 +319,14 @@ TEST_F(BnplFormEventsMetricsTest, SuggestionsShownOnBnplEligibleMerchant) {
                              SuggestionType::kCreditCardEntry);
 
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
-                                     BnplFormEvent::kSuggestionsShownOnce, 1);
+                                     BnplFormEvent::kSuggestionsShown, 1);
 
   // To ensure the metrics logs only once per page.
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
 
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
-                                     BnplFormEvent::kSuggestionsShownOnce, 1);
+                                     BnplFormEvent::kSuggestionsShown, 1);
 }
 
 TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
@@ -345,17 +344,17 @@ TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
                              SuggestionType::kCreditCardEntry);
 
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
-                                     BnplFormEvent::kSuggestionsShownOnce, 0);
+                                     BnplFormEvent::kSuggestionsShown, 0);
 }
 
 TEST_F(BnplFormEventsMetricsTest, SuggestionAccepted) {
   base::HistogramTester histogram_tester;
 
-  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAcceptedOnce);
+  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAccepted);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*sample=*/BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_count=*/1);
 }
 
@@ -366,7 +365,7 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAffirm) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kFormFilledWithAffirmOnce,
+      /*sample=*/BnplFormEvent::kFormFilledWithAffirm,
       /*expected_count=*/1);
 }
 
@@ -377,7 +376,7 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithZip) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kFormFilledWithZipOnce,
+      /*sample=*/BnplFormEvent::kFormFilledWithZip,
       /*expected_count=*/1);
 }
 
@@ -388,7 +387,7 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAfterpay) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kFormFilledWithAfterpayOnce,
+      /*sample=*/BnplFormEvent::kFormFilledWithAfterpay,
       /*expected_count=*/1);
 }
 
@@ -399,7 +398,7 @@ TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithAffirm) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*sample=*/BnplFormEvent::kFormSubmittedWithAffirm,
       /*expected_count=*/1);
 }
 
@@ -410,7 +409,7 @@ TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithZip) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kFormSubmittedWithZipOnce,
+      /*sample=*/BnplFormEvent::kFormSubmittedWithZip,
       /*expected_count=*/1);
 }
 
@@ -421,7 +420,7 @@ TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithAfterpay) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/BnplFormEvent::kFormSubmittedWithAfterpayOnce,
+      /*sample=*/BnplFormEvent::kFormSubmittedWithAfterpay,
       /*expected_count=*/1);
 }
 

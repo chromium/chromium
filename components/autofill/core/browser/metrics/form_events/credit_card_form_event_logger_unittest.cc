@@ -24,7 +24,7 @@ class CreditCardFormEventLoggerTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 };
 
-// Tests that the `kBnplSuggestionAcceptedOnce` event is logged once when
+// Tests that the `kBnplSuggestionAccepted` event is logged once when
 // `OnDidAcceptBnplSuggestion()` is called.
 TEST_F(CreditCardFormEventLoggerTest,
        OnDidAcceptBnplSuggestion_SuggestionAcceptedLogged) {
@@ -33,15 +33,15 @@ TEST_F(CreditCardFormEventLoggerTest,
   autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
 
-  // Test that `kBnplSuggestionAcceptedOnce` is logged only once even if
+  // Test that `kBnplSuggestionAccepted` is logged only once even if
   // `OnDidAcceptBnplSuggestion()` is called more than once on the same page.
   autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
 }
 
@@ -79,7 +79,7 @@ TEST_F(CreditCardFormEventLoggerTest,
   on_did_fill_form_filling_suggestion();
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kFormFilledWithAffirmOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormFilledWithAffirm,
       /*expected_count=*/1);
 
   // Ensure that BNPL VCN's don't affect regular VCN metrics.
@@ -90,12 +90,12 @@ TEST_F(CreditCardFormEventLoggerTest,
           base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE,
                        /*count=*/0)));
 
-  // Test that `kFormFilledWithAffirmOnce` is logged only once even if
+  // Test that `kFormFilledWithAffirm` is logged only once even if
   // OnDidFillFormFillingSuggestion() is called more than once on the same page.
   on_did_fill_form_filling_suggestion();
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kFormFilledWithAffirmOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormFilledWithAffirm,
       /*expected_count=*/1);
 
   // Ensure that BNPL VCN's don't affect regular VCN metrics.
@@ -134,7 +134,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kFormFilledWithAffirmOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormFilledWithAffirm,
       /*expected_count=*/0);
 
   // Ensure that the regular VCN metrics are logged.
@@ -285,7 +285,7 @@ TEST_F(CreditCardFormEventLoggerTest, LogFormSubmitted_BnplFormFilledOnce) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirm,
       /*expected_count=*/1);
 
   // Ensure that BNPL VCN's don't affect regular VCN metrics.
@@ -297,7 +297,7 @@ TEST_F(CreditCardFormEventLoggerTest, LogFormSubmitted_BnplFormFilledOnce) {
           base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE,
                        /*count=*/0)));
 
-  // Test that `kFormSubmittedWithAffirmOnce` is logged only once even if
+  // Test that `kFormSubmittedWithAffirm` is logged only once even if
   // LogFormSubmitted() is called more than once on the same page.
   on_did_fill_form_filling_suggestion();
   autofill_manager()
@@ -310,7 +310,7 @@ TEST_F(CreditCardFormEventLoggerTest, LogFormSubmitted_BnplFormFilledOnce) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirm,
       /*expected_count=*/1);
 
   // Ensure that BNPL VCN's don't affect regular VCN metrics.
@@ -356,7 +356,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirm,
       /*expected_count=*/0);
 
   // Ensure that the regular VCN metrics are logged.
@@ -368,7 +368,7 @@ TEST_F(CreditCardFormEventLoggerTest,
                        /*count=*/1)));
 }
 
-// Tests that the `kBnplSuggestionShownOnce` event is logged once when
+// Tests that the `kBnplSuggestionShown` event is logged once when
 // `OnBnplSuggestionShown()` is called.
 TEST_F(CreditCardFormEventLoggerTest,
        OnBnplSuggestionShown_SuggestionAddedLogged) {
@@ -377,15 +377,15 @@ TEST_F(CreditCardFormEventLoggerTest,
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShownOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShown,
       /*expected_bucket_count=*/1);
 
-  // Test that `kBnplSuggestionShownOnce` is logged only once even if
+  // Test that `kBnplSuggestionShown` is logged only once even if
   // `OnBnplSuggestionShown()` is called more than once on the same page.
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
-      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShownOnce,
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShown,
       /*expected_bucket_count=*/1);
 }
 

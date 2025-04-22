@@ -115,11 +115,11 @@ void LogBnplFormEvent(BnplFormEvent event) {
 
 void LogFormFilledWithBnplVcn(std::string_view issuer_id) {
   if (issuer_id == kBnplAffirmIssuerId) {
-    LogBnplFormEvent(BnplFormEvent::kFormFilledWithAffirmOnce);
+    LogBnplFormEvent(BnplFormEvent::kFormFilledWithAffirm);
   } else if (issuer_id == kBnplZipIssuerId) {
-    LogBnplFormEvent(BnplFormEvent::kFormFilledWithZipOnce);
+    LogBnplFormEvent(BnplFormEvent::kFormFilledWithZip);
   } else if (issuer_id == kBnplAfterpayIssuerId) {
-    LogBnplFormEvent(BnplFormEvent::kFormFilledWithAfterpayOnce);
+    LogBnplFormEvent(BnplFormEvent::kFormFilledWithAfterpay);
   } else {
     NOTREACHED();
   }
@@ -127,11 +127,11 @@ void LogFormFilledWithBnplVcn(std::string_view issuer_id) {
 
 void LogFormSubmittedWithBnplVcn(std::string_view issuer_id) {
   if (issuer_id == kBnplAffirmIssuerId) {
-    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAffirmOnce);
+    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAffirm);
   } else if (issuer_id == kBnplZipIssuerId) {
-    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithZipOnce);
+    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithZip);
   } else if (issuer_id == kBnplAfterpayIssuerId) {
-    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAfterpayOnce);
+    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAfterpay);
   } else {
     NOTREACHED();
   }
