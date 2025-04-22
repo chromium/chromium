@@ -174,7 +174,13 @@ ChromeShellDelegate::CreateClipboardHistoryControllerDelegate() const {
 
 std::unique_ptr<ash::CoralDelegate> ChromeShellDelegate::CreateCoralDelegate()
     const {
-  return std::make_unique<CoralDelegateImpl>();
+  // TODO(crbug.com/403153076): Remove g_browser_process usage.
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  return std::make_unique<CoralDelegateImpl>(application_locale_storage,
+                                             variations_service);
 }
 
 std::unique_ptr<ash::GameDashboardDelegate>
