@@ -553,34 +553,6 @@ class CheckingFlowRequirementsState : public ControllerState {
   }
 
  private:
-  // Called to process the outcome of data sharing read event.
-  void ProcessGroupDataOrFailureOutcome(
-      const GroupDataOrFailureOutcome& group_outcome) {
-    // TODO(crbug.com/373403973): add version check once all platforms
-    // implemented ReadNewGroup in SDK.
-    if (!group_outcome.has_value()) {
-      RecordJoinEvent(GetLogger(),
-                      CollaborationServiceJoinEvent::kReadNewGroupFailed);
-      HandleError();
-      return;
-    }
-
-    RecordJoinEvent(GetLogger(),
-                    CollaborationServiceJoinEvent::kReadNewGroupSuccess);
-
-    if (GetCurrentUserRoleForGroup(controller->identity_manager(),
-                                   group_outcome.value()) !=
-        data_sharing::MemberRole::kUnknown) {
-      RecordJoinEvent(
-          GetLogger(),
-          CollaborationServiceJoinEvent::kReadNewGroupUserIsAlreadyMember);
-      controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
-      return;
-    }
-
-    controller->TransitionTo(StateId::kAddingUserToGroup);
-  }
-
   void CheckJoinFlowRequirements() {
     RecordJoinEvent(GetLogger(),
                     CollaborationServiceJoinEvent::kFlowRequirementsMet);
@@ -602,15 +574,7 @@ class CheckingFlowRequirementsState : public ControllerState {
       controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
       return;
     }
-    // If user is not part of the group, do a readgroup to ensure version
-    // match.
-    // TODO(haileywang): Do the version check in the preview data and do the
-    // network requests in parallel instead of one by one.
-    controller->data_sharing_service()->ReadNewGroup(
-        controller->flow().join_token(),
-        base::BindOnce(
-            &CheckingFlowRequirementsState::ProcessGroupDataOrFailureOutcome,
-            local_weak_ptr_factory_.GetWeakPtr()));
+    controller->TransitionTo(StateId::kAddingUserToGroup);
   }
 
   void CheckShareFlowRequirements() {
@@ -665,6 +629,11 @@ class AddingUserToGroupState : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    controller->data_sharing_service()->ReadNewGroup(
+        controller->flow().join_token(),
+        base::BindOnce(
+            &AddingUserToGroupState::ProcessGroupDataOrFailureOutcome,
+            local_weak_ptr_factory_.GetWeakPtr()));
     controller->data_sharing_service()->GetSharedEntitiesPreview(
         controller->flow().join_token(),
         base::BindOnce(
@@ -706,6 +675,45 @@ class AddingUserToGroupState : public ControllerState {
   void ProcessSharedDataPreviewOrFailureOutcome(
       const data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome&
           preview_outcome) {
+    preview_data_ = preview_outcome;
+    MaybeProceedJoinFlow();
+  }
+
+  // Called to process the outcome of data sharing read event.
+  void ProcessGroupDataOrFailureOutcome(
+      const GroupDataOrFailureOutcome& group_outcome) {
+    read_group_data_ = group_outcome;
+    MaybeProceedJoinFlow();
+  }
+
+  void MaybeProceedJoinFlow() {
+    // Data sharing outcome is not ready yet.
+    if (!preview_data_.has_value() || !read_group_data_.has_value()) {
+      return;
+    }
+
+    data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome
+        preview_outcome = preview_data_.value();
+    GroupDataOrFailureOutcome group_outcome = read_group_data_.value();
+
+    // Check if user is already in group.
+    if (group_outcome.has_value()) {
+      RecordJoinEvent(GetLogger(),
+                      CollaborationServiceJoinEvent::kReadNewGroupSuccess);
+    }
+
+    if (group_outcome.has_value() &&
+        GetCurrentUserRoleForGroup(controller->identity_manager(),
+                                   group_outcome.value()) !=
+            data_sharing::MemberRole::kUnknown) {
+      RecordJoinEvent(
+          GetLogger(),
+          CollaborationServiceJoinEvent::kReadNewGroupUserIsAlreadyMember);
+      controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
+      return;
+    }
+
+    // Handle preview failures first.
     if (!preview_outcome.has_value() &&
         preview_outcome.error() == data_sharing::DataSharingService::
                                        DataPreviewActionFailure::kGroupFull) {
@@ -725,11 +733,26 @@ class AddingUserToGroupState : public ControllerState {
 
     RecordJoinEvent(GetLogger(),
                     CollaborationServiceJoinEvent::kPreviewSuccess);
+
+    // Handle read group failure next.
+    if (!group_outcome.has_value()) {
+      RecordJoinEvent(GetLogger(),
+                      CollaborationServiceJoinEvent::kReadNewGroupFailed);
+      HandleErrorWithType(ErrorInfo::Type::kInvalidUrl);
+      return;
+    }
+
+    // All checks are successful. Continue the join flow.
     controller->delegate()->ShowJoinDialog(
         controller->flow().join_token(), preview_outcome.value(),
         base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
                        local_weak_ptr_factory_.GetWeakPtr()));
   }
+
+  std::optional<
+      data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome>
+      preview_data_{std::nullopt};
+  std::optional<GroupDataOrFailureOutcome> read_group_data_{std::nullopt};
 
   base::WeakPtrFactory<AddingUserToGroupState> local_weak_ptr_factory_{this};
 };
