@@ -3720,6 +3720,7 @@
       // ChromeStatus: https://chromestatus.com/feature/5207202081800192
       name: "RenderBlockingFullFrameRate",
       copied_from_base_feature_if: "overridden",
+      origin_trial_feature_name: "RenderBlockingFullFrameRate",
       status: "test",
     },
     {
