@@ -2323,6 +2323,8 @@ void StorageHandler::OnSourceHandled(
               registration.trigger_specs.max_event_level_reports())
           .SetNamedBudgets(
               ToNamedBudgetDefs(registration.aggregatable_named_budget_defs))
+          .SetDebugReporting(registration.debug_reporting)
+          .SetEventLevelEpsilon(registration.event_level_epsilon)
           .Build();
 
   if (registration.debug_key.has_value()) {

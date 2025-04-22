@@ -11223,6 +11223,8 @@ experimental domain Storage
       optional AttributionScopesData scopesData
       integer maxEventLevelReports
       array of AttributionReportingNamedBudgetDef namedBudgets
+      boolean debugReporting
+      number eventLevelEpsilon
 
   experimental type AttributionReportingSourceRegistrationResult extends string
     enum
