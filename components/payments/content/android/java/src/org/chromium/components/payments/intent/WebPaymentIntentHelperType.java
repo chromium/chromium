@@ -29,10 +29,12 @@ import java.util.List;
 public final class WebPaymentIntentHelperType {
     private static final String EMPTY_JSON_DATA = "{}";
 
-    /** The class that corresponds to mojom.PaymentCurrencyAmount, with minimally required fields. */
+    /**
+     * The class that corresponds to mojom.PaymentCurrencyAmount, with minimally required fields.
+     */
     public static final class PaymentCurrencyAmount {
-        public static String EXTRA_CURRENCY = "currency";
-        public static String EXTRA_VALUE = "value";
+        public static final String EXTRA_CURRENCY = "currency";
+        public static final String EXTRA_VALUE = "value";
 
         public final String currency;
         public final String value;
@@ -357,7 +359,7 @@ public final class WebPaymentIntentHelperType {
         public Bundle asBundle() {
             Bundle bundle = new Bundle();
             if (total != null) {
-                bundle.putBundle(WebPaymentIntentHelper.EXTRA_TOTAL, total.asBundle());
+                bundle.putBundle(EXTRA_TOTAL, total.asBundle());
             }
             if (shippingOptions != null && !shippingOptions.isEmpty()) {
                 bundle.putParcelableArray(

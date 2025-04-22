@@ -394,6 +394,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/payments/DeduplicatePaymentAppsUnitTest.java",
     "junit/src/org/chromium/components/payments/PaymentDetailsUpdateConnectionTest.java",
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
+    "junit/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverterTest.java",
   ]
   deps = [
     ":browser_binding_junit_test",
