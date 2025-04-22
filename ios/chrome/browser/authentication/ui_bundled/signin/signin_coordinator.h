@@ -177,7 +177,7 @@ class PrefRegistrySyncable;
 // `securityDomainID` Identifies a particular security domain.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
 // `accessPoint` Identifies where the dialog is initiated from.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                           browser:
