@@ -57,6 +57,7 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   const bool private_aggregation_permissions_policy_allowed_;
   const bool enforce_permission_policy_for_on_event_;
   const bool additional_extensions_allowed_;
+  const bool error_reporting_allowed_;
 
   // This is true if the binding is used for functions where reserved.once is
   // permitted; it's irrelevant if reserved.once is turned off by
@@ -66,9 +67,15 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   // Defaults to debug mode being disabled.
   blink::mojom::DebugModeDetails debug_mode_details_;
 
-  // Contributions from calling Private Aggregation APIs.
+  // Contributions from calling Private Aggregation APIs, excluding those
+  // conditional on an uncaught error.
   std::vector<auction_worklet::mojom::AggregatableReportContributionPtr>
       private_aggregation_contributions_;
+
+  // Private Aggregation contributions that are conditional on an uncaught
+  // error occurring.
+  std::vector<auction_worklet::mojom::AggregatableReportContributionPtr>
+      private_aggregation_uncaught_error_contributions_;
 };
 
 }  // namespace auction_worklet

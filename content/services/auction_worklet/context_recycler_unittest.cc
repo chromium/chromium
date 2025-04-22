@@ -44,6 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
@@ -97,12 +98,23 @@ class ContextRecyclerTest : public testing::Test {
   }
   ~ContextRecyclerTest() override = default;
 
-  auction_worklet::mojom::EventTypePtr Reserved(
-      auction_worklet::mojom::ReservedEventType reserved_event_type) {
-    return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
+  using ReservedNonErrorEventType =
+      auction_worklet::mojom::ReservedNonErrorEventType;
+  using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
+
+  auction_worklet::mojom::EventTypePtr ToEventPtr(
+      ReservedNonErrorEventType reserved_event_type) {
+    return auction_worklet::mojom::EventType::NewReservedNonError(
+        reserved_event_type);
   }
 
-  auction_worklet::mojom::EventTypePtr NonReserved(
+  auction_worklet::mojom::EventTypePtr ToEventPtr(
+      ReservedErrorEventType reserved_event_type) {
+    return auction_worklet::mojom::EventType::NewReservedError(
+        reserved_event_type);
+  }
+
+  auction_worklet::mojom::EventTypePtr ToEventPtr(
       const std::string& event_type) {
     return auction_worklet::mojom::EventType::NewNonReserved(event_type);
   }
@@ -4667,10 +4679,10 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Exercise `reportContributionsForEvent()` of PrivateAggregationBindings, and
-// make sure they reset properly.
+// Exercise `contributeToHistogramOnEvent()` of PrivateAggregationBindings for
+// non-error events, and make sure they reset properly.
 TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
-       PrivateAggregationForEventBindings) {
+       PrivateAggregationForEventNonErrorBindings) {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -4769,36 +4781,29 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                                /*did_uncaught_error_occur=*/false);
 
     ASSERT_EQ(pa_requests.size(), 5u);
-    EXPECT_EQ(
-        pa_requests[0],
-        CreateForEventRequest(
-            /*bucket=*/123, /*value=*/45,
-            /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin)));
-    EXPECT_EQ(
-        pa_requests[1],
-        CreateForEventRequest(
-            /*bucket=*/123, /*value=*/46,
-            /*event_type=*/
-            Reserved(
-                auction_worklet::mojom::ReservedEventType::kReservedLoss)));
-    EXPECT_EQ(
-        pa_requests[2],
-        CreateForEventRequest(
-            /*bucket=*/123, /*value=*/47,
-            /*event_type=*/
-            Reserved(
-                auction_worklet::mojom::ReservedEventType::kReservedAlways)));
-    EXPECT_EQ(
-        pa_requests[3],
-        CreateForEventRequest(
-            /*bucket=*/123, /*value=*/48,
-            /*event_type=*/
-            Reserved(
-                auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/45,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedWin)));
+    EXPECT_EQ(pa_requests[1],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/46,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedLoss)));
+    EXPECT_EQ(pa_requests[2],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/47,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedAlways)));
+    EXPECT_EQ(pa_requests[3],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/48,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedOnce)));
     EXPECT_EQ(pa_requests[4],
               CreateForEventRequest(/*bucket=*/123, /*value=*/49,
-                                    /*event_type=*/NonReserved("click")));
+                                    /*event_type=*/ToEventPtr("click")));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests(
@@ -4918,7 +4923,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -4948,7 +4953,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -4978,7 +4983,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -5008,7 +5013,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(0),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -5046,18 +5051,16 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             ->TakePrivateAggregationRequests(
                 /*did_uncaught_error_occur=*/false);
     ASSERT_EQ(pa_requests.size(), 2u);
-    EXPECT_EQ(
-        pa_requests[0],
-        CreateForEventRequest(
-            /*bucket=*/123, /*value=*/45,
-            /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin)));
-    EXPECT_EQ(
-        pa_requests[1],
-        CreateForEventRequest(
-            /*bucket=*/678, /*value=*/90,
-            /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin)));
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/45,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedWin)));
+    EXPECT_EQ(pa_requests[1],
+              CreateForEventRequest(
+                  /*bucket=*/678, /*value=*/90,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedWin)));
   }
 
   // Too large bucket
@@ -5116,7 +5119,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -5155,7 +5158,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -5185,7 +5188,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(4),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -5418,7 +5421,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 std::move(signal_value)),
             /*filtering_id=*/std::nullopt,
             /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin));
+            ToEventPtr(ReservedNonErrorEventType::kReservedWin));
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -5720,14 +5723,13 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                                /*did_uncaught_error_occur=*/false);
 
     ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(
-        pa_requests[0],
-        CreateForEventRequest(
-            /*bucket=*/123, /*value=*/45,
-            /*event_type=*/
-            Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin),
-            /*filtering_id=*/
-            0));
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/45,
+                  /*event_type=*/
+                  ToEventPtr(ReservedNonErrorEventType::kReservedWin),
+                  /*filtering_id=*/
+                  0));
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests(
                         /*did_uncaught_error_occur=*/false)
@@ -5753,13 +5755,14 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                                /*did_uncaught_error_occur=*/false);
 
     ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0],
-              CreateForEventRequest(
-                  /*bucket=*/123, /*value=*/45,
-                  /*event_type=*/
-                  Reserved(auction_worklet::mojom::ReservedEventType::
-                               kReservedWin), /*filtering_id=*/
-                  255));
+    EXPECT_EQ(
+        pa_requests[0],
+        CreateForEventRequest(
+            /*bucket=*/123, /*value=*/45,
+            /*event_type=*/
+            ToEventPtr(
+                ReservedNonErrorEventType::kReservedWin), /*filtering_id=*/
+            255));
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests(
                         /*did_uncaught_error_occur=*/false)
@@ -5906,39 +5909,485 @@ TEST_F(ContextRecyclerPrivateAggregationAdditionalExtensionsDisabledTest,
                                  /*did_uncaught_error_occur=*/false);
 
       ASSERT_EQ(pa_requests.size(), 4u);
-      EXPECT_EQ(
-          pa_requests[0],
-          CreateForEventRequest(
-              /*bucket=*/123, /*value=*/45,
-              /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)));
-      EXPECT_EQ(
-          pa_requests[1],
-          CreateForEventRequest(
-              /*bucket=*/123, /*value=*/46,
-              /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)));
-      EXPECT_EQ(
-          pa_requests[2],
-          CreateForEventRequest(
-              /*bucket=*/123, /*value=*/47,
-              /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedAlways)));
+      EXPECT_EQ(pa_requests[0],
+                CreateForEventRequest(
+                    /*bucket=*/123, /*value=*/45,
+                    /*event_type=*/
+                    ToEventPtr(ReservedNonErrorEventType::kReservedWin)));
+      EXPECT_EQ(pa_requests[1],
+                CreateForEventRequest(
+                    /*bucket=*/123, /*value=*/46,
+                    /*event_type=*/
+                    ToEventPtr(ReservedNonErrorEventType::kReservedLoss)));
+      EXPECT_EQ(pa_requests[2],
+                CreateForEventRequest(
+                    /*bucket=*/123, /*value=*/47,
+                    /*event_type=*/
+                    ToEventPtr(ReservedNonErrorEventType::kReservedAlways)));
 
       // No reserved.once event here!
 
       EXPECT_EQ(pa_requests[3],
                 CreateForEventRequest(/*bucket=*/123, /*value=*/49,
-                                      /*event_type=*/NonReserved("click")));
+                                      /*event_type=*/ToEventPtr("click")));
 
       EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                       ->TakePrivateAggregationRequests(
                           /*did_uncaught_error_occur=*/false)
                       .empty());
     }
+  }
+}
+
+class ContextRecyclerPrivateAggregationErrorReportingEnabledTest
+    : public ContextRecyclerPrivateAggregationExtensionsEnabledTest {
+ public:
+  ContextRecyclerPrivateAggregationErrorReportingEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPrivateAggregationApiErrorReporting);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ContextRecyclerPrivateAggregationErrorReportingDisabledTest
+    : public ContextRecyclerPrivateAggregationExtensionsEnabledTest {
+ public:
+  ContextRecyclerPrivateAggregationErrorReportingDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kPrivateAggregationApiErrorReporting);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Exercise `contributeToHistogramOnEvent()` of PrivateAggregationBindings for
+// error events, and make sure they reset properly.
+TEST_F(ContextRecyclerPrivateAggregationErrorReportingEnabledTest,
+       PrivateAggregationForEventErrorBindings) {
+  const char kScript[] = R"(
+    function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === 'string') {
+        args.bucket = BigInt(args.bucket);
+      } else if (
+          typeof args.bucket === 'object' &&
+          typeof args.bucket.offset === 'string') {
+        args.bucket.offset = BigInt(args.bucket.offset);
+      }
+      if (args.filteringId && typeof args.filteringId === 'string') {
+        args.filteringId = BigInt(args.filteringId);
+      }
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success', args);
+    }
+
+    function testDifferentEventTypes(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success', args);
+      // Add 1 to value, to let each error get a different value.
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.too-many-contributions', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.empty-report-dropped', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.pending-report-limit-reached', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.insufficient-budget', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.uncaught-error', args);
+    }
+
+    function testMissingContribution() {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success');
+    }
+
+    function testWrongArgumentsOrder(args) {
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent(
+          args, 'reserved.report-success');
+    }
+
+    function doNothing() {}
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddPrivateAggregationBindings(
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
+  }
+
+  // Basic test with uncaught error triggered.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testDifferentEventTypes", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto pa_requests = context_recycler.private_aggregation_bindings()
+                           ->TakePrivateAggregationRequests(
+                               /*did_uncaught_error_occur=*/true);
+
+    ASSERT_EQ(pa_requests.size(), 6u);
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/45,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kReportSuccess)));
+    EXPECT_EQ(pa_requests[1],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/46,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kTooManyContributions)));
+    EXPECT_EQ(pa_requests[2],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/47,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kEmptyReportDropped)));
+    EXPECT_EQ(
+        pa_requests[3],
+        CreateForEventRequest(
+            /*bucket=*/123, /*value=*/48,
+            /*event_type=*/
+            ToEventPtr(ReservedErrorEventType::kPendingReportLimitReached)));
+    EXPECT_EQ(pa_requests[4],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/49,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kInsufficientBudget)));
+    EXPECT_EQ(pa_requests[5],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/50,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kUncaughtError)));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/true)
+                    .empty());
+  }
+
+  // Basic test with uncaught error not triggered.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testDifferentEventTypes", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auto pa_requests = context_recycler.private_aggregation_bindings()
+                           ->TakePrivateAggregationRequests(
+                               /*did_uncaught_error_occur=*/false);
+
+    ASSERT_EQ(pa_requests.size(), 5u);
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/45,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kReportSuccess)));
+    EXPECT_EQ(pa_requests[1],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/46,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kTooManyContributions)));
+    EXPECT_EQ(pa_requests[2],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/47,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kEmptyReportDropped)));
+    EXPECT_EQ(
+        pa_requests[3],
+        CreateForEventRequest(
+            /*bucket=*/123, /*value=*/48,
+            /*event_type=*/
+            ToEventPtr(ReservedErrorEventType::kPendingReportLimitReached)));
+    EXPECT_EQ(pa_requests[4],
+              CreateForEventRequest(
+                  /*bucket=*/123, /*value=*/49,
+                  /*event_type=*/
+                  ToEventPtr(ReservedErrorEventType::kInsufficientBudget)));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
+                    .empty());
+  }
+
+  // Dictionary bucket
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("baseValue", std::string("bid-reject-reason"));
+    bucket_dict.Set("scale", 2);
+    bucket_dict.Set("offset", std::string("-255"));
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    auto signal_bucket = auction_worklet::mojom::SignalBucket::New(
+        /*base_value=*/auction_worklet::mojom::BaseValue::kBidRejectReason,
+        /*scale=*/2,
+        /*offset=*/
+        auction_worklet::mojom::BucketOffset::New(/*value=*/255,
+                                                  /*is_negative=*/true));
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewSignalBucket(std::move(signal_bucket)),
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
+            /*filtering_id=*/std::nullopt,
+            /*event_type=*/
+            ToEventPtr(ReservedErrorEventType::kReportSuccess));
+
+    ExpectOneForEventRequestEqualTo(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
+        expected_contribution.Clone());
+  }
+
+  // Dictionary value
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary value_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    value_dict.Set("baseValue", std::string("winning-bid"));
+    value_dict.Set("scale", 2);
+    value_dict.Set("offset", -5);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("1596"));
+    dict.Set("value", value_dict);
+
+    auto signal_value = auction_worklet::mojom::SignalValue::New(
+        /*base_value=*/auction_worklet::mojom::BaseValue::kWinningBid,
+        /*scale=*/2,
+        /*offset=*/-5);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewIdBucket(1596),
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
+                std::move(signal_value)),
+            /*filtering_id=*/std::nullopt,
+            /*event_type=*/
+            ToEventPtr(ReservedErrorEventType::kReportSuccess));
+
+    ExpectOneForEventRequestEqualTo(
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
+        expected_contribution.Clone());
+  }
+}
+
+// Exercise `contributeToHistogramOnEvent()` of PrivateAggregationBindings for
+// error events, and make sure they are ignored if the feature is disabled.
+TEST_F(ContextRecyclerPrivateAggregationErrorReportingDisabledTest,
+       PrivateAggregationForEventErrorBindings) {
+  const char kScript[] = R"(
+    function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === 'string') {
+        args.bucket = BigInt(args.bucket);
+      } else if (
+          typeof args.bucket === 'object' &&
+          typeof args.bucket.offset === 'string') {
+        args.bucket.offset = BigInt(args.bucket.offset);
+      }
+      if (args.filteringId && typeof args.filteringId === 'string') {
+        args.filteringId = BigInt(args.filteringId);
+      }
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success', args);
+    }
+
+    function testDifferentEventTypes(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success', args);
+      // Add 1 to value, to let each error get a different value.
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.too-many-contributions', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.empty-report-dropped', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.pending-report-limit-reached', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.insufficient-budget', args);
+      args.value += 1;
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.uncaught-error', args);
+    }
+
+    function testMissingContribution() {
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.report-success');
+    }
+
+    function testWrongArgumentsOrder(args) {
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.contributeToHistogramOnEvent(
+          args, 'reserved.report-success');
+    }
+
+    function doNothing() {}
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddPrivateAggregationBindings(
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*reserved_once_allowed=*/true);
+  }
+
+  // Basic test with uncaught error triggered.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testDifferentEventTypes", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    ASSERT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/true)
+                    .empty());
+  }
+
+  // Basic test with uncaught error not triggered.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testDifferentEventTypes", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    ASSERT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
+                    .empty());
+  }
+
+  // Missing contribution (the second argument) to
+  // contributeToHistogramOnEvent() API.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+
+    Run(scope, script, "testMissingContribution", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:46 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent(): at "
+                    "least 2 argument(s) are required."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
+                    .empty());
+  }
+
+  // The two arguments to contributeToHistogramOnEvent() API are in wrong order.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testWrongArgumentsOrder", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:54 Uncaught TypeError: "
+                    "privateAggregation.contributeToHistogramOnEvent() "
+                    "'contribution' argument: Value passed as dictionary is "
+                    "neither object, null, nor undefined."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
+                    .empty());
   }
 }
 

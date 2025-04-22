@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,6 +29,7 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
@@ -396,6 +398,8 @@ PrivateAggregationBindings::PrivateAggregationBindings(
       additional_extensions_allowed_(base::FeatureList::IsEnabled(
           blink::features::
               kPrivateAggregationApiProtectedAudienceAdditionalExtensions)),
+      error_reporting_allowed_(base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiErrorReporting)),
       reserved_once_allowed_(reserved_once_allowed) {}
 
 PrivateAggregationBindings::~PrivateAggregationBindings() = default;
@@ -453,6 +457,7 @@ void PrivateAggregationBindings::AttachToContext(
 
 void PrivateAggregationBindings::Reset() {
   private_aggregation_contributions_.clear();
+  private_aggregation_uncaught_error_contributions_.clear();
   debug_mode_details_.is_enabled = false;
   debug_mode_details_.debug_key = nullptr;
 }
@@ -460,22 +465,23 @@ void PrivateAggregationBindings::Reset() {
 std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
 PrivateAggregationBindings::TakePrivateAggregationRequests(
     bool did_uncaught_error_occur) {
-  // TODO(crbug.com/381788013): Use `did_uncaught_error_occur` to trigger
-  // contributions conditional on an uncaught exception.
-
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests;
 
-  requests.reserve(private_aggregation_contributions_.size());
-  std::ranges::transform(
-      private_aggregation_contributions_, std::back_inserter(requests),
-      [this](auction_worklet::mojom::AggregatableReportContributionPtr&
-                 contribution) {
-        return auction_worklet::mojom::PrivateAggregationRequest::New(
-            std::move(contribution),
-            // TODO(alexmt): consider allowing this to be set
-            blink::mojom::AggregationServiceMode::kDefault,
-            debug_mode_details_.Clone());
-      });
+  if (did_uncaught_error_occur) {
+    base::Extend(private_aggregation_contributions_,
+                 std::move(private_aggregation_uncaught_error_contributions_));
+  }
+  private_aggregation_uncaught_error_contributions_.clear();
+
+  base::Extend(requests, std::move(private_aggregation_contributions_),
+               [this](auction_worklet::mojom::AggregatableReportContributionPtr&
+                          contribution) {
+                 return auction_worklet::mojom::PrivateAggregationRequest::New(
+                     std::move(contribution),
+                     // TODO(alexmt): consider allowing this to be set
+                     blink::mojom::AggregationServiceMode::kDefault,
+                     debug_mode_details_.Clone());
+               });
   private_aggregation_contributions_.clear();
 
   return requests;
@@ -646,18 +652,23 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   }
 
   auction_worklet::mojom::EventTypePtr event_type =
-      ParsePrivateAggregationEventType(
-          event_type_str, bindings->additional_extensions_allowed_);
+      ParsePrivateAggregationEventType(event_type_str,
+                                       bindings->additional_extensions_allowed_,
+                                       bindings->error_reporting_allowed_);
   if (!event_type) {
     // Don't throw an error if an invalid reserved event type is provided, to
     // provide forward compatibility with new reserved event types added
     // later.
+    // TODO(crbug.com/408225510): Consider still performing the IDL validation
+    // for the `contribution` even though we're ignoring the call (to match the
+    // spec).
     return;
   }
 
-  if (!bindings->reserved_once_allowed_ && event_type->is_reserved() &&
-      event_type->get_reserved() ==
-          auction_worklet::mojom::ReservedEventType::kReservedOnce) {
+  if (!bindings->reserved_once_allowed_ &&
+      event_type->is_reserved_non_error() &&
+      event_type->get_reserved_non_error() ==
+          auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce) {
     // Do throw one if people use reserved.once when not permitted.
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
@@ -665,6 +676,16 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
             "is not available in reporting methods")));
     return;
   }
+
+  bool is_conditional_on_uncaught_error =
+      event_type->is_reserved_error() &&
+      event_type->get_reserved_error() ==
+          auction_worklet::mojom::ReservedErrorEventType::kUncaughtError;
+  std::vector<auction_worklet::mojom::AggregatableReportContributionPtr>&
+      vector_to_append_to =
+          is_conditional_on_uncaught_error
+              ? bindings->private_aggregation_uncaught_error_contributions_
+              : bindings->private_aggregation_contributions_;
 
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
@@ -680,7 +701,7 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     return;
   }
 
-  bindings->private_aggregation_contributions_.push_back(
+  vector_to_append_to.push_back(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)));
 }

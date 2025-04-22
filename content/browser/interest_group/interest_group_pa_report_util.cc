@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -257,6 +258,18 @@ CalculateContributionBucketAndValue(
       bucket, value, contribution->filtering_id);
 }
 
+bool DoesRequestUseErrorEvent(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  }
+
+  const auction_worklet::mojom::AggregatableReportForEventContributionPtr&
+      for_event_contrib = request.contribution->get_for_event_contribution();
+
+  return for_event_contrib->event_type->is_reserved_error();
+}
+
 }  // namespace
 
 PrivateAggregationParticipantData::PrivateAggregationParticipantData() =
@@ -367,19 +380,22 @@ FillInPrivateAggregationRequest(
   const auction_worklet::mojom::EventTypePtr& event_type =
       contribution->get_for_event_contribution()->event_type;
   std::optional<std::string> non_reserved_event_type = std::nullopt;
-  std::optional<auction_worklet::mojom::ReservedEventType> reserved_event_type =
-      std::nullopt;
+  std::optional<auction_worklet::mojom::ReservedNonErrorEventType>
+      reserved_non_error_event_type = std::nullopt;
   if (event_type->is_non_reserved()) {
     non_reserved_event_type = event_type->get_non_reserved();
+  } else if (event_type->is_reserved_non_error()) {
+    reserved_non_error_event_type = event_type->get_reserved_non_error();
   } else {
-    reserved_event_type = event_type->get_reserved();
+    // TODO(crbug.com/381788013): Handle error reporting.
+    NOTREACHED();
   }
 
   if (is_winner) {
     // Don't run loss events for a winner.
-    if (reserved_event_type.has_value() &&
-        *reserved_event_type ==
-            auction_worklet::mojom::ReservedEventType::kReservedLoss) {
+    if (reserved_non_error_event_type.has_value() &&
+        *reserved_non_error_event_type ==
+            auction_worklet::mojom::ReservedNonErrorEventType::kReservedLoss) {
       return std::nullopt;
     }
   } else {
@@ -390,9 +406,9 @@ FillInPrivateAggregationRequest(
     }
 
     // Don't run win events for a loser.
-    if (reserved_event_type.has_value() &&
-        *reserved_event_type ==
-            auction_worklet::mojom::ReservedEventType::kReservedWin) {
+    if (reserved_non_error_event_type.has_value() &&
+        *reserved_non_error_event_type ==
+            auction_worklet::mojom::ReservedNonErrorEventType::kReservedWin) {
       return std::nullopt;
     }
   }
@@ -419,10 +435,10 @@ bool IsPrivateAggregationRequestReservedOnce(
     return false;
   }
   return request.contribution->get_for_event_contribution()
-             ->event_type->is_reserved() &&
+             ->event_type->is_reserved_non_error() &&
          request.contribution->get_for_event_contribution()
-                 ->event_type->get_reserved() ==
-             auction_worklet::mojom::ReservedEventType::kReservedOnce;
+                 ->event_type->get_reserved_non_error() ==
+             auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce;
 }
 
 void SplitContributionsIntoBatchesThenSendToHost(
@@ -519,6 +535,9 @@ std::optional<std::string> ValidatePrivateAggregationRequests(
   bool additional_extensions_allowed = base::FeatureList::IsEnabled(
       blink::features::
           kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  bool error_events_allowed = base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiErrorReporting);
+
   for (const auto& request : pa_requests) {
     // The mojom API declaration should ensure none of these are null.
     CHECK(!request.is_null());
@@ -529,7 +548,8 @@ std::optional<std::string> ValidatePrivateAggregationRequests(
 
     if (!auction_worklet::
             IsValidPrivateAggregationRequestForAdditionalExtensions(
-                *request, additional_extensions_allowed)) {
+                *request, additional_extensions_allowed) ||
+        (!error_events_allowed && DoesRequestUseErrorEvent(*request))) {
       return "Private Aggregation request using disabled features";
     }
   }

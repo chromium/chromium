@@ -16,56 +16,94 @@ namespace auction_worklet {
 
 namespace {
 
-constexpr auto kReservedEventTypes =
-    base::MakeFixedFlatMap<std::string_view,
-                           auction_worklet::mojom::ReservedEventType>(
-        {{"reserved.always",
-          auction_worklet::mojom::ReservedEventType::kReservedAlways},
-         {"reserved.win",
-          auction_worklet::mojom::ReservedEventType::kReservedWin},
-         {"reserved.loss",
-          auction_worklet::mojom::ReservedEventType::kReservedLoss},
-         {"reserved.once",
-          auction_worklet::mojom::ReservedEventType::kReservedOnce}});
+using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
+using ReservedNonErrorEventType =
+    auction_worklet::mojom::ReservedNonErrorEventType;
 
-bool RequiresAdditionalExtensionsForReservedEventType(
-    auction_worklet::mojom::ReservedEventType type) {
-  return type == auction_worklet::mojom::ReservedEventType::kReservedOnce;
+constexpr auto kReservedErrorEventTypes =
+    base::MakeFixedFlatMap<std::string_view, ReservedErrorEventType>(
+        {{"reserved.report-success", ReservedErrorEventType::kReportSuccess},
+         {"reserved.too-many-contributions",
+          ReservedErrorEventType::kTooManyContributions},
+         {"reserved.empty-report-dropped",
+          ReservedErrorEventType::kEmptyReportDropped},
+         {"reserved.pending-report-limit-reached",
+          ReservedErrorEventType::kPendingReportLimitReached},
+         {"reserved.insufficient-budget",
+          ReservedErrorEventType::kInsufficientBudget},
+         {"reserved.uncaught-error", ReservedErrorEventType::kUncaughtError}});
+
+constexpr auto kReservedNonErrorEventTypes =
+    base::MakeFixedFlatMap<std::string_view, ReservedNonErrorEventType>(
+        {{"reserved.always", ReservedNonErrorEventType::kReservedAlways},
+         {"reserved.win", ReservedNonErrorEventType::kReservedWin},
+         {"reserved.loss", ReservedNonErrorEventType::kReservedLoss},
+         {"reserved.once", ReservedNonErrorEventType::kReservedOnce}});
+
+bool RequiresAdditionalExtensionsForReservedNonErrorEventType(
+    ReservedNonErrorEventType type) {
+  return type == ReservedNonErrorEventType::kReservedOnce;
 }
 
-}  // namespace
-
-std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
+std::optional<ReservedErrorEventType> ParseReservedErrorEventType(
     const std::string& name,
-    bool additional_extensions_allowed) {
-  auto it = kReservedEventTypes.find(name);
-  if (it == kReservedEventTypes.end()) {
+    bool error_reporting_allowed) {
+  if (!error_reporting_allowed) {
     return std::nullopt;
   }
-  auction_worklet::mojom::ReservedEventType keyword = it->second;
+
+  auto it = kReservedErrorEventTypes.find(name);
+  if (it == kReservedErrorEventTypes.end()) {
+    return std::nullopt;
+  }
+  ReservedErrorEventType keyword = it->second;
+
+  return keyword;
+}
+
+std::optional<ReservedNonErrorEventType> ParseReservedNonErrorEventType(
+    const std::string& name,
+    bool additional_extensions_allowed) {
+  auto it = kReservedNonErrorEventTypes.find(name);
+  if (it == kReservedNonErrorEventTypes.end()) {
+    return std::nullopt;
+  }
+  ReservedNonErrorEventType keyword = it->second;
   if (!additional_extensions_allowed &&
-      RequiresAdditionalExtensionsForReservedEventType(keyword)) {
+      RequiresAdditionalExtensionsForReservedNonErrorEventType(keyword)) {
     return std::nullopt;
   }
   return keyword;
 }
 
+}  // namespace
+
 auction_worklet::mojom::EventTypePtr ParsePrivateAggregationEventType(
     const std::string& event_type_str,
-    bool additional_extensions_allowed) {
-  if (base::StartsWith(event_type_str, "reserved.")) {
-    std::optional<auction_worklet::mojom::ReservedEventType> maybe_reserved =
-        ParseReservedEventType(event_type_str, additional_extensions_allowed);
-    // Don't throw an error if an invalid reserved event type is provided, to
-    // provide forward compatibility with new reserved event types added
-    // later.
-    if (maybe_reserved.has_value()) {
-      return auction_worklet::mojom::EventType::NewReserved(
-          maybe_reserved.value());
-    }
-  } else {
+    bool additional_extensions_allowed,
+    bool error_reporting_allowed) {
+  if (!base::StartsWith(event_type_str, "reserved.")) {
     return auction_worklet::mojom::EventType::NewNonReserved(event_type_str);
   }
+
+  std::optional<ReservedNonErrorEventType> maybe_reserved_non_error =
+      ParseReservedNonErrorEventType(event_type_str,
+                                     additional_extensions_allowed);
+  // Don't throw an error if an invalid reserved event type is provided, to
+  // provide forward compatibility with new reserved event types added
+  // later.
+  if (maybe_reserved_non_error.has_value()) {
+    return auction_worklet::mojom::EventType::NewReservedNonError(
+        maybe_reserved_non_error.value());
+  }
+
+  std::optional<ReservedErrorEventType> maybe_reserved_error =
+      ParseReservedErrorEventType(event_type_str, error_reporting_allowed);
+  if (maybe_reserved_error.has_value()) {
+    return auction_worklet::mojom::EventType::NewReservedError(
+        maybe_reserved_error.value());
+  }
+
   return auction_worklet::mojom::EventTypePtr();
 }
 
@@ -83,9 +121,9 @@ bool IsValidPrivateAggregationRequestForAdditionalExtensions(
   const mojom::AggregatableReportForEventContribution& for_event_contrib =
       *request.contribution->get_for_event_contribution();
 
-  if (for_event_contrib.event_type->is_reserved() &&
-      RequiresAdditionalExtensionsForReservedEventType(
-          for_event_contrib.event_type->get_reserved())) {
+  if (for_event_contrib.event_type->is_reserved_non_error() &&
+      RequiresAdditionalExtensionsForReservedNonErrorEventType(
+          for_event_contrib.event_type->get_reserved_non_error())) {
     return false;
   }
 

@@ -81,13 +81,15 @@ CreateFinalizedHistogramRequest(
       blink::mojom::DebugModeDetails::New());
 }
 
-// TODO(crbug.com/381788013): This naming inconsistency is temporary and should
-// be fixed.
-using ReservedNonErrorEventType = auction_worklet::mojom::ReservedEventType;
+// TODO(crbug.com/381788013): Expand tests for aggregate error reporting once
+// browser-side functionality is complete.
+using ReservedNonErrorEventType =
+    auction_worklet::mojom::ReservedNonErrorEventType;
 
 auction_worklet::mojom::EventTypePtr ToEventTypePtr(
     ReservedNonErrorEventType reserved_event_type) {
-  return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
+  return auction_worklet::mojom::EventType::NewReservedNonError(
+      reserved_event_type);
 }
 
 auction_worklet::mojom::EventTypePtr ToEventTypePtr(

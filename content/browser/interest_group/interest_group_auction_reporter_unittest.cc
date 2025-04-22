@@ -662,9 +662,11 @@ class InterestGroupAuctionReporterTest
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(2),
                               /*filtering_id=*/std::nullopt,
-                              auction_worklet::mojom::EventType::NewReserved(
-                                  auction_worklet::mojom::ReservedEventType::
-                                      kReservedOnce))),
+                              auction_worklet::mojom::EventType::
+                                  NewReservedNonError(
+                                      auction_worklet::mojom::
+                                          ReservedNonErrorEventType::
+                                              kReservedOnce))),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -697,6 +699,25 @@ class InterestGroupAuctionReporterTest
                               /*filtering_id=*/0,
                               auction_worklet::mojom::EventType::NewNonReserved(
                                   "event_type"))),
+              blink::mojom::AggregationServiceMode::kDefault,
+              blink::mojom::DebugModeDetails::New());
+
+  const auction_worklet::mojom::PrivateAggregationRequestPtr
+      kErrorEventPrivateAggregationRequest =
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewForEventContribution(
+                      auction_worklet::mojom::
+                          AggregatableReportForEventContribution::New(
+                              auction_worklet::mojom::ForEventSignalBucket::
+                                  NewIdBucket(3),
+                              auction_worklet::mojom::ForEventSignalValue::
+                                  NewIntValue(4),
+                              /*filtering_id=*/0,
+                              auction_worklet::mojom::EventType::
+                                  NewReservedError(auction_worklet::mojom::
+                                                       ReservedErrorEventType::
+                                                           kReportSuccess))),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
 
@@ -1802,6 +1823,45 @@ TEST_F(InterestGroupAuctionReporterTest, InvalidPrivateAggregationRequests2) {
       MakeRequestPtrVector(kReportWinPrivateAggregationRequest.Clone(),
                            kReservedOncePrivateAggregationRequest.Clone()));
   EXPECT_EQ("Reporting Private Aggregation request using reserved.once",
+            TakeBadMessage());
+
+  // The invalid PA stuff got discarded.
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
+
+  WaitForCompletion();
+}
+
+// TODO(crbug.com/381788013): Add test for valid error reporting requests once
+// browser-side implementation is complete.
+
+TEST_F(InterestGroupAuctionReporterTest,
+       InvalidErrorReportingPrivateAggregationRequests) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiErrorReporting);
+  SetUpAndStartSingleSellerAuction();
+
+  interest_group_auction_reporter_
+      ->OnNavigateToWinningAdCallback(FrameTreeNodeId())
+      .Run();
+
+  WaitForReportResultAndRunCallback(
+      kSellerScriptUrl, /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(kErrorEventPrivateAggregationRequest.Clone()));
+
+  // No requests should be sent until all phases are complete.
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
+  EXPECT_EQ("Private Aggregation request using disabled features",
+            TakeBadMessage());
+
+  // All reserved aggregation requests should be immediately passed along once
+  // the auction is complete.
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/std::nullopt, /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
+      MakeRequestPtrVector(kErrorEventPrivateAggregationRequest.Clone()));
+  EXPECT_EQ("Private Aggregation request using disabled features",
             TakeBadMessage());
 
   // The invalid PA stuff got discarded.

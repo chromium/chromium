@@ -32,8 +32,8 @@ class PaReportingTest : public testing::Test {
                   mojom::ForEventSignalBucket::NewIdBucket(1),
                   mojom::ForEventSignalValue::NewIntValue(2),
                   /*filtering_id=*/std::nullopt,
-                  mojom::EventType::NewReserved(
-                      mojom::ReservedEventType::kReservedOnce))),
+                  mojom::EventType::NewReservedNonError(
+                      mojom::ReservedNonErrorEventType::kReservedOnce))),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
@@ -45,8 +45,8 @@ class PaReportingTest : public testing::Test {
                   mojom::ForEventSignalBucket::NewIdBucket(1),
                   mojom::ForEventSignalValue::NewIntValue(2),
                   /*filtering_id=*/std::nullopt,
-                  mojom::EventType::NewReserved(
-                      mojom::ReservedEventType::kReservedAlways))),
+                  mojom::EventType::NewReservedNonError(
+                      mojom::ReservedNonErrorEventType::kReservedAlways))),
           blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
