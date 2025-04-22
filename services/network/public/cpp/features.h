@@ -112,9 +112,6 @@ BASE_DECLARE_FEATURE(kSharedDictionaryRegisterNavigationRequests);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kPreloadedDictionaryConditionalUse);
 
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kCSPRequireSRIFor);
-
 // Enables visibility aware network service resource scheduler. When enabled,
 // request may be prioritized or de-prioritized based on the visibility of
 // requestors.
