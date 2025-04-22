@@ -235,16 +235,10 @@ template("write_build_config") {
       args += [ "--non-chromium-code" ]
     }
 
-    if (defined(invoker.device_jar_path)) {
+    if (defined(invoker.processed_jar_path)) {
       args += [
-        "--device-jar-path",
-        rebase_path(invoker.device_jar_path, root_build_dir),
-      ]
-    }
-    if (defined(invoker.host_jar_path)) {
-      args += [
-        "--host-jar-path",
-        rebase_path(invoker.host_jar_path, root_build_dir),
+        "--processed-jar-path",
+        rebase_path(invoker.processed_jar_path, root_build_dir),
       ]
     }
     if (defined(invoker.unprocessed_jar_path)) {
@@ -1757,12 +1751,18 @@ if (enable_java_templates) {
             args += [ "--show-desugar-default-interface-warnings" ]
           }
 
-          # Cannot use header jar for the active jar, because it does not
-          # contain anonymous classes. https://crbug.com/1342018#c5
-          # Cannot use processed .jar here because it might have classes
-          # filtered out via jar_excluded_patterns.
+          # Header .jar is missing anonymous classes, and unprocessed_jar_path
+          # is missing filtered classes, so use both.
+          # https://crbug.com/1342018#c5
           # Must come first in classpath in order to take precedence over
           # deps that defined the same classes (via jar_excluded_patterns).
+          if (defined(invoker.header_jar_path)) {
+            args += [
+              "--classpath",
+              rebase_path(invoker.header_jar_path, root_build_dir),
+            ]
+            inputs += [ invoker.header_jar_path ]
+          }
           if (defined(invoker.unprocessed_jar_path)) {
             args += [
               "--classpath",
@@ -1770,21 +1770,26 @@ if (enable_java_templates) {
             ]
             inputs += [ invoker.unprocessed_jar_path ]
           }
-          if (_min_sdk_version < 24) {
+
+          if (defined(invoker.build_config)) {
             _rebased_build_config =
                 rebase_path(invoker.build_config, root_build_dir)
-            _desugar_dependencies_path =
-                "$target_gen_dir/$target_name.desugardeps"
             args += [
-              "--desugar-dependencies",
-              rebase_path(_desugar_dependencies_path, root_build_dir),
-
               # Pass the full classpath to find new dependencies that are not in
               # the .desugardeps file.
               "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
+            ]
+          }
+
+          if (_min_sdk_version < 24) {
+            _desugar_dependencies_path =
+                "$target_gen_dir/$target_name.desugardeps"
+            inputs += [ android_sdk_jar ]
+            args += [
+              "--desugar-dependencies",
+              rebase_path(_desugar_dependencies_path, root_build_dir),
               "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_jars)",
             ]
-            inputs += [ android_sdk_jar ]
           }
         }
 
@@ -1881,53 +1886,6 @@ if (enable_java_templates) {
     }
   }
 
-  template("process_java_library") {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    _previous_output_jar = invoker.input_jar_path
-
-    if (invoker.jacoco_instrument) {
-      _filter_jar_target_name = "${target_name}__filter_jar"
-      _filter_jar_output_jar = "$target_out_dir/$target_name.filter.jar"
-    } else {
-      _filter_jar_target_name = target_name
-      _filter_jar_output_jar = invoker.output_jar_path
-    }
-
-    filter_jar(_filter_jar_target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "data",
-                               "data_deps",
-                               "jar_excluded_patterns",
-                               "jar_included_patterns",
-                             ])
-      deps = invoker.deps
-      input_jar = _previous_output_jar
-      output_jar = _filter_jar_output_jar
-    }
-
-    if (invoker.jacoco_instrument) {
-      # Jacoco must run after desugar (or else desugar sometimes fails).
-      # It must run after filtering to avoid the same (filtered) class mapping
-      # to multiple .jar files.
-      # We run offline code coverage processing here rather than with a
-      # javaagent as the desired coverage data was not being generated.
-      # See crbug.com/1097815.
-      jacoco_instr(target_name) {
-        deps = [ ":$_filter_jar_target_name" ] + invoker.deps
-        forward_variables_from(invoker,
-                               [
-                                 "source_files",
-                                 "target_sources_file",
-                               ])
-
-        input_jar_path = _filter_jar_output_jar
-        output_jar_path = invoker.output_jar_path
-      }
-    }
-  }
-
   template("check_for_missing_direct_deps") {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
@@ -1959,6 +1917,11 @@ if (enable_java_templates) {
         "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:deps_info:javac_full_classpath_targets)",
       ]
+      if (defined(invoker.header_jar_path)) {
+        _rebased_header_jar_path =
+            rebase_path(invoker.header_jar_path, root_build_dir)
+        args += [ "--direct-classpath-jars=$_rebased_header_jar_path" ]
+      }
       if (auto_add_missing_java_deps) {
         args += [ "--auto-add-deps" ]
       }
@@ -2763,6 +2726,7 @@ if (enable_java_templates) {
       } else {
         inputs += [ invoker.res_size_info_path ]
         args += [
+          # Look for .info files created by compile_java.py.
           "--jar-files=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
           "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
           "--in-res-info-path",
@@ -3020,11 +2984,6 @@ if (enable_java_templates) {
   #  target_sources_file: Optional path to file containing list of source file
   #    paths. This must always be provided if java_files is not empty and the
   #    .java files in it must match the list of java_files exactly.
-  #  build_config: Path to the .build_config.json file of the corresponding
-  #    java_library_impl() target. The following entries will be used by this
-  #    template: javac:srcjars, deps_info:javac_full_classpath,
-  #    deps_info:javac_full_interface_classpath, javac:processor_classpath,
-  #    javac:processor_classes
   #  javac_jar_path: Path to the final output .jar file.
   #  javac_args: Optional list of extra arguments to pass to javac.
   #  chromium_code: Whether this corresponds to Chromium-specific sources.
@@ -3219,11 +3178,17 @@ if (enable_java_templates) {
       }
       if (defined(invoker.jar_excluded_patterns) &&
           invoker.jar_excluded_patterns != []) {
-        args += [ "--jar-info-exclude-globs=${invoker.jar_excluded_patterns}" ]
+        args += [ "--jar-exclude-globs=${invoker.jar_excluded_patterns}" ]
       }
       if (defined(invoker.jar_included_patterns) &&
           invoker.jar_included_patterns != []) {
-        args += [ "--jar-info-include-globs=${invoker.jar_included_patterns}" ]
+        args += [ "--jar-include-globs=${invoker.jar_included_patterns}" ]
+      }
+      if (defined(invoker.filtered_jar_path)) {
+        _rebased_filtered_jar =
+            rebase_path(invoker.filtered_jar_path, root_build_dir)
+        args += [ "--filtered-jar=$_rebased_filtered_jar" ]
+        outputs += [ invoker.filtered_jar_path ]
       }
 
       if (invoker.enable_errorprone) {
@@ -3655,38 +3620,58 @@ if (enable_java_templates) {
       if (_jacoco_instrument) {
         _invoker_deps += [ _jacoco_dep ]
       }
-
-      if (_build_host_jar) {
-        # Jar files can be needed at runtime (by Robolectric tests or java binaries),
-        # so do not put them under obj/.
-        # TODO(agrieve): I suspect it would be better to use dist_jar for java_binary
-        #     rather than archiving unnecessary .jar files within lib.java.
-        _host_processed_jar_path =
-            "$root_out_dir/lib.java$_target_dir/$_output_name.jar"
-      }
       if (_has_sources) {
-        _javac_jar_path = "$target_out_dir/$_main_target_name.javac.jar"
         _generated_jar_path =
             "$target_gen_dir/$_main_target_name.generated.srcjar"
       }
 
+      _filter_jar = (defined(invoker.jar_excluded_patterns) &&
+                     invoker.jar_excluded_patterns != []) ||
+                    (defined(invoker.jar_included_patterns) &&
+                     invoker.jar_included_patterns != [])
+      _process_jar = _jacoco_instrument || (_is_prebuilt && _filter_jar)
+
+      if (_has_sources) {
+        _javac_jar_path = "$target_out_dir/$_main_target_name.javac.jar"
+      }
+
+      if (_process_jar) {
+        if (_build_host_jar) {
+          # Jar files can be needed at runtime (by Robolectric tests or java binaries),
+          # so do not put them under obj/.
+          # TODO(agrieve): I suspect it would be better to use dist_jar for java_binary
+          #     rather than archiving unnecessary .jar files within lib.java.
+          _parent_dir = "$root_out_dir/lib.java$_target_dir"
+        } else {
+          _parent_dir = target_out_dir
+        }
+
+        # _processed_jar_path is .jar used at runtime (for host).
+        if (_jacoco_instrument) {
+          _processed_jar_path = "$_parent_dir/$_main_target_name.jacoco.jar"
+        } else {
+          _processed_jar_path = "$_parent_dir/$_main_target_name.filtered.jar"
+        }
+        if (_filter_jar) {
+          if (_jacoco_instrument) {
+            # Do not use _parent_dir for this one.
+            _filter_jar_path = "$target_out_dir/$target_name.filtered.jar"
+          } else {
+            _filter_jar_path = _processed_jar_path
+          }
+        }
+      } else if (_is_prebuilt && _build_host_jar) {
+        # Skip "process device" step if the step would be just a copy.
+        _processed_jar_path = invoker.jar_path
+      } else if (_has_sources) {
+        # Filter directly in compile_java.py when no other processing is required.
+        _processed_jar_path = _javac_jar_path
+      }
+
       if (_build_device_jar) {
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
-
-        # Build speed optimization: Skip "process device" step if the step
-        # would be just a copy and avoid the copy.
-        _process_device_jar =
-            defined(invoker.bytecode_rewriter_target) || _jacoco_instrument ||
-            defined(invoker.jar_excluded_patterns) ||
-            defined(invoker.jar_included_patterns)
-        if (!_process_device_jar && _is_prebuilt) {
-          _device_processed_jar_path = invoker.jar_path
-        } else if (!_process_device_jar && _has_sources) {
-          _device_processed_jar_path = _javac_jar_path
-        } else {
-          _device_processed_jar_path =
-              "$target_out_dir/$_output_name.processed.jar"
-        }
+        _enable_desugar =
+            !defined(invoker.enable_desugar) || invoker.enable_desugar
       }
 
       # For static libraries, the javac jar output is created at the intermediate
@@ -3695,9 +3680,9 @@ if (enable_java_templates) {
       # for the ijar as well, but this is only used for APK targets where
       # the ijar path isn't actually used.
       if (_has_sources) {
-        _final_ijar_path = "$target_out_dir/$_output_name.turbine.jar"
+        _header_jar_path = "$target_out_dir/$_output_name.turbine.jar"
       } else {
-        _final_ijar_path = "$target_out_dir/$_output_name.ijar.jar"
+        _header_jar_path = "$target_out_dir/$_output_name.ijar.jar"
       }
 
       if (_is_prebuilt) {
@@ -3752,8 +3737,6 @@ if (enable_java_templates) {
       _java_host_deps += [ "${invoker.base_module_target}__compile_java" ]
     }
 
-    not_needed([ "_non_java_deps" ])
-
     if (_is_prebuilt || _has_sources) {
       # Classpath deps are used for header and dex targets, they do not need
       # __assetres deps.
@@ -3784,6 +3767,8 @@ if (enable_java_templates) {
     not_needed([
                  "_header_classpath_deps",
                  "_javac_classpath_deps",
+                 "_non_java_deps",
+                 "_supports_host",
                ])
 
     if (_source_files != []) {
@@ -3893,17 +3878,16 @@ if (enable_java_templates) {
           # We are tricking everything that is looking for an ijar into looking
           # at the processed jar path, which is has the excluded classes
           # removed.
-          ijar_path = _device_processed_jar_path
+          ijar_path = _processed_jar_path
         } else {
-          ijar_path = _final_ijar_path
+          ijar_path = _header_jar_path
         }
         unprocessed_jar_path = _unprocessed_jar_path
       }
-      if (_build_host_jar) {
-        host_jar_path = _host_processed_jar_path
+      if (_build_host_jar || _build_device_jar) {
+        processed_jar_path = _processed_jar_path
       }
       if (_build_device_jar) {
-        device_jar_path = _device_processed_jar_path
         dex_path = _dex_path
       }
       if (_source_files != []) {
@@ -3919,12 +3903,12 @@ if (enable_java_templates) {
       bundled_srcjars += _srcjars
       if (defined(invoker.include_java_resources) &&
           invoker.include_java_resources) {
-        java_resources_jar = _unprocessed_jar_path
         if (defined(invoker.jar_path)) {
           # Use original jar_path because _jar_path points to a library without
           # resources.
+          java_resources_jar = _unprocessed_jar_path
         } else {
-          java_resources_jar = _device_processed_jar_path
+          java_resources_jar = _processed_jar_path
         }
       }
     }
@@ -4056,7 +4040,15 @@ if (enable_java_templates) {
         "processor_args_javac",
       ]
 
-      if (!_skip_header_jar) {
+      if (_skip_header_jar) {
+        if (default_min_sdk_version < 24) {
+          # Filtered out classes are needed by default interface desugaring, so
+          # when header jars are disabled, we get compile_java.py to output a
+          # .jar of filtered classes instead.
+          _skip_header_filtered_jar_path =
+              "$target_out_dir/$target_name.compliment.jar"
+        }
+      } else {
         _annotation_processor_deps = []
         if (defined(invoker.annotation_processor_deps)) {
           _annotation_processor_deps = invoker.annotation_processor_deps
@@ -4065,7 +4057,7 @@ if (enable_java_templates) {
         compile_java_helper(_header_target_name) {
           forward_variables_from(invoker, _compile_java_forward_variables)
           use_turbine = true
-          output_jar_path = _final_ijar_path
+          output_jar_path = _header_jar_path
           generated_jar_path = _generated_jar_path
           deps = _annotation_processor_deps
           if (_kt_files != []) {
@@ -4084,8 +4076,11 @@ if (enable_java_templates) {
         output_jar_path = _javac_jar_path
         if (!_skip_header_jar) {
           deps = [ ":$_header_target_name" ]
-          header_jar_path = _final_ijar_path
+          header_jar_path = _header_jar_path
           generated_jar_path = _generated_jar_path
+        }
+        if (defined(_skip_header_filtered_jar_path)) {
+          filtered_jar_path = _skip_header_filtered_jar_path
         }
         if (_kt_files != []) {
           kotlin_jar_path = _kotlinc_jar_path
@@ -4109,7 +4104,7 @@ if (enable_java_templates) {
           }
           if (!_skip_header_jar) {
             deps = [ ":$_header_target_name" ]
-            header_jar_path = _final_ijar_path
+            header_jar_path = _header_jar_path
           }
         }
         _java_validate_deps += [ ":$_compile_java_errorprone_target" ]
@@ -4172,7 +4167,7 @@ if (enable_java_templates) {
         # other targets will resolve filtered classes when depending on
         # BuildConfig, NativeLibraries, etc.
         input_jar = _unprocessed_jar_path
-        output_jar = _final_ijar_path
+        output_jar = _header_jar_path
 
         # ijar needs only _unprocessed_jar_deps, but this also needs to export
         # __header and __build_config targets from deps.
@@ -4182,15 +4177,22 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
+      _enable_bytecode_checks = !defined(invoker.enable_bytecode_checks) ||
+                                invoker.enable_bytecode_checks
       _enable_bytecode_checks =
-          (!defined(invoker.enable_bytecode_checks) ||
-           invoker.enable_bytecode_checks) && !_is_prebuilt &&
-          android_static_analysis != "off"
+          _enable_bytecode_checks && !_is_prebuilt &&
+          android_static_analysis != "off" && !_skip_header_jar
       if (_enable_bytecode_checks) {
         _validate_target_name = "${target_name}__validate"
         check_for_missing_direct_deps(_validate_target_name) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
-          deps = _unprocessed_jar_deps + _header_classpath_deps
+          deps = _unprocessed_jar_deps + _header_classpath_deps +
+                 [ ":$_build_config_target_name" ]
+          if (_filter_jar) {
+            # Ensures the filtered classes appear on the classpath.
+            deps += [ ":$_header_target_name" ]
+            header_jar_path = _header_jar_path
+          }
           data_deps = _java_validate_deps
           if (defined(_compile_java_errorprone_target)) {
             data_deps += [ ":$_compile_java_errorprone_target" ]
@@ -4206,70 +4208,55 @@ if (enable_java_templates) {
         not_needed(invoker, [ "missing_classes_allowlist" ])
       }
 
-      if (_build_host_jar) {
-        _process_host_jar_target_name = "${target_name}__host"
-        process_java_library(_process_host_jar_target_name) {
+      if (_filter_jar && _is_prebuilt) {
+        _filter_jar_target_name = "${target_name}__filter_jar"
+        filter_jar(_filter_jar_target_name) {
           forward_variables_from(invoker,
                                  [
                                    "jar_excluded_patterns",
                                    "jar_included_patterns",
                                  ])
+          deps = _unprocessed_jar_deps
+          input_jar = _unprocessed_jar_path
+          output_jar = _filter_jar_path
+        }
+        _process_jar_target_name = _filter_jar_target_name
+      }
 
-          # Robolectric tests require these to be on swarming.
-          data = [ _host_processed_jar_path ]
-          input_jar_path = _unprocessed_jar_path
-          deps = _unprocessed_jar_deps + _javac_classpath_deps
-          output_jar_path = _host_processed_jar_path
-          jacoco_instrument = _jacoco_instrument
-          if (_jacoco_instrument) {
-            source_files = _source_files
-            target_sources_file = _target_sources_file
+      if (_jacoco_instrument) {
+        # We run offline code coverage processing here rather than with a
+        # javaagent as the desired coverage data was not being generated.
+        # See crbug.com/1097815.
+        _process_jar_target_name = "${target_name}__jacoco"
+        jacoco_instr(_process_jar_target_name) {
+          source_files = _source_files
+          target_sources_file = _target_sources_file
+
+          # Needed for generated sources
+          deps = _non_java_deps
+          if (defined(_filter_jar_target_name)) {
+            deps += [ ":$_filter_jar_target_name" ]
+            input_jar_path = _filter_jar_path
+          } else {
+            deps += _unprocessed_jar_deps
+            input_jar_path = _unprocessed_jar_path
           }
 
-          # _java_host_deps isn't necessary for process_java_library(), but is
-          # necessary so that this target can be used to depend on transitive
-          # __device targets without the need to create a separate group()
-          # target. This trade-off works because process_java_library is fast.
-          deps += _java_host_deps
-
-          # Add runtime_deps here since robolectric_binary does not depend on top-level group.
-          if (defined(invoker.data)) {
-            data += invoker.data
-          }
-          if (defined(invoker.data_deps)) {
-            data_deps = invoker.data_deps
-          }
+          output_jar_path = _processed_jar_path
         }
       }
 
+      if (defined(_process_jar_target_name)) {
+        _processed_jar_deps = [ ":$_process_jar_target_name" ]
+      } else {
+        assert(_unprocessed_jar_path == _processed_jar_path)
+        _processed_jar_deps = _unprocessed_jar_deps
+      }
+
       if (_build_device_jar) {
-        if (_process_device_jar) {
-          _process_device_jar_target_name = "${target_name}__process_device"
-          process_java_library(_process_device_jar_target_name) {
-            forward_variables_from(invoker,
-                                   [
-                                     "jar_excluded_patterns",
-                                     "jar_included_patterns",
-                                   ])
-            input_jar_path = _unprocessed_jar_path
-
-            deps = _unprocessed_jar_deps + _javac_classpath_deps
-            output_jar_path = _device_processed_jar_path
-            jacoco_instrument = _jacoco_instrument
-            if (_jacoco_instrument) {
-              source_files = _source_files
-              target_sources_file = _target_sources_file
-            }
-          }
-          _process_device_jar_deps = [ ":${_process_device_jar_target_name}" ]
-        } else {
-          assert(_unprocessed_jar_path == _device_processed_jar_path)
-          _process_device_jar_deps = _unprocessed_jar_deps
-        }
-
         if (_skip_header_jar) {
           group(_header_target_name) {
-            public_deps = [ ":$_process_device_jar_target_name" ]
+            public_deps = _processed_jar_deps
           }
         }
 
@@ -4280,17 +4267,28 @@ if (enable_java_templates) {
                                    "proguard_enable_obfuscation",
                                    "repackage_classes",
                                  ])
-          input_class_jars = [ _device_processed_jar_path ]
+          input_class_jars = [ _processed_jar_path ]
+          enable_desugar = _enable_desugar
           ignore_desugar_missing_deps = !_enable_bytecode_checks
 
           # There's no value in per-class dexing prebuilts since they never
           # change just one class at a time.
           disable_incremental = _is_prebuilt
           output = _dex_path
-          deps = _process_device_jar_deps + _unprocessed_jar_deps
+          deps = _processed_jar_deps
 
           unprocessed_jar_path = _unprocessed_jar_path
-          if (default_min_sdk_version < 24) {
+          deps += _unprocessed_jar_deps
+
+          # Need the header jar only if the unprocessed one has classes filtered out.
+          if (!_skip_header_jar && _filter_jar) {
+            header_jar_path = _header_jar_path
+            deps += [ ":$_header_target_name" ]
+          } else if (defined(_skip_header_filtered_jar_path)) {
+            header_jar_path = _skip_header_filtered_jar_path
+          }
+
+          if (enable_desugar && default_min_sdk_version < 24) {
             # Desugaring with D8 requires classpath for default method desugaring (required until API 24).
             build_config = _build_config
             deps += _header_classpath_deps
@@ -4357,9 +4355,23 @@ if (enable_java_templates) {
       }
     }
 
-    if (_supports_host && !defined(_process_host_jar_target_name)) {
-      group("${target_name}__host") {
-        deps = _java_host_deps
+    group("${target_name}__host") {
+      deps = _java_host_deps
+      data = []
+
+      if (_build_host_jar) {
+        deps += _processed_jar_deps
+
+        # Robolectric tests require these to be on swarming.
+        data += [ _processed_jar_path ]
+      }
+
+      # Add runtime_deps here since robolectric_binary does not depend on top-level group.
+      if (defined(invoker.data)) {
+        data += invoker.data
+      }
+      if (defined(invoker.data_deps)) {
+        data_deps = invoker.data_deps
       }
     }
 
@@ -4386,6 +4398,7 @@ if (enable_java_templates) {
                                "data_deps",
                                "visibility",
                              ])
+      public_deps = [ ":${target_name}__host" ]
       if (_requires_android || (_supports_android && _is_library)) {
         # For non-robolectric targets, depend on other java target's top-level
         # groups so that the __dex step gets depended on.
@@ -4393,7 +4406,7 @@ if (enable_java_templates) {
         if (defined(invoker.deps)) {
           deps += invoker.deps
         }
-        public_deps = [ ":$_build_config_target_name" ]
+        public_deps += [ ":$_build_config_target_name" ]
         if (defined(invoker.public_deps)) {
           public_deps += invoker.public_deps
         }
@@ -4440,7 +4453,6 @@ if (enable_java_templates) {
         # For robolectric targets, depend only on non-java deps and the specific
         # subtargets below, which will not include __dex.
         deps = _non_java_deps
-        public_deps = []
         if (defined(invoker.public_deps)) {
           public_deps +=
               filter_exclude(invoker.public_deps, java_target_patterns)
@@ -4452,8 +4464,8 @@ if (enable_java_templates) {
       if (defined(invoker.apk_under_test)) {
         deps += [ invoker.apk_under_test ]
       }
-      if (defined(_process_device_jar_target_name)) {
-        public_deps += [ ":$_process_device_jar_target_name" ]
+      if (defined(_process_jar_target_name)) {
+        public_deps += [ ":$_process_jar_target_name" ]
       }
       if (defined(_dex_target_name)) {
         public_deps += [ ":$_dex_target_name" ]
@@ -4462,11 +4474,6 @@ if (enable_java_templates) {
         # Robolectric targets define __assetres, but there's no need to build it
         # by default.
         public_deps += [ ":${target_name}__assetres" ]
-      }
-      if (_supports_host) {
-        # android_* targets define __host, but there's no need to build it by
-        # default.
-        public_deps += [ ":${target_name}__host" ]
       }
       if (_is_java_binary) {
         public_deps += [ ":$_java_binary_script_target_name" ]

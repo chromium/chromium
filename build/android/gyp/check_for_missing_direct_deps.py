@@ -245,7 +245,7 @@ def main(argv):
                       help='Always use the build server.')
   parser.add_argument('--gn-target', required=True)
   parser.add_argument('--input-jar', required=True)
-  parser.add_argument('--direct-classpath-jars')
+  parser.add_argument('--direct-classpath-jars', action='append')
   parser.add_argument('--sdk-classpath-jars')
   parser.add_argument('--full-classpath-jars')
   parser.add_argument('--full-classpath-gn-targets')
