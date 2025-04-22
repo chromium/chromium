@@ -19,13 +19,13 @@ static_library("cast_config") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
+    "//components/application_locale_storage",
     "//components/media_router/common",
     "//components/user_manager",
     "//third_party/icu",

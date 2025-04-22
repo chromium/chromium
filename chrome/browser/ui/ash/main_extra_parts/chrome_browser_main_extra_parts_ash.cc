@@ -212,7 +212,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   ash::NetworkConnect::Initialize(network_connect_delegate_.get());
 
   cast_config_controller_media_router_ =
-      std::make_unique<CastConfigControllerMediaRouter>();
+      std::make_unique<CastConfigControllerMediaRouter>(
+          g_browser_process->GetFeatures()->application_locale_storage());
 
   // This controller MUST be initialized before the UI (AshShellInit) is
   // constructed. The video conferencing views will observe and have their own
