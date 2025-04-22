@@ -23,7 +23,9 @@
   }
 
   async function getSharedStorageEvents(testRunner, events) {
-    testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
+    testRunner.log(events, 'Events: ', [
+      'accessTime', 'mainFrameId', 'urnUuid', 'workletId', 'serializedData'
+    ]);
   }
 
   const events = [];
@@ -32,11 +34,6 @@
   async function getPromiseForEventCount(numEvents) {
     totalEventsSoFar += numEvents;
     return dp.Storage.onceSharedStorageAccessed(messageObject => {
-      // Skip testing the content of `serializedData`, as it can contain
-      // non-printable characters.
-      if (messageObject.params.params.serializedData !== undefined) {
-        messageObject.params.params.serializedData = '';
-      }
       events.push(messageObject.params);
       return (events.length === totalEventsSoFar);
     });
@@ -44,13 +41,14 @@
 
   await dp.Storage.setSharedStorageTracking({enable: true});
 
-  eventPromise = getPromiseForEventCount(7);
+  eventPromise = getPromiseForEventCount(8);
 
   // The following calls should trigger events if shared storage is enabled, as
   // tracking is now enabled.
   //
-  // Generates 7 events.
+  // Generates 8 events.
   await session.evaluateAsync(`
+        sharedStorage.clear();
         sharedStorage.set('key0-set-from-document', 'value0');
         sharedStorage.set('key1-set-from-document', 'value1',
                           {ignoreIfPresent: true});

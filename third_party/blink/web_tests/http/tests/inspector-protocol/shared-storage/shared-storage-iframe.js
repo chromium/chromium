@@ -29,7 +29,9 @@
   }
 
   function dumpSharedStorageEvents(events) {
-    testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
+    testRunner.log(events, 'Events: ', [
+      'accessTime', 'mainFrameId', 'batchUpdateId', 'serializedData'
+    ]);
   }
 
   const events = [];
@@ -66,6 +68,9 @@
   await getSharedStorageMetadata(baseOrigin);
   await getSharedStorageEntries(baseOrigin);
   await dumpSharedStorageEvents(events);
+
+  // Clean up shared storage.
+  await session.evaluateAsync(`sharedStorage.clear();`);
 
   testRunner.completeTest();
 })
