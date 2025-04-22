@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/apps/app_info_dialog/app_info_dialog_views.h"
 #include "chrome/common/buildflags.h"
+#include "components/constrained_window/constrained_window_views.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,6 +22,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -39,6 +43,8 @@ const ui::mojom::ModalType kModalType = ui::mojom::ModalType::kWindow;
 const views::BubbleBorder::Shadow kShadowType =
     views::BubbleBorder::STANDARD_SHADOW;
 #endif
+
+constexpr gfx::Size kDialogSize = gfx::Size(380, 490);
 
 // A BubbleFrameView that allows its client view to extend all the way to the
 // top of the dialog, overlapping the BubbleFrameView's close button. This
@@ -101,10 +107,21 @@ class NativeDialogContainer : public views::DialogDelegateView {
 BEGIN_METADATA(NativeDialogContainer)
 END_METADATA
 
-views::DialogDelegateView* CreateDialogContainerForView(
-    std::unique_ptr<views::View> view,
-    const gfx::Size& size,
-    base::OnceClosure close_callback) {
-  return new NativeDialogContainer(std::move(view), size,
-                                   std::move(close_callback));
+void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
+                               Profile* profile,
+                               const extensions::Extension* app,
+                               base::OnceClosure close_callback) {
+  views::DialogDelegate* dialog =
+      new NativeDialogContainer(std::make_unique<AppInfoDialog>(profile, app),
+                                kDialogSize, std::move(close_callback));
+  views::Widget* dialog_widget;
+  if (dialog->GetModalType() == ui::mojom::ModalType::kChild) {
+    dialog_widget =
+        constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  } else {
+    gfx::NativeWindow window = web_contents->GetTopLevelNativeWindow();
+    dialog_widget =
+        constrained_window::CreateBrowserModalDialogViews(dialog, window);
+    dialog_widget->Show();
+  }
 }

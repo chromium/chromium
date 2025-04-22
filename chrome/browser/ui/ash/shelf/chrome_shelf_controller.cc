@@ -48,12 +48,12 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -109,6 +109,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -166,6 +167,29 @@ void MaybeRecordPromiseAppShelfItemCreated(bool is_promise_app) {
     apps::RecordPromiseAppLifecycleEvent(
         apps::PromiseAppLifecycleEvent::kCreatedInShelf);
   }
+}
+
+bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
+  auto* system_web_app_manager = ash::SystemWebAppManager::Get(profile);
+  if (system_web_app_manager &&
+      system_web_app_manager->IsSystemWebApp(extension_id)) {
+    return false;
+  }
+
+  const extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  const extensions::Extension* extension =
+      registry->GetInstalledExtension(extension_id);
+
+  if (!extension) {
+    return false;
+  }
+
+  // App Management only displays apps that are displayed in the launcher.
+  if (!extensions::AppDisplayInfo::ShouldDisplayInAppLauncher(*extension)) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
