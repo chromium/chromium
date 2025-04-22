@@ -67,10 +67,6 @@ namespace level_db {
 class AutoDidCommitTransaction;
 class BackingStoreTest;
 
-namespace indexed_db_backing_store_unittest {
-FORWARD_DECLARE_TEST(BackingStoreTest, ReadCorruptionInfo);
-}  // namespace indexed_db_backing_store_unittest
-
 class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                     public LevelDBCleanupScheduler::Delegate {
  public:
@@ -468,9 +464,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   void OnTransactionComplete(bool tombstone_threshold_exceeded);
 
-  static bool RecordCorruptionInfo(const base::FilePath& path_base,
-                                   const storage::BucketLocator& bucket_locator,
-                                   const std::string& message);
+  static void HandleCorruption(const base::FilePath& path_base,
+                               const storage::BucketLocator& bucket_locator,
+                               const std::string& message);
 
   // BackingStore:
   void TearDown(base::WaitableEvent* signal_on_destruction) override;
@@ -550,9 +546,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                 bool is_first_attempt,
                 bool create_if_missing);
 
-  // Delete LevelDB files; used to handle corruptions.
-  static Status DestroyDatabase(const base::FilePath file_path);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
                            ActiveBlobJournal);
@@ -561,6 +554,18 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   friend class AutoDidCommitTransaction;
   friend class indexed_db::BucketContext;
+
+  static std::tuple<std::unique_ptr<BackingStore>,
+                    Status,
+                    IndexedDBDataLossInfo,
+                    bool /* is_disk_full */>
+  DoOpenAndVerify(BucketContext& bucket_context,
+                  base::FilePath data_directory,
+                  base::FilePath database_path,
+                  base::FilePath blob_path,
+                  PartitionedLockManager* lock_manager,
+                  bool is_first_attempt,
+                  bool create_if_missing);
 
   // LevelDBCleanupScheduler::Delegate:
   // This function updates the next run timestamp for the
@@ -576,10 +581,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
   Status GetCompleteMetadata(
       std::vector<blink::IndexedDBDatabaseMetadata>* output) override;
-
-  void set_bucket_context(BucketContext* bucket_context) {
-    bucket_context_ = bucket_context;
-  }
 
   Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 

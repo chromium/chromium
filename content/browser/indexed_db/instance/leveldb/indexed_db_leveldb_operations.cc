@@ -10,7 +10,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -128,6 +130,24 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
   base::DeleteFile(info_path);
 
   return message;
+}
+
+bool RecordCorruptionInfo(const base::FilePath& path_base,
+                          const storage::BucketLocator& bucket_locator,
+                          const std::string& message) {
+  const base::FilePath info_path =
+      path_base.Append(ComputeCorruptionFileName(bucket_locator));
+  if (IsPathTooLong(info_path)) {
+    return false;
+  }
+
+  base::Value::Dict root_dict;
+  root_dict.Set("message", message);
+  std::string output_js;
+
+  base::JSONWriter::Write(root_dict, &output_js);
+  return base::ImportantFileWriter::WriteFileAtomically(info_path,
+                                                        std::move(output_js));
 }
 
 Status InternalInconsistencyStatus() {

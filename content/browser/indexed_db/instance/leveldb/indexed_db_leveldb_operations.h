@@ -43,6 +43,10 @@ std::string CONTENT_EXPORT
 ReadCorruptionInfo(const base::FilePath& path_base,
                    const storage::BucketLocator& bucket_locator);
 
+bool RecordCorruptionInfo(const base::FilePath& path_base,
+                          const storage::BucketLocator& bucket_locator,
+                          const std::string& message);
+
 // Was able to use LevelDB to read the data w/o error, but the data read was not
 // in the expected format.
 Status CONTENT_EXPORT InternalInconsistencyStatus();

@@ -24,11 +24,9 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -296,6 +294,11 @@ Status GetDBSizeFromEnv(leveldb::Env* env,
     }
   }
   return s;
+}
+
+Status DestroyDatabase(const base::FilePath file_path) {
+  return Status(
+      leveldb::DestroyDB(file_path.AsUTF8Unsafe(), GetLevelDBOptions()));
 }
 
 // TODO(ericu): Error recovery. If we persistently can't read the
@@ -1494,13 +1497,13 @@ std::tuple<std::unique_ptr<BackingStore>,
            Status,
            IndexedDBDataLossInfo,
            bool /* is_disk_full */>
-BackingStore::OpenAndVerify(BucketContext& bucket_context,
-                            base::FilePath data_directory,
-                            base::FilePath database_path,
-                            base::FilePath blob_path,
-                            PartitionedLockManager* lock_manager,
-                            bool is_first_attempt,
-                            bool create_if_missing) {
+BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
+                              base::FilePath data_directory,
+                              base::FilePath database_path,
+                              base::FilePath blob_path,
+                              PartitionedLockManager* lock_manager,
+                              bool is_first_attempt,
+                              bool create_if_missing) {
   CHECK_EQ(database_path.empty(), data_directory.empty());
   CHECK_EQ(blob_path.empty(), data_directory.empty());
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify");
@@ -1616,15 +1619,41 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
   if (!status.ok()) [[unlikely]] {
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
   }
-
+  backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
+  backing_store->bucket_context_ = &bucket_context;
   return {std::move(backing_store), status, std::move(data_loss_info),
           /*is_disk_full=*/false};
 }
 
 // static
-Status BackingStore::DestroyDatabase(const base::FilePath file_path) {
-  return Status(
-      leveldb::DestroyDB(file_path.AsUTF8Unsafe(), GetLevelDBOptions()));
+std::tuple<std::unique_ptr<BackingStore>,
+           Status,
+           IndexedDBDataLossInfo,
+           bool /* is_disk_full */>
+BackingStore::OpenAndVerify(BucketContext& bucket_context,
+                            base::FilePath data_directory,
+                            base::FilePath database_path,
+                            base::FilePath blob_path,
+                            PartitionedLockManager* lock_manager,
+                            bool is_first_attempt,
+                            bool create_if_missing) {
+  auto return_values =
+      DoOpenAndVerify(bucket_context, data_directory, database_path, blob_path,
+                      lock_manager, is_first_attempt, create_if_missing);
+
+  Status& status = std::get<Status>(return_values);
+  if (status.IsCorruption()) {
+    std::string sanitized_message =
+        leveldb_env::GetCorruptionMessage(status.leveldb_status());
+    base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
+                                       data_directory.AsUTF8Unsafe(), "...");
+    LOG(ERROR) << "Got corruption for "
+               << bucket_context.bucket_locator().storage_key.GetDebugString()
+               << ", " << sanitized_message;
+    RecordCorruptionInfo(data_directory, bucket_context.bucket_locator(),
+                         sanitized_message);
+  }
+  return return_values;
 }
 
 Status BackingStore::GetCompleteMetadata(
@@ -1654,23 +1683,18 @@ Status BackingStore::GetCompleteMetadata(
 }
 
 // static
-bool BackingStore::RecordCorruptionInfo(
+void BackingStore::HandleCorruption(
     const base::FilePath& path_base,
     const storage::BucketLocator& bucket_locator,
     const std::string& message) {
-  const base::FilePath info_path =
-      path_base.Append(ComputeCorruptionFileName(bucket_locator));
-  if (IsPathTooLong(info_path)) {
-    return false;
-  }
-
-  base::Value::Dict root_dict;
-  root_dict.Set("message", message);
-  std::string output_js;
-
-  base::JSONWriter::Write(root_dict, &output_js);
-  return base::ImportantFileWriter::WriteFileAtomically(info_path,
-                                                        std::move(output_js));
+  RecordCorruptionInfo(path_base, bucket_locator, message);
+  // Note: DestroyDatabase only deletes LevelDB files, leaving all others,
+  //       so our corruption info file will remain.
+  //       The blob directory will be deleted when the database is recreated
+  //       the next time it is opened.
+  Status s =
+      DestroyDatabase(path_base.Append(GetLevelDBFileName(bucket_locator)));
+  DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
 Status BackingStore::CreateDatabase(

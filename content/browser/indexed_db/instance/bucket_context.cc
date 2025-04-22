@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <atomic>
 #include <compare>
 #include <cstdint>
 #include <limits>
@@ -27,6 +26,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -39,32 +39,18 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/common/trace_event_common.h"
-#include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "base/types/expected.h"
-#include "build/build_config.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
-#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -72,36 +58,23 @@
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/indexed_db/blob_reader.h"
 #include "content/browser/indexed_db/file_path_util.h"
-#include "content/browser/indexed_db/indexed_db_data_loss_info.h"
-#include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
-#include "content/browser/indexed_db/instance/active_blob_registry.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/database.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
-#include "content/browser/indexed_db/instance/factory_client.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
-#include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/status.h"
-#include "env_chromium.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
+#include "url/origin.h"
 
 namespace content::indexed_db {
 namespace {
@@ -915,23 +888,19 @@ void BucketContext::HandleBackingStoreCorruption(
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto sanitized_error_message = SanitizeErrorMessage(error_message);
-  level_db::BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
-                                               sanitized_error_message);
+  std::string sanitized_error_message = SanitizeErrorMessage(error_message);
+  base::OnceClosure handle_corruption =
+      base::BindOnce(&level_db::BackingStore::HandleCorruption, data_path_,
+                     bucket_locator(), sanitized_error_message);
 
-  const base::FilePath file_path =
-      data_path_.Append(GetLevelDBFileName(bucket_locator()));
-  ForceClose(/*doom=*/false, error_message);
+  ForceClose(/*doom=*/false, sanitized_error_message);
   // In order to successfully delete the corrupted DB, the open handle must
   // first be closed.
   ResetBackingStore();
+  // NOTE: `this` may be deleted (in tests, where `on_ready_for_destruction`
+  // executes synchronously).
 
-  // Note: DestroyDatabase only deletes LevelDB files, leaving all others,
-  //       so our corruption info file will remain.
-  //       The blob directory will be deleted when the database is recreated
-  //       the next time it is opened.
-  Status s = level_db::BackingStore::DestroyDatabase(file_path);
-  DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
+  std::move(handle_corruption).Run();
 }
 
 void BucketContext::OnDatabaseError(Status status, const std::string& message) {
@@ -1018,17 +987,6 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     if (disk_full) {
       break;
     }
-    if (status.IsCorruption()) {
-      std::string sanitized_message =
-          leveldb_env::GetCorruptionMessage(status.leveldb_status());
-      base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
-                                         data_path_.AsUTF8Unsafe(), "...");
-      LOG(ERROR) << "Got corruption for "
-                 << bucket_locator().storage_key.GetDebugString() << ", "
-                 << sanitized_message;
-      level_db::BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
-                                                   sanitized_message);
-    }
   }
 
   // Record this here because the !create_if_missing && not_found case shouldn't
@@ -1074,8 +1032,6 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
 
   lock_manager_ = std::move(lock_manager);
   backing_store_ = std::move(backing_store);
-  leveldb_backing_store()->db()->scopes()->StartRecoveryAndCleanupTasks();
-  leveldb_backing_store()->set_bucket_context(this);
   delegate().on_files_written.Run(/*flushed=*/true);
   return {Status::OK(), DatabaseError(), data_loss_info};
 }
