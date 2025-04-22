@@ -146,7 +146,6 @@ public class MainActivity extends AppCompatActivity
     private static final int CLOSE_ICON_CHECK = 2;
     private static final int UNCHECKED = 0;
     private static final int CHECKED = 1;
-    private static final int BACKGROUND_INTERACT_OFF_VALUE = 2;
 
     /** Minimal height the bottom sheet CCT should show is half of the display height. */
     private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
@@ -1114,6 +1113,8 @@ public class MainActivity extends AppCompatActivity
                 builder.setActivitySideSheetBreakpointDp(pcctBreakpointDp);
             }
 
+            builder.setBackgroundInteractionEnabled(mBackgroundInteractCheckbox.isChecked());
+
             customTabsIntent = builder.build();
             int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
@@ -1132,11 +1133,6 @@ public class MainActivity extends AppCompatActivity
             if (!mPcctHeightResizableCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
                         EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_FIXED);
-            }
-            if (!mBackgroundInteractCheckbox.isChecked()) {
-                customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION",
-                        BACKGROUND_INTERACT_OFF_VALUE);
             }
             if (mSideSheetRoundedCornerCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
