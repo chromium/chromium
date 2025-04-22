@@ -594,6 +594,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Database.WriteNotificationMetadataReadResult"
+    enum="NotificationDatabaseStatus" expires_after="2026-04-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the response status after trying to find the existing
+    NotificationDatabase entry that corresponds to the one we should update with
+    notification content detection metadata. Logged each time a notification is
+    shown, when we request to persist the metadata.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Database.WriteNotificationMetadataUpdateResult"
+    enum="NotificationDatabaseStatus" expires_after="2026-04-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the response status after trying to update an existing
+    NotificationDatabase entry with notification content detection metadata.
+    Logged each time a notification is shown and the database entry is
+    successfully found.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Database.WriteResult"
     enum="NotificationDatabaseStatus" expires_after="2023-04-16">
   <owner>knollr@chromium.org</owner>

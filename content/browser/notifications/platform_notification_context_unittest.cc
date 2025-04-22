@@ -1227,6 +1227,7 @@ TEST_F(PlatformNotificationContextTest,
 }
 
 TEST_F(PlatformNotificationContextTest, WriteReadNotificationMetadata) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<PlatformNotificationContextImpl> context =
       CreatePlatformNotificationContext();
   GURL origin("https://example.com");
@@ -1276,6 +1277,15 @@ TEST_F(PlatformNotificationContextTest, WriteReadNotificationMetadata) {
   ASSERT_TRUE(read_database_data.serialized_metadata.contains(metadata_key_2));
   EXPECT_EQ(metadata_value_2,
             read_database_data.serialized_metadata.at(metadata_key_2));
+
+  // Check histogram statuses are logged with value `0`, corresponding to
+  // `STATUS_OK`.
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Database.WriteNotificationMetadataReadResult",
+      /*sample=*/0, /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Database.WriteNotificationMetadataUpdateResult",
+      /*sample=*/0, /*expected_count=*/3);
 }
 
 }  // namespace content

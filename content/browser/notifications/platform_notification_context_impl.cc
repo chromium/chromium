@@ -710,6 +710,9 @@ void PlatformNotificationContextImpl::DoWriteNotificationMetadata(
   NotificationDatabaseData notification_data;
   status = database_->ReadNotificationData(notification_id, origin,
                                            &notification_data);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Notifications.Database.WriteNotificationMetadataReadResult", status,
+      NotificationDatabase::STATUS_COUNT);
 
   if (status == NotificationDatabase::STATUS_ERROR_NOT_FOUND) {
     // This should be false because if the notification is not found in the
@@ -722,6 +725,9 @@ void PlatformNotificationContextImpl::DoWriteNotificationMetadata(
     // Update notification metadata for database storage.
     notification_data.serialized_metadata[metadata_key] = metadata_value;
     status = database_->WriteNotificationData(origin, notification_data);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Notifications.Database.WriteNotificationMetadataUpdateResult", status,
+        NotificationDatabase::STATUS_COUNT);
 
     if (status == NotificationDatabase::STATUS_OK) {
       GetUIThreadTaskRunner({})->PostTask(
