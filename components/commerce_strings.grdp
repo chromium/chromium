@@ -542,6 +542,9 @@
     <message name="IDS_DISCOUNT_CODE_COPIED_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout. This text will show on the button after user has clicked on the copy button to indicate that the discount code has been copied." formatter_data="android_java">
       Copied
     </message>
+    <message name="IDS_DISCOUNT_COPY_BUTTON_ACTION_DESCRIPTION" desc="Accessibility string that describes the copy button action to copy discount code." formatter_data="android_java" translateable="false">
+      Copy discount code
+    </message>
     <message name="IDS_DISCOUNT_CONTAINER_TITLE" desc="The title of the discount container, indicating the discount section in the commerce bottom sheet." formatter_data="android_java" translateable="false">
       Discounts
     </message>

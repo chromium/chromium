@@ -28,6 +28,7 @@ android_library("java") {
     "//components/commerce/core/android:core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
     "//url:url_java",
