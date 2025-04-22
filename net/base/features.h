@@ -193,12 +193,19 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 // Enables a more efficient SearchEnginePreconnector
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnect2);
 
+// The idle timeout for the SearchEnginePreconnector2 feature.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kIdleTimeoutInSeconds);
+
 // The maximum time for the SearchEnginePreconnector2 to be considered as short.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kShortSessionThreshold);
 
 // The maximum time to backoff when attempting preconnect retry for
 // SearchEnginePreconnector2.
 NET_EXPORT extern const base::FeatureParam<int> kMaxPreconnectRetryInterval;
+
+// The interval between two QUIC ping requests for the periodic PING for
+// SearchEnginePreconnector2.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kPingIntervalInSeconds);
 
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff

@@ -1007,7 +1007,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
       kLoadingPredictorPreconnectTrafficAnnotation,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 
   EXPECT_CALL(
       *mock_network_context_,
@@ -1024,7 +1025,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   preconnect_manager_->StartPreconnectUrl(
       non_http_url, allow_credentials, network_anonymization_key,
       kLoadingPredictorPreconnectTrafficAnnotation,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
@@ -1041,7 +1043,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
       kLoadingPredictorPreconnectTrafficAnnotation,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
@@ -1057,7 +1060,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
       kLoadingPredictorPreconnectTrafficAnnotation,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 
   EXPECT_CALL(
       *mock_network_context_,

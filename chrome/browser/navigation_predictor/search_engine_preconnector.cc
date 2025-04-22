@@ -25,7 +25,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/reconnect_notifier.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom-forward.h"
 
 namespace {
 
@@ -175,6 +178,23 @@ void SearchEnginePreconnector::PreconnectDSE() {
       "IsBrowserAppLikelyInForeground",
       is_browser_app_likely_in_foreground);
 
+  std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
+  mojo::PendingRemote<network::mojom::ReconnectEventObserver> observer;
+  if (SearchEnginePreconnect2Enabled()) {
+    keepalive_config = net::ConnectionKeepAliveConfig();
+    keepalive_config->idle_timeout_in_seconds =
+        net::features::kIdleTimeoutInSeconds.Get();
+    keepalive_config->ping_interval_in_seconds =
+        net::features::kPingIntervalInSeconds.Get();
+
+    if (!receiver_.is_bound()) {
+      observer = receiver_.BindNewPipeAndPassRemote();
+      receiver_.set_disconnect_handler(base::BindOnce(
+          &SearchEnginePreconnector::OnReconnectObserverPipeDisconnected,
+          base::Unretained(this)));
+    }
+  }
+
   if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
                                                "skip_in_background",
                                                kDefaultSkipInBackground) ||
@@ -185,7 +205,8 @@ void SearchEnginePreconnector::PreconnectDSE() {
     GetPreconnectManager().StartPreconnectUrl(
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key,
         predictors::kSearchEnginePreconnectTrafficAnnotation,
-        /*storage_partition_config=*/nullptr);
+        /*storage_partition_config=*/nullptr, std::move(keepalive_config),
+        std::move(observer));
   }
 
   // Periodically preconnect to the DSE. If the browser app is likely in
@@ -319,4 +340,13 @@ void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
 void SearchEnginePreconnector::OnConnectionFailed() {
   consecutive_connection_failure_++;
   StartPreconnectWithDelay(GetPreconnectInterval());
+}
+
+void SearchEnginePreconnector::OnReconnectObserverPipeDisconnected() {
+  receiver_.reset();
+  // Only call `OnConnectionFailed` when the `timer_` is not running since we
+  // might already be waiting for reconnect attempt from other reasons.
+  if (!timer_.IsRunning()) {
+    OnConnectionFailed();
+  }
 }

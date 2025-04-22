@@ -558,6 +558,7 @@ class RenderViewContextMenuPrefsTest
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
       bool success) override {
     last_preresolved_url_ = url;
     if (!preresolved_finished_closure_.is_null()) {

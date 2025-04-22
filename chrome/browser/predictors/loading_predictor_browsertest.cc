@@ -222,6 +222,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ReconnectEventObserver>& observer,
       bool success) override {
     ResolveHostRequestInfo preconnect_info{url.host(),
                                            network_anonymization_key};

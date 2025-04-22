@@ -140,6 +140,9 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   // back-to-back connections.
   bool IsShortSession() const;
 
+  // Invoked when the mojo pipe to the reconnect observer is disconnected.
+  void OnReconnectObserverPipeDisconnected();
+
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -156,6 +159,10 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   std::unique_ptr<predictors::PreconnectManager> preconnect_manager_;
 
   std::optional<base::TimeTicks> last_preconnect_attempt_time_;
+
+  // Receives and dispatches method calls to this implementation of the
+  // `network::mojom::ReconnectEventObserver` interface.
+  mojo::Receiver<network::mojom::ReconnectEventObserver> receiver_{this};
 
   // How many times the connection has consecutively failed. This is used for
   // exponential backoff the preconnect retries.

@@ -428,7 +428,8 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
       preconnect_manager()->StartPreconnectUrl(
           url, true, network_anonymization_key,
           kLoadingPredictorPreconnectTrafficAnnotation,
-          /*storage_partition_config=*/nullptr);
+          /*storage_partition_config=*/nullptr,
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
     }
     return true;
   }
@@ -503,7 +504,8 @@ void LoadingPredictor::PreconnectURLIfAllowed(
 
   preconnect_manager()->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key, traffic_annotation,
-      storage_partition_config);
+      storage_partition_config, /*keepalive_config=*/std::nullopt,
+      mojo::NullRemote());
 }
 
 void LoadingPredictor::MaybePrewarmResources(
