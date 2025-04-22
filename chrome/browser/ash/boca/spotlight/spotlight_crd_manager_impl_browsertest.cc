@@ -61,7 +61,8 @@ class SpotlightCrdManagerImplTest : public InProcessBrowserTest {
   SpotlightCrdManagerImplTest() {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kBoca, ash::features::kBocaConsumer,
-         ash::features::kBocaSpotlight},
+         ash::features::kBocaSpotlight,
+         ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 

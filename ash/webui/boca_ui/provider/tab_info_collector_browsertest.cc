@@ -77,7 +77,8 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
 class TabInfoCollectorConsumerTest : public TabInfoCollectorTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kBoca, ash::features::kBocaConsumer},
+        {ash::features::kBoca, ash::features::kBocaConsumer,
+         ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
     tab_info_collector_ =
         std::make_unique<TabInfoCollector>(/*is_producer=*/false);
@@ -87,8 +88,9 @@ class TabInfoCollectorConsumerTest : public TabInfoCollectorTest {
 
 class TabInfoCollectorProducerTest : public TabInfoCollectorTest {
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kBoca, ash::features::kOnDeviceSpeechRecognition},
+        /*disabled_features=*/{});
     tab_info_collector_ = std::make_unique<TabInfoCollector>(
         /*is_producer=*/true);
     TabInfoCollectorTest::SetUp();

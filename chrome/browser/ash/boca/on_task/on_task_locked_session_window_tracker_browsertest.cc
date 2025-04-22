@@ -97,7 +97,8 @@ class OnTaskLockedSessionWindowTrackerBrowserTestBase
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca,
                               ash::features::kBocaConsumer,
-                              ash::features::kBocaOnTaskPod},
+                              ash::features::kBocaOnTaskPod,
+                              ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 

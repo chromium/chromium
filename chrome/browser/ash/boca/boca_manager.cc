@@ -21,6 +21,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher_impl.h"
+#include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -46,6 +47,7 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     boca::BocaSessionManager* session_manager,
     Profile* profile,
     PrefService* global_prefs,
+    babelorca::SodaInstaller* soda_installer,
     const std::string& application_locale,
     bool is_consumer) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
@@ -78,9 +80,10 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
           ash::features::kOnDeviceSpeechRecognition)) {
     return nullptr;
   }
+
   auto speech_recognizer =
       std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
-          profile, global_prefs, application_locale);
+          profile, soda_installer, application_locale);
   auto babel_orca_manager = boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
@@ -126,16 +129,21 @@ BocaManager::BocaManager(Profile* profile,
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
+  if (!is_consumer) {
+    soda_installer_ = std::make_unique<babelorca::SodaInstaller>(
+        global_prefs, profile->GetPrefs(), application_locale);
+  }
   if (ash::features::IsBabelOrcaAvailable()) {
-    babel_orca_manager_ =
-        CreateBabelOrcaManager(boca_session_manager_.get(), profile,
-                               global_prefs, application_locale, is_consumer);
+    babel_orca_manager_ = CreateBabelOrcaManager(
+        boca_session_manager_.get(), profile, global_prefs,
+        soda_installer_.get(), application_locale, is_consumer);
   }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
         std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
   }
+
   boca_metrics_manager_ =
       std::make_unique<boca::BocaMetricsManager>(/*is_producer=*/!is_consumer);
 
@@ -171,6 +179,7 @@ void BocaManager::Shutdown() {
 void BocaManager::AddObservers(const user_manager::User* user) {
   if (babel_orca_manager_) {
     boca_session_manager_->AddObserver(babel_orca_manager_.get());
+    boca_session_manager_->SetSodaInstaller(soda_installer_.get());
   }
   if (ash::boca_util::IsConsumer(user)) {
     boca_session_manager_->AddObserver(on_task_session_manager_.get());

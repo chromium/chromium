@@ -91,7 +91,8 @@ class OnTaskLockedSessionNavigationThrottleInteractiveUITestBase
     // Enable Boca and consumer experience for testing purposes. This is used
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBoca, features::kBocaConsumer},
+        /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
+                              features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 

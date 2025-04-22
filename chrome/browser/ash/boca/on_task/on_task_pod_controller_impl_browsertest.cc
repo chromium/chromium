@@ -89,7 +89,8 @@ class OnTaskPodControllerImplSetupBrowserTest
  protected:
   OnTaskPodControllerImplSetupBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features{
-        features::kBoca, features::kBocaConsumer};
+        features::kBoca, features::kBocaConsumer,
+        features::kOnDeviceSpeechRecognition};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsOnTaskPodEnabled()) {
       enabled_features.push_back(features::kBocaOnTaskPod);
@@ -146,7 +147,8 @@ class OnTaskPodControllerImplBrowserTest
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
-                              features::kBocaOnTaskPod},
+                              features::kBocaOnTaskPod,
+                              features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 

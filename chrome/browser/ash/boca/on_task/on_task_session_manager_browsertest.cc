@@ -82,7 +82,8 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
-                              features::kBocaLockedModeCustomCountdownDuration},
+                              features::kBocaLockedModeCustomCountdownDuration,
+                              features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 

@@ -39,7 +39,8 @@ class ChromeTabStripDelegateBrowserTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kBoca, ash::features::kBocaConsumer},
+        {ash::features::kBoca, ash::features::kBocaConsumer,
+         ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
     extensions::PlatformAppBrowserTest::SetUp();
   }

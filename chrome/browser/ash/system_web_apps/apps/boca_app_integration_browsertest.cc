@@ -149,7 +149,8 @@ class BocaAppProviderIntegrationTest : public BocaAppIntegrationTest {
  protected:
   BocaAppProviderIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kBoca},
+        /*enabled_features=*/{ash::features::kBoca,
+                              ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{ash::features::kBocaConsumer});
   }
 
@@ -244,7 +245,8 @@ class BocaAppConsumerIntegrationTest : public BocaAppIntegrationTest {
   BocaAppConsumerIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca,
-                              ash::features::kBocaConsumer},
+                              ash::features::kBocaConsumer,
+                              ash::features::kOnDeviceSpeechRecognition},
         /*disabled_features=*/{});
   }
 
