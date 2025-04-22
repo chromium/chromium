@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_ZIPFILE_INSTALLER_H_
 
 #include "extensions/browser/zipfile_installer.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

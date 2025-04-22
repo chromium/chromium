@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FRAME_HOST_H_
 
 #include "extensions/browser/extension_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class WebContents;

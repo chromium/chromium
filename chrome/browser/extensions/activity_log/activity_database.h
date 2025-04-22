@@ -16,8 +16,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "sql/database.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class FilePath;
