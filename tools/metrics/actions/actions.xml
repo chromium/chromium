@@ -48560,6 +48560,8 @@ should be able to be added at any place in this file.
       label="For switching accounts via the account particle disc."/>
   <suffix name="iOSTabGridSwipeRightForIncognito"
       label="For iOSTabGridSwipeRightForIncognito feature"/>
+  <suffix name="iOSWelcomeBackFeature"
+      label="For iOSWelcomeBackFeature feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
       label="For KeyboardAccessoryAddressFilling feature."/>
   <suffix name="KeyboardAccessoryBarSwiping"

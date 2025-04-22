@@ -726,6 +726,10 @@ BASE_FEATURE(kIPHiOSFeedSwipeAnimatedFeature,
              "IPH_iOSFeedSwipeAnimatedFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSWelcomeBackFeature,
+             "IPH_iOSWelcomeBack",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
              "DefaultBrowserEligibilitySlidingWindow",

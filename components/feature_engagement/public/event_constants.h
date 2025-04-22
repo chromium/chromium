@@ -314,6 +314,12 @@ extern const char kIOSScrolledOnFeed[];
 // The user has taken action on the feed.
 extern const char kIOSActionOnFeed[];
 
+// The Welcome Back promo was triggered.
+extern const char kIOSWelcomeBackPromoTrigger[];
+
+// The Welcome Back promo was used.
+extern const char kIOSWelcomeBackPromoUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

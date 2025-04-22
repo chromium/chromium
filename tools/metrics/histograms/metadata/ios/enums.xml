@@ -915,6 +915,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="All Tabs default browser promo"/>
   <int value="14" label="Made for iOS default browser promo"/>
   <int value="15" label="Stay Safe default browser promo"/>
+  <int value="18" label="Welcome Back promo"/>
 </enum>
 
 <enum name="IOSPromosManagerPromoType">

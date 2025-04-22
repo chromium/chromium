@@ -55,6 +55,13 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.event_configs.insert(
         EventConfig(feature_engagement::events::kChromeOpened,
                     Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+
+    // Only show the promo if the Welcome Back Screen hasn't been displayed
+    // in the past 3 days.
+    config.event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSWelcomeBackPromoTrigger,
+                    Comparator(EQUAL, 0), 3, 365));
+
     return config;
   }
 
@@ -222,6 +229,23 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         feature_engagement::events::kIOSSigninFullscreenPromoTrigger,
         Comparator(ANY, 0), feature_engagement::kMaxStoragePeriod,
         feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
+  if (kIPHiOSWelcomeBackFeature.name == feature->name) {
+    // Show the promo any time the conditions are met.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.used =
+        EventConfig(feature_engagement::events::kIOSWelcomeBackPromoUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.trigger =
+        EventConfig(feature_engagement::events::kIOSWelcomeBackPromoTrigger,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     return config;
   }
 

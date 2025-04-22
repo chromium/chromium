@@ -372,6 +372,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSTabGridSwipeRightForIncognito"
       summary="the full screen IPH for left swipe on regular tab grid to
                browse in incognito"/>
+  <variant name="IPH_iOSWelcomeBackFeature"
+      summary="shows returning users features they may be interested in"/>
   <variant name="IPH_KeyboardAccessoryAddressFilling"
       summary="address autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPasswordFilling"

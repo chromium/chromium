@@ -165,6 +165,8 @@ const char kIOSDownloadAutoDeletionIPHCriterionMet[] =
     "ios_download_auto_deletion_iph_criterion_met";
 const char kIOSScrolledOnFeed[] = "ios_scrolled_on_feed";
 const char kIOSActionOnFeed[] = "ios_action_on_feed";
+const char kIOSWelcomeBackPromoTrigger[] = "welcome_back_promo_trigger";
+const char kIOSWelcomeBackPromoUsed[] = "welcome_back_promo_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
