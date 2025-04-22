@@ -83,6 +83,7 @@ public class MiniOriginBarController implements Observer {
         mShowMiniOriginBar = showMiniOriginBar;
         mLocationBar.setShowOriginOnly(mShowMiniOriginBar);
         mSuppressToolbarSceneLayerSupplier.set(mShowMiniOriginBar);
+        mControlContainer.toggleLocationBarOnlyMode(mShowMiniOriginBar);
     }
 
     public void destroy() {

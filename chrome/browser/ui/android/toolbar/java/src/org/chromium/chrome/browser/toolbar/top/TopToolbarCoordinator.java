@@ -82,6 +82,7 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     private final ToolbarLayout mToolbarLayout;
+    private final View mLocationBarView;
     private final ObservableSupplierImpl<Tracker> mTrackerSupplier;
 
     private OptionalBrowsingModeButtonController mOptionalButtonController;
@@ -115,6 +116,8 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
+
+    private int mIndexOfLocationBarInToolbar;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -201,6 +204,8 @@ public class TopToolbarCoordinator implements Toolbar {
         mNtpLoadingSupplier = new ObservableSupplierImpl<>();
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mToolbarLayout.setOnLongClickListener(onLongClickListener);
+        mLocationBarView = mToolbarLayout.findViewById(R.id.location_bar);
+        mIndexOfLocationBarInToolbar = mToolbarLayout.indexOfChild(mLocationBarView);
 
         ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
         if (reloadButton != null) {
@@ -224,6 +229,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
         controlContainer.setPostInitializationDependencies(
                 this,
+                toolbarLayout,
                 initializeWithIncognitoColors,
                 constraintsSupplier,
                 toolbarDataProvider::getTab,
@@ -759,6 +765,21 @@ public class TopToolbarCoordinator implements Toolbar {
     @Override
     public boolean isBrowsingModeToolbarVisible() {
         return mToolbarLayout.getVisibility() == View.VISIBLE;
+    }
+
+    @Override
+    public View removeLocationBarView() {
+        assert mToolbarLayout instanceof ToolbarPhone
+                : "Location bar removal logic is only supported on phones";
+        mToolbarLayout.removeView(mLocationBarView);
+        return mLocationBarView;
+    }
+
+    @Override
+    public void restoreLocationBarView() {
+        assert mToolbarLayout instanceof ToolbarPhone
+                : "Location bar restore logic is only supported on phones";
+        mToolbarLayout.addView(mLocationBarView, mIndexOfLocationBarInToolbar);
     }
 
     public void onTransitionStart() {
