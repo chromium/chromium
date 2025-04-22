@@ -48,8 +48,7 @@ BASE_FEATURE(kDisableVPBLTUpscale,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This flag attempts to enable MPO for P010 SDR video content. The feature
-// should only enabled when P010 pixel format is detected as displayable
-// surface at the same time.
+// should only be enabled when P010 MPO is detected as supported.
 BASE_FEATURE(kP010MPOForSDR, "P010MPOForSDR", base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
@@ -527,7 +526,7 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
 
   if (!presentation_history_.Valid()) {
     // Prefer P010 swapchain when playing P010 SDR content on SDR system with
-    // P010 displayable.
+    // P010 MPO supported.
     return sdr_yuv_overlay_format;
   }
 
@@ -1585,13 +1584,13 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       (content_is_pq10 || use_vp_auto_hdr);
 
   // Try to use P010 swapchain when playing 10-bit content on SDR monitor where
-  // P010 pixel format is also detected as displayable surface, due to the
-  // better quality over 8-bit swapchain.
+  // P010 MPO support is detected, due to the better quality over 8-bit
+  // swapchain.
   bool use_p010_for_sdr_swap_chain =
       base::FeatureList::IsEnabled(kP010MPOForSDR) &&
       (gl::GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT_P010) != 0) &&
       !DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
-      CheckDisplayableSupportForP010() && params.video_params.is_p010_content;
+      params.video_params.is_p010_content;
 
   DXGI_FORMAT swap_chain_format =
       GetSwapChainFormat(params.video_params.protected_video_type,

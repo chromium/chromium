@@ -87,9 +87,6 @@ GL_EXPORT bool VideoProcessorAutoHDRSupported();
 // Returns true if video processor support handling the given format.
 GL_EXPORT bool CheckVideoProcessorFormatSupport(DXGI_FORMAT format);
 
-// Returns true if the given P010 video format is displayable.
-GL_EXPORT bool CheckDisplayableSupportForP010();
-
 // Returns overlay support flags for the given format.
 // Caller should check for DXGI_OVERLAY_SUPPORT_FLAG_DIRECT and
 // DXGI_OVERLAY_SUPPORT_FLAG_SCALING bits.
@@ -175,6 +172,8 @@ GL_EXPORT void SetSupportsAMDHwOffloadHDRCapsForTesting(
     bool amd_platform_detected,
     INT32 amd_hdr_hw_offload_max_width,
     INT32 amd_hdr_hw_offload_max_height);
+GL_EXPORT UINT
+GetDirectCompositionOverlaySupportFlagsForTesting(DXGI_FORMAT format);
 
 class GL_EXPORT DirectCompositionOverlayCapsObserver
     : public base::CheckedObserver {

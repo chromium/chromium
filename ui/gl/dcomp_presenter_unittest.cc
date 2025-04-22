@@ -197,7 +197,7 @@ DCLayerOverlayImage CreateDCompSurface(
   HRESULT hr = S_OK;
 
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
-      gl::GetDirectCompositionDevice();
+      GetDirectCompositionDevice();
 
   Microsoft::WRL::ComPtr<IDCompositionSurface> surface;
   hr = dcomp_device->CreateSurface(
@@ -268,7 +268,7 @@ class DCompPresenterTestBase : public testing::Test {
 
     context_.reset();
     gl_surface_.reset();
-    gl::init::ShutdownGL(display_, false);
+    init::ShutdownGL(display_, false);
     display_ = nullptr;
   }
 
@@ -1618,8 +1618,9 @@ TEST_P(DCompPresenterPixelTest, YUY2SwapChain) {
 }
 
 TEST_P(DCompPresenterPixelTest, P010SwapChain) {
-  if (!CheckDisplayableSupportForP010()) {
-    GTEST_SKIP() << "P010 pixel format is not displayable on this test system.";
+  if (GetDirectCompositionOverlaySupportFlagsForTesting(DXGI_FORMAT_P010) ==
+      0) {
+    GTEST_SKIP() << "P010 overlay is not supported on this test system.";
   }
 
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
@@ -2458,7 +2459,7 @@ TEST_P(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
                                          SkColors::kBlue, SkColors::kWhite};
 
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
-      gl::GetDirectCompositionDevice();
+      GetDirectCompositionDevice();
 
   Microsoft::WRL::ComPtr<IDCompositionSurface> surface;
   ASSERT_HRESULT_SUCCEEDED(dcomp_device->CreateSurface(
@@ -3863,7 +3864,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   }
 }
 
-class MockDCOMPSurfaceProxy : public gl::DCOMPSurfaceProxy {
+class MockDCOMPSurfaceProxy : public DCOMPSurfaceProxy {
  public:
   MockDCOMPSurfaceProxy() = default;
 
@@ -3895,8 +3896,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
 
   // Make a 1080p dcomp surface.
-  scoped_refptr<gl::MockDCOMPSurfaceProxy> dcomp_surface_proxy =
-      base::MakeRefCounted<gl::MockDCOMPSurfaceProxy>();
+  scoped_refptr<MockDCOMPSurfaceProxy> dcomp_surface_proxy =
+      base::MakeRefCounted<MockDCOMPSurfaceProxy>();
   const gfx::Rect dcomp_surface_rect(0, 0, 1920, 1080);
   gfx::Size dcomp_surface_size(1920, 1080);
 
@@ -3928,8 +3929,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_CALL(*dcomp_surface_proxy, GetSize())
       .WillRepeatedly(::testing::ReturnRef(dcomp_surface_size));
   HANDLE handle = INVALID_HANDLE_VALUE;
-  EXPECT_TRUE(
-      gl::SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
+  EXPECT_TRUE(SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
   EXPECT_CALL(*dcomp_surface_proxy, GetSurfaceHandle())
       .WillRepeatedly(::testing::Return(handle));
   EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
@@ -3984,8 +3984,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
 
   // Make a 1800x1200 dcomp surface.
-  scoped_refptr<gl::MockDCOMPSurfaceProxy> dcomp_surface_proxy =
-      base::MakeRefCounted<gl::MockDCOMPSurfaceProxy>();
+  scoped_refptr<MockDCOMPSurfaceProxy> dcomp_surface_proxy =
+      base::MakeRefCounted<MockDCOMPSurfaceProxy>();
   const gfx::Rect dcomp_surface_rect(0, 0, 1800, 1200);
   gfx::Size dcomp_surface_size(1800, 1200);
 
@@ -4017,8 +4017,7 @@ TEST_P(DCompPresenterLetterboxingTest,
   EXPECT_CALL(*dcomp_surface_proxy, GetSize())
       .WillRepeatedly(::testing::ReturnRef(dcomp_surface_size));
   HANDLE handle = INVALID_HANDLE_VALUE;
-  EXPECT_TRUE(
-      gl::SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
+  EXPECT_TRUE(SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
   EXPECT_CALL(*dcomp_surface_proxy, GetSurfaceHandle())
       .WillRepeatedly(::testing::Return(handle));
   EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
@@ -4076,8 +4075,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
 
   // Make a 1000x1000 dcomp surface.
-  scoped_refptr<gl::MockDCOMPSurfaceProxy> dcomp_surface_proxy =
-      base::MakeRefCounted<gl::MockDCOMPSurfaceProxy>();
+  scoped_refptr<MockDCOMPSurfaceProxy> dcomp_surface_proxy =
+      base::MakeRefCounted<MockDCOMPSurfaceProxy>();
   gfx::Size dcomp_surface_size(1000, 1000);
   // Target letterboxed rect after non-uniform scaling is 1920x1080 and centered
   // in monitor.
@@ -4101,8 +4100,7 @@ TEST_P(DCompPresenterLetterboxingTest,
       .WillRepeatedly(::testing::ReturnRef(dcomp_surface_size));
 
   HANDLE handle = INVALID_HANDLE_VALUE;
-  EXPECT_TRUE(
-      gl::SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
+  EXPECT_TRUE(SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
   EXPECT_CALL(*dcomp_surface_proxy, GetSurfaceHandle())
       .WillRepeatedly(::testing::Return(handle));
   EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
