@@ -29,3 +29,10 @@ export function getRunnerImageSprite(): CanvasImageSource|null {
   }
   return null;
 }
+
+export function getRunnerOrigImageSprite(): CanvasImageSource|null {
+  if ('origImageSprite' in Runner) {
+    return Runner.origImageSprite as CanvasImageSource;
+  }
+  return null;
+}
