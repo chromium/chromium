@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -91,7 +90,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // AttachToOuterWebContents() and ResumeAttachOrDestroy().
   void set_resume_attach_callback_for_testing(
       base::OnceCallback<void(base::OnceClosure)> callback) {
-    CHECK_IS_TEST();
     resume_attach_callback_for_testing_ = std::move(callback);
   }
 
