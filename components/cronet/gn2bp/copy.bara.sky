@@ -103,6 +103,7 @@ origin_files = glob([
     "url/third_party/mozilla/**",
     "third_party/simdutf/**",
     "third_party/perfetto/**",
+    "third_party/zstd/**",
   ]) + glob([
     "third_party/compiler-rt/**",
   ]) - glob([

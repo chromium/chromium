@@ -71,6 +71,11 @@
 
 namespace {
 
+// When enabled Cronet advertises zstd support. Suffixed with V2 to avoid
+// clashing with previous feature flag that was rolled back in
+// https://crrev.com/c/6458938.
+BASE_FEATURE(kEnableZstd, "EnableZstdV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This class wraps a NetLog that also contains network change events.
 class NetLogWithNetworkChangeEvents {
  public:
@@ -460,6 +465,7 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextBuilderConfig(
 
   context_builder->set_check_cleartext_permitted(true);
   context_builder->set_enable_brotli(context_config_->enable_brotli);
+  context_builder->set_enable_zstd(base::FeatureList::IsEnabled(kEnableZstd));
   context_builder->set_enable_shared_dictionary(context_config_->enable_brotli);
 }
 
