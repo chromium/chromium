@@ -94,6 +94,15 @@ void VideoFrameResourceProvider::AppendQuads(
   // it will produce the bounds in target space.
   auto quad_rect = gfx::Rect(frame->natural_size());
 
+  if (media_transform.mirrored) {
+    transform.RotateAboutYAxis(180.0);
+    transform.Translate((media_transform.rotation == media::VIDEO_ROTATION_0 ||
+                         media_transform.rotation == media::VIDEO_ROTATION_180)
+                            ? -quad_rect.width()
+                            : -quad_rect.height(),
+                        0);
+  }
+
   switch (media_transform.rotation) {
     case media::VIDEO_ROTATION_90:
       transform.RotateAboutZAxis(90.0);
@@ -109,17 +118,6 @@ void VideoFrameResourceProvider::AppendQuads(
       break;
     case media::VIDEO_ROTATION_0:
       break;
-  }
-
-  if (media_transform.mirrored) {
-    transform.RotateAboutYAxis(180.0);
-    transform.Translate(-quad_rect.width(), 0);
-
-    if (media_transform.rotation == media::VIDEO_ROTATION_90 ||
-        media_transform.rotation == media::VIDEO_ROTATION_270) {
-      transform.RotateAboutZAxis(180.0);
-      transform.Translate(-quad_rect.width(), -quad_rect.height());
-    }
   }
 
   gfx::Rect visible_quad_rect = quad_rect;
