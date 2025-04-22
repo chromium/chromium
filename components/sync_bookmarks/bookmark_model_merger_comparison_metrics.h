@@ -21,6 +21,25 @@ enum class SubtreeSelection {
   kUnderBookmarkBar,
 };
 
+// Result of comparing two datasets for the purpose of logging metrics. Note
+// that enum values listed first take precedence (are evaluated earlier) than
+// those following.
+// Exposed in the header file for testing.
+enum class SetComparisonOutcome {
+  kBothEmpty = 0,
+  kLocalDataEmpty = 1,
+  kAccountDataEmpty = 2,
+  kExactMatchNonEmpty = 3,
+  kLocalDataIsStrictSubsetOfAccountData = 4,
+  kIntersectionBetween99And100Percent = 5,
+  kIntersectionBetween95And99Percent = 6,
+  kIntersectionBetween90And95Percent = 7,
+  kIntersectionBetween50And90Percent = 8,
+  kIntersectionBetween10And50Percent = 9,
+  kIntersectionBelow10PercentExcludingZero = 10,
+  kIntersectionEmpty = 11,
+};
+
 struct UrlAndTitle {
   auto operator<=>(const UrlAndTitle&) const = default;
 
@@ -67,6 +86,11 @@ base::flat_set<UrlAndTitleAndPath>
 ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
     const BookmarkModelMerger::RemoteForest& all_account_data,
     SubtreeSelection subtree_selection);
+
+// Test-only function to compare two sets.
+SetComparisonOutcome CompareSetsForTesting(
+    const base::flat_set<int>& account_data,
+    const base::flat_set<int>& local_data);
 
 }  // namespace metrics
 }  // namespace sync_bookmarks

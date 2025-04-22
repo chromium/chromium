@@ -185,6 +185,88 @@ UrlAndTitleAndPath GroupingKeyFromAccountData(
   return key;
 }
 
+// Given two sets `set1` and `set2`, returns the number of values that exist in
+// both.
+template <typename Key>
+size_t GetSetIntersectionSize(const base::flat_set<Key>& set1,
+                              const base::flat_set<Key>& set2) {
+  size_t intersection_size = 0;
+  auto it1 = set1.begin();
+  auto it2 = set2.begin();
+  while (it1 != set1.end() && it2 != set2.end()) {
+    if (*it1 == *it2) {
+      ++intersection_size;
+      ++it1;
+      ++it2;
+    } else if (*it1 < *it2) {
+      ++it1;
+    } else {
+      ++it2;
+    }
+  }
+  // The implementation above could be replaced the size resulting of calling
+  // base::STLSetIntersection(), but this is avoided for performance reasons,
+  // because base::STLSetIntersection() would compute a full set.
+  DCHECK_EQ(intersection_size,
+            base::STLSetIntersection<base::flat_set<Key>>(set1, set2).size());
+  return intersection_size;
+}
+
+// Given two sets `account_data` and `local_data`, it returns how the two
+// relate to each other as represented in enum `SetComparisonOutcome`.
+template <typename Key>
+SetComparisonOutcome CompareSets(const base::flat_set<Key>& account_data,
+                                 const base::flat_set<Key>& local_data) {
+  const size_t account_data_set_size = account_data.size();
+  const size_t local_data_set_size = local_data.size();
+  const size_t intersection_size =
+      GetSetIntersectionSize(local_data, account_data);
+
+  CHECK_LE(intersection_size, local_data_set_size);
+  CHECK_LE(intersection_size, account_data_set_size);
+
+  if (local_data_set_size == 0 && account_data_set_size == 0) {
+    return SetComparisonOutcome::kBothEmpty;
+  } else if (local_data_set_size == 0) {
+    return SetComparisonOutcome::kLocalDataEmpty;
+  } else if (account_data_set_size == 0) {
+    return SetComparisonOutcome::kAccountDataEmpty;
+  } else if (local_data_set_size == intersection_size) {
+    if (account_data_set_size == intersection_size) {
+      return SetComparisonOutcome::kExactMatchNonEmpty;
+    } else {
+      return SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData;
+    }
+  }
+
+  // Produce a notion of similarity based on which fraction of the total data
+  // items (union) is included in the intersection.
+  const size_t union_size =
+      local_data_set_size + account_data_set_size - intersection_size;
+  DCHECK_EQ(
+      union_size,
+      base::STLSetUnion<base::flat_set<Key>>(account_data, local_data).size());
+
+  CHECK_LT(intersection_size, union_size);
+  const double intersecting_fraction = 1.0 * intersection_size / union_size;
+
+  if (intersecting_fraction >= 0.99) {
+    return SetComparisonOutcome::kIntersectionBetween99And100Percent;
+  } else if (intersecting_fraction >= 0.95) {
+    return SetComparisonOutcome::kIntersectionBetween95And99Percent;
+  } else if (intersecting_fraction >= 0.90) {
+    return SetComparisonOutcome::kIntersectionBetween90And95Percent;
+  } else if (intersecting_fraction >= 0.50) {
+    return SetComparisonOutcome::kIntersectionBetween50And90Percent;
+  } else if (intersecting_fraction >= 0.10) {
+    return SetComparisonOutcome::kIntersectionBetween10And50Percent;
+  } else if (intersecting_fraction > 0) {
+    return SetComparisonOutcome::kIntersectionBelow10PercentExcludingZero;
+  } else {
+    return SetComparisonOutcome::kIntersectionEmpty;
+  }
+}
+
 // Recursive function used to implement `ExtractLocalDataSet()` below.
 template <typename Key>
 void ExtractLocalDataSetRecursive(std::u16string path,
@@ -291,6 +373,12 @@ ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
     SubtreeSelection subtree_selection) {
   return ExtractAccountDataSet<UrlAndTitleAndPath>(
       GetRelevantAccountSubtrees(all_account_data, subtree_selection));
+}
+
+SetComparisonOutcome CompareSetsForTesting(
+    const base::flat_set<int>& account_data,
+    const base::flat_set<int>& local_data) {
+  return CompareSets<int>(account_data, local_data);
 }
 
 }  // namespace sync_bookmarks::metrics

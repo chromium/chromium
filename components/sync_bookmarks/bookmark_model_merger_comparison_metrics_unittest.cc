@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -45,6 +46,7 @@ namespace {
 
 using RemoteTreeNode = BookmarkModelMerger::RemoteTreeNode;
 
+using testing::Eq;
 using testing::UnorderedElementsAre;
 
 // Constants forked from bookmark_model_merger.cc.
@@ -56,6 +58,14 @@ const char kOtherBookmarksTag[] = "other_bookmarks";
 constexpr char16_t kBookmarkBarFolderName[] = u"__Bookmarks bar__";
 constexpr char16_t kOtherBookmarksFolderName[] = u"__Other bookmarks__";
 constexpr char16_t kMobileBookmarksFolderName[] = u"__Mobile bookmarks__";
+
+base::flat_set<int> ContiguousSetBetween(int start, int end) {
+  base::flat_set<int> result;
+  for (int i = start; i <= end; ++i) {
+    result.insert(i);
+  }
+  return result;
+}
 
 // Test class to build bookmark URLs conveniently and compactly in tests.
 class UrlBookmarkBuilder {
@@ -418,6 +428,71 @@ TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldExtractAccountNodes) {
           UrlAndTitleAndPath{kUrl2, kUrl2Title,
                              base::StrCat({u"/", kBookmarkBarFolderName, u"/",
                                            kFolder1Title})}));
+}
+
+TEST_F(BookmarkModelMergerComparisonMetricsTest, ShouldCompareSets) {
+  // kBothEmpty.
+  EXPECT_THAT(CompareSetsForTesting(/*account_data=*/{}, /*local_data=*/{}),
+              Eq(SetComparisonOutcome::kBothEmpty));
+
+  // kLocalDataEmpty.
+  EXPECT_THAT(CompareSetsForTesting(/*account_data=*/{1}, /*local_data=*/{}),
+              Eq(SetComparisonOutcome::kLocalDataEmpty));
+
+  // kAccountDataEmpty.
+  EXPECT_THAT(CompareSetsForTesting(/*account_data=*/{}, /*local_data=*/{1}),
+              Eq(SetComparisonOutcome::kAccountDataEmpty));
+
+  // kExactMatchNonEmpty.
+  EXPECT_THAT(CompareSetsForTesting(/*account_data=*/{1}, /*local_data=*/{1}),
+              Eq(SetComparisonOutcome::kExactMatchNonEmpty));
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/{1, 2}, /*local_data=*/{1, 2}),
+      Eq(SetComparisonOutcome::kExactMatchNonEmpty));
+
+  // kLocalDataIsStrictSubsetOfAccountData.
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/{1, 2}, /*local_data=*/{1}),
+      Eq(SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData));
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/{1, 2}, /*local_data=*/{2}),
+      Eq(SetComparisonOutcome::kLocalDataIsStrictSubsetOfAccountData));
+
+  // kIntersectionBetween99And100Percent.
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/ContiguousSetBetween(1, 200),
+                            /*local_data=*/ContiguousSetBetween(2, 201)),
+      Eq(SetComparisonOutcome::kIntersectionBetween99And100Percent));
+
+  // kIntersectionBetween95And99Percent.
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/ContiguousSetBetween(1, 50),
+                            /*local_data=*/ContiguousSetBetween(2, 51)),
+      Eq(SetComparisonOutcome::kIntersectionBetween95And99Percent));
+
+  // kIntersectionBetween90And95Percent.
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/ContiguousSetBetween(1, 30),
+                            /*local_data=*/ContiguousSetBetween(2, 31)),
+      Eq(SetComparisonOutcome::kIntersectionBetween90And95Percent));
+
+  // kIntersectionBetween50And90Percent.
+  EXPECT_THAT(CompareSetsForTesting(/*account_data=*/{1, 2, 3, 4},
+                                    /*local_data=*/{2, 3, 4, 5}),
+              Eq(SetComparisonOutcome::kIntersectionBetween50And90Percent));
+
+  // kIntersectionBetween10And50Percent.
+  EXPECT_THAT(CompareSetsForTesting(/*account_data=*/{1, 2},
+                                    /*local_data=*/{2, 3}),
+              Eq(SetComparisonOutcome::kIntersectionBetween10And50Percent));
+
+  // kIntersectionBelow10Percent.
+  EXPECT_THAT(
+      CompareSetsForTesting(/*account_data=*/{1, 2},
+                            /*local_data=*/ContiguousSetBetween(2, 11)),
+      Eq(SetComparisonOutcome::kIntersectionBelow10PercentExcludingZero));
+
+  // IntersectionEmpty.
 }
 
 }  // namespace
