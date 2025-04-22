@@ -235,6 +235,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 12;
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS:
       return 12;
+    case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL:
+      return 1;
   }
   NOTREACHED();
 }

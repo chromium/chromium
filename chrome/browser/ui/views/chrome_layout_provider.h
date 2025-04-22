@@ -189,6 +189,8 @@ enum ChromeDistanceMetric {
   DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_PADDING,
   // Rounded corner radius for infoboxes in the FFR dialog.
   DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS,
+  // Vertical spacing between infoboxes in the FFR dialog.
+  DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

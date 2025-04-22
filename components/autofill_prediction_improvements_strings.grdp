@@ -162,4 +162,19 @@
   <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with new attributes">
     <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> added
   </message>
+
+  <!-- FFR Dialog -->
+  <!-- TODO(crbug.com/409520456): Make strings translateable. -->
+  <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE" translateable="false">
+    Fill more fields faster
+  </message>
+  <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_DESCRIPTION" translateable="false">
+    Autofill with AI understands forms better and can autofill them faster for you.
+  </message>
+  <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_DESCRIPTION" translateable="false">
+    To offer suggestions, sites you visit and page content are shared with Google. Change your mind anytime and <ph name="LEARN_MORE">$1<ex>learn more about autofill with AI in settings</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" translateable="false">
+    learn more about autofill with AI in settings
+  </message>
 </grit-part>

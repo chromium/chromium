@@ -19,6 +19,7 @@ source_set("impl") {
 
   deps = [
     ":feature_first_run",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
     "//components/constrained_window",
     "//components/strings:components_strings_grit",

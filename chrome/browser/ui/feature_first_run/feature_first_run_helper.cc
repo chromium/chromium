@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/feature_first_run/feature_first_run_helper.h"
 
+#include <memory>
+#include <string>
+
 #include "base/notreached.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
@@ -21,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 
@@ -30,9 +35,15 @@ namespace {
 
 // Builds a DialogModel for a generic FFR dialog.
 std::unique_ptr<ui::DialogModel> CreateGenericFeatureFirstRunDialogModel(
-    std::u16string title) {
+    std::u16string title,
+    std::unique_ptr<views::View> content_view) {
   return ui::DialogModel::Builder()
-      .SetTitle(title)
+      .SetTitle(std::move(title))
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              std::move(content_view),
+              views::BubbleDialogModelHost::FieldType::kText),
+          kFeatureFirstRunDialogContentViewElementId)
       .AddOkButton(base::DoNothing(),
                    ui::DialogModel::Button::Params().SetLabel(
                        l10n_util::GetStringUTF16(IDS_APP_TURN_ON)))
@@ -58,13 +69,10 @@ gfx::RoundedCornersF CalculateInfoBoxBorderRadius(InfoBoxPosition position) {
   NOTREACHED();
 }
 
-}  // namespace
-
-std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainer(
-    const std::u16string& title,
-    const std::u16string& description,
-    const gfx::VectorIcon& vector_icon,
-    InfoBoxPosition position) {
+std::unique_ptr<RichControlsContainerView>
+CreateInfoBoxContainerWithoutDescription(std::u16string title,
+                                         const gfx::VectorIcon& vector_icon,
+                                         InfoBoxPosition position) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const int container_padding = layout_provider->GetDistanceMetric(
       DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_PADDING);
@@ -72,8 +80,7 @@ std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainer(
       DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ICON_SIZE);
 
   auto container_view = std::make_unique<RichControlsContainerView>();
-  container_view->SetTitle(title);
-  container_view->AddSecondaryLabel(description);
+  container_view->SetTitle(std::move(title));
   container_view->SetIcon(ui::ImageModel::FromVectorIcon(
       vector_icon, kColorFeatureFirstRunIconColor, icon_size));
   container_view->SetBackground(views::CreateRoundedRectBackground(
@@ -85,8 +92,64 @@ std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainer(
   return container_view;
 }
 
-views::Widget* ShowFeatureFirstRunDialog(std::u16string title,
-                                         content::WebContents* web_contents) {
+}  // namespace
+
+std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainer(
+    std::u16string title,
+    std::u16string description,
+    const gfx::VectorIcon& vector_icon,
+    InfoBoxPosition position) {
+  auto container_view = CreateInfoBoxContainerWithoutDescription(
+      std::move(title), vector_icon, position);
+  container_view->AddSecondaryLabel(std::move(description));
+
+  return container_view;
+}
+
+std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainerWithLearnMore(
+    std::u16string title,
+    int description_id,
+    const std::u16string& learn_more,
+    base::RepeatingClosure learn_more_callback,
+    const gfx::VectorIcon& vector_icon,
+    InfoBoxPosition position) {
+  auto container_view = CreateInfoBoxContainerWithoutDescription(
+      std::move(title), vector_icon, position);
+
+  size_t offset;
+  std::u16string full_description =
+      l10n_util::GetStringFUTF16(description_id, learn_more, &offset);
+
+  gfx::Range learn_more_link_range(offset, offset + learn_more.size());
+  auto learn_more_link = views::StyledLabel::RangeStyleInfo::CreateForLink(
+      std::move(learn_more_callback));
+
+  auto* description_view =
+      container_view->AddSecondaryStyledLabel(full_description);
+  description_view->AddStyleRange(learn_more_link_range,
+                                  std::move(learn_more_link));
+
+  return container_view;
+}
+
+std::unique_ptr<views::View> CreateDialogContentViewContainer() {
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int container_top_padding = layout_provider->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+  const int space_between = layout_provider->GetDistanceMetric(
+      DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL);
+
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetBetweenChildSpacing(space_between)
+      .SetInsideBorderInsets(gfx::Insets().set_top(container_top_padding))
+      .Build();
+}
+
+views::Widget* ShowFeatureFirstRunDialog(
+    std::u16string title,
+    std::unique_ptr<views::View> content_view,
+    content::WebContents* web_contents) {
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab || !tab->CanShowModalUI()) {
@@ -94,7 +157,9 @@ views::Widget* ShowFeatureFirstRunDialog(std::u16string title,
   }
 
   return constrained_window::ShowWebModal(
-      CreateGenericFeatureFirstRunDialogModel(title), web_contents);
+      CreateGenericFeatureFirstRunDialogModel(std::move(title),
+                                              std::move(content_view)),
+      web_contents);
 }
 
 }  // namespace feature_first_run

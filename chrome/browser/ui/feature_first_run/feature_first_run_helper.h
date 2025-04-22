@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+
 class RichControlsContainerView;
 
 namespace content {
@@ -19,6 +21,7 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -27,16 +30,32 @@ namespace feature_first_run {
 enum class InfoBoxPosition { kStart, kMiddle, kEnd };
 
 // Show a tab-modal dialog from the supplied params on the `web_contents`.
-// TODO(crbug.com/409520456): Add banner, content view and button callbacks as
-// params to construct the dialog.
-views::Widget* ShowFeatureFirstRunDialog(std::u16string title,
-                                         content::WebContents* web_contents);
+// TODO(crbug.com/409520456): Add banner and button callbacks as params to
+// construct the dialog.
+views::Widget* ShowFeatureFirstRunDialog(
+    std::u16string title,
+    std::unique_ptr<views::View> content_view,
+    content::WebContents* web_contents);
 
+// Creates a styled infobox container view an icon, title and description.
 std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainer(
-    const std::u16string& title,
-    const std::u16string& description,
+    std::u16string title,
+    std::u16string description,
     const gfx::VectorIcon& vector_icon,
     InfoBoxPosition position);
+
+// Creates a styled infobox container view an icon, title and a description with
+// a learn more link.
+std::unique_ptr<RichControlsContainerView> CreateInfoBoxContainerWithLearnMore(
+    std::u16string title,
+    int description_id,
+    const std::u16string& learn_more,
+    base::RepeatingClosure learn_more_callback,
+    const gfx::VectorIcon& vector_icon,
+    InfoBoxPosition position);
+
+// Creates an empty container view to wrap the dialog content.
+std::unique_ptr<views::View> CreateDialogContentViewContainer();
 
 }  // namespace feature_first_run
 

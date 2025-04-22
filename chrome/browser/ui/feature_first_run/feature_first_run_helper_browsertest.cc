@@ -8,6 +8,8 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
@@ -20,6 +22,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -31,12 +34,22 @@ using FeatureFirstRunDialogHelperBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
                        DialogConstructedFromParams) {
   const std::u16string title = u"Test Title";
+  auto content_view = std::make_unique<views::View>();
+  auto* expected_content_view = content_view.get();
+
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* dialog_widget = ShowFeatureFirstRunDialog(title, web_contents);
+  auto* dialog_widget =
+      ShowFeatureFirstRunDialog(title, std::move(content_view), web_contents);
   auto* dialog_widget_delegate = dialog_widget->widget_delegate();
 
   EXPECT_TRUE(dialog_widget->IsVisible());
   EXPECT_EQ(title, dialog_widget_delegate->GetWindowTitle());
+
+  auto* actual_content_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kFeatureFirstRunDialogContentViewElementId,
+          browser()->window()->GetElementContext());
+  EXPECT_EQ(expected_content_view, actual_content_view);
 }
 
 IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
