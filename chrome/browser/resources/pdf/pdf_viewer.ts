@@ -861,6 +861,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.currentController.viewportChanged();
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
+      const hasScrollbars = this.viewport.documentHasScrollbars();
+      const scrollbarWidthStyle = `${this.viewport.scrollbarWidth}px`;
+      this.style.setProperty(
+          '--vertical-scrollbar-width',
+          hasScrollbars.vertical ? scrollbarWidthStyle : '0px');
+      this.style.setProperty(
+          '--horizontal-scrollbar-width',
+          hasScrollbars.horizontal ? scrollbarWidthStyle : '0px');
       Ink2Manager.getInstance().viewportChanged();
     }
     // </if>

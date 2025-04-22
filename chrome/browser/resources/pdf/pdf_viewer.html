@@ -66,9 +66,12 @@ import {AnnotationMode} from './constants.js';
       </div>
       <if expr="enable_pdf_ink2">
         ${this.isInTextAnnotationMode_() ? html`
-          <ink-text-box></ink-text-box>` : ''}
+          <div class="text-box-container">
+            <ink-text-box></ink-text-box>
+          </div>` : ''}
       </if>
-      <div id="content"></div>
+      <div id="content">
+      </div>
     </div>
     <div id="content-focus-rectangle" ?hidden="${!this.documentHasFocus_}">
     </div>

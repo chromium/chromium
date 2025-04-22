@@ -171,3 +171,14 @@ viewer-ink-host {
   /* color-surface */
   --cr-toast-text-color: rgb(31, 31, 31);
 }
+
+<if expr="enable_pdf_ink2">
+.text-box-container {
+  height: calc(100% - var(--horizontal-scrollbar-width, 0px));
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: calc(100% - var(--vertical-scrollbar-width, 0px));
+}
+</if>
