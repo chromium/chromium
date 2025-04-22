@@ -39,6 +39,11 @@ class ManageSharingRow : public views::Button {
   void OnBlur() override;
   void UpdateBackgroundColor();
 
+  // Button:
+  void AddLayerToRegion(ui::Layer* new_layer,
+                        views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+
  private:
   // Member variables for UI components.
   raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;

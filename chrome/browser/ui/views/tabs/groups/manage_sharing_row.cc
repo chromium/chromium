@@ -112,6 +112,13 @@ void ManageSharingRow::RebuildChildren() {
       views::kMarginsKey, gfx::Insets::TLBR(0, kImageLabelSpacing, 0, 0));
   avatar_container_->SetPaintToLayer();
   avatar_container_->layer()->SetFillsBoundsOpaquely(false);
+
+  ink_drop_container_ =
+      AddChildView(views::Builder<views::InkDropContainerView>()
+                       .SetAutoMatchParentBounds(true)
+                       .Build());
+  ink_drop_container_->SetVisible(false);
+  ink_drop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 void ManageSharingRow::StateChanged(ButtonState old_state) {
@@ -187,6 +194,17 @@ void ManageSharingRow::UpdateBackgroundColor() {
   }
 
   SetBackground(views::CreateSolidBackground(bg_color));
+}
+
+void ManageSharingRow::AddLayerToRegion(ui::Layer* new_layer,
+                                        views::LayerRegion region) {
+  ink_drop_container_->SetVisible(true);
+  ink_drop_container_->AddLayerToRegion(new_layer, region);
+}
+
+void ManageSharingRow::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  ink_drop_container_->RemoveLayerFromRegions(old_layer);
+  ink_drop_container_->SetVisible(false);
 }
 
 BEGIN_METADATA(ManageSharingRow)
