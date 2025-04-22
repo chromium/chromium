@@ -3946,6 +3946,13 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Bottom sheet dismissed"/>
 </enum>
 
+<enum name="TouchToFill.Iban.Outcome">
+  <int value="0"
+      label="IBAN selected from the sheet (either local or server one)"/>
+  <int value="1" label="Manage payment settings option selected"/>
+  <int value="2" label="Bottom sheet dismissed"/>
+</enum>
+
 <enum name="TouchToFill.PaymentMethod.TriggerOutcome">
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown: clicked field not focusable or not empty"/>

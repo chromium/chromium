@@ -6557,6 +6557,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.Iban.Outcome"
+    enum="TouchToFill.Iban.Outcome" expires_after="2025-12-31">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the user action on the Touch To Fill for IBANs. It is recorded when
+    the Touch To Fill bottom sheet is closed. Only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.Iban.SelectedIndex" units="index"
     expires_after="2025-07-01">
   <owner>qihuizhao@google.com</owner>
