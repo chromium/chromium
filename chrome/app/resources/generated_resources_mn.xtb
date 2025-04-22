@@ -3151,7 +3151,7 @@
     Хэрэв та ПИН-г мартсан бол энэ төхөөрөмжийг powerwash-р дахин форматалж, ахин тохируулна уу.</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Энэ аппыг блоклосон байна}other{Зарим аппыг блоклосон байна}}</translation>
 <translation id="3185454065699440434"><ph name="SITE_NAME" /> дээр өргөтгөлүүдийг зөвшөөрөх</translation>
-<translation id="3187472288455401631">Зарын хэмжигдэхүүн</translation>
+<translation id="3187472288455401631">Зарын хэмжилт</translation>
 <translation id="3187556136478864255">Та дамжуулагч төхөөрөмжөө
     <ph name="BEGIN_LINK" />
     Google Home аппад<ph name="END_LINK" /> харах боломжтой байна уу?</translation>
