@@ -368,6 +368,40 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSPromoNonModalSigninPasswordFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+
+    config.used = EventConfig("non_modal_signin_promo_password",
+                              Comparator(ANY, 0), 365, 365);
+    // Should be triggered no more than once every 14 days.
+    config.trigger = EventConfig(
+        feature_engagement::events::kNonModalSigninPromoPasswordTrigger,
+        Comparator(LESS_THAN, 1), 14, 365);
+
+    config.groups.push_back(kiOSNonModalSigninPromosGroup.name);
+    return config;
+  }
+
+  if (kIPHiOSPromoNonModalSigninBookmarkFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+
+    config.used = EventConfig("non_modal_signin_promo_bookmark",
+                              Comparator(ANY, 0), 365, 365);
+    // Should be triggered no more than once every 14 days.
+    config.trigger = EventConfig(
+        feature_engagement::events::kNonModalSigninPromoBookmarkTrigger,
+        Comparator(LESS_THAN, 1), 14, 365);
+
+    config.groups.push_back(kiOSNonModalSigninPromosGroup.name);
+    return config;
+  }
+
   if (kIPHiOSDockingPromoRemindMeLaterFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

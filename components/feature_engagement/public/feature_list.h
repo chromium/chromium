@@ -261,6 +261,10 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoCredentialProviderExtensionFeature,
                        "IPH_iOSPromoCredentialProviderExtension");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoDefaultBrowserReminderFeature,
                        "IPH_iOSPromoDefaultBrowserReminder");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoNonModalSigninPasswordFeature,
+                       "IPH_iOSPromoNonModalSigninPassword");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoNonModalSigninBookmarkFeature,
+                       "IPH_iOSPromoNonModalSigninBookmark");
 DEFINE_VARIATION_PARAM(kIPHiOSHistoryOnOverflowMenuFeature,
                        "IPH_iOSHistoryOnOverflowMenuFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
@@ -694,6 +698,8 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalShareDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSPromoNonModalSigninPasswordFeature),
+        VARIATION_ENTRY(kIPHiOSPromoNonModalSigninBookmarkFeature),
         VARIATION_ENTRY(kIPHiOSPromoPasswordManagerWidgetFeature),
         VARIATION_ENTRY(kIPHiOSPullToRefreshFeature),
         VARIATION_ENTRY(kIPHiOSReplaceSyncPromosWithSignInPromos),

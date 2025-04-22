@@ -48522,6 +48522,10 @@ should be able to be added at any place in this file.
              iOS."/>
   <suffix name="iOSPromoNonModalShareDefaultBrowser"
       label="Showing the non-modal Default Browser Promo from share on iOS."/>
+  <suffix name="iOSPromoNonModalSigninBookmark"
+      label="Showing the non-modal sign-in promo for add a bookmark on iOS."/>
+  <suffix name="iOSPromoNonModalSigninPassword"
+      label="Showing the non-modal sign-in promo for save a password on iOS."/>
   <suffix name="iOSPromoNonModalUrlPasteDefaultBrowser"
       label="Showing the non-modal Default Browser Promo from omnibox paste
              on iOS."/>

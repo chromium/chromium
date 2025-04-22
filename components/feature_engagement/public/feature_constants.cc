@@ -623,6 +623,12 @@ BASE_FEATURE(kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature,
 BASE_FEATURE(kIPHiOSPromoNonModalShareDefaultBrowserFeature,
              "IPH_iOSPromoNonModalShareDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoNonModalSigninPasswordFeature,
+             "IPH_iOSPromoNonModalSigninPassword",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoNonModalSigninBookmarkFeature,
+             "IPH_iOSPromoNonModalSigninBookmark",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
              "IPH_iOSPromoPasswordManagerWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);

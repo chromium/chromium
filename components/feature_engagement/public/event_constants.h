@@ -123,6 +123,12 @@ extern const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[];
 // The non-modal default browser promo from share was triggered.
 extern const char kNonModalDefaultBrowserPromoShareTrigger[];
 
+// The non-modal sign-in promo was triggered for save password.
+extern const char kNonModalSigninPromoPasswordTrigger[];
+
+// The non-modal sign-in promo was triggered for add bookmark.
+extern const char kNonModalSigninPromoBookmarkTrigger[];
+
 // The Password Manager widget promo was triggered.
 extern const char kPasswordManagerWidgetPromoTriggered[];
 

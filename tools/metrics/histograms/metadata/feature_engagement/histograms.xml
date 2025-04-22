@@ -325,6 +325,10 @@ chromium-metrics-reviews@google.com.
                on iOS"/>
   <variant name="IPH_iOSPromoNonModalShareDefaultBrowser"
       summary="showing the non-modal Default Browser Promo from share on iOS"/>
+  <variant name="IPH_iOSPromoNonModalSigninBookmark"
+      summary="showing the non-modal sign-in promo for add a bookmark."/>
+  <variant name="IPH_iOSPromoNonModalSigninPassword"
+      summary="showing the non-modal sign-in promo for save a password."/>
   <variant name="IPH_iOSPromoNonModalUrlPasteDefaultBrowser"
       summary="showing the non-modal Default Browser Promo from omnibox paste
                on iOS"/>

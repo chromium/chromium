@@ -72,6 +72,10 @@ const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[] =
     "non_modal_default_browser_promo_app_switcher_trigger";
 const char kNonModalDefaultBrowserPromoShareTrigger[] =
     "non_modal_default_browser_promo_share_trigger";
+const char kNonModalSigninPromoPasswordTrigger[] =
+    "ios_non_modal_signin_promo_password_trigger";
+const char kNonModalSigninPromoBookmarkTrigger[] =
+    "ios_non_modal_signin_promo_bookmark_trigger";
 const char kPasswordManagerWidgetPromoTriggered[] =
     "password_manager_widget_promo_trigger";
 const char kPasswordManagerWidgetPromoUsed[] =
