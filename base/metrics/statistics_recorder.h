@@ -194,6 +194,12 @@ class BASE_EXPORT StatisticsRecorder {
   // This method is thread safe.
   static HistogramBase* FindHistogram(std::string_view name);
 
+  // Finds a histogram by hash and name. Matches the exact name. Returns a null
+  // pointer if a matching histogram is not found.
+  //
+  // This method is thread safe.
+  static HistogramBase* FindHistogram(uint64_t hash, std::string_view name);
+
   // Imports histograms from providers. If |async| is true, the providers may do
   // the work asynchronously (though this is not guaranteed and it is up to the
   // providers to decide). If false, the work will be done synchronously.
@@ -271,7 +277,8 @@ class BASE_EXPORT StatisticsRecorder {
   // Checks if the given histogram should be recorded based on the
   // ShouldRecord() method of the record checker. If the record checker is not
   // set, returns true.
-  // |histogram_hash| corresponds to the result of HashMetricNameAs32Bits().
+  // |histogram_hash| corresponds to the result of HashMetricNameAs32Bits() or
+  // ParseMetricHashTo32Bits().
   //
   // This method is thread safe.
   static bool ShouldRecordHistogram(uint32_t histogram_hash);
