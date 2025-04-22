@@ -1257,7 +1257,7 @@ std::string ReadAnythingAppController::GetLanguage(
 std::u16string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  DCHECK(ax_node);
+  CHECK(ax_node);
 
   return a11y::GetTextContent(ax_node, IsGoogleDocs(), model_.is_pdf());
 }
