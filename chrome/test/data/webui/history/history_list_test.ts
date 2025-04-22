@@ -545,9 +545,8 @@ suite('HistoryListTest', function() {
         element.shadowRoot!
             .querySelector<HTMLButtonElement>('#menuRemoveButton')!.disabled);
     assertEquals(2, toolbar.count);
-    assertTrue(
-        toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
-            .querySelector('cr-button')!.disabled);
+    assertTrue(toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')!
+                   .querySelector('cr-button')!.disabled);
 
     // Key event should be ignored.
     assertEquals(1, testService.handler.getCallCount('removeVisits'));
@@ -571,7 +570,7 @@ suite('HistoryListTest', function() {
     // Check that delete option is re-enabled.
     assertEquals(2, toolbar.count);
     assertFalse(
-        toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
+        toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')!
             .querySelector('cr-button')!.disabled);
 
     // Menu button should also be re-enabled.
