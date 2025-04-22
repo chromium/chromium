@@ -12211,6 +12211,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(tabs::kTabGroupShortcuts)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"bundled-security-settings",
+     flag_descriptions::kBundledSecuritySettingsName,
+     flag_descriptions::kBundledSecuritySettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(safe_browsing::kBundledSecuritySettings)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

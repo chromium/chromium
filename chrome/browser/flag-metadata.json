@@ -1195,6 +1195,14 @@
       "expiry_milestone": 137
   },
   {
+    "name": "bundled-security-settings",
+    "owners": [
+      "awado@google.com",
+      "jacastro@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"],
+      "expiry_milestone": 140
+  },
+  {
     "name": "by-date-history-in-side-panel",
     "owners": [
       "mfacey@chromium.org",

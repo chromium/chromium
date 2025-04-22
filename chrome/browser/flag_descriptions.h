@@ -158,6 +158,9 @@ extern const char kBookmarksTreeViewName[];
 extern const char kBookmarksTreeViewDescription[];
 #endif
 
+extern const char kBundledSecuritySettingsName[];
+extern const char kBundledSecuritySettingsDescription[];
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kCampaignsComponentUpdaterTestTagName[];
 extern const char kCampaignsComponentUpdaterTestTagDescription[];

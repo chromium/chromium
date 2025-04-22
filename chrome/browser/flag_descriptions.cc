@@ -238,6 +238,13 @@ const char kBookmarksTreeViewDescription[] =
     "Show the bookmarks side panel in a tree view while in compact mode.";
 #endif
 
+const char kBundledSecuritySettingsName[] = "Bundled Security Settings";
+const char kBundledSecuritySettingsDescription[] =
+    "Enables new Bundled Security Settings UI on chrome://settings/security. "
+    "This new UI bundles all security settings into either an enhanced or "
+    "standard bundle which should simplify the security settings page and also "
+    "help simplify the user's decision.";
+
 const char kCertVerificationNetworkTimeName[] =
     "Network Time for Certificate Verification";
 const char kCertVerificationNetworkTimeDescription[] =

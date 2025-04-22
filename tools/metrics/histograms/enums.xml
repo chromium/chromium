@@ -18203,6 +18203,7 @@ from previous Chrome versions.
   <int value="1486171015" label="disable-fill-on-account-select"/>
   <int value="1486347614" label="IsolatedWebApps:disabled"/>
   <int value="1487341558" label="MacViewsAutofillPopup:enabled"/>
+  <int value="1487630656" label="BundledSecuritySettings:enabled"/>
   <int value="1487866428" label="SeparateLocalAndAccountThemes:enabled"/>
   <int value="1488193175" label="ChromeOSAssistant:enabled"/>
   <int value="1488565593" label="TabCaptureInfobarLinks:disabled"/>
@@ -19417,6 +19418,7 @@ from previous Chrome versions.
   <int value="1930901873" label="disable-sync-app-list"/>
   <int value="1931013086" label="ContainerAppPreinstall:disabled"/>
   <int value="1931309368" label="fill-on-account-select:disabled"/>
+  <int value="1931564063" label="BundledSecuritySettings:disabled"/>
   <int value="1932038907" label="CrosBatterySaverAlwaysOn:enabled"/>
   <int value="1932204471" label="SyncPseudoUSSThemes:disabled"/>
   <int value="1932732886" label="OpenVR:enabled"/>
