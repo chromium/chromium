@@ -11,9 +11,11 @@
 #include <cstddef>
 #include <iostream>
 #include <random>
+#include <sstream>
 
 #include "archive_reader.h"
 #include "archive_writer.h"
+#include "base/strings/string_split.h"
 #include "crc32_hasher.h"
 #include "zst_compressor.h"
 #include "zst_decompressor.h"
@@ -24,10 +26,18 @@ void PrintUsageInfo(std::string program_name) {
 }
 
 void PrintUsageInfoHash(std::string program_name) {
-  std::cerr << "Usage: " << program_name << " hash base64-gzipped-'"
-            << kFilePathDelimiter << "'-separated-files" << std::endl;
+  std::cerr << "Usage: " << program_name << " hash '" << kFilePathDelimiter
+            << "'-separated-file-paths" << std::endl;
+  std::cerr << "E.g.: " << program_name << " hash path1" << kFilePathDelimiter
+            << "path2" << std::endl;
+}
+
+void PrintUsageInfoCompress(std::string program_name) {
+  std::cerr << "Usage: " << program_name
+            << " compress destination-file-path uncompressed-content"
+            << std::endl;
   std::cerr << "E.g.: " << program_name
-            << " hash $(echo -n path1:path2 | gzip | base64)" << std::endl;
+            << " compress /path/to/compressed/content abcdefg" << std::endl;
 }
 
 void PrintUsageInfoArchive(std::string program_name) {
@@ -58,15 +68,14 @@ void PrintUsageInfoPipe(std::string program_name) {
 // which are gzipped and base64-encoded, and it outputs a crc32 hash for each
 // file in the list, in the same order as the input list. If a file does not
 // exist, outputs a blank line for it.
-int DoHash(int argc, const char* argv[]) {
-  if (argc != 3) {
-    PrintUsageInfoHash(std::string(argv[0]));
+int DoHash(const std::vector<std::string>& argv) {
+  if (argv.size() != 3) {
+    PrintUsageInfoHash(argv[0]);
     return 1;
   }
 
   Crc32Hasher hasher;
-  std::vector<std::string> files =
-      hasher.MakeFileListFromCompressedList(std::string_view(argv[2]));
+  std::vector<std::string> files = hasher.ParseFileList(argv[2]);
 
   for (const auto& file : files) {
     std::optional<uint32_t> hash = hasher.HashFile(file);
@@ -79,14 +88,41 @@ int DoHash(int argc, const char* argv[]) {
   return 0;
 }
 
+// The compress command is given a string that needs to be compressed.
+// It compresses the string via zst and saves the result to the specified file.
+int DoCompress(const std::vector<std::string>& argv) {
+  if (argv.size() != 4) {
+    PrintUsageInfoCompress(argv[0]);
+    return 1;
+  }
+
+  std::string destination_file_path = argv[2];
+  std::ofstream output_file_stream;
+  output_file_stream.open(destination_file_path,
+                          std::ios::binary | std::ios::trunc);
+  if (output_file_stream.fail()) {
+    std::cerr << "Failed to open the destination file at "
+              << destination_file_path << std::endl;
+    return 1;
+  }
+
+  ZstCompressor compressor(output_file_stream, 3);
+  std::string uncompressed_string = argv[3];
+  ZstCompressor::UncompressedContent uncompressed_content;
+  uncompressed_content.buffer = uncompressed_string.data();
+  uncompressed_content.size = uncompressed_string.size();
+  compressor.CompressStreaming(uncompressed_content, true);
+  return 0;
+}
+
 // The archive command creates a zst-compressed archive file. It is given a text
 // file that contains the paths to the files that should be included in archive.
 // It then creates an archive from these files and compresses the archive via
 // zstd. The archive is in a custom file format and can be extracted using the
 // extract command below.
-int DoArchive(int argc, const char* argv[]) {
-  if (argc != 4) {
-    PrintUsageInfoArchive(std::string(argv[0]));
+int DoArchive(const std::vector<std::string>& argv) {
+  if (argv.size() != 4) {
+    PrintUsageInfoArchive(argv[0]);
     return 1;
   }
 
@@ -153,9 +189,9 @@ int DoArchive(int argc, const char* argv[]) {
 // It does so in a streaming way (i.e. it reads a portion of the input file and
 // extracts it, and then read the next portion of input file and extracts it).
 // The input file can be created by the archive command above.
-int DoExtract(int argc, const char* argv[]) {
-  if (argc != 3) {
-    PrintUsageInfoExtract(std::string(argv[0]));
+int DoExtract(const std::vector<std::string>& argv) {
+  if (argv.size() != 3) {
+    PrintUsageInfoExtract(argv[0]);
     return 1;
   }
 
@@ -199,14 +235,14 @@ int DoExtract(int argc, const char* argv[]) {
 
 // The pipe command is given a path, and it creates a named pipe at that path
 // via a mkfifo() system call.
-int DoPipe(int argc, const char* argv[]) {
-  if (argc != 3) {
-    PrintUsageInfoPipe(std::string(argv[0]));
+int DoPipe(const std::vector<std::string>& argv) {
+  if (argv.size() != 3) {
+    PrintUsageInfoPipe(argv[0]);
     return 1;
   }
 
-  const char* named_pipe_path = argv[2];
-  int result = mkfifo(named_pipe_path, 0777);
+  std::string named_pipe_path = argv[2];
+  int result = mkfifo(named_pipe_path.c_str(), 0777);
   if (result != 0) {
     std::cerr << "Failed to call mkfifo(): " << strerror(errno) << std::endl;
     return 1;
@@ -214,23 +250,88 @@ int DoPipe(int argc, const char* argv[]) {
   return 0;
 }
 
+// Given the path to a response file, process the response file and return the
+// command line arguments that it contains as a vector of strings.
+std::vector<std::string> HandleResponseFile(
+    const std::string& response_file_path) {
+  std::string response_file_content;
+  if (response_file_path.length() >= 4 &&
+      response_file_path.substr(response_file_path.length() - 4) == ".zst") {
+    // If the path to the response file ends in .zst, then decompress the
+    // content of the response file via zst.
+    std::ifstream input_file_stream;
+    input_file_stream.open(response_file_path, std::ios::binary);
+    if (input_file_stream.fail()) {
+      std::cerr << "Failed to open the input response file at "
+                << response_file_path << std::endl;
+      exit(1);
+    }
+    ZstDecompressor decompressor(input_file_stream);
+    ZstDecompressor::DecompressedContent decompressed_content;
+    std::stringstream decompressed_string_stream;
+    while (true) {
+      if (decompressor.DecompressStreaming(&decompressed_content)) {
+        break;
+      }
+      decompressed_string_stream.write(decompressed_content.buffer,
+                                       decompressed_content.size);
+    }
+    response_file_content = decompressed_string_stream.str();
+  } else {
+    // If the path to the response file does not end in .zst, then read the
+    // entire content of the response file.
+    std::ifstream input_file_stream;
+    input_file_stream.open(response_file_path);
+    if (input_file_stream.fail()) {
+      std::cerr << "Failed to open the input response file at "
+                << response_file_path << std::endl;
+      exit(1);
+    }
+    std::stringstream string_stream;
+    string_stream << input_file_stream.rdbuf();
+    response_file_content = string_stream.str();
+  }
+  // Each line in the response file is treated as a separate command line
+  // argument.
+  return SplitString(response_file_content, "\n", base::KEEP_WHITESPACE,
+                     base::SPLIT_WANT_NONEMPTY);
+}
+
 int main(int argc, const char* argv[]) {
-  if (argc < 2) {
-    PrintUsageInfo(std::string(argv[0]));
+  // Pre-process the command line arguments and expand all the response files
+  // (a response file is identified by the @ symbol).
+  std::vector<std::string> processed_argv;
+  for (int i = 0; i < argc; ++i) {
+    std::string arg = argv[i];
+    if (arg.length() >= 1 && arg[0] == '@') {
+      std::string response_file_path = arg.substr(1);
+      std::vector<std::string> response_file_args =
+          HandleResponseFile(response_file_path);
+      processed_argv.insert(processed_argv.end(), response_file_args.begin(),
+                            response_file_args.end());
+    } else {
+      processed_argv.push_back(arg);
+    }
+  }
+
+  if (processed_argv.size() < 2) {
+    PrintUsageInfo(processed_argv[0]);
     return 1;
   }
 
-  std::string command = argv[1];
+  std::string command = processed_argv[1];
   if (command == "hash") {
-    return DoHash(argc, argv);
+    return DoHash(processed_argv);
+  } else if (command == "compress") {
+    return DoCompress(processed_argv);
   } else if (command == "archive") {
-    return DoArchive(argc, argv);
+    return DoArchive(processed_argv);
   } else if (command == "extract") {
-    return DoExtract(argc, argv);
+    return DoExtract(processed_argv);
   } else if (command == "pipe") {
-    return DoPipe(argc, argv);
+    return DoPipe(processed_argv);
   } else {
-    PrintUsageInfo(std::string(argv[0]));
+    PrintUsageInfo(processed_argv[0]);
     return 1;
   }
 }
