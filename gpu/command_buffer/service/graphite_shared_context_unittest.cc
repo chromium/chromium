@@ -58,28 +58,9 @@ std::unique_ptr<skgpu::graphite::Context> MakeGraphiteContext() {
     }
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Retry with wgpu::BackendType::OpenGLES for old Android devices, e.g. Nexus
-  // 5x.
   if (!matched_adaptor) {
-    backend = wgpu::BackendType::OpenGLES;
-    options.featureLevel = wgpu::FeatureLevel::Compatibility;
-    adapters = instance->EnumerateAdapters(&options);
-    CHECK(!adapters.empty());
-
-    for (const auto& adapter : adapters) {
-      wgpu::Adapter wgpuAdapter = adapter.Get();
-      wgpu::AdapterInfo props;
-      wgpuAdapter.GetInfo(&props);
-      if (backend == props.backendType) {
-        matched_adaptor = adapter;
-        break;
-      }
-    }
+    return nullptr;
   }
-#endif
-
-  CHECK(matched_adaptor);
 
   wgpu::DeviceDescriptor device_desc;
   device_desc.requiredFeatureCount = 0;
@@ -105,7 +86,13 @@ class GraphiteSharedContextThreadSafeTest : public testing::Test {
   void SetUp() override {
     std::unique_ptr<skgpu::graphite::Context> graphite_context =
         MakeGraphiteContext();
-    CHECK(graphite_context);
+
+    // Only test with a Dawn adapter that is thread-safe. Skip the test if this
+    // adapter is not available.
+    if (!graphite_context) {
+      GTEST_SKIP() << "Graphite context creation failed, skipping test.";
+    }
+
     graphite_shared_context_ = std::make_unique<GraphiteSharedContext>(
         std::move(graphite_context), /*is_thread_safe=*/true);
 
