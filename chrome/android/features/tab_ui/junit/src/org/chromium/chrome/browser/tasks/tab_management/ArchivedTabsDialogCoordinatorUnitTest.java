@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -96,6 +97,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private RecyclerView mRecyclerView;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -140,7 +142,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mTabArchiveSettings,
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mTabGroupSyncService);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
         recyclerView = new TabListRecyclerView(mActivity, null);
         recyclerView.setId(R.id.tab_list_recycler_view);
