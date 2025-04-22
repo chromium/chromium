@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.LaunchHandlerClientMode;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.List;
 import java.util.Objects;
 
 /** Tests for {@link WebAppLaunchHandler}. */
@@ -65,23 +67,27 @@ public class WebAppLaunchHandlerTest {
     public void getStartNewNavigation() {
         String url = JUnitTestGURLs.INITIAL_URL.getSpec();
         String packageName = null;
+        List<Uri> fileUris = null;
         WebAppLaunchHandler launchHandler =
                 new WebAppLaunchHandler(
-                        LaunchHandlerClientMode.NAVIGATE_EXISTING, url, packageName);
+                        LaunchHandlerClientMode.NAVIGATE_EXISTING, url, packageName, fileUris);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
 
         launchHandler =
-                new WebAppLaunchHandler(LaunchHandlerClientMode.FOCUS_EXISTING, url, packageName);
+                new WebAppLaunchHandler(
+                        LaunchHandlerClientMode.FOCUS_EXISTING, url, packageName, fileUris);
         Assert.assertFalse(launchHandler.getStartNewNavigation());
 
         launchHandler =
-                new WebAppLaunchHandler(LaunchHandlerClientMode.NAVIGATE_NEW, url, packageName);
+                new WebAppLaunchHandler(
+                        LaunchHandlerClientMode.NAVIGATE_NEW, url, packageName, fileUris);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
 
-        launchHandler = new WebAppLaunchHandler(LaunchHandlerClientMode.AUTO, url, packageName);
+        launchHandler =
+                new WebAppLaunchHandler(LaunchHandlerClientMode.AUTO, url, packageName, fileUris);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
 
-        launchHandler = new WebAppLaunchHandler(65, url, packageName);
+        launchHandler = new WebAppLaunchHandler(65, url, packageName, fileUris);
         Assert.assertTrue(launchHandler.getStartNewNavigation());
     }
 

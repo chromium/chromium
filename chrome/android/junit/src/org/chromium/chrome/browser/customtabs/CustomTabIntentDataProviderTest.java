@@ -45,6 +45,7 @@ import android.view.ContextThemeWrapper;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
@@ -1584,6 +1585,18 @@ public class CustomTabIntentDataProviderTest {
         return bundle;
     }
 
+    private ArrayList<Uri> getSampleUriList() {
+        return new ArrayList<>(
+                Arrays.asList(
+                        Uri.parse("content://com.a.b.c/a"), Uri.parse("content://com.a.b.c/b")));
+    }
+
+    private Bundle createFileHandlingDataBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(FileHandlingData.KEY_URIS, getSampleUriList());
+        return bundle;
+    }
+
     protected Uri getLaunchingUrl() {
         return Uri.parse("https://www.example.com/");
     }
@@ -1710,5 +1723,18 @@ public class CustomTabIntentDataProviderTest {
         BrowserServicesIntentDataProvider dataProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(LaunchHandlerClientMode.AUTO, dataProvider.getLaunchHandlerClientMode());
+    }
+
+    @Test
+    public void launchHandlerFileHandlingData() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA,
+                createFileHandlingDataBundle());
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        FileHandlingData data = dataProvider.getFileHandlingData();
+        assertEquals(getSampleUriList(), data.uris);
     }
 }

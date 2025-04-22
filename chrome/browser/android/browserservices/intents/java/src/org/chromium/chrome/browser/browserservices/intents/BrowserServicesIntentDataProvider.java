@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
+import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
@@ -690,5 +691,13 @@ public abstract class BrowserServicesIntentDataProvider {
     /** Return the client mode for Launch Handler API. */
     public @LaunchHandlerClientMode.ClientMode int getLaunchHandlerClientMode() {
         return LaunchHandlerClientMode.AUTO;
+    }
+
+    /**
+     * Return {@link FileHandlingData} which contains the URIs of the opened files for Launch
+     * Handler API.
+     */
+    public @Nullable FileHandlingData getFileHandlingData() {
+        return null;
     }
 }

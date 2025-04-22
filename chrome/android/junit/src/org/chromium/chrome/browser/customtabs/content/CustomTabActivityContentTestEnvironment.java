@@ -73,6 +73,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public static final String INITIAL_URL = JUnitTestGURLs.INITIAL_URL.getSpec();
     public static final String SPECULATED_URL = "https://speculated.com";
     public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+    public static final String CONTENT_URI = "content://com.a.b.c/a";
 
     public final Intent mIntent = new Intent();
 

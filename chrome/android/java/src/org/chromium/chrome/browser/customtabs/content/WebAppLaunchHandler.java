@@ -8,6 +8,8 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
+import android.net.Uri;
+
 import androidx.browser.trusted.LaunchHandlerClientMode.ClientMode;
 
 import org.jni_zero.JNINamespace;
@@ -17,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
@@ -45,8 +48,9 @@ public class WebAppLaunchHandler {
         }
     }
 
-    public WebAppLaunchHandler(@ClientMode int clientMode, String targetUrl, String packageName) {
-        mLaunchParams = getLaunchParams(clientMode, targetUrl, packageName);
+    public WebAppLaunchHandler(
+            @ClientMode int clientMode, String targetUrl, String packageName, List<Uri> fileUris) {
+        mLaunchParams = getLaunchParams(clientMode, targetUrl, packageName, fileUris);
     }
 
     /** Returns whether this launch triggers a navigation */
@@ -65,7 +69,8 @@ public class WebAppLaunchHandler {
                         webContents,
                         mLaunchParams.startNewNavigation,
                         mLaunchParams.targetUrl,
-                        mLaunchParams.packageName);
+                        mLaunchParams.packageName,
+                        mLaunchParams.fileUris);
     }
 
     /**
@@ -77,11 +82,14 @@ public class WebAppLaunchHandler {
      * @return The generated WebAppLaunchParams object.
      */
     private static WebAppLaunchParams getLaunchParams(
-            @ClientMode int clientModeParam, String targetUrl, String packageName) {
+            @ClientMode int clientModeParam,
+            String targetUrl,
+            String packageName,
+            List<Uri> fileUris) {
         @ClientMode int clientMode = getClientMode(clientModeParam);
 
         boolean startedNewNavigation = clientMode != FOCUS_EXISTING;
-        return new WebAppLaunchParams(startedNewNavigation, targetUrl, packageName);
+        return new WebAppLaunchParams(startedNewNavigation, targetUrl, packageName, fileUris);
     }
 
     /**
@@ -94,6 +102,7 @@ public class WebAppLaunchHandler {
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("bool") boolean startNewNavigation,
                 @JniType("std::string") String startUrl,
-                @JniType("std::string") String packageName);
+                @JniType("std::string") String packageName,
+                @JniType("std::vector<std::string>") String[] fileUris);
     }
 }

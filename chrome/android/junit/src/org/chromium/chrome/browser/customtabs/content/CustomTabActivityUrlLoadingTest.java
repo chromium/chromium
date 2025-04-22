@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.CONTENT_URI;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.INITIAL_URL;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.OTHER_URL;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.SPECULATED_URL;
@@ -21,6 +22,7 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityCo
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 
 import org.junit.Before;
@@ -51,6 +53,9 @@ import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Integration tests involving several classes in Custom Tabs content layer, checking that urls are
@@ -216,9 +221,14 @@ public class CustomTabActivityUrlLoadingTest {
         verify(env.tabFromFactory, times(expectedLoadUrlNumber))
                 .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), eq(true), eq(INITIAL_URL), eq(null));
+                .notifyLaunchQueue(any(), eq(true), eq(INITIAL_URL), eq(null), eq(new String[0]));
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), eq(expectedStartNewNavigation), eq(OTHER_URL), eq(null));
+                .notifyLaunchQueue(
+                        any(),
+                        eq(expectedStartNewNavigation),
+                        eq(OTHER_URL),
+                        eq(null),
+                        eq(new String[0]));
     }
 
     @Test
@@ -291,6 +301,29 @@ public class CustomTabActivityUrlLoadingTest {
 
         // According to the specification if not specified, the default client_mode value is auto.
         checkLaunchHandler(intentDataProvider, 1, true);
+    }
+
+    private FileHandlingData createFileHandlingData() {
+        ArrayList<Uri> sampleList = new ArrayList<>(Arrays.asList(Uri.parse(CONTENT_URI)));
+        return new FileHandlingData(sampleList);
+    }
+
+    @Test
+    public void checkFileHandling() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider = createDataProviderForNewIntent(OTHER_URL);
+        when(intentDataProvider.getFileHandlingData()).thenReturn(createFileHandlingData());
+
+        mIntentHandler.onNewIntent(intentDataProvider);
+        verify(env.tabFromFactory, times(1))
+                .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
+        verify(mWebAppLaunchHandlerJniMock, times(1))
+                .notifyLaunchQueue(any(), eq(true), eq(INITIAL_URL), eq(null), eq(new String[0]));
+        verify(mWebAppLaunchHandlerJniMock, times(1))
+                .notifyLaunchQueue(
+                        any(), eq(true), eq(OTHER_URL), eq(null), eq(new String[] {CONTENT_URI}));
     }
 
     private CustomTabIntentDataProvider createDataProviderForNewIntent(

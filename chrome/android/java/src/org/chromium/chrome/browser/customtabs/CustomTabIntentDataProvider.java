@@ -58,6 +58,7 @@ import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCorn
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
@@ -1623,6 +1624,20 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             return clientMode;
         } else {
             return LaunchHandlerClientMode.AUTO;
+        }
+    }
+
+    @Override
+    public @Nullable FileHandlingData getFileHandlingData() {
+        Bundle bundle =
+                IntentUtils.safeGetBundleExtra(
+                        getIntent(), TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA);
+        if (bundle == null) return null;
+        try {
+            return FileHandlingData.fromBundle(bundle);
+        } catch (Throwable e) {
+            // Catch unparcelling errors potentially thrown by AndroidX bundle parsing code
+            return null;
         }
     }
 }

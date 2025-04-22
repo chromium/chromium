@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import android.net.Uri;
 import android.text.TextUtils;
+
+import androidx.browser.trusted.FileHandlingData;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
@@ -13,6 +16,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
+
+import java.util.List;
 
 /**
  * Default implementation of {@link CustomTabIntentHandlingStrategy}. Navigates the Custom Tab to
@@ -86,11 +91,18 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     private void handleLaunch(
             BrowserServicesIntentDataProvider intentDataProvider, boolean isInitialIntent) {
+        List<Uri> fileUris = null;
+        FileHandlingData fileHandlingData = intentDataProvider.getFileHandlingData();
+        if (fileHandlingData != null) {
+            fileUris = fileHandlingData.uris;
+        }
+
         WebAppLaunchHandler launchHandler =
                 new WebAppLaunchHandler(
                         intentDataProvider.getLaunchHandlerClientMode(),
                         intentDataProvider.getUrlToLoad(),
-                        intentDataProvider.getClientPackageName());
+                        intentDataProvider.getClientPackageName(),
+                        fileUris);
 
         if (launchHandler.getStartNewNavigation() && !isInitialIntent) {
             loadUrl(intentDataProvider);
