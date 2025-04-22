@@ -14,7 +14,7 @@ package metrics;
 // Signals for machine learning scoring (used during ML inference).
 // See details: http://shortn/_B21YgmkLs9.
 //
-// Next tag: 35
+// Next tag: 38
 message OmniboxScoringSignals {
   // Number of times the URL was navigated to using the Omnibox for this
   // profile on this device, and all other devices syncing with this
@@ -245,4 +245,35 @@ message OmniboxScoringSignals {
   // NOTE: The "page contexts" listed above are sourced from the
   //       `PageClassification` enum in omnibox_event.proto.
   optional bool is_web_page_context = 34;
+  // Whether the host part of the `destination_url` associated with this
+  // suggestion matches the host part of the URL for the page the user is
+  // currently on.
+  // As such, this signal will take on the following values:
+  //   - True:  `destination_url` for this suggestion has the same host as
+  //            the current page.
+  //   - False: Current page is the NTP (any default search engine)
+  //            OR `destination_url` for this suggestion is empty
+  //            OR `destination_url` does not have the same host as the
+  //            current page.
+  //   - Unset: Otherwise (due to unexpected client-side behavior).
+  optional bool destination_host_match_for_current_page = 35;
+  // Whether selecting this suggestion would navigate to a page that's already
+  // open in another tab in the current browser session (across all browser
+  // windows on the current device). Cross-device tab sync does NOT have any
+  // impact on the value of this signal.
+  // As such, this signal will take on the following values:
+  //   - True:  The destination associated with this suggestion is already open
+  //            in another tab.
+  //   - False: The destination associated with this suggestion is not open in
+  //            another tab.
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool has_open_tab_match = 36;
+  // Whether this suggestion (or one of the duplicates deduped under it) is a
+  // SEARCH_HISTORY match.
+  // As such, this signal will take on the following values:
+  //   - True:  Suggestion (or one of its duplicates) is a SEARCH_HISTORY match
+  //   - False: Neither this suggestion nor any of its duplicates is a
+  //            SEARCH_HISTORY match
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_search_history = 37;
 }

@@ -640,6 +640,18 @@ message OmniboxEventProto {
 
       // Moved to OmniboxScoringSignals proto in cl/651828883:
       optional bool is_verbatim = 27 [deprecated = true];
+      // Whether the host part of the `destination_url` associated with this
+      // suggestion matches the host part of the URL for the page the user is
+      // currently on.
+      // As such, this signal will take on the following values:
+      //   - True:  `destination_url` for this suggestion has the same host as
+      //            the current page.
+      //   - False: Current page is the NTP (any default search engine)
+      //            OR `destination_url` for this suggestion is empty
+      //            OR `destination_url` does not have the same host as the
+      //            current page.
+      //   - Unset: Otherwise (due to unexpected client-side behavior).
+      optional bool destination_host_match_for_current_page = 35;
     }
 
     optional ScoringSignals scoring_signals = 10;
