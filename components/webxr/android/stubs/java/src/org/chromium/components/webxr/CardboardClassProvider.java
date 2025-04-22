@@ -6,9 +6,8 @@ package org.chromium.components.webxr;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This "stub" version of CardboardClassProvider is only built if |enable_cardboard| is false. As

@@ -4,9 +4,8 @@
 
 package org.chromium.components.webxr;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
