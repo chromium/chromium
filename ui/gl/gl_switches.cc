@@ -378,6 +378,14 @@ bool IsDefaultANGLEVulkan() {
       active_gpu.detailedDriverVersion.minor <= 530) {
     return false;
   }
+
+  // Exclude Qualcomm 512.615 driver on Xiaomi phones that is the cause of
+  // yet-to-be explained GPU hangs.
+  // http://crbug.com/382725542
+  if (active_gpu.driverId == VK_DRIVER_ID_QUALCOMM_PROPRIETARY &&
+      active_gpu.detailedDriverVersion.minor == 615) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
