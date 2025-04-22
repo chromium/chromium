@@ -140,24 +140,27 @@ struct GlyphOffsetArray::iterator<true> final {
   STACK_ALLOCATED();
 
  public:
+  explicit iterator(base::span<const GlyphOffset> offsets)
+      : iterator_(offsets.begin()) {
+    // An empty span should use `has_non_zero_glyph_offsets = false`.
+    DCHECK(!offsets.empty());
+  }
+
   // The constructor for ShapeResult
   explicit iterator(const GlyphOffsetArray& array)
-      : pointer(array.GetStorage()) {
-    DCHECK(pointer);
-  }
+      : iterator(static_cast<base::span<const GlyphOffset>>(array)) {}
 
   // The constructor for ShapeResultView
-  explicit iterator(const GlyphDataRange& range) : pointer(range.Offset()) {
-    DCHECK(pointer);
-  }
+  explicit iterator(const GlyphDataRange& range) : iterator(range.Offsets()) {}
 
-  GlyphOffset operator*() const { return *pointer; }
-  void operator++() { ++pointer; }
-  void operator+=(ptrdiff_t s) { pointer += s; }
+  GlyphOffset operator*() const { return *iterator_; }
+  void operator++() { ++iterator_; }
+  void operator+=(ptrdiff_t s) { iterator_ += s; }
 
-  GlyphOffset operator[](size_t i) const { return pointer[i]; }
+  GlyphOffset operator[](size_t i) const { return *(iterator_ + i); }
 
-  const GlyphOffset* pointer;
+ private:
+  base::span<const GlyphOffset>::iterator iterator_;
 };
 
 // For zero glyph offset array

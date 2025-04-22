@@ -39,9 +39,9 @@ class PLATFORM_EXPORT GlyphDataRange {
   const_iterator end() const;
 
   bool HasOffsets() const;
+
   // The `span` of `GlyphOffset` if `HasOffsets()`, or an empty span.
   base::span<const GlyphOffset> Offsets() const;
-  const GlyphOffset* Offset() const { return Offsets().data(); }
 
   void Trace(Visitor*) const;
 
