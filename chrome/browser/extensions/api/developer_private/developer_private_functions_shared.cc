@@ -42,7 +42,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -50,7 +50,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/ui_util.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -96,7 +96,7 @@ GURL ConvertHostToUrl(const std::string& host) {
       {url::kHttpScheme, url::kStandardSchemeSeparator, host, "/"}));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Runs the install verifier for all extensions that are enabled, disabled, or
 // terminated.
 void PerformVerificationCheck(content::BrowserContext* context) {
@@ -119,7 +119,7 @@ void PerformVerificationCheck(content::BrowserContext* context) {
     InstallVerifier::Get(context)->VerifyAllExtensions();
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 std::string GetETldPlusOne(const GURL& site) {
   DCHECK(site.is_valid());
@@ -409,7 +409,7 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   developer::ProfileInfo info =
       CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If this is called from the chrome://extensions page, we use this as a
   // heuristic that it's a good time to verify installs. We do this on startup,
   // but there's a chance that it failed erroneously, so it's good to double-
@@ -417,7 +417,7 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   if (source_context_type() == mojom::ContextType::kWebUi) {
     PerformVerificationCheck(browser_context());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return RespondNow(WithArguments(info.ToValue()));
 }
@@ -538,7 +538,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
   }
 // TODO(crbug.com/392777363): Enable this code when toolbars are supported on
 // desktop Android.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (update.show_access_requests_in_toolbar) {
     SitePermissionsHelper(Profile::FromBrowserContext(browser_context()))
         .SetShowAccessRequestsInToolbar(
@@ -558,7 +558,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
                                                  !is_action_pinned);
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return RespondNow(NoArguments());
 }

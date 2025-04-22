@@ -17,11 +17,11 @@
 #include "extensions/browser/warning_service_factory.h"
 #include "ui/base/clipboard/file_info.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -78,12 +78,12 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(PermissionsManager::GetFactory());
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(ExtensionManagementFactory::GetInstance());
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(AppWindowRegistry::Factory::GetInstance());
   DependsOn(CommandService::GetFactoryInstance());
   DependsOn(ToolbarActionsModelFactory::GetInstance());
   DependsOn(AccountExtensionTracker::GetFactory());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 // static
