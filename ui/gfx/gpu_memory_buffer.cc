@@ -88,7 +88,9 @@ GpuMemoryBufferHandle::GpuMemoryBufferHandle() = default;
 GpuMemoryBufferHandle::GpuMemoryBufferHandle(
     base::UnsafeSharedMemoryRegion region)
     : type(GpuMemoryBufferType::SHARED_MEMORY_BUFFER),
-      region_(std::move(region)) {}
+      region_(std::move(region)) {
+  CHECK(region_.IsValid(), base::NotFatalUntil::M138);
+}
 
 #if BUILDFLAG(IS_WIN)
 GpuMemoryBufferHandle::GpuMemoryBufferHandle(DXGIHandle handle)
