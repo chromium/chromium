@@ -85,6 +85,10 @@ class IOSCollaborationControllerDelegate
   using PreviewItemsCallBack =
       base::OnceCallback<void(NSArray<ShareKitPreviewItem*>*)>;
 
+  // Common implementation of `ShowLeaveDialog:` and `ShowDeleteDialog:`.
+  void ShowLeaveOrDeleteDialog(const tab_groups::EitherGroupID& either_id,
+                               ResultCallback result);
+
   // Called when the authentication ui flow is complete.
   void OnAuthenticationComplete(ResultCallback result,
                                 SigninCoordinatorResult sign_in_result,
@@ -137,6 +141,9 @@ class IOSCollaborationControllerDelegate
 
   // Returns the join group image displayed in the join flow.
   UIImage* JoinGroupImage(NSArray<ShareKitPreviewItem*>* preview_items);
+
+  // Presents the scrim view.
+  void AddScrimView();
 
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<FaviconLoader> favicon_loader_;
