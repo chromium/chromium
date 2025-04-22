@@ -15,7 +15,7 @@ class PrintingContextFactoryForTest {
  public:
   virtual std::unique_ptr<PrintingContext> CreatePrintingContext(
       PrintingContext::Delegate* delegate,
-      PrintingContext::ProcessBehavior process_behavior) = 0;
+      PrintingContext::OutOfProcessBehavior out_of_process_behavior) = 0;
 };
 
 }  // namespace printing
