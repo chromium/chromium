@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.enterprise.util;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /** Provides access to the enterprise data protection utility methods. */
@@ -20,10 +23,15 @@ public class DataProtectionBridge {
      *
      * @param text The text being copied.
      * @param renderFrameHost The RenderFrameHost providing the context in which a copy occurred.
-     * @param callback The callback to run after verifying the policy.
+     * @param callback The callback to run after verifying the policy. The boolean input will be
+     *     true if the copy action was allowed, false if the action was blocked or cancelled.
      */
     public static void verifyCopyIsAllowedByPolicy(
             String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
+        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
+            callback.onResult(true);
+            return;
+        }
         DataProtectionBridgeJni.get().verifyCopyIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
