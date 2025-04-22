@@ -7,7 +7,6 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
