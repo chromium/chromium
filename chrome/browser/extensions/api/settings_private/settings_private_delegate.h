@@ -52,7 +52,7 @@ class SettingsPrivateDelegate : public KeyedService {
   // Sets the pref.
   virtual settings_private::SetPrefResult SetDefaultZoom(double zoom);
 
-  Profile* profile_for_test();
+  Profile* profile_for_test() { return profile_; }
 
  protected:
   raw_ptr<Profile> profile_;  // weak; not owned by us

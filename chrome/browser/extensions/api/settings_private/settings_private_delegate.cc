@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
@@ -77,11 +76,6 @@ settings_private::SetPrefResult SettingsPrivateDelegate::SetDefaultZoom(
   double zoom_factor = blink::ZoomFactorToZoomLevel(zoom);
   profile_->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(zoom_factor);
   return settings_private::SetPrefResult::SUCCESS;
-}
-
-Profile* SettingsPrivateDelegate::profile_for_test() {
-  CHECK_IS_TEST();
-  return profile_;
 }
 
 }  // namespace extensions

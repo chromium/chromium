@@ -48,7 +48,7 @@ class SettingsPrivateEventRouter
   // settings_private::GeneratedPref::Observer implementation.
   void OnGeneratedPrefChanged(const std::string& pref_name) override;
 
-  content::BrowserContext* context_for_test();
+  content::BrowserContext* context_for_test() { return context_; }
 
  protected:
   // KeyedService overrides:
