@@ -58,8 +58,8 @@ class BookmarkModelMerger {
   // and metadata entities in the injected tracker.
   void Merge();
 
- private:
-  // Internal representation of a remote tree, composed of nodes.
+  // Internal representation of a remote tree, composed of nodes. Exposed
+  // publicly for metric recording.
   class RemoteTreeNode final {
    private:
     using UpdatesPerParentUuid =
@@ -79,6 +79,10 @@ class BookmarkModelMerger {
         syncer::UpdateResponseData update,
         size_t max_depth,
         UpdatesPerParentUuid* updates_per_parent_uuid);
+
+    // Test-only factory function.
+    static RemoteTreeNode BuildForTesting(syncer::UpdateResponseData update,
+                                          std::vector<RemoteTreeNode> children);
 
     ~RemoteTreeNode();
 
@@ -116,6 +120,7 @@ class BookmarkModelMerger {
   // a permanent node, keyed by server-defined unique tag of the root.
   using RemoteForest = std::unordered_map<std::string, RemoteTreeNode>;
 
+ private:
   // Represents a pair of bookmarks, one local and one remote, that have been
   // matched by UUID. They are guaranteed to have the same type and URL (if
   // applicable).

@@ -528,6 +528,17 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
   return node;
 }
 
+// static
+BookmarkModelMerger::RemoteTreeNode
+BookmarkModelMerger::RemoteTreeNode::BuildForTesting(
+    syncer::UpdateResponseData update,
+    std::vector<RemoteTreeNode> children) {
+  RemoteTreeNode node;
+  node.update_ = std::move(update);
+  node.children_ = std::move(children);
+  return node;
+}
+
 BookmarkModelMerger::BookmarkModelMerger(
     UpdateResponseDataList updates,
     BookmarkModelView* bookmark_model,
