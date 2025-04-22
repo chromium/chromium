@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
@@ -107,6 +108,7 @@ class ExtensionWebContentsObserver
   void ListenToWindowIdChangesFrom(sessions::SessionTabHelper* helper);
 
   ExtensionFrameHost* extension_frame_host_for_testing() {
+    CHECK_IS_TEST();
     return extension_frame_host_.get();
   }
 

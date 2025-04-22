@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -770,6 +771,16 @@ void AppWindow::SetAlwaysOnTop(bool always_on_top) {
   OnNativeWindowChanged();
 }
 
+AppWindowContents* AppWindow::app_window_contents_for_test() {
+  CHECK_IS_TEST();
+  return app_window_contents_.get();
+}
+
+int AppWindow::fullscreen_types_for_test() {
+  CHECK_IS_TEST();
+  return fullscreen_types_;
+}
+
 bool AppWindow::IsAlwaysOnTop() const {
   return cached_always_on_top_;
 }
@@ -817,6 +828,12 @@ void AppWindow::GetSerializedState(base::Value::Dict* properties) const {
       content_max_size, frame_insets, window_radii);
   SetBoundsProperties(window_bounds, window_min_size, window_max_size,
                       "outerBounds", properties);
+}
+
+void AppWindow::SetOnDraggableRegionsChangedForTesting(
+    base::OnceClosure callback) {
+  CHECK_IS_TEST();
+  on_update_draggable_regions_callback_for_testing_ = std::move(callback);
 }
 
 //------------------------------------------------------------------------------

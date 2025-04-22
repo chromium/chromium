@@ -350,11 +350,9 @@ class AppWindow : public content::WebContentsDelegate,
   // first paint, it will be unflagged.
   void Hide();
 
-  AppWindowContents* app_window_contents_for_test() {
-    return app_window_contents_.get();
-  }
+  AppWindowContents* app_window_contents_for_test();
 
-  int fullscreen_types_for_test() { return fullscreen_types_; }
+  int fullscreen_types_for_test();
 
   // Set whether the window should stay above other windows which are not
   // configured to be always-on-top.
@@ -395,9 +393,7 @@ class AppWindow : public content::WebContentsDelegate,
     native_app_window_ = std::move(native_app_window);
   }
 
-  void SetOnDraggableRegionsChangedForTesting(base::OnceClosure callback) {
-    on_update_draggable_regions_callback_for_testing_ = std::move(callback);
-  }
+  void SetOnDraggableRegionsChangedForTesting(base::OnceClosure callback);
 
   bool DidFinishFirstNavigation() { return did_finish_first_navigation_; }
 

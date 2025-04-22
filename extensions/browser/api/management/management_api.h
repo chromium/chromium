@@ -345,13 +345,9 @@ class ManagementAPI : public BrowserContextKeyedAPI,
     return supervised_user_extensions_delegate_.get();
   }
 
-  void set_delegate_for_test(std::unique_ptr<ManagementAPIDelegate> delegate) {
-    delegate_ = std::move(delegate);
-  }
+  void set_delegate_for_test(std::unique_ptr<ManagementAPIDelegate> delegate);
   void set_supervised_user_extensions_delegate_for_test(
-      std::unique_ptr<SupervisedUserExtensionsDelegate> delegate) {
-    supervised_user_extensions_delegate_ = std::move(delegate);
-  }
+      std::unique_ptr<SupervisedUserExtensionsDelegate> delegate);
 
  private:
   friend class BrowserContextKeyedAPIFactory<ManagementAPI>;

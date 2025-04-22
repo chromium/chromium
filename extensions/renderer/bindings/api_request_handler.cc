@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_request_handler.h"
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -553,7 +554,13 @@ void APIRequestHandler::SetResponseValidator(
   response_validator_ = std::move(response_validator);
 }
 
+bool APIRequestHandler::has_response_validator_for_testing() const {
+  CHECK_IS_TEST();
+  return response_validator_.get() != nullptr;
+}
+
 std::set<int> APIRequestHandler::GetPendingRequestIdsForTesting() const {
+  CHECK_IS_TEST();
   std::set<int> result;
   for (const auto& pair : pending_requests_) {
     result.insert(pair.first);

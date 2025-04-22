@@ -201,6 +201,11 @@ void ExtensionRegistrar::AddExtension(
   }
 }
 
+void ExtensionRegistrar::set_extensions_enabled_for_test(bool value) {
+  CHECK_IS_TEST();
+  extensions_enabled_ = value;
+}
+
 void ExtensionRegistrar::AddNewExtension(
     scoped_refptr<const Extension> extension) {
   if (blocklist_prefs::IsExtensionBlocklisted(extension->id(),

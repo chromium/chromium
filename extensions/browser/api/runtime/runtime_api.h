@@ -151,9 +151,7 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
 
   void AllowNonKioskAppsInRestartAfterDelayForTesting();
 
-  void set_min_duration_between_restarts_for_testing(base::TimeDelta delta) {
-    minimum_duration_between_restarts_ = delta;
-  }
+  void set_min_duration_between_restarts_for_testing(base::TimeDelta delta);
 
   std::unique_ptr<RuntimeAPIDelegate> delegate_;
 

@@ -9,6 +9,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
@@ -294,6 +295,12 @@ base::Time WebRequestRulesRegistry::GetExtensionInstallationTime(
 
 void WebRequestRulesRegistry::ClearCacheOnNavigation() {
   extension_web_request_api_helpers::ClearCacheOnNavigation();
+}
+
+const std::set<raw_ptr<const WebRequestRule, SetExperimental>>&
+WebRequestRulesRegistry::rules_with_untriggered_conditions_for_test() const {
+  CHECK_IS_TEST();
+  return rules_with_untriggered_conditions_;
 }
 
 // static

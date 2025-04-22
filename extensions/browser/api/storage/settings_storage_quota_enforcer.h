@@ -60,7 +60,7 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;
 
-  value_store::ValueStore* get_delegate_for_test() { return delegate_.get(); }
+  value_store::ValueStore* get_delegate_for_test();
 
  private:
   template <class T>

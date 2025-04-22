@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -207,6 +208,11 @@ ValueStore::WriteResult SettingsStorageQuotaEnforcer::Clear() {
   used_total_ = 0u;
 
   return result;
+}
+
+value_store::ValueStore* SettingsStorageQuotaEnforcer::get_delegate_for_test() {
+  CHECK_IS_TEST();
+  return delegate_.get();
 }
 
 template <class T>

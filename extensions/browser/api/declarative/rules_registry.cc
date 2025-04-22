@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -299,6 +300,7 @@ void RulesRegistry::OnExtensionLoaded(const Extension* extension) {
 }
 
 size_t RulesRegistry::GetNumberOfUsedRuleIdentifiersForTesting() const {
+  CHECK_IS_TEST();
   size_t entry_count = 0u;
   for (const auto& used_rule_identifier : used_rule_identifiers_) {
     // Each extension is counted as 1 just for being there. Otherwise we miss
@@ -306,6 +308,11 @@ size_t RulesRegistry::GetNumberOfUsedRuleIdentifiersForTesting() const {
     entry_count += 1u + used_rule_identifier.second.size();
   }
   return entry_count;
+}
+
+RulesCacheDelegate* RulesRegistry::rules_cache_delegate_for_testing() const {
+  CHECK_IS_TEST();
+  return cache_delegate_.get();
 }
 
 void RulesRegistry::DeserializeAndAddRules(const ExtensionId& extension_id,

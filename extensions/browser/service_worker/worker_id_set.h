@@ -42,7 +42,7 @@ class WorkerIdSet {
 
   std::vector<WorkerId> GetAllForTesting() const;
   static base::AutoReset<bool> AllowMultipleWorkersPerExtensionForTesting();
-  size_t count_for_testing() const { return workers_.size(); }
+  size_t count_for_testing() const;
 
  private:
   std::set<WorkerId> workers_;

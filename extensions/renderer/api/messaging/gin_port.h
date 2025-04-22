@@ -82,7 +82,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   const PortId& port_id() const { return port_id_; }
   const std::string& name() const { return name_; }
 
-  bool is_closed_for_testing() const { return state_ == kDisconnected; }
+  bool is_closed_for_testing() const;
 
  private:
   enum State {

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -1224,6 +1225,18 @@ void ManagementAPI::OnListenerAdded(const EventListenerInfo& details) {
   management_event_router_ =
       std::make_unique<ManagementEventRouter>(browser_context_);
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
+}
+
+void ManagementAPI::set_delegate_for_test(
+    std::unique_ptr<ManagementAPIDelegate> delegate) {
+  CHECK_IS_TEST();
+  delegate_ = std::move(delegate);
+}
+
+void ManagementAPI::set_supervised_user_extensions_delegate_for_test(
+    std::unique_ptr<SupervisedUserExtensionsDelegate> delegate) {
+  CHECK_IS_TEST();
+  supervised_user_extensions_delegate_ = std::move(delegate);
 }
 
 }  // namespace extensions

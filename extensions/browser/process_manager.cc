@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1142,7 +1143,13 @@ ProcessManager::GetServiceWorkerKeepaliveDataForRecords(
   return result;
 }
 
+bool ProcessManager::startup_background_hosts_created_for_test() const {
+  CHECK_IS_TEST();
+  return startup_background_hosts_created_;
+}
+
 std::vector<WorkerId> ProcessManager::GetAllWorkersIdsForTesting() {
+  CHECK_IS_TEST();
   return all_running_extension_workers_.GetAllForTesting();  // IN-TEST
 }
 

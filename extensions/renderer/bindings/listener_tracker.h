@@ -86,7 +86,7 @@ class ListenerTracker {
       mojom::EventFilteringInfoPtr filter,
       int routing_id);
 
-  EventFilter* event_filter_for_testing() { return &event_filter_; }
+  EventFilter* event_filter_for_testing();
 
  private:
   // A map of event name to the number of different contexts listening to that

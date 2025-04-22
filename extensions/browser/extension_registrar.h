@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -364,9 +365,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     return unpacked_install_directory_;
   }
 
-  void set_extensions_enabled_for_test(bool value) {
-    extensions_enabled_ = value;
-  }
+  void set_extensions_enabled_for_test(bool value);
 
  private:
   // How to surface an extension load error, e.g. showing an error dialog. The

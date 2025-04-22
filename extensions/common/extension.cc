@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
@@ -227,6 +228,7 @@ const int Extension::kValidHostPermissionSchemes =
 // static
 void Extension::set_silence_deprecated_manifest_version_warnings_for_testing(
     bool silence) {
+  CHECK_IS_TEST();
   g_silence_deprecated_manifest_version_warnings = silence;
 }
 
