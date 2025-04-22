@@ -50,13 +50,13 @@ static const int kMaximumMonthInMaximumYear = 8;
 static const int kMaximumDayInMaximumMonth = 13;
 static const int kMaximumWeekInMaximumYear = 37;  // The week of 275760-09-13
 
-static const int kDaysInMonth[12] = {31, 28, 31, 30, 31, 30,
-                                     31, 31, 30, 31, 30, 31};
+static const std::array<int, 12> kDaysInMonth = {31, 28, 31, 30, 31, 30,
+                                                 31, 31, 30, 31, 30, 31};
 
 // 'month' is 0-based.
 static int MaxDayOfMonth(int year, int month) {
   if (month != 1)  // February?
-    return UNSAFE_TODO(kDaysInMonth[month]);
+    return kDaysInMonth[month];
   return IsLeapYear(year) ? 29 : 28;
 }
 
