@@ -56,10 +56,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
- * This is the java counterpart to ChildProcessLauncherHelper. It is owned by native side and
- * has an explicit destroy method.
- * Each public or jni methods should have explicit documentation on what threads they are called.
+ * This is the java counterpart to ChildProcessLauncherHelper. It is owned by native side and has an
+ * explicit destroy method. Each public or jni methods should have explicit documentation on what
+ * threads they are called.
  */
 @JNINamespace("content::internal")
 @NullMarked
@@ -345,6 +347,9 @@ public final class ChildProcessLauncherHelperImpl {
 
     private boolean mDroppedStrongBingingDueToBackgrounding;
 
+    private final Object mIsSpareRendererLock = new Object();
+
+    @GuardedBy("mIsSpareRendererLock")
     private boolean mIsSpareRenderer;
 
     @CalledByNative
@@ -742,6 +747,18 @@ public final class ChildProcessLauncherHelperImpl {
         return TextUtils.isEmpty(mProcessType) ? "" : mProcessType;
     }
 
+    private boolean getIsSpareRenderer() {
+        synchronized (mIsSpareRendererLock) {
+            return mIsSpareRenderer;
+        }
+    }
+
+    private void setIsSpareRenderer(boolean isSpareRenderer) {
+        synchronized (mIsSpareRendererLock) {
+            mIsSpareRenderer = isSpareRenderer;
+        }
+    }
+
     // Called on client (UI or IO) thread.
     @CalledByNative
     private void getTerminationInfoAndStop(long terminationInfoPtr) {
@@ -750,6 +767,11 @@ public final class ChildProcessLauncherHelperImpl {
         // does not change once it's been set. So it is safe to test whether it's null here and
         // access it afterwards.
         if (connection == null) return;
+
+        boolean isSpareRenderer;
+        synchronized (mIsSpareRendererLock) {
+            isSpareRenderer = mIsSpareRenderer;
+        }
 
         // Note there is no guarantee that connection lost has happened. However ChildProcessRanking
         // is not thread safe, so this is the best we can do.
@@ -766,7 +788,8 @@ public final class ChildProcessLauncherHelperImpl {
                         connection.bindingStateCurrentOrWhenDied(),
                         connection.isKilledByUs(),
                         connection.hasCleanExit(),
-                        exceptionString != null);
+                        exceptionString != null,
+                        isSpareRenderer);
         LauncherThread.post(() -> mLauncher.stop());
     }
 
@@ -861,7 +884,7 @@ public final class ChildProcessLauncherHelperImpl {
             }
         }
 
-        if (mIsSpareRenderer != isSpareRenderer
+        if (getIsSpareRenderer() != isSpareRenderer
                 && ChildProcessConnection.supportNotPerceptibleBinding()
                 && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue()) {
             if (isSpareRenderer) {
@@ -870,7 +893,7 @@ public final class ChildProcessLauncherHelperImpl {
                 connection.removeNotPerceptibleBinding();
             }
         }
-        mIsSpareRenderer = isSpareRenderer;
+        setIsSpareRenderer(isSpareRenderer);
 
         if (mRanking != null) {
             mRanking.updateConnection(
@@ -1066,7 +1089,8 @@ public final class ChildProcessLauncherHelperImpl {
                 @ChildBindingState int bindingState,
                 boolean killedByUs,
                 boolean cleanExit,
-                boolean exceptionDuringInit);
+                boolean exceptionDuringInit,
+                boolean isSpareRenderer);
 
         boolean serviceGroupImportanceEnabled();
     }

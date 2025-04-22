@@ -145,6 +145,17 @@ MATCHER(RenderProcessHostIsReady, "") {
   return arg->IsReady();
 }
 
+// The test verifies that HasSpareRenderer() correctly returns
+// whether there is an available spare renderer.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest, HasSpareRenderer) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  EXPECT_FALSE(spare_manager.HasSpareRenderer());
+  spare_manager.WarmupSpare(browser_context());
+  EXPECT_TRUE(spare_manager.HasSpareRenderer());
+  spare_manager.CleanupSparesForTesting();
+  EXPECT_FALSE(spare_manager.HasSpareRenderer());
+}
+
 // This test verifies the creation of a deferred spare renderer. It checks two
 // conditions:
 //  1. A spare renderer is created successfully under standard conditions.

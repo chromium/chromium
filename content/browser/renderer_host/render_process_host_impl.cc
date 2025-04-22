@@ -4240,6 +4240,8 @@ void RenderProcessHostImpl::PopulateTerminationInfoRendererFields(
     ChildProcessTerminationInfo* info) {
   info->renderer_has_visible_clients = VisibleClientCount() > 0;
   info->renderer_was_subframe = GetFrameDepth() > 0;
+  info->has_spare_renderer =
+      SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

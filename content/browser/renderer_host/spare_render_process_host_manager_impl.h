@@ -151,6 +151,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   void SetIsBrowserIdleForTesting(bool is_browser_idle);
 
+  bool HasSpareRenderer() { return !spare_rphs_.empty(); }
+
  private:
   // Release ownership of a spare renderer. Called when the spare has either
   // been 1) claimed to be used in a navigation or 2) shutdown somewhere else.
