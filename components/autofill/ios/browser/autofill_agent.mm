@@ -33,6 +33,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
+#import "base/types/zip.h"
 #import "base/uuid.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
@@ -551,10 +552,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   base::Value::Dict predictionData;
   for (const auto& form : forms) {
     base::Value::Dict fieldData;
-    DCHECK(form.fields.size() == form.data.fields().size());
-    for (size_t i = 0; i < form.fields.size(); i++) {
-      fieldData.Set(NumberToString(form.data.fields()[i].renderer_id().value()),
-                    base::Value(form.fields[i].overall_type));
+    for (const auto [field, field_prediction] :
+         base::zip(form.data.fields(), form.fields)) {
+      fieldData.Set(NumberToString(field.renderer_id().value()),
+                    base::Value(field_prediction.overall_type));
     }
     predictionData.Set(base::UTF16ToUTF8(form.data.name()),
                        std::move(fieldData));

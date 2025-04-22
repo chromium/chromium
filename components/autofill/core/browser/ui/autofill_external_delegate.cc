@@ -28,6 +28,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -1159,10 +1160,10 @@ void AutofillExternalDelegate::InsertDataListValues(
   // Insert the datalist elements at the beginning.
   suggestions.insert(suggestions.begin(), datalist.size(),
                      Suggestion(SuggestionType::kDatalistEntry));
-  for (size_t i = 0; i < datalist.size(); i++) {
-    suggestions[i].main_text =
-        Suggestion::Text(datalist[i].value, Suggestion::Text::IsPrimary(true));
-    suggestions[i].labels = {{Suggestion::Text(datalist[i].text)}};
+  for (auto [suggestion, list_entry] : base::zip(suggestions, datalist)) {
+    suggestion.main_text =
+        Suggestion::Text(list_entry.value, Suggestion::Text::IsPrimary(true));
+    suggestion.labels = {{Suggestion::Text(list_entry.text)}};
   }
 }
 

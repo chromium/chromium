@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -443,21 +444,22 @@ FormFiller::GetFieldFillingSkipReasons(
             return std::make_pair(field->global_id(),
                                   DenseSet<FieldFillingSkipReason>{});
           });
-  for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    // Log events when the fields on the form are filled by autofill suggestion.
+  for (auto [field, autofill_field] :
+       base::zip(fields, form_structure.fields())) {
+    // Log events when the fields on the form are filled by autofill
+    // suggestion.
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
-        GetFillingSkipReasonsForField(
-            fields[i], *form_structure.field(i), trigger_field, type_count,
-            type_groups_originally_filled, blocked_fields, filling_product,
-            is_refill);
+        GetFillingSkipReasonsForField(field, *autofill_field, trigger_field,
+                                      type_count, type_groups_originally_filled,
+                                      blocked_fields, filling_product,
+                                      is_refill);
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
     // unique among `FormData::fields_` (see crbug.com/41496988), so a previous
     // iteration may have added skip reasons for `field_id`. To err on the side
-    // of caution we accumulate all skip reasons found in any iteration
-    skip_reasons[form_structure.field(i)->global_id()].insert_all(
-        field_skip_reasons);
+    // of caution we accumulate all skip reasons found in any iteration.
+    skip_reasons[autofill_field->global_id()].insert_all(field_skip_reasons);
   }
   return skip_reasons;
 }
@@ -639,9 +641,10 @@ void FormFiller::FillOrPreviewForm(
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
   // TODO(crbug.com/40266549): Remove when Undo launches on iOS.
-  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+  for (auto [result_field, field] :
+       base::zip(result_fields, form_structure.fields())) {
     // On the renderer, the section is used regardless of the autofill status.
-    result_fields[i].set_section(form_structure.field(i)->section());
+    result_field.set_section(field->section());
   }
 
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic

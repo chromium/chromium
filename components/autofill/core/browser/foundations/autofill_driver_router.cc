@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
@@ -587,11 +588,9 @@ void AutofillDriverRouter::SendTypePredictionsToRenderer(
   // Builds an index of the field predictions by the field's global ID.
   std::map<FieldGlobalId, FormFieldDataPredictions> field_predictions;
   DCHECK_EQ(browser_fdp.data.fields().size(), browser_fdp.fields.size());
-  for (size_t i = 0; i < std::min(browser_fdp.data.fields().size(),
-                                  browser_fdp.fields.size());
-       ++i) {
-    field_predictions.emplace(browser_fdp.data.fields()[i].global_id(),
-                              browser_fdp.fields[i]);
+  for (auto [field, field_prediction] :
+       base::zip(browser_fdp.data.fields(), browser_fdp.fields)) {
+    field_predictions.emplace(field.global_id(), field_prediction);
   }
 
   // Builds the FormDataPredictions of each renderer form and groups them by

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -173,9 +174,10 @@ bool DeserializeSection3(base::PickleIterator* iter,
   }
   field_data->set_text_direction(text_direction);
   std::vector<SelectOption> options;
-  for (size_t i = 0; i < option_values.size(); ++i) {
-    options.push_back({.value = std::move(option_values[i]),
-                       .text = std::move(option_texts[i])});
+  for (auto [option_value, option_text] :
+       base::zip(option_values, option_texts)) {
+    options.push_back(
+        {.value = std::move(option_value), .text = std::move(option_text)});
   }
   field_data->set_options(std::move(options));
   return true;
