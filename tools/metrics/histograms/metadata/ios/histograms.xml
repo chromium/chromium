@@ -1663,6 +1663,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.EnhancedCalendar.ResponseStatus"
+    enum="EnhancedCalendarResponseStatus" expires_after="2025-10-19">
+  <owner>prasanaa@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>Status of the enhanced calendar response.</summary>
+</histogram>
+
 <histogram name="IOS.ExperienceKitCalendar.Present"
     enum="ExperienceKitCalendarTypes" expires_after="2026-01-31">
   <owner>olivierrobin@chromium.org</owner>

@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 
 #import <optional>
+#import <string>
 #import <utility>
 
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -15,6 +17,7 @@
 #import "components/optimization_guide/core/optimization_guide_model_executor.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
+#import "ios/chrome/browser/intelligence/enhanced_calendar/metrics/enhanced_calendar_metrics.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -24,6 +27,10 @@
 #import "mojo/public/cpp/base/proto_wrapper.h"
 
 namespace ai {
+
+// Error message when the service is shutting down.
+const std::string kServiceShutDownErrorString =
+    "Enhanced Calendar service is shutting down.";
 
 // TODO(crbug.com/398903376): Evaluate a good timeout when using prod-served
 // models.
@@ -57,7 +64,7 @@ EnhancedCalendarServiceImpl::~EnhancedCalendarServiceImpl() {
 
   mojom::EnhancedCalendarResponseResultPtr result_union =
       mojom::EnhancedCalendarResponseResult::NewError(
-          "Enhanced Calendar service is shutting down.");
+          kServiceShutDownErrorString);
 
   InvokePendingCallback(std::move(result_union));
 }
@@ -133,6 +140,7 @@ void EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse(
   if (!pending_request_callback_) {
     return;
   }
+
   mojom::EnhancedCalendarResponseResultPtr result_union;
 
   if (result.response.has_value()) {
@@ -163,12 +171,31 @@ void EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse(
 void EnhancedCalendarServiceImpl::InvokePendingCallback(
     mojom::EnhancedCalendarResponseResultPtr result_union) {
   CHECK(pending_request_callback_);
-
-  if (result_union->is_error()) {
-    // TODO(crbug.com/411171228) : Add metrics for success rate.
-  }
+  RecordMetrics(result_union->is_error()
+                    ? std::make_optional(result_union->get_error())
+                    : std::nullopt);
 
   std::move(pending_request_callback_).Run(std::move(result_union));
+}
+
+void EnhancedCalendarServiceImpl::RecordMetrics(
+    std::optional<std::string> error_message) {
+  if (!error_message.has_value()) {
+    base::UmaHistogramEnumeration(kEnhancedCalendarResponseStatusHistogram,
+                                  EnhancedCalendarResponseStatus::kSuccess);
+    return;
+  }
+
+  if (error_message.value() == kServiceShutDownErrorString) {
+    base::UmaHistogramEnumeration(
+        kEnhancedCalendarResponseStatusHistogram,
+        EnhancedCalendarResponseStatus::kCancelRequest);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      kEnhancedCalendarResponseStatusHistogram,
+      EnhancedCalendarResponseStatus::kGenericFailure);
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
