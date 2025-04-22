@@ -65,6 +65,10 @@ public class HttpEngineNativeProvider extends CronetProvider {
 
     @Override
     public boolean isEnabled() {
+        return isHttpEngineAvailable();
+    }
+
+    static boolean isHttpEngineAvailable() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && SdkExtensions.getExtensionVersion(EXT_API_LEVEL) >= EXT_VERSION;
     }

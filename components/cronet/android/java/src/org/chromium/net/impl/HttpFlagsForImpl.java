@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import android.content.Context;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 import org.chromium.net.httpflags.ResolvedFlags;
@@ -30,5 +32,11 @@ public final class HttpFlagsForImpl {
                 ContextUtils.getApplicationContext(),
                 ImplVersion.getCronetVersion(),
                 /* isLoadedFromApi= */ false);
+    }
+
+    /** Same as getHttpFlags() but the caller has to provide a context. */
+    public static ResolvedFlags getHttpFlags(Context context) {
+        return HttpFlagsLoader.getHttpFlags(
+                context, ImplVersion.getCronetVersion(), /* isLoadedFromApi= */ false);
     }
 }
