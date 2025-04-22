@@ -476,7 +476,7 @@
 <translation id="3167258285411721858">Та <ph name="HOST_NAME" />-н мобайл сайтыг хүсэх боломжтой</translation>
 <translation id="3169472444629675720">Олох</translation>
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}other{# нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ хадгална уу.}}</translation>
-<translation id="3187472288455401631">Зарын хэмжигдэхүүн</translation>
+<translation id="3187472288455401631">Зарын хэмжилт</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> табын бүлэг</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208584281581115441">Одоо шалгах</translation>
