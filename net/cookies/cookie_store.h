@@ -165,7 +165,7 @@ class NET_EXPORT CookieStore {
   // the instance initialization process). Otherwise, this returns true to
   // indicate success. CookieStores which do not support modifying cookieable
   // schemes will always return false.
-  virtual void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  virtual void SetCookieableSchemes(std::vector<std::string> schemes,
                                     SetCookieableSchemesCallback callback) = 0;
 
   // Transfer ownership of a CookieAccessDelegate.

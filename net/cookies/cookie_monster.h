@@ -236,7 +236,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   void FlushStore(base::OnceClosure callback) override;
   void SetForceKeepSessionState() override;
   CookieChangeDispatcher& GetChangeDispatcher() override;
-  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  void SetCookieableSchemes(std::vector<std::string> schemes,
                             SetCookieableSchemesCallback callback) override;
   std::optional<bool> SiteHasCookieInOtherPartition(
       const net::SchemefulSite& site,
@@ -247,9 +247,10 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // (i.e. as part of the instance initialization process).
   void SetPersistSessionCookies(bool persist_session_cookies);
 
-  // The default list of schemes the cookie monster can handle.
-  static const char* const kDefaultCookieableSchemes[];
-  static const int kDefaultCookieableSchemesCount;
+  // The default list of schemes the cookie monster can handle. Returns a vector
+  // of strings rather than a span of string_views for easy use with
+  // SetCookieableSchemes().
+  static std::vector<std::string> GetDefaultCookieableSchemes();
 
   // Find a key based on the given domain, which will be used to find all
   // cookies potentially relevant to it. This is used for lookup in cookies_ as

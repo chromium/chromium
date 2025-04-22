@@ -51,7 +51,7 @@ class FakeCookieStore : public net::CookieStore {
   void DeleteMatchingCookiesAsync(DeletePredicate predicate,
                                   DeleteCallback callback) override;
   void FlushStore(base::OnceClosure callback) override;
-  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  void SetCookieableSchemes(std::vector<std::string> schemes,
                             SetCookieableSchemesCallback callback) override;
   net::CookieChangeDispatcher& GetChangeDispatcher() override;
 

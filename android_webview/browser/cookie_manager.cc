@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/browser/cookie_manager.h"
 
 #include <stdint.h>
@@ -347,13 +342,11 @@ net::CookieStore* CookieManager::GetCookieStore() {
       // TODO(mmenke): This call should be removed once we can deprecate and
       // remove the Android WebView 'CookieManager::SetAllowFileSchemeCookies'
       // method. Until then, note that this is just not a great idea.
-      cookie_config.cookieable_schemes.insert(
-          cookie_config.cookieable_schemes.begin(),
-          net::CookieMonster::kDefaultCookieableSchemes,
-          net::CookieMonster::kDefaultCookieableSchemes +
-              net::CookieMonster::kDefaultCookieableSchemesCount);
-      if (allow_file_scheme_cookies_)
-        cookie_config.cookieable_schemes.push_back(url::kFileScheme);
+      cookie_config.cookieable_schemes =
+          net::CookieMonster::GetDefaultCookieableSchemes();
+      if (allow_file_scheme_cookies_) {
+        cookie_config.cookieable_schemes.emplace_back(url::kFileScheme);
+      }
       cookie_store_created_ = true;
     }
 
