@@ -698,11 +698,6 @@ void ExtensionService::CheckForUpdatesSoon() {
   updater_->CheckSoon();
 }
 
-void ExtensionService::UnloadExtension(const std::string& extension_id,
-                                       UnloadedExtensionReason reason) {
-  extension_registrar_->RemoveExtension(extension_id, reason);
-}
-
 void ExtensionService::UnloadAllExtensionsForTest() {
   UnloadAllExtensionsInternal();
 }
@@ -875,7 +870,8 @@ void ExtensionService::OnProfileMarkedForPermanentDeletion(Profile* profile) {
 
   ExtensionIdSet ids_to_unload = registry_->enabled_extensions().GetIDs();
   for (const auto& id : ids_to_unload) {
-    UnloadExtension(id, UnloadedExtensionReason::PROFILE_SHUTDOWN);
+    extension_registrar_->RemoveExtension(
+        id, UnloadedExtensionReason::PROFILE_SHUTDOWN);
   }
 }
 
@@ -902,7 +898,8 @@ void ExtensionService::UnloadAllExtensionsInternal() {
       ExtensionRegistry::TERMINATED);
 
   for (const auto& extension : extensions) {
-    UnloadExtension(extension->id(), UnloadedExtensionReason::UNINSTALL);
+    extension_registrar_->RemoveExtension(extension->id(),
+                                          UnloadedExtensionReason::UNINSTALL);
   }
 
   // TODO(erikkay) should there be a notification for this?  We can't use

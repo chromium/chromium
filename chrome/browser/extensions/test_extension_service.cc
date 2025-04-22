@@ -38,12 +38,6 @@ void TestExtensionService::AddExtension(const Extension* extension) {
   ADD_FAILURE();
 }
 
-void TestExtensionService::UnloadExtension(
-    const std::string& extension_id,
-    extensions::UnloadedExtensionReason reason) {
-  ADD_FAILURE();
-}
-
 bool TestExtensionService::UserCanDisableInstalledExtension(
     const std::string& extension_id) {
   ADD_FAILURE();

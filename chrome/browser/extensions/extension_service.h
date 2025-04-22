@@ -113,10 +113,6 @@ class ExtensionServiceInterface {
   // extension has been loaded.
   virtual void AddExtension(const Extension* extension) = 0;
 
-  // Unload the specified extension.
-  virtual void UnloadExtension(const std::string& extension_id,
-                               UnloadedExtensionReason reason) = 0;
-
   // Whether a user is able to disable a given extension.
   virtual bool UserCanDisableInstalledExtension(
       const std::string& extension_id) = 0;
@@ -156,8 +152,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionServiceInterface implementation.
   //
-  void UnloadExtension(const std::string& extension_id,
-                       UnloadedExtensionReason reason) override;
   void AddExtension(const Extension* extension) override;
   const Extension* GetPendingExtensionUpdate(
       const std::string& extension_id) const override;
