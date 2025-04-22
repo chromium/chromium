@@ -738,6 +738,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetAudioDucking) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetDisplayMedia) {
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
   ExecuteJsTest();
 }

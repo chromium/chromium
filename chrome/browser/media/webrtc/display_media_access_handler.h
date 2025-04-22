@@ -67,6 +67,7 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
 
   void BypassMediaSelectionDialog(content::WebContents* web_contents,
                                   const content::MediaStreamRequest& request,
+                                  const content::DesktopMediaID& media_id,
                                   content::MediaResponseCallback callback);
 
   void ProcessChangeSourceRequest(content::WebContents* web_contents,

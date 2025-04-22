@@ -171,13 +171,9 @@ export class WebviewController {
     }
     switch (e.permission) {
       case 'media': {
-        const isMediaAllowed =
-            await this.host.shouldAllowMediaPermissionRequest();
-        if (isMediaAllowed) {
-          e.request.allow();
-        } else {
-          e.request.deny();
-        }
+        // TODO(crbug.com/409118577): Block mic requests if the mic permission
+        // is not enabled.
+        e.request.allow();
         return;
       }
       case 'geolocation': {

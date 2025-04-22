@@ -543,6 +543,42 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setAudioDucking(true);
   }
 
+  async testGetDisplayMedia() {
+    async function waitForFirstFrame(track: MediaStreamVideoTrack):
+        Promise<boolean> {
+      const processor = new MediaStreamTrackProcessor({track});
+      const reader = processor.readable.getReader();
+
+      try {
+        const result = await reader.read();
+        if (result.done) {
+          throw new Error('Track ended before a frame could be read.');
+        }
+        const frame = result.value;  // This is a VideoFrame
+        frame.close();
+        return true;
+      } finally {
+        reader.releaseLock();
+      }
+    }
+
+    // The client should be able to use getDisplayMedia() to capture the glic
+    // window.
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: {
+        cursor: 'always',
+        displaySurface: 'browser',
+      } as MediaTrackConstraints,
+      audio: false,
+      preferCurrentTab: true,
+    } as any);
+    const videoTracks = stream.getVideoTracks();
+    assertTrue(videoTracks.length > 0);
+    const track = videoTracks[0] as MediaStreamVideoTrack;
+    assertTrue(!!track);
+    assertTrue(await waitForFirstFrame(track));
+  }
+
   async testMetrics() {
     assertTrue(!!this.host.getMetrics);
     const metrics = this.host.getMetrics();

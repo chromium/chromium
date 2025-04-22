@@ -184,6 +184,33 @@ window.addEventListener('load', () => {
       $.desktopScreenshotErrorReason!.innerText = `Caught error: ${error}`;
     }
   });
+  $.panelScreenshot.addEventListener('click', async () => {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: {
+        cursor: 'always',
+        displaySurface: 'browser',
+        height: 200,
+        width: 200,
+      },
+      audio: false,
+      preferCurrentTab: true,
+    } as any);
+    const track = stream.getVideoTracks()[0] as MediaStreamVideoTrack;
+    const capture = new (window as any).ImageCapture(track);
+    capture.grabFrame().then((bitmap: any) => {
+      track.stop();
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      canvas.getContext('2d')!.drawImage(bitmap, 0, 0);
+      canvas.toBlob(blob => {
+        if (blob) {
+          $.desktopScreenshotImg.src = URL.createObjectURL(blob);
+        }
+      });
+    });
+  });
+
   $.setExperiment.addEventListener('click', async () => {
     const trialName = $.trialName.value;
     const groupName = $.groupName.value;
