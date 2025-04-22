@@ -1741,6 +1741,24 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "mac_arm64_apple_m3_retina_gpu_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "gpu": "apple:m3",
+            "mac_model": "Mac15,3",
+            "os": "Mac-15.4.1",
+            "pool": "chromium.tests.gpu",
+            "display_attached": "1",
+            "hidpi": "1",
+        },
+    ),
+)
+
+targets.mixin(
     name = "mac_beta_arm64",
     generate_pyl_entry = False,
     swarming = targets.swarming(

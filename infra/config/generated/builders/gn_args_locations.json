@@ -873,6 +873,7 @@
     "gpu-fyi-try-mac-arm64-apple-m1-rel": "try/gpu-fyi-try-mac-arm64-apple-m1-rel/gn-args.json",
     "gpu-fyi-try-mac-arm64-apple-m2-exp": "try/gpu-fyi-try-mac-arm64-apple-m2-exp/gn-args.json",
     "gpu-fyi-try-mac-arm64-apple-m2-retina-rel": "try/gpu-fyi-try-mac-arm64-apple-m2-retina-rel/gn-args.json",
+    "gpu-fyi-try-mac-arm64-apple-m3-retina-rel": "try/gpu-fyi-try-mac-arm64-apple-m3-retina-rel/gn-args.json",
     "gpu-fyi-try-mac-intel-asan": "try/gpu-fyi-try-mac-intel-asan/gn-args.json",
     "gpu-fyi-try-mac-intel-dbg": "try/gpu-fyi-try-mac-intel-dbg/gn-args.json",
     "gpu-fyi-try-mac-intel-exp": "try/gpu-fyi-try-mac-intel-exp/gn-args.json",
