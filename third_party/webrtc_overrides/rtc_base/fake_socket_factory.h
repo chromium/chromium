@@ -20,23 +20,23 @@ class FakeSocketFactory;
 
 // Barebone implementation of the socket interface for use in tests with minimal
 // dependencies on webrtc test constructs, threads or clocks.
-class FakeSocket : public rtc::Socket {
+class FakeSocket : public webrtc::Socket {
  public:
   FakeSocket(FakeSocketFactory* factory, int family, int type);
 
-  rtc::SocketAddress GetLocalAddress() const override;
-  rtc::SocketAddress GetRemoteAddress() const override;
+  webrtc::SocketAddress GetLocalAddress() const override;
+  webrtc::SocketAddress GetRemoteAddress() const override;
 
-  int Bind(const rtc::SocketAddress& addr) override;
+  int Bind(const webrtc::SocketAddress& addr) override;
   int Close() override;
 
   int GetError() const override;
   void SetError(int error) override;
-  rtc::Socket::ConnState GetState() const override;
+  webrtc::Socket::ConnState GetState() const override;
 
   // Unimplemented Socket overrides.
 
-  int Connect(const rtc::SocketAddress& addr) override {
+  int Connect(const webrtc::SocketAddress& addr) override {
     NOTIMPLEMENTED();
     return -1;
   }
@@ -46,7 +46,7 @@ class FakeSocket : public rtc::Socket {
   }
   int SendTo(const void* pv,
              size_t cb,
-             const rtc::SocketAddress& addr) override {
+             const webrtc::SocketAddress& addr) override {
     NOTIMPLEMENTED();
     return -1;
   }
@@ -56,7 +56,7 @@ class FakeSocket : public rtc::Socket {
   }
   int RecvFrom(void* pv,
                size_t cb,
-               rtc::SocketAddress* paddr,
+               webrtc::SocketAddress* paddr,
                int64_t* timestamp) override {
     NOTIMPLEMENTED();
     return -1;
@@ -65,15 +65,15 @@ class FakeSocket : public rtc::Socket {
     NOTIMPLEMENTED();
     return -1;
   }
-  FakeSocket* Accept(rtc::SocketAddress* paddr) override {
+  FakeSocket* Accept(webrtc::SocketAddress* paddr) override {
     NOTIMPLEMENTED();
     return nullptr;
   }
-  int GetOption(rtc::Socket::Option opt, int* value) override {
+  int GetOption(webrtc::Socket::Option opt, int* value) override {
     NOTIMPLEMENTED();
     return 0;
   }
-  int SetOption(rtc::Socket::Option opt, int value) override {
+  int SetOption(webrtc::Socket::Option opt, int value) override {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -82,26 +82,26 @@ class FakeSocket : public rtc::Socket {
   FakeSocketFactory* factory_;
   bool bound_;
   int error_;
-  rtc::Socket::ConnState state_;
-  rtc::SocketAddress local_addr_;
-  rtc::SocketAddress remote_addr_;
+  webrtc::Socket::ConnState state_;
+  webrtc::SocketAddress local_addr_;
+  webrtc::SocketAddress remote_addr_;
 };
 
 // Generates fake socket objects.
-class FakeSocketFactory : public rtc::SocketFactory {
+class FakeSocketFactory : public webrtc::SocketFactory {
  public:
   FakeSocketFactory();
   ~FakeSocketFactory() override = default;
 
-  rtc::Socket* CreateSocket(int family, int type) override;
+  webrtc::Socket* CreateSocket(int family, int type) override;
 
   // Assigns a binding address for the requested address.
-  rtc::SocketAddress AssignBindAddress(const rtc::SocketAddress& addr);
-  int Bind(FakeSocket* socket, const rtc::SocketAddress& addr);
-  int Unbind(const rtc::SocketAddress& addr, FakeSocket* socket);
+  webrtc::SocketAddress AssignBindAddress(const webrtc::SocketAddress& addr);
+  int Bind(FakeSocket* socket, const webrtc::SocketAddress& addr);
+  int Unbind(const webrtc::SocketAddress& addr, FakeSocket* socket);
 
  private:
-  typedef std::map<rtc::SocketAddress, FakeSocket*> AddressMap;
+  typedef std::map<webrtc::SocketAddress, FakeSocket*> AddressMap;
 
   uint16_t GetNextPort();
 

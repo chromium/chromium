@@ -29,18 +29,18 @@ namespace {
 // A factory that constructs a BridgeIceController wrapping over a native
 // BasicIceController.
 class BasicActiveIceControllerFactory
-    : public cricket::ActiveIceControllerFactoryInterface {
+    : public webrtc::ActiveIceControllerFactoryInterface {
  public:
   explicit BasicActiveIceControllerFactory(
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : task_runner_(std::move(task_runner)) {}
   ~BasicActiveIceControllerFactory() override = default;
 
-  std::unique_ptr<cricket::ActiveIceControllerInterface> Create(
-      const cricket::ActiveIceControllerFactoryArgs& args) override {
+  std::unique_ptr<webrtc::ActiveIceControllerInterface> Create(
+      const webrtc::ActiveIceControllerFactoryArgs& args) override {
     return std::make_unique<blink::BridgeIceController>(
         task_runner_, args.ice_agent,
-        std::make_unique<cricket::BasicIceController>(args.legacy_args));
+        std::make_unique<webrtc::BasicIceController>(args.legacy_args));
   }
 
  private:
@@ -53,7 +53,7 @@ BridgeIceTransportFactory::BridgeIceTransportFactory(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : network_task_runner_(std::move(task_runner)) {}
 
-rtc::scoped_refptr<webrtc::IceTransportInterface>
+webrtc::scoped_refptr<webrtc::IceTransportInterface>
 BridgeIceTransportFactory::CreateIceTransport(const std::string& transport_name,
                                               int component,
                                               webrtc::IceTransportInit init) {
@@ -63,9 +63,9 @@ BridgeIceTransportFactory::CreateIceTransport(const std::string& transport_name,
   DCHECK(network_task_runner_->BelongsToCurrentThread());
   BasicActiveIceControllerFactory factory(network_task_runner_);
   init.set_active_ice_controller_factory(&factory);
-  return rtc::make_ref_counted<webrtc::DefaultIceTransport>(
-      cricket::P2PTransportChannel::Create(transport_name, component,
-                                           std::move(init)));
+  return webrtc::make_ref_counted<webrtc::DefaultIceTransport>(
+      webrtc::P2PTransportChannel::Create(transport_name, component,
+                                          std::move(init)));
 }
 
 }  // namespace blink

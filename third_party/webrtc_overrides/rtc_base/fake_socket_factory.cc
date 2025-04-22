@@ -23,17 +23,17 @@ const uint16_t kEphemeralPortCount =
 }  // unnamed namespace
 
 FakeSocket::FakeSocket(FakeSocketFactory* factory, int family, int type)
-    : factory_(factory), error_(0), state_(rtc::Socket::CS_CLOSED) {}
+    : factory_(factory), error_(0), state_(webrtc::Socket::CS_CLOSED) {}
 
-rtc::SocketAddress FakeSocket::GetLocalAddress() const {
+webrtc::SocketAddress FakeSocket::GetLocalAddress() const {
   return local_addr_;
 }
 
-rtc::SocketAddress FakeSocket::GetRemoteAddress() const {
+webrtc::SocketAddress FakeSocket::GetRemoteAddress() const {
   return remote_addr_;
 }
 
-int FakeSocket::Bind(const rtc::SocketAddress& addr) {
+int FakeSocket::Bind(const webrtc::SocketAddress& addr) {
   if (!local_addr_.IsNil()) {
     error_ = EINVAL;
     return -1;
@@ -67,13 +67,13 @@ void FakeSocket::SetError(int error) {
   error_ = error;
 }
 
-rtc::Socket::ConnState FakeSocket::GetState() const {
+webrtc::Socket::ConnState FakeSocket::GetState() const {
   return state_;
 }
 
 FakeSocketFactory::FakeSocketFactory() : next_port_(kFirstEphemeralPort) {}
 
-rtc::Socket* FakeSocketFactory::CreateSocket(int family, int type) {
+webrtc::Socket* FakeSocketFactory::CreateSocket(int family, int type) {
   return new FakeSocket(this, family, type);
 }
 
@@ -87,11 +87,11 @@ uint16_t FakeSocketFactory::GetNextPort() {
   return port;
 }
 
-rtc::SocketAddress FakeSocketFactory::AssignBindAddress(
-    const rtc::SocketAddress& addr) {
-  DCHECK(!rtc::IPIsUnspec(addr.ipaddr()));
+webrtc::SocketAddress FakeSocketFactory::AssignBindAddress(
+    const webrtc::SocketAddress& addr) {
+  DCHECK(!webrtc::IPIsUnspec(addr.ipaddr()));
 
-  rtc::SocketAddress assigned_addr;
+  webrtc::SocketAddress assigned_addr;
   assigned_addr.SetIP(addr.ipaddr().Normalized());
 
   if (addr.port() != 0) {
@@ -109,19 +109,19 @@ rtc::SocketAddress FakeSocketFactory::AssignBindAddress(
 }
 
 int FakeSocketFactory::Bind(FakeSocket* socket,
-                            const rtc::SocketAddress& addr) {
+                            const webrtc::SocketAddress& addr) {
   DCHECK_NE(socket, nullptr);
-  DCHECK(!rtc::IPIsUnspec(addr.ipaddr()));
+  DCHECK(!webrtc::IPIsUnspec(addr.ipaddr()));
   DCHECK_NE(addr.port(), 0);
 
-  rtc::SocketAddress normalized(addr.ipaddr().Normalized(), addr.port());
+  webrtc::SocketAddress normalized(addr.ipaddr().Normalized(), addr.port());
   AddressMap::value_type entry(normalized, socket);
   return bindings_.insert(entry).second ? 0 : -1;
 }
 
-int FakeSocketFactory::Unbind(const rtc::SocketAddress& addr,
+int FakeSocketFactory::Unbind(const webrtc::SocketAddress& addr,
                               FakeSocket* socket) {
-  rtc::SocketAddress normalized(addr.ipaddr().Normalized(), addr.port());
+  webrtc::SocketAddress normalized(addr.ipaddr().Normalized(), addr.port());
   DCHECK((bindings_)[normalized] == socket);
   bindings_.erase(bindings_.find(normalized));
   return 0;

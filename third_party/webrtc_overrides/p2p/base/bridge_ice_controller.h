@@ -39,7 +39,7 @@ namespace blink {
 // by the native ICE transport (i.e. P2PTransportChannel). It must be called on
 // the same sequence (or thread) on which the ICE agent expects to be invoked.
 class RTC_EXPORT BridgeIceController
-    : public cricket::ActiveIceControllerInterface {
+    : public webrtc::ActiveIceControllerInterface {
  public:
   // Constructs an ICE controller wrapping an already constructed native webrtc
   // ICE controller. Does not take ownership of the ICE agent, which must
@@ -48,61 +48,59 @@ class RTC_EXPORT BridgeIceController
   BridgeIceController(
       scoped_refptr<base::SequencedTaskRunner> network_task_runner,
       IceControllerObserverInterface* observer,
-      cricket::IceAgentInterface* ice_agent,
-      std::unique_ptr<cricket::IceControllerInterface> native_controller);
+      webrtc::IceAgentInterface* ice_agent,
+      std::unique_ptr<webrtc::IceControllerInterface> native_controller);
   BridgeIceController(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      cricket::IceAgentInterface* ice_agent,
-      std::unique_ptr<cricket::IceControllerInterface> native_controller);
+      webrtc::IceAgentInterface* ice_agent,
+      std::unique_ptr<webrtc::IceControllerInterface> native_controller);
   ~BridgeIceController() override;
 
   void AttachObserver(IceControllerObserverInterface* observer);
 
   // ActiveIceControllerInterface overrides.
 
-  void SetIceConfig(const cricket::IceConfig& config) override;
-  bool GetUseCandidateAttribute(
-      const cricket::Connection* connection,
-      cricket::NominationMode mode,
-      cricket::IceMode remote_ice_mode) const override;
+  void SetIceConfig(const webrtc::IceConfig& config) override;
+  bool GetUseCandidateAttribute(const webrtc::Connection* connection,
+                                webrtc::NominationMode mode,
+                                webrtc::IceMode remote_ice_mode) const override;
 
-  void OnConnectionAdded(const cricket::Connection* connection) override;
-  void OnConnectionPinged(const cricket::Connection* connection) override;
-  void OnConnectionUpdated(const cricket::Connection* connection) override;
-  void OnConnectionSwitched(const cricket::Connection* connection) override;
-  void OnConnectionDestroyed(const cricket::Connection* connection) override;
+  void OnConnectionAdded(const webrtc::Connection* connection) override;
+  void OnConnectionPinged(const webrtc::Connection* connection) override;
+  void OnConnectionUpdated(const webrtc::Connection* connection) override;
+  void OnConnectionSwitched(const webrtc::Connection* connection) override;
+  void OnConnectionDestroyed(const webrtc::Connection* connection) override;
 
-  void OnSortAndSwitchRequest(cricket::IceSwitchReason reason) override;
-  void OnImmediateSortAndSwitchRequest(
-      cricket::IceSwitchReason reason) override;
-  bool OnImmediateSwitchRequest(cricket::IceSwitchReason reason,
-                                const cricket::Connection* selected) override;
+  void OnSortAndSwitchRequest(webrtc::IceSwitchReason reason) override;
+  void OnImmediateSortAndSwitchRequest(webrtc::IceSwitchReason reason) override;
+  bool OnImmediateSwitchRequest(webrtc::IceSwitchReason reason,
+                                const webrtc::Connection* selected) override;
 
   // Only for unit tests
-  const cricket::Connection* FindNextPingableConnection() override;
+  const webrtc::Connection* FindNextPingableConnection() override;
 
  private:
   void MaybeStartPinging();
   void SelectAndPingConnection();
 
-  void DoPerformPing(const cricket::IceControllerInterface::PingResult result);
-  void DoPerformPing(const cricket::Connection* connection,
+  void DoPerformPing(const webrtc::IceControllerInterface::PingResult result);
+  void DoPerformPing(const webrtc::Connection* connection,
                      std::optional<int> recheck_delay_ms);
   void DoSchedulePingRecheck(std::optional<int> recheck_delay_ms);
 
-  void SortAndSwitchToBestConnection(cricket::IceSwitchReason reason);
+  void SortAndSwitchToBestConnection(webrtc::IceSwitchReason reason);
 
-  void DoSortAndSwitchToBestConnection(cricket::IceSwitchReason reason);
+  void DoSortAndSwitchToBestConnection(webrtc::IceSwitchReason reason);
   void DoPerformSwitch(
-      cricket::IceSwitchReason reason_for_switch,
-      const cricket::IceControllerInterface::SwitchResult result);
-  void DoPerformSwitch(cricket::IceSwitchReason reason_for_switch,
-                       const cricket::Connection* connection,
-                       std::optional<cricket::IceRecheckEvent> recheck_event,
-                       base::span<const cricket::Connection* const>
+      webrtc::IceSwitchReason reason_for_switch,
+      const webrtc::IceControllerInterface::SwitchResult result);
+  void DoPerformSwitch(webrtc::IceSwitchReason reason_for_switch,
+                       const webrtc::Connection* connection,
+                       std::optional<webrtc::IceRecheckEvent> recheck_event,
+                       base::span<const webrtc::Connection* const>
                            connections_to_forget_state_on);
   void DoScheduleSwitchRecheck(
-      std::optional<cricket::IceRecheckEvent> recheck_event);
+      std::optional<webrtc::IceRecheckEvent> recheck_event);
 
   void UpdateStateOnConnectionsResorted();
   void UpdateStateOnPrune();
@@ -154,19 +152,19 @@ class RTC_EXPORT BridgeIceController
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
   };
 
-  void DoPerformPrune(base::span<const cricket::Connection* const> connections);
+  void DoPerformPrune(base::span<const webrtc::Connection* const> connections);
 
-  const cricket::Connection* FindConnection(uint32_t id) const;
+  const webrtc::Connection* FindConnection(uint32_t id) const;
 
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
 
   bool started_pinging_ = false;
   bool sort_pending_ = false;
-  const cricket::Connection* selected_connection_ = nullptr;
+  const webrtc::Connection* selected_connection_ = nullptr;
 
   scoped_refptr<IceInteractionProxy> interaction_proxy_;
-  const std::unique_ptr<cricket::IceControllerInterface> native_controller_;
-  cricket::IceAgentInterface& agent_;
+  const std::unique_ptr<webrtc::IceControllerInterface> native_controller_;
+  webrtc::IceAgentInterface& agent_;
   IceControllerObserverInterface* observer_ = nullptr;
 
   base::WeakPtrFactory<BridgeIceController> weak_factory_;

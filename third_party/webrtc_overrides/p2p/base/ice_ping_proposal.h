@@ -20,9 +20,8 @@ namespace blink {
 // duration until the next time when a connection will be selected to be pinged.
 class RTC_EXPORT IcePingProposal : public IceProposal {
  public:
-  IcePingProposal(
-      const cricket::IceControllerInterface::PingResult& ping_result,
-      bool reply_expected);
+  IcePingProposal(const webrtc::IceControllerInterface::PingResult& ping_result,
+                  bool reply_expected);
 
   IcePingProposal(const IcePingProposal&) = default;
 
