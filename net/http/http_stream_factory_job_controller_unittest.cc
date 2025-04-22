@@ -5395,7 +5395,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  SecureDnsPolicy::kAllow, require_dns_https_alpn,
                  /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
                  net_log_with_source_, &net_error_details,
-                 MultiplexedSessionCreationInitiator::kUnknown,
+                 MultiplexedSessionCreationInitiator::kUnknown, std::nullopt,
                  base::BindLambdaForTesting([&](int result) {}),
                  base::BindLambdaForTesting([&quic_request_result](int result) {
                    quic_request_result = result;

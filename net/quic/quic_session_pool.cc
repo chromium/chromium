@@ -396,6 +396,7 @@ int QuicSessionRequest::Request(
     const NetLogWithSource& net_log,
     NetErrorDetails* net_error_details,
     MultiplexedSessionCreationInitiator session_creation_initiator,
+    std::optional<ConnectionManagementConfig> management_config,
     CompletionOnceCallback failed_on_default_network_callback,
     CompletionOnceCallback callback) {
   DCHECK_EQ(quic_version.IsKnown(), !require_dns_https_alpn);
@@ -417,8 +418,8 @@ int QuicSessionRequest::Request(
   int rv = pool_->RequestSession(
       session_key_, std::move(destination), quic_version,
       std::move(proxy_annotation_tag), session_creation_initiator,
-      http_user_agent_settings, priority, use_dns_aliases, cert_verify_flags,
-      url, net_log, this);
+      management_config, http_user_agent_settings, priority, use_dns_aliases,
+      cert_verify_flags, url, net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -781,6 +782,7 @@ int QuicSessionPool::RequestSession(
     quic::ParsedQuicVersion quic_version,
     std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
     MultiplexedSessionCreationInitiator session_creation_initiator,
+    std::optional<ConnectionManagementConfig> management_config,
     const HttpUserAgentSettings* http_user_agent_settings,
     RequestPriority priority,
     bool use_dns_aliases,
@@ -795,6 +797,18 @@ int QuicSessionPool::RequestSession(
   DCHECK(HostPortPair(session_key.server_id().host(),
                       session_key.server_id().port())
              .Equals(HostPortPair::FromURL(url)));
+
+  // Add the observer in the `management_config` for the
+  // `ConnectionChangeNotifier`.
+  if (management_config.has_value() &&
+      management_config->connection_change_observer) {
+    if (!base::Contains(connection_change_notifier_, session_key)) {
+      connection_change_notifier_[session_key] =
+          std::make_unique<ConnectionChangeNotifier>();
+    }
+    connection_change_notifier_[session_key]->AddObserver(
+        management_config->connection_change_observer);
+  }
 
   // Use active session for `session_key` if such exists, or pool to active
   // session to `destination` if possible.
@@ -978,6 +992,10 @@ void QuicSessionPool::CloseAllSessions(int error,
     DCHECK_NE(initial_size, all_sessions_.size());
   }
   DCHECK(all_sessions_.empty());
+
+  // Remove all connection change notifiers.
+  connection_change_notifier_.clear();
+
   // TODO(crbug.com/347984574): Remove before/after counts once we identified
   // the cause.
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_CLOSE_ALL_SESSIONS, [&] {

@@ -188,6 +188,7 @@ int QuicSessionPool::ProxyJob::DoCreateProxySession() {
       session_key.secure_dns_policy(), session_key.require_dns_https_alpn(),
       cert_verify_flags_, GURL("https://" + last_server.ToString()), net_log(),
       &net_error_details_, session_creation_initiator_,
+      /*management_config=*/std::nullopt,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       io_callback_);
 }

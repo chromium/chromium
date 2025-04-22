@@ -175,6 +175,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
               const NetLogWithSource& net_log,
               NetErrorDetails* net_error_details,
               MultiplexedSessionCreationInitiator session_creation_initiator,
+              std::optional<ConnectionManagementConfig> management_config,
               CompletionOnceCallback failed_on_default_network_callback,
               CompletionOnceCallback callback);
 
@@ -376,6 +377,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       quic::ParsedQuicVersion quic_version,
       std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
       MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> management_config,
       const HttpUserAgentSettings* http_user_agent_settings,
       RequestPriority priority,
       bool use_dns_aliases,
@@ -879,6 +881,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   QuicConnectivityMonitor connectivity_monitor_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+
+  std::map<QuicSessionKey, std::unique_ptr<ConnectionChangeNotifier>>
+      connection_change_notifier_;
 
   // This needs to be below `task_runner_`, since in some tests, it often points
   // to a TickClock owned by the TestMockTimeTaskRunner that `task_runner_`
