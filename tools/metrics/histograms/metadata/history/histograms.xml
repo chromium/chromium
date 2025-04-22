@@ -1994,7 +1994,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.InputTruncated" enum="Boolean"
-    expires_after="2025-07-31">
+    expires_after="2025-10-19">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2101,7 +2101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.TokenizationSucceeded"
-    enum="Boolean" expires_after="2025-07-31">
+    enum="Boolean" expires_after="2025-10-19">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2136,7 +2136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.LoadedMissizedEmbedding" enum="Boolean"
-    expires_after="2025-07-31">
+    expires_after="2025-10-19">
   <owner>orinj@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

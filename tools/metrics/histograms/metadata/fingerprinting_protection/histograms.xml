@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.WebContentsObserver.RefreshCount"
-    units="refresh counts" expires_after="2025-08-20">
+    units="refresh counts" expires_after="2025-10-19">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>

@@ -1273,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionChanged"
-    enum="BooleanConnected" expires_after="2025-08-10">
+    enum="BooleanConnected" expires_after="2025-10-19">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1285,7 +1285,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionDuration"
-    units="seconds" expires_after="2025-08-10">
+    units="seconds" expires_after="2025-10-19">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1923,7 +1923,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.CaptionBubbleError"
-    enum="CaptionBubbleErrorType" expires_after="2025-08-19">
+    enum="CaptionBubbleErrorType" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1933,7 +1933,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
-    units="ms" expires_after="2025-08-19">
+    units="ms" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1950,7 +1950,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1974,7 +1974,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled2"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1994,7 +1994,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
-    enum="WinGetLastError" expires_after="2025-08-19">
+    enum="WinGetLastError" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2005,7 +2005,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
-    enum="LoadSodaResult" expires_after="2025-08-19">
+    enum="LoadSodaResult" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2032,7 +2032,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session2"
-    enum="LiveCaptionSessionEvent" expires_after="2025-08-19">
+    enum="LiveCaptionSessionEvent" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2070,7 +2070,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2104,7 +2104,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
-    units="count" expires_after="2025-08-19">
+    units="count" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2130,7 +2130,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-19">
+    enum="LocaleCodeISO639" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2140,7 +2140,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-08-19">
+    enum="LocaleCodeISO639" expires_after="2025-10-19">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
