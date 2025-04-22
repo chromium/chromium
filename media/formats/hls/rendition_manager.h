@@ -95,20 +95,19 @@ class MEDIA_EXPORT RenditionManager {
   void UpdatePlayerResolution(const gfx::Size& resolution);
   void UpdateNetworkSpeed(uint64_t network_bps);
 
-  // After initialization, is there anything to select?
-  bool HasAnyVariants() const;
-
-  std::vector<MediaTrack> GetSelectableVariants() const;
-  std::vector<MediaTrack> GetSelectableRenditions() const;
-
   // Uses player state and user preferences to trigger `on_variant_selected`
   // calls with preferred playback uris.
   void Reselect(SelectedCallonce callback);
 
-  // Set preferred variants. A nullopt means that no preference is set, and
-  // automatic selection can take place.
-  void SetPreferredAudioRendition(std::optional<MediaTrack::Id> rendition_id);
-  void SetPreferredVariant(std::optional<MediaTrack::Id> variant_id);
+  // Set preferred tracks. A nullopt means that no preference is set, and
+  // automatic selection will take over.
+  void SetPreferredExtraRendition(std::optional<MediaTrack::Id> rendition_id);
+  void SetPreferredPrimaryRendition(std::optional<MediaTrack::Id> variant_id);
+
+  bool HasSelectableVariants() const { return !selectable_variants_.empty(); }
+
+  std::vector<MediaTrack> GetSelectablePrimaryRenditions() const;
+  std::vector<MediaTrack> GetSelectableExtraRenditions() const;
 
  private:
   struct UpdatedSelections {

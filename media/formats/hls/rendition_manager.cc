@@ -80,7 +80,8 @@ RenditionManager::RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
   InitializeVariantMaps(std::move(is_type_supported_cb));
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectableVariants() const {
+std::vector<MediaTrack> RenditionManager::GetSelectablePrimaryRenditions()
+    const {
   std::vector<MediaTrack> result;
   for (const auto& [_, metadata] : selectable_variants_) {
     result.push_back(track_map_.at(metadata.track_id));
@@ -88,7 +89,7 @@ std::vector<MediaTrack> RenditionManager::GetSelectableVariants() const {
   return result;
 }
 
-std::vector<MediaTrack> RenditionManager::GetSelectableRenditions() const {
+std::vector<MediaTrack> RenditionManager::GetSelectableExtraRenditions() const {
   std::vector<MediaTrack> result;
   if (!selected_variant_.has_value()) {
     // We can't select an audio rendition if the variant hasn't been selected
@@ -147,7 +148,7 @@ void RenditionManager::Reselect(SelectedCallonce callback) {
   }
 }
 
-void RenditionManager::SetPreferredAudioRendition(
+void RenditionManager::SetPreferredExtraRendition(
     std::optional<MediaTrack::Id> rendition_id) {
   if (rendition_id.has_value()) {
     auto track = track_map_.at(rendition_id);
@@ -160,7 +161,7 @@ void RenditionManager::SetPreferredAudioRendition(
       base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
 }
 
-void RenditionManager::SetPreferredVariant(
+void RenditionManager::SetPreferredPrimaryRendition(
     std::optional<MediaTrack::Id> variant_id) {
   if (variant_id.has_value()) {
     auto track = track_map_.at(variant_id);
@@ -185,10 +186,6 @@ void RenditionManager::UpdateNetworkSpeed(uint64_t network_bps) {
                                 : AdaptationReason::kNetworkUpgrade;
   network_bps_ = network_bps;
   Reselect(base::BindOnce(on_variant_selected_, reason));
-}
-
-bool RenditionManager::HasAnyVariants() const {
-  return !selectable_variants_.empty();
 }
 
 void RenditionManager::InitializeVariantMaps(

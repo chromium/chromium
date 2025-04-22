@@ -737,7 +737,7 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&GetSupportedTypes));
 
-  if (!rendition_manager_->HasAnyVariants()) {
+  if (!rendition_manager_->HasSelectableVariants()) {
     // This will abort the pending init, and `parse_complete_cb` will not need
     // to be called.
     std::move(parse_complete_cb).Run(HlsDemuxerStatus::Codes::kNoRenditions);

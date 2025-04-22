@@ -185,7 +185,7 @@ TEST_F(HlsRenditionManagerTest, NoSupportedCodecs) {
       "http://example.com/audio-only.m3u8",
       "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"av02.00.00\"",
       "http://example.com/audio-only.m3u8");
-  ASSERT_FALSE(rm.HasAnyVariants());
+  ASSERT_FALSE(rm.HasSelectableVariants());
   EXPECT_CALL(*this, VariantSelected("NONE", "NONE"));
   rm.Reselect(GetVariantCb());
 }
@@ -584,7 +584,7 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
 
   // Now lets check the available renditions for this selected variant. These
   // Should be in the same order as the manifest.
-  const auto renditions = rm.GetSelectableRenditions();
+  const auto renditions = rm.GetSelectableExtraRenditions();
   ASSERT_EQ(renditions.size(), 3u);
   ASSERT_EQ(renditions[0].label().value(), "English");
   ASSERT_EQ(renditions[1].label().value(), "Dubbing");
@@ -594,7 +594,7 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
   const auto dubbing_id = renditions[1].track_id();
   EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
                                      "/audio/stereo/none/128kbit.m3u8"));
-  rm.SetPreferredAudioRendition(dubbing_id);
+  rm.SetPreferredExtraRendition(dubbing_id);
 
   // Increase the network speed to full again. Because the user has selected
   // the dubbing track, we try to match the language.
@@ -611,7 +611,7 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
   const auto german_id = renditions[2].track_id();
   EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
                                      "/audio/stereo/de/128kbit.m3u8"));
-  rm.SetPreferredAudioRendition(german_id);
+  rm.SetPreferredExtraRendition(german_id);
 
   // Increase the network speed to full again. Because the user has selected
   // the german track, but the surround sound has no german audio, we switch
@@ -629,7 +629,7 @@ TEST_F(HlsRenditionManagerTest, MultipleRenditionGroupsVariantsOutOfOrder) {
   // Unselect a preferred rendition, which switches back to english.
   EXPECT_CALL(*this, VariantSelected("/video/800kbit.m3u8",
                                      "/audio/stereo/en/128kbit.m3u8"));
-  rm.SetPreferredAudioRendition(std::nullopt);
+  rm.SetPreferredExtraRendition(std::nullopt);
 }
 
 TEST_F(HlsRenditionManagerTest, VariantNames) {
@@ -639,7 +639,8 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
         GetRenditionManager(
             MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist1.m3u8",
             MakeVariantStr(1234, "1366x768", std::nullopt), "playlist2.m3u8")
-            .GetSelectableVariants();
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "1920x1080");
     ASSERT_EQ(variants[1].label().value(), "1366x768");
   }
@@ -650,7 +651,8 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
         GetRenditionManager(
             MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist1.m3u8",
             MakeVariantStr(1234, "1920x1080", std::nullopt), "playlist2.m3u8")
-            .GetSelectableVariants();
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "Stream: 1");
     ASSERT_EQ(variants[1].label().value(), "Stream: 2");
   }
@@ -661,7 +663,8 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
         GetRenditionManager(
             MakeVariantStr(1234, "1920x1080", "24.00"), "playlist1.m3u8",
             MakeVariantStr(1234, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVariants();
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "24fps");
     ASSERT_EQ(variants[1].label().value(), "60fps");
   }
@@ -672,7 +675,8 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
         GetRenditionManager(
             MakeVariantStr(1234, "1920x1080", "60.00"), "playlist1.m3u8",
             MakeVariantStr(1234, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVariants();
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "Stream: 1");
     ASSERT_EQ(variants[1].label().value(), "Stream: 2");
   }
@@ -683,7 +687,8 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
         GetRenditionManager(
             MakeVariantStr(831270, "1920x1080", "60.00"), "playlist1.m3u8",
             MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist2.m3u8")
-            .GetSelectableVariants();
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "831 Kbps");
     ASSERT_EQ(variants[1].label().value(), "1 Mbps");
   }
@@ -696,7 +701,8 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
             MakeVariantStr(1144430, "1920x1080", "24.00"), "playlist2.m3u8",
             MakeVariantStr(1234, "1366x768", "60.00"), "playlist3.m3u8",
             MakeVariantStr(67989, "1366x768", "24.00"), "playlist4.m3u8")
-            .GetSelectableVariants();
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 4u);
     ASSERT_EQ(variants[0].label().value(), "1366x768 60fps");
     ASSERT_EQ(variants[1].label().value(), "1366x768 24fps");
     ASSERT_EQ(variants[2].label().value(), "1920x1080 60fps");
