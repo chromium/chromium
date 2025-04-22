@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
@@ -91,7 +92,10 @@ class OsSettingsManagerTest : public testing::Test {
         new input_method::MockInputMethodManager);
     statistics_provider_.SetMachineStatistic(ash::system::kRegionKey, "us");
     graduation_manager_ =
-        std::make_unique<ash::graduation::GraduationManagerImpl>();
+        std::make_unique<ash::graduation::GraduationManagerImpl>(
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage());
 
     UserDataAuthClient::InitializeFake();
 

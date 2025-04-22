@@ -452,7 +452,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   if (ash::features::IsGraduationEnabled()) {
     graduation_manager_ =
-        std::make_unique<ash::graduation::GraduationManagerImpl>();
+        std::make_unique<ash::graduation::GraduationManagerImpl>(
+            g_browser_process->GetFeatures()->application_locale_storage());
   }
 
   browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
