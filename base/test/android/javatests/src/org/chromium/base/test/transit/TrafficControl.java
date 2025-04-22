@@ -20,13 +20,13 @@ import java.util.List;
  */
 @NullMarked
 public class TrafficControl {
-    private static final List<Pair<String, Station<?>>> sAllStations = new ArrayList<>();
+    private static final List<Pair<String, String>> sAllStationNames = new ArrayList<>();
     private static @Nullable String sCurrentTestCase;
 
     private static @Nullable Station<?> sActiveStation;
 
     static void notifyCreatedStation(Station<?> station) {
-        sAllStations.add(Pair.create(sCurrentTestCase, station));
+        sAllStationNames.add(Pair.create(sCurrentTestCase, station.getName()));
     }
 
     static void notifyEntryPointSentinelStationCreated(EntryPointSentinelStation sentinelStation) {
@@ -49,8 +49,8 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
-    public static List<Pair<String, Station<?>>> getAllStations() {
-        return sAllStations;
+    public static List<Pair<String, String>> getAllStationsNames() {
+        return sAllStationNames;
     }
 
     public static @Nullable Station<?> getActiveStation() {

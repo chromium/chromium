@@ -53,8 +53,8 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     protected Station(@Nullable Class<HostActivity> activityClass) {
         mActivityClass = activityClass;
         mId = sLastStationId++;
-        TrafficControl.notifyCreatedStation(this);
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
+        TrafficControl.notifyCreatedStation(this);
     }
 
     protected List<Facility<?>> getFacilitiesWithPhase(@Phase int phase) {

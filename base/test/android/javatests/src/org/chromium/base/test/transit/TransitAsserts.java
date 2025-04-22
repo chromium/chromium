@@ -79,23 +79,17 @@ public class TransitAsserts {
     }
 
     private static void raiseAssertion(String message) {
-        List<Pair<String, Station<?>>> allStations = TrafficControl.getAllStations();
-        assert false : message + "\n" + stationListToString(allStations);
+        List<Pair<String, String>> allStationsNames = TrafficControl.getAllStationsNames();
+        assert false : message + "\n" + stationListToString(allStationsNames);
     }
 
-    private static String stationListToString(List<Pair<String, Station<?>>> allStations) {
+    private static String stationListToString(List<Pair<String, String>> allStations) {
         StringBuilder builder = new StringBuilder();
         int i = 1;
-        for (Pair<String, Station<?>> pair : allStations) {
-            Station station = pair.second;
+        for (Pair<String, String> pair : allStations) {
+            String stationName = pair.second;
             String testName = pair.first != null ? pair.first : "__outside_test__";
-            builder.append(
-                    String.format(
-                            "  [%d] (%s) %s (#%s)\n",
-                            i,
-                            ConditionalState.phaseToShortString(station.getPhase()),
-                            station,
-                            testName));
+            builder.append(String.format("  (%s) %s (#%s)\n", i, stationName, testName));
             i++;
         }
         return builder.toString();
