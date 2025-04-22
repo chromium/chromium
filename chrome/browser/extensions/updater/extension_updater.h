@@ -15,6 +15,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -218,10 +219,12 @@ class ExtensionUpdater : public KeyedService,
   // Exists because some tests are not able to use the private constructor for
   // testing.
   void set_crx_installer_factory_for_test(CrxInstallerFactoryForTest* factory) {
+    CHECK_IS_TEST();
     crx_installer_factory_for_test_ = factory;
   }
 
   void set_browser_terminating_for_test(bool value) {
+    CHECK_IS_TEST();
     browser_terminating_ = value;
   }
 
