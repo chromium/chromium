@@ -29,8 +29,6 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
   bool is_profile_elibile_for_dse_guest_propagation = false;
 #if !BUILDFLAG(IS_ANDROID)
   is_profile_elibile_for_dse_guest_propagation =
-      base::FeatureList::IsEnabled(
-          switches::kSearchEngineChoiceGuestExperience) &&
 #if BUILDFLAG(IS_CHROMEOS)
       !chromeos::IsManagedGuestSession() &&
 #endif

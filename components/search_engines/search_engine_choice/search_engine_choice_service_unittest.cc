@@ -81,8 +81,6 @@ class SearchEngineChoiceServiceTest : public SearchEngineChoiceServiceTestBase {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineChoiceServiceTest, GuestSessionDsePropagation) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
   InitService({.force_reset = true,
                .is_profile_eligible_for_dse_guest_propagation = true});
 
@@ -119,8 +117,6 @@ TEST_F(SearchEngineChoiceServiceTest, GuestSessionDsePropagation) {
 
 TEST_F(SearchEngineChoiceServiceTest,
        UpdatesDefaultSearchEngineManagerForGuestMode) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
   InitService({.force_reset = true,
                .is_profile_eligible_for_dse_guest_propagation = true});
 

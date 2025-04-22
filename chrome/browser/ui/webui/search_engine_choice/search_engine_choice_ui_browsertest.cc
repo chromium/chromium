@@ -359,8 +359,6 @@ class SearchEngineChoiceUIPixelTest
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceGuestExperience};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

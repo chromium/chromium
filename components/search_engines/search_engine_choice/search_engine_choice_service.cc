@@ -250,8 +250,6 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 #endif
   is_profile_eligible_for_dse_guest_propagation_ =
       is_profile_eligbile_for_dse_guest_propagation &&
-      base::FeatureList::IsEnabled(
-          switches::kSearchEngineChoiceGuestExperience) &&
       regional_capabilities_service_->IsInEeaCountry();
 
   ProcessPendingChoiceScreenDisplayState();

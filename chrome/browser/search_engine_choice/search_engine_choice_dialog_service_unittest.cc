@@ -349,9 +349,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_ProfileCreation) {
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
        NotifyChoiceMade_Guest_SaveSelection) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
-
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
 
@@ -380,9 +377,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
        NotifyChoiceMade_Guest_DontSaveSelection) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
-
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
 
@@ -415,9 +409,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
        NotifyChoiceMade_Guest_SavingNotAvailable) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceGuestExperience};
-
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
 
