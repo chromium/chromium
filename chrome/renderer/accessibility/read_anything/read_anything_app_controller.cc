@@ -801,10 +801,10 @@ bool ReadAnythingAppController::PostProcessSelection() {
   }
   // Skip drawing the selection in the side panel if the selection originally
   // came from there.
-  if (!model_.selection_from_action()) {
+  if (!model_.selection_from_reading_mode()) {
     DrawSelection();
   }
-  model_.set_selection_from_action(false);
+  model_.set_selection_from_reading_mode(false);
   return did_draw;
 }
 
@@ -1689,7 +1689,7 @@ double ReadAnythingAppController::GetLetterSpacingValue(
 void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
                                                   int anchor_offset,
                                                   ui::AXNodeID focus_node_id,
-                                                  int focus_offset) const {
+                                                  int focus_offset) {
   DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
   // Prevent link clicks while distillation is in progress, as it means that
   // the tree may have changed in an unexpected way.
@@ -1704,6 +1704,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // clears the selection, so we should tell the main page to clear too.
   if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
     if (model_.has_selection()) {
+      model_.set_selection_from_reading_mode(true);
       OnCollapseSelection();
     }
     return;
@@ -1739,12 +1740,21 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
+  model_.set_selection_from_reading_mode(true);
   page_handler_->OnSelectionChange(model_.active_tree_id(), anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
 }
 
 void ReadAnythingAppController::OnCollapseSelection() const {
-  page_handler_->OnCollapseSelection();
+  if (model_.is_pdf()) {
+    // CollapseSelection does nothing in pdfs, so just set an empty selection
+    // instead.
+    page_handler_->OnSelectionChange(
+        model_.active_tree_id(), model_.start_node_id(), model_.start_offset(),
+        model_.start_node_id(), model_.start_offset());
+  } else {
+    page_handler_->OnCollapseSelection();
+  }
 }
 void ReadAnythingAppController::ResetGranularityIndex() {
   read_aloud_model_.ResetGranularityIndex();

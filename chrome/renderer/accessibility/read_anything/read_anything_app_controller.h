@@ -219,7 +219,7 @@ class ReadAnythingAppController
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
-                         int focus_offset) const;
+                         int focus_offset);
   void OnCollapseSelection() const;
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;

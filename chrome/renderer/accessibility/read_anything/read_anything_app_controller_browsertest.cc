@@ -754,7 +754,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 3;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
@@ -777,7 +776,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 3;
   update.tree_data.sel_anchor_offset = 0;
@@ -1315,7 +1313,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 2;
   update.tree_data.sel_focus_object_id = 3;
   update.tree_data.sel_anchor_offset = 0;
@@ -1334,7 +1331,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 3;
   update.tree_data.sel_focus_object_id = 2;
   update.tree_data.sel_anchor_offset = 0;
@@ -2078,6 +2074,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
       .Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
+  ASSERT_TRUE(model().selection_from_reading_mode());
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -2101,7 +2098,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate selection;
   test::SetUpdateTreeID(&selection, tree_id_);
   selection.has_tree_data = true;
-  selection.event_from = ax::mojom::EventFrom::kUser;
   selection.tree_data.sel_anchor_object_id = 2;
   selection.tree_data.sel_focus_object_id = 2;
   selection.tree_data.sel_anchor_offset = 0;
@@ -2110,6 +2106,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   controller().OnSelectionChange(3, 5, 3, 5);
+  ASSERT_FALSE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
 }
 
@@ -2122,7 +2119,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate selection;
   test::SetUpdateTreeID(&selection, tree_id_);
   selection.has_tree_data = true;
-  selection.event_from = ax::mojom::EventFrom::kUser;
   selection.tree_data.sel_anchor_object_id = 2;
   selection.tree_data.sel_focus_object_id = 3;
   selection.tree_data.sel_anchor_offset = 0;
@@ -2136,6 +2132,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
+  ASSERT_TRUE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2157,6 +2154,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // If distillation is in progress, OnSelectionChange should not be called.
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   controller().OnSelectionChange(2, 0, 3, 1);
+  ASSERT_FALSE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2185,6 +2183,7 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(0);
   controller().OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                  focus_offset);
+  ASSERT_FALSE(model().selection_from_reading_mode());
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2194,17 +2193,17 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Forward) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 3;
   update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_EQ(3, controller().StartNodeId());
-  EXPECT_EQ(4, controller().EndNodeId());
-  EXPECT_EQ(0, controller().StartOffset());
-  EXPECT_EQ(1, controller().EndOffset());
+  ASSERT_EQ(3, controller().StartNodeId());
+  ASSERT_EQ(4, controller().EndNodeId());
+  ASSERT_EQ(0, controller().StartOffset());
+  ASSERT_EQ(1, controller().EndOffset());
+  ASSERT_FALSE(model().selection_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
@@ -2212,7 +2211,6 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 4;
   update.tree_data.sel_focus_object_id = 3;
   update.tree_data.sel_anchor_offset = 1;
@@ -2223,6 +2221,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
   EXPECT_EQ(4, controller().EndNodeId());
   EXPECT_EQ(0, controller().StartOffset());
   EXPECT_EQ(1, controller().EndOffset());
+  ASSERT_FALSE(model().selection_from_reading_mode());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
@@ -2261,7 +2260,6 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.has_tree_data = true;
-  update.event_from = ax::mojom::EventFrom::kUser;
   update.tree_data.sel_anchor_object_id = 2;
   update.tree_data.sel_focus_object_id = 2;
   update.tree_data.sel_anchor_offset = 3;

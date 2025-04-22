@@ -143,7 +143,7 @@ void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
   display_node_ids_.clear();
   distillation_in_progress_ = false;
   requires_post_process_selection_ = false;
-  selection_from_action_ = false;
+  selection_from_reading_mode_ = false;
   ResetSelection();
 }
 
@@ -173,7 +173,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     return display_node_ids_.contains(start_.id) &&
            display_node_ids_.contains(end_.id);
   };
-  const bool need_to_draw = !selection_from_action_ && has_selection() &&
+  const bool need_to_draw = !selection_from_reading_mode_ && has_selection() &&
                             !selection_in_distilled_content();
   const bool was_empty = is_empty();
 
@@ -694,43 +694,6 @@ void ReadAnythingAppModel::OnScroll(bool on_selection,
                                 event);
 }
 
-void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
-  // If event_from is kUser, the user selected text on the main web page.
-  // If event_from is kAction, the user selected text in RM and the main web
-  // page was updated with that selection.
-  // Edgecases:
-  // 1. For selections in PDFs coming from the main pane or from the side
-  // panel, event_from is set to kNone.
-  // 2. When the user clicks and drags the cursor to highlight text on a
-  // webpage, such that the anchor node and offset stays the same and the focus
-  // node and/or offset changes, the first few selection events have event_from
-  // kUser, but the subsequent selection events have event_from kPage. This is
-  // the way UserActivationState is implemented. To detect this case, compare
-  // the new selection to the saved selection. If the anchor is the same, update
-  // the selection in RM.
-  bool is_click_and_drag_selection = false;
-  if (ContainsTree(active_tree_id_)) {
-    ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
-    if (!tree) {
-      return;
-    }
-    ui::AXSelection selection = tree->GetUnignoredSelection();
-    const SelectionEndpoint anchor(selection,
-                                   SelectionEndpoint::Source::kAnchor);
-    const SelectionEndpoint focus(selection, SelectionEndpoint::Source::kFocus);
-    is_click_and_drag_selection = (anchor == start_ && focus != end_) ||
-                                  (anchor == end_ && focus != start_);
-  }
-  if (event_from == ax::mojom::EventFrom::kUser ||
-      event_from == ax::mojom::EventFrom::kAction ||
-      (event_from == ax::mojom::EventFrom::kPage &&
-       is_click_and_drag_selection) ||
-      is_pdf_) {
-    requires_post_process_selection_ = true;
-    selection_from_action_ = event_from == ax::mojom::EventFrom::kAction;
-  }
-}
-
 void ReadAnythingAppModel::SetActiveTreeId(ui::AXTreeID active_tree_id) {
   active_tree_id_ = std::move(active_tree_id);
   // If data collection mode for screen2x is enabled, begin
@@ -884,7 +847,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   for (const auto& event : event_generator) {
     switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-        OnSelection(event.event_params->event_from);
+        requires_post_process_selection_ = true;
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
         if (!features::IsReadAnythingReadAloudEnabled() ||

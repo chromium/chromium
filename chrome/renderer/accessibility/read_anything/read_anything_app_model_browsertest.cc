@@ -836,7 +836,7 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelection_SelectionStateCorrect) {
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  model().set_requires_post_process_selection(true);
+  ASSERT_TRUE(model().requires_post_process_selection());
   model().PostProcessSelection();
 
   ASSERT_FALSE(model().requires_post_process_selection());
@@ -853,7 +853,8 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelection_SelectionStateCorrect) {
   ASSERT_EQ(model().end_node_id(), 3);
 }
 
-TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelectionFromReadingMode_DoesNotDraw) {
   // Initial state.
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
@@ -864,7 +865,7 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
   ProcessDisplayNodes({2, 3});
-  model().set_selection_from_action(true);
+  model().set_selection_from_reading_mode(true);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -881,7 +882,6 @@ TEST_F(
   update.tree_data.sel_focus_offset = 5;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -897,7 +897,6 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_focus_offset = 5;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -913,7 +912,6 @@ TEST_F(ReadAnythingAppModelTest,
   update.tree_data.sel_focus_offset = 5;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -930,7 +928,6 @@ TEST_F(
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -948,7 +945,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 5;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Empty selection inside display nodes.
@@ -960,7 +956,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -978,7 +973,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 0;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Different empty selection inside display nodes.
@@ -990,7 +984,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1008,7 +1001,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 2;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Non-empty selection inside display nodes.
@@ -1020,7 +1012,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1038,7 +1029,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 6;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Different non-empty selection inside display nodes.
@@ -1050,7 +1040,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1068,7 +1057,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 5;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Empty selection outside display nodes.
@@ -1080,7 +1068,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1098,7 +1085,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 0;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Different empty selection outside display nodes.
@@ -1110,7 +1096,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1128,7 +1113,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 2;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Non-empty selection outside display nodes.
@@ -1140,7 +1124,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1158,7 +1141,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 6;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Different non-empty selection outside display nodes.
@@ -1170,7 +1152,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1188,7 +1169,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 5;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Empty selection inside display nodes.
@@ -1200,7 +1180,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1218,7 +1197,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 0;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Empty selection inside display nodes.
@@ -1230,7 +1208,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1248,7 +1225,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 2;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Non-empty selection inside display nodes.
@@ -1260,7 +1236,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1278,7 +1253,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 6;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Non-empty selection inside display nodes.
@@ -1290,7 +1264,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1308,7 +1281,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 5;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Empty selection outside display nodes.
@@ -1320,7 +1292,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1338,7 +1309,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 0;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Empty selection outside display nodes.
@@ -1350,7 +1320,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 2;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_FALSE(model().PostProcessSelection());
 }
@@ -1368,7 +1337,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 2;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Non-empty selection outside display nodes.
@@ -1380,7 +1348,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1398,7 +1365,6 @@ TEST_F(ReadAnythingAppModelTest,
   update1.tree_data.sel_focus_offset = 6;
   update1.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update1)});
-  model().set_selection_from_action(false);
   model().PostProcessSelection();
 
   // Non-empty selection outside display nodes.
@@ -1410,7 +1376,6 @@ TEST_F(ReadAnythingAppModelTest,
   update2.tree_data.sel_focus_offset = 5;
   update2.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({std::move(update2)});
-  model().set_selection_from_action(false);
 
   ASSERT_TRUE(model().PostProcessSelection());
 }
@@ -1765,65 +1730,6 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   update.nodes = {std::move(static_text_node)};
   AccessibilityEventReceived({std::move(update)});
   ASSERT_FALSE(model().requires_distillation());
-}
-
-TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
-  ui::AXTreeUpdate update;
-  test::SetUpdateTreeID(&update, tree_id_);
-  update.tree_data.sel_anchor_object_id = 2;
-  update.tree_data.sel_focus_object_id = 3;
-  update.tree_data.sel_anchor_offset = 0;
-  update.tree_data.sel_focus_offset = 0;
-  update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({update});
-  model().PostProcessSelection();
-
-  // If there is a click and drag selection (the anchor object id and offset are
-  // the same as the prev selection received), the event_from eventually changes
-  // from kUser to kPage. Post process selection should be required in either
-  // case.
-  // model().set_requires_post_process_selection(false) is needed to
-  // reset the flag to check that model().OnSelection(...) properly sets (or
-  // doesn't set) the flag.
-  update.tree_data.sel_anchor_object_id = 2;
-  update.tree_data.sel_focus_object_id = 3;
-  update.tree_data.sel_anchor_offset = 0;
-  update.tree_data.sel_focus_offset = 1;
-  update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({update});
-
-  model().set_requires_post_process_selection(false);
-  model().OnSelection(ax::mojom::EventFrom::kUser);
-  EXPECT_TRUE(model().requires_post_process_selection());
-
-  model().set_requires_post_process_selection(false);
-  model().OnSelection(ax::mojom::EventFrom::kPage);
-  EXPECT_TRUE(model().requires_post_process_selection());
-
-  // If the user drags the selection so that it is backwards, post process
-  // selection should still be required.
-  update.tree_data.sel_anchor_object_id = 2;
-  update.tree_data.sel_focus_object_id = 1;
-  update.tree_data.sel_anchor_offset = 0;
-  update.tree_data.sel_focus_offset = 2;
-  update.tree_data.sel_is_backward = true;
-  AccessibilityEventReceived({update});
-  model().set_requires_post_process_selection(false);
-  model().OnSelection(ax::mojom::EventFrom::kPage);
-  EXPECT_TRUE(model().requires_post_process_selection());
-
-  // If the anchor changes (the user stopped dragging their cursor) and we
-  // receive an event with event_from kPage, post process selection should not
-  // be set to true.
-  update.tree_data.sel_anchor_object_id = 2;
-  update.tree_data.sel_focus_object_id = 3;
-  update.tree_data.sel_anchor_offset = 1;
-  update.tree_data.sel_focus_offset = 0;
-  update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({std::move(update)});
-  model().set_requires_post_process_selection(false);
-  model().OnSelection(ax::mojom::EventFrom::kPage);
-  EXPECT_FALSE(model().requires_post_process_selection());
 }
 
 TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
