@@ -243,7 +243,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 24
+// Next ID: 25
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -254,6 +254,9 @@ message ContentAttributes {
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_SVG.
     SVGData svg_data = 23;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_CANVAS.
+    CanvasData canvas_data = 24;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_ANCHOR.
     AnchorData anchor_data = 14;
@@ -439,6 +442,12 @@ message SecurityOrigin {
 message SVGData {
   // The inner text for the SVG subtree.
   string inner_text = 1;
+}
+
+message CanvasData {
+  int32 layout_width = 1;
+
+  int32 layout_height = 2;
 }
 
 message AnchorData {
@@ -1614,7 +1623,7 @@ enum AnnotatedPageContentVersion {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 26;
+// Next ID: 27;
 enum ContentAttributeType {
   // Unknown is not a valid attribute type and should never be used by the
   // client. You can consider discarding ContentNodes with this attribute type.
@@ -1639,6 +1648,8 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
   CONTENT_ATTRIBUTE_SVG = 25;
+
+  CONTENT_ATTRIBUTE_CANVAS = 26;
 
   // Structured chunks.
   CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
