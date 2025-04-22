@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
@@ -70,6 +72,11 @@ struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess;
 struct SynchronizeOsOptions;
 struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
+
+#if BUILDFLAG(IS_CHROMEOS)
+class CleanupCacheForManagedGuestSessionSuccess;
+class CleanupCacheForManagedGuestSessionError;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -272,6 +279,18 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                               std::optional<base::Version>)> callback,
       const base::Location& call_location = FROM_HERE);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Cleans all IWA cached bundles for Managed Guest Session which are not in
+  // the `iwas_to_keep_in_cache`. This function will CHECK that
+  // `ShouldCleanupManagedGuestSessionCache` is true.
+  void CleanupIsolatedWebAppCacheForManagedGuestSession(
+      const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
+      base::OnceCallback<void(
+          base::expected<CleanupCacheForManagedGuestSessionSuccess,
+                         CleanupCacheForManagedGuestSessionError>)> callback,
+      const base::Location& call_location = FROM_HERE);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Computes the browsing data size of all installed Isolated Web Apps.
   void GetIsolatedWebAppBrowsingData(

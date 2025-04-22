@@ -391,6 +391,8 @@ source_set("web_applications") {
       "chromeos_web_app_experiments.h",
       "commands/install_app_from_verified_manifest_command.cc",
       "commands/install_app_from_verified_manifest_command.h",
+      "isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command.cc",
+      "isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command.h",
       "isolated_web_apps/policy/isolated_web_app_cache_client.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_client.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
@@ -972,6 +974,7 @@ source_set("web_applications_unit_tests") {
   if (is_chromeos) {
     sources += [
       "chromeos_web_app_experiments_unittest.cc",
+      "isolated_web_apps/commands/cleanup_cache_for_managed_guest_session_command_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_client_unittest.cc",
       "os_integration/web_app_run_on_os_login_chromeos_unittest.cc",
       "web_app_run_on_os_login_manager_unittest.cc",

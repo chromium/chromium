@@ -25,6 +25,11 @@
 
 namespace web_app {
 
+#if BUILDFLAG(IS_CHROMEOS)
+class CleanupCacheForManagedGuestSessionSuccess;
+class CleanupCacheForManagedGuestSessionError;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Controls whether we attempt to fetch latest component data before processing
 // the policy for the first time.
 BASE_DECLARE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate);
@@ -39,6 +44,9 @@ class IsolatedWebAppPolicyManager
   static void SetOnInstallTaskCompletedCallbackForTesting(
       base::RepeatingCallback<void(web_package::SignedWebBundleId,
                                    IwaInstaller::Result)> callback);
+
+  static std::vector<IsolatedWebAppExternalInstallOptions>
+  GetIwaInstallForceList(const Profile& profile);
 
   explicit IsolatedWebAppPolicyManager(Profile* profile);
 
@@ -61,7 +69,14 @@ class IsolatedWebAppPolicyManager
   void SetPendingInitCount(int pending_count);
   void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
-  void OnPolicyProcessed();
+  void OnPolicyProcessed(
+      const std::vector<IsolatedWebAppExternalInstallOptions>& apps_in_policy);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnCleanIsolatedWebAppCacheForManagedGuestSession(
+      base::expected<CleanupCacheForManagedGuestSessionSuccess,
+                     CleanupCacheForManagedGuestSessionError> result);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void LogAddPolicyInstallSourceResult(
       web_package::SignedWebBundleId web_bundle_id);
