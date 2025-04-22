@@ -6486,7 +6486,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_NoAutoFocus_20250408",
+                    "name": "Enabled_NoAutoFocus_20250421",
                     "params": {
                         "auto-focus-searchbox": "false",
                         "page-content-request-id-fix": "true",
