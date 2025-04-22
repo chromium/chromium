@@ -97,15 +97,15 @@ public class StripLayoutUtils {
      * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
      * @param tabModel The {@link TabModel} that holds the give tab.
      * @param stripTab The {@link StripLayoutTab}
-     * @return Whether the given tab is at the last position in any group.
+     * @return Whether the given tab is at a non-last position in any group.
      */
-    public static boolean isTabAtLastPositionInGroup(
+    public static boolean isNonTrailingTabInGroup(
             TabGroupModelFilter modelFilter, TabModel tabModel, StripLayoutTab stripTab) {
         Tab tab = tabModel.getTabById(stripTab.getTabId());
         if (modelFilter.isTabInTabGroup(tab)) {
             List<Tab> relatedTabs = modelFilter.getRelatedTabList(tab.getId());
             Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
-            return tab.getId() == lastTab.getId();
+            return tab.getId() != lastTab.getId();
         }
         return false;
     }

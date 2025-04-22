@@ -235,7 +235,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
         verify(mAnimationHost).startAnimations(anyList(), any());
         assertTrue(
-                "Interacting tab trailing margin should be 0 in non-trailng tab in group",
+                "Interacting tab trailing margin should be 0 in non-trailing tab in group",
                 mInteractingTab.getTrailingMargin() == 0);
         assertTrue(
                 "Bottom indicator width should not change if there is no trailing margin",
@@ -267,6 +267,45 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 "mStripTab2 bottom indicator width should not change for group hover",
                 mInteractingGroupTitle.getBottomIndicatorWidth() - initialBottomIndicatorWidth
                         == 0);
+    }
+
+    @Test
+    public void testHoverGroupOverIndividualTab_hasTrailingMargin() {
+        // Set up tab group metadata.
+        setupDragDropState(/* isGroupDrag= */ true);
+
+        // Start reorder to set interacting view
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        assertTrue(
+                "Interacting tab trailing margin should be set",
+                mInteractingTab.getTrailingMargin() > 0);
+
+        // Move drag to mStripTab2.
+        // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
+        when(mModel.getTabById(anyInt())).thenReturn(mTabForInteractingView);
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                mStripTab2.getDrawX() + TAB_WIDTH + mInteractingTab.getTrailingMargin(),
+                0,
+                ReorderType.DRAG_ONTO_STRIP);
+
+        // Verify
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
+
+        assertEquals(
+                "mStripTab2 should become interacting view",
+                mStripTab2,
+                mStrategy.getInteractingView());
+        // Verify trailing margins updated
+        assertTrue(
+                "Old interacting view trailing margin should be 0",
+                mInteractingTab.getTrailingMargin() == 0);
+        assertTrue(
+                "mStripTab2 should have trailing margin set", mStripTab2.getTrailingMargin() > 0);
     }
 
     @Test

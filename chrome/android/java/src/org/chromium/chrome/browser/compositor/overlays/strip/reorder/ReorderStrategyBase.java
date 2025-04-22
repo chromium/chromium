@@ -211,19 +211,12 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         // Skip applying trailing margin for grouped views (like expanded group titles or tabs) when
         // merging on drop is not allowed.
         if (!TabDragSource.canMergeIntoGroupOnDrop() && isInteracting) {
-            boolean isExpandedGroupTitleHovered =
-                    interactingView instanceof StripLayoutGroupTitle
-                            && !interactingView.isCollapsed();
-            boolean isNonTrailingTabInGroupHovered = false;
-            if (interactingView instanceof StripLayoutTab stripTab) {
-                // Only tabs that are not the last in their group are treated as "in group" for
-                // margin rules.
-                isNonTrailingTabInGroupHovered =
-                        !StripLayoutUtils.isTabAtLastPositionInGroup(
-                                mTabGroupModelFilter, mModel, stripTab);
+            if (interactingView instanceof StripLayoutGroupTitle groupTitle) {
+                return groupTitle.isCollapsed();
+            } else if (interactingView instanceof StripLayoutTab stripTab) {
+                return !StripLayoutUtils.isNonTrailingTabInGroup(
+                        mTabGroupModelFilter, mModel, stripTab);
             }
-            // Do not apply trailing margin if the hovered view is part of an expanded group.
-            return !isExpandedGroupTitleHovered && !isNonTrailingTabInGroupHovered;
         }
         return isInteracting;
     }
