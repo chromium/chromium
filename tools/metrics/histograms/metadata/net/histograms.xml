@@ -7126,6 +7126,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.URLLoader.AcceptCH.Status" enum="NetErrorCodes"
+    expires_after="2025-09-27">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the response status of the the AcceptCH frame handling in the
+    browser process. It is recorded if there are hints in the ACCEPT_CH frame
+    that were not included in the original request during URLLoader to handle a
+    connection. It is time just before the OnAcceptCHFrameReceived() IPC call
+    until the IPC callback is called. Refer
+    URLLoader::ProcessAcceptCHFrameOnConnected() for details.
+  </summary>
+</histogram>
+
 <histogram name="Net.URLLoaderThrottle.OnReceiveResponseTime" units="ms"
     expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>

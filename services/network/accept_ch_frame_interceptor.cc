@@ -93,6 +93,7 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
                    base::TimeTicks call_time, uint64_t trace_id, int status) {
     base::UmaHistogramMicrosecondsTimes("Net.URLLoader.AcceptCH.RoundTripTime",
                                         base::TimeTicks::Now() - call_time);
+    base::UmaHistogramSparse("Net.URLLoader.AcceptCH.Status", -status);
     TRACE_EVENT_NESTABLE_ASYNC_END1(
         "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
         TRACE_ID_LOCAL(trace_id), "status", status);
