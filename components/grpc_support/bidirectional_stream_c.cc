@@ -90,14 +90,12 @@ HeadersArray::~HeadersArray() {
   delete[] headers;
 }
 
-class BidirectionalStreamAdapter
+class BidirectionalStreamAdapter final
     : public grpc_support::BidirectionalStream::Delegate {
  public:
   BidirectionalStreamAdapter(stream_engine* engine,
                              void* annotation,
                              const bidirectional_stream_callback* callback);
-
-  virtual ~BidirectionalStreamAdapter();
 
   void OnStreamReady() override;
 
@@ -125,12 +123,13 @@ class BidirectionalStreamAdapter
   static void DestroyAdapterForStream(bidirectional_stream* stream);
 
  private:
+  ~BidirectionalStreamAdapter();
   void DestroyOnNetworkThread();
 
-  // None of these objects are owned by |this|.
+  std::unique_ptr<grpc_support::BidirectionalStream> bidirectional_stream_;
+
   raw_ptr<net::URLRequestContextGetter> request_context_getter_;
-  raw_ptr<grpc_support::BidirectionalStream, AcrossTasksDanglingUntriaged>
-      bidirectional_stream_;
+
   // C side
   std::unique_ptr<bidirectional_stream> c_stream_;
   raw_ptr<const bidirectional_stream_callback> c_callback_;
@@ -145,8 +144,8 @@ BidirectionalStreamAdapter::BidirectionalStreamAdapter(
       c_stream_(std::make_unique<bidirectional_stream>()),
       c_callback_(callback) {
   DCHECK(request_context_getter_);
-  bidirectional_stream_ =
-      new grpc_support::BidirectionalStream(request_context_getter_, this);
+  bidirectional_stream_ = std::make_unique<grpc_support::BidirectionalStream>(
+      request_context_getter_, this);
   c_stream_->obj = this;
   c_stream_->annotation = annotation;
 }
@@ -206,7 +205,7 @@ grpc_support::BidirectionalStream* BidirectionalStreamAdapter::GetStream(
       static_cast<BidirectionalStreamAdapter*>(stream->obj);
   DCHECK(adapter->c_stream() == stream);
   DCHECK(adapter->bidirectional_stream_);
-  return adapter->bidirectional_stream_;
+  return adapter->bidirectional_stream_.get();
 }
 
 void BidirectionalStreamAdapter::DestroyAdapterForStream(
@@ -215,10 +214,6 @@ void BidirectionalStreamAdapter::DestroyAdapterForStream(
   BidirectionalStreamAdapter* adapter =
       static_cast<BidirectionalStreamAdapter*>(stream->obj);
   DCHECK(adapter->c_stream() == stream);
-  // Destroy could be called from any thread, including network thread (if
-  // posting task to executor throws an exception), but is posted, so |this|
-  // is valid until calling task is complete.
-  adapter->bidirectional_stream_->Destroy();
   adapter->request_context_getter_->GetNetworkTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&BidirectionalStreamAdapter::DestroyOnNetworkThread,
