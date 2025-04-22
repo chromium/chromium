@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +27,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
@@ -42,13 +41,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 public class NewTabPageCreationTest {
     private static final String TEST_URL = "/chrome/test/data/android/test.html";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private NewTabPageCreationState mTestState;
     private OmniboxTestUtils mOmnibox;
@@ -58,7 +53,7 @@ public class NewTabPageCreationTest {
         mTestState = spy(new NewTabPageCreationState());
         NewTabPageCreationState.setInstanceForTesting(mTestState);
 
-        mOmnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
     }
 
     @Test
@@ -72,12 +67,12 @@ public class NewTabPageCreationTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivityTestRule.getActivity().getCurrentTabCreator().launchNtp();
+                    mActivityTestRule.getActivity().getCurrentTabCreator().launchNtp();
                 });
 
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 
         verify(mTestState).onNewTabCreated();
@@ -90,10 +85,10 @@ public class NewTabPageCreationTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE)
     public void testCreateNTPInExistingTab() throws Exception {
-        String testUrl = sActivityTestRule.getTestServer().getURL(TEST_URL);
-        sActivityTestRule.loadUrlInNewTab(testUrl);
+        String testUrl = mActivityTestRule.getTestServer().getURL(TEST_URL);
+        mActivityTestRule.loadUrlInNewTab(testUrl);
 
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
         assertNull(tab.getNativePage());
         assertEquals(tab.getUrl().getSpec(), testUrl);
 

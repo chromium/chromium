@@ -28,7 +28,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +44,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
@@ -64,13 +63,9 @@ import java.util.Locale;
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private void setCookieControlsMode(@CookieControlsMode int mode) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -119,7 +114,7 @@ public class IncognitoNewTabPageTest {
     @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookieControlsToggleStartsOn() throws Exception {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
-        sActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
 
         // Make sure cookie controls card is visible
         onView(withId(R.id.cookie_controls_card))
@@ -135,7 +130,7 @@ public class IncognitoNewTabPageTest {
     @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookieControlsToggleChanges() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
-        sActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.cookie_controls_card))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
@@ -159,7 +154,7 @@ public class IncognitoNewTabPageTest {
     @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookieControlsToggleManaged() throws Exception {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
-        sActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.cookie_controls_card))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
@@ -187,7 +182,7 @@ public class IncognitoNewTabPageTest {
     @SmallTest
     public void testTrackingProtection() throws Exception {
         enableTrackingProtection();
-        sActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.tracking_protection_card))
                 .perform(scrollTo())
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -196,14 +191,14 @@ public class IncognitoNewTabPageTest {
     @Test
     @SmallTest
     public void incognitoNtpShowsThirdPartyCookieBlockingHeader() throws Exception {
-        sActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.tracking_protection_card))
                 .perform(scrollTo())
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         String ntpDescription =
                 getIncognitoNtpDescriptionSpanned(
-                        sActivityTestRule
+                        mActivityTestRule
                                 .getActivity()
                                 .getResources()
                                 .getString(
@@ -227,7 +222,7 @@ public class IncognitoNewTabPageTest {
     @Test
     @SmallTest
     public void testDescriptionLanguages() throws Exception {
-        var context = sActivityTestRule.getActivity().getApplicationContext();
+        var context = mActivityTestRule.getActivity().getApplicationContext();
         for (String languageTag : ProductConfig.LOCALES) {
             var localeContext = createContextForLocale(context, languageTag);
             IncognitoDescriptionView.getSpannedBulletText(

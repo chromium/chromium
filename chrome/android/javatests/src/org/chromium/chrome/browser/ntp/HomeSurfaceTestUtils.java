@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Base64;
 
@@ -32,8 +31,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,18 +44,6 @@ public class HomeSurfaceTestUtils {
                     + ":start_surface_return_time_on_tablet_seconds/0";
 
     private static final long MAX_TIMEOUT_MS = 30000L;
-
-    /**
-     * Only launch Chrome without waiting for a current tab. This method could not use {@link
-     * ChromeTabbedActivityTestRule#startMainActivityFromLauncher()} because of its {@link
-     * org.chromium.chrome.browser.tab.Tab} dependency.
-     */
-    public static void startMainActivityFromLauncher(ChromeActivityTestRule activityTestRule) {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        activityTestRule.prepareUrlIntent(intent, null);
-        activityTestRule.launchActivity(intent);
-    }
 
     /**
      * Wait for the tab state to be initialized.

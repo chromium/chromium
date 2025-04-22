@@ -83,8 +83,9 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -137,7 +138,8 @@ public class NewTabPageTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -177,7 +179,7 @@ public class NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityWithURL("about:blank");
+        mActivityTestRule.startOnBlankPage();
         TemplateUrlService originalService =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -318,7 +320,7 @@ public class NewTabPageTest {
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
-                mActivityTestRule,
+                mActivityTestRule.getActivity(),
                 mMvTilesLayout.getTileAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
                 false,
@@ -335,7 +337,7 @@ public class NewTabPageTest {
         HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
 
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
-                mActivityTestRule,
+                mActivityTestRule.getActivity(),
                 mMvTilesLayout.getTileAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
                 true,
