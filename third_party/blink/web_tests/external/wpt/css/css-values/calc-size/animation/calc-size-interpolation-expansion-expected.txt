@@ -1,13 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] value at progress 0.75 in animation of "height" from "0px" to "calc-size(calc-size(min-content, size + 20px), 2 * size)"
-  assert_equals: expected "calc-size(calc-size(min-content, 20px + size), 0px + 0.75 * 2 * size)" but got "calc-size(calc-size(min-content, 20px + size), 0px + ((0.75 * 2) * size))"
-[FAIL] value at progress 0.75 in animation of "height" from "calc-size(min-content, size * 4)" to "calc-size(calc-size(min-content, size + 20px), 2 * size)"
-  assert_equals: expected "calc-size(min-content, 0.25 * 4 * size + 0.75 * 2 * (20px + size))" but got "calc-size(min-content, ((0.25 * 4) * size) + ((0.75 * 2) * (20px + size)))"
-[FAIL] value at progress 0.75 in animation of "width" from "calc-size(fit-content, 20px)" to "calc-size(calc-size(fit-content, 3 * size + 10px), min(size + 20px, 2 * size - 30px) + 2 * size + 80px)"
-  assert_equals: expected "calc-size(fit-content, 5px + 0.75 * (80px + min(10px + 20px + 3 * size, -30px + 2 * (10px + 3 * size)) + 2 * (10px + 3 * size)))" but got "calc-size(fit-content, 5px + (0.75 * ((80px + min((10px + 20px) + (3 * size), -30px + (2 * (10px + (3 * size))))) + (2 * (10px + (3 * size))))))"
 [FAIL] value at progress 0.75 in animation of "width" from "calc-size(50%, size)" to "calc-size(calc-size(45%, (2 * size)), size + 20px)"
-  assert_equals: expected "calc-size(100%, 0.25 * 0.5 * size + 0.75 * (20px + 0.45 * 2 * size))" but got "calc-size(100%, ((0.5 * 0.25) * size) + (0.75 * (20px + ((0.45 * 2) * size))))"
+  assert_equals: expected "calc-size(100%, (0.25 * 0.5 * size) + (0.75 * (20px + (0.45 * 2 * size))))" but got "calc-size(100%, (0.5 * 0.25 * size) + (0.75 * (20px + (0.45 * 2 * size))))"
 [FAIL] value at progress 0.75 in animation of "width" from "calc-size(40%, size)" to "calc-size(calc-size(10px, (2 * size)), size + 20px)"
-  assert_equals: expected "calc-size(100%, 30px + 0.25 * 0.4 * size)" but got "calc-size(100%, (0% + 30px) + ((0.4 * 0.25) * size))"
+  assert_equals: expected "calc-size(100%, 30px + (0.25 * 0.4 * size))" but got "calc-size(100%, 0% + 30px + (0.4 * 0.25 * size))"
 Harness: the test ran to completion.
 
