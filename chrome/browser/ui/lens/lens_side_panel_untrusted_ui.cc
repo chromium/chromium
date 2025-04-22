@@ -45,10 +45,10 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString(
       "networkErrorPageTopLine",
-      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE);
+      IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE);
   html_source->AddLocalizedString(
       "networkErrorPageBottomLine",
-      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE);
+      IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_SECOND_LINE);
   html_source->AddLocalizedString(
       "searchboxGhostLoaderHintTextPrimaryDefault",
       lens::features::ShouldUseAltLoadingHintWeb()
