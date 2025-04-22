@@ -138,13 +138,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void FillField(FieldRendererId field_id,
                  const std::u16string& value,
                  AutofillSuggestionTriggerSource suggestion_source) override;
-  void SubmitChangePasswordForm(
-      FieldRendererId password_element_id,
-      FieldRendererId new_password_element_id,
-      FieldRendererId confirm_password_element_id,
-      const std::u16string& old_password,
-      const std::u16string& new_password,
-      SubmitChangePasswordFormCallback callback) override;
+  void FillChangePasswordForm(FieldRendererId password_element_id,
+                              FieldRendererId new_password_element_id,
+                              FieldRendererId confirm_password_element_id,
+                              const std::u16string& old_password,
+                              const std::u16string& new_password,
+                              FillChangePasswordFormCallback callback) override;
+  void SubmitFormWithEnter(FieldRendererId field,
+                           SubmitFormWithEnterCallback callback) override;
   void SetLoggingState(bool active) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;

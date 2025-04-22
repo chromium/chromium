@@ -994,13 +994,13 @@ void PasswordAutofillAgent::FillField(
   DoFillField(input_element, value, GetFieldFlags(suggestion_source));
 }
 
-void PasswordAutofillAgent::SubmitChangePasswordForm(
+void PasswordAutofillAgent::FillChangePasswordForm(
     FieldRendererId password_element_id,
     FieldRendererId new_password_element_id,
     FieldRendererId confirm_password_element_id,
     const std::u16string& old_password,
     const std::u16string& new_password,
-    SubmitChangePasswordFormCallback callback) {
+    FillChangePasswordFormCallback callback) {
   WebInputElement last_element;
 
   auto filling_tasks = {
@@ -1021,16 +1021,34 @@ void PasswordAutofillAgent::SubmitChangePasswordForm(
   }
 
   if (!last_element) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::optional<FormData> form_data = GetFormDataFromWebForm(
       last_element.GetOwningFormForAutofill(), /*form_cache=*/{});
   if (!form_data) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  last_element.DispatchSimulatedEnter();
   std::move(callback).Run(*form_data);
+}
+
+void PasswordAutofillAgent::SubmitFormWithEnter(
+    FieldRendererId field,
+    SubmitFormWithEnterCallback callback) {
+  WebFormControlElement form_control =
+      form_util::GetFormControlByRendererId(field);
+  WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
+
+  if (!input_element) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // TODO(crbug.com/407488221): Check if form can be submitted with Enter.
+  input_element.DispatchSimulatedEnter();
+  std::move(callback).Run(true);
 }
 
 void PasswordAutofillAgent::DoPreviewField(WebInputElement input,

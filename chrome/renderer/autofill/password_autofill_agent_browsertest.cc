@@ -5172,8 +5172,8 @@ TEST_F(PasswordAutofillAgentTest, NoFillingFallbackForBannedFields) {
           .has_value());
 }
 
-// Tests that `SubmitChangePasswordForm` fills and submits change password form.
-TEST_F(PasswordAutofillAgentTest, SubmitChangePasswordForm) {
+// Tests that `FillChangePasswordForm` fills change password form.
+TEST_F(PasswordAutofillAgentTest, FillChangePasswordForm) {
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
 
@@ -5190,20 +5190,74 @@ TEST_F(PasswordAutofillAgentTest, SubmitChangePasswordForm) {
       fake_driver_.form_data_parsed().value();
   EXPECT_EQ(1u, parsed_form_data.size());
 
-  base::MockCallback<base::OnceCallback<void(const autofill::FormData&)>>
+  base::MockCallback<
+      base::OnceCallback<void(const std::optional<autofill::FormData>&)>>
       mock_reply;
-  EXPECT_CALL(mock_reply, Run(parsed_form_data[0]));
+  EXPECT_CALL(mock_reply, Run(testing::Optional(parsed_form_data[0])));
 
-  password_autofill_agent_->SubmitChangePasswordForm(
+  password_autofill_agent_->FillChangePasswordForm(
       password_id, new_password_id, password_confirmation, u"qwerty",
       u"Pa$sw0rD", mock_reply.Get());
-  // Wait for submission event.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return fake_driver_.called_password_form_submitted(); }));
 
   EXPECT_EQ(u"qwerty", password.Value().Utf16());
   EXPECT_EQ(u"Pa$sw0rD", new_password.Value().Utf16());
   EXPECT_EQ(u"Pa$sw0rD", confirmation_password.Value().Utf16());
+}
+
+// Tests that `FillChangePasswordForm` invokes callback with std::nullopt when
+// form wasn't filled.
+TEST_F(PasswordAutofillAgentTest, FillChangePasswordFormFailed) {
+  LoadHTML(kPasswordChangeFormHTML);
+  UpdateUrlForHTML(kPasswordChangeFormHTML);
+
+  WebInputElement password = GetInputElementByID("password"),
+                  new_password = GetInputElementByID("newpassword"),
+                  confirmation_password =
+                      GetInputElementByID("confirmpassword");
+
+  base::MockCallback<
+      base::OnceCallback<void(const std::optional<autofill::FormData>&)>>
+      mock_reply;
+  EXPECT_CALL(mock_reply, Run(Eq(std::nullopt)));
+
+  password_autofill_agent_->FillChangePasswordForm(
+      autofill::FieldRendererId(0), autofill::FieldRendererId(0),
+      autofill::FieldRendererId(0), u"qwerty", u"Pa$sw0rD", mock_reply.Get());
+
+  EXPECT_EQ(u"", password.Value().Utf16());
+  EXPECT_EQ(u"", new_password.Value().Utf16());
+  EXPECT_EQ(u"", confirmation_password.Value().Utf16());
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmitChangePassword) {
+  LoadHTML(kPasswordChangeFormHTML);
+  UpdateUrlForHTML(kPasswordChangeFormHTML);
+
+  WebInputElement password = GetInputElementByID("password");
+
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(true));
+  ASSERT_FALSE(fake_driver_.called_password_form_submitted());
+  password_autofill_agent_->SubmitFormWithEnter(
+      autofill::form_util::GetFieldRendererId(password), mock_reply.Get());
+
+  // Wait for submission event.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return fake_driver_.called_password_form_submitted(); }));
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmitChangePasswordFailed) {
+  LoadHTML(kPasswordChangeFormHTML);
+  UpdateUrlForHTML(kPasswordChangeFormHTML);
+
+  WebInputElement password = GetInputElementByID("password");
+
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(false));
+  ASSERT_FALSE(fake_driver_.called_password_form_submitted());
+  password_autofill_agent_->SubmitFormWithEnter(autofill::FieldRendererId(0),
+                                                mock_reply.Get());
+  EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
 // Check that a dynamic form submission can be detected after the form is
