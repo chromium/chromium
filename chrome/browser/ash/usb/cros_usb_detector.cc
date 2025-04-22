@@ -1117,6 +1117,10 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
   }
 
   PrefService* prefs = profile()->GetPrefs();
+  if (success) {
+    LOG(WARNING) << "Successful connection of "
+                 << UsbDeviceIdentifier(device_info);
+  }
   if (success &&
       prefs->GetBoolean(
           guest_os::prefs::kGuestOsUSBPersistentPassthroughEnabled)) {
