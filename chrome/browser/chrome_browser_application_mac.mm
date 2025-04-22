@@ -456,7 +456,8 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     if (!_scoped_accessibility_mode_voiceover) {
       _scoped_accessibility_mode_voiceover =
           content::BrowserAccessibilityState::GetInstance()
-              ->CreateScopedModeForProcess(ui::kAXModeComplete);
+              ->CreateScopedModeForProcess(ui::kAXModeComplete |
+                                           ui::AXMode::kFromPlatform);
     }
   } else {
     _scoped_accessibility_mode_voiceover.reset();
@@ -557,7 +558,8 @@ std::string DescriptionForNSEvent(NSEvent* event) {
                                  : ui::kAXModeBasic;
     _scoped_accessibility_mode_general =
         content::BrowserAccessibilityState::GetInstance()
-            ->CreateScopedModeForProcess(target_mode);
+            ->CreateScopedModeForProcess(target_mode |
+                                         ui::AXMode::kFromPlatform);
   }
 
   return [super accessibilityRole];

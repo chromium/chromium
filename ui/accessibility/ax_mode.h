@@ -25,6 +25,7 @@ namespace ui {
 
 class AX_BASE_EXPORT AXMode {
  public:
+  // LINT.IfChange
   // No modes set (default).
   static constexpr uint32_t kNone = 0;
 
@@ -92,11 +93,20 @@ class AX_BASE_EXPORT AXMode {
   // The accessibility tree will have the main node annotated.
   static constexpr uint32_t kAnnotateMainNode = 1 << 9;
 
+  // Indicates that the bundle containing this and other flags is being applied
+  // in response to an interaction with the platform's accessibility
+  // integration. This meta-flag, which must always be used in combination with
+  // one or more other flags and is never sent to renderers, is used to
+  // selectively suppress or permit accessibility modes that are set due to
+  // interactions from accessibility tools.
+  static constexpr uint32_t kFromPlatform = 1 << 10;
+
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
   // logging and debugging, as well as AccessibilityModeFlagEnum (and
   // related metrics callsites, see: |ModeFlagHistogramValue|).
-  static constexpr uint32_t kLastModeFlag = 1 << 9;
+  static constexpr uint32_t kLastModeFlag = 1 << 10;
+  // LINT.ThenChange(//chrome/browser/metrics/accessibility_state_provider.cc,//chrome/browser/performance_manager/metrics/metrics_provider_common.cc,//chrome/browser/resources/accessibility/accessibility.ts,//tools/metrics/histograms/enums.xml,//ui/accessibility/ax_mode_histogram_logger.cc)
 
   constexpr AXMode() : flags_(kNone), filter_flags_(kNone) {}
   constexpr AXMode(uint32_t flags) : flags_(flags), filter_flags_(kNone) {}
@@ -150,6 +160,7 @@ class AX_BASE_EXPORT AXMode {
     UMA_AX_MODE_PDF = 7,
     UMA_AX_MODE_PDF_OCR = 8,
     UMA_AX_MODE_ANNOTATE_MAIN_NODE = 9,
+    UMA_AX_MODE_FROM_PLATFORM = 10,
 
     // This must always be the last enum. It's okay for its value to
     // increase, but none of the other enum values may change.

@@ -97,6 +97,9 @@ void AddStates(FuzzedDataProvider& fdp, ui::AXNodeData* node) {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Env env;
   auto accessibility_state = BrowserAccessibilityStateImpl::Create();
+  // Prevent accessibility from being turned on by the platform so that the
+  // tests can run undisturbed.
+  accessibility_state->SetActivationFromPlatformEnabled(false);
   FuzzedDataProvider fdp(data, size);
 
   // The tree structure is always the same, only the data changes.

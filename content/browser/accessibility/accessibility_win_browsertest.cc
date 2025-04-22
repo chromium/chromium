@@ -2333,6 +2333,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                    ->GetAccessibilityMode()
                    .has_mode(ui::AXMode::kWebContents));
 
+  // Enable platform activation since that is what is begin tested here.
+  BrowserAccessibilityState::GetInstance()->SetActivationFromPlatformEnabled(
+      /*enabled=*/true);
+
   // Search for the document, we should be able to find it.
   found = false;
   FindNodeInAccessibilityTree(browser_accessible.Get(), ROLE_SYSTEM_DOCUMENT,
@@ -6161,6 +6165,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
   uia->ElementFromHandle(hwnd, &root);
   ASSERT_NE(nullptr, root.Get());
 
+  // Enable platform activation since that is what is begin tested here.
+  BrowserAccessibilityState::GetInstance()->SetActivationFromPlatformEnabled(
+      /*enabled=*/true);
+
   // AXMode::kNativeAPIs should now be enabled in addition to kWebContents.
   // (kAXModeBasic includes both kNativeAPIs and kWebContents). Importantly,
   // this combination of AXModes allows RenderFrameHostImpl to create
@@ -6415,7 +6423,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetCurrentValue) {
   EXPECT_DOUBLE_EQ(5.0, V_R8(slider_value.ptr()));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FixedRuntimeId) {
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, FixedRuntimeId) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <p id="target">foo</p>
       <div id="newParent">bar</div>
@@ -6521,13 +6529,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Disable the automatic enablement done by AccessibilityBrowserTest.
   SetInitialAccessibilityMode({});
 
-  // This is necessary to turn of any a11y that the environment started
-  // with, and this test requires starting with no a11y tree / manager.
-  // TODO(accessibility) In order to avoid undermining a
-  // ScopedAccessibilityMode, prevent the environment from turning a11y on via
-  // A11y API calls during content_browsertests.
-  BrowserAccessibilityState::GetInstance()->RemoveAccessibilityModeFlags(
-      ui::kAXModeComplete);
   EXPECT_EQ(nullptr, GetManager());
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(R"HTML(
@@ -6571,8 +6572,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
 
   // Turn accessibility off again.
   mode_override.reset();
-  BrowserAccessibilityState::GetInstance()->RemoveAccessibilityModeFlags(
-      ui::kAXModeComplete);
   accessibility_mode = web_contents->GetAccessibilityMode();
   ASSERT_TRUE(accessibility_mode.is_mode_off());
   EXPECT_EQ(nullptr, GetManager());

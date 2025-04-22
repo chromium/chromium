@@ -661,8 +661,8 @@ void WebContentsAccessibilityAndroid::SetBrowserAXMode(
     target_mode = ui::kAXModeBasic;
   }
 
-  scoped_accessibility_mode_ =
-      accessibility_state->CreateScopedModeForProcess(target_mode);
+  scoped_accessibility_mode_ = accessibility_state->CreateScopedModeForProcess(
+      target_mode | ui::AXMode::kFromPlatform);
 }
 
 jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {

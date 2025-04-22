@@ -494,6 +494,11 @@ void BrowserTestBase::SetUp() {
   // interference. This GPU process is launched 120 seconds after chrome starts.
   command_line->AppendSwitch(switches::kDisableGpuProcessForDX12InfoCollection);
 
+  // Disable activation of accessibility from interactions with the platform's
+  // accessibility integration since it leads to flaky tests.
+  command_line->AppendSwitch(
+      switches::kDisablePlatformAccessibilityIntegration);
+
   // The current global field trial list contains any trials that were activated
   // prior to main browser startup. That global field trial list is about to be
   // destroyed below, and will be recreated during the browser_tests browser

@@ -160,6 +160,19 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
+            <input type="checkbox" id="isolate"
+                   aria-describedby="isolate_secondary">
+          </span>
+          Suppress automatic accessibility enablement from platform API
+          consumers such as assistive tech.
+        </label>
+      </div>
+      <div id="isolate_secondary" class="secondary">Changes to this setting will
+      persist until the browser is restarted.</div>
+
+      <div class="checkbox-row">
+        <label>
+          <span class="checkbox-wrapper">
             <input type="checkbox" id="locked"
                    aria-describedby="locked_secondary">
           </span>

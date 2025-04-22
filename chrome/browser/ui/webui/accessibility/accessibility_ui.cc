@@ -100,6 +100,7 @@ static const char kWidget[] = "widget";
 static const char kBrowser[] = "browser";
 static const char kCopyTree[] = "copyTree";
 static const char kHTML[] = "html";
+static const char kIsolate[] = "isolate";
 static const char kLocked[] = "locked";
 static const char kNative[] = "native";
 static const char kPage[] = "page";
@@ -186,10 +187,11 @@ void HandleAccessibilityRequestCallback(
     content::WebUIDataSource::GotDataCallback callback) {
   DCHECK(ShouldHandleAccessibilityRequestCallback(path));
 
+  auto& browser_accessibility_state =
+      *content::BrowserAccessibilityState::GetInstance();
   base::Value::Dict data;
   PrefService* pref = Profile::FromBrowserContext(current_context)->GetPrefs();
-  ui::AXMode mode =
-      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
+  ui::AXMode mode = browser_accessibility_state.GetAccessibilityMode();
   bool native = mode.has_mode(ui::AXMode::kNativeAPIs);
   bool web = mode.has_mode(ui::AXMode::kWebContents);
   bool text = mode.has_mode(ui::AXMode::kInlineTextBoxes);
@@ -235,9 +237,10 @@ void HandleAccessibilityRequestCallback(
   }
   data.Set(kApiTypeField, pref_api_type);
 
-  bool is_mode_locked = !content::BrowserAccessibilityState::GetInstance()
-                             ->IsAXModeChangeAllowed();
-  data.Set(kLocked, is_mode_locked);
+  data.Set(kIsolate,
+           !browser_accessibility_state.IsActivationFromPlatformEnabled());
+
+  data.Set(kLocked, !browser_accessibility_state.IsAXModeChangeAllowed());
 
   base::Value::List page_list;
   std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
@@ -691,14 +694,19 @@ void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
 
 void AccessibilityUIMessageHandler::SetGlobalFlag(
     const base::Value::List& args) {
+  auto& browser_accessibility_state =
+      *content::BrowserAccessibilityState::GetInstance();
   const base::Value::Dict& data = args[0].GetDict();
   const std::string flag_name = CheckJSValue(data.FindString(kFlagNameField));
   bool enabled = *data.FindBool(kEnabledField);
 
   AllowJavascript();
+  if (flag_name == kIsolate) {
+    browser_accessibility_state.SetActivationFromPlatformEnabled(!enabled);
+    return;
+  }
   if (flag_name == kLocked) {
-    content::BrowserAccessibilityState::GetInstance()->SetAXModeChangeAllowed(
-        !enabled);
+    browser_accessibility_state.SetAXModeChangeAllowed(!enabled);
     return;
   }
 
@@ -741,8 +749,7 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
   // accordingly. Note that this change will persist beyond the lifetime of
   // chrome://accessibility.
   if (!enabled) {
-    content::BrowserAccessibilityState::GetInstance()
-        ->RemoveAccessibilityModeFlags(new_mode);
+    browser_accessibility_state.RemoveAccessibilityModeFlags(new_mode);
   }
 }
 

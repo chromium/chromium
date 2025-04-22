@@ -82,6 +82,9 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
           prefix,
           AXMode::ModeFlagHistogramValue::UMA_AX_MODE_ANNOTATE_MAIN_NODE);
     }
+
+    // ui::AXMode::kFromPlatform is unconditionally filtered out and is
+    // therefore never present in `mode`.
   }
 
   // Record forms control flag transitioning from unset to set.

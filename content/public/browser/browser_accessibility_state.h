@@ -47,7 +47,10 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // WebContents (colloquially referred to as the "target" of the scoper).
   // Creation and deletion of a scoper will each result in recomputation of the
   // effective accessibility mode for its target. If the effective mode changes,
-  // WebContentses associated with the target will be notified.
+  // WebContentses associated with the target will be notified. Calls that are
+  // made in response to signals from the platform accessibility integration
+  // (e.g., enabling accessibility when VoiceOver is detected) must include the
+  // `AXMode::kFromPlatform` flag in addition to other flags.
   virtual std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForProcess(
       ui::AXMode mode) = 0;
   virtual std::unique_ptr<ScopedAccessibilityMode>
@@ -95,6 +98,14 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // want to ensure that the AXMode is not changed after a certain point.
   virtual void SetAXModeChangeAllowed(bool allow) = 0;
   virtual bool IsAXModeChangeAllowed() const = 0;
+
+  // Enables or disables activation of accessibility from interactions with the
+  // platform's accessibility integration. Such activations are disabled by
+  // default in tests; specifically, mode changes via calls to
+  // `CreateScopedModeForProcess()` are ignored when the `AXMode` contains the
+  // `AXMode::kFromPlatform` flag.
+  virtual void SetActivationFromPlatformEnabled(bool enabled) = 0;
+  virtual bool IsActivationFromPlatformEnabled() = 0;
 
   // Notifies web contents that preferences have changed.
   virtual void NotifyWebContentsPreferencesChanged() const = 0;

@@ -1653,7 +1653,8 @@ void FrameImpl::SetAccessibilityEnabled(bool enabled) {
   } else if (!scoped_accessibility_mode_) {
     scoped_accessibility_mode_ =
         content::BrowserAccessibilityState::GetInstance()
-            ->CreateScopedModeForProcess(ui::kAXModeComplete);
+            ->CreateScopedModeForProcess(ui::kAXModeComplete |
+                                         ui::AXMode::kFromPlatform);
   }
 }
 

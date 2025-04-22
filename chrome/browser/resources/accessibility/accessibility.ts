@@ -22,6 +22,7 @@ enum AxMode {
   PDF_PRINTING = 1 << 7,
   PDF_OCR = 1 << 8,
   ANNOTATE_MAIN_NODE = 1 << 9,
+  FROM_PLATFORM = 1 << 10,
 }
 
 interface Data {
@@ -70,6 +71,7 @@ interface InitData {
   supportedApiTypes: string[];
   apiType: string;
   locked: boolean;
+  isolate: boolean;
 
   html: boolean;
   native: boolean;
@@ -248,6 +250,7 @@ function initialize() {
   bindCheckbox('extendedProperties', data.extendedProperties);
   bindCheckbox('html', data.html);
   bindDropdown('apiType', data.supportedApiTypes, data.apiType);
+  bindCheckbox('isolate', data.isolate);
   bindCheckbox('locked', data.locked);
 
   getRequiredElement('pages').textContent = '';
@@ -394,6 +397,8 @@ function formatRow(
     row.appendChild(createModeElement(
         AxMode.ANNOTATE_MAIN_NODE, pageData, 'extendedProperties',
         /* readOnly= */ true));
+    // AxMode.FROM_PLATFORM is unconditionally filtered out and is therefore
+    // never presented to renderers or the user.
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));
