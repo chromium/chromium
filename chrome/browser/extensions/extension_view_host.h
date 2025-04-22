@@ -16,8 +16,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
 
-class Browser;
-
 namespace content {
 class SiteInstance;
 class WebContents;
@@ -41,10 +39,6 @@ class ExtensionViewHost
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate();
-
-    // Returns the browser associated with this ExtensionViewHost.
-    // TODO(crbug.com/385987224): Remove this method.
-    virtual Browser* GetBrowser() = 0;
 
     // Opens a URL with the given disposition.
     virtual content::WebContents* OpenURL(
@@ -84,9 +78,6 @@ class ExtensionViewHost
 
   void set_view(ExtensionView* view) { view_ = view; }
   ExtensionView* view() { return view_; }
-
-  // Returns the browser associated with this ExtensionViewHost.
-  Browser* GetBrowser();
 
   // ExtensionHost
   void OnDidStopFirstLoad() override;

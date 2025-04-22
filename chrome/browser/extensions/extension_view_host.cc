@@ -69,10 +69,6 @@ ExtensionViewHost::~ExtensionViewHost() {
   }
 }
 
-Browser* ExtensionViewHost::GetBrowser() {
-  return delegate_->GetBrowser();
-}
-
 bool ExtensionViewHost::UnhandledKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {

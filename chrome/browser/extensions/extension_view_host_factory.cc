@@ -37,8 +37,6 @@ class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
       const ExtensionViewHostBrowserDelegate&) = delete;
   ~ExtensionViewHostBrowserDelegate() override = default;
 
-  Browser* GetBrowser() override { return browser_; }
-
   content::WebContents* OpenURL(
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
@@ -77,8 +75,6 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
   ExtensionViewHostTabDelegate& operator=(const ExtensionViewHostTabDelegate&) =
       delete;
   ~ExtensionViewHostTabDelegate() override = default;
-
-  Browser* GetBrowser() override { return FindBrowser(); }
 
   content::WebContents* OpenURL(
       const content::OpenURLParams& params,
