@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/mock_callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -30,8 +31,27 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace feature_first_run {
+
+namespace {
+
+views::Widget* ShowDialog(content::WebContents* web_contents,
+                          base::OnceClosure accept_callback = base::DoNothing(),
+                          base::OnceClosure cancel_callback = base::DoNothing(),
+                          std::u16string title = std::u16string(),
+                          ui::ImageModel banner = ui::ImageModel(),
+                          ui::ImageModel dark_mode_banner = ui::ImageModel(),
+                          std::unique_ptr<views::View> content_view =
+                              std::make_unique<views::View>()) {
+  return ShowFeatureFirstRunDialog(
+      std::move(title), std::move(banner), std::move(dark_mode_banner),
+      std::move(content_view), std::move(accept_callback),
+      std::move(cancel_callback), web_contents);
+}
+
+}  // namespace
 
 using FeatureFirstRunDialogHelperBrowserTest = InProcessBrowserTest;
 
@@ -45,8 +65,9 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
       ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT_DARK);
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* dialog_widget = ShowFeatureFirstRunDialog(
-      title, banner, dark_mode_banner, std::move(content_view), web_contents);
+  auto* dialog_widget =
+      ShowDialog(web_contents, base::DoNothing(), base::DoNothing(), title,
+                 banner, dark_mode_banner, std::move(content_view));
   auto* dialog_widget_delegate = dialog_widget->widget_delegate();
 
   EXPECT_TRUE(dialog_widget->IsVisible());
@@ -74,6 +95,29 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
           kFeatureFirstRunDialogContentViewElementId,
           browser()->window()->GetElementContext());
   EXPECT_EQ(expected_content_view, actual_content_view);
+}
+
+IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
+                       OnDialogAccepted) {
+  base::MockOnceClosure accept_callback;
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* dialog_widget = ShowDialog(web_contents, accept_callback.Get());
+
+  EXPECT_CALL(accept_callback, Run);
+  dialog_widget->widget_delegate()->AsDialogDelegate()->Accept();
+}
+
+IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
+                       OnDialogCancelled) {
+  base::MockOnceClosure cancel_callback;
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* dialog_widget =
+      ShowDialog(web_contents, base::DoNothing(), cancel_callback.Get());
+
+  EXPECT_CALL(cancel_callback, Run);
+  dialog_widget->widget_delegate()->AsDialogDelegate()->Cancel();
 }
 
 IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,

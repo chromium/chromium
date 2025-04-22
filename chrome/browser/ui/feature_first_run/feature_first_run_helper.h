@@ -34,13 +34,13 @@ namespace feature_first_run {
 enum class InfoBoxPosition { kStart, kMiddle, kEnd };
 
 // Show a tab-modal dialog from the supplied params on the `web_contents`.
-// TODO(crbug.com/409520456): Add button callbacks as params to construct the
-// dialog.
 views::Widget* ShowFeatureFirstRunDialog(
     std::u16string title,
     ui::ImageModel banner,
     ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback,
     content::WebContents* web_contents);
 
 // Creates a styled infobox container view an icon, title and description.

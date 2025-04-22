@@ -39,7 +39,9 @@ std::unique_ptr<ui::DialogModel> CreateGenericFeatureFirstRunDialogModel(
     std::u16string title,
     ui::ImageModel banner,
     ui::ImageModel dark_mode_banner,
-    std::unique_ptr<views::View> content_view) {
+    std::unique_ptr<views::View> content_view,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
   return ui::DialogModel::Builder()
       .SetTitle(std::move(title))
       .SetBannerImage(std::move(banner), std::move(dark_mode_banner))
@@ -48,10 +50,10 @@ std::unique_ptr<ui::DialogModel> CreateGenericFeatureFirstRunDialogModel(
               std::move(content_view),
               views::BubbleDialogModelHost::FieldType::kText),
           kFeatureFirstRunDialogContentViewElementId)
-      .AddOkButton(base::DoNothing(),
+      .AddOkButton(std::move(accept_callback),
                    ui::DialogModel::Button::Params().SetLabel(
                        l10n_util::GetStringUTF16(IDS_APP_TURN_ON)))
-      .AddCancelButton(base::DoNothing())
+      .AddCancelButton(std::move(cancel_callback))
       .Build();
 }
 
@@ -155,6 +157,8 @@ views::Widget* ShowFeatureFirstRunDialog(
     ui::ImageModel banner,
     ui::ImageModel dark_mode_banner,
     std::unique_ptr<views::View> content_view,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback,
     content::WebContents* web_contents) {
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
@@ -165,7 +169,8 @@ views::Widget* ShowFeatureFirstRunDialog(
   return constrained_window::ShowWebModal(
       CreateGenericFeatureFirstRunDialogModel(
           std::move(title), std::move(banner), std::move(dark_mode_banner),
-          std::move(content_view)),
+          std::move(content_view), std::move(accept_callback),
+          std::move(cancel_callback)),
       web_contents);
 }
 

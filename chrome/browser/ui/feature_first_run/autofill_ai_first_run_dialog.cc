@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,6 +31,19 @@ const gfx::VectorIcon& kGoogleGLogoIcon =
 
 // TODO(crbug.com/409520456): Open learn more link.
 void OnLearnMoreClicked() {}
+
+// TODO(crbug.com/409520456): Record accept button clicks.
+void OnDialogAccepted(content::WebContents* web_contents) {
+  autofill::AutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+
+  autofill::SetAutofillAiOptInStatus(*client, true);
+}
+
+// TODO(crbug.com/409520456): Record cancel button clicks.
+void OnDialogCancelled() {
+  // Do nothing.
+}
 
 std::unique_ptr<views::View> CreateDialogContentView() {
   auto container_view = CreateDialogContentViewContainer();
@@ -54,7 +70,9 @@ void ShowAutofillAiFirstRunDialog(content::WebContents* web_contents) {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE),
       ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT),
       ui::ImageModel::FromResourceId(IDR_SAVE_PASSPORT_DARK),
-      CreateDialogContentView(), web_contents);
+      CreateDialogContentView(),
+      base::BindOnce(&OnDialogAccepted, web_contents),
+      base::BindOnce(&OnDialogCancelled), web_contents);
 }
 
 }  // namespace feature_first_run
