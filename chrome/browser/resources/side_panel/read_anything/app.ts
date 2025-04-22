@@ -535,10 +535,6 @@ export class AppElement extends AppElementBase {
     chrome.readingMode.onTtsEngineInstalled = () => {
       this.onTtsEngineInstalled();
     };
-
-    chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
-      this.onNodeWillBeDeleted(nodeId);
-    };
   }
 
   private clearHighlightFormatting_() {
@@ -2812,19 +2808,6 @@ export class AppElement extends AppElementBase {
 
   onTtsEngineInstalled() {
     this.waitingForNewEngine_ = true;
-  }
-
-  onNodeWillBeDeleted(nodeId: number) {
-    const deletedNode = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as ChildNode;
-    if (deletedNode) {
-      this.domNodeToAxNodeIdMap_.delete(deletedNode);
-      deletedNode.remove();
-    }
-    const root = this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.rootId);
-    if (this.hasContent_ && !root?.textContent) {
-      this.hasContent_ = false;
-      chrome.readingMode.onNoTextContent();
-    }
   }
 
   languageChanged() {

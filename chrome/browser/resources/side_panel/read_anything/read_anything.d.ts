@@ -293,9 +293,6 @@ declare namespace chrome {
     // Ping that a new tts engine has installed.
     function onTtsEngineInstalled(): void;
 
-    // Ping that the given node will be deleted.
-    function onNodeWillBeDeleted(nodeId: number): void;
-
     // Called with the response of sendGetVoicePackInfoRequest() or
     // sendInstallVoicePackRequest()
     function updateVoicePackStatus(lang: string, status: string): void;
