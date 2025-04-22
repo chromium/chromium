@@ -219,6 +219,7 @@ void HttpStreamPool::Job::Resume() {
     return;
   }
 
+  group_->EnsureAttemptManager();
   StartInternal();
 }
 

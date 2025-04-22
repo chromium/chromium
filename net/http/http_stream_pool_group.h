@@ -177,6 +177,9 @@ class HttpStreamPool::Group {
   // Cancels all on-going jobs.
   void CancelJobs(int error);
 
+  // Create an AttemptManager if needed.
+  void EnsureAttemptManager();
+
   // Called when the attempt manager has completed.
   void OnAttemptManagerComplete();
 
@@ -243,8 +246,6 @@ class HttpStreamPool::Group {
 
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
-
-  void EnsureAttemptManager();
 
   void MaybeComplete();
 

@@ -321,8 +321,6 @@ void HttpStreamPool::Group::FlushWithError(
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
                                     StreamSocketCloseReason cancel_reason) {
-  // TODO(crbug.com/381742472): Should we do anything for paused
-  // jobs/preconnects?
   ++generation_;
   if (attempt_manager_) {
     attempt_manager_->CancelTcpBasedAttempts(cancel_reason);
@@ -339,19 +337,23 @@ void HttpStreamPool::Group::CancelJobs(int error) {
   if (!paused_jobs_.empty()) {
     CancelPausedJob(error);
   }
-  // TODO(crbug.com/381742472): Need to cancel paused preconnects when we
-  // support paused preconnects.
   if (attempt_manager_) {
     attempt_manager_->CancelJobs(error);
   }
 }
 
+void HttpStreamPool::Group::EnsureAttemptManager() {
+  if (attempt_manager_) {
+    return;
+  }
+  attempt_manager_ =
+      std::make_unique<AttemptManager>(this, http_network_session()->net_log());
+}
+
 void HttpStreamPool::Group::OnAttemptManagerComplete() {
   CHECK(attempt_manager_);
 
-  // TODO(crbug.com/381742472): Need to handle paused preconnects when we
-  // support paused preconnects.
-  const bool should_start_new_attempt_manager =
+  const bool should_resume_paused_job =
       attempt_manager_->is_failing() && !paused_jobs_.empty();
 
   attempt_manager_.reset();
@@ -360,8 +362,7 @@ void HttpStreamPool::Group::OnAttemptManagerComplete() {
     std::move(on_attempt_manager_complete_callback_for_testing_).Run();
   }
 
-  if (should_start_new_attempt_manager) {
-    EnsureAttemptManager();
+  if (should_resume_paused_job) {
     ResumePausedJob();
   } else {
     MaybeComplete();
@@ -487,17 +488,7 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
   MaybeCompleteLater();
 }
 
-void HttpStreamPool::Group::EnsureAttemptManager() {
-  if (attempt_manager_) {
-    return;
-  }
-  attempt_manager_ =
-      std::make_unique<AttemptManager>(this, http_network_session()->net_log());
-}
-
 bool HttpStreamPool::Group::CanComplete() const {
-  // TODO(crbug.com/381742472): Check paused preconnects once we support
-  // paused preconnects.
   return ActiveStreamSocketCount() == 0 && paused_jobs_.empty() &&
          resumed_jobs_.empty() && !attempt_manager_;
 }

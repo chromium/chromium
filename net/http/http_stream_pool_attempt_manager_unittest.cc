@@ -4346,6 +4346,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
   EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoHTTP2);
+  // The Group should not create an AttemptManager since the second request used
+  // the existing SPDY session.
+  ASSERT_FALSE(
+      pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting());
 
   // Close the SPDY session so that the Group can complete. The Group should not
   // be destroyed yet since the second request isn't destroyed yet.
