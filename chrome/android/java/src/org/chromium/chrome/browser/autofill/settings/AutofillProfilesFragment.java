@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -92,6 +93,12 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
     static final String MANAGE_PLUS_ADDRESSES = "manage_plus_addresses";
+
+    public static final String GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL =
+            "https://myaccount.google.com/address/home?utm_source=chrome&utm_campaign=manage_addresses";
+    public static final String GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL =
+            "https://myaccount.google.com/address/work?utm_source=chrome&utm_campaign=manage_addresses";
+
     private @Nullable AddressEditorCoordinator mAddressEditor;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -263,14 +270,28 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             return;
         }
 
-        if (preference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
+        AutofillProfileEditorPreference editorPreference =
+                (AutofillProfileEditorPreference) preference;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)
+                && editorPreference.getRecordType().isPresent()) {
+            if (editorPreference.getRecordType().getAsInt() == RecordType.ACCOUNT_HOME) {
+                openHomeAndWorkLink(GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL);
+                return;
+            }
+            if (editorPreference.getRecordType().getAsInt() == RecordType.ACCOUNT_WORK) {
+                openHomeAndWorkLink(GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL);
+                return;
+            }
+        }
+
+        if (editorPreference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
             PlusAddressesHelper.openManagePlusAddresses(getActivity(), getProfile());
             PlusAddressesUserActions.MANAGE_OPTION_ON_SETTINGS_SELECTED.log();
             return;
         }
 
-        AutofillAddress autofillAddress =
-                getAutofillAddress((AutofillProfileEditorPreference) preference);
+        AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
         if (autofillAddress == null) {
             mAddressEditor =
                     new AddressEditorCoordinator(
@@ -328,6 +349,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     EditorDialogView getEditorDialogForTest() {
         return mAddressEditor.getEditorDialogForTesting();
+    }
+
+    private void openHomeAndWorkLink(String url) {
+        CustomTabActivity.showInfoPage(getActivity(), url);
     }
 
     private int getIconIdForProfile(AutofillProfile profile) {

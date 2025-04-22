@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,8 +18,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,6 +32,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -72,7 +83,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit test suite for AutofillProfilesFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.PLUS_ADDRESSES_ENABLED})
+@EnableFeatures({
+    ChromeFeatureList.PLUS_ADDRESSES_ENABLED,
+    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK
+})
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillProfilesFragmentTest {
@@ -105,6 +119,35 @@ public class AutofillProfilesFragmentTest {
                     .setLanguageCode("en-US")
                     .build();
 
+    private static final AutofillProfile sHomeProfile =
+            AutofillProfile.builder()
+                    .setRecordType(RecordType.ACCOUNT_HOME)
+                    .setFullName("Home Doe")
+                    .setCompanyName("Google")
+                    .setStreetAddress("242 Fourth St")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90291")
+                    .setCountryCode("US")
+                    .setPhoneNumber("650-253-0000")
+                    .setEmailAddress("home@gmail.com")
+                    .setLanguageCode("en-US")
+                    .build();
+    private static final AutofillProfile sWorkProfile =
+            AutofillProfile.builder()
+                    .setRecordType(RecordType.ACCOUNT_WORK)
+                    .setFullName("Work Doe")
+                    .setCompanyName("Google")
+                    .setStreetAddress("242 Fourth St")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90291")
+                    .setCountryCode("US")
+                    .setPhoneNumber("650-253-0000")
+                    .setEmailAddress("work@gmail.com")
+                    .setLanguageCode("en-US")
+                    .build();
+
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
     @ClassRule
@@ -127,10 +170,10 @@ public class AutofillProfilesFragmentTest {
 
     @Before
     public void setUp() throws TimeoutException {
+        Intents.init();
         mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(
                 AutofillProfile.builder()
-                        .setRecordType(RecordType.ACCOUNT_HOME)
                         .setFullName("John Doe")
                         .setCompanyName("Google")
                         .setStreetAddress("111 Second St")
@@ -174,6 +217,7 @@ public class AutofillProfilesFragmentTest {
 
     @After
     public void tearDown() throws TimeoutException {
+        Intents.release();
         mHelper.clearAllDataForTesting();
     }
 
@@ -241,6 +285,71 @@ public class AutofillProfilesFragmentTest {
                         .getContext()
                         .getString(R.string.plus_address_settings_entry_summary),
                 plusAddressEntry.getSummary());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testHomeEntry() throws Exception {
+        mHelper.setProfile(sHomeProfile);
+
+        AutofillProfileEditorPreference homeProfilePreference =
+                findPreference(sHomeProfile.getInfo(FieldType.NAME_FULL));
+        assertNotNull(homeProfilePreference);
+        assertFalse(homeProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(homeProfilePreference.getRecordType().isPresent());
+        assertEquals(RecordType.ACCOUNT_HOME, homeProfilePreference.getRecordType().getAsInt());
+        assertTrue(homeProfilePreference.getIcon().isVisible());
+
+        // Define a fake result to return immediately when the intent is caught.
+        // This prevents the actual Custom Tab from launching.
+        Instrumentation.ActivityResult ok_result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        var homeIntentMatcher =
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData(
+                                Uri.parse(
+                                        AutofillProfilesFragment
+                                                .GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL)));
+        intending(homeIntentMatcher).respondWith(ok_result);
+
+        // Test that Custom Tab with the correct url is launched when Work address clicked.
+        ThreadUtils.runOnUiThreadBlocking(homeProfilePreference::performClick);
+        intended(homeIntentMatcher);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testWorkEntry() throws Exception {
+        mHelper.setProfile(sWorkProfile);
+
+        // Test work profile
+        AutofillProfileEditorPreference workProfilePreference =
+                findPreference(sWorkProfile.getInfo(FieldType.NAME_FULL));
+        assertNotNull(workProfilePreference);
+        assertFalse(workProfilePreference.shouldShowLocalProfileIcon());
+        assertTrue(workProfilePreference.getRecordType().isPresent());
+        assertEquals(RecordType.ACCOUNT_WORK, workProfilePreference.getRecordType().getAsInt());
+        assertTrue(workProfilePreference.getIcon().isVisible());
+
+        // Define a fake result to return immediately when the intent is caught.
+        // This prevents the actual Custom Tab from launching.
+        Instrumentation.ActivityResult ok_result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        var workIntentMatcher =
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData(
+                                Uri.parse(
+                                        AutofillProfilesFragment
+                                                .GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL)));
+        intending(workIntentMatcher).respondWith(ok_result);
+
+        // Test that Custom Tab with the correct url is launched when Home address clicked.
+        ThreadUtils.runOnUiThreadBlocking(workProfilePreference::performClick);
+        intended(workIntentMatcher);
     }
 
     @Test
@@ -405,7 +514,6 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)
     @Feature({"Preferences"})
     public void testEditProfile() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
@@ -418,7 +526,6 @@ public class AutofillProfilesFragmentTest {
         assertNotNull(johnProfile);
         assertEquals("John Doe", johnProfile.getTitle());
         assertTrue(johnProfile.getIcon().isVisible());
-        assertEquals(RecordType.ACCOUNT_HOME, johnProfile.getRecordType().getAsInt());
 
         // Make sure that the icon is visible for non-HW profiles too.
         AutofillProfileEditorPreference billProfile =
