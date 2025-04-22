@@ -1306,7 +1306,7 @@ message TelomereEvent {
     string log_data = 2
         // copybara:datapol_begin
         // [(datapol.semantic_type) = ST_USER_CONTENT]
-        // copybara:datapol_begin
+        // copybara:datapol_end
         ;
   }
 
