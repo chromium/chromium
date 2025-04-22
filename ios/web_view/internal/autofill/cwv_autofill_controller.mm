@@ -750,6 +750,13 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   // No op
 }
 
+- (void)didLoginWithExistingPassword {
+  if ([self.delegate respondsToSelector:@selector
+                     (autofillControllerDidLoginWithExistingPassword:)]) {
+    [self.delegate autofillControllerDidLoginWithExistingPassword:self];
+  }
+}
+
 #pragma mark - SharedPasswordControllerDelegate
 
 - (password_manager::PasswordManagerClient*)passwordManagerClient {
