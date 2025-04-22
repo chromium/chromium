@@ -77,7 +77,7 @@ class WebViewRendererState {
                               const std::set<std::string>& script_ids);
 
   // Returns the number of WebView guest instances tracked by this object.
-  size_t guest_count_for_testing() { return web_view_info_map_.size(); }
+  size_t guest_count_for_testing();
 
  private:
   friend class WebViewGuest;

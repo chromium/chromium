@@ -4,6 +4,7 @@
 
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -160,6 +161,11 @@ void WebViewRendererState::RemoveContentScriptIDs(
       // due to OOPIFs inside <webview>).
     }
   }
+}
+
+size_t WebViewRendererState::guest_count_for_testing() {
+  CHECK_IS_TEST();
+  return web_view_info_map_.size();
 }
 
 }  // namespace extensions
