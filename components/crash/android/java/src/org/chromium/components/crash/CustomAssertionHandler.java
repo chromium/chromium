@@ -4,10 +4,8 @@
 
 package org.chromium.components.crash;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Assertion handler to report assertions to crash.
@@ -19,7 +17,8 @@ import org.chromium.build.annotations.Nullable;
 public class CustomAssertionHandler {
     private CustomAssertionHandler() {}
 
-    private static PureJavaExceptionHandler.@Nullable JavaExceptionReporterFactory sReporterFactory;
+    private static @MonotonicNonNull PureJavaExceptionHandler.JavaExceptionReporterFactory
+            sReporterFactory;
 
     /**
      * The handler that we tell R8 to forward assertions to via --force-assertions-hander.
@@ -34,7 +33,6 @@ public class CustomAssertionHandler {
             NativeAndJavaSmartExceptionReporter.postUploadReport(
                     exception,
                     (e) -> {
-                        assumeNonNull(sReporterFactory);
                         PureJavaExceptionHandler.JavaExceptionReporter reporter =
                                 sReporterFactory.createJavaExceptionReporter();
                         reporter.createAndUploadReport(e);

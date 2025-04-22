@@ -626,7 +626,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
                             + headerHeight;
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                    () -> assumeNonNull(sExceptionReporter).onResult(new Throwable(logMessage)));
+                    () -> sExceptionReporter.onResult(new Throwable(logMessage)));
         }
 
         int menuHeight =

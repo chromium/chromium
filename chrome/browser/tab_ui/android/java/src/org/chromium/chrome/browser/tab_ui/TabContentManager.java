@@ -613,7 +613,7 @@ public class TabContentManager {
                 return;
             }
             Callback<@Nullable Bitmap> wrappedCallback =
-                    (Bitmap bitmap) -> {
+                    (@Nullable Bitmap bitmap) -> {
                         if (bitmap != null) {
                             long durationMs = SystemClock.elapsedRealtime() - startTime;
                             RecordHistogram.recordTimesHistogram(

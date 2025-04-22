@@ -253,7 +253,7 @@ public class HardwareDraw {
                 mPendingDraw = true;
                 mRenderer.requestDraw(
                         renderNode,
-                        (Bitmap bitmap) -> {
+                        (@Nullable Bitmap bitmap) -> {
                             mUiThreadChecker.assertOnValidThread();
                             onBitmapCapture.onResult(bitmap);
                             mPendingDraw = false;

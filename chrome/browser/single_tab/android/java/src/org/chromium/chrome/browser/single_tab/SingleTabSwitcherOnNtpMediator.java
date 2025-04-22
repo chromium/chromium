@@ -249,7 +249,7 @@ public class SingleTabSwitcherOnNtpMediator {
                 mMostRecentTab.getId(),
                 mThumbnailSize,
                 /* isSelected= */ false,
-                (Drawable tabThumbnail) -> {
+                (@Nullable Drawable tabThumbnail) -> {
                     mPropertyModel.set(TAB_THUMBNAIL, tabThumbnail);
                 });
     }

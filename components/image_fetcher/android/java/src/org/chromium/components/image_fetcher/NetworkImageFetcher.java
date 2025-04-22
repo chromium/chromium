@@ -42,7 +42,7 @@ public class NetworkImageFetcher extends ImageFetcher {
                 .fetchImage(
                         getConfig(),
                         params,
-                        (Bitmap bitmapFromNative) -> {
+                        (@Nullable Bitmap bitmapFromNative) -> {
                             callback.onResult(bitmapFromNative);
                             getImageFetcherBridge()
                                     .reportTotalFetchTimeFromNative(
