@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
@@ -20,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** State for the Fast Checkout UI. */
+@NullMarked
 public class FastCheckoutProperties {
     /** The different screens that can be shown on the sheet. */
     @IntDef({

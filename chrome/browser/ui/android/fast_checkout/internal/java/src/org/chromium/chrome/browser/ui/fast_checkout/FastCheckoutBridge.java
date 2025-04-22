@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -23,6 +27,7 @@ import java.util.List;
  * This bridge creates and initializes a {@link FastCheckoutComponent} on construction and forwards
  * native calls to it.
  */
+@NullMarked
 class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
     private long mNativeFastCheckoutBridge;
     private final FastCheckoutComponent mFastCheckoutComponent;
@@ -33,8 +38,8 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
             BottomSheetController bottomSheetController) {
         mNativeFastCheckoutBridge = nativeBridge;
         mFastCheckoutComponent = new FastCheckoutCoordinator();
-        mFastCheckoutComponent.initialize(
-                windowAndroid.getContext().get(), bottomSheetController, this);
+        Context context = assumeNonNull(windowAndroid.getContext().get());
+        mFastCheckoutComponent.initialize(context, bottomSheetController, this);
     }
 
     @CalledByNative

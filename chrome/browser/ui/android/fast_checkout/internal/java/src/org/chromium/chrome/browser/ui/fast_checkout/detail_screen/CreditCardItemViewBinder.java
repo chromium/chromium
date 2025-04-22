@@ -17,12 +17,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A binder class for credit card items on the detail sheet. */
+@NullMarked
 class CreditCardItemViewBinder {
     /** Creates a view for credit card items on the detail sheet. */
     static View create(ViewGroup parent) {
