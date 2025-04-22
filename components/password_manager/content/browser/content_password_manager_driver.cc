@@ -604,6 +604,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestionsForField(
       triggering_field.element_id, triggering_field.trigger_source,
       triggering_field.text_direction, triggering_field.typed_username,
       ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
+      ShowIdentityCredentials(triggering_field.show_identity_credentials),
       TransformToRootCoordinates(render_frame_host_, triggering_field.bounds));
 }
 

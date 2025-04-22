@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -196,7 +197,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
 class PasswordSuggestionGeneratorTest : public testing::Test {
  public:
-  PasswordSuggestionGeneratorTest() : generator_(&driver(), &client()) {
+  PasswordSuggestionGeneratorTest()
+      : generator_(&driver(), &client(), &autofill_client()) {
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     client_.SetIdentityManager(identity_test_env_->identity_manager());
 
@@ -214,6 +216,8 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
   syncer::MockSyncService& sync_service() { return mock_sync_service_; }
 
   MockPasswordManagerClient& client() { return client_; }
+
+  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
 
   MockWebAuthnCredentialsDelegate& credentials_delegate() {
     return credentials_delegate_;
@@ -333,6 +337,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   NiceMock<syncer::MockSyncService> mock_sync_service_;
   NiceMock<MockPasswordManagerClient> client_;
+  autofill::TestAutofillClient autofill_client_;
   NiceMock<MockWebAuthnCredentialsDelegate> credentials_delegate_;
   StubPasswordManagerDriver driver_;
   PasswordSuggestionGenerator generator_;
@@ -344,7 +349,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -356,7 +361,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       password_form_fill_data(), favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(false),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -366,7 +371,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromProfileStore) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       password_form_fill_data(), favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
@@ -385,7 +390,8 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromAccountStore) {
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
@@ -406,7 +412,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
@@ -430,7 +437,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(false));
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
                               SuggestionType::kPasswordEntry, u"username",
@@ -460,7 +468,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(false),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false));
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(false));
 
   EXPECT_THAT(
       suggestions,
@@ -488,7 +497,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_NoPasskeysSaved) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(true));
+      ShowWebAuthnCredentials(true), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -504,7 +513,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_DontShowPasskey) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
 }
@@ -520,7 +529,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(true));
+      ShowWebAuthnCredentials(true), ShowIdentityCredentials(false));
 
   EXPECT_THAT(
       suggestions,
@@ -550,7 +559,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(true));
+      ShowWebAuthnCredentials(true), ShowIdentityCredentials(false));
 
   EXPECT_THAT(
       suggestions,
@@ -579,7 +588,7 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_NoCredentials) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(true), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
   EXPECT_THAT(suggestions, IsEmpty());
 }
 
@@ -589,7 +598,7 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPassword) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       password_form_fill_data(), favicon(), /*username_filter=*/u"",
       OffersGeneration(true), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
@@ -613,7 +622,7 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(true), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(true));
+      ShowWebAuthnCredentials(true), ShowIdentityCredentials(false));
 
   EXPECT_THAT(
       suggestions,
@@ -654,7 +663,8 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(true),
-      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(true));
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(true),
+      ShowIdentityCredentials(false));
 
   EXPECT_THAT(
       suggestions,
@@ -1247,7 +1257,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(
@@ -1276,7 +1286,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       password_form_fill_data(), favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(
       suggestions,
@@ -1311,7 +1321,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
   histogram_tester.ExpectTotalCount(kReauthPromoHistogramName, 0);
@@ -1334,7 +1344,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       password_form_fill_data(), favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
@@ -1365,7 +1375,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
   histogram_tester.ExpectTotalCount(kReauthPromoHistogramName, 0);
@@ -1389,7 +1399,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       password_form_fill_data(), favicon(), /*username_filter=*/u"",
       OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
+      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
 
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsDomainPasswordSuggestion(
