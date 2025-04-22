@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -71,16 +70,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetThirdPartyCookiesTitleAndDescription(
       bool protections_on,
       CookieControlsEnforcement enforcement,
-      content_settings::TrackingProtectionBlockingStatus status,
       CookieBlocking3pcdStatus blocking_status,
       base::Time expiration);
 
   // Sets properties for `third_party_cookies_toggle_` using:
   // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
   // `status: current 3PC blocking status
-  void SetThirdPartyCookiesToggle(
-      bool protections_on,
-      content_settings::TrackingProtectionBlockingStatus status);
+  void SetThirdPartyCookiesToggle(bool protections_on,
+                                  CookieBlocking3pcdStatus blocking_status);
 
   // Sets `cookie_description_label_` text and style using:
   // `blocking_status`: label for the status of the protection (e.g. allowed,
@@ -99,12 +96,11 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // limited, blocked)
   // `expiration`: duration of site exception
   // `feature: list of tracking protection features
-  void SetThirdPartyCookiesInfo(
-      bool protections_on,
-      bool controls_visible,
-      CookieBlocking3pcdStatus blocking_status,
-      base::Time expiration,
-      content_settings::TrackingProtectionFeature feature);
+  void SetThirdPartyCookiesInfo(bool protections_on,
+                                bool controls_visible,
+                                CookieControlsEnforcement enforcement,
+                                CookieBlocking3pcdStatus blocking_status,
+                                base::Time expiration);
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);

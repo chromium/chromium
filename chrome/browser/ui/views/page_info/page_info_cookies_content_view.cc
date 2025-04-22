@@ -39,8 +39,6 @@
 namespace {
 
 using ::content_settings::CookieControlsUtil;
-using ::content_settings::TrackingProtectionFeature;
-using ::content_settings::TrackingProtectionFeatureType;
 
 const ui::ImageModel GetThirdPartyCookiesIcon(
     bool third_party_cookies_enabled) {
@@ -212,19 +210,10 @@ void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
   SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement,
                       cookie_info.is_incognito);
-
-  for (const auto& feature : cookie_info.features) {
-    switch (feature.feature_type) {
-      case TrackingProtectionFeatureType::kThirdPartyCookies:
-        SetThirdPartyCookiesInfo(
-            cookie_info.protections_on, cookie_info.controls_visible,
-            cookie_info.blocking_status, cookie_info.expiration, feature);
-        break;
-      // TODO(http://b/353724401): Add support for additional ACT feature rows
-      default:
-        break;
-    }
-  }
+  SetThirdPartyCookiesInfo(cookie_info.protections_on,
+                           cookie_info.controls_visible,
+                           cookie_info.enforcement, cookie_info.blocking_status,
+                           cookie_info.expiration);
   InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.
   cookies_dialog_button_->SetSubtitleText(l10n_util::GetPluralStringFUTF16(
@@ -242,7 +231,6 @@ void PageInfoCookiesContentView::SetCookieInfo(
 void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
     bool protections_on,
     CookieControlsEnforcement enforcement,
-    content_settings::TrackingProtectionBlockingStatus status,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   std::u16string title_text;
@@ -276,8 +264,17 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
     bool protections_on,
-    content_settings::TrackingProtectionBlockingStatus status) {
-  const std::u16string subtitle = GetStatusLabel(status);
+    CookieBlocking3pcdStatus blocking_status) {
+  std::u16string subtitle;
+  if (protections_on) {
+    subtitle = l10n_util::GetStringUTF16(
+        blocking_status == CookieBlocking3pcdStatus::kLimited
+            ? IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE
+            : IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE);
+  } else {
+    subtitle = l10n_util::GetStringUTF16(
+        IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
+  }
   third_party_cookies_toggle_->SetIsOn(!protections_on);
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
@@ -324,22 +321,21 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     bool protections_on,
     bool controls_visible,
+    CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration,
-    TrackingProtectionFeature feature) {
+    base::Time expiration) {
   third_party_cookies_container_->SetVisible(controls_visible);
   if (!controls_visible) {
     return;
   }
-  SetThirdPartyCookiesTitleAndDescription(protections_on, feature.enforcement,
-                                          feature.status, blocking_status,
-                                          expiration);
-  SetThirdPartyCookiesToggle(protections_on, feature.status);
+  SetThirdPartyCookiesTitleAndDescription(protections_on, enforcement,
+                                          blocking_status, expiration);
+  SetThirdPartyCookiesToggle(protections_on, blocking_status);
   third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(!protections_on));
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 
-  if (feature.enforcement == CookieControlsEnforcement::kNoEnforcement) {
+  if (enforcement == CookieControlsEnforcement::kNoEnforcement) {
     third_party_cookies_label_wrapper_->SetVisible(true);
     third_party_cookies_toggle_->SetVisible(true);
     third_party_cookies_enforced_icon_->SetVisible(false);
@@ -347,17 +343,16 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     // In 3PCD, tell the user if they allowed the current site via settings.
     third_party_cookies_label_wrapper_->SetVisible(
         blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
-        feature.enforcement ==
-            CookieControlsEnforcement::kEnforcedByCookieSetting);
+        enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
     // In the enforced state, the toggle button is hidden; enforced icon is
     // shown instead of the toggle button.
     third_party_cookies_toggle_->SetVisible(false);
     third_party_cookies_enforced_icon_->SetVisible(true);
     third_party_cookies_enforced_icon_->SetImage(
         PageInfoViewFactory::GetImageModel(
-            CookieControlsUtil::GetEnforcedIcon(feature.enforcement)));
+            CookieControlsUtil::GetEnforcedIcon(enforcement)));
     third_party_cookies_enforced_icon_->SetTooltipText(
-        CookieControlsUtil::GetEnforcedTooltip(feature.enforcement));
+        CookieControlsUtil::GetEnforcedTooltip(enforcement));
   }
 }
 
@@ -576,20 +571,3 @@ void PageInfoCookiesContentView::MaybeAddSyncDisclaimer() {
   cookies_sync_description_->AddStyleRange(link_range, link_style);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-std::u16string PageInfoCookiesContentView::GetStatusLabel(
-    content_settings::TrackingProtectionBlockingStatus blocking_status) {
-  switch (blocking_status) {
-    case content_settings::TrackingProtectionBlockingStatus::kAllowed:
-      return l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE);
-    case content_settings::TrackingProtectionBlockingStatus::kBlocked:
-      return l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE);
-    case content_settings::TrackingProtectionBlockingStatus::kLimited:
-      return l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE);
-    default:
-      NOTREACHED();
-  }
-}
