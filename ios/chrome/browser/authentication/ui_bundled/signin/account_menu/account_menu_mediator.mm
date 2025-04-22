@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_open_ntp.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
@@ -441,7 +443,15 @@
 
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
   _authenticationFlow = nil;
-  return DoNothingContinuation();
+  switch (_accessPoint) {
+    case AccountMenuAccessPoint::kNewTabPage:
+      return CreateChangeProfileOpensNTPContinuation();
+    case AccountMenuAccessPoint::kSettings:
+      return CreateChangeProfileSettingsContinuation();
+    case AccountMenuAccessPoint::kWeb:
+      // TODO(crbug.com/375605412): Move the current tab into the new profile.
+      return DoNothingContinuation();
+  }
 }
 
 #pragma mark - Private
