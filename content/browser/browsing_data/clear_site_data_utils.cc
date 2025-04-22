@@ -89,8 +89,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
               BrowsingDataFilterBuilder::Mode::kDelete));
       cookie_filter_builder->AddRegisterableDomain(domain);
       cookie_filter_builder->SetCookiePartitionKeyCollection(
-          net::CookiePartitionKeyCollection::FromOptional(
-              cookie_partition_key_));
+          net::CookiePartitionKeyCollection(cookie_partition_key_));
       cookie_filter_builder->SetPartitionedCookiesOnly(
           partitioned_state_allowed_only_);
       if (storage_partition_config_.has_value()) {

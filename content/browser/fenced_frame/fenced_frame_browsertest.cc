@@ -3523,8 +3523,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
           isolation_info.site_for_cookies(), net::SchemefulSite(https_url),
           isolation_info.IsMainFrameRequest());
   EXPECT_TRUE(partition_key && partition_key->nonce());
-  net::CookiePartitionKeyCollection cookie_partition_key_collection =
-      net::CookiePartitionKeyCollection::FromOptional(partition_key);
+  net::CookiePartitionKeyCollection cookie_partition_key_collection(
+      partition_key);
 
   std::vector<net::CanonicalCookie> cookies =
       GetCanonicalCookies(shell()->web_contents()->GetBrowserContext(),
@@ -3634,8 +3634,8 @@ IN_PROC_BROWSER_TEST_F(
           isolation_info.site_for_cookies(), net::SchemefulSite(https_url),
           isolation_info.IsMainFrameRequest());
   EXPECT_TRUE(partition_key && partition_key->nonce());
-  net::CookiePartitionKeyCollection cookie_partition_key_collection =
-      net::CookiePartitionKeyCollection::FromOptional(partition_key);
+  net::CookiePartitionKeyCollection cookie_partition_key_collection(
+      partition_key);
 
   std::vector<net::CanonicalCookie> cookies =
       GetCanonicalCookies(shell()->web_contents()->GetBrowserContext(),

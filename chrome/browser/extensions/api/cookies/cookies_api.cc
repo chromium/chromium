@@ -311,7 +311,7 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   DCHECK(!url_.is_empty() && url_.is_valid());
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key.value()),
+      net::CookiePartitionKeyCollection(std::move(partition_key).value()),
       base::BindOnce(&CookiesGetFunction::GetCookieListCallback, this));
 
   // Extension telemetry signal intercept
@@ -602,8 +602,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(
-          net_partition_key.value()),
+      net::CookiePartitionKeyCollection(std::move(net_partition_key).value()),
       base::BindOnce(&CookiesSetFunction::GetCookieListCallback, this));
 
   // Will finish asynchronously.
@@ -692,7 +691,7 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
       network::mojom::CookieDeletionFilter::New());
 
   filter->cookie_partition_key_collection =
-      net::CookiePartitionKeyCollection::FromOptional(partition_key.value());
+      net::CookiePartitionKeyCollection(std::move(partition_key).value());
   filter->url = url_;
   filter->cookie_name = parsed_args_->details.name;
   cookie_manager->DeleteCookies(

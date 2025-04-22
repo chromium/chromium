@@ -139,7 +139,7 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
       filter_builder.AddRegisterableDomain(origin.host());
       filter_builder.SetStoragePartitionConfig(storage_partition_config);
       filter_builder.SetCookiePartitionKeyCollection(
-          net::CookiePartitionKeyCollection::FromOptional(
+          net::CookiePartitionKeyCollection(
               net::CookiePartitionKey::FromStorageKeyComponents(
                   top_level_site, ancestor_chain_bit, /*nonce=*/std::nullopt)));
 

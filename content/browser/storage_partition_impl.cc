@@ -2925,8 +2925,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
     if (!storage_key_origin_empty) {
       cookie_deletion_filter->cookie_partition_key_collection =
-          net::CookiePartitionKeyCollection::FromOptional(
-              storage_key.ToCookiePartitionKey());
+          net::CookiePartitionKeyCollection(storage_key.ToCookiePartitionKey());
     }
 
     cookie_manager->DeleteCookies(

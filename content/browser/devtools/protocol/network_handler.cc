@@ -250,7 +250,7 @@ class CookieRetrieverNetworkService
     for (const auto& url : urls) {
       cookie_manager->GetCookieList(
           url, cookie_options,
-          net::CookiePartitionKeyCollection::FromOptional(
+          net::CookiePartitionKeyCollection(
               net::CookiePartitionKey::FromNetworkIsolationKey(
                   network_isolation_key, site_for_cookies,
                   net::SchemefulSite(url), /*main_frame_navigation=*/false)),

@@ -422,8 +422,7 @@ RestrictedCookieManager::RestrictedCookieManager(
           net::SchemefulSite(origin),
           isolation_info_.IsMainFrameRequest())),
       cookie_partition_key_collection_(
-          net::CookiePartitionKeyCollection::FromOptional(
-              cookie_partition_key_)),
+          net::CookiePartitionKeyCollection(cookie_partition_key_)),
       receiver_(this),
       metrics_updater_(metrics_updater),
       max_cookie_cache_count_(
@@ -524,7 +523,7 @@ void RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting(
       isolation_info_.site_for_cookies(), net::SchemefulSite(origin_),
       isolation_info_.IsMainFrameRequest());
   cookie_partition_key_collection_ =
-      net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
+      net::CookiePartitionKeyCollection(cookie_partition_key_);
   std::move(done_closure).Run();
 }
 
