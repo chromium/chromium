@@ -171,12 +171,15 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     void setPlaybackMode(PlaybackMode playbackMode) {
+      TextView chromeNowPlaying = mContentView.findViewById(R.id.chrome_now_playing_text);
       if (playbackMode == PlaybackMode.OVERVIEW) {
             mIsModeActive = true;
             mModeSelectorButton.setSelected(true);
+            chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
         } else {
             mIsModeActive = false;
             mModeSelectorButton.setSelected(false);
+            chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing));
         }
     }
 

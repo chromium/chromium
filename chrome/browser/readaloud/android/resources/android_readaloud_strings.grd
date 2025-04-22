@@ -189,6 +189,9 @@
       <message name="IDS_READALOUD_CHROME_NOW_PLAYING" desc="Text in 'Listen to this page' player appearing before the title of the currently playing page.">
         Chrome now playing
       </message>
+      <message name="IDS_READALOUD_CHROME_NOW_PLAYING_AUDIO_OVERVIEW" desc="Text in the expanded player appearing before the title, when in Audio Overviews mode.">
+        AI enhanced audio
+      </message>
       <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
         Go back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
       </message>

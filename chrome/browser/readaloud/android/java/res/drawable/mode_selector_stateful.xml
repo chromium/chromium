@@ -10,10 +10,10 @@ found in the LICENSE file.
             <item android:drawable="@drawable/primary_color_rounded"/>
             <item
                 android:drawable="@drawable/mode_selector_toggle_24"
-                android:left="10dp"
-                android:top="10dp"
-                android:right="10dp"
-                android:bottom="10dp"/>
+                android:left="6dp"
+                android:top="6dp"
+                android:right="6dp"
+                android:bottom="6dp"/>
         </layer-list>
     </item>
     <item>
@@ -21,10 +21,10 @@ found in the LICENSE file.
             <item android:drawable="@drawable/primary_gray_rounded"/>
             <item
                 android:drawable="@drawable/mode_selector_toggle_24"
-                android:left="10dp"
-                android:top="10dp"
-                android:right="10dp"
-                android:bottom="10dp"/>
+                android:left="6dp"
+                android:top="6dp"
+                android:right="6dp"
+                android:bottom="6dp"/>
         </layer-list>
 </item>
 </selector>

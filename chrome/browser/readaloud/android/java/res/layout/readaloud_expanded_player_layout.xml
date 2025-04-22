@@ -221,6 +221,7 @@ found in the LICENSE file.
                             android:id="@+id/readaloud_mode_selector"
                             android:layout_width="@dimen/readaloud_playback_mode_selector_diameter"
                             android:layout_height="@dimen/readaloud_playback_mode_selector_diameter"
+                            android:padding="8dp"
                             android:src="@drawable/mode_selector_stateful"
                             android:foreground="@drawable/rounded_ripple"
                             android:layout_gravity="center_vertical"

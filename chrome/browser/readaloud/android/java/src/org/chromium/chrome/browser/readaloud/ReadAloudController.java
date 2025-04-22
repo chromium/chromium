@@ -238,7 +238,7 @@ public class ReadAloudController
       boolean isReadable() {
           // For audio overviews, we don't account for the language in the readability phase (we will check it during playback).
           return isReadable(PlaybackArgs.PlaybackMode.CLASSIC)
-                  || (ReadAloudFeatures.isAudioOverviewsAllowed() && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW));
+                  || (isAudioOverviewsAllowed() && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW));
       }
 
       boolean isReadable(PlaybackArgs.PlaybackMode mode) {
@@ -1309,7 +1309,7 @@ public class ReadAloudController
     }
 
     private PlaybackMode getPlaybackModeForNewPlayback(ReadabilityInfo readabilityInfo, String webPageLanguage) {
-      if (!ReadAloudFeatures.isAudioOverviewsAllowed()) {
+      if (!isAudioOverviewsAllowed()) {
           // AO feature is disabled, return CLASSIC.
           return PlaybackMode.CLASSIC;
       }
@@ -1370,9 +1370,13 @@ public class ReadAloudController
         return language;
     }
 
+    private static boolean isAudioOverviewsAllowed() {
+      return ReadAloudFeatures.isAudioOverviewsAllowed();
+    }
+
     private void updatePlaybackModeSelectionEnabled(
             ReadabilityInfo readabilityInfo, String language) {
-        if (!ReadAloudFeatures.isAudioOverviewsAllowed()) {
+        if (!isAudioOverviewsAllowed()) {
             mPlaybackModeSelectionEnabled.set(
                     PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
             return;
