@@ -808,6 +808,7 @@
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextmenu/context_menu_features.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_android.h"
 #include "components/feed/feed_feature_list.h"
@@ -4728,6 +4729,10 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
   web_prefs->prefers_default_scrollbar_styles =
       prefs->GetBoolean(prefs::kPrefersDefaultScrollbarStyles);
+#if BUILDFLAG(IS_ANDROID)
+  web_prefs->always_show_context_menu_on_touch =
+      base::FeatureList::IsEnabled(::features::kContextMenuEmptySpace);
+#endif
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
