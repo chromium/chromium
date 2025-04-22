@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PluginVm.DlcUseResult" enum="PluginVmDlcUseResult"
-    expires_after="2025-07-27">
+    expires_after="2026-05-05">
   <owner>kimjae@google.com</owner>
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -31,7 +31,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Background" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Foreground" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.PluginVmTotal" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Total" units="ms"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.LaunchResult" enum="PluginVmLaunchResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
-    expires_after="2025-07-27">
+    expires_after="2026-05-05">
   <owner>timloh@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <owner>clumptini@google.com</owner>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
-    expires_after="2025-05-05">
+    expires_after="2026-05-05">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
