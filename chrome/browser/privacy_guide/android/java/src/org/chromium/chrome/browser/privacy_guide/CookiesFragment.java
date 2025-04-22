@@ -11,9 +11,8 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -23,6 +22,7 @@ import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Controls the behavior of the Cookies privacy guide page. */
+@NullMarked
 public class CookiesFragment extends PrivacyGuideBasePage
         implements RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
@@ -30,12 +30,14 @@ public class CookiesFragment extends PrivacyGuideBasePage
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_cookies_step, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         RadioGroup radioGroup = view.findViewById(R.id.cookies_radio_button);
         radioGroup.setOnCheckedChangeListener(this);
 

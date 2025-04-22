@@ -12,7 +12,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A custom view for a heading of a setting explanation for the privacy guide. */
+@NullMarked
 public class PrivacyGuideExplanationHeading extends LinearLayout {
     public PrivacyGuideExplanationHeading(Context context, AttributeSet attrs) {
         super(context, attrs);

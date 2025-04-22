@@ -12,9 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
@@ -22,18 +21,19 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Last privacy guide page. */
+@NullMarked
 public class DoneFragment extends PrivacyGuideBasePage {
-    @Nullable
+
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
+    public @Nullable View onCreateView(
+            LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_done, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (!getPrivacySandboxBridge().isPrivacySandboxRestricted()

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -19,22 +23,25 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
 /** Controls the behavior of the Safe Browsing privacy guide page. */
+@NullMarked
 public class SafeBrowsingFragment extends PrivacyGuideBasePage
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
                 RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mStandardProtection;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
-    private BottomSheetController mBottomSheetController;
-    private PrivacyGuideBottomSheetView mBottomSheetView;
+    private @Nullable BottomSheetController mBottomSheetController;
+    private @Nullable PrivacyGuideBottomSheetView mBottomSheetView;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_sb_step, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         RadioGroup radioGroup = view.findViewById(R.id.sb_radio_button);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -82,7 +89,7 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
 
     @Override
     public void onAuxButtonClicked(int clickedButtonId) {
-        LayoutInflater inflater = LayoutInflater.from(getView().getContext());
+        LayoutInflater inflater = LayoutInflater.from(assumeNonNull(getView()).getContext());
         if (clickedButtonId == mEnhancedProtection.getId()) {
             displayBottomSheet(
                     inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null));

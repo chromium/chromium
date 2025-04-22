@@ -9,21 +9,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 /** Controls the behavior of the MSBB privacy guide page. */
+@NullMarked
 public class MSBBFragment extends PrivacyGuideBasePage {
     private MaterialSwitchWithText mMSBBSwitch;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mMSBBSwitch = view.findViewById(R.id.msbb_switch);
         setMSBBSwitchState();
 
