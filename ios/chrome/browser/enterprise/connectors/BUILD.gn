@@ -18,10 +18,15 @@ source_set("connectors") {
     "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/keyed_service/core",
+    "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
     "//ios/web/public",
   ]
 }
@@ -101,6 +106,7 @@ source_set("unit_tests") {
     "//components/security_interstitials/core",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//services/network:test_support",

@@ -14,6 +14,10 @@ namespace policy {
 class UserCloudPolicyManager;
 }  // namespace policy
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace enterprise_connectors {
 
 // iOS-specific implementation of `ConnectorsServiceBase`, to be used to access
@@ -24,7 +28,8 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
   ConnectorsService(bool off_the_record,
                     PrefService* pref_service,
-                    policy::UserCloudPolicyManager* user_cloud_policy_manager);
+                    policy::UserCloudPolicyManager* user_cloud_policy_manager,
+                    signin::IdentityManager* identity_manager);
   ~ConnectorsService() override;
 
   // Returns the CBCM domain or profile domain that enables connector policies.
@@ -59,6 +64,9 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   raw_ptr<PrefService> prefs_;
   raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
+  // Unowned pointer used for retrieving the management domain for connectors
+  // policies.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace enterprise_connectors

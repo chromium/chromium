@@ -4,31 +4,89 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 
+#import "base/feature_list.h"
+#import "base/types/expected.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#import "components/enterprise/connectors/core/common.h"
+#import "components/enterprise/connectors/core/connectors_prefs.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/policy/core/browser/policy_data_utils.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_types.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/enterprise/connectors/features.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace enterprise_connectors {
 
 ConnectorsService::ConnectorsService(
     bool off_the_record,
     PrefService* pref_service,
-    policy::UserCloudPolicyManager* user_cloud_policy_manager)
+    policy::UserCloudPolicyManager* user_cloud_policy_manager,
+    signin::IdentityManager* identity_manager)
     : off_the_record_(off_the_record),
       prefs_(pref_service),
       user_cloud_policy_manager_(user_cloud_policy_manager),
       connectors_manager_(
           std::make_unique<ConnectorsManager>(pref_service,
-                                              GetServiceProviderConfig())) {
+                                              GetServiceProviderConfig())),
+      identity_manager_(identity_manager) {
   DCHECK(prefs_);
+  // TODO(crbug.com/411092942): Add check for IdentityManager once tests are
+  // updated.
 }
 
 ConnectorsService::~ConnectorsService() = default;
 
 std::string ConnectorsService::GetManagementDomain() {
-  // TODO(crbug.com/411092942): Determine managment domain (profile or CBCM)
-  // that enables the connectors policies.
-  return std::string();
+  if (!ConnectorsEnabled()) {
+    return std::string();
+  }
+
+  std::optional<policy::PolicyScope> policy_scope = std::nullopt;
+
+  // Check the scope of the Url Filtering policy.
+  if (base::FeatureList::IsEnabled(kIOSEnterpriseRealtimeUrlFiltering)) {
+    if (std::optional<DmToken> dm_token =
+            GetDmToken(kEnterpriseRealTimeUrlCheckScope)) {
+      policy_scope = dm_token.value().scope;
+    }
+  }
+
+  // Check the scope of Event Reporting policy.
+  if (base::FeatureList::IsEnabled(kEnterpriseRealtimeEventReportingOnIOS)) {
+    // Machine scope has precedence, only update the scope if the previous
+    // policy is not already machine-scoped.
+    if (policy_scope != policy::PolicyScope::POLICY_SCOPE_MACHINE) {
+      if (std::optional<DmToken> dm_token =
+              GetDmToken(kOnSecurityEventScopePref)) {
+        policy_scope = dm_token.value().scope;
+      }
+    }
+  }
+
+  // Return empty string if none of the policies are enabled.
+  if (!policy_scope) {
+    return std::string();
+  }
+
+  // Retrieve the management domain for the give scope.
+  switch (*policy_scope) {
+      // Retrieve the domain via profile email for user-scoped policies.
+    case policy::PolicyScope::POLICY_SCOPE_USER: {
+      std::string profile_email = GetProfileEmail(identity_manager_);
+      return gaia::ExtractDomainName(profile_email);
+    }
+    case policy::PolicyScope::POLICY_SCOPE_MACHINE:
+      policy::MachineLevelUserCloudPolicyManager* manager =
+          GetApplicationContext()
+              ->GetBrowserPolicyConnector()
+              ->machine_level_user_cloud_policy_manager();
+      return policy::GetManagedBy(manager).value_or(std::string());
+  }
 }
 
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {

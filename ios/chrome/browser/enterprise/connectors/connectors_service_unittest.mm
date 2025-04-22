@@ -73,10 +73,11 @@ class ConnectorsServiceTest : public PlatformTest {
 
 TEST_F(ConnectorsServiceTest, GetPrefs) {
   ConnectorsService connectors_service{/*off_the_record=*/false, prefs(),
-                                       /*user_cloud_policy_client=*/nullptr};
+                                       /*user_cloud_policy_client=*/nullptr,
+                                       /*identity_manager=*/nullptr};
   const ConnectorsService const_connectors_service{
       /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/nullptr};
+      /*user_cloud_policy_client=*/nullptr, /*identity_manager=*/nullptr};
 
   PrefService* prefs = connectors_service.GetPrefs();
   const PrefService* const_prefs = const_connectors_service.GetPrefs();
@@ -91,7 +92,8 @@ TEST_F(ConnectorsServiceTest, GetProfileDmToken) {
                       policy::POLICY_SCOPE_USER);
   ConnectorsService connectors_service{
       /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager()};
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+      /*identity_manager=*/nullptr};
 
   auto profile_dm_token =
       connectors_service.GetDmToken(kEnterpriseRealTimeUrlCheckScope);
@@ -105,7 +107,8 @@ TEST_F(ConnectorsServiceTest, GetBrowserDmToken) {
                       policy::POLICY_SCOPE_MACHINE);
   ConnectorsService connectors_service{
       /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager()};
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+      /*identity_manager=*/nullptr};
 
   auto browser_dm_token =
       connectors_service.GetDmToken(kEnterpriseRealTimeUrlCheckScope);
@@ -126,19 +129,22 @@ TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {
   ASSERT_TRUE(
       ConnectorsService(
           /*off_the_record=*/false, prefs(),
-          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager())
+          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+          /*identity_manager=*/nullptr)
           .ConnectorsEnabled());
   ASSERT_FALSE(
       ConnectorsService(
           /*off_the_record=*/true, prefs(),
-          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager())
+          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+          /*identity_manager=*/nullptr)
           .ConnectorsEnabled());
 }
 
 TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
   auto service = ConnectorsService(
       /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+      /*identity_manager=*/nullptr);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
@@ -170,7 +176,8 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
 TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
   auto service = ConnectorsService(
       /*off_the_record=*/true, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+      /*identity_manager=*/nullptr);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
@@ -204,7 +211,8 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
 TEST_F(ConnectorsServiceTest, ReportingSettings) {
   auto service = ConnectorsService(
       /*off_the_record=*/false, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+      /*identity_manager=*/nullptr);
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
@@ -241,7 +249,8 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
 TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
   auto service = ConnectorsService(
       /*off_the_record=*/true, prefs(),
-      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager(),
+      /*identity_manager=*/nullptr);
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
