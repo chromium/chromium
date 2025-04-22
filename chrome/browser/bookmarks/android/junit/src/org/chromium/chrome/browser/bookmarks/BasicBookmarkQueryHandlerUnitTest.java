@@ -39,7 +39,10 @@ public class BasicBookmarkQueryHandlerUnitTest {
     public void setup() {
         mBookmarkModel = FakeBookmarkModel.createModel();
         mHandler =
-                new BasicBookmarkQueryHandler(mBookmarkModel, Mockito.mock(BookmarkUiPrefs.class));
+                new BasicBookmarkQueryHandler(
+                        mBookmarkModel,
+                        Mockito.mock(BookmarkUiPrefs.class),
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
     }
 
     @Test

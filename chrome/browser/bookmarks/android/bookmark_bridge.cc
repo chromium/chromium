@@ -388,17 +388,19 @@ void BookmarkBridge::GetAllFoldersWithDepths(
 
 void BookmarkBridge::GetTopLevelFolderIds(
     JNIEnv* env,
-    jboolean j_ignore_visibility,
+    jint j_force_visible_mask,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
   AddBookmarkNodesToBookmarkIdList(
-      env, j_result_obj, GetTopLevelFolderIdsImpl(j_ignore_visibility));
+      env, j_result_obj,
+      GetTopLevelFolderIdsImpl(
+          static_cast<BookmarkNodeMaskBit>(j_force_visible_mask)));
 }
 
 std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
-    bool ignore_visibility) {
+    BookmarkNodeMaskBit force_visible_mask) {
   std::vector<const BookmarkNode*> top_level_folders;
 
   // Query for the top-level folders:
@@ -407,49 +409,64 @@ std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
   // local bookmarks after.
   const BookmarkNode* account_mobile_node =
       bookmark_model_->account_mobile_node();
-  if (IsPermanentFolderVisible(ignore_visibility, account_mobile_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::ACCOUNT_MOBILE) != 0,
+          account_mobile_node)) {
     top_level_folders.push_back(account_mobile_node);
   }
 
   const BookmarkNode* account_bookmark_bar_node =
       bookmark_model_->account_bookmark_bar_node();
-  if (IsPermanentFolderVisible(ignore_visibility, account_bookmark_bar_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::ACCOUNT_BOOKMARK_BAR) != 0,
+          account_bookmark_bar_node)) {
     top_level_folders.push_back(account_bookmark_bar_node);
   }
 
   const BookmarkNode* account_other_node =
       bookmark_model_->account_other_node();
-  if (IsPermanentFolderVisible(ignore_visibility, account_other_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::ACCOUNT_OTHER) != 0,
+          account_other_node)) {
     top_level_folders.push_back(account_other_node);
   }
 
   const BookmarkNode* account_reading_list_node =
       account_reading_list_manager_ ? account_reading_list_manager_->GetRoot()
                                     : nullptr;
-  if (IsPermanentFolderVisible(ignore_visibility, account_reading_list_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::ACCOUNT_READING_LIST) != 0,
+          account_reading_list_node)) {
     top_level_folders.push_back(account_reading_list_node);
   }
 
   const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
   // Partner bookmarks are child of the local mobile_node.
-  if (IsPermanentFolderVisible(ignore_visibility, mobile_node) ||
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::MOBILE) != 0,
+          mobile_node) ||
       partner_bookmarks_shim_->HasPartnerBookmarks()) {
     top_level_folders.push_back(mobile_node);
   }
 
   const BookmarkNode* bookmark_bar_node = bookmark_model_->bookmark_bar_node();
-  if (IsPermanentFolderVisible(ignore_visibility, bookmark_bar_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::BOOKMARK_BAR) != 0,
+          bookmark_bar_node)) {
     top_level_folders.push_back(bookmark_bar_node);
   }
 
   const BookmarkNode* other_node = bookmark_model_->other_node();
-  if (IsPermanentFolderVisible(ignore_visibility, other_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::OTHER) != 0, other_node)) {
     top_level_folders.push_back(other_node);
   }
 
   const BookmarkNode* reading_list_node =
       local_or_syncable_reading_list_manager_->GetRoot();
-  if (IsPermanentFolderVisible(ignore_visibility, reading_list_node)) {
+  if (IsPermanentFolderVisible(
+          (force_visible_mask & BookmarkNodeMaskBit::READING_LIST) != 0,
+          reading_list_node)) {
     top_level_folders.push_back(reading_list_node);
   }
 
@@ -466,7 +483,7 @@ std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
   return top_level_folders;
 }
 
-bool BookmarkBridge::IsPermanentFolderVisible(bool ignore_visibility,
+bool BookmarkBridge::IsPermanentFolderVisible(bool force_visible,
                                               const BookmarkNode* folder) {
   // Null folders are never shown.
   if (!folder) {
@@ -474,7 +491,7 @@ bool BookmarkBridge::IsPermanentFolderVisible(bool ignore_visibility,
   }
 
   bool is_account_bookmark = IsAccountBookmarkImpl(folder);
-  if (ignore_visibility) {
+  if (force_visible) {
     // When butter is active ignore_visibility only applies to a subset of local
     // folder to avoid overwhelming the user with unnecessary folders
     // (crbug.com/325070543).

@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrde
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -428,6 +429,9 @@ public class BookmarkManagerMediatorTest {
                                 mReadingListFolderId))
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds();
+        doAnswer(i -> mBookmarkModel.getTopLevelFolderIds())
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds(/* forceVisibleMask= */ anyInt());
 
         // Setup SelectableListLayout.
         doReturn(mActivity).when(mSelectableListLayout).getContext();
@@ -665,11 +669,15 @@ public class BookmarkManagerMediatorTest {
             syncStateChangedListener.syncStateChanged();
         }
 
-        verify(mBookmarkModel, times(0)).getTopLevelFolderIds();
+        verify(mBookmarkModel, times(0)).getTopLevelFolderIds(anyInt());
 
         finishLoading();
         mMediator.openFolder(mBookmarkModel.getRootFolderId());
-        verify(mBookmarkModel, times(1)).getTopLevelFolderIds();
+        verify(mBookmarkModel, times(1))
+                .getTopLevelFolderIds(
+                        BookmarkBarUtils.isFeatureEnabled(mActivity)
+                                ? BookmarkNodeMaskBit.ACCOUNT_AND_LOCAL_BOOKMARK_BAR
+                                : BookmarkNodeMaskBit.NONE);
     }
 
     @Test

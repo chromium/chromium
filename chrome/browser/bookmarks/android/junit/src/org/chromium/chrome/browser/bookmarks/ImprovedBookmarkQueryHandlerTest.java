@@ -85,7 +85,10 @@ public class ImprovedBookmarkQueryHandlerTest {
 
         mHandler =
                 new ImprovedBookmarkQueryHandler(
-                        mBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+                        mBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
     }
 
     @Test
@@ -111,7 +114,10 @@ public class ImprovedBookmarkQueryHandlerTest {
         fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mHandler =
                 new ImprovedBookmarkQueryHandler(
-                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+                        fakeBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
 
         doReturn(BookmarkRowSortOrder.CHRONOLOGICAL)
                 .when(mBookmarkUiPrefs)
@@ -381,7 +387,10 @@ public class ImprovedBookmarkQueryHandlerTest {
         FakeBookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
         mHandler =
                 new ImprovedBookmarkQueryHandler(
-                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+                        fakeBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
 
         doReturn(BookmarkRowSortOrder.ALPHABETICAL)
                 .when(mBookmarkUiPrefs)
@@ -404,7 +413,10 @@ public class ImprovedBookmarkQueryHandlerTest {
         fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mHandler =
                 new ImprovedBookmarkQueryHandler(
-                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+                        fakeBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
 
         doReturn(BookmarkRowSortOrder.ALPHABETICAL)
                 .when(mBookmarkUiPrefs)
@@ -432,7 +444,10 @@ public class ImprovedBookmarkQueryHandlerTest {
         fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         mHandler =
                 new ImprovedBookmarkQueryHandler(
-                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+                        fakeBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
 
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =

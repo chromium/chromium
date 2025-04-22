@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -98,6 +99,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -146,6 +148,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /** Tests for the bookmark manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -1238,6 +1242,19 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    public void testTopLevelFolders() throws Exception {
+        openBookmarkManager();
+        onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
+        onViewWaiting(allOf(withText("Reading list"), isDisplayed()));
+        onView(withText("Bookmarks bar"))
+                .check(
+                        BookmarkBarUtils.isFeatureEnabled(mActivityTestRule.getActivity())
+                                ? matches(isDisplayed())
+                                : doesNotExist());
+    }
+
+    @Test
+    @MediumTest
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
@@ -1259,10 +1276,27 @@ public class BookmarkTest {
         }
         runOnUiThreadBlocking(getTestingDelegate()::simulateSignInForTesting);
 
+        final List<String> expectedTopLevelFolders =
+                new ArrayList<>(List.of("Mobile bookmarks", "Other bookmarks", "Reading list"));
+
+        if (BookmarkBarUtils.isFeatureEnabled(mActivityTestRule.getActivity())) {
+            expectedTopLevelFolders.add(1, "Bookmarks bar");
+        }
+
+        final String expectedTopLevelFoldersStr =
+                IntStream.range(0, expectedTopLevelFolders.size())
+                        .mapToObj(
+                                i -> {
+                                    final var folder = expectedTopLevelFolders.get(i);
+                                    final var isLast = i == expectedTopLevelFolders.size() - 1;
+                                    final var conjunction = isLast ? "and " : "";
+                                    return String.format("%s\"%s\"", conjunction, folder);
+                                })
+                        .collect(Collectors.joining(", "));
+
         assertEquals(
-                "Expected promo, \"Mobile bookmarks\", \"Other bookmarks\" and \"Reading list\""
-                        + " folder to appear!",
-                3,
+                String.format("Expected promo, %s folder to appear!", expectedTopLevelFoldersStr),
+                expectedTopLevelFolders.size(),
                 getBookmarkCount());
     }
 

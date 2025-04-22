@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -470,7 +471,14 @@ class BookmarkManagerMediator
         }
 
         mBookmarkQueryHandler =
-                new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs, mShoppingService);
+                new ImprovedBookmarkQueryHandler(
+                        mBookmarkModel,
+                        bookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkBarUtils.isFeatureEnabled(
+                                        mContext)
+                                ? BookmarkNodeMaskBit.ACCOUNT_AND_LOCAL_BOOKMARK_BAR
+                                : BookmarkNodeMaskBit.NONE);
 
         onScrollListenerConsumer.accept(
                 new OnScrollListener() {

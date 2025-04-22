@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import org.chromium.components.bookmarks.BookmarkId;
@@ -94,6 +96,9 @@ public class SharedBookmarkModelMocks {
                                 READING_LIST_BOOKMARK_ID))
                 .when(bookmarkModel)
                 .getTopLevelFolderIds();
+        doAnswer(i -> bookmarkModel.getTopLevelFolderIds())
+                .when(bookmarkModel)
+                .getTopLevelFolderIds(/* forceVisibleMask= */ anyInt());
 
         doReturn(ROOT_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(ROOT_BOOKMARK_ID);
         doReturn(DESKTOP_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(DESKTOP_BOOKMARK_ID);

@@ -430,7 +430,7 @@ public class FakeBookmarkModel extends BookmarkModel {
         @Override
         public void getTopLevelFolderIds(
                 long nativeBookmarkBridge,
-                boolean ignoreVisibility,
+                @BookmarkNodeMaskBit int forceVisibleMask,
                 List<BookmarkId> bookmarksList) {
             bookmarksList.addAll(FakeBookmarkModel.this.getChildIds(mRootFolderId));
 
