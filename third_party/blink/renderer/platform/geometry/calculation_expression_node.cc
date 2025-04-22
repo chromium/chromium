@@ -336,6 +336,32 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
             std::move(children), op);
       }
     }
+    case CalculationOperator::kLog: {
+      DCHECK_GE(children.size(), 1u);
+      DCHECK_LE(children.size(), 2u);
+      Vector<float> operand_pixels;
+      operand_pixels.reserve(children.size());
+      bool can_simplify = true;
+      for (auto& child : children) {
+        const auto* pixels_and_percent =
+            DynamicTo<CalculationExpressionPixelsAndPercentNode>(*child);
+        if (!pixels_and_percent || pixels_and_percent->Percent()) {
+          can_simplify = false;
+          break;
+        }
+        operand_pixels.push_back(pixels_and_percent->Pixels());
+      }
+      if (can_simplify) {
+        float value = operand_pixels.size() == 1u
+                          ? std::log(operand_pixels.front())
+                          : std::log2(operand_pixels.front()) /
+                                std::log2(operand_pixels.back());
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(value));
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
     case CalculationOperator::kHypot: {
       DCHECK_GE(children.size(), 1u);
       Vector<float> operand_pixels;
@@ -574,6 +600,14 @@ float CalculationExpressionOperationNode::Evaluate(
       float b = children_[1]->Evaluate(max_value, input);
       return EvaluateSteppedValueFunction(operator_, a, b);
     }
+    case CalculationOperator::kLog: {
+      DCHECK_GE(children_.size(), 1u);
+      DCHECK_LE(children_.size(), 2u);
+      return children_.size() == 1u
+                 ? std::log(children_.front()->Evaluate(max_value, input))
+                 : std::log2(children_.front()->Evaluate(max_value, input)) /
+                       std::log2(children_.back()->Evaluate(max_value, input));
+    }
     case CalculationOperator::kHypot: {
       DCHECK_GE(children_.size(), 1u);
       float value = 0;
@@ -709,6 +743,7 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kRem:
     case CalculationOperator::kHypot:
     case CalculationOperator::kAbs:
+    case CalculationOperator::kLog:
     case CalculationOperator::kExp:
     case CalculationOperator::kSqrt:
     case CalculationOperator::kSign:
@@ -838,6 +873,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kContainerProgress:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kLog:
     case CalculationOperator::kExp:
     case CalculationOperator::kSin:
     case CalculationOperator::kCos:

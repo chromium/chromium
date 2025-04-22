@@ -1571,6 +1571,14 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
     case CSSValueID::kLog: {
       DCHECK_GE(operands.size(), 1u);
       DCHECK_LE(operands.size(), 2u);
+      if (operands.front()->Category() != kCalcNumber ||
+          operands.back()->Category() != kCalcNumber) {
+        return nullptr;
+      }
+      if (!CanEagerlySimplify(operands)) {
+        return MakeGarbageCollected<CSSMathExpressionOperation>(
+            kCalcNumber, std::move(operands), CSSMathOperator::kLog);
+      }
       double a = ValueAsNumber(operands[0], error);
       if (operands.size() == 2) {
         double b = ValueAsNumber(operands[1], error);
@@ -2245,6 +2253,7 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kMod:
     case CSSMathOperator::kRem:
     case CSSMathOperator::kSqrt:
+    case CSSMathOperator::kLog:
     case CSSMathOperator::kExp:
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
@@ -2325,6 +2334,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kRoundToZero:
     case CSSMathOperator::kMod:
     case CSSMathOperator::kRem:
+    case CSSMathOperator::kLog:
     case CSSMathOperator::kExp:
     case CSSMathOperator::kSqrt:
     case CSSMathOperator::kHypot:
@@ -2360,6 +2370,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kMod;
       } else if (operator_ == CSSMathOperator::kRem) {
         op = CalculationOperator::kRem;
+      } else if (operator_ == CSSMathOperator::kLog) {
+        op = CalculationOperator::kLog;
       } else if (operator_ == CSSMathOperator::kExp) {
         op = CalculationOperator::kExp;
       } else if (operator_ == CSSMathOperator::kSqrt) {
@@ -2539,6 +2551,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
     case CSSMathOperator::kRoundToZero:
     case CSSMathOperator::kMod:
     case CSSMathOperator::kRem:
+    case CSSMathOperator::kLog:
     case CSSMathOperator::kExp:
     case CSSMathOperator::kSqrt:
     case CSSMathOperator::kHypot:
@@ -2667,6 +2680,7 @@ String CSSMathExpressionOperation::CustomCSSText() const {
     case CSSMathOperator::kClamp:
     case CSSMathOperator::kMod:
     case CSSMathOperator::kRem:
+    case CSSMathOperator::kLog:
     case CSSMathOperator::kExp:
     case CSSMathOperator::kSqrt:
     case CSSMathOperator::kHypot:
@@ -2823,6 +2837,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         case CSSMathOperator::kPow:
         case CSSMathOperator::kSin:
         case CSSMathOperator::kCos:
+        case CSSMathOperator::kLog:
         case CSSMathOperator::kExp:
         case CSSMathOperator::kTan:
           return CSSPrimitiveValue::UnitType::kNumber;
@@ -2978,6 +2993,14 @@ double CSSMathExpressionOperation::EvaluateOperator(
     case CSSMathOperator::kExp: {
       DCHECK_EQ(operands.size(), 1u);
       return std::exp(operands.front());
+    }
+    case CSSMathOperator::kLog: {
+      DCHECK_GE(operands.size(), 1u);
+      DCHECK_LE(operands.size(), 2u);
+      if (operands.size() == 2) {
+        return std::log2(operands.front()) / std::log2(operands.back());
+      }
+      return std::log(operands.front());
     }
     case CSSMathOperator::kSqrt: {
       DCHECK_EQ(operands.size(), 1u);
@@ -4567,6 +4590,16 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       }
       return CSSMathExpressionOperation::CreateExponentialFunction(
           std::move(operands), CSSValueID::kHypot);
+    }
+    case CalculationOperator::kLog: {
+      DCHECK_GE(children.size(), 1u);
+      DCHECK_LE(children.size(), 2u);
+      CSSMathExpressionOperation::Operands operands;
+      for (const auto& child : children) {
+        operands.push_back(Create(*child));
+      }
+      return CSSMathExpressionOperation::CreateExponentialFunction(
+          std::move(operands), CSSValueID::kLog);
     }
     case CalculationOperator::kExp: {
       DCHECK_EQ(children.size(), 1u);

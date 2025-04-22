@@ -28,6 +28,7 @@ enum class CalculationOperator {
   kRoundToZero,
   kMod,
   kRem,
+  kLog,
   kExp,
   kSqrt,
   kHypot,
