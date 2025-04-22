@@ -101,7 +101,7 @@ suite('SystemDialogTest', function() {
 
           // Set an invalid input.
           const scalingSettingsInput =
-              scalingSettings.shadowRoot!
+              scalingSettings.shadowRoot
                   .querySelector('print-preview-number-settings-section')!.$
                   .userValue.inputElement;
           scalingSettingsInput.value = '0';
