@@ -316,7 +316,7 @@ using manual_fill::ManualFillDataType;
         initWithFaviconLoader:faviconLoader
            plusAddressService:plusAddressService
                           URL:URL
-               isOffTheRecord:self.profile->IsOffTheRecord()
+               isOffTheRecord:self.isOffTheRecord
       isAddressManualFallback:isAddressManualFallback];
 
   return _manualFillPlusAddressMediator;
