@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
@@ -176,13 +175,14 @@
                                       completion:nil];
 }
 
-- (void)stop {
+- (void)stopAnimated:(BOOL)animated {
   // TODO(crbug.com/336719423): Change condition to CHECK(_mediator). But
   // first inform the parent coordinator at didTapClose that this view was
   // dismissed.
   if (!_mediator) {
     return;
   }
+  [self stopChildrenAndViewControllerAnimated:animated];
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
@@ -402,14 +402,6 @@
                                        continuationProvider:
                                            DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:nil];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  [self stopChildrenAndViewControllerAnimated:animated];
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
 }
 
 #pragma mark - ManageAccountsCoordinatorDelegate

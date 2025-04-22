@@ -245,7 +245,7 @@ class PrefRegistrySyncable;
                                              continuationProvider;
 
 // Returns a coordinator to switch account.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     accountMenuCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser

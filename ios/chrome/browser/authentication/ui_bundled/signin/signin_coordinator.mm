@@ -273,7 +273,7 @@ using signin_metrics::PromoAction;
             continuationProvider:continuationProvider];
 }
 
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     accountMenuCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser

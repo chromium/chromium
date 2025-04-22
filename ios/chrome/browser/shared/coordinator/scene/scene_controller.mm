@@ -2240,7 +2240,7 @@ using UserFeedbackDataCallback =
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
-  SigninCoordinator<InterruptibleChromeCoordinator>* accountMenuCoordinator =
+  SigninCoordinator<StopAnimatedChromeCoordinator>* accountMenuCoordinator =
       [SigninCoordinator
           accountMenuCoordinatorWithBaseViewController:baseViewController
                                                browser:browser

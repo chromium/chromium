@@ -91,7 +91,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   // Account menu coordinator.
-  SigninCoordinator<InterruptibleChromeCoordinator>* _accountMenuCoordinator;
+  SigninCoordinator<StopAnimatedChromeCoordinator>* _accountMenuCoordinator;
 }
 
 // View controller.
@@ -192,7 +192,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self.mediator disconnect];
   [self stopBulkUpload];
   [self stopManageAccountsCoordinator];
-  [self interruptAccountMenuCoordinator];
+  [self stopAccountMenuCoordinatorAnimated:YES];
   self.mediator = nil;
   self.viewController = nil;
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
@@ -248,13 +248,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _personalizeGoogleServicesCoordinator = nil;
 }
 
-- (void)stopAccountMenuCoordinator {
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator = nil;
-}
-
-- (void)interruptAccountMenuCoordinator {
-  [_accountMenuCoordinator interruptAnimated:YES];
+- (void)stopAccountMenuCoordinatorAnimated:(BOOL)animated {
+  [_accountMenuCoordinator stopAnimated:animated];
   _accountMenuCoordinator = nil;
 }
 
@@ -502,7 +497,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   __weak __typeof(self) weakself = self;
   _accountMenuCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakself stopAccountMenuCoordinator];
+        [weakself stopAccountMenuCoordinatorAnimated:YES];
       };
 
   [_accountMenuCoordinator start];

@@ -268,7 +268,7 @@
   // Indicates whether the fakebox was tapped as part of an omnibox focus event.
   BOOL _fakeboxTapped;
   // The account menu coordinator.
-  SigninCoordinator<InterruptibleChromeCoordinator>* _accountMenuCoordinator;
+  SigninCoordinator<StopAnimatedChromeCoordinator>* _accountMenuCoordinator;
   // Whether the signin menu is displayed on top of this NTP.
   BOOL _showSigninCommandInProgress;
 }
@@ -403,7 +403,7 @@
   self.feedHeaderViewController = nil;
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
-  [_accountMenuCoordinator interruptAnimated:NO];
+  [_accountMenuCoordinator stop];
 
   self.NTPMetricsRecorder = nil;
 

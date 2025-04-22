@@ -7,15 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 
 enum class AccountMenuAccessPoint;
 @protocol AccountMenuCoordinatorDelegate;
 
 // Coordinator to display the fast account menu view controller.
 @interface AccountMenuCoordinator
-    : SigninCoordinator <InterruptibleChromeCoordinator>
+    : SigninCoordinator <StopAnimatedChromeCoordinator>
 
 // `anchorView`: Clicked view, used to anchor the menu to it when using
 // UIModalPresentationPopover mode.

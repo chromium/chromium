@@ -137,7 +137,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                        accessPoint:AccountMenuAccessPoint::kNewTabPage];
     coordinator_.signinCompletion =
         ^(SigninCoordinatorResult, id<SystemIdentity>) {
-          signinCompletion();
+          Stop();
         };
     [coordinator_ start];
 
@@ -154,7 +154,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
 
   void TearDown() override {
     VerifyMock();
-    ASSERT_TRUE(completionCalled_);
     PlatformTest::TearDown();
   }
 
@@ -173,14 +172,11 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   }
 
   // Asserts that the coordinator is still open and request it to be closed.
-  void assertOpenAndInterrupt() {
-    // `stop` should not be called directly. Instead, the SigninCoordinator is
-    // closed inderectly through `runCompletion`. We ensure to close it by
-    // simulating that the mediator request to dismiss the coordinator.
+  void AssertOpenAndStop() {
     OCMExpect(view_controller_.dataSource = nil);
     OCMExpect(mediator_.consumer = nil);
     OCMExpect(view_controller_.mutator = nil);
-    [coordinator_ interruptAnimated:NO];
+    Stop();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -205,11 +201,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   UIView* view_;
 
  private:
-  // Stops the coordinator. This is the coordinator’s `signinCompletion`, it is
-  // called through `interruptWithAction:completion:` and should not be called
-  // directly.
-  void signinCompletion() {
-    completionCalled_ = true;
+  // Stops the coordinator.
+  void Stop() {
     OCMExpect([mediator_ disconnect]);
     OCMExpect(mediator_.delegate = nil);
     [coordinator_ stop];
@@ -233,7 +226,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  bool completionCalled_ = false;
 };
 
 // The test param determines whether `kSeparateProfilesForManagedAccounts` is
@@ -273,14 +265,14 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testManageYourGoogleAccount) {
                                            animated:YES
                                          completion:nil]);
   [coordinator_ didTapManageYourGoogleAccount];
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 // Tests that `didTapManageAccounts` has no impact on the view controller and
 // mediator.
 TEST_P(AccountMenuCoordinatorNonManagedTest, testEditAccountList) {
   [coordinator_ didTapManageAccounts];
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 // Tests that `signOutFromTargetRect` requests the delegate to be stopped and
@@ -294,7 +286,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSignOut) {
   [coordinator_ signOutFromTargetRect:rect
                            completion:^(BOOL success, SceneState* scene_state) {
                              EXPECT_TRUE(success);
-                             assertOpenAndInterrupt();
+                             AssertOpenAndStop();
                              closure.Run();
                            }];
   run_loop.Run();
@@ -306,7 +298,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSignOut) {
 // Tests that `mediatorWantsToBeDismissed` requests to the delegate to stop the
 // coordinator.
 TEST_P(AccountMenuCoordinatorNonManagedTest, testMediatorWantsToBeDismissed) {
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 // Tests that `triggerSignoutWithTargetRect` calls its
@@ -324,7 +316,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
                              closure.Run();
                            }];
   run_loop.Run();
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler
@@ -340,28 +332,28 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testPassphrase) {
       OCMClassMock([SyncEncryptionPassphraseTableViewController class]);
   OCMExpect([classMock alloc]).andReturn(passphraseViewController);
   [coordinator_ openPassphraseDialogWithModalPresentation:YES];
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 // Tests that `openTrustedVaultReauthForFetchKeys` calls
 // `showTrustedVaultReauthForFetchKeysFromViewController`.
 TEST_P(AccountMenuCoordinatorNonManagedTest, testFetchKeys) {
   [coordinator_ openTrustedVaultReauthForFetchKeys];
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 // Tests that `openTrustedVaultReauthForDegradedRecoverability` calls
 // `showTrustedVaultReauthForDegradedRecoverabilityFromViewController`.
 TEST_P(AccountMenuCoordinatorNonManagedTest, testDegradedRecoverability) {
   [coordinator_ openTrustedVaultReauthForDegradedRecoverability];
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 // Tests that `openMDMErrodDialogWithSystemIdentity` has no effects on the
 // mediator and view controller.
 TEST_P(AccountMenuCoordinatorNonManagedTest, testMDMError) {
   [coordinator_ openMDMErrodDialogWithSystemIdentity:kPrimaryIdentity];
-  assertOpenAndInterrupt();
+  AssertOpenAndStop();
 }
 
 INSTANTIATE_TEST_SUITE_P(,
