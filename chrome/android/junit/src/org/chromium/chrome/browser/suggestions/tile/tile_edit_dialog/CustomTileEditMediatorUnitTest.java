@@ -48,7 +48,8 @@ public class CustomTileEditMediatorUnitTest {
 
         verify(mViewDelegate).setDialogMode(DialogMode.ADD_SHORTCUT);
         verify(mViewDelegate).setName("");
-        verify(mViewDelegate).setUrlText("");
+        verify(mViewDelegate).setUrlText(CustomTileEditMediator.DEFAULT_URL_TEXT);
+        verify(mViewDelegate).focusOnUrl(true);
         verify(mBrowserDelegate).showEditDialog();
     }
 
@@ -62,6 +63,7 @@ public class CustomTileEditMediatorUnitTest {
         verify(mViewDelegate).setDialogMode(DialogMode.EDIT_SHORTCUT);
         verify(mViewDelegate).setName("Test Name");
         verify(mViewDelegate).setUrlText("http://test.com/");
+        verify(mViewDelegate).focusOnName();
         verify(mBrowserDelegate).showEditDialog();
     }
 
@@ -121,7 +123,7 @@ public class CustomTileEditMediatorUnitTest {
 
         verify(mBrowserDelegate, never()).closeEditDialog(anyBoolean());
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.INVALID_URL);
-        verify(mViewDelegate).focusOnUrl();
+        verify(mViewDelegate).focusOnUrl(false);
     }
 
     @Test
@@ -132,7 +134,7 @@ public class CustomTileEditMediatorUnitTest {
 
         verify(mBrowserDelegate, never()).closeEditDialog(anyBoolean());
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.DUPLICATE_URL);
-        verify(mViewDelegate).focusOnUrl();
+        verify(mViewDelegate).focusOnUrl(false);
     }
 
     @Test

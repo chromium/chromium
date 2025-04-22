@@ -177,14 +177,36 @@ public class CustomTileEditViewUnitTest {
     }
 
     @Test
+    public void testFocusOnName() {
+        // Focus on some other view first.
+        mUrlField.requestFocus();
+        assertFalse(mNameField.hasFocus());
+        assertTrue(mUrlField.hasFocus());
+
+        mView.focusOnName();
+        assertTrue(mNameField.hasFocus());
+        assertFalse(mUrlField.hasFocus());
+    }
+
+    @Test
     public void testFocusOnUrl() {
+        String urlText = "https://example.com";
+        mUrlField.setText(urlText);
+
         // Focus on some other view first.
         mNameField.requestFocus();
         assertTrue(mNameField.hasFocus());
         assertFalse(mUrlField.hasFocus());
 
-        mView.focusOnUrl();
+        mView.focusOnUrl(false);
         assertTrue(mUrlField.hasFocus());
         assertFalse(mNameField.hasFocus());
+        assertEquals(mUrlField.getSelectionStart(), mUrlField.getSelectionEnd());
+
+        mView.focusOnUrl(true);
+        assertTrue(mUrlField.hasFocus());
+        assertFalse(mNameField.hasFocus());
+        assertEquals(0, mUrlField.getSelectionStart());
+        assertEquals(urlText.length(), mUrlField.getSelectionEnd());
     }
 }
