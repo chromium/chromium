@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import asyncio
 import os.path
 import unittest
 from unittest import mock
@@ -1143,7 +1144,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1194,7 +1195,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1246,7 +1247,7 @@ class TestSignAll(unittest.TestCase):
 
         config = Config()
 
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1303,7 +1304,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1356,7 +1357,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1413,7 +1414,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1471,7 +1472,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1529,7 +1530,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1575,7 +1576,8 @@ class TestSignAll(unittest.TestCase):
             manager.attach_mock(kwargs[attr], attr)
 
         config = test_config.TestConfig()
-        pipeline.sign_all(self.paths, config, disable_packaging=True)
+        asyncio.run(
+            pipeline.sign_all(self.paths, config, disable_packaging=True))
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1611,7 +1613,7 @@ class TestSignAll(unittest.TestCase):
 
         config = test_config.TestConfig(
             notarize=model.NotarizeAndStapleLevel.WAIT_NOSTAPLE)
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1649,7 +1651,7 @@ class TestSignAll(unittest.TestCase):
 
         config = test_config.TestConfig(
             notarize=model.NotarizeAndStapleLevel.NONE)
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1676,7 +1678,8 @@ class TestSignAll(unittest.TestCase):
 
         config = test_config.TestConfig(
             notarize=model.NotarizeAndStapleLevel.NONE)
-        pipeline.sign_all(self.paths, config, disable_packaging=True)
+        asyncio.run(
+            pipeline.sign_all(self.paths, config, disable_packaging=True))
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1748,7 +1751,7 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
-        pipeline.sign_all(self.paths, config)
+        asyncio.run(pipeline.sign_all(self.paths, config))
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(6, kwargs['_customize_and_sign_chrome'].call_count)
@@ -1829,11 +1832,12 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
-        pipeline.sign_all(
-            self.paths,
-            config,
-            skip_brands=skip_brands,
-            channels=include_channels)
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths,
+                config,
+                skip_brands=skip_brands,
+                channels=include_channels))
 
         self.assertEqual(_last_brand_filter(), skip_brands)
         self.assertEqual(_last_channel_filter(), include_channels)

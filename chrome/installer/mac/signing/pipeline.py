@@ -816,7 +816,7 @@ async def _sign_and_maybe_notarize_distributions(config, distributions,
 
             # Yield the event loop to let the notarization subprocesses start
             # before continuing to the next distribution.
-            asyncio.sleep(0)
+            await asyncio.sleep(0)
     return dist_configs
 
 
@@ -868,7 +868,7 @@ async def _package_and_maybe_notarize_distributions(config, distributions,
 
             # Yield the event loop to let the notarization subprocesses start
             # before continuing to the next distribution.
-            asyncio.sleep(0)
+            await asyncio.sleep(0)
 
     if config.notarize.should_staple():
         for path in staple_paths:

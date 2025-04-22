@@ -48,7 +48,7 @@ class Invoker(invoker.Base):
     def notary_args(self):
         return self._notary_args
 
-    async def submit(self, path, config):
+    async def submit_async(self, path, config):
         # Submit the notarization.
         command = [
             'xcrun',
@@ -128,7 +128,7 @@ async def submit(path, config):
         path: The path to the artifact that will be uploaded for notarization.
         config: The |config.CodeSignConfig| for the artifact.
     """
-    await config.invoker.notarizer.submit(path, config)
+    await config.invoker.notarizer.submit_async(path, config)
 
 
 class Status(enum.Enum):
