@@ -19,6 +19,7 @@ namespace autofill {
 class AutofillProfile;
 class CreditCard;
 class FormStructure;
+class LoyaltyCard;
 
 // For each submitted field in the `form_structure`, determines whether
 // `ADDRESS_HOME_STATE` is a possible matching type.
@@ -29,14 +30,15 @@ class FormStructure;
     const FormStructure& form_structure,
     const std::string& app_locale);
 
-// Uses the existing personal data in |profiles| and |credit_cards| to
-// determine possible field types for the |form|.  This is
+// Uses the existing personal data in `profiles`, `credit_cards` and
+// `loyalty_cardss` to determine possible field types for the `form`.  This is
 // potentially expensive -- on the order of 50ms even for a small set of
-// |stored_data|. Hence, it should not run on the UI thread -- to avoid
+// `stored_data`. Hence, it should not run on the UI thread -- to avoid
 // locking up the UI -- nor on the IO thread -- to avoid blocking IPC calls.
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,

@@ -14,7 +14,10 @@ namespace autofill {
 ValuablesDataManager::ValuablesDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service)
     : webdata_service_(std::move(webdata_service)) {
-  CHECK(webdata_service_);
+  if (!webdata_service_) {
+    // In some tests, there are no dbs.
+    return;
+  }
   webdata_service_observer_.Observe(webdata_service_.get());
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     LoadLoyaltyCards();
@@ -41,6 +44,9 @@ void ValuablesDataManager::OnDataRetrieved(
 }
 
 void ValuablesDataManager::LoadLoyaltyCards() {
+  if (!webdata_service_) {
+    return;
+  }
   if (pending_query_) {
     webdata_service_->CancelRequest(pending_query_);
   }

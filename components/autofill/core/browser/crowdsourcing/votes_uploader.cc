@@ -208,11 +208,19 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           .payments_data_manager()
           .GetCreditCards();
 
-  if (profiles.empty() && credit_cards.empty()) {
+  std::vector<LoyaltyCard> loyalty_cards;
+  if (ValuablesDataManager* valuables_data_manager =
+          client_->GetValuablesDataManager()) {
+    loyalty_cards = base::ToVector(valuables_data_manager->GetLoyaltyCards(),
+                                   [](LoyaltyCard card) { return card; });
+  }
+
+  if (profiles.empty() && credit_cards.empty() && loyalty_cards.empty()) {
     return false;
   }
 
-  if (form->field_count() * (profiles.size() + credit_cards.size()) >=
+  if (form->field_count() *
+          (profiles.size() + credit_cards.size() + loyalty_cards.size()) >=
       kMaxTypeMatchingCalls) {
     return false;
   }
@@ -245,6 +253,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
       base::BindOnce(
           [](const std::vector<AutofillProfile>& profiles,
              const std::vector<CreditCard>& credit_cards,
+             const std::vector<LoyaltyCard>& loyalty_cards,
              const std::u16string& last_unlocked_credit_card_cvc,
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
@@ -252,7 +261,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              FormStructure::FormAssociations form_associations,
              std::set<FieldGlobalId> fields_that_match_state) {
             DeterminePossibleFieldTypesForUpload(
-                profiles, credit_cards, fields_that_match_state,
+                profiles, credit_cards, loyalty_cards, fields_that_match_state,
                 last_unlocked_credit_card_cvc, app_locale, *form);
 
             EncodeUploadRequestOptions options;
@@ -285,8 +294,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(copied_profiles), std::move(copied_credit_cards),
-          last_unlocked_credit_card_cvc, client_->GetAppLocale(),
-          observed_submission, std::move(form),
+          std::move(loyalty_cards), last_unlocked_credit_card_cvc,
+          client_->GetAppLocale(), observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
           std::move(form_associations), std::move(fields_that_match_state)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,

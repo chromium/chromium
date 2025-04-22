@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -139,12 +140,13 @@ void FindAndSetPossibleFieldTypesForField(
     AutofillField& field,
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
     const std::set<FieldGlobalId> fields_that_match_state,
     const std::string& app_locale) {
-  std::u16string value = field.value_for_import();
-  base::TrimWhitespace(value, base::TRIM_ALL, &value);
+  std::u16string value_u16 = field.value_for_import();
+  base::TrimWhitespace(value_u16, base::TRIM_ALL, &value_u16);
 
-  if (!field.possible_types().empty() && value.empty()) {
+  if (!field.possible_types().empty() && value_u16.empty()) {
     // This is a password field in a sign-in form. Skip checking its type
     // since |field->value| is not set.
     DCHECK_EQ(1u, field.possible_types().size());
@@ -154,10 +156,19 @@ void FindAndSetPossibleFieldTypesForField(
   FieldTypeSet matching_types;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypes(value, app_locale, &matching_types);
+    profile.GetMatchingTypes(value_u16, app_locale, &matching_types);
   }
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypes(value, app_locale, &matching_types);
+    card.GetMatchingTypes(value_u16, app_locale, &matching_types);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling)) {
+    const std::string value_u8 = base::UTF16ToUTF8(value_u16);
+    for (const LoyaltyCard& card : loyalty_cards) {
+      if (value_u8 == card.loyalty_card_number()) {
+        matching_types.insert(LOYALTY_MEMBERSHIP_ID);
+      }
+    }
   }
 
   if (fields_that_match_state.contains(field.global_id())) {
@@ -175,13 +186,15 @@ void FindAndSetPossibleFieldTypesForField(
 void FindAndSetPossibleFieldTypes(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
     const std::set<FieldGlobalId> fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form) {
   for (size_t i = 0; i < form.field_count(); ++i) {
     FindAndSetPossibleFieldTypesForField(*form.field(i), profiles, credit_cards,
-                                         fields_that_match_state, app_locale);
+                                         loyalty_cards, fields_that_match_state,
+                                         app_locale);
   }
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
@@ -262,6 +275,7 @@ std::set<FieldGlobalId> PreProcessStateMatchingTypes(
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
+    const std::vector<LoyaltyCard>& loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
@@ -271,7 +285,8 @@ void DeterminePossibleFieldTypesForUpload(
     // the values so that the first call does not affect later calls.
     field->set_possible_types({});
   }
-  FindAndSetPossibleFieldTypes(profiles, credit_cards, fields_that_match_state,
+  FindAndSetPossibleFieldTypes(profiles, credit_cards, loyalty_cards,
+                               fields_that_match_state,
                                last_unlocked_credit_card_cvc, app_locale, form);
   DisambiguatePossibleFieldTypes(form);
 }
