@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -94,6 +95,15 @@ public class PrivacySettingsFragmentTest {
     public static final int PRIVACY_SANDBOX_V4_POS_IDX = 4;
     // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
     public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
+
+    private static final int IPP_TOGGLE_LABEL =
+            R.string.incognito_tracking_protections_ip_protection_toggle_label;
+    private static final int IPP_TOGGLE_SUBLABEL =
+            R.string.incognito_tracking_protections_ip_protection_toggle_sublabel;
+    private static final int FPP_TOGGLE_LABEL =
+            R.string.incognito_tracking_protections_fingerprinting_protection_toggle_label;
+    private static final int FPP_TOGGLE_SUBLABEL =
+            R.string.incognito_tracking_protections_fingerprinting_protection_toggle_sublabel;
 
     public final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySettings.class);
@@ -300,22 +310,6 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    public void testIpProtectionFragment() throws IOException {
-        setShowTrackingProtection(false);
-        mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.ip_protection_title));
-        onView(withText(R.string.ip_protection_title)).perform(click());
-        // Verify that the right view is shown depending on feature state.
-        onView(withText(R.string.ip_protection_title)).check(matches(isDisplayed()));
-        // Verify that the user action is emitted when ip protection is clicked
-        assertTrue(
-                mActionTester.getActions().contains("Settings.IpProtection.OpenedFromPrivacyPage"));
-    }
-
-    @Test
-    @LargeTest
     public void testPrivacySandboxV4RestrictedWithRestrictedNoticeEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
@@ -386,67 +380,52 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    public void testIpProtectionSettingsE2E() throws ExecutionException {
+    public void clickingIpProtectionToggleEnablesPref() throws ExecutionException {
         setIpProtection(false);
         setShowTrackingProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.ip_protection_title));
-        onView(withText(R.string.ip_protection_title)).perform(click());
-        // Verify that the right view is shown depending on feature state.
-        onView(withText(R.string.ip_protection_title)).check(matches(isDisplayed()));
-        onView(allOf(withText(R.string.text_off), isDisplayed())).perform(click());
+        // Scroll down and open the Incognito tracking protections page.
+        scrollToSetting(withText(R.string.incognito_tracking_protections_page_title));
+        onView(withText(R.string.incognito_tracking_protections_page_title)).perform(click());
+        onView(withText(R.string.incognito_tracking_protections_ip_protection_toggle_sublabel_off))
+                .check(matches(isDisplayed()));
+        // Scroll to the IP protections preference and go to the IP protections page.
+        scrollToSetting(withText(IPP_TOGGLE_LABEL));
+        onView(withText(IPP_TOGGLE_LABEL)).perform(click());
+        onView(
+                        allOf(
+                                withText(IPP_TOGGLE_LABEL),
+                                hasSibling(withText(IPP_TOGGLE_SUBLABEL)),
+                                isDisplayed()))
+                .perform(click());
         assertTrue(isIpProtectionEnabled());
     }
 
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-    public void testFingerprintingProtectionSettingsE2E() throws ExecutionException {
+    public void clickingFingerprintingProtectionToggleEnablesPref() throws ExecutionException {
         setFpProtection(false);
         setShowTrackingProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.tracking_protection_fingerprinting_protection_title));
-        onView(withText(R.string.tracking_protection_fingerprinting_protection_title))
-                .perform(click());
-        // Verify that the right view is shown depending on feature state.
-        onView(withText(R.string.tracking_protection_fingerprinting_protection_title))
+        // Scroll down and open the Incognito tracking protections page.
+        scrollToSetting(withText(R.string.incognito_tracking_protections_page_title));
+        onView(withText(R.string.incognito_tracking_protections_page_title)).perform(click());
+        onView(
+                        withText(
+                                R.string
+                                        .incognito_tracking_protections_fingerprinting_protection_toggle_sublabel_off))
                 .check(matches(isDisplayed()));
-        onView(allOf(withText(R.string.text_off), isDisplayed())).perform(click());
+        // Scroll to the FPP preference and go to the FPP page.
+        scrollToSetting(withText(FPP_TOGGLE_LABEL));
+        onView(withText(FPP_TOGGLE_LABEL)).perform(click());
+        onView(
+                        allOf(
+                                withText(FPP_TOGGLE_LABEL),
+                                hasSibling(withText(FPP_TOGGLE_SUBLABEL)),
+                                isDisplayed()))
+                .perform(click());
         assertTrue(isFpProtectionEnabled());
-    }
-
-    @Test
-    @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    public void testIpProtectionSettingsWithTrackingProtectionEnabled() {
-        setIpProtection(false);
-        setShowTrackingProtection(true);
-        mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
-
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference ipProtectionPreference =
-                fragment.findPreference(PrivacySettings.PREF_IP_PROTECTION);
-
-        assertFalse(ipProtectionPreference.isVisible());
-    }
-
-    @Test
-    @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-    public void testFingerprintingProtectionSettingsWithTrackingProtectionEnabled() {
-        setFpProtection(false);
-        setShowTrackingProtection(true);
-        mSettingsActivityTestRule.startSettingsActivity();
-        waitForOptionsMenu();
-
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference fpProtectionPreference =
-                fragment.findPreference(PrivacySettings.PREF_FP_PROTECTION);
-
-        assertFalse(fpProtectionPreference.isVisible());
     }
 
     @Test

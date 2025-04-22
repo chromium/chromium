@@ -10,11 +10,39 @@ found in the LICENSE file.
 
   <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
       android:key="ip_protection_switch"
-      android:summaryOn="@string/text_on"
-      android:summaryOff="@string/text_off" />
+      android:title="@string/incognito_tracking_protections_ip_protection_toggle_label"
+      android:summary="@string/incognito_tracking_protections_ip_protection_toggle_sublabel" />
 
+  <PreferenceCategory
+        android:title="@string/incognito_tracking_protections_when_on"/>
   <org.chromium.components.browser_ui.settings.TextMessagePreference
-      android:id="@+id/privacy_sandbox_ip_protection_summary"
-      android:key="ip_protection_summary"
-      app:allowDividerBelow="false" />
+        android:key="ipp_when_on"
+        android:summary="@string/incognito_tracking_protections_ip_protection_when_on"
+        android:icon="@drawable/network_ping"
+        android:drawablePadding="16dp"
+        android:layout_marginVertical="16dp"
+        app:allowDividerBelow="false" />
+  <PreferenceCategory
+        android:title="@string/incognito_tracking_protections_things_to_consider"/>
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="ipp_things_to_consider_one"
+        android:summary="@string/incognito_tracking_protections_ip_protection_things_to_consider_bullet_one"
+        android:icon="@drawable/preview"
+        android:drawablePadding="16dp"
+        android:layout_marginVertical="16dp"
+        app:allowDividerBelow="false" />
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="ipp_things_to_consider_three"
+        android:summary="@string/incognito_tracking_protections_ip_protection_things_to_consider_bullet_two"
+        android:icon="@drawable/account_circle"
+        android:drawablePadding="16dp"
+        android:layout_marginVertical="16dp"
+        app:allowDividerBelow="false" />
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="ipp_things_to_consider_three"
+        android:summary="@string/incognito_tracking_protections_ip_protection_things_to_consider_bullet_three"
+        android:icon="@drawable/google"
+        android:drawablePadding="16dp"
+        android:layout_marginVertical="16dp"
+        app:allowDividerBelow="false" />
 </PreferenceScreen>

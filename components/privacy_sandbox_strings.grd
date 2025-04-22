@@ -351,16 +351,6 @@
         </else>
       </if>
 
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TITLE" desc="" formatter_data="android_java" translateable="false">
-        Limit digital fingerprinting
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
-        Prevent sites from collecting settings from your browser and computer to create a unique digital fingerprint which can be used to track you.
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
-        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how limiting digital fingerprinting works<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-
       <!-- Privacy Sandbox Ads Notice -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java">
         Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -1023,69 +1013,90 @@
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_ENTRYPOINT_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
         Manage information sites can use to learn about you in Incognito
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="" formatter_data="android_java" translateable="false">
         Tracking protections
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="" translateable="false">
         Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
+        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph> Incongito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
         Block third-party cookies
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_LABEL" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
         Protect your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
         Limit access to your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_ONE" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL_ON" desc="" formatter_data="android_java" translateable="false">
+        Limit access to your IP address. This setting is on.
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_TOGGLE_SUBLABEL_OFF" desc="" formatter_data="android_java" translateable="false">
+        Limit access to your IP address. This setting is off.
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_ONE" desc="" formatter_data="android_java" translateable="false">
         Applies to embedded sites, not the site you're directly visiting
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_THREE" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_THREE" desc="" formatter_data="android_java" translateable="false">
         Google's privacy servers can see your IP address but not your browsing destination when protecting your IP address
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
         Block tracking scripts
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
         Limit access to device and browser data
       </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_THINGS_TO_CONSIDER" desc="" translateable="false">
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL_ON" desc="" formatter_data="android_java" translateable="false">
+        Limit access to device and browser data. This setting is on.
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL_OFF" desc="" formatter_data="android_java" translateable="false">
+        Limit access to device and browser data. This setting is off.
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_THINGS_TO_CONSIDER" desc="" formatter_data="android_java" translateable="false">
         Applies to embedded sites, not the site you're directly visiting
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
+        When on
+      </message>
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_THINGS_TO_CONSIDER" desc="" formatter_data="android_java" translateable="false">
+        Things to consider
       </message>
       <if expr="_google_chrome">
         <then>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
             When you browse in Incognito, Chrome won't save your browsing history, cookies and site data, and the information you enter in forms. Incognito also provides features that can limit the information available to embedded sites.
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="" translateable="false">
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
             Chrome blocks sites from using third-party cookies in Incognito
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="" translateable="false">
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
             Chrome will try to protect your IP address from embedded sites that may be trying to learn about you
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="" translateable="false">
-            Only available when Incognito is opened from a signed-in Chrome window
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="" formatter_data="android_java" translateable="false">
+            Only available when Incognito is opened from a signed-in Chrome tab
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" translateable="false">
-            Chrome will try to limit the availability of device and browser data, like installed fonts or your time zone, to embedded sites that may be trying to learn about you
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
+            Chrome will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
           </message>
         </then>
         <else>
-        <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" translateable="false">
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
             When you browse in Incognito, Chromium won't save your browsing history, cookies and site data, and the information you enter in forms. Incognito also provides features that can limit the information available to embedded sites.
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="" translateable="false">
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="" formatter_data="android_java" translateable="false">
             Chromium blocks sites from using third-party cookies in Incognito
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="" translateable="false">
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
             Chromium will try to protect your IP address from embedded sites that may be trying to learn about you
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="" translateable="false">
-            Only available when Incognito is opened from a signed-in Chromium window
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="" formatter_data="android_java" translateable="false">
+            Only available when Incognito is opened from a signed-in Chromium tab
           </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" translateable="false">
-            Chromium will try to limit the availability of device and browser data, like installed fonts or your time zone, to embedded sites that may be trying to learn about you
+          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="" formatter_data="android_java" translateable="false">
+            Chromium will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
           </message>
         </else>
       </if>

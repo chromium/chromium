@@ -14,9 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
-import org.chromium.ui.text.ChromeClickableSpan;
-import org.chromium.ui.text.SpanApplier;
 
 /**
  * PreferenceFragment for managing fingerprinting protection settings.
@@ -30,11 +27,6 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
     // Must match key in fp_protection_preferences.xml.
     private static final String PREF_FP_PROTECTION_SWITCH = "fp_protection_switch";
 
-    private static final String PREF_FP_PROTECTION_LEARN_MORE = "fp_protection_learn_more";
-
-    // TODO(b/325599577): Update the URL once it's finalized.
-    public static final String LEARN_MORE_URL = "https://support.google.com/chrome/";
-
     protected static final String FP_PROTECTION_PREF_HISTOGRAM_NAME =
             "Settings.FingerprintingProtection.Enabled";
 
@@ -45,9 +37,20 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.fp_protection_preferences);
-        mPageTitle.set(getString(R.string.tracking_protection_fingerprinting_protection_title));
+        mPageTitle.set(
+                getString(
+                        R.string
+                                .incognito_tracking_protections_fingerprinting_protection_toggle_label));
 
-        setupPreferences();
+        ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
+        fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
+        fpProtectionSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    mDelegate.setFingerprintingProtection((boolean) newValue);
+                    RecordHistogram.recordBooleanHistogram(
+                            FP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
+                    return true;
+                });
     }
 
     @Override
@@ -64,35 +67,5 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
     @Initializer
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
-    }
-
-    private void setupPreferences() {
-        ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
-        TextMessagePreference fpProtectionLearnMore = findPreference(PREF_FP_PROTECTION_LEARN_MORE);
-
-        fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
-        fpProtectionSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    mDelegate.setFingerprintingProtection((boolean) newValue);
-                    RecordHistogram.recordBooleanHistogram(
-                            FP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
-                    return true;
-                });
-
-        fpProtectionLearnMore.setSummary(
-                SpanApplier.applySpans(
-                        getResources()
-                                .getString(
-                                        R.string
-                                                .tracking_protection_fingerprinting_protection_learn_more),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(), (view) -> onLearnMoreClicked()))));
-    }
-
-    private void onLearnMoreClicked() {
-        getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
     }
 }

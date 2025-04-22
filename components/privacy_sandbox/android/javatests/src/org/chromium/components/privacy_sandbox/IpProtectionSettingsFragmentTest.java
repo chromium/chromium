@@ -7,12 +7,14 @@ package org.chromium.components.privacy_sandbox;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment.IP_PROTECTION_PREF_HISTOGRAM_NAME;
@@ -33,13 +35,16 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Tests for {@link IpProtectionSettingsFragment}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class IpProtectionSettingsFragmentTest {
+    private static final int PREF_TOGGLE_LABEL =
+            R.string.incognito_tracking_protections_ip_protection_toggle_label;
+    private static final int PREF_TOGGLE_SUBLABEL =
+            R.string.incognito_tracking_protections_ip_protection_toggle_sublabel;
+
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
@@ -49,7 +54,7 @@ public class IpProtectionSettingsFragmentTest {
     private IpProtectionSettingsFragment mFragment;
 
     @BeforeClass
-    public static void setupSuite() {
+    public static void setUpSuite() {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         LibraryLoader.getInstance().ensureInitialized();
     }
@@ -71,23 +76,36 @@ public class IpProtectionSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testShowIpProtectionUi() {
+    public void showIpProtectionUi() {
         when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
 
         launchTrackingProtectionSettings();
 
-        String ipProtectionSummarySpanned =
-                getIpProtectionSummarySpanned(
-                        mFragment
-                                .getResources()
-                                .getString(R.string.privacy_sandbox_ip_protection_summary));
+        onView(allOf(withText(PREF_TOGGLE_LABEL), hasSibling(withText(PREF_TOGGLE_SUBLABEL))))
+                .check(matches(isDisplayed()));
 
-        onView(withText(ipProtectionSummarySpanned)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_tracking_protections_ip_protection_when_on))
+                .check(matches(isDisplayed()));
+        onView(
+                        withText(
+                                R.string
+                                        .incognito_tracking_protections_ip_protection_things_to_consider_bullet_one))
+                .check(matches(isDisplayed()));
+        onView(
+                        withText(
+                                R.string
+                                        .incognito_tracking_protections_ip_protection_things_to_consider_bullet_one))
+                .check(matches(isDisplayed()));
+        onView(
+                        withText(
+                                R.string
+                                        .incognito_tracking_protections_ip_protection_things_to_consider_bullet_one))
+                .check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
-    public void testRecordTrueForIpProtectionPerfHistogram() {
+    public void enablingIpProtectionToggleUpdatesPrefAndRecordsHistogram() {
         when(mDelegate.isIpProtectionEnabled()).thenReturn(false);
         doNothing().when(mDelegate).setIpProtection(anyBoolean());
         HistogramWatcher ipProtectionHistogramWatcher =
@@ -97,22 +115,19 @@ public class IpProtectionSettingsFragmentTest {
 
         launchTrackingProtectionSettings();
 
-        String ipProtectionSummarySpanned =
-                getIpProtectionSummarySpanned(
-                        mFragment
-                                .getResources()
-                                .getString(R.string.privacy_sandbox_ip_protection_summary));
-        onView(withText(ipProtectionSummarySpanned)).check(matches(isDisplayed()));
-
-        when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
-        onView(allOf(withText(R.string.text_off), isDisplayed())).perform(click());
-        // checks whether the histogram was properly recorded
+        onView(
+                        allOf(
+                                withText(PREF_TOGGLE_LABEL),
+                                hasSibling(withText(PREF_TOGGLE_SUBLABEL)),
+                                isDisplayed()))
+                .perform(click());
+        verify(mDelegate).setIpProtection(true);
         ipProtectionHistogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
-    public void testRecordFalseForIpProtectionPerfHistogram() {
+    public void disablingIpProtectionToggleUpdatesPrefAndRecordsHistogram() {
         when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
         doNothing().when(mDelegate).setIpProtection(anyBoolean());
         HistogramWatcher ipProtectionHistogramWatcher =
@@ -122,21 +137,13 @@ public class IpProtectionSettingsFragmentTest {
 
         launchTrackingProtectionSettings();
 
-        String ipProtectionSummarySpanned =
-                getIpProtectionSummarySpanned(
-                        mFragment
-                                .getResources()
-                                .getString(R.string.privacy_sandbox_ip_protection_summary));
-        onView(withText(ipProtectionSummarySpanned)).check(matches(isDisplayed()));
-
-        when(mDelegate.isIpProtectionEnabled()).thenReturn(false);
-        onView(allOf(withText(R.string.text_on), isDisplayed())).perform(click());
-        // checks whether the histogram was properly recorded
+        onView(
+                        allOf(
+                                withText(PREF_TOGGLE_LABEL),
+                                hasSibling(withText(PREF_TOGGLE_SUBLABEL)),
+                                isDisplayed()))
+                .perform(click());
+        verify(mDelegate).setIpProtection(false);
         ipProtectionHistogramWatcher.assertExpected();
-    }
-
-    private String getIpProtectionSummarySpanned(String mFragment) {
-        return SpanApplier.applySpans(mFragment, new SpanInfo("<link>", "</link>", new Object()))
-                .toString();
     }
 }
