@@ -353,7 +353,6 @@ if (is_chromeos_device) {
 
     deps = [
       "//chrome/browser/ash/accessibility:integration_tests",
-      "//chrome/browser/ash/assistant:integration_tests",
       "//chrome/browser/ash/bluetooth:integration_tests",
       "//chrome/browser/ash/child_accounts:integration_tests",
       "//chrome/browser/ash/external_metrics:integration_tests",
