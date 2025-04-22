@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Populates a {@link ModelList} with an item for each group. */
+@NullMarked
 public class CrossDeviceListMediator {
     private final ModelList mModelList;
     private final PropertyModel mModel;

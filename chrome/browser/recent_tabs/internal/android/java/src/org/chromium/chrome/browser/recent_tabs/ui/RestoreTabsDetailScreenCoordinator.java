@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.R;
 import org.chromium.chrome.browser.recent_tabs.ui.TabItemViewBinder.BindContext;
@@ -24,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /**
  * Coordinator for the detail screens (device select, review tabs) of the Restore Tabs on FRE promo.
  */
+@NullMarked
 public class RestoreTabsDetailScreenCoordinator {
     private static final int RECYLCER_VIEW_DIRECTION_UP = -1;
     private static final int RECYLCER_VIEW_DIRECTION_DOWN = 1;
@@ -90,6 +92,7 @@ public class RestoreTabsDetailScreenCoordinator {
                 model, viewHolder, RestoreTabsDetailScreenViewBinder::bind);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mFaviconHelper.destroy();
         mFaviconHelper = null;

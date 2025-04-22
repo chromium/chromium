@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -21,11 +26,12 @@ import org.chromium.components.feature_engagement.Tracker;
 import java.util.List;
 
 /** A class of helper methods that assist in the restore tabs workflow. */
+@NullMarked
 public class RestoreTabsFeatureHelper {
-    private RestoreTabsController mController;
-    private RestoreTabsControllerDelegate mDelegate;
-    private RestoreTabsControllerDelegate mDelegateForTesting;
-    private ForeignSessionHelper mForeignSessionHelper;
+    private @Nullable RestoreTabsController mController;
+    private @Nullable RestoreTabsControllerDelegate mDelegate;
+    private @Nullable RestoreTabsControllerDelegate mDelegateForTesting;
+    private @Nullable ForeignSessionHelper mForeignSessionHelper;
 
     public RestoreTabsFeatureHelper() {}
 
@@ -126,6 +132,7 @@ public class RestoreTabsFeatureHelper {
         }
     }
 
+    @EnsuresNonNull("mDelegate")
     private void createDelegate(
             Activity activity,
             Profile profile,
@@ -148,7 +155,9 @@ public class RestoreTabsFeatureHelper {
                                                 tabCreatorManager,
                                                 bottomSheetController);
                                 mController.showHomeScreen(
-                                        mForeignSessionHelper, sessions, mDelegate);
+                                        assumeNonNull(mForeignSessionHelper),
+                                        sessions,
+                                        assumeNonNull(mDelegate));
                             }
 
                             @Override
