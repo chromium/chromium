@@ -15,7 +15,6 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
@@ -28,7 +27,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "url/gurl.h"
@@ -203,8 +201,6 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
     webstore_install::Result install_result = webstore_install::SUCCESS;
 
     auto* extension_registrar = ExtensionRegistrar::Get(profile_);
-    ExtensionService* extension_service =
-        ExtensionSystem::Get(profile_)->extension_service();
     if (blocklist_prefs::IsExtensionBlocklisted(
             id_, ExtensionPrefs::Get(profile_))) {
       // Don't install a blocklisted extension.
@@ -213,7 +209,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
     } else if (!extension_registrar->IsExtensionEnabled(id_)) {
       // If the extension is installed but disabled, and not blocklisted,
       // enable it.
-      extension_service->EnableExtension(id_);
+      extension_registrar->EnableExtension(id_);
     }  // else extension is installed and enabled; no work to be done.
 
     CompleteInstall(install_result, install_message);

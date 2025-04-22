@@ -1529,6 +1529,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/webstore_installer_browsertest.cc",
       "../browser/extensions/webstore_installer_test.cc",
       "../browser/extensions/webstore_installer_test.h",
+      "../browser/extensions/webstore_reinstaller_browsertest.cc",
     ]
     deps += [
       ":test_support",
@@ -4456,7 +4457,6 @@ if (!is_android) {
         "../browser/extensions/wasm_mv3_browsertest.cc",
         "../browser/extensions/web_contents_browsertest.cc",
         "../browser/extensions/webstore_domain_browsertest.cc",
-        "../browser/extensions/webstore_reinstaller_browsertest.cc",
         "../browser/extensions/window_open_apitest.cc",
         "../browser/extensions/worker_apitest.cc",
         "../browser/notifications/notification_permission_context_apitest.cc",
@@ -4501,8 +4501,8 @@ if (!is_android) {
 
       if (is_win || is_linux || is_mac) {
         sources += [
-          "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/extensions/api/experimental_actor/experimental_actor_apitest.cc",
+          "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
           "../browser/ui/webui/app_home/app_home_page_handler_browsertest.cc",

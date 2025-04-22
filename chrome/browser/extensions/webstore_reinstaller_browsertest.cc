@@ -8,13 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -83,7 +81,7 @@ class WebstoreReinstallerBrowserTest : public WebstoreInstallerTest {
   bool last_install_result() const { return last_install_result_; }
 
  private:
-  bool last_install_result_;
+  bool last_install_result_ = false;
 };
 
 void WebstoreReinstallerBrowserTest::OnInstallCompletion(
@@ -126,8 +124,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
   extension_registrar()->DisableExtension(kTestExtensionId,
                                           {disable_reason::DISABLE_CORRUPTED});
 
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
 
   // Start by canceling the repair prompt.
