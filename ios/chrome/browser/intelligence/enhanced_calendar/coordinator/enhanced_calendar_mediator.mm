@@ -162,6 +162,20 @@ constexpr std::string kCalendarEventDescriptionTemplate = "{}\n\n{} {}\n{} {}";
                           IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_URL),
                       _enhancedCalendarConfig.URL));
 
+  // Optionally add the confirmation code if it exists.
+  NSString* confirmationCode = base::SysUTF8ToNSString(
+      enhancedCalendarResponse.event_confirmation_code());
+  if (confirmationCode) {
+    _enhancedCalendarConfig.calendarEventConfig
+        .eventDescription = [_enhancedCalendarConfig.calendarEventConfig
+                                 .eventDescription
+        stringByAppendingFormat:
+            @"\n%@ %@",
+            l10n_util::GetNSString(
+                IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_CONFIRMATION_CODE),
+            confirmationCode];
+  }
+
   // Set `isAllDay`.
   _enhancedCalendarConfig.calendarEventConfig.isAllDay =
       enhancedCalendarResponse.is_all_day();

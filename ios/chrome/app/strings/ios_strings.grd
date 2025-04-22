@@ -2187,6 +2187,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_TITLE" translateable="false" desc="The title for the Enhanced Calendar bottom sheet.">
         Enhanced Calendar
       </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_CONFIRMATION_CODE" translateable="false" desc="Optional Confirmation Code added in the description of the calendar event in the add-to-calendar UI.">
+        Confirmation Code:
+      </message>
       <message name="IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_LOCATION" translateable="false" desc="Prefix added before the calendar event location string in the description of the calendar event in the add-to-calendar UI.">
         Location:
       </message>
