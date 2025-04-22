@@ -290,7 +290,7 @@ class ThemeSyncableServiceTest : public testing::Test,
     extensions::ExtensionPrefs::Get(profile_.get())
         ->AddGrantedPermissions(theme_extension_->id(),
                                 extensions::PermissionSet());
-    service->AddExtension(theme_extension_.get());
+    registrar->AddExtension(theme_extension_.get());
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile_.get());
     ASSERT_EQ(1u, registry->enabled_extensions().size());

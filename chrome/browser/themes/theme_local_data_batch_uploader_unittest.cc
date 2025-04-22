@@ -36,6 +36,7 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +97,7 @@ class ThemeLocalDataBatchUploaderTestBase
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
-    service_->Init();
+    service()->Init();
 
     theme_service_ = ThemeServiceFactory::GetForProfile(profile());
     theme_sync_service_ = theme_service_->GetThemeSyncableService();
@@ -110,7 +111,7 @@ class ThemeLocalDataBatchUploaderTestBase
         extensions::mojom::ManifestLocation::kInternal, kCustomThemeUrl);
     extensions::ExtensionPrefs::Get(profile())->AddGrantedPermissions(
         theme_extension_->id(), extensions::PermissionSet());
-    service_->AddExtension(theme_extension_.get());
+    registrar()->AddExtension(theme_extension_.get());
     ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
                       ->enabled_extensions()
                       .size());
