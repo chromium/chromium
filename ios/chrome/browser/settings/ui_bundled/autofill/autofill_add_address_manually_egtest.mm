@@ -9,12 +9,14 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -56,11 +58,29 @@ id<GREYMatcher> TextFieldWithLabel(NSString* text_field_label) {
                     grey_kindOfClass([UITextField class]), nil);
 }
 
+// Matcher for the "add address" bottom sheet.
+id<GREYMatcher> EditProfileBottomSheet() {
+  return grey_accessibilityID(kEditProfileBottomSheetViewIdentfier);
+}
+
 // Helper to open the address settings page.
 void OpenAddressSettings() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
+}
+
+// Gets the top presented view controller, in this case the bottom sheet view
+// controller.
+UIViewController* TopPresentedViewController() {
+  UIViewController* top_controller =
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
+  for (UIViewController* controller = [top_controller presentedViewController];
+       controller && ![controller isBeingDismissed];
+       controller = [controller presentedViewController]) {
+    top_controller = controller;
+  }
+  return top_controller;
 }
 
 }  // namespace
@@ -331,6 +351,38 @@ void OpenAddressSettings() {
 
   // Sign out.
   [SigninEarlGrey signOut];
+}
+
+// Tests that the 'Save' button enabled state on iPads is being correctly
+// updated, even when the button is not visible in the view. See
+// crbug.com/410609782.
+// TODO(crbug.com/411171102): Improve EGTest to correctly handle UI layout
+// variations on different screen sizes.
+- (void)testButtonEnabledStateLargeTextForAccountAddress {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone.");
+  }
+
+  if (@available(iOS 17.0, *)) {
+    [self openAddAddressView:YES];
+
+    // Change trait collection to use extra large content size so that the
+    // 'Save' button becomes hidden.
+    ScopedTraitOverrider overrider(TopPresentedViewController());
+    overrider.SetContentSizeCategory(UIContentSizeCategoryExtraLarge);
+    [ChromeEarlGreyUI waitForAppToIdle];
+
+    // Fill the required fields.
+    [self fillRequiredFields];
+
+    // Scroll down to show the 'Save' button.
+    [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+    // Ensure the 'Save' button's status changed to enabled.
+    [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+        assertWithMatcher:grey_enabled()];
+  }
 }
 
 @end
