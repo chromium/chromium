@@ -6,6 +6,7 @@ include_rules = [
   "+base",
   "+chromeos/ash/components/dbus",
   "+chromeos/ash/grit/ash_resources.h",
+  "+components/pref_registry",
   "+components/prefs",
   "+device/bluetooth",
   "+media",
