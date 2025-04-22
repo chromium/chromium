@@ -14,6 +14,7 @@
 #include "chrome/common/buildflags.h"
 
 class ChromeAutofillAiClient;
+class FromGWSNavigationAndKeepAliveRequestObserver;
 class LensOverlayController;
 class LensSearchController;
 class PinnedTranslateActionListener;
@@ -298,6 +299,9 @@ class TabFeatures {
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
       memory_saver_chip_controller_;
+
+  std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
+      from_gws_navigation_and_keep_alive_request_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -88,6 +88,16 @@ void KeepAliveURLLoaderService::FactoryContext::
   attribution_context = AttributionSuitableContext::Create(rfh);
 }
 
+void KeepAliveURLLoaderService::FactoryContext::
+    OnBeforeKeepAliveURLLoaderCreated(
+        const network::ResourceRequest& resource_request) {
+  if (auto* rfh = static_cast<RenderFrameHostImpl*>(
+          weak_document_ptr.AsRenderFrameHostIfValid());
+      rfh) {
+    rfh->OnKeepAliveRequestCreated(resource_request);
+  }
+}
+
 void KeepAliveURLLoaderService::FactoryContext::UpdateFactory(
     scoped_refptr<network::SharedURLLoaderFactory> new_factory) {
   factory = new_factory;
@@ -180,6 +190,10 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
           "resource_request.trusted_params must not be set");
       return nullptr;
     }
+
+    // Notifies RenderFrameHostImpl (if any) that a fetch keepalive request is
+    // created.
+    context->OnBeforeKeepAliveURLLoaderCreated(resource_request);
 
     // Passes in the pending remote of `client` from a renderer so that `loader`
     // can forward response back to the renderer.
