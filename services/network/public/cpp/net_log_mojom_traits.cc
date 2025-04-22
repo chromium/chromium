@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/net_log_mojom_traits.h"
 
+#include "net/log/net_log_capture_mode.h"
+
 namespace mojo {
 
 // static
@@ -11,6 +13,9 @@ bool EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::
     FromMojom(network::mojom::NetLogCaptureMode capture_mode,
               net::NetLogCaptureMode* out) {
   switch (capture_mode) {
+    case network::mojom::NetLogCaptureMode::HEAVILY_REDACTED:
+      *out = net::NetLogCaptureMode::kHeavilyRedacted;
+      return true;
     case network::mojom::NetLogCaptureMode::DEFAULT:
       *out = net::NetLogCaptureMode::kDefault;
       return true;
@@ -29,6 +34,8 @@ network::mojom::NetLogCaptureMode
 EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::ToMojom(
     net::NetLogCaptureMode capture_mode) {
   switch (capture_mode) {
+    case net::NetLogCaptureMode::kHeavilyRedacted:
+      return network::mojom::NetLogCaptureMode::HEAVILY_REDACTED;
     case net::NetLogCaptureMode::kDefault:
       return network::mojom::NetLogCaptureMode::DEFAULT;
     case net::NetLogCaptureMode::kIncludeSensitive:

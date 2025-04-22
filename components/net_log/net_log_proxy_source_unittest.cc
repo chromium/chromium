@@ -116,6 +116,9 @@ base::Value::Dict NetLogCaptureModeToParams(
     net::NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   switch (capture_mode) {
+    case net::NetLogCaptureMode::kHeavilyRedacted:
+      dict.Set("capture_mode", "kHeavilyRedacted");
+      break;
     case net::NetLogCaptureMode::kDefault:
       dict.Set("capture_mode", "kDefault");
       break;

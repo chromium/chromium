@@ -725,6 +725,7 @@ component("net") {
     "log/net_log_event_type.cc",
     "log/net_log_event_type.h",
     "log/net_log_event_type_list.h",
+    "log/net_log_heavily_redacted_allowlist.h",
     "log/net_log_source.cc",
     "log/net_log_source.h",
     "log/net_log_source_type.h",

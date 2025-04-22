@@ -477,6 +477,9 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
   if (command_line.HasSwitch(switch_name)) {
     std::string value = command_line.GetSwitchValueASCII(switch_name);
 
+    if (value == "HeavilyRedacted") {
+      return net::NetLogCaptureMode::kHeavilyRedacted;
+    }
     if (value == "Default")
       return net::NetLogCaptureMode::kDefault;
     if (value == "IncludeSensitive")
