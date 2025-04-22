@@ -175,7 +175,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
                 this,
                 new NewTabGroupDialogFacility(
                         mTabIdsToGroup, mTitle, mSelectedColor, mSoftKeyboard),
-                Transition.newOptions().withPossiblyAlreadyFulfilled().build(),
+                Transition.possiblyAlreadyFulfilledOption(),
                 DONE_BUTTON::click);
     }
 

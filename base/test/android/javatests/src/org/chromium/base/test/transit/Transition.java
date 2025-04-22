@@ -209,6 +209,11 @@ public abstract class Transition {
         return newOptions().withRetry().build();
     }
 
+    /** Convenience method equivalent to newOptions().withPossiblyAlreadyFulfilled().build(). */
+    public static TransitionOptions possiblyAlreadyFulfilledOption() {
+        return newOptions().withPossiblyAlreadyFulfilled().build();
+    }
+
     /** Convenience method equivalent to newOptions().withCondition().withCondition().build(). */
     public static TransitionOptions conditionOption(Condition... conditions) {
         TransitionOptions.Builder builder = newOptions();
