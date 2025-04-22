@@ -280,6 +280,13 @@ public class PaymentDetailsUpdateServiceHelper {
         return result;
     }
 
+    /**
+     * @return Whether the helper is initialized. Used in testing.
+     */
+    static boolean isInitializedForTest() {
+        return sInstance != null;
+    }
+
     private void runCallbackWithError(
             String errorMessage, IPaymentDetailsUpdateServiceCallback callback) {
         ThreadUtils.assertOnUiThread();
