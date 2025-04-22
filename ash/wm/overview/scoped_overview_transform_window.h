@@ -152,6 +152,9 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  void OnDragStarted();
+  void OnDragEnded();
+
   // If true, makes `CloseWidget()` execute synchronously when used in tests.
   static void SetImmediateCloseForTests(bool immediate);
 
@@ -227,6 +230,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
       window_observations_{this};
 
   std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_;
+  std::unique_ptr<WindowTreeSynchronizer> window_tree_synchronizer_during_drag_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

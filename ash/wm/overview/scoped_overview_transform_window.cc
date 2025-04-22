@@ -5,6 +5,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -31,6 +32,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/auto_reset.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -575,6 +577,12 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
       window_util::GetMiniWindowRoundedCorners(
           window(), /*include_header_rounding=*/false));
 
+  auto window_tree_synchronizer([&]() {
+    return window_tree_synchronizer_during_drag_
+               ? window_tree_synchronizer_during_drag_.get()
+               : window_tree_synchronizer_.get();
+  });
+
   // Synchronizing the rounded corners of a window and its transient hierarchy
   // against `rounded_contents_bounds` yields two outcomes:
   // * We can apply the specified rounding without the need for a render
@@ -582,7 +590,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   // * It ensures that the transient windows' corners are correctly rounded,
   //   ensuring that all four corners of the WindowMiniView appear rounded.
   //   See b/325635179.
-  window_tree_synchronizer_->SynchronizeRoundedCorners(
+  window_tree_synchronizer()->SynchronizeRoundedCorners(
       window(), rounded_contents_bounds,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
@@ -686,6 +694,21 @@ void ScopedOverviewTransformWindow::OnWindowBoundsChanged(
 void ScopedOverviewTransformWindow::OnWindowDestroying(aura::Window* window) {
   DCHECK(window_observations_.IsObservingSource(window));
   window_observations_.RemoveObservation(window);
+}
+
+void ScopedOverviewTransformWindow::OnDragStarted() {
+  window_tree_synchronizer_during_drag_ =
+      std::make_unique<WindowTreeSynchronizer>(window_->GetRootWindow(),
+                                               /*restore_tree=*/true);
+}
+
+void ScopedOverviewTransformWindow::OnDragEnded() {
+  if (!window_tree_synchronizer_during_drag_) {
+    return;
+  }
+
+  window_tree_synchronizer_during_drag_->Restore();
+  window_tree_synchronizer_during_drag_.reset();
 }
 
 // static

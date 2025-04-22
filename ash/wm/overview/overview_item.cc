@@ -755,6 +755,7 @@ void OverviewItem::StartDrag() {
 
 void OverviewItem::OnOverviewItemDragStarted() {
   GetOrCreateOverviewItemView().SetCloseButtonVisible(false);
+  transform_window_.OnDragStarted();
 }
 
 void OverviewItem::OnOverviewItemDragEnded(bool snap) {
@@ -765,6 +766,8 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
   } else {
     GetOrCreateOverviewItemView().SetCloseButtonVisible(true);
   }
+
+  transform_window_.OnDragEnded();
 }
 
 void OverviewItem::OnOverviewItemContinuousScroll(
