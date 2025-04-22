@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 
 #include "base/barrier_closure.h"
-#include "base/check_is_test.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -1237,17 +1236,6 @@ void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
   // backward compatability.
   Respond(Error(kFileSelectionCanceled));
   Release();
-}
-
-void DeveloperPrivateChoosePathFunction::set_accept_dialog_for_testing(
-    bool accept) {
-  CHECK_IS_TEST();
-  accept_dialog_for_testing_ = accept;
-}
-void DeveloperPrivateChoosePathFunction::set_selected_file_for_testing(
-    const ui::SelectedFileInfo& file) {
-  CHECK_IS_TEST();
-  selected_file_for_testing_ = file;
 }
 
 DeveloperPrivateRequestFileSourceFunction::

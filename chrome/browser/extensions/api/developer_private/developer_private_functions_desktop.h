@@ -99,8 +99,12 @@ class DeveloperPrivateLoadUnpackedFunction
   void FileSelectionCanceled() override;
 
   // For testing:
-  void set_accept_dialog_for_testing(bool accept);
-  void set_selected_file_for_testing(const ui::SelectedFileInfo& file);
+  void set_accept_dialog_for_testing(bool accept) {
+    accept_dialog_for_testing_ = accept;
+  }
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
+    selected_file_for_testing_ = file;
+  }
 
  protected:
   ~DeveloperPrivateLoadUnpackedFunction() override;
@@ -302,7 +306,9 @@ class DeveloperPrivateRemoveMultipleExtensionsFunction
   DeveloperPrivateRemoveMultipleExtensionsFunction& operator=(
       const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
 
-  void accept_bubble_for_testing(bool accept_bubble);
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
 
  private:
   ~DeveloperPrivateRemoveMultipleExtensionsFunction() override;
@@ -341,7 +347,9 @@ class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
       const DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction&) =
       delete;
 
-  void accept_bubble_for_testing(bool accept_bubble);
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
 
  private:
   ~DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() override;
@@ -376,7 +384,9 @@ class DeveloperPrivateUploadExtensionToAccountFunction
   DeveloperPrivateUploadExtensionToAccountFunction& operator=(
       const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
 
-  void accept_bubble_for_testing(bool accept_bubble);
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
 
  private:
   ~DeveloperPrivateUploadExtensionToAccountFunction() override;
