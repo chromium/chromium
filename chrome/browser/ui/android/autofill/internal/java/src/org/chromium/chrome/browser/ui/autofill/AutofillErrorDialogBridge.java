@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -23,18 +27,19 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Controller that allows the native autofill code to show an error dialog.
- * For example: When unmasking a virtual card returns an error, we show an error dialog with more
- * information about the error.
+ * Controller that allows the native autofill code to show an error dialog. For example: When
+ * unmasking a virtual card returns an error, we show an error dialog with more information about
+ * the error.
  *
- * Note: The error dialog only shows a positive button which dismisses the dialog.
+ * <p>Note: The error dialog only shows a positive button which dismisses the dialog.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillErrorDialogBridge {
     private final long mNativeAutofillErrorDialogView;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
-    private PropertyModel mDialogModel;
+    private @Nullable PropertyModel mDialogModel;
 
     private final ModalDialogProperties.Controller mModalDialogController =
             new ModalDialogProperties.Controller() {
@@ -64,8 +69,8 @@ public class AutofillErrorDialogBridge {
             long nativeAutofillErrorDialogView, WindowAndroid windowAndroid) {
         return new AutofillErrorDialogBridge(
                 nativeAutofillErrorDialogView,
-                windowAndroid.getModalDialogManager(),
-                windowAndroid.getActivity().get());
+                assertNonNull(windowAndroid.getModalDialogManager()),
+                assertNonNull(windowAndroid.getActivity().get()));
     }
 
     /**

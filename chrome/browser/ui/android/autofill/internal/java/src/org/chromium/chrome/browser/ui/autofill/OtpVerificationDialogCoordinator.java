@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -25,7 +26,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Optional;
 
-/** The coordinator for the OTP Verification Dialog. Manages the sub-component objects. **/
+/** The coordinator for the OTP Verification Dialog. Manages the sub-component objects. */
+@NullMarked
 class OtpVerificationDialogCoordinator {
     /** Interface for the caller to be notified of user actions. */
     interface Delegate {
