@@ -223,6 +223,16 @@ bool CompositorGpuThread::Initialize() {
   // Setup thread options.
   base::Thread::Options thread_options(base::MessagePumpType::DEFAULT, 0);
   thread_options.thread_type = base::ThreadType::kDisplayCritical;
+
+#if BUILDFLAG(IS_MAC)
+  thread_options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
+
+  // Note: The WorkBatchSize is different from GpuMain thread set. Revisit the
+  // following code if any regression is found. See GpuMain() and
+  // crbug.com/40668161.
+  // std::unique_ptr<base::SingleThreadTaskExecutor> thread_task_executor;
+  // thread_task_executor->SetWorkBatchSize(2);
+#endif
   StartWithOptions(std::move(thread_options));
 
   // Wait until thread is started and Init() is executed in order to return
