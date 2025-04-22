@@ -20,6 +20,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -29,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
+namespace {
 
 const char kAtomicItemName[] = "X-Wombat";
 const char kSettingsName[] = "TestingSetting";
@@ -438,4 +441,36 @@ TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
                        "ContentPackManualBehaviorHosts:youtube.com");
 }
 
+TEST_F(SupervisedUserSettingsServiceTest,
+       DeactivationClearsConsumingPrefStore) {
+  // Example pref store that consumes changes in the settings service. Has a
+  // private destructor.
+  scoped_refptr<SupervisedUserPrefStore> pref_store =
+      new SupervisedUserPrefStore(&settings_service_);
+  StartSyncing(syncer::SyncDataList());
+
+  // Implementation detail: SupervisedUserPrefStore presets value of
+  // kSafeSitesEnabled. This is why this tests checks both values to avoid
+  // situation where verified value is that default.
+  for (bool setting : {true, false}) {
+    syncer::SyncChangeList change_list;
+    change_list.emplace_back(
+        FROM_HERE, syncer::SyncChange::ACTION_ADD,
+        SupervisedUserSettingsService::CreateSyncDataForSetting(
+            kSafeSitesEnabled, base::Value(setting)));
+    settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
+
+    const base::Value* value = nullptr;
+    ASSERT_TRUE(pref_store->GetValue(prefs::kSupervisedUserSafeSites, &value));
+    EXPECT_EQ(*value, base::Value(setting));
+  }
+
+  settings_service_.SetActive(false);
+  {
+    const base::Value* value = nullptr;
+    EXPECT_FALSE(pref_store->GetValue(prefs::kSupervisedUserSafeSites, &value));
+  }
+}
+
+}  // namespace
 }  // namespace supervised_user
