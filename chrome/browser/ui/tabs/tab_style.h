@@ -113,6 +113,9 @@ class TabStyle {
   TabStyle& operator=(const TabStyle&) = delete;
   ~TabStyle();
 
+  // Returns the standard height of a single Tab.
+  int GetStandardHeight() const;
+
   // Returns the preferred width of a single Tab, assuming space is
   // available.
   int GetStandardWidth() const;

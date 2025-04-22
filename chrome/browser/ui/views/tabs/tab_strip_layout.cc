@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,12 +17,13 @@ namespace {
 // Solve layout constraints to determine how much space is available for tabs
 // to use relative to how much they want to use.
 TabSizer CalculateSpaceFractionAvailable(
-    const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
     std::optional<int> width) {
   if (!width.has_value()) {
     return TabSizer(LayoutDomain::kInactiveWidthEqualsActiveWidth, 1);
   }
+
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
   float minimum_width = 0;
   float crossover_width = 0;
@@ -31,16 +31,15 @@ TabSizer CalculateSpaceFractionAvailable(
   for (const TabWidthConstraints& tab : tabs) {
     // Add the tab's width, less the width of its trailing foot (which would
     // be double counting).
-    minimum_width += tab.GetMinimumWidth() - layout_constants.tab_overlap;
-    crossover_width +=
-        tab.GetLayoutCrossoverWidth() - layout_constants.tab_overlap;
-    preferred_width += tab.GetPreferredWidth() - layout_constants.tab_overlap;
+    minimum_width += tab.GetMinimumWidth() - tab_overlap;
+    crossover_width += tab.GetLayoutCrossoverWidth() - tab_overlap;
+    preferred_width += tab.GetPreferredWidth() - tab_overlap;
   }
 
   // Add back the width of the trailing foot of the last tab.
-  minimum_width += layout_constants.tab_overlap;
-  crossover_width += layout_constants.tab_overlap;
-  preferred_width += layout_constants.tab_overlap;
+  minimum_width += tab_overlap;
+  crossover_width += tab_overlap;
+  preferred_width += tab_overlap;
 
   LayoutDomain domain;
   float space_fraction_available;
@@ -130,22 +129,21 @@ void AllocateExtraSpace(std::vector<gfx::Rect>* bounds,
 }
 
 std::vector<gfx::Rect> CalculateTabBounds(
-    const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
     std::optional<int> width) {
   if (tabs.empty()) {
     return std::vector<gfx::Rect>();
   }
 
-  TabSizer tab_sizer =
-      CalculateSpaceFractionAvailable(layout_constants, tabs, width);
+  TabSizer tab_sizer = CalculateSpaceFractionAvailable(tabs, width);
 
   int next_x = 0;
   std::vector<gfx::Rect> bounds;
   for (const TabWidthConstraints& tab : tabs) {
     const int tab_width = tab_sizer.CalculateTabWidth(tab);
-    bounds.emplace_back(next_x, 0, tab_width, layout_constants.tab_height);
-    next_x += tab_width - layout_constants.tab_overlap;
+    bounds.emplace_back(next_x, 0, tab_width,
+                        TabStyle::Get()->GetStandardHeight());
+    next_x += tab_width - TabStyle::Get()->GetTabOverlap();
   }
 
   const std::optional<int> calculated_extra_space =

@@ -52,7 +52,6 @@ struct TabWidthOverride {
 // minimum widths in TabSizeInfo, and as a result the calculated bounds may go
 // beyond `width`.
 std::vector<gfx::Rect> CalculateTabBounds(
-    const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
     std::optional<int> width);
 

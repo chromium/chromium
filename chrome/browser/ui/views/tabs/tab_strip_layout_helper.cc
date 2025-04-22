@@ -252,8 +252,6 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
           ? std::optional<int>(GetSlotIndexForExistingTab(pinned_tab_count - 1))
           : std::nullopt;
 
-  TabLayoutConstants layout_constants = {GetLayoutConstant(TAB_STRIP_HEIGHT),
-                                         TabStyle::Get()->GetTabOverlap()};
   std::vector<TabWidthConstraints> tab_widths;
   for (int i = 0; i < static_cast<int>(slots_.size()); i++) {
     auto active =
@@ -270,10 +268,10 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     TabLayoutState state = TabLayoutState(open, pinned, active);
     TabSizeInfo size_info = slots_[i].view->GetTabSizeInfo();
 
-    tab_widths.emplace_back(state, layout_constants, size_info);
+    tab_widths.emplace_back(state, size_info);
   }
 
-  return CalculateTabBounds(layout_constants, tab_widths, available_width);
+  return CalculateTabBounds(tab_widths, available_width);
 }
 
 int TabStripLayoutHelper::GetSlotIndexForExistingTab(int model_index) const {

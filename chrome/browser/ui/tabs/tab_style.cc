@@ -34,6 +34,10 @@ constexpr int kTabWidth = 232;
 
 TabStyle::~TabStyle() = default;
 
+int TabStyle::GetStandardHeight() const {
+  return GetLayoutConstant(TAB_STRIP_HEIGHT);
+}
+
 int TabStyle::GetStandardWidth() const {
   // The full width includes two extensions with the bottom corner radius.
   return kTabWidth + 2 * GetBottomCornerRadius();

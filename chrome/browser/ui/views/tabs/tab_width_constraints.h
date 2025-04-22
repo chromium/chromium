@@ -12,7 +12,6 @@
 class TabWidthConstraints {
  public:
   TabWidthConstraints(const TabLayoutState& state,
-                      const TabLayoutConstants& layout_constants,
                       const TabSizeInfo& size_info);
 
   // The smallest width this tab should ever have.
@@ -32,7 +31,6 @@ class TabWidthConstraints {
   float TransformForPinnednessAndOpenness(float width) const;
 
   TabLayoutState state_;
-  TabLayoutConstants layout_constants_;
   TabSizeInfo size_info_;
 };
 
