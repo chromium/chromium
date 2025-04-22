@@ -52,7 +52,7 @@ void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // Register editions here.
 #if BUILDFLAG(ENABLE_GLIC)
   registry->RegisterEdition(
-      WhatsNewEdition(::features::kGlic, "tommasin@chromium.org",
+      WhatsNewEdition(::features::kGlicRollout, "tommasin@chromium.org",
                       std::vector<BrowserCommand>{BrowserCommand::kOpenGlic}));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
