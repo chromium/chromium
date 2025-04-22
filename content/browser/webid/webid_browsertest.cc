@@ -2064,6 +2064,23 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   MockIdentityRequestDialogController* controller = mock.get();
   test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
 
+  base::RunLoop modal_loop;
+  auto configURL = BaseIdpUrl();
+  EXPECT_CALL(*controller, ShowAccountsDialog)
+      .WillOnce(
+          ::testing::WithArg<6>([&modal_loop, &configURL](auto on_selected) {
+            std::move(on_selected)
+                .Run(GURL(configURL),
+                     /*account_id=*/"not_real_account",
+                     /*is_sign_in=*/true);
+
+            modal_loop.Quit();
+
+            return true;
+          }));
+
+  EXPECT_CALL(*controller, ShowLoadingDialog).WillOnce(Return(true));
+
   base::RunLoop run_loop;
   SetVcIssuanceConfigDetails(&run_loop);
 
@@ -2078,7 +2095,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
           format: 'vc+sd-jwt',
           fields: ['name'],
           configURL: ')" +
-                       BaseIdpUrl() + R"(',
+                       configURL + R"(',
           clientId: 'client_id_1',
           nonce: '12345',
         }],
@@ -2109,6 +2126,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   source->NotifyAutofillSuggestionAccepted(
       account->identity_provider->idp_metadata.config_url, account->id);
 
+  // Wait for the user to accept the prompt.
+  modal_loop.Run();
+
+  // Verify that the token is correct.
   auto public_key = sdjwt::ExportPublicKey(*private_key_);
   EXPECT_TRUE(public_key);
 

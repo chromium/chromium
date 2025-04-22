@@ -1940,7 +1940,51 @@ void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
   // know whether this is a sign-in or sign-up moment (e.g. wouldn't have a
   // approved_clients array). We should figure out how to reconcile these two
   // modes.
-  OnAccountSelected(idp, account_id, true);
+  auto get_info_it = token_request_get_infos_.find(idp);
+
+  // TODO(crbug.com/412640661): Currently, in order to skip the account chooser
+  // and go straight to the disclosure UI, we have to call ShowLoadingDialog()
+  // before we can call ShowAccountsDialog() to create the internal state
+  // necessary in the dialog controller. We should probably be able to create
+  // the internal state on demand in case it isn't available.
+  if (!request_dialog_controller_->ShowLoadingDialog(
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+          FormatOriginForDisplay(url::Origin::Create(idp)),
+          get_info_it->second.rp_context, blink::mojom::RpMode::kActive,
+          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
+
+  std::vector<IdentityRequestAccountPtr> selected;
+
+  for (auto account : accounts_) {
+    if (account->identity_provider->idp_metadata.config_url == idp &&
+        account->id == account_id) {
+      selected.push_back(account);
+    }
+  }
+
+  // TODO(crbug.com/412640661): in order to skip the account chooser, we
+  // overload the use of "new_accounts" in the ShowAccountsDialog. We should
+  // probably refactor the API to support this use case, rather than overload
+  // an unintended use.
+  if (!request_dialog_controller_->ShowAccountsDialog(
+          std::move(content::RelyingPartyData(
+              GetTopFrameOriginForDisplay(GetEmbeddingOrigin()))),
+          idp_data_for_display_, {}, SignInMode::kExplicit,
+          blink::mojom::RpMode::kActive, selected,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              /*can_append_hints=*/false),
+          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {
