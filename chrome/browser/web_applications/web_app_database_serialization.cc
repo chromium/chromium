@@ -1327,8 +1327,10 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
         syncer::ProtoTimeToTime(proto.first_install_time()));
   }
 
-  if (proto.has_generated_icon_fix() &&
-      generated_icon_fix_util::IsValid(proto.generated_icon_fix())) {
+  if (proto.has_generated_icon_fix()) {
+    if (!generated_icon_fix_util::IsValid(proto.generated_icon_fix())) {
+      return nullptr;
+    }
     web_app->SetGeneratedIconFix(proto.generated_icon_fix());
   }
 
@@ -1688,7 +1690,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     local_data->clear_capture_links();
   }
 
-  if (!web_app.manifest_url().is_empty()) {
+  if (web_app.manifest_url().is_valid()) {
     local_data->set_manifest_url(web_app.manifest_url().spec());
   }
 
@@ -1816,6 +1818,13 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       auto* mutable_pending_update_info =
           mutable_data->mutable_pending_update_info();
 
+      // Add this check:
+      CHECK_EQ(isolation_data.location().dev_mode(),
+               pending_update_info.location.dev_mode(),
+               base::NotFatalUntil::M138)
+          << "IsolationData dev_mode mismatch between current location and "
+             "pending update location during serialization.";
+
       IsolationDataLocationToProto(pending_update_info.location,
                                    mutable_pending_update_info);
       mutable_pending_update_info->set_version(
@@ -1831,8 +1840,8 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
           isolation_data.integrity_block_data()->ToProto();
     }
 
-    if (const auto& update_manifest_url =
-            isolation_data.update_manifest_url()) {
+    if (const auto& update_manifest_url = isolation_data.update_manifest_url();
+        update_manifest_url.has_value() && update_manifest_url->is_valid()) {
       mutable_data->set_update_manifest_url(update_manifest_url->spec());
     }
 

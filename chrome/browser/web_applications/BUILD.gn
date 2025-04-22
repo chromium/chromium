@@ -916,6 +916,7 @@ source_set("web_applications_unit_tests") {
     "web_app_command_manager_unittest.cc",
     "web_app_command_scheduler_unittest.cc",
     "web_app_database_migration_unittest.cc",
+    "web_app_database_serialization_unittest.cc",
     "web_app_database_unittest.cc",
     "web_app_helpers_unittest.cc",
     "web_app_icon_generator_unittest.cc",
