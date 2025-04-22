@@ -6405,7 +6405,7 @@ TEST_F(FederatedAuthRequestImplTest, GetDisclosureFields) {
   // When a superset of the supported fields is passed, we should mediate the
   // supported fields.
   EXPECT_THAT(
-      GetDisclosureFields({"name", "email", "picture", "locale", "phone"}),
+      GetDisclosureFields({"name", "email", "picture", "locale", "tel"}),
       ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
 }
 
@@ -6416,7 +6416,7 @@ TEST_F(FederatedAuthRequestImplTest,
   // When a superset of the supported fields is passed, we should mediate the
   // supported fields.
   EXPECT_THAT(
-      GetDisclosureFields({"name", "email", "picture", "locale", "phone"}),
+      GetDisclosureFields({"name", "email", "picture", "locale", "tel"}),
       ElementsAre(Field::kName, Field::kEmail, Field::kPicture,
                   Field::kPhoneNumber));
 }
@@ -6426,7 +6426,7 @@ TEST_F(FederatedAuthRequestImplTest,
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
   // We should only support the new identifiers if the flag is enabled
-  EXPECT_THAT(GetDisclosureFields({"username", "phone"}), ElementsAre());
+  EXPECT_THAT(GetDisclosureFields({"username", "tel"}), ElementsAre());
 }
 TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsSubsetOfDefault) {
   base::test::ScopedFeatureList list;

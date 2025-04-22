@@ -109,7 +109,7 @@ static constexpr double kRejectionLogNormalSigma = 1.4;
 static constexpr char kDefaultFieldName[] = "name";
 static constexpr char kDefaultFieldEmail[] = "email";
 static constexpr char kDefaultFieldPicture[] = "picture";
-static constexpr char kFieldPhoneNumber[] = "phone";
+static constexpr char kFieldPhoneNumber[] = "tel";
 static constexpr char kFieldUsername[] = "username";
 
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";

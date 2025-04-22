@@ -850,7 +850,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
   "accounts" : [
     {
       "id": "1234",
-      "phone": "111-111-1111"
+      "tel": "111-111-1111"
     }
   ]
   })";
