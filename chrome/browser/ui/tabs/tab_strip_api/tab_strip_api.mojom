@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+// The TabStripController is an object that lives alongside the
+// TabStripViewModel. It acts as the bridge between the model and any UI Dialog
+// or client.
+interface TabStripController {
+
+  // Creates a new tab.
+  // TODO (crbug.com/409821664). Returns a result type of bool for success or
+  // string for errors. These result types are temporary and will be changed
+  // once they are defined.
+  [Sync]
+  CreateNewTab() => result<bool, string>;
+};
+
