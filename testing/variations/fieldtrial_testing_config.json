@@ -9913,6 +9913,51 @@
             ]
         }
     ],
+    "FastPairPWACompanion": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250318",
+                    "params": {
+                        "pwa-companion-app-id": "",
+                        "pwa-companion-device-ids": "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B,DA2DB1,6C7979,A28BDC,03E047,9B9FFE,DCDA99,9F7942,8D479E",
+                        "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
+                        "pwa-companion-play-store-uri": ""
+                    },
+                    "enable_features": [
+                        "FastPairPwaCompanion"
+                    ]
+                },
+                {
+                    "name": "Enabled_20250318_Dogfood",
+                    "params": {
+                        "pwa-companion-app-id": "",
+                        "pwa-companion-device-ids": "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B,DA2DB1,6C7979,A28BDC,03E047,9B9FFE,DCDA99,9F7942,8D479E",
+                        "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
+                        "pwa-companion-play-store-uri": ""
+                    },
+                    "enable_features": [
+                        "FastPairPwaCompanion"
+                    ]
+                },
+                {
+                    "name": "EnabledWithStagingLinks_Dogfood",
+                    "params": {
+                        "pwa-companion-app-id": "",
+                        "pwa-companion-device-ids": "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B,DA2DB1,6C7979,A28BDC,03E047,9B9FFE,DCDA99,9F7942,8D479E",
+                        "pwa-companion-install-uri": "https://mypixelbuds-preprod.corp.google.com/",
+                        "pwa-companion-play-store-uri": ""
+                    },
+                    "enable_features": [
+                        "FastPairPwaCompanion"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPathNoRaster": [
         {
             "platforms": [
