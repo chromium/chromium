@@ -167,9 +167,18 @@ Length CSSMathFunctionValue::ConvertToLength(
 static String BuildCSSText(const String& expression) {
   StringBuilder result;
   result.Append("calc");
-  result.Append('(');
-  result.Append(expression);
-  result.Append(')');
+  // https://drafts.csswg.org/css-values-4/#serialize-a-math-function
+  // “If a result of this serialization starts with a "(" (open parenthesis) and
+  // ends with a ")" (close parenthesis), remove those characters from the
+  // result.”
+  if (expression.StartsWith('(')) {
+    DCHECK(expression.EndsWith(')'));
+    result.Append(expression);
+  } else {
+    result.Append('(');
+    result.Append(expression);
+    result.Append(')');
+  }
   return result.ReleaseString();
 }
 

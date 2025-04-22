@@ -392,14 +392,14 @@ TEST_F(CSSPrimitiveValueTest, CSSPrimitiveValueOperations) {
   EXPECT_EQ(function->Multiply(1, CSSPrimitiveValue::UnitType::kPixels)
                 ->Add(10, CSSPrimitiveValue::UnitType::kPixels)
                 ->CustomCSSText(),
-            "calc(10px + 1px * sign(-20em + 10px))");
+            "calc(10px + (1px * sign(-20em + 10px)))");
   EXPECT_EQ(function->MultiplyBy(10, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
             "calc(10 * sign(-20em + 10px))");
   EXPECT_EQ(function->MultiplyBy(1, CSSPrimitiveValue::UnitType::kPixels)
                 ->Subtract(*numeric_percentage)
                 ->CustomCSSText(),
-            "calc(-10% + 1px * sign(-20em + 10px))");
+            "calc(-10% + (1px * sign(-20em + 10px)))");
   EXPECT_EQ(function->Divide(20, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
             "calc(0.05 * sign(-20em + 10px))");

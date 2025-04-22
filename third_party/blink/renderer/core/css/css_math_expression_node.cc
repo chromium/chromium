@@ -2630,6 +2630,21 @@ bool CSSMathExpressionOperation::IsElementDependent() const {
   return false;
 }
 
+// https://drafts.csswg.org/css-values-4/#serialize-a-math-function
+// “If a result of this serialization starts with a "(" (open parenthesis) and
+// ends with a ")" (close parenthesis), remove those characters from the
+// result.”
+static void SerializeTopLevelNode(const CSSMathExpressionNode* node,
+                                  StringBuilder& result) {
+  String text = node->CustomCSSText();
+  if (text.StartsWith('(')) {
+    DCHECK(text.EndsWith(')'));
+    result.Append(StringView(text, 1, text.length() - 2));
+  } else {
+    result.Append(text);
+  }
+}
+
 String CSSMathExpressionOperation::CustomCSSText() const {
   switch (operator_) {
     case CSSMathOperator::kAdd:
@@ -2654,40 +2669,18 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       CSSMathOperator op = operation->OperatorType();
       const Operands& operands = operation->GetOperands();
 
+      // https://drafts.csswg.org/css-values-4/#serialize-a-calculation-tree
+      //
+      // The parens will be removed by the caller if needed
+      // (#serialize-a-math-function).
       StringBuilder result;
-
-      // After all the simplifications we only need parentheses here for the
-      // cases like: (lhs as unsimplified sum/sub) [* or /] rhs
-      const bool left_side_needs_parentheses =
-          IsMultiplyOrDivide() && operands.front()->IsOperation() &&
-          To<CSSMathExpressionOperation>(operands.front().Get())
-              ->IsAddOrSubtract();
-      if (left_side_needs_parentheses) {
-        result.Append('(');
-      }
+      result.Append('(');
       result.Append(operands[0]->CustomCSSText());
-      if (left_side_needs_parentheses) {
-        result.Append(')');
-      }
-
       result.Append(' ');
       result.Append(ToString(op));
       result.Append(' ');
-
-      // After all the simplifications we only need parentheses here for the
-      // cases like: lhs [* or /] (rhs as unsimplified sum/sub)
-      const bool right_side_needs_parentheses =
-          IsMultiplyOrDivide() && operands.back()->IsOperation() &&
-          To<CSSMathExpressionOperation>(operands.back().Get())
-              ->IsAddOrSubtract();
-      if (right_side_needs_parentheses) {
-        result.Append('(');
-      }
       result.Append(operands[1]->CustomCSSText());
-      if (right_side_needs_parentheses) {
-        result.Append(')');
-      }
-
+      result.Append(')');
       return result.ReleaseString();
     }
     case CSSMathOperator::kMin:
@@ -2712,10 +2705,10 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       StringBuilder result;
       result.Append(ToString(operator_));
       result.Append('(');
-      result.Append(operands_.front()->CustomCSSText());
+      SerializeTopLevelNode(operands_.front(), result);
       for (const CSSMathExpressionNode* operand : SecondToLastOperands()) {
         result.Append(", ");
-        result.Append(operand->CustomCSSText());
+        SerializeTopLevelNode(operand, result);
       }
       result.Append(')');
 
@@ -2732,10 +2725,10 @@ String CSSMathExpressionOperation::CustomCSSText() const {
         result.Append(ToRoundingStrategyString(operator_));
         result.Append(", ");
       }
-      result.Append(operands_[0]->CustomCSSText());
+      SerializeTopLevelNode(operands_[0], result);
       if (ShouldSerializeRoundingStep(operands_)) {
         result.Append(", ");
-        result.Append(operands_[1]->CustomCSSText());
+        SerializeTopLevelNode(operands_[1], result);
       }
       result.Append(')');
 
@@ -2748,11 +2741,11 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       StringBuilder result;
       result.Append(ToString(operator_));
       result.Append('(');
-      result.Append(operands_.front()->CustomCSSText());
+      SerializeTopLevelNode(operands_.front(), result);
       result.Append(", ");
-      result.Append(operands_[1]->CustomCSSText());
+      SerializeTopLevelNode(operands_[1], result);
       result.Append(", ");
-      result.Append(operands_.back()->CustomCSSText());
+      SerializeTopLevelNode(operands_.back(), result);
       result.Append(')');
 
       return result.ReleaseString();
