@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,6 +43,11 @@ SettingsPrivateEventRouter::~SettingsPrivateEventRouter() {
 void SettingsPrivateEventRouter::OnGeneratedPrefChanged(
     const std::string& pref_name) {
   OnPreferenceChanged(pref_name);
+}
+
+content::BrowserContext* SettingsPrivateEventRouter::context_for_test() {
+  CHECK_IS_TEST();
+  return context_;
 }
 
 void SettingsPrivateEventRouter::Shutdown() {
