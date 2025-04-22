@@ -310,12 +310,16 @@ base::Value::Dict CreateResponseDictWithDebugReports(
               .Set("reports", base::Value::List().Append(std::move(report)))));
 }
 
-auction_worklet::mojom::EventTypePtr CreateReservedEventType(
-    auction_worklet::mojom::ReservedEventType reserved_event_type) {
+// TODO(crbug.com/381788013): This naming inconsistency is temporary and should
+// be fixed.
+using ReservedNonErrorEventType = auction_worklet::mojom::ReservedEventType;
+
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedNonErrorEventType reserved_event_type) {
   return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
 }
 
-auction_worklet::mojom::EventTypePtr CreateNonReservedEventType(
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
     const std::string& event_type) {
   return auction_worklet::mojom::EventType::NewNonReserved(event_type);
 }
@@ -2280,8 +2284,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
       PrivateAggregationPhase::kNonTopLevelSeller,
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   auction_worklet::mojom::PrivateAggregationRequestPtr request1 =
-      CreatePaggForEventRequest(1, 123, std::nullopt,
-                                CreateNonReservedEventType("click"));
+      CreatePaggForEventRequest(1, 123, std::nullopt, ToEventTypePtr("click"));
   EXPECT_THAT(result->component_win_pagg_requests[std::move(phase_key1)],
               ElementsAreRequests(request1));
 
@@ -2292,8 +2295,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
   auction_worklet::mojom::PrivateAggregationRequestPtr request2 =
       CreatePaggForEventRequest(
           1, 123, std::nullopt,
-          CreateReservedEventType(
-              auction_worklet::mojom::ReservedEventType::kReservedWin));
+          ToEventTypePtr(ReservedNonErrorEventType::kReservedWin));
   EXPECT_THAT(result->component_win_pagg_requests[std::move(phase_key2)],
               ElementsAreRequests(request2));
 
@@ -2417,8 +2419,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseContribution) {
           123,
           CreatePaggForEventRequest(
               absl::MakeUint128(1, 2), 123, 123,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       },
       {
           "bucket is bigger than 128 bits",
@@ -2450,8 +2451,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseContribution) {
           std::nullopt,
           CreatePaggForEventRequest(
               absl::MakeUint128(1, 2), 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       },
       {
           "Invalid filtering_id",
@@ -2515,22 +2515,19 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseComponentWinEvents) {
           "reserved.win",
           CreatePaggForEventRequest(
               1, 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       },
       {
           "reserved.always",
           CreatePaggForEventRequest(
               1, 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedAlways)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
       },
       {
           "reserved.loss",
           CreatePaggForEventRequest(
               1, 123, std::nullopt,
-              CreateReservedEventType(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
       },
       {
           "click",
