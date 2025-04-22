@@ -281,7 +281,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             Runnable onSuccess) {
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
         GroupMember groupMember = MessageUtils.extractMember(message);
-        Runnable openTabAction = prepareOpenTabAction(message, tabGroupModelFilter);
+        Runnable openTabAction = prepareOpenTabActionForRemovedTab(message, tabGroupModelFilter);
 
         fetchAvatarIconFromMessage(
                 context,
@@ -298,12 +298,21 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 });
     }
 
-    private Runnable prepareOpenTabAction(
+    private Runnable prepareOpenTabActionForRemovedTab(
             InstantMessage message, TabGroupModelFilter tabGroupModelFilter) {
         // Okay to use extractTabGroupId here, as these actions require the tab to be in the current
         // model already.
         @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
         String url = MessageUtils.extractTabUrl(message);
+        return () -> doOpenTab(tabGroupId, url, tabGroupModelFilter);
+    }
+
+    private Runnable prepareOpenTabActionForUpdatedTab(
+            InstantMessage message, TabGroupModelFilter tabGroupModelFilter) {
+        // Okay to use extractTabGroupId here, as these actions require the tab to be in the current
+        // model already.
+        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
+        String url = MessageUtils.extractPrevTabUrl(message);
         return () -> doOpenTab(tabGroupId, url, tabGroupModelFilter);
     }
 
@@ -325,7 +334,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             Runnable onSuccess) {
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
         GroupMember groupMember = MessageUtils.extractMember(message);
-        Runnable openTabAction = prepareOpenTabAction(message, tabGroupModelFilter);
+        Runnable openTabAction = prepareOpenTabActionForUpdatedTab(message, tabGroupModelFilter);
 
         fetchAvatarIconFromMessage(
                 context,

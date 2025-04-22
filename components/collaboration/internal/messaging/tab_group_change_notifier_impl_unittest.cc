@@ -26,6 +26,7 @@
 using base::test::RunOnceClosure;
 
 using testing::_;
+using testing::DoAll;
 using testing::Eq;
 using testing::InSequence;
 using testing::Return;
@@ -108,6 +109,7 @@ class MockTabGroupChangeNotifierObserver
   MOCK_METHOD(void,
               OnTabUpdated,
               (const tab_groups::SavedTabGroupTab&,
+               const tab_groups::SavedTabGroupTab&,
                tab_groups::TriggerSource,
                bool));
   MOCK_METHOD(void,
@@ -186,9 +188,9 @@ class TabGroupChangeNotifierImplTest : public testing::Test {
     tab_groups::SavedTabGroupTab tab_update_received =
         CreateSavedTabGroupTab("N/A", u"N/A", updated_tab_group.saved_guid());
     EXPECT_CALL(*notifier_observer_,
-                OnTabUpdated(TabGuidEq(updated_tab),
+                OnTabUpdated(_, TabGuidEq(updated_tab),
                              Eq(tab_groups::TriggerSource::REMOTE), Eq(false)))
-        .WillOnce(SaveArg<0>(&tab_update_received));
+        .WillOnce(SaveArg<1>(&tab_update_received));
     UpdateTabGroup(updated_tab_group, tab_groups::TriggerSource::REMOTE);
     return tab_update_received;
   }
@@ -197,8 +199,7 @@ class TabGroupChangeNotifierImplTest : public testing::Test {
                            tab_groups::SavedTabGroupTab changed_tab) {
     tab_groups::SavedTabGroup updated_tab_group = old_group;
     updated_tab_group.UpdateTab(changed_tab);
-    EXPECT_CALL(*notifier_observer_, OnTabUpdated(TabGuidEq(changed_tab), _, _))
-        .Times(0);
+    EXPECT_CALL(*notifier_observer_, OnTabUpdated).Times(0);
   }
 
   void TearDown() override {
@@ -725,10 +726,15 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtStartup) {
       *notifier_observer_,
       OnTabAdded(TabGuidEq(tab4), Eq(tab_groups::TriggerSource::REMOTE)))
       .WillOnce(SaveArg<0>(&tab_received_added));
+
+  tab_groups::SavedTabGroupTab tab_received_before =
+      CreateSavedTabGroupTab("N/A", u"N/A", tab_group_startup.saved_guid());
   EXPECT_CALL(*notifier_observer_,
-              OnTabUpdated(TabGuidEq(tab2_updated),
+              OnTabUpdated(TabGuidEq(tab2), TabGuidEq(tab2),
                            Eq(tab_groups::TriggerSource::REMOTE), Eq(false)))
-      .WillOnce(SaveArg<0>(&tab_received_updated));
+      .WillOnce(DoAll(SaveArg<0>(&tab_received_before),
+                      SaveArg<1>(&tab_received_updated)));
+
   EXPECT_CALL(*notifier_observer_,
               OnTabRemoved(TabGuidEq(tab1),
                            Eq(tab_groups::TriggerSource::REMOTE), Eq(false)))
@@ -741,6 +747,7 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtStartup) {
           {tab_group_init}));
 
   EXPECT_EQ(tab2_updated.url(), tab_received_updated.url());
+  EXPECT_EQ(tab2.url(), tab_received_before.url());
 
   // Now, ensure that the latest update of the tab is used and that going back
   // to the original URL is considered an update again.
@@ -801,12 +808,17 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
   // This tab will be overridden by the callback.
   tab_groups::SavedTabGroupTab tab2_updated_received =
       CreateSavedTabGroupTab("N/A", u"N/A", tab_group.saved_guid());
+  tab_groups::SavedTabGroupTab tab2_before_received =
+      CreateSavedTabGroupTab("N/A", u"N/A", tab_group.saved_guid());
   EXPECT_CALL(*notifier_observer_,
-              OnTabUpdated(TabGuidEq(tab2_updated),
+              OnTabUpdated(TabGuidEq(tab2), TabGuidEq(tab2),
                            Eq(tab_groups::TriggerSource::REMOTE), Eq(false)))
-      .WillOnce(SaveArg<0>(&tab2_updated_received));
+      .WillOnce(DoAll(SaveArg<0>(&tab2_before_received),
+                      SaveArg<1>(&tab2_updated_received)));
+
   UpdateTabGroup(updated_tab_group, tab_groups::TriggerSource::REMOTE);
   EXPECT_EQ(tab2_updated.url(), tab2_updated_received.url());
+  EXPECT_EQ(tab2.url(), tab2_before_received.url());
 
   // Verify that we have stored the updated tab by restoring tab 2 to its
   // original and it should be considered an updated.
@@ -818,9 +830,9 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
   tab_groups::SavedTabGroupTab tab2_restored_received =
       CreateSavedTabGroupTab("N/A", u"N/A", tab_group.saved_guid());
   EXPECT_CALL(*notifier_observer_,
-              OnTabUpdated(TabGuidEq(tab2_restored),
+              OnTabUpdated(TabGuidEq(tab2), TabGuidEq(tab2_restored),
                            Eq(tab_groups::TriggerSource::REMOTE), Eq(false)))
-      .WillOnce(SaveArg<0>(&tab2_restored_received));
+      .WillOnce(SaveArg<1>(&tab2_restored_received));
   UpdateTabGroup(restored_tab_group, tab_groups::TriggerSource::REMOTE);
   EXPECT_EQ(tab2_restored.url(), tab2_restored_received.url());
 }

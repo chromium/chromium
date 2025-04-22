@@ -68,7 +68,8 @@ class TabGroupChangeNotifier
                               tab_groups::TriggerSource source,
                               bool is_selected) = 0;
     // A tab has been updated.
-    virtual void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab,
+    virtual void OnTabUpdated(const tab_groups::SavedTabGroupTab& before,
+                              const tab_groups::SavedTabGroupTab& after,
                               tab_groups::TriggerSource source,
                               bool is_selected) = 0;
     // A tab was selected or deselected.

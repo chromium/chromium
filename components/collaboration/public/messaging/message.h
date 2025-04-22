@@ -130,6 +130,10 @@ struct TabMessageMetadata {
   // In the case where the tab is no longer available, this contains the last
   // known title (or empty string if unknown).
   std::optional<std::string> last_known_title;
+
+  // URL of the tab before the last navigation. Only populated for the tab
+  // update events.
+  std::optional<std::string> previous_url;
 };
 
 // A list of attribution data for a message, which can be used to associate it

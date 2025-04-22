@@ -895,9 +895,11 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 }
 
 void MessagingBackendServiceImpl::OnTabUpdated(
-    const tab_groups::SavedTabGroupTab& updated_tab,
+    const tab_groups::SavedTabGroupTab& before,
+    const tab_groups::SavedTabGroupTab& after,
     tab_groups::TriggerSource source,
     bool is_selected) {
+  const tab_groups::SavedTabGroupTab& updated_tab = after;
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(updated_tab);
   if (!collaboration_group_id) {
@@ -952,9 +954,11 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   if (dirty_type != DirtyType::kNone && is_selected &&
       instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message_base;
-    instant_message_base.attributions.emplace_back(
-        CreateMessageAttributionForTabUpdates(message, std::nullopt,
-                                              updated_tab));
+    auto message_attribution = CreateMessageAttributionForTabUpdates(
+        message, std::nullopt, updated_tab);
+    message_attribution.tab_metadata->previous_url = before.url().spec();
+    instant_message_base.attributions.emplace_back(message_attribution);
+
     instant_message_base.collaboration_event = CollaborationEvent::TAB_UPDATED;
     // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
     // to be used. In that case, remove them.

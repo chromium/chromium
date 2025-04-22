@@ -21,4 +21,5 @@ public class TabMessageMetadata {
     public @Nullable String syncTabId;
     public @Nullable String lastKnownUrl;
     public @Nullable String lastKnownTitle;
+    public @Nullable String previousUrl;
 }

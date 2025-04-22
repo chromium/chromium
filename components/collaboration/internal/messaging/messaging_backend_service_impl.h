@@ -98,7 +98,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab,
                     tab_groups::TriggerSource source,
                     bool is_selected) override;
-  void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab,
+  void OnTabUpdated(const tab_groups::SavedTabGroupTab& before,
+                    const tab_groups::SavedTabGroupTab& after,
                     tab_groups::TriggerSource source,
                     bool is_selected) override;
   void OnTabSelectionChanged(const tab_groups::LocalTabID& tab_id,

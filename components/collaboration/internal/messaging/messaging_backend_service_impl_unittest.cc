@@ -884,8 +884,8 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
                   expected_message_dot_tab_group)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
-  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::REMOTE,
-                                      false);
+  tg_notifier_observer_->OnTabUpdated(*tab2, *tab2,
+                                      tab_groups::TriggerSource::REMOTE, false);
   message = GetLastMessageFromDB();
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_UPDATED,
@@ -1068,8 +1068,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromLocal) {
 
   EXPECT_TRUE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                     DirtyType::kDot));
-  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::LOCAL,
-                                      false);
+  tg_notifier_observer_->OnTabUpdated(*tab2, *tab2,
+                                      tab_groups::TriggerSource::LOCAL, false);
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                      DirtyType::kDot));
 
@@ -1229,8 +1229,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromRemoteByYourself) {
 
   EXPECT_TRUE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                     DirtyType::kDot));
-  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::REMOTE,
-                                      true);
+  tg_notifier_observer_->OnTabUpdated(*tab2, *tab2,
+                                      tab_groups::TriggerSource::REMOTE, true);
   task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                      DirtyType::kDot));
@@ -1783,8 +1783,10 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
       .WillOnce(SaveArg<0>(&last_persistent_message));
 
   // Updating the currently selected tab should inform the delegate.
-  tg_notifier_observer_->OnTabUpdated(*tab1, tab_groups::TriggerSource::REMOTE,
-                                      true);
+  tab_groups::SavedTabGroupTab old_tab1 = *tab1;
+  old_tab1.SetURL(GURL("https://www.example3.com/"));
+  tg_notifier_observer_->OnTabUpdated(old_tab1, *tab1,
+                                      tab_groups::TriggerSource::REMOTE, true);
   task_environment_.FastForwardBy(base::Seconds(10));
 
   // We should have received a stored message about the updated tab.
@@ -1804,6 +1806,12 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
   // Verify instant message.
   EXPECT_EQ(CollaborationEvent::TAB_UPDATED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::UNDEFINED, message.type);
+  EXPECT_EQ(1u, message.attributions.size());
+  EXPECT_TRUE(message.attributions[0].tab_metadata.has_value());
+  EXPECT_EQ(old_tab1.url().spec(),
+            message.attributions[0].tab_metadata->previous_url);
+  EXPECT_EQ(tab1->url().spec(),
+            message.attributions[0].tab_metadata->last_known_url);
 
   std::move(success_callback).Run(true);
   EXPECT_FALSE(unowned_messaging_backend_store_->HasAnyDirtyMessages(
