@@ -125,7 +125,7 @@ ExtensionsToolbarUnitTest::InstallExtension(
 
 void ExtensionsToolbarUnitTest::ReloadExtension(
     const extensions::ExtensionId& extension_id) {
-  extension_service()->ReloadExtension(extension_id);
+  extension_registrar()->ReloadExtension(extension_id);
 }
 
 void ExtensionsToolbarUnitTest::UninstallExtension(

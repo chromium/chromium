@@ -8,12 +8,12 @@
 #include "apps/launcher.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/platform_apps/app_load_service_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -44,10 +44,7 @@ void AppLoadService::Shutdown() {
 
 void AppLoadService::RestartApplication(const std::string& extension_id) {
   post_reload_actions_[extension_id].action_type = RESTART;
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(context_)->extension_service();
-  DCHECK(service);
-  service->ReloadExtension(extension_id);
+  extensions::ExtensionRegistrar::Get(context_)->ReloadExtension(extension_id);
 }
 
 void AppLoadService::RestartApplicationIfRunning(

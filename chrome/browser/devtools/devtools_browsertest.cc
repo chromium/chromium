@@ -146,13 +146,13 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
@@ -741,8 +741,7 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     Profile* profile = browser()->profile();
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile)->extension_service();
+    extension_registrar_ = extensions::ExtensionRegistrar::Get(profile);
     extension_registry_ = extensions::ExtensionRegistry::Get(profile);
   }
 
@@ -785,8 +784,8 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   }
 
   raw_ptr<DevToolsWindow, DanglingUntriaged> window_ = nullptr;
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
-      nullptr;
+  raw_ptr<extensions::ExtensionRegistrar, DanglingUntriaged>
+      extension_registrar_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
       extension_registry_ = nullptr;
 };
@@ -812,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsServiceWorkerExtensionTest,
   scoped_refptr<DevToolsAgentHost> host = FindExtensionHost(extension_id);
   ASSERT_TRUE(host);
   OpenDevToolsWindow(host);
-  extension_service_->ReloadExtension(extension_id);
+  extension_registrar_->ReloadExtension(extension_id);
   RunTestFunction(window_, "waitForTestResultsInConsole");
   CloseDevToolsWindow();
 }

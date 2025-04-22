@@ -4559,8 +4559,7 @@ void RenderViewContextMenu::ExecReloadPackagedApp() {
   DCHECK(platform_app);
   DCHECK(platform_app->is_platform_app());
 
-  extensions::ExtensionSystem::Get(browser_context_)
-      ->extension_service()
+  extensions::ExtensionRegistrar::Get(browser_context_)
       ->ReloadExtension(platform_app->id());
 }
 

@@ -43,6 +43,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "extensions/browser/crx_file_info.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -346,7 +347,8 @@ void OnExtensionInstalled(
   GetExtensionService(state->context)->EnableExtension(extension->id());
   // Reload the extension to make sure old service worker are cleaned. This is
   // important when the extension has already been installed to the profile.
-  GetExtensionService(state->context)->ReloadExtension(extension->id());
+  extensions::ExtensionRegistrar::Get(state->context)
+      ->ReloadExtension(extension->id());
 
   GURL script_url = extension->GetResourceURL(
       extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension));

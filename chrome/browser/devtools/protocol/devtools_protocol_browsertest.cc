@@ -89,7 +89,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -97,6 +96,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -1085,8 +1085,7 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   void SetUpOnMainThread() override {
     DevToolsProtocolTest::SetUpOnMainThread();
     Profile* profile = chrome_test_utils::GetProfile(this);
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile)->extension_service();
+    extension_registrar_ = extensions::ExtensionRegistrar::Get(profile);
     extension_registry_ = extensions::ExtensionRegistry::Get(profile);
   }
 
@@ -1144,12 +1143,13 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
 
   void ReloadExtension(const std::string& extension_id) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
-    extension_service_->ReloadExtension(extension_id);
+    extension_registrar_->ReloadExtension(extension_id);
     observer.WaitForExtensionLoaded();
   }
 
  private:
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_;
+  raw_ptr<extensions::ExtensionRegistrar, DanglingUntriaged>
+      extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> extension_registry_;
   raw_ptr<content::WebContents, DanglingUntriaged> background_web_contents_;
 #if BUILDFLAG(IS_WIN)

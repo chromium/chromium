@@ -1131,7 +1131,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
   extension_directory.WriteManifest(kManifestWithErrors);
 
   // Reload the extension. It should fail due to the manifest errors.
-  extension_service()->ReloadExtensionWithQuietFailure(extension->id());
+  extension_registrar()->ReloadExtensionWithQuietFailure(extension->id());
   base::RunLoop().RunUntilIdle();
   LayoutMenuIfNecessary();
 
