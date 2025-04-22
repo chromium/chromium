@@ -215,6 +215,11 @@ const char kBestFeaturesScreenInFirstRunDescription[] =
     "When enabled, displays the BestFeatures screen in the First Run sequence. "
     "Screen can be displayed either before or after the DB promo.";
 
+const char kBestOfAppFREName[] = "Display Best of App view in the FRE";
+const char kBestOfAppFREDescription[] =
+    "When enabled, displays some views during the FRE highlighting the best "
+    "features in the app.";
+
 const char kBlueDotOnToolsMenuButtonName[] =
     "Show blue dot promo on tools menu button";
 const char kBlueDotOnToolsMenuButtonDescription[] =

@@ -956,6 +956,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "best-of-app-fre",
+    "owners": [ "thegreenfrog@google.com", "bling-gsu-pod@google.com"],
+    "expiry_milestone": 146
+  },
+  {
     "name": "bind-cookies-to-port",
     "owners": [ "bingler@chromium.org"],
     "expiry_milestone": 142

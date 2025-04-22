@@ -1361,3 +1361,9 @@ BASE_FEATURE(kContainedTabGroup,
 bool IsContainedTabGroupEnabled() {
   return base::FeatureList::IsEnabled(kContainedTabGroup);
 }
+
+BASE_FEATURE(kBestOfAppFRE, "BestOfAppFRE", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBestOfAppFREEnabled() {
+  return base::FeatureList::IsEnabled(kBestOfAppFRE);
+}

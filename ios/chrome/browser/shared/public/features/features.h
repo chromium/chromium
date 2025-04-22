@@ -1122,4 +1122,11 @@ BASE_DECLARE_FEATURE(kContainedTabGroup);
 // Whether the feature associated with contained tab group is enabled.
 bool IsContainedTabGroupEnabled();
 
+// Feature flag to highlight the app's features during the FRE.
+BASE_DECLARE_FEATURE(kBestOfAppFRE);
+
+// Whether the feature to highlight the app's features during the FRE is
+// enabled.
+bool IsBestOfAppFREEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

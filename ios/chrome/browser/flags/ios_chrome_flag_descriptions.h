@@ -126,6 +126,9 @@ extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 extern const char kBestFeaturesScreenInFirstRunName[];
 extern const char kBestFeaturesScreenInFirstRunDescription[];
 
+extern const char kBestOfAppFREName[];
+extern const char kBestOfAppFREDescription[];
+
 extern const char kBlueDotOnToolsMenuButtonName[];
 extern const char kBlueDotOnToolsMenuButtonDescription[];
 
