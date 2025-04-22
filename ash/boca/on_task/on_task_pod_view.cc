@@ -117,17 +117,18 @@ void OnTaskPodView::AddShortcutButtons() {
 
   pin_tab_strip_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&OnTaskPodView::UpdatePinTabStripButton,
-                          base::Unretained(this)),
+                          base::Unretained(this), true),
       &kOnTaskPodTabsIcon, IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME,
       /*is_togglable=*/true));
   pin_tab_strip_button_->SetVisible(
       pod_controller_->CanToggleTabStripVisibility());
 }
 
-void OnTaskPodView::UpdatePinTabStripButton() {
+void OnTaskPodView::UpdatePinTabStripButton(bool user_action) {
   should_show_tab_strip_ = !should_show_tab_strip_;
   pin_tab_strip_button_->SetToggled(should_show_tab_strip_);
-  pod_controller_->ToggleTabStripVisibility(should_show_tab_strip_);
+  pod_controller_->ToggleTabStripVisibility(should_show_tab_strip_,
+                                            user_action);
 
   if (should_show_tab_strip_) {
     // Button is "Hide tabs" when the tab strip is already shown.
@@ -160,7 +161,7 @@ void OnTaskPodView::OnLockedModeUpdate() {
     // `UpdatePinTabStripButton()` to by default hide the tab strip when
     // entering locked mode.
     should_show_tab_strip_ = true;
-    UpdatePinTabStripButton();
+    UpdatePinTabStripButton(false);
   }
 }
 

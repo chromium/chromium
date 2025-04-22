@@ -16,6 +16,18 @@ inline constexpr char kBocaNumOfStudentsJoinedViaCodeDuringSession[] =
     "Ash.Boca.NumberOfStudentsJoinedViaCodeDuringSession";
 inline constexpr char kBocaBabelorcaActionOfStudentSwitchLanguage[] =
     "Ash.Boca.Babelorca.StudentSwitchLanguage";
+inline constexpr char kBocaOnTaskActionOfStudentNavigateBack[] =
+    "Ash.Boca.OnTask.StudentNavigateBack";
+inline constexpr char kBocaOnTaskActionOfStudentNavigateForward[] =
+    "Ash.Boca.OnTask.StudentNavigateForward";
+inline constexpr char kBocaOnTaskActionOfStudentReloadPage[] =
+    "Ash.Boca.OnTask.StudentReloadPage";
+inline constexpr char kBocaOnTaskActionOfStudentToggleTabStripVisibility[] =
+    "Ash.Boca.OnTask.StudentToggleTabStripVisibility";
+inline constexpr char kBocaOnTaskActionOfStudentSetSnapLocationToLeft[] =
+    "Ash.Boca.OnTask.StudentSetSnapLocationToLeft";
+inline constexpr char kBocaOnTaskActionOfStudentSetSnapLocationToRight[] =
+    "Ash.Boca.OnTask.StudentSetSnapLocationToRight";
 inline constexpr char kBocaBabelorcaTargetLanguage[] =
     "Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage";
 inline constexpr char kBocaOnTaskLockedSessionDurationPercentage[] =
@@ -55,6 +67,23 @@ void RecordBabelOrcaTranslationLanguage(const std::string& language);
 
 // Records the action of a student translates the live caption.
 void RecordBabelOrcaTranslationLanguageSwitched();
+
+// Records the action of a student clicks navigate back button in OnTask pod.
+void RecordOnTaskPodNavigateBackClicked();
+
+// Records the action of a student clicks navigate forward button in OnTask pod.
+void RecordOnTaskPodNavigateForwardClicked();
+
+// Records the action of a student clicks reload page button in OnTask pod.
+void RecordOnTaskPodReloadPageClicked();
+
+// Records the action of a student clicks toggle tab strip visibility button in
+// OnTask pod.
+void RecordOnTaskPodToggleTabStripVisibilityClicked();
+
+// Records the action of a student clicks move left or move right buttons in
+// OnTask pod.
+void RecordOnTaskPodSetSnapLocationClicked(bool is_left);
 
 }  // namespace ash::boca
 

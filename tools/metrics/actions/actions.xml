@@ -4216,13 +4216,62 @@ should be able to be added at any place in this file.
 <action name="Ash.Boca.Babelorca.StudentSwitchLanguage">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
-  <description>A student translate captions in School Tools app.</description>
+  <description>A student translate captions in Class Tools app.</description>
+</action>
+
+<action name="Ash.Boca.OnTask.StudentNavigateBack">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    A student clicks navigation back button in OnTask pod in Class Tools app.
+  </description>
+</action>
+
+<action name="Ash.Boca.OnTask.StudentNavigateForward">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    A student clicks navigation forward button in OnTask pod in Class Tools app.
+  </description>
+</action>
+
+<action name="Ash.Boca.OnTask.StudentReloadPage">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    A student clicks reload page button in OnTask pod in Class Tools app.
+  </description>
+</action>
+
+<action name="Ash.Boca.OnTask.StudentSetSnapLocationToLeft">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    A student clicks move left button in OnTask pod in Class Tools app.
+  </description>
+</action>
+
+<action name="Ash.Boca.OnTask.StudentSetSnapLocationToRight">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    A student clicks move right button in OnTask pod in Class Tools app.
+  </description>
+</action>
+
+<action name="Ash.Boca.OnTask.StudentToggleTabStripVisibility">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    A student clicks toggle tab strip visibility button in OnTask pod in Class
+    Tools app.
+  </description>
 </action>
 
 <action name="Ash.Boca.StudentJoinedSession">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
-  <description>A student joined a School Tools session.</description>
+  <description>A student joined a Class Tools session.</description>
 </action>
 
 <action name="Ash_Clipboard_CopiedItem">

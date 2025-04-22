@@ -70,7 +70,7 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
 
   // Update the color and text of the `pin_tab_strip_button_`, and the tab strip
   // visibility.
-  void UpdatePinTabStripButton();
+  void UpdatePinTabStripButton(bool user_action);
 
   // Pointer to the pod controller that outlives the `OnTaskPodView`.
   const raw_ptr<OnTaskPodController> pod_controller_;

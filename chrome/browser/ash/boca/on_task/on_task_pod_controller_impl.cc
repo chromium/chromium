@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -81,6 +82,7 @@ void OnTaskPodControllerImpl::MaybeNavigateToPreviousPage() {
   if (!browser_) {
     return;
   }
+  boca::RecordOnTaskPodNavigateBackClicked();
   chrome::GoBack(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
 }
 
@@ -88,6 +90,7 @@ void OnTaskPodControllerImpl::MaybeNavigateToNextPage() {
   if (!browser_) {
     return;
   }
+  boca::RecordOnTaskPodNavigateForwardClicked();
   chrome::GoForward(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
 }
 
@@ -95,10 +98,16 @@ void OnTaskPodControllerImpl::ReloadCurrentPage() {
   if (!browser_) {
     return;
   }
+  boca::RecordOnTaskPodReloadPageClicked();
   chrome::Reload(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
 }
 
-void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show) {
+void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show,
+                                                       bool user_action) {
+  if (user_action) {
+    boca::RecordOnTaskPodToggleTabStripVisibilityClicked();
+  }
+
   // Hide tab strip.
   if (!show) {
     tab_strip_reveal_lock_.reset();
@@ -115,6 +124,8 @@ void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show) {
 
 void OnTaskPodControllerImpl::SetSnapLocation(
     OnTaskPodSnapLocation snap_location) {
+  boca::RecordOnTaskPodSetSnapLocationClicked(
+      snap_location == ash::OnTaskPodSnapLocation::kTopLeft);
   pod_snap_location_ = snap_location;
 
   // Reposition the widget.
