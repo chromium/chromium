@@ -10,7 +10,7 @@ import android.view.View;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.action.ViewActions;
 
 import org.hamcrest.Matcher;
@@ -101,15 +101,17 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         }
     }
 
-    /** Start an Espresso interaction with this View. */
-    private ViewInteraction onView() {
-        View view = get();
-        return Espresso.onView(is(view));
+    /** Returns the {@link ViewSpec} for this ViewElement. */
+    public ViewSpec<ViewT> getViewSpec() {
+        return mViewSpec;
     }
 
     /** Trigger an Espresso action on this View. */
     public Transition.Trigger performTrigger(ViewAction action) {
-        return () -> onView().perform(action);
+        return () -> {
+            View view = get();
+            Espresso.onView(is(view)).perform(action);
+        };
     }
 
     /**
@@ -140,6 +142,12 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
      */
     public Transition.Trigger longClickTrigger() {
         return performTrigger(ViewActions.longClick());
+    }
+
+    /** Trigger an Espresso ViewAssertion on this View. */
+    public void check(ViewAssertion assertion) {
+        View view = get();
+        Espresso.onView(is(view)).check(assertion);
     }
 
     /** Extra options for declaring ViewElements. */

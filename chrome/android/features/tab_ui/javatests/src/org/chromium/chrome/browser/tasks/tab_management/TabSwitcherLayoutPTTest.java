@@ -559,8 +559,7 @@ public class TabSwitcherLayoutPTTest {
         dialog = dialog.pressDoneWithInvalidTitle();
 
         // Verify that the action was blocked
-        onView(NewTabGroupDialogFacility.DIALOG.getViewMatcher())
-                .check(matches(isCompletelyDisplayed()));
+        dialog.dialogElement.check(matches(isCompletelyDisplayed()));
         dialog.pressBack();
 
         // Assert that the expected fields are correct

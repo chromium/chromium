@@ -64,7 +64,7 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
         mHostStation.exitFacilitiesSync(
                 List.of(this, itemOnScreen),
                 Transition.conditionOption(tabCountIncrease),
-                itemOnScreen.clickTrigger());
+                itemOnScreen.viewElement.clickTrigger());
         return null;
     }
 
@@ -74,6 +74,6 @@ public class LinkContextMenuFacility extends ContextMenuFacility {
         return mHostStation.swapFacilitySync(
                 this,
                 new TabGroupUiFacility<>(mHostStation.getActivity().getTabModelSelectorSupplier()),
-                itemOnScreen.clickTrigger());
+                itemOnScreen.viewElement.clickTrigger());
     }
 }

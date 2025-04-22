@@ -57,10 +57,9 @@ public class TabSwitcherGroupCardAppMenuFacility extends ScrollableFacility<TabS
 
     private UndoSnackbarFacility doCloseRegularTabGroup(
             ItemOnScreenFacility<UndoSnackbarFacility> itemOnScreen) {
-        int tabCount = mHostStation.getActivity().getTabModelSelector().getTotalTabCount();
         String snackbarMessage = TabGroupUtil.getUndoCloseGroupSnackbarMessageString(mTitle);
         UndoSnackbarFacility undoSnackbar = new UndoSnackbarFacility(snackbarMessage);
-        mHostStation.swapFacilitySync(this, undoSnackbar, itemOnScreen.clickTrigger());
+        mHostStation.swapFacilitySync(this, undoSnackbar, itemOnScreen.viewElement.clickTrigger());
         return undoSnackbar;
     }
 }

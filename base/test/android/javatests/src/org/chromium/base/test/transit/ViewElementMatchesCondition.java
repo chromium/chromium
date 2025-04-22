@@ -14,10 +14,10 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class ViewElementMatchesCondition extends InstrumentationThreadCondition {
 
-    private ViewElement mViewElement;
-    private Matcher<View> mViewMatcher;
+    private final ViewElement<View> mViewElement;
+    private final Matcher<View> mViewMatcher;
 
-    public ViewElementMatchesCondition(ViewElement viewElement, Matcher<View> viewMatcher) {
+    public ViewElementMatchesCondition(ViewElement<View> viewElement, Matcher<View> viewMatcher) {
         mViewElement = dependOnSupplier(viewElement, "ViewElement");
         mViewMatcher = viewMatcher;
     }

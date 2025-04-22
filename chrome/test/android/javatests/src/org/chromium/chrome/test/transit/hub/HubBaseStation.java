@@ -23,6 +23,8 @@ import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
+import com.google.android.material.tabs.TabLayout;
+
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
@@ -45,10 +47,14 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
     public static final ViewSpec HUB_MENU_BUTTON =
             HUB_TOOLBAR.descendant(withId(org.chromium.chrome.R.id.menu_button));
-    public static final ViewSpec HUB_PANE_SWITCHER =
-            HUB_TOOLBAR.descendant(withId(R.id.pane_switcher));
+    public static final ViewSpec<TabLayout> HUB_PANE_SWITCHER =
+            HUB_TOOLBAR.descendant(TabLayout.class, withId(R.id.pane_switcher));
 
     public Element<TabModelSelector> tabModelSelectorElement;
+    public ViewElement<View> toolbarElement;
+    public ViewElement<View> paneHostElement;
+    public ViewElement<View> menuButtonElement;
+    public ViewElement<TabLayout> paneSwitcherElement;
     public @Nullable ViewElement<View> regularTabsButtonElement;
     public @Nullable ViewElement<View> incognitoTabsButtonElement;
     protected final boolean mIncognitoTabsExist;
@@ -70,9 +76,11 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
                 elements.declareEnterConditionAsElement(
                         new TabModelSelectorCondition(mActivityElement));
 
-        elements.declareView(HUB_TOOLBAR);
-        elements.declareView(HUB_PANE_HOST);
-        elements.declareView(HUB_MENU_BUTTON);
+        toolbarElement = elements.declareView(HUB_TOOLBAR);
+        paneHostElement = elements.declareView(HUB_PANE_HOST);
+        menuButtonElement = elements.declareView(HUB_MENU_BUTTON);
+
+        paneSwitcherElement = elements.declareView(HUB_PANE_SWITCHER);
 
         // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
         // The non-regular toggle tab button contentDescription is a substring found in the string:
@@ -120,7 +128,7 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
                                 paneId, mRegularTabsExist, mIncognitoTabsExist));
 
         try {
-            HUB_PANE_SWITCHER.onView().check(matches(isDisplayed()));
+            onView(HUB_PANE_SWITCHER.getViewMatcher()).check(matches(isDisplayed()));
         } catch (NoMatchingViewException e) {
             throw TravelException.newTravelException(
                     "Hub pane switcher is not visible to switch to " + paneId);

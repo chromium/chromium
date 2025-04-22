@@ -51,6 +51,6 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return travelToSync(page, getNewTabButtonViewSpec()::click);
+        return travelToSync(page, newTabButtonElement.clickTrigger());
     }
 }

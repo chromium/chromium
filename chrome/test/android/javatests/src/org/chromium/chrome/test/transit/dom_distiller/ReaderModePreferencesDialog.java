@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.GeneralClickAction;
 import androidx.test.espresso.action.GeneralLocation;
@@ -19,7 +23,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -30,12 +34,11 @@ import org.chromium.chrome.test.util.MenuUtils;
  * <p>TODO(crbug.com/350074837): Turn this into a Facility when CctPageStation exists.
  */
 public class ReaderModePreferencesDialog extends CarryOn {
-
-    public static final ViewSpec TEXT_COLOR_LIGHT = viewSpec(withText("Light"));
-    public static final ViewSpec TEXT_COLOR_DARK = viewSpec(withText("Dark"));
-    public static final ViewSpec TEXT_COLOR_SEPIA = viewSpec(withText("Sepia"));
-    public static final ViewSpec FONT_FAMILY = viewSpec(withId(R.id.font_family));
-    public static final ViewSpec FONT_SIZE_SLIDER = viewSpec(withId(R.id.font_size));
+    public ViewElement<Button> darkButtonElement;
+    public ViewElement<Button> sepiaButtonElement;
+    public ViewElement<Button> lightButtonElement;
+    public ViewElement<Spinner> fontFamilySpinnerElement;
+    public ViewElement<SeekBar> fontSizeSliderElement;
 
     @Override
     public void declareElements(Elements.Builder elements) {
@@ -61,41 +64,41 @@ public class ReaderModePreferencesDialog extends CarryOn {
                                             ├── @id/font_size | AppCompatSeekBar
                                             ╰── "A" | MaterialTextView
         */
-        elements.declareView(TEXT_COLOR_DARK);
-        elements.declareView(TEXT_COLOR_SEPIA);
-        elements.declareView(TEXT_COLOR_LIGHT);
-        elements.declareView(FONT_FAMILY);
-        elements.declareView(FONT_SIZE_SLIDER);
+        darkButtonElement = elements.declareView(viewSpec(Button.class, withText("Dark")));
+        sepiaButtonElement = elements.declareView(viewSpec(Button.class, withText("Sepia")));
+        lightButtonElement = elements.declareView(viewSpec(Button.class, withText("Light")));
+        fontFamilySpinnerElement =
+                elements.declareView(viewSpec(Spinner.class, withId(R.id.font_family)));
+        fontSizeSliderElement =
+                elements.declareView(viewSpec(SeekBar.class, withId(R.id.font_size)));
     }
 
     public void pickColorLight(Condition condition) {
-        Condition.runAndWaitFor(TEXT_COLOR_LIGHT::click, condition);
+        Condition.runAndWaitFor(lightButtonElement.clickTrigger(), condition);
     }
 
     public void pickColorDark(Condition condition) {
-        Condition.runAndWaitFor(TEXT_COLOR_DARK::click, condition);
+        Condition.runAndWaitFor(darkButtonElement.clickTrigger(), condition);
     }
 
     public void pickColorSepia(Condition condition) {
-        Condition.runAndWaitFor(TEXT_COLOR_SEPIA::click, condition);
+        Condition.runAndWaitFor(sepiaButtonElement.clickTrigger(), condition);
     }
 
     public void setFontSizeSliderToMin(Condition condition) {
         // Min is 50% font size.
         Condition.runAndWaitFor(
-                () ->
-                        FONT_SIZE_SLIDER.perform(
-                                new GeneralClickAction(
-                                        Tap.SINGLE, GeneralLocation.CENTER_LEFT, Press.FINGER)),
+                fontSizeSliderElement.performTrigger(
+                        new GeneralClickAction(
+                                Tap.SINGLE, GeneralLocation.CENTER_LEFT, Press.FINGER)),
                 condition);
     }
 
     public void setFontSizeSliderToMax(Condition condition) {
         Condition.runAndWaitFor(
-                () ->
-                        FONT_SIZE_SLIDER.perform(
-                                new GeneralClickAction(
-                                        Tap.SINGLE, GeneralLocation.CENTER_RIGHT, Press.FINGER)),
+                fontSizeSliderElement.performTrigger(
+                        new GeneralClickAction(
+                                Tap.SINGLE, GeneralLocation.CENTER_RIGHT, Press.FINGER)),
                 condition);
     }
 

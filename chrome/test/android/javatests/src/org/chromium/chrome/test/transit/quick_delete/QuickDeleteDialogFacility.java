@@ -36,9 +36,6 @@ import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 
 /** Confirmation dialog that appears when "Delete browsing data" is chosen from the app menu. */
 public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActivity>> {
-    public static final ViewSpec<ModalDialogView> DIALOG =
-            viewSpec(ModalDialogView.class, withId(R.id.modal_dialog_view));
-
     private final int mTimePeriod;
 
     public ViewElement<ModalDialogView> dialogElement;
@@ -61,34 +58,36 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        dialogElement = elements.declareView(DIALOG);
+        ViewSpec<ModalDialogView> dialog =
+                viewSpec(ModalDialogView.class, withId(R.id.modal_dialog_view));
+        dialogElement = elements.declareView(dialog);
         customViewElement =
-                elements.declareView(DIALOG.descendant(withId(R.id.custom_view_not_in_scrollable)));
-        elements.declareView(DIALOG.descendant(withText(R.string.quick_delete_dialog_title)));
+                elements.declareView(dialog.descendant(withId(R.id.custom_view_not_in_scrollable)));
+        elements.declareView(dialog.descendant(withText(R.string.quick_delete_dialog_title)));
         spinnerElement =
                 elements.declareView(
-                        DIALOG.descendant(Spinner.class, withId(R.id.quick_delete_spinner)));
+                        dialog.descendant(Spinner.class, withId(R.id.quick_delete_spinner)));
         historyInfoElement =
                 elements.declareView(
-                        DIALOG.descendant(
+                        dialog.descendant(
                                 TextView.class, withId(R.id.quick_delete_history_row_title)));
         tabsInfoElement =
                 elements.declareView(
-                        DIALOG.descendant(TextView.class, withId(R.id.quick_delete_tabs_row_title)),
+                        dialog.descendant(TextView.class, withId(R.id.quick_delete_tabs_row_title)),
                         ViewElement.allowDisabledOption());
         elements.declareView(
-                DIALOG.descendant(
+                dialog.descendant(
                         withText(
                                 R.string
                                         .quick_delete_dialog_cookies_cache_and_other_site_data_text)));
         moreOptionsElement =
-                elements.declareView(DIALOG.descendant(withId(R.id.quick_delete_more_options)));
+                elements.declareView(dialog.descendant(withId(R.id.quick_delete_more_options)));
         cancelButtonElement =
                 elements.declareView(
-                        DIALOG.descendant(withId(R.id.negative_button), withText("Cancel")));
+                        dialog.descendant(withId(R.id.negative_button), withText("Cancel")));
         deleteButtonElement =
                 elements.declareView(
-                        DIALOG.descendant(withId(R.id.positive_button), withText("Delete data")));
+                        dialog.descendant(withId(R.id.positive_button), withText("Delete data")));
         elements.declareEnterCondition(new TimePeriodSelectedCondition());
     }
 
@@ -182,7 +181,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         }
     }
 
-    public static class SearchHistoryDisambiguiationFacility
+    public class SearchHistoryDisambiguiationFacility
             extends Facility<Station<ChromeTabbedActivity>> {
         private final boolean mExpectPresent;
 
@@ -192,7 +191,10 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            ViewSpec spec = DIALOG.descendant(withId(R.id.search_history_disambiguation));
+            ViewSpec<View> spec =
+                    dialogElement
+                            .getViewSpec()
+                            .descendant(withId(R.id.search_history_disambiguation));
             if (mExpectPresent) {
                 elements.declareView(spec);
             } else {
@@ -201,7 +203,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         }
     }
 
-    public static class SitesSubtitleFacility extends Facility<Station<ChromeTabbedActivity>> {
+    public class SitesSubtitleFacility extends Facility<Station<ChromeTabbedActivity>> {
         private final boolean mExpectPresent;
 
         public SitesSubtitleFacility(boolean expectPresent) {
@@ -210,7 +212,10 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            ViewSpec spec = DIALOG.descendant(withId(R.id.quick_delete_history_row_subtitle));
+            ViewSpec spec =
+                    dialogElement
+                            .getViewSpec()
+                            .descendant(withId(R.id.quick_delete_history_row_subtitle));
             if (mExpectPresent) {
                 elements.declareView(spec);
             } else {

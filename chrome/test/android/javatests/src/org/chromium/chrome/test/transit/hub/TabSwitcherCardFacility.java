@@ -24,7 +24,6 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
@@ -32,11 +31,11 @@ import org.chromium.chrome.test.R;
 
 /** Base class for Card Facilities in the Tab Switcher. */
 public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStation> {
-    public static final Matcher<View> CARD_MATCHER = withId(R.id.card_view);
     private final @Nullable Integer mCardIndex;
     protected final String mTitle;
 
-    private ViewSpec mCardTitleSpec;
+    public ViewElement<View> titleElement;
+    public ViewElement<View> cardViewElement;
 
     TabSwitcherCardFacility(@Nullable Integer cardIndex, String title) {
         mCardIndex = cardIndex;
@@ -47,27 +46,24 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
     @CallSuper
     public void declareElements(Elements.Builder elements) {
         String titleElementId = "Card title: " + mTitle;
-        Matcher<View> cardTitleMatcher = cardTitleMatcher(mTitle);
-        mCardTitleSpec = viewSpec(cardTitleMatcher);
-        elements.declareView(mCardTitleSpec, elementIdOption(titleElementId));
+        Matcher<View> cardTitleMatcher =
+                allOf(withText(mTitle), withId(R.id.tab_title), withParent(withId(R.id.card_view)));
+        titleElement =
+                elements.declareView(viewSpec(cardTitleMatcher), elementIdOption(titleElementId));
 
-        ViewSpec cardSpec =
+        ViewSpec<View> cardSpec =
                 viewSpec(isAssignableFrom(TabGridView.class), hasDescendant(cardTitleMatcher));
-        ViewElement mCardViewElement =
-                elements.declareView(cardSpec, elementIdOption(titleElementId));
+        cardViewElement = elements.declareView(cardSpec, elementIdOption(titleElementId));
 
         if (mCardIndex != null) {
             elements.declareEnterCondition(
                     new CardAtPositionCondition(
-                            mCardIndex, mHostStation.recyclerViewElement, mCardViewElement));
+                            mCardIndex, mHostStation.recyclerViewElement, cardViewElement));
         }
     }
 
-    protected static Matcher<View> cardTitleMatcher(String title) {
-        return allOf(withText(title), withId(R.id.tab_title), withParent(CARD_MATCHER));
-    }
-
-    protected Transition.Trigger clickTitleTrigger() {
-        return mCardTitleSpec::click;
+    protected ViewElement<View> declareActionButton(Elements.Builder elements) {
+        return elements.declareView(
+                cardViewElement.getViewSpec().descendant(withId(R.id.action_button)));
     }
 }

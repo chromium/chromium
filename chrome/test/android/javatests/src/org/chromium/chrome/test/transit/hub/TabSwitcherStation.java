@@ -48,12 +48,8 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public static final ViewSpec<RecyclerView> TAB_LIST_RECYCLER_VIEW =
             HUB_PANE_HOST.descendant(RecyclerView.class, withId(R.id.tab_list_recycler_view));
 
-    public static final ViewSpec TOOLBAR = viewSpec(instanceOf(HubToolbarView.class));
-    public static final ViewSpec TOOLBAR_NEW_TAB_BUTTON =
-            TOOLBAR.descendant(withId(R.id.toolbar_action_button));
-    public static final ViewSpec SEARCH_BOX = viewSpec(withId(R.id.search_box));
-    public static final ViewSpec SEARCH_LOUPE = TOOLBAR.descendant(withId(R.id.search_loupe));
-    public static final ViewSpec TAB_GROUP_COLOR_ICON_VIEW =
+    public static final ViewSpec<View> TOOLBAR = viewSpec(instanceOf(HubToolbarView.class));
+    public static final ViewSpec<View> TAB_GROUP_COLOR_ICON_VIEW =
             viewSpec(
                     allOf(
                             withId(R.id.tab_group_color_view_container),
@@ -78,6 +74,8 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     private final boolean mIsIncognito;
 
     public ViewElement<RecyclerView> recyclerViewElement;
+    public ViewElement<View> searchElement;
+    public ViewElement<View> newTabButtonElement;
 
     public TabSwitcherStation(
             boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
@@ -89,17 +87,20 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        elements.declareView(getNewTabButtonViewSpec());
+        newTabButtonElement =
+                elements.declareView(TOOLBAR.descendant(withId(R.id.toolbar_action_button)));
         if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             elements.declareElementFactory(
                     mActivityElement,
                     delayedElements -> {
+                        ViewSpec<View> searchBox = viewSpec(withId(R.id.search_box));
+                        ViewSpec<View> searchLoupe = TOOLBAR.descendant(withId(R.id.search_loupe));
                         if (shouldHubSearchBoxBeVisible()) {
-                            delayedElements.declareNoView(SEARCH_BOX);
-                            delayedElements.declareView(SEARCH_LOUPE);
+                            searchElement = delayedElements.declareView(searchLoupe);
+                            delayedElements.declareNoView(searchBox);
                         } else {
-                            delayedElements.declareNoView(SEARCH_LOUPE);
-                            delayedElements.declareView(SEARCH_BOX);
+                            searchElement = delayedElements.declareView(searchBox);
+                            delayedElements.declareNoView(searchLoupe);
                         }
                     });
         }
@@ -119,7 +120,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         recheckActiveConditions();
 
         return enterFacilitySync(
-                new TabSwitcherAppMenuFacility(mIsIncognito), HUB_MENU_BUTTON::click);
+                new TabSwitcherAppMenuFacility(mIsIncognito), menuButtonElement.clickTrigger());
     }
 
     /**
@@ -196,10 +197,6 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                 });
     }
 
-    protected ViewSpec getNewTabButtonViewSpec() {
-        return TOOLBAR_NEW_TAB_BUTTON;
-    }
-
     /**
      * Returns to the previous tab via the back button.
      *
@@ -242,9 +239,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     public TabSwitcherSearchStation openTabSwitcherSearch() {
         TabSwitcherSearchStation searchStation = new TabSwitcherSearchStation(mIsIncognito);
-        travelToSync(
-                searchStation,
-                shouldHubSearchBoxBeVisible() ? SEARCH_LOUPE::click : SEARCH_BOX::click);
+        travelToSync(searchStation, searchElement.clickTrigger());
         searchStation.focusAndDropSoftKeyboard();
         return searchStation;
     }
