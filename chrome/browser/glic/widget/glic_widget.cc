@@ -18,6 +18,8 @@
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/win/shell.h"
@@ -120,6 +122,10 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   HWND hwnd = widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
   if (hwnd != nullptr) {
     ui::win::PreventWindowFromPinning(hwnd);
+    if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
+      ui::win::SetAppIdForWindow(
+          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()), hwnd);
+    }
   }  // BUILDFLAG(IS_WIN)
 #endif  //
   return widget;
