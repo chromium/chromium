@@ -8079,7 +8079,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="226" label="PromiseAny"/>
   <int value="227" label="SetMethods"/>
   <int value="228" label="ScrollSnapEvents"/>
-  <int value="229" label="MoveBeforeAPI"/>
+  <int value="229" label="MoveBefore"/>
   <int value="230" label="ScrollDrivenAnimations"/>
   <int value="231" label="WebAnimations"/>
   <int value="232" label="CrossDocumentViewTransitions"/>
@@ -8124,8 +8124,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="271" label="ClipboardCustomFormat"/>
   <int value="272" label="ClipboardSvg"/>
   <int value="273" label="ClipboardSupports"/>
-  <int value="274" label="BarProp"/>
-  <int value="275" label="BeforeUnload"/>
+  <int value="274" label="Barprop"/>
+  <int value="275" label="Beforeunload"/>
   <int value="276" label="BfcacheBlockingReasons"/>
   <int value="277" label="LayoutInstability"/>
   <int value="278" label="Profiler"/>
@@ -8153,13 +8153,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="300" label="AppProtocolHandlers"/>
   <int value="301" label="Badging"/>
   <int value="302" label="Manifest"/>
-  <int value="303" label="BeforeInstallPrompt"/>
+  <int value="303" label="Beforeinstallprompt"/>
   <int value="304" label="AppShareTargets"/>
   <int value="305" label="AppShortcuts"/>
-  <int value="306" label="FetchLater"/>
+  <int value="306" label="Fetchlater"/>
   <int value="307" label="DRAFT_WasmBranchHinting"/>
   <int value="308" label="DRAFT_ExplicitResourceManagement"/>
-  <int value="309" label="LaunchHandler"/>
+  <int value="309" label="AppLaunchHandler"/>
   <int value="310" label="DRAFT_CssFunction"/>
   <int value="311" label="DRAFT_CssIf"/>
   <int value="312" label="WebAppManifestUpdateToken"/>
