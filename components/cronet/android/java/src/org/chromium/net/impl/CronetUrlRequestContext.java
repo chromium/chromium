@@ -172,7 +172,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     @GuardedBy("mLock")
     private boolean mIsStoppingNetLog;
 
-    /** The network handle to be used for requests that do not explicitly specify one. **/
+    /** The network handle to be used for requests that do not explicitly specify one. */
     private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
     /** The ID of this CronetEngine for CronetLogger purposes. */

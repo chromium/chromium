@@ -236,7 +236,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         getInfoForOrigins();
     }
 
-    /** OnClickListener for the zoom button **/
+    /** OnClickListener for the zoom button */
     @Initializer
     public void handleZoomClearAll(View v) {
         Resources resources = getContext().getResources();

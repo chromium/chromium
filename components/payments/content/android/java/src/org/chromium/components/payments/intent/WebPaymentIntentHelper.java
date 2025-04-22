@@ -123,13 +123,14 @@ public class WebPaymentIntentHelper {
 
     /**
      * Parse the Payment Intent response.
+     *
      * @param resultCode Result code of the requested intent.
      * @param data The intent response data.
      * @param requestedPaymentOptions The merchant required payment options. This is used to
-     *          populate relevant fields in payerData.
+     *     populate relevant fields in payerData.
      * @param errorCallback Callback to handle parsing errors. Invoked synchronously.
      * @param successCallback Callback to receive the parsed data. Invoked synchronously.
-     **/
+     */
     public static void parsePaymentResponse(
             int resultCode,
             Intent data,

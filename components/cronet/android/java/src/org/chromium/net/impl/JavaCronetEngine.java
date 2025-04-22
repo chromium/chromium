@@ -55,7 +55,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
     private final CronetLogger mLogger;
     private final AtomicInteger mActiveRequestCount = new AtomicInteger();
 
-    /** The network handle to be used for requests that do not explicitly specify one. **/
+    /** The network handle to be used for requests that do not explicitly specify one. */
     private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
     private final Context mContext;

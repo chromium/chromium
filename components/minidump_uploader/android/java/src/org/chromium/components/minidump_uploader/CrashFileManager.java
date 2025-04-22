@@ -374,7 +374,7 @@ public class CrashFileManager {
     /**
      * Imports minidumps from Crashpad's database to the Crash Reports directory, converting them to
      * MIME files.
-     **/
+     */
     private void importCrashpadMinidumps() {
         File crashpadDir = getCrashpadDirectory();
         if (crashpadDir.exists() && ensureCrashDirExists()) {
