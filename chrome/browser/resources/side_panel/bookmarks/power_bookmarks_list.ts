@@ -754,12 +754,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
         this.getActiveFolder_();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
-    this.displayLists_ = [primaryList];
     if (this.hasSomeActiveFilter_ && !!activeFolder) {
       const secondaryList = this.bookmarksService_.filterBookmarks(
           undefined, this.activeSortIndex_, this.searchQuery_, this.labels_,
           activeFolder);
-      this.displayLists_.push(secondaryList);
+      this.displayLists_ = [primaryList, secondaryList];
+    } else {
+      this.displayLists_ = [primaryList];
     }
     this.displayLists_.forEach(
         list => this.bookmarksService_.refreshDataForBookmarks(list));

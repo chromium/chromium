@@ -308,6 +308,10 @@ suite('General', () => {
           1,
           metrics.count(
               'PowerBookmarks.SidePanel.SearchOrFilter.BookmarksShown', 2));
+      // Bookmark list is shown when there are no filter results in the active
+      // folder.
+      assertTrue(isHidden(powerBookmarksList.$.topLevelEmptyState));
+      assertFalse(isHidden(powerBookmarksList.$.bookmarks));
     });
 
     test('UpdatesChangedBookmarks', async () => {
