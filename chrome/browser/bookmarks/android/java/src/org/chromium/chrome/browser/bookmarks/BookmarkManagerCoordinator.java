@@ -453,7 +453,9 @@ public class BookmarkManagerCoordinator
     }
 
     View buildEmptyStateView(ViewGroup parent) {
-        return inflate(parent, R.layout.empty_state_view);
+        ViewGroup emptyStateView = (ViewGroup) inflate(parent, R.layout.empty_state_view);
+        emptyStateView.setTouchscreenBlocksFocus(true);
+        return emptyStateView;
     }
 
     boolean canShowSigninPromo() {
