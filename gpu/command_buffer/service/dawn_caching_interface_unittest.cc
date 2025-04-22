@@ -232,7 +232,7 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
   }
 }
 
-TEST_F(DawnCachingInterfaceTest, TestGraphiteMemoryPressureCritical) {
+TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
   // Verifies that on PurgeMemory the cache becomes empty for critical pressure
   // levels without `kAggressiveShaderCacheLimits` feature flag.
   static constexpr std::string_view kKey1 = "1";
@@ -245,17 +245,20 @@ TEST_F(DawnCachingInterfaceTest, TestGraphiteMemoryPressureCritical) {
     return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
   }));
 
-  // Pass graphite_handle_ here so that the backends_ are populated.
-  auto interface = factory.CreateInstance(kDawnGraphiteHandle);
-  interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  // Pass handles here so that the backends_ are populated.
+  auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
+                     factory.CreateInstance(kDawnWebGPUHandle)};
+  for (auto& interface : interfaces) {
+    interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
-  factory.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    factory.PurgeMemory(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  }
 }
 
-TEST_F(DawnCachingInterfaceTest, TestGraphiteAggressiveCacheAndMemoryPressure) {
+TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   // Verifies PurgeMemory with `kAggressiveShaderCacheLimits` feature flag.
   base::test::ScopedFeatureList feature_list{
       ::features::kAggressiveShaderCacheLimits};
@@ -269,24 +272,27 @@ TEST_F(DawnCachingInterfaceTest, TestGraphiteAggressiveCacheAndMemoryPressure) {
     return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
   }));
 
-  // Pass graphite_handle_ here so that the backends_ are populated.
-  auto interface = factory.CreateInstance(kDawnGraphiteHandle);
-  interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  // Pass handles here so that the backends_ are populated.
+  auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
+                     factory.CreateInstance(kDawnWebGPUHandle)};
+  for (auto& interface : interfaces) {
+    interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
-  // Moderate memory pressure is ignored
-  factory.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    // Moderate memory pressure is ignored
+    factory.PurgeMemory(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
-  // But not critical, except on Android
-  factory.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    // But not critical, except on Android
+    factory.PurgeMemory(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 #else
-  EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+    EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 #endif
+  }
 }
 
 }  // namespace

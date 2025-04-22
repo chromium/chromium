@@ -111,10 +111,9 @@ void DawnCachingInterfaceFactory::ReleaseHandle(
 void DawnCachingInterfaceFactory::PurgeMemory(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   for (auto& [key, backend] : backends_) {
-    // Only purge memory for GraphiteDawn for now.
-    if (std::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key)) {
-      backend->PurgeMemory(memory_pressure_level);
-    }
+    CHECK(std::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key) ||
+          std::holds_alternative<GpuDiskCacheDawnWebGPUHandle>(key));
+    backend->PurgeMemory(memory_pressure_level);
   }
 }
 
