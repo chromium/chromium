@@ -1003,6 +1003,7 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<PrefetchHandle> StartPrefetch(
       const GURL& prefetch_url,
       bool use_prefetch_proxy,
+      const std::string& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,

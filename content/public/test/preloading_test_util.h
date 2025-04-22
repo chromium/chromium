@@ -25,6 +25,10 @@ namespace test {
 extern const std::vector<std::string> kPreloadingAttemptUkmMetrics;
 extern const std::vector<std::string> kPreloadingPredictionUkmMetrics;
 
+// Used for generating histogram names recorded per trigger.
+inline constexpr char kPreloadingEmbedderHistgramSuffixForTesting[] =
+    "EmbedderHistogramSuffixForTesting";
+
 // Utility class to make building expected
 // TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ for PreloadingAttempt.
 class PreloadingAttemptUkmEntryBuilder {

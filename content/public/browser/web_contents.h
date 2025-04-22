@@ -1562,6 +1562,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // - `prefetch_url` is the url the prefetch will be performed.
   // - If `use_prefetch_proxy` is set to true, private prefetch proxy is used in
   //   this prefetch request.
+  // - `embedder_histogram_suffix` is used for generating internal histogram
+  //   names recorded per trigger.
   // - `referrer` is utilized as a value of Referer HTTP request header in this
   //   prefetch request.
   // - `referring_origin` represents the initiator origin of prefetch request,
@@ -1581,6 +1583,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual std::unique_ptr<PrefetchHandle> StartPrefetch(
       const GURL& prefetch_url,
       bool use_prefetch_proxy,
+      const std::string& embedder_histogram_suffix,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,

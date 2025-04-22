@@ -83,9 +83,13 @@ void SearchPreloadPipeline::StartPrefetch(
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   net::HttpNoVarySearchData no_vary_search_hint = CreateNoVarySearchHint();
+  // TODO(crbug.com/379140429): Create `preloading_utils` and move common
+  // preloading histograms suffixes to it.
   prefetch_handle_ = web_contents.StartPrefetch(
       prefetch_url,
-      /*use_prefetch_proxy=*/false, blink::mojom::Referrer(),
+      /*use_prefetch_proxy=*/false,
+      prerender_utils::kDefaultSearchEngineMetricSuffix,
+      blink::mojom::Referrer(),
       /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
       pipeline_info_, attempt->GetWeakPtr(),
       /*holdback_status_override=*/std::nullopt);

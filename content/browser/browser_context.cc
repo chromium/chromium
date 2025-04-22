@@ -195,6 +195,7 @@ StoragePartition* BrowserContext::GetDefaultStoragePartition() {
 std::unique_ptr<content::PrefetchHandle>
 BrowserContext::StartBrowserPrefetchRequest(
     const GURL& url,
+    const std::string& embedder_histogram_suffix,
     bool javascript_enabled,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     const net::HttpRequestHeaders& additional_headers,
@@ -216,7 +217,8 @@ BrowserContext::StartBrowserPrefetchRequest(
   PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
                              /*use_prefetch_proxy=*/false);
   auto container = std::make_unique<PrefetchContainer>(
-      this, url, prefetch_type, blink::mojom::Referrer(), javascript_enabled,
+      this, url, prefetch_type, embedder_histogram_suffix,
+      blink::mojom::Referrer(), javascript_enabled,
       /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
       /*attempt=*/nullptr, additional_headers,
       std::move(request_status_listener), ttl_in_sec,

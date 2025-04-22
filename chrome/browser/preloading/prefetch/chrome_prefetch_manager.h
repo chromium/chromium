@@ -10,6 +10,9 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+// TODO(crbug.com/379140429): Create `preloading_utils` and move this to it.
+inline constexpr char kCCTMetricsSuffix[] = "ChromeCustomTabs";
+
 // Manages all prefetch triggers from the //chrome.
 class ChromePrefetchManager
     : public content::WebContentsUserData<ChromePrefetchManager> {

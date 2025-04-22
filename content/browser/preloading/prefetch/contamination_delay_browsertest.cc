@@ -26,6 +26,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -251,8 +252,10 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
 
   auto test_prefetch_watcher = std::make_unique<test::TestPrefetchWatcher>();
   auto handle = shell()->web_contents()->StartPrefetch(
-      prefetch_url, /*use_prefetch_proxy=*/false, blink::mojom::Referrer(),
-      referring_origin, /*no_vary_search_hint=*/std::nullopt,
+      prefetch_url, /*use_prefetch_proxy=*/false,
+      test::kPreloadingEmbedderHistgramSuffixForTesting,
+      blink::mojom::Referrer(), referring_origin,
+      /*no_vary_search_hint=*/std::nullopt,
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
       /*attempt=*/nullptr, /*holdback_status_override=*/std::nullopt);

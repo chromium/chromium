@@ -379,6 +379,7 @@ PrefetchContainer::PrefetchContainer(
               referring_render_frame_host.GetLastCommittedURL().spec()),
           PrefetchContainer::Key(referring_document_token, url),
           prefetch_type,
+          /*embedder_histogram_suffix=*/std::nullopt,
           referrer,
           std::move(speculation_rules_tags),
           std::move(no_vary_search_hint),
@@ -403,6 +404,7 @@ PrefetchContainer::PrefetchContainer(
     WebContents& referring_web_contents,
     const GURL& url,
     const PrefetchType& prefetch_type,
+    const std::string& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -417,6 +419,7 @@ PrefetchContainer::PrefetchContainer(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
           prefetch_type,
+          embedder_histogram_suffix,
           referrer,
           /*speculation_rules_tags=*/std::nullopt,
           std::move(no_vary_search_hint),
@@ -434,12 +437,14 @@ PrefetchContainer::PrefetchContainer(
           /*should_append_variations_header=*/true) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+  CHECK(!embedder_histogram_suffix_.value().empty());
 }
 
 PrefetchContainer::PrefetchContainer(
     BrowserContext* browser_context,
     const GURL& url,
     const PrefetchType& prefetch_type,
+    const std::string& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     bool javascript_enabled,
     const std::optional<url::Origin>& referring_origin,
@@ -457,6 +462,7 @@ PrefetchContainer::PrefetchContainer(
               std::optional<blink::DocumentToken>(std::nullopt),
               url),
           prefetch_type,
+          embedder_histogram_suffix,
           referrer,
           /*speculation_rules_tags=*/std::nullopt,
           std::move(no_vary_search_hint),
@@ -475,6 +481,7 @@ PrefetchContainer::PrefetchContainer(
           should_append_variations_header) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+  CHECK(!embedder_histogram_suffix_.value().empty());
 }
 
 PrefetchContainer::PrefetchContainer(
@@ -483,6 +490,7 @@ PrefetchContainer::PrefetchContainer(
     const std::optional<size_t>& referring_url_hash,
     const PrefetchContainer::Key& key,
     const PrefetchType& prefetch_type,
+    const std::optional<std::string>& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     std::optional<SpeculationRulesTags> speculation_rules_tags,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -503,6 +511,7 @@ PrefetchContainer::PrefetchContainer(
       referring_url_hash_(referring_url_hash),
       key_(key),
       prefetch_type_(prefetch_type),
+      embedder_histogram_suffix_(embedder_histogram_suffix),
       referrer_(referrer),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       speculation_rules_tags_(std::move(speculation_rules_tags)),

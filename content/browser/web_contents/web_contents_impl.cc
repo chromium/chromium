@@ -11889,6 +11889,7 @@ float WebContentsImpl::GetCurrentTouchSequenceYOffset() {
 std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     const GURL& prefetch_url,
     bool use_prefetch_proxy,
+    const std::string& embedder_histogram_suffix,
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -11909,9 +11910,10 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
   PrefetchType prefetch_type(PreloadingTriggerType::kEmbedder,
                              use_prefetch_proxy);
   auto container = std::make_unique<PrefetchContainer>(
-      *this, prefetch_url, prefetch_type, referrer, referring_origin,
-      std::move(no_vary_search_hint), std::move(preload_pipeline_info),
-      std::move(attempt), holdback_status_override);
+      *this, prefetch_url, prefetch_type, embedder_histogram_suffix, referrer,
+      referring_origin, std::move(no_vary_search_hint),
+      std::move(preload_pipeline_info), std::move(attempt),
+      holdback_status_override);
 
   return prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }
