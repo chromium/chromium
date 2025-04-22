@@ -199,11 +199,12 @@ class WTF_EXPORT StringView {
   UChar operator[](unsigned i) const {
     SECURITY_DCHECK(i < length());
     if (Is8Bit())
-      return Characters8()[i];
+      return static_cast<const LChar*>(bytes_)[i];
     return static_cast<const UChar*>(bytes_)[i];
   }
 
-  const LChar* Characters8() const {
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
     DCHECK(Is8Bit());
     return static_cast<const LChar*>(bytes_);
   }

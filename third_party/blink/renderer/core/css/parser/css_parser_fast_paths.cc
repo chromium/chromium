@@ -155,8 +155,8 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   double number;
   CSSPrimitiveValue::UnitType unit = CSSPrimitiveValue::UnitType::kNumber;
 
-  const bool parsed_simple_length =
-      ParseSimpleLength(string.Characters8(), string.length(), unit, number);
+  const bool parsed_simple_length = ParseSimpleLength(
+      UNSAFE_TODO(string.Characters8()), string.length(), unit, number);
   if (!parsed_simple_length) {
     return nullptr;
   }

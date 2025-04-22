@@ -59,7 +59,7 @@ class CSSTokenizerInputStream {
   template <bool characterPredicate(UChar)>
   unsigned SkipWhilePredicate(unsigned offset) {
     if (string_.Is8Bit()) {
-      const LChar* characters8 = string_.Characters8();
+      const LChar* characters8 = UNSAFE_TODO(string_.Characters8());
       while ((offset_ + offset) < string_length_ &&
              characterPredicate(UNSAFE_TODO(characters8[offset_ + offset]))) {
         ++offset;

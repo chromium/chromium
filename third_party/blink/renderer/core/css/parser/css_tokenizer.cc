@@ -597,7 +597,7 @@ StringView CSSTokenizer::ConsumeName() {
   unsigned size = 0;
 #if defined(__SSE2__) || defined(__ARM_NEON__)
   if (buffer.Is8Bit()) {
-    const LChar* ptr = buffer.Characters8();
+    const LChar* ptr = UNSAFE_TODO(buffer.Characters8());
     while (size + 16 <= buffer.length()) {
       int8_t b __attribute__((vector_size(16)));
       UNSAFE_TODO(memcpy(&b, ptr + size, sizeof(b)));

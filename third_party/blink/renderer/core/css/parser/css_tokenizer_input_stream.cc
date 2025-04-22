@@ -14,7 +14,7 @@ namespace blink {
 void CSSTokenizerInputStream::AdvanceUntilNonWhitespace() {
   // Using HTML space here rather than CSS space since we don't do preprocessing
   if (string_.Is8Bit()) {
-    const LChar* characters = string_.Characters8();
+    const LChar* characters = UNSAFE_TODO(string_.Characters8());
     while (offset_ < string_length_ &&
            IsHTMLSpace(UNSAFE_TODO(characters[offset_]))) {
       ++offset_;
