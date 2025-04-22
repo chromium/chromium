@@ -4316,16 +4316,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="kCbcs"/>
 </enum>
 
-<!-- LINT.IfChange(EnhancedCalendarResponseStatus) -->
-
-<enum name="EnhancedCalendarResponseStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="GenericFailure"/>
-  <int value="2" label="CancelRequest"/>
-</enum>
-
-<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/enhanced_calendar/metrics/enhanced_calendar_metrics.h:EnhancedCalendarResponseStatus) -->
-
 <enum name="EnrollmentStatus">
   <int value="0" label="Non-managed"/>
   <int value="1" label="Managed EDU (Deprecated)"/>
