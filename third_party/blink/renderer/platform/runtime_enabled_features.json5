@@ -2490,12 +2490,6 @@
       name: "ImportMapIntegrity",
       status: "stable"
     },
-    // This ensures that list element tag is included in extended selection.
-    // https://crbug.com/40658772
-    {
-      name: "IncludeListElementTagInExtendedSelection",
-      status: "stable",
-    },
     // This ensures that table tag is included in extended selection.
     // https://crbug.com/40833812
     {

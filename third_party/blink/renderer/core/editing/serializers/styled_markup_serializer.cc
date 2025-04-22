@@ -349,9 +349,7 @@ bool StyledMarkupSerializer<Strategy>::DetermineParentTagAndUpdateLastClosed(
       }
     }
   }
-  if (RuntimeEnabledFeatures::
-          IncludeListElementTagInExtendedSelectionEnabled() &&
-      last_closed_ && IsListItemTag(last_closed_)) {
+  if (last_closed_ && IsListItemTag(last_closed_)) {
     if (Node* ancestor =
             FirstAncestorOfTypes<HTMLUListElement, HTMLOListElement,
                                  HTMLDListElement>(*last_closed_)) {
