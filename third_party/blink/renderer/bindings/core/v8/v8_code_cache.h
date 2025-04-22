@@ -86,7 +86,7 @@ class CORE_EXPORT V8CodeCache final {
       bool might_generate_crowdsourced_compile_hints = false,
       bool can_use_crowdsourced_compile_hints = false,
       v8_compile_hints::MagicCommentMode v8_compile_hints_magic_comment_mode =
-          v8_compile_hints::MagicCommentMode::kNever);
+          v8_compile_hints::MagicCommentMode::kNone);
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
@@ -99,7 +99,7 @@ class CORE_EXPORT V8CodeCache final {
       bool might_generate_crowdsourced_compile_hints = false,
       bool can_use_crowdsourced_compile_hints = false,
       v8_compile_hints::MagicCommentMode v8_compile_hints_magic_comment_mode =
-          v8_compile_hints::MagicCommentMode::kNever);
+          v8_compile_hints::MagicCommentMode::kNone);
 
   static bool IsFull(const CachedMetadata* metadata);
 

@@ -1014,9 +1014,13 @@ BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
                              : v8::ScriptCompiler::StreamedSource::TWO_BYTE);
 
   // We don't generate code caches for inline scripts, so we never pass the
-  // kFollowCompileHintsMagicComment compile option.
-  CHECK((compile_options &
-         v8::ScriptCompiler::kFollowCompileHintsMagicComment) == 0);
+  // kFollowCompileHintsMagicComment /
+  // kFollowCompileHintsPerFunctionMagicComment compile options.
+  CHECK_EQ(
+      compile_options & v8::ScriptCompiler::kFollowCompileHintsMagicComment, 0);
+  CHECK_EQ(compile_options &
+               v8::ScriptCompiler::kFollowCompileHintsPerFunctionMagicComment,
+           0);
   task_ = base::WrapUnique(v8::ScriptCompiler::StartStreaming(
       isolate, source_.get(), v8::ScriptType::kClassic, compile_options));
 }
