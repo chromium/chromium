@@ -99,7 +99,7 @@ public class TabLabellerUnitTest {
 
     private PersistentMessage makeStandardMessage() {
         PersistentMessage message = new PersistentMessage();
-        message.type = PersistentNotificationType.CHIP;
+        message.type = PersistentNotificationType.DIRTY_TAB;
         message.attribution = new MessageAttribution();
         message.attribution.tabMetadata = new TabMessageMetadata();
         message.attribution.tabMetadata.localTabId = 1;
@@ -194,7 +194,7 @@ public class TabLabellerUnitTest {
     @Test
     public void testShowAll_WrongMessageType() {
         PersistentMessage message = makeStandardMessage();
-        message.type = PersistentNotificationType.DIRTY_TAB;
+        message.type = PersistentNotificationType.CHIP;
         List<PersistentMessage> messageList = List.of(message);
         when(mMessagingBackendService.getMessagesForGroup(any(), any())).thenReturn(messageList);
 

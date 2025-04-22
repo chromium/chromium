@@ -74,7 +74,7 @@ enum class InstantNotificationType {
 //   org.chromium.components.collaboration.messaging)
 enum class PersistentNotificationType {
   UNDEFINED,
-  // A chip displayed for a specific tab.
+  // A chip displayed for a specific tab. Only used in desktop.
   CHIP,
   // A marker that a tab has been changed and the user has not seen it yet.
   DIRTY_TAB,

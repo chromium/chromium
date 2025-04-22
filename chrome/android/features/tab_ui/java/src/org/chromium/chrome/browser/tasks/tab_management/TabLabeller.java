@@ -60,7 +60,7 @@ public class TabLabeller extends TabObjectLabeller {
         return mTabGroupIdSupplier.get() != null
                 && Objects.equals(
                         mTabGroupIdSupplier.get(), MessageUtils.extractTabGroupId(message))
-                && message.type == PersistentNotificationType.CHIP
+                && message.type == PersistentNotificationType.DIRTY_TAB
                 && getTabId(message) != Tab.INVALID_TAB_ID
                 && getTextRes(message) != Resources.ID_NULL;
     }
@@ -82,7 +82,7 @@ public class TabLabeller extends TabObjectLabeller {
         if (tabGroupId == null) return Collections.emptyList();
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         EitherGroupId eitherGroupId = EitherGroupId.createLocalId(localTabGroupId);
-        Optional<Integer> messageType = Optional.of(PersistentNotificationType.CHIP);
+        Optional<Integer> messageType = Optional.of(PersistentNotificationType.DIRTY_TAB);
         return mMessagingBackendService.getMessagesForGroup(eitherGroupId, messageType);
     }
 
