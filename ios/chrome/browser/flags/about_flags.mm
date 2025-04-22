@@ -1434,17 +1434,6 @@ const FeatureEntry::FeatureVariation kReaderModeDistillerHeuristicOptions[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kAfterEditExplainGeminiEditMenu[] = {
-    {kExplainGeminiEditMenuParams, "1"}};
-const FeatureEntry::FeatureParam kAfterSearchExplainGeminiEditMenu[] = {
-    {kExplainGeminiEditMenuParams, "2"}};
-
-const FeatureEntry::FeatureVariation kExplainGeminiEditMenuVariations[] = {
-    {"After Edit Gemini Edit Menu", kAfterEditExplainGeminiEditMenu,
-     std::size(kAfterEditExplainGeminiEditMenu), nullptr},
-    {"After Search Gemini Edit Menu", kAfterSearchExplainGeminiEditMenu,
-     std::size(kAfterSearchExplainGeminiEditMenu), nullptr}};
-
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2656,11 +2645,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(variations::kFeedbackIncludeVariations)},
-    {"explain-gemini-edit-menu", flag_descriptions::kExplainGeminiEditMenuName,
-     flag_descriptions::kExplainGeminiEditMenuDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kExplainGeminiEditMenu,
-                                    kExplainGeminiEditMenuVariations,
-                                    "IOSExplainGeminiEditMenu")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
