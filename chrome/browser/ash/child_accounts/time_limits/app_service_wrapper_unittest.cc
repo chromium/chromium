@@ -155,7 +155,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     if (app_id.app_type() == apps::AppType::kChromeApp) {
       scoped_refptr<extensions::Extension> ext =
           CreateExtension(app_id.app_id(), app_name, url.value());
-      extension_service_->AddExtension(ext.get());
+      extensions::ExtensionRegistrar::Get(&profile_)->AddExtension(ext.get());
       task_environment_.RunUntilIdle();
       return;
     }
