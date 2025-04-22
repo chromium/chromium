@@ -37,6 +37,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -360,15 +361,21 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   back_button->SetStyle(ui::ButtonStyle::kProminent);
   back_button->SetProperty(views::kElementIdentifierKey,
                            kErrorDialogBackButtonElementId);
-  // Pad the button size on the side.
-  const int preferred_button_width = 155;
-  const int preferred_button_height = 40;
-  back_button->SetPreferredSize(gfx::Size(
-      std::max(back_button->GetPreferredSize().width(), preferred_button_width),
-      std::max(back_button->GetPreferredSize().height(),
-               preferred_button_height)));
-  back_button->SizeToPreferredSize();
-  error_view->AddChildView(std::move(back_button));
+  back_button->SetCustomPadding(
+      gfx::Insets().set_top_bottom(8, 8).set_left_right(16, 16));
+  // Add a row and fill it with an empty, spacer view, that pushes the
+  // `Back` button to the right end.
+  auto button_row = std::make_unique<views::View>();
+  auto button_row_layout = std::make_unique<views::BoxLayout>();
+  auto* button_row_layout_ptr = button_row_layout.get();
+  button_row->SetLayoutManager(std::move(button_row_layout));
+  auto button_spacer = std::make_unique<views::View>();
+  views::View* button_spacer_ptr = button_spacer.get();
+  button_row->AddChildView(std::move(button_spacer));
+  button_row_layout_ptr->SetFlexForView(button_spacer_ptr, 1);
+  button_row->AddChildView(std::move(back_button));
+
+  error_view->AddChildView(std::move(button_row));
 
   error_view_ = AddChildView(std::move(error_view));
   // Triggers the dialog resizing.
