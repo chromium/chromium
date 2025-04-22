@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -35,12 +34,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/model/client_tag_based_data_type_processor.h"
-#include "components/sync/model/data_type_store.h"
-#include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
-#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "net/cookies/cookie_constants.h"
@@ -455,11 +450,11 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FloatingSsoStopsListeningAndResumes) {
             net::CookieChangeCause::INSERTED);
   EXPECT_EQ(store_entries.size(), 1u);
 
-  // We fetch and commit both cookies again, so we need to wait for 2 commits.
+  // Expect the new cookie to result in a commit once Floating SSO is enabled
+  // again.
   base::test::TestFuture<void> commit_future;
   floating_sso_service().GetBridgeForTesting()->SetOnStoreCommitCallbackForTest(
-      base::BarrierClosure(
-          /*num_callbacks=*/2, commit_future.GetRepeatingCallback()));
+      commit_future.GetRepeatingCallback());
 
   // Re-enabling means that the cookies are fetched again and committed to the
   // store.
@@ -864,120 +859,6 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest,
   AddCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL,
                             "CookieName=CookieValue");
   EXPECT_EQ(store_entries.size(), 1u);
-}
-
-// Defines mock versions of `AddOrUpdateCookie` and `DeleteCookie` which are
-// the main methods to notify the bridge about local changes. This class allows
-// to test how `FloatingSsoService` calls those methods of the bridge.
-class MockFloatingSsoSyncBridge : public FloatingSsoSyncBridge {
- public:
-  explicit MockFloatingSsoSyncBridge(
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceDataTypeStoreFactory create_store_callback)
-      : FloatingSsoSyncBridge(std::move(change_processor),
-                              std::move(create_store_callback)) {}
-  ~MockFloatingSsoSyncBridge() override = default;
-
-  MOCK_METHOD(void,
-              AddOrUpdateCookie,
-              (const sync_pb::CookieSpecifics& specifics),
-              (override));
-  MOCK_METHOD(void, DeleteCookie, (const std::string& storage_key), (override));
-};
-
-class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
- public:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    FloatingSsoTest::SetUpBrowserContextKeyedServices(context);
-    FloatingSsoServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindOnce([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          auto cookie_manager_getter = base::BindLambdaForTesting([profile]() {
-            return profile->GetDefaultStoragePartition()
-                ->GetCookieManagerForBrowserProcess();
-          });
-          return std::make_unique<FloatingSsoService>(
-              profile->GetPrefs(),
-              std::make_unique<testing::NiceMock<MockFloatingSsoSyncBridge>>(
-                  std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-                      syncer::COOKIES, base::DoNothing()),
-                  DataTypeStoreServiceFactory::GetForProfile(profile)
-                      ->GetStoreFactory()),
-              cookie_manager_getter);
-        }));
-  }
-
-  void SetUpOnMainThread() override {
-    FloatingSsoTest::SetUpOnMainThread();
-    // Wait until the bridge finishes reading initial data from the store.
-    ASSERT_TRUE(base::test::RunUntil(
-        [&] { return bridge().IsInitialDataReadFinishedForTest(); }));
-  }
-
-  // Add a cookie as if requested by the Sync server, i.e. by calling
-  // `ApplyIncrementalSyncChanges` on the bridge.
-  void AddCookieSyncRequest(const sync_pb::CookieSpecifics& specifics) {
-    base::test::TestFuture<const net::CookieChangeInfo&> cookie_change_future;
-    CookieChangeListener listener(cookie_manager(),
-                                  cookie_change_future.GetRepeatingCallback());
-
-    syncer::EntityChangeList addition_list;
-    addition_list.push_back(syncer::EntityChange::CreateAdd(
-        specifics.unique_key(), CreateEntityDataForTest(specifics)));
-    bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
-                                         std::move(addition_list));
-
-    // Wait for the change to be noticed by the browser.
-    ASSERT_EQ(cookie_change_future.Take().cause,
-              net::CookieChangeCause::INSERTED);
-  }
-
-  // Remove a cookie as if requested by the Sync server, i.e. by calling
-  // `ApplyIncrementalSyncChanges` on the bridge.
-  void RemoveCookieSyncRequest(const sync_pb::CookieSpecifics& specifics) {
-    base::test::TestFuture<const net::CookieChangeInfo&> cookie_change_future;
-    CookieChangeListener listener(cookie_manager(),
-                                  cookie_change_future.GetRepeatingCallback());
-
-    syncer::EntityChangeList deletion_list;
-    deletion_list.push_back(syncer::EntityChange::CreateDelete(
-        specifics.unique_key(),
-        CreateEntityDataForTest(sync_pb::CookieSpecifics())));
-    bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
-                                         std::move(deletion_list));
-
-    // Wait for the change to be noticed by the browser.
-    ASSERT_EQ(cookie_change_future.Take().cause,
-              net::CookieChangeCause::EXPLICIT);
-  }
-
-  testing::NiceMock<MockFloatingSsoSyncBridge>& bridge() {
-    return static_cast<testing::NiceMock<MockFloatingSsoSyncBridge>&>(
-        *floating_sso_service().GetBridgeForTesting());
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(FloatingSsoWithMockedBridgeTest,
-                       NoOpChangesAreNotPassedToBridge) {
-  auto& service = floating_sso_service();
-  EnableAllFloatingSsoSettings();
-  ASSERT_TRUE(service.IsBoundToCookieManagerForTesting());
-
-  // Below we will add and then delete a cookie via calls to
-  // `ApplyIncrementalSyncChanges` method of the bridge. Since
-  // `FloatingSsoService` observes all cookie changes, it could in theory notify
-  // the bridge about these changes. Check that this doesn't happen (because the
-  // service should not ask the bridge to perform no-op changes).
-  EXPECT_CALL(bridge(), AddOrUpdateCookie).Times(0);
-  EXPECT_CALL(bridge(), DeleteCookie).Times(0);
-
-  const sync_pb::CookieSpecifics specifics =
-      CreatePredefinedCookieSpecificsForTest(
-          0, /*creation_time=*/base::Time::Now(), /*persistent=*/true);
-  AddCookieSyncRequest(specifics);
-  RemoveCookieSyncRequest(specifics);
 }
 
 }  // namespace ash::floating_sso

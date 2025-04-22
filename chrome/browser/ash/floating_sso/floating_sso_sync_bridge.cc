@@ -241,17 +241,17 @@ void FloatingSsoSyncBridge::OnStoreCreated(
 
 void FloatingSsoSyncBridge::ProcessQueuedCookies() {
   // Add all new cookies. The two queues should not overlap.
-  for (const auto& [key, specifics] : deferred_cookie_additions_) {
+  for (const auto& [key, cookie] : deferred_cookie_additions_) {
     if (deferred_cookie_deletions_.contains(key)) {
-      DVLOG(1) << "Cookie present in both addition and deletetion queues. Will "
+      DVLOG(1) << "Cookie present in both addition and deletion queues. Will "
                   "perform delete.";
     } else {
-      AddOrUpdateCookie(specifics);
+      AddOrUpdateCookie(cookie);
     }
   }
   // Delete queued cookies.
   for (const auto& storage_key : deferred_cookie_deletions_) {
-    DeleteCookie(storage_key);
+    DeleteCookieWithKey(storage_key);
   }
   deferred_cookie_additions_.clear();
   deferred_cookie_deletions_.clear();
@@ -280,33 +280,68 @@ bool FloatingSsoSyncBridge::IsCookieInStore(
 }
 
 void FloatingSsoSyncBridge::AddOrUpdateCookie(
-    const sync_pb::CookieSpecifics& specifics) {
-  std::string storage_key = specifics.unique_key();
+    const net::CanonicalCookie& cookie) {
+  std::optional<std::string> serialization_result = SerializedKey(cookie);
+  if (!serialization_result.has_value()) {
+    return;
+  }
+  const std::string& storage_key = serialization_result.value();
 
   if (!is_initial_data_read_finished_) {
-    deferred_cookie_additions_[storage_key] = specifics;
+    deferred_cookie_additions_[storage_key] = cookie;
     deferred_cookie_deletions_.erase(storage_key);
     return;
+  }
+
+  std::optional<sync_pb::CookieSpecifics> specifics = ToSyncProto(cookie);
+  if (!specifics.has_value()) {
+    return;
+  }
+
+  // Check if an identical cookie already exists in the store, to avoid sending
+  // no-op changes to Sync.
+  const CookieSpecificsEntries& in_store_specifics = CookieSpecificsInStore();
+  if (auto it = in_store_specifics.find(specifics->unique_key());
+      it != in_store_specifics.end()) {
+    const sync_pb::CookieSpecifics& local_specifics = it->second;
+    std::unique_ptr<net::CanonicalCookie> in_store_cookie =
+        FromSyncProto(local_specifics);
+    if (in_store_cookie && in_store_cookie->HasEquivalentDataMembers(cookie)) {
+      return;
+    }
   }
 
   std::unique_ptr<StoreWithCache::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   // Add/update this entry to the store and model.
-  change_processor()->Put(storage_key, CreateEntityData(specifics),
+  change_processor()->Put(storage_key, CreateEntityData(specifics.value()),
                           batch->GetMetadataChangeList());
-  batch->WriteData(storage_key, specifics);
+  batch->WriteData(storage_key, specifics.value());
 
   CommitToStore(std::move(batch));
 }
 
-void FloatingSsoSyncBridge::DeleteCookie(const std::string& storage_key) {
+void FloatingSsoSyncBridge::DeleteCookie(const net::CanonicalCookie& cookie) {
+  std::optional<std::string> serialization_result = SerializedKey(cookie);
+  if (!serialization_result.has_value()) {
+    return;
+  }
+  const std::string& storage_key = serialization_result.value();
+
   if (!is_initial_data_read_finished_) {
     deferred_cookie_deletions_.insert(storage_key);
     deferred_cookie_additions_.erase(storage_key);
     return;
   }
 
+  DeleteCookieWithKey(storage_key);
+}
+
+void FloatingSsoSyncBridge::DeleteCookieWithKey(
+    const std::string& storage_key) {
+  // Check if the key is present in the store, to avoid sending no-op changes to
+  // Sync.
   if (!IsCookieInStore(storage_key)) {
     return;
   }

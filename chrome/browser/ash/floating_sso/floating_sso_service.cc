@@ -211,28 +211,11 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
   if (!ShouldSyncCookie(cookie)) {
     return;
   }
-  std::optional<sync_pb::CookieSpecifics> sync_specifics = ToSyncProto(cookie);
-  if (!sync_specifics.has_value()) {
-    return;
-  }
 
-  const auto& in_store_specifics = bridge_->CookieSpecificsInStore();
   switch (change.cause) {
     case net::CookieChangeCause::INSERTED:
     case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE: {
-      // Check if an identical cookie already exists in the bridge's store,
-      // to avoid sending no-op changes to sync.
-      if (auto it = in_store_specifics.find(sync_specifics->unique_key());
-          it != in_store_specifics.end()) {
-        const sync_pb::CookieSpecifics& local_specifics = it->second;
-        std::unique_ptr<net::CanonicalCookie> in_store_cookie =
-            FromSyncProto(local_specifics);
-        if (in_store_cookie &&
-            in_store_cookie->HasEquivalentDataMembers(cookie)) {
-          break;
-        }
-      }
-      bridge_->AddOrUpdateCookie(sync_specifics.value());
+      bridge_->AddOrUpdateCookie(cookie);
       break;
     }
     // All cases below correspond to deletion of a cookie. When intention is to
@@ -245,12 +228,7 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
     case net::CookieChangeCause::EXPIRED:
     case net::CookieChangeCause::EVICTED:
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
-      // Check if the key is present in the bridge's store, to avoid sending
-      // no-op changes to sync.
-      if (auto it = in_store_specifics.find(sync_specifics->unique_key());
-          it != in_store_specifics.end()) {
-        bridge_->DeleteCookie(sync_specifics.value().unique_key());
-      }
+      bridge_->DeleteCookie(cookie);
       break;
   }
 }
@@ -306,12 +284,7 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
     if (!ShouldSyncCookie(cookie)) {
       continue;
     }
-    std::optional<sync_pb::CookieSpecifics> sync_specifics =
-        ToSyncProto(cookie);
-    if (!sync_specifics.has_value()) {
-      continue;
-    }
-    bridge_->AddOrUpdateCookie(sync_specifics.value());
+    bridge_->AddOrUpdateCookie(cookie);
   }
 }
 
