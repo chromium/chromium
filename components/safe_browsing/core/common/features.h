@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kAddReferringAppInfoToProtegoPings);
 BASE_DECLARE_FEATURE(kAddReferringWebApkToProtegoPings);
 #endif
 
+// Enables Bundled Security Settings UI on chrome://settings/security
+BASE_DECLARE_FEATURE(kBundledSecuritySettings);
+
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 
