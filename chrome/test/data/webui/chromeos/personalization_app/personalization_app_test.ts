@@ -658,17 +658,20 @@ suite('sea pen', () => {
   test('hides selected wallpaper on non root page', async () => {
     await getSeaPenRouter();
 
-    let wallpaperSelected =
+    const wallpaperSelectedHiddenClass = 'wallpaperSelectedHidden';
+
+    const wallpaperSelected =
         getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
-    assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+    assertFalse(
+        wallpaperSelected.classList.contains(wallpaperSelectedHiddenClass));
     assertNotEquals(getComputedStyle(wallpaperSelected).display, 'none');
 
     const seaPenTemplateQuery = await getSeaPenTemplateQuery(0);
     assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query should exist');
 
-    wallpaperSelected =
-        getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
-    assertFalse(!!wallpaperSelected, 'wallpaper-selected should not exist');
+    assertTrue(
+        wallpaperSelected.classList.contains(wallpaperSelectedHiddenClass),
+        'wallpaper-selected should be hidden');
   });
 
   test('show more option chips', async () => {
