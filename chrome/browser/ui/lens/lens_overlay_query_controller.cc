@@ -1380,7 +1380,13 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   // The initial request id should be set by the time we get here. If not, call
   // below will crash.
   CHECK(initial_request_id_);
-  if (lens::features::IsLensOverlayUploadChunkingEnabled()) {
+
+  // Send a chunk request if the upload is a PDF larger than the chunk size.
+  // If not, send a normal page content request.
+  if (lens::features::IsLensOverlayUploadChunkingEnabled() &&
+      primary_content_type_ == lens::MimeType::kPdf &&
+      underlying_page_contents_.front().bytes_.size() >
+          lens::features::GetLensOverlayChunkSizeBytes()) {
     // Post MakeChunks to a task off the main thread so compression does not
     // throttle the main thread.
     compression_task_tracker_->PostTaskAndReplyWithResult(
