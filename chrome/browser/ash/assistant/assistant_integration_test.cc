@@ -74,7 +74,8 @@ class AssistantIntegrationTest : public AshIntegrationTest,
 
 INSTANTIATE_TEST_SUITE_P(All, AssistantIntegrationTest, testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(AssistantIntegrationTest, Hotkey) {
+// Disabled due to b/412475160
+IN_PROC_BROWSER_TEST_P(AssistantIntegrationTest, DISABLED_Hotkey) {
   SetupContextWidget();
 
   // Login and wait for the user session to start.
