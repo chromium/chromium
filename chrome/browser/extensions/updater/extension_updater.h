@@ -31,8 +31,11 @@
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/browser/updater/extension_update_data.h"
 #include "extensions/browser/updater/update_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class PrefService;
 class Profile;

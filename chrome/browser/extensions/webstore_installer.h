@@ -21,8 +21,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

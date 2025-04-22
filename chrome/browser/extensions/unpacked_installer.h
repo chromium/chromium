@@ -22,7 +22,10 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/preload_check.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
