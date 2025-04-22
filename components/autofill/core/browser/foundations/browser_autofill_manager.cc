@@ -2996,7 +2996,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
         if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
           if (ValuablesDataManager* manager =
                   client().GetValuablesDataManager()) {
-            suggestions = GetLoyaltyCardSuggestions(manager->GetLoyaltyCards());
+            suggestions = GetLoyaltyCardSuggestions(
+                manager->GetLoyaltyCards(),
+                client().GetLastCommittedPrimaryMainFrameURL());
           }
         }
       }

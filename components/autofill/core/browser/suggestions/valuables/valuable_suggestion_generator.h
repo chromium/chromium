@@ -9,12 +9,18 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
-// Generates suggestions for given `loyalty_cards`.
+// Generates suggestions for given `origin` and all given `loyalty_cards`.
+//
+// The suggestions are generated in order of given `loyalty_cards`.
+// If any of loyalty card merchant domains matches given `origin`
+// respective suggestion is moved to the top.
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
-    base::span<const LoyaltyCard> loyalty_cards);
+    base::span<const LoyaltyCard> loyalty_cards,
+    const GURL& url);
 
 }  // namespace autofill
 

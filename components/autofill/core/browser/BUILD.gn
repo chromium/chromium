@@ -843,6 +843,7 @@ static_library("browser") {
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
+    "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth",

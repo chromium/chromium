@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -24,25 +26,65 @@ Suggestion CreateManageLoyaltyCardsSuggestion() {
   return suggestion;
 }
 
+// Builds suggestion for given `loyalty_card`.
+Suggestion CreateLoyaltyCardSuggestion(const LoyaltyCard& loyalty_card) {
+  Suggestion suggestion =
+      Suggestion(base::UTF8ToUTF16(loyalty_card.loyalty_card_number()),
+                 SuggestionType::kLoyaltyCardEntry);
+  suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(true);
+  std::u16string merchant_name =
+      base::UTF8ToUTF16(loyalty_card.merchant_name());
+  suggestion.labels.push_back({Suggestion::Text(merchant_name)});
+  suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
+  return suggestion;
+}
+
+// Returns whether given `loyalty_card` any of merchant domains match given
+// `url`.
+bool LoyaltyCardMatchesDomain(const LoyaltyCard& loyalty_card,
+                              const GURL& url) {
+  return std::ranges::any_of(
+      loyalty_card.merchant_domains(), [url](const GURL& merchant_url) {
+        return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_url,
+                                                               url, {});
+      });
+}
+
 }  // namespace
 
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
-    const base::span<const LoyaltyCard> loyalty_cards) {
+    const base::span<const LoyaltyCard> loyalty_cards,
+    const GURL& url) {
   if (loyalty_cards.empty()) {
     return {};
   }
+  std::vector<LoyaltyCard> partitionable_cards(loyalty_cards.begin(),
+                                               loyalty_cards.end());
+  auto non_affiliated_cards = std::ranges::stable_partition(
+      partitionable_cards, [&](const LoyaltyCard& card) {
+        return LoyaltyCardMatchesDomain(card, url);
+      });
+  // SAFETY: Bounds information contained in vector iterators.
+  UNSAFE_BUFFERS(base::span<LoyaltyCard> affiliated_cards(
+      partitionable_cards.begin(), non_affiliated_cards.begin()));
   std::vector<Suggestion> suggestions;
-  for (const LoyaltyCard& loyalty_card : loyalty_cards) {
-    Suggestion& suggestion = suggestions.emplace_back(
-        base::UTF8ToUTF16(loyalty_card.loyalty_card_number()),
-        SuggestionType::kLoyaltyCardEntry);
-    suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(true);
-    std::u16string merchant_name =
-        base::UTF8ToUTF16(loyalty_card.merchant_name());
-    suggestion.labels.push_back({Suggestion::Text(merchant_name)});
-    suggestion.payload = Suggestion::Guid(loyalty_card.id().value());
+  // Build matching loyalty cards top suggestions.
+  for (const LoyaltyCard& loyalty_card : affiliated_cards) {
+    suggestions.push_back(CreateLoyaltyCardSuggestion(loyalty_card));
   }
-  suggestions.emplace_back(SuggestionType::kSeparator);
+  // If there was at least one matching loyalty card add a separator.
+  if (!affiliated_cards.empty()) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+  }
+  // Build remaining loyalty cards suggestions.
+  for (const LoyaltyCard& loyalty_card : non_affiliated_cards) {
+    suggestions.push_back(CreateLoyaltyCardSuggestion(loyalty_card));
+  }
+  // If there was at least one non-matching loyalty card add a separator.
+  if (!non_affiliated_cards.empty()) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+  }
+  // Add 'manage loyalty cards' suggestion.
   suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
   return suggestions;
 }
