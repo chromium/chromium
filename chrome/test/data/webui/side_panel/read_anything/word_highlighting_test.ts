@@ -72,39 +72,34 @@ suite('WordHighlighting', () => {
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
+    chrome.readingMode.onSpeechRateChange(1);
   });
 
-  // TODO(b/301131238): Before enabling the feature flag, ensure we've
-  // added more robust tests.
-  suite('with word boundary flag enabled after a word boundary', () => {
-    setup(() => {
-      app.updateBoundary(10);
-    });
+  test('word highlight used', () => {
+    app.updateBoundary(10);
+    app.playSpeech();
 
-    test('word highlight used', () => {
-      app.playSpeech();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    // Sometimes the word returned can be "link", "link.", or "link. " which
+    // can create flaky tests. Therefore, just check that the highlighted
+    // text starts with "link" and isn't longer than the string would be if it
+    // were "link. "
+    // TODO(crbug.com/301131238): Investigate why there's a discrepancy here.
+    assertTrue(currentHighlight.textContent!.startsWith('link'));
+    assertTrue(currentHighlight.textContent!.length < 6);
+  });
 
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      // Sometimes the word returned can be "link", "link.", or "link. " which
-      // can create flaky tests. Therefore, just check that the highlighted
-      // text starts with "link" and isn't longer than the string would be if it
-      // were "link. "
-      // TODO(b/301131238): Investigate why there's a discrepancy here.
-      assertTrue(currentHighlight!.textContent!.startsWith('link'));
-      assertTrue(currentHighlight!.textContent!.length < 6);
-    });
+  test('with rate over 1 sentence highlight used', () => {
+    app.updateBoundary(10);
+    chrome.readingMode.onSpeechRateChange(2);
+    app.playSpeech();
 
-    test('with rate over 1 sentence highlight used', () => {
-      chrome.readingMode.onSpeechRateChange(2);
-      app.playSpeech();
-
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals('This is a link.', currentHighlight!.textContent);
-    });
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals('This is a link.', currentHighlight.textContent);
   });
 
   test('with no word boundary sentence highlight used', () => {
@@ -116,30 +111,148 @@ suite('WordHighlighting', () => {
     assertEquals('This is a link.', currentHighlight.textContent);
   });
 
-  test(
-      'word highlighting with multiple punctuation marks skips highlight',
-      () => {
-        setSimpleAxTreeWithText('.?!\'\",(){}[]');
-        app.updateBoundary(10);
-        app.playSpeech();
+  test('word highlighting with only punctuation skips highlight', () => {
+    setSimpleAxTreeWithText('.?!\'\",(){}[]');
+    app.updateBoundary(10);
+    app.playSpeech();
 
-        const currentHighlight =
-            app.$.container.querySelector('.current-read-highlight');
-        assertFalse(!!currentHighlight);
-      });
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertFalse(!!currentHighlight);
+  });
 
-  test(
-      'word highlighting with single alphabet character does not skip highlight',
-      () => {
-        setSimpleAxTreeWithText('a');
-        app.updateBoundary(0);
-        app.playSpeech();
+  test('word highlighting time with charLength uses charLength', () => {
+    const text = '4:00pm';
+    setSimpleAxTreeWithText(text);
+    app.updateBoundary(0, text.length);
+    app.playSpeech();
 
-        const currentHighlight =
-            app.$.container.querySelector('.current-read-highlight');
-        assertTrue(!!currentHighlight);
-        assertEquals('a', currentHighlight.textContent);
-      });
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals(text, currentHighlight.textContent);
+  });
+
+  test('word highlighting time without charLength uses ax pos', () => {
+    const text = '4:00pm';
+    setSimpleAxTreeWithText(text);
+    app.updateBoundary(0);
+    app.playSpeech();
+
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals('4:', currentHighlight.textContent);
+  });
+
+  test('word highlighting date across nodes with charLength', () => {
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4, 5],
+        },
+        {
+          id: 2,
+          htmlTag: 'b',
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'April',
+        },
+        {
+          id: 4,
+          role: 'staticText',
+          name: ' 18,',
+        },
+        {
+          id: 5,
+          role: 'link',
+          htmlTag: 'a',
+          url: 'http://www.google.com',
+          childIds: [6],
+        },
+        {
+          id: 6,
+          role: 'staticText',
+          name: ' 2025',
+        },
+      ],
+    };
+    chrome.readingMode.setContentForTesting(axTree, [3, 4, 6]);
+    app.updateBoundary(0, 14);
+    app.playSpeech();
+
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals('April', currentHighlight.textContent);
+  });
+
+  test('word highlighting date across nodes without charLength', () => {
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4, 5],
+        },
+        {
+          id: 2,
+          htmlTag: 'b',
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'April',
+        },
+        {
+          id: 4,
+          role: 'staticText',
+          name: '18',
+        },
+        {
+          id: 5,
+          role: 'link',
+          htmlTag: 'a',
+          url: 'http://www.google.com',
+          childIds: [6],
+        },
+        {
+          id: 6,
+          role: 'staticText',
+          name: '2025',
+        },
+      ],
+    };
+    chrome.readingMode.setContentForTesting(axTree, [3, 4, 6]);
+    app.updateBoundary(0);
+    app.playSpeech();
+
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals('April', currentHighlight.textContent);
+  });
+
+  test('word highlighting with single alphabet character has highlight', () => {
+    setSimpleAxTreeWithText('a');
+    app.updateBoundary(0);
+    app.playSpeech();
+
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals('a', currentHighlight.textContent);
+  });
 
   test('word highlighting skipping', () => {
     const toTest =

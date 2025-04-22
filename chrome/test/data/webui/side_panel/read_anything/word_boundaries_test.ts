@@ -74,6 +74,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
     assertEquals(0, state.previouslySpokenIndex);
     assertEquals(0, state.speechUtteranceStartIndex);
+    assertEquals(0, state.speechUtteranceLength);
     assertEquals(0, state.tooLongTextOffset);
   });
 
@@ -85,21 +86,14 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
         assertEquals(0, state.previouslySpokenIndex);
         assertEquals(0, state.speechUtteranceStartIndex);
+        assertEquals(0, state.speechUtteranceLength);
         assertEquals(0, state.tooLongTextOffset);
       });
-
-  test('by default, wordBoundaryState in default state', () => {
-    const state: WordBoundaryState = app.wordBoundaryState;
-    assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
-    assertEquals(0, state.previouslySpokenIndex);
-    assertEquals(0, state.speechUtteranceStartIndex);
-    assertEquals(0, state.tooLongTextOffset);
-  });
 
   suite('during speech with one initial word boundary ', () => {
     setup(() => {
       app.playSpeech();
-      app.updateBoundary(10);
+      app.updateBoundary(10, 5);
     });
 
     test('wordBoundaryState uses most recent boundary', () => {
@@ -107,44 +101,49 @@ suite('WordBoundariesUsedForSpeech', () => {
       assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
       assertEquals(10, state.previouslySpokenIndex);
       assertEquals(0, state.speechUtteranceStartIndex);
+      assertEquals(5, state.speechUtteranceLength);
     });
 
-    test(
-        'pause / play toggle updates speechResumedOnPreviousWordBoundary',
-        () => {
-          app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-          app.playSpeech();
-          const state: WordBoundaryState = app.wordBoundaryState;
-          assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-          assertTrue(!!app.getSpeechSynthesisVoice());
-          assertEquals(0, state.previouslySpokenIndex);
-          assertEquals(10, state.speechUtteranceStartIndex);
-        });
+    test('pause / play toggle maintains word boundary state', () => {
+      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      app.playSpeech();
+
+      const state: WordBoundaryState = app.wordBoundaryState;
+      assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
+      assertTrue(!!app.getSpeechSynthesisVoice());
+      assertEquals(10, state.speechUtteranceStartIndex);
+      assertEquals(0, state.previouslySpokenIndex);
+      assertEquals(5, state.speechUtteranceLength);
+    });
 
     test('word boundaries update after pause / play toggle', () => {
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       app.playSpeech();
-      app.updateBoundary(3);
+      app.updateBoundary(3, 9);
+
       const state: WordBoundaryState = app.wordBoundaryState;
       assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
       assertEquals(3, state.previouslySpokenIndex);
       assertEquals(10, state.speechUtteranceStartIndex);
+      assertEquals(9, state.speechUtteranceLength);
     });
 
     test('word boundaries correct after multiple pause / play toggles', () => {
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       app.playSpeech();
-      app.updateBoundary(3);
+      app.updateBoundary(3, 9);
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       app.playSpeech();
       app.updateBoundary(7);
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       app.playSpeech();
-      app.updateBoundary(1);
+      app.updateBoundary(1, 15);
+
       const state: WordBoundaryState = app.wordBoundaryState;
       assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
       assertEquals(1, state.previouslySpokenIndex);
       assertEquals(20, state.speechUtteranceStartIndex);
+      assertEquals(15, state.speechUtteranceLength);
     });
   });
 
@@ -153,13 +152,14 @@ suite('WordBoundariesUsedForSpeech', () => {
       () => {
         app.playSpeech();
         app.updateBoundary(10);
-        app.updateBoundary(15);
-        app.updateBoundary(25);
+        app.updateBoundary(15, 5);
+        app.updateBoundary(25, 10);
         app.updateBoundary(40);
 
         const state: WordBoundaryState = app.wordBoundaryState;
         assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
         assertEquals(40, state.previouslySpokenIndex);
+        assertEquals(0, state.speechUtteranceLength);
         assertEquals(0, state.speechUtteranceStartIndex);
       });
 
@@ -177,6 +177,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     const state: WordBoundaryState = app.wordBoundaryState;
     assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
     assertEquals(0, state.previouslySpokenIndex);
+    assertEquals(0, state.speechUtteranceLength);
     assertEquals(0, state.speechUtteranceStartIndex);
 
     // After another boundary event, the boundary mode is set to
@@ -210,6 +211,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     app.wordBoundaryState = {
       mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
+      speechUtteranceLength: 0,
       previouslySpokenIndex: 0,
       tooLongTextOffset: 10,
     };

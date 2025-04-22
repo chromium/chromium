@@ -140,6 +140,9 @@ export interface WordBoundaryState {
   // just the correct index within the current string.
   // Default is 0.
   speechUtteranceStartIndex: number;
+  // The length of the current word if it was provided by the speech engine. If
+  // not, this is 0.
+  speechUtteranceLength: number;
   // If we have to break a string because the text is too long, we need to
   // offset future word boundaries within this utterance by this offset so
   // that they appear in the correct locations.
@@ -336,6 +339,7 @@ export class AppElement extends AppElementBase {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
     speechUtteranceStartIndex: 0,
     previouslySpokenIndex: 0,
+    speechUtteranceLength: 0,
     tooLongTextOffset: 0,
   };
 
@@ -2006,7 +2010,7 @@ export class AppElement extends AppElementBase {
       // the sentence granularity level, so we'll retrieve these boundaries in
       // message.onEnd instead.
       if (event.name === 'word') {
-        this.updateBoundary(event.charIndex);
+        this.updateBoundary(event.charIndex, event.charLength);
 
         // No need to update the highlight on word boundary events if
         // highlighting is off or if sentence highlighting is used.
@@ -2187,10 +2191,11 @@ export class AppElement extends AppElementBase {
     this.stopSpeech(PauseActionSource.DEFAULT);
   }
 
-  updateBoundary(charIndex: number) {
+  updateBoundary(charIndex: number, charLength: number = 0) {
     this.wordBoundaryState.previouslySpokenIndex =
         charIndex + this.wordBoundaryState.tooLongTextOffset;
     this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
+    this.wordBoundaryState.speechUtteranceLength = charLength;
   }
 
   resetToDefaultWordBoundaryState(
@@ -2212,6 +2217,7 @@ export class AppElement extends AppElementBase {
           WordBoundaryMode.NO_BOUNDARIES :
           WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
+      speechUtteranceLength: 0,
       tooLongTextOffset: 0,
     };
   }
@@ -2267,13 +2273,15 @@ export class AppElement extends AppElementBase {
     this.resetPreviousHighlight_();
     const index = this.wordBoundaryState.speechUtteranceStartIndex +
         this.wordBoundaryState.previouslySpokenIndex;
+    const length = this.wordBoundaryState.speechUtteranceLength;
+
     const highlightNodes =
         chrome.readingMode.getHighlightForCurrentSegmentIndex(
             index, highlightPhrases);
     let anyHighlighted: boolean = false;
     for (const highlightNode of highlightNodes) {
       const nodeId = highlightNode.nodeId;
-      const highlightLength: number = highlightNode.length;
+      const highlightLength: number = length ? length : highlightNode.length;
       const highlightStartIndex = highlightNode.start;
       const endIndex = highlightStartIndex + highlightLength;
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
