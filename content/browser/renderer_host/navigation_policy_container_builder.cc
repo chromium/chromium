@@ -244,8 +244,7 @@ void NavigationPolicyContainerBuilder::ComputeSandboxFlags(
   policies.sandbox_flags = sandbox_flags_to_commit;
 }
 
-void NavigationPolicyContainerBuilder::IncorporateDeliveredPolicies(
-    const GURL& url,
+void NavigationPolicyContainerBuilder::IncorporateDeliveredPoliciesForLocalURL(
     PolicyContainerPolicies& policies) {
   // Delivered content security policies must be appended.
   policies.AddContentSecurityPolicies(
@@ -297,7 +296,7 @@ PolicyContainerPolicies NavigationPolicyContainerBuilder::ComputeFinalPolicies(
     policies = history_policies_->Clone();
   } else {
     policies = ComputeInheritedPolicies(url);
-    IncorporateDeliveredPolicies(url, policies);
+    IncorporateDeliveredPoliciesForLocalURL(policies);
 
     // TODO(crbug.com/40053796): Persist the policy container for URLs with
     // local schemes so this override is not needed.
