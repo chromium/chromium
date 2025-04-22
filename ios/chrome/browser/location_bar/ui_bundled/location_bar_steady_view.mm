@@ -196,12 +196,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   _trailingButton.pointerStyleProvider =
       CreateLiftEffectCirclePointerStyleProvider();
 
-  __weak __typeof(self) weakSelf = self;
-  CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
-    [weakSelf updateTrailingButtonWithHighlightedStatus:highlighted];
-  };
-  [_trailingButton setCustomHighlightHandler:handler];
-
   // Setup label.
   _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;
   _locationLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -636,13 +630,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 - (UIFont*)locationLabelFont {
   return LocationBarSteadyViewFont(
       self.traitCollection.preferredContentSizeCategory);
-}
-
-- (void)updateTrailingButtonWithHighlightedStatus:(BOOL)highlighted {
-  self.trailingButton.tintColor =
-      highlighted ? [UIColor colorNamed:kSolidButtonTextColor]
-                  : [UIColor colorNamed:kToolbarButtonColor];
-  _trailingButtonSpotlightView.hidden = !highlighted;
 }
 
 // Updates the `locationLabel`'s font when the device's preferred content size
