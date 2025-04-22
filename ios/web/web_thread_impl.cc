@@ -156,7 +156,7 @@ class WebThreadTaskExecutor {
   static const WebThreadTaskExecutor* GetInstance() {
     DCHECK(g_instance)
         << "No web task executor created.\nHint: if this is in a unit test, "
-           "you're likely missing a WebTaskEnvironment member in  your "
+           "you're likely missing a WebTaskEnvironment member in your "
            "fixture.";
     return g_instance;
   }
