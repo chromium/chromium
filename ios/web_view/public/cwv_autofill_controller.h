@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVAutofillForm;
 @class CWVAutofillSuggestion;
+@class CWVCreditCard;
 @protocol CWVAutofillControllerDelegate;
 
 // Exposes features that allow autofilling html forms. May include autofilling
@@ -66,6 +67,14 @@ CWV_EXPORT
 - (void)acceptSuggestion:(CWVAutofillSuggestion*)suggestion
                  atIndex:(NSInteger)index
        completionHandler:(nullable void (^)(void))completionHandler;
+
+// Takes the |creditCard| and creates a suggestion for it. It then finds the
+// form matching it's |formName| and |fieldIdentifier| property and executes the
+// appropriate action. This function operates similarly to
+// acceptSuggestion:atIndex:completionHandler.
+- (void)acceptCreditCardAsSuggestion:(CWVCreditCard*)creditCard
+                             atIndex:(NSInteger)index
+                   completionHandler:(nullable void (^)(void))completionHandler;
 
 // Changes focus to the previous sibling of the currently focused field.
 // No-op if no field is currently focused or if previous field is not available.
