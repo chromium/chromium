@@ -23,7 +23,7 @@ class ApplicationLocaleStorage {
   ~ApplicationLocaleStorage();
 
   // Returns current locale string.
-  const std::string& Get();
+  const std::string& Get() const;
 
   // Changes the locale string.
   void Set(std::string new_locale);
