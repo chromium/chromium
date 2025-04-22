@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
-#include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
@@ -110,8 +109,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
-      chrome_app_kiosk_service_ash_(
-          std::make_unique<ChromeAppKioskServiceAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
@@ -196,11 +193,6 @@ void CrosapiAsh::BindCfmServiceContext(
 void CrosapiAsh::BindChapsService(
     mojo::PendingReceiver<mojom::ChapsService> receiver) {
   chaps_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindChromeAppKioskService(
-    mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
-  chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCrosDisplayConfigController(

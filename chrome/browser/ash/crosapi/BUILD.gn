@@ -18,8 +18,6 @@ static_library("crosapi") {
     "cert_provisioning_ash.h",
     "chaps_service_ash.cc",
     "chaps_service_ash.h",
-    "chrome_app_kiosk_service_ash.cc",
-    "chrome_app_kiosk_service_ash.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
     "crosapi_id.h",

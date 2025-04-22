@@ -45,7 +45,6 @@ namespace crosapi {
 
 class CertProvisioningAsh;
 class ChapsServiceAsh;
-class ChromeAppKioskServiceAsh;
 class DeviceAttributesAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
@@ -95,8 +94,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindChapsService(
       mojo::PendingReceiver<mojom::ChapsService> receiver) override;
-  void BindChromeAppKioskService(
-      mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
@@ -203,10 +200,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ChapsServiceAsh* chaps_service_ash() { return chaps_service_ash_.get(); }
 
-  ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
-    return chrome_app_kiosk_service_ash_.get();
-  }
-
   DeviceAttributesAsh* device_attributes_ash() {
     return device_attributes_ash_.get();
   }
@@ -285,7 +278,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
-  std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
