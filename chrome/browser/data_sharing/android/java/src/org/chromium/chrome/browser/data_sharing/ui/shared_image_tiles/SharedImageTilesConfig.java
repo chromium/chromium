@@ -98,10 +98,10 @@ public class SharedImageTilesConfig {
             this.mIconSizeDp = R.dimen.shared_image_tiles_icon_height;
             this.mBorderSizeDp = R.dimen.shared_image_tiles_icon_border;
             this.mTextPaddingDp = R.dimen.shared_image_tiles_text_padding;
-            this.mTextColor = SemanticColorUtils.getDefaultTextColorAccent1(context);
+            this.mTextColor = SemanticColorUtils.getDefaultTextColor(context);
             this.mBorderColor = SemanticColorUtils.getDefaultBgColor(context);
             this.mBackgroundColor = SemanticColorUtils.getColorPrimaryContainer(context);
-            this.mTextStyle = R.style.TextAppearance_TextAccentMediumThick_Primary;
+            this.mTextStyle = R.style.TextAppearance_TextAccentMediumThick;
         }
 
         /**
