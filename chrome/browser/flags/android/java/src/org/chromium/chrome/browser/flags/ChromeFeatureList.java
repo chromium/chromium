@@ -628,6 +628,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, false);
+    public static final CachedFlag sAndroidSurfaceColorUpdate =
+            newCachedFlag(ANDROID_SURFACE_COLOR_UPDATE, /* defaultValue= */ false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
@@ -752,6 +754,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
+    public static final CachedFlag sGridTabSwitcherSurfaceColorUpdate =
+            newCachedFlag(GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE, /* defaultValue= */ false);
     public static final CachedFlag sGridTabSwitcherUpdate =
             newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
@@ -857,6 +861,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
                     sAndroidMinimalUiLargeScreen,
+                    sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidThemeModule,
@@ -910,6 +915,7 @@ public abstract class ChromeFeatureList {
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
+                    sGridTabSwitcherSurfaceColorUpdate,
                     sGridTabSwitcherUpdate,
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
