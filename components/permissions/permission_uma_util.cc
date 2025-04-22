@@ -774,9 +774,6 @@ void PermissionUmaUtil::RecordDismissalType(
   std::optional<RequestType> request_type =
       ContentSettingsTypeToRequestTypeIfExists(content_settings_types[0]);
   if (!request_type.has_value()) {
-    base::UmaHistogramEnumeration(
-        "Permissions.Prompt.Dismissed.InvalidContentSetting",
-        content_settings_types[0]);
     return;
   }
   RequestTypeForUma type =
