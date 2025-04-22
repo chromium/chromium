@@ -24,6 +24,7 @@ class SharedCrdSession {
   using ErrorCallback =
       base::OnceCallback<void(ExtendedStartCrdSessionResultCode,
                               const std::string&)>;
+  using SessionFinishedCallback = base::OnceClosure;
 
   // The caller who initiated the request.
   // This should match `StartCrdSessionJobDelegate::RequestOrigin`.
@@ -55,9 +56,11 @@ class SharedCrdSession {
 
   virtual ~SharedCrdSession() = default;
 
-  virtual void StartCrdHost(const SessionParameters& parameters,
-                            AccessCodeCallback success_callback,
-                            ErrorCallback error_callback) = 0;
+  virtual void StartCrdHost(
+      const SessionParameters& parameters,
+      AccessCodeCallback success_callback,
+      ErrorCallback error_callback,
+      SessionFinishedCallback session_finished_callback) = 0;
 
   virtual void TerminateSession() = 0;
 };

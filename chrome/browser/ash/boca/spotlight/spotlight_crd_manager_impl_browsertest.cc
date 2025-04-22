@@ -32,6 +32,7 @@
 using base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
 using ::testing::WithArg;
@@ -49,7 +50,8 @@ class MockSharedCrdSession : public policy::SharedCrdSession {
               StartCrdHost,
               (const SessionParameters& parameters,
                AccessCodeCallback success_callback,
-               ErrorCallback error_callback),
+               ErrorCallback error_callback,
+               SessionFinishedCallback session_finished_callback),
               (override));
   MOCK_METHOD(void, TerminateSession, (), (override));
 };
@@ -171,10 +173,23 @@ IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
-                       OnSessionEndedHidesNotificationWidget) {
+                       HidesNotificationWidgetOnCrdSessionEnd) {
+  base::OnceClosure session_finished_callback;
+  EXPECT_CALL(*crd_session_, StartCrdHost)
+      .WillOnce(WithArg<3>(Invoke([&](auto callback) {
+        session_finished_callback = std::move(callback);
+      })));
+  EXPECT_CALL(*crd_session_, TerminateSession)
+      .WillOnce(InvokeWithoutArgs(
+          [&]() { std::move(session_finished_callback).Run(); }));
+  TestFuture<const std::string&> success_future;
+
+  manager_->OnSessionStarted(kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback());
   manager_->ShowPersistentNotification("Teacher");
 
   manager_->OnSessionEnded();
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
   EXPECT_FALSE(notification_bubble_controller_->IsNotificationBubbleVisible());
 }
 

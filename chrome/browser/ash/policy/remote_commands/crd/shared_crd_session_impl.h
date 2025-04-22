@@ -31,7 +31,8 @@ class SharedCrdSessionImpl : public SharedCrdSession {
 
   void StartCrdHost(const SessionParameters& parameters,
                     AccessCodeCallback success_callback,
-                    ErrorCallback error_callback) override;
+                    ErrorCallback error_callback,
+                    SessionFinishedCallback session_finished_callback) override;
 
   void TerminateSession() override;
 

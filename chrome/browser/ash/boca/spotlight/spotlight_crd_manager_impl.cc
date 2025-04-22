@@ -65,7 +65,6 @@ void SpotlightCrdManagerImpl::OnSessionEnded() {
   }
   teacher_email_ = "";
   crd_session_->TerminateSession();
-  HidePersistentNotification();
 }
 
 void SpotlightCrdManagerImpl::InitiateSpotlightSession(
@@ -89,8 +88,10 @@ void SpotlightCrdManagerImpl::InitiateSpotlightSession(
   parameters.request_origin =
       policy::SharedCrdSession::RequestOrigin::kClassManagement;
 
-  crd_session_->StartCrdHost(parameters, std::move(callback),
-                             base::BindOnce(&LogCrdError));
+  crd_session_->StartCrdHost(
+      parameters, std::move(callback), base::BindOnce(&LogCrdError),
+      base::BindOnce(&SpotlightCrdManagerImpl::HidePersistentNotification,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SpotlightCrdManagerImpl::ShowPersistentNotification(
