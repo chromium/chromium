@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
@@ -51,33 +52,53 @@ void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
   Persistent<InvalidationSetToSelectorMap>& instance = GetInstanceReference();
   const bool is_tracing_enabled = InvalidationTracingFlag::IsEnabled();
   if (is_tracing_enabled) [[unlikely]] {
-    auto revisit_style_sheets =
-        [](InvalidationSetToSelectorMap* instance,
-           const ActiveStyleSheetVector& active_style_sheets,
-           StyleEngine& style_engine) {
-          for (const ActiveStyleSheet& sheet : active_style_sheets) {
-            StyleSheetContents* contents = sheet.first->Contents();
-            if (!instance->revisited_style_sheets_.Contains(contents)) {
-              instance->revisited_style_sheets_.insert(contents);
-              style_engine.RevisitStyleSheetForInspector(contents);
-              // TODO(crbug.com/337076014): Revisit UA sheets.
-            }
-          }
-        };
     if (instance == nullptr) {
       instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
-      revisit_style_sheets(instance, style_engine.ActiveUserStyleSheets(),
-                           style_engine);
+      instance->RevisitActiveStyleSheets(style_engine.ActiveUserStyleSheets(),
+                                         style_engine);
+      CSSDefaultStyleSheets::Instance().ForEachRuleFeatureSet(
+          tree_scope.GetDocument(),
+          /*call_for_each_stylesheet=*/true,
+          WTF::BindRepeating(
+              [](InvalidationSetToSelectorMap* instance,
+                 StyleEngine* style_engine, const RuleFeatureSet& features,
+                 StyleSheetContents* contents) {
+                if (contents) {
+                  instance->RevisitStylesheetOnce(style_engine, contents,
+                                                  &features);
+                }
+              },
+              instance, WrapPersistent(&style_engine)));
     }
     const ScopedStyleResolver* scoped_style_resolver =
         tree_scope.GetScopedStyleResolver();
     if (scoped_style_resolver != nullptr) {
-      revisit_style_sheets(instance,
-                           scoped_style_resolver->GetActiveStyleSheets(),
-                           style_engine);
+      instance->RevisitActiveStyleSheets(
+          scoped_style_resolver->GetActiveStyleSheets(), style_engine);
     }
   } else if (!is_tracing_enabled && instance != nullptr) [[unlikely]] {
     instance.Clear();
+  }
+}
+
+void InvalidationSetToSelectorMap::RevisitActiveStyleSheets(
+    const ActiveStyleSheetVector& active_style_sheets,
+    StyleEngine& style_engine) {
+  for (const ActiveStyleSheet& sheet : active_style_sheets) {
+    StyleSheetContents* contents = sheet.first->Contents();
+    const RuleFeatureSet* features =
+        contents->HasRuleSet() ? &contents->GetRuleSet().Features() : nullptr;
+    RevisitStylesheetOnce(&style_engine, contents, features);
+  }
+}
+
+void InvalidationSetToSelectorMap::RevisitStylesheetOnce(
+    StyleEngine* style_engine,
+    StyleSheetContents* contents,
+    const RuleFeatureSet* features) {
+  if (!revisited_style_sheets_.Contains(contents)) {
+    revisited_style_sheets_.insert(contents);
+    style_engine->RevisitStyleSheetForInspector(contents, features);
   }
 }
 
@@ -194,10 +215,7 @@ void InvalidationSetToSelectorMap::BeginInvalidationSetCombine(
   instance->combine_recursion_depth_++;
 
   // `source` may not be in the map if it contains only information that is not
-  // tracked such as self-invalidation, or if it was created before tracking
-  // started.
-  // TODO(crbug.com/337076014): Re-visit rule sets that already existed when
-  // tracking started so that invalidation sets for them can be included.
+  // tracked such as self-invalidation.
   if (instance->invalidation_set_map_->Contains(source)) {
     InvalidationSetEntryMap* target_entry_map =
         instance->invalidation_set_map_
