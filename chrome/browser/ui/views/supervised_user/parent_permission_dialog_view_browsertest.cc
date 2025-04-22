@@ -51,6 +51,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -272,6 +273,10 @@ class ParentPermissionDialogViewTest
     return test_extension_.get();
   }
 
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(browser()->profile());
+  }
+
   extensions::ExtensionService* extension_service() {
     return extensions::ExtensionSystem::Get(browser()->profile())
         ->extension_service();
@@ -338,7 +343,7 @@ class ParentPermissionDialogViewTest
       const std::string& extension_name) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(extension_name).Build();
-    extension_service()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension.get());
     extension_service()->DisableExtension(
         extension->id(),
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);

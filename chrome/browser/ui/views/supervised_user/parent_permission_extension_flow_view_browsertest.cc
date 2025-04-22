@@ -42,6 +42,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -123,7 +124,7 @@ class ExtensionEnableFlowTestSupervised
             browser()->profile());
 
     test_extension_ = extensions::ExtensionBuilder("test extension").Build();
-    extension_service()->AddExtension(test_extension_.get());
+    extension_registrar()->AddExtension(test_extension_.get());
     extension_service()->DisableExtension(
         test_extension_->id(),
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
@@ -146,6 +147,10 @@ class ExtensionEnableFlowTestSupervised
  protected:
   const extensions::Extension* test_extension() {
     return test_extension_.get();
+  }
+
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(browser()->profile());
   }
 
   extensions::ExtensionRegistry* extension_registry() {
