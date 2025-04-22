@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -75,7 +76,7 @@ HostAccessRequestsHelperUnittest::InstallExtensionAndWithholdHostPermissions(
                        .AddHostPermission(host_permission)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
@@ -91,7 +92,7 @@ HostAccessRequestsHelperUnittest::InstallExtensionWithActiveTab(
                        .SetID(crx_file::id_util::GenerateId(name))
                        .AddAPIPermission("activeTab")
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   return extension;
 }
@@ -391,7 +392,7 @@ TEST_F(HostAccessRequestsHelperUnittest,
                        .AddAPIPermission("activeTab")
                        .SetID(crx_file::id_util::GenerateId(extension_name))
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 

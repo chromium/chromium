@@ -6,7 +6,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -17,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -80,7 +80,7 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
                        .AddAPIPermissions(permissions)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   return extension;
 }

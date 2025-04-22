@@ -5,7 +5,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/user_script.h"
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptExtensionBrowserTest, TestBasicInjection) {
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
 
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
 
   // Wait for the scripts to load, if they haven't already.
   UserScriptManager* user_script_manager =

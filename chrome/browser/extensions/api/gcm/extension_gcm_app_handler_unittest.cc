@@ -53,6 +53,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
@@ -257,7 +258,6 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
   ExtensionGCMAppHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        extension_service_(nullptr),
         registration_result_(gcm::GCMClient::UNKNOWN_ERROR),
         unregistration_result_(gcm::GCMClient::UNKNOWN_ERROR) {
     // Allow unpacked extensions without developer mode for testing.
@@ -298,7 +298,6 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Extensions"));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), extensions_install_dir, false);
-    extension_service_ = extension_system->Get(profile())->extension_service();
 
     // Create GCMProfileService that talks with fake GCMClient.
     gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -342,8 +341,16 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     return extension;
   }
 
+  ExtensionService* extension_service() {
+    return ExtensionSystem::Get(profile())->extension_service();
+  }
+
+  ExtensionRegistrar* extension_registrar() {
+    return ExtensionRegistrar::Get(profile());
+  }
+
   void LoadExtension(const Extension* extension) {
-    extension_service_->AddExtension(extension);
+    extension_registrar()->AddExtension(extension);
   }
 
   void InstallerDone(const std::optional<CrxInstallError>& error) {
@@ -381,12 +388,12 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   }
 
   void DisableExtension(const Extension* extension) {
-    extension_service_->DisableExtension(extension->id(),
-                                         disable_reason::DISABLE_USER_ACTION);
+    extension_service()->DisableExtension(extension->id(),
+                                          disable_reason::DISABLE_USER_ACTION);
   }
 
   void EnableExtension(const Extension* extension) {
-    extension_service_->EnableExtension(extension->id());
+    extension_service()->EnableExtension(extension->id());
   }
 
   void UninstallExtension(const Extension* extension) {
@@ -434,8 +441,6 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService, DanglingUntriaged>
-      extension_service_;  // Not owned.
   base::ScopedTempDir temp_dir_;
 
   // This is needed to create extension service under CrOS.

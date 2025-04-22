@@ -67,7 +67,7 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
       const std::string& id,
       mojom::ManifestLocation location) {
     scoped_refptr<const Extension> fake_app = CreateExtension(id, location);
-    service()->AddExtension(fake_app.get());
+    registrar()->AddExtension(fake_app.get());
     return fake_app;
   }
 
