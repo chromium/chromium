@@ -16,6 +16,7 @@
 #include "components/cbor/reader.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
+#include "crypto/hash.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "url/origin.h"
@@ -391,12 +392,7 @@ void SignedExchangeEnvelope::set_cbor_header(base::span<const uint8_t> data) {
 }
 
 net::SHA256HashValue SignedExchangeEnvelope::ComputeHeaderIntegrity() const {
-  net::SHA256HashValue hash;
-  crypto::SHA256HashString(
-      std::string_view(reinterpret_cast<const char*>(cbor_header().data()),
-                       cbor_header().size()),
-      &hash, sizeof(net::SHA256HashValue));
-  return hash;
+  return crypto::hash::Sha256(cbor_header());
 }
 
 }  // namespace content
