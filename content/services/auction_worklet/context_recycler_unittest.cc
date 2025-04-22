@@ -3898,7 +3898,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45);
   }
 
@@ -3917,7 +3918,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/absl::MakeUint128(/*high=*/1, /*low=*/0), /*value=*/45);
   }
 
@@ -3936,7 +3938,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/absl::Uint128Max(), /*value=*/45);
   }
 
@@ -3955,7 +3958,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/0, /*value=*/45);
   }
 
@@ -3974,7 +3978,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/0);
   }
 
@@ -3993,7 +3998,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/4);
   }
 
@@ -4041,7 +4047,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     PrivateAggregationRequests pa_requests =
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false);
     ASSERT_EQ(pa_requests.size(), 2u);
     EXPECT_EQ(pa_requests[0], expected_request_1.Clone());
     EXPECT_EQ(pa_requests[1], expected_request_2.Clone());
@@ -4064,7 +4071,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     "BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4084,7 +4092,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                             "TypeError: Cannot convert 123 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4105,7 +4114,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4126,7 +4136,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     "Value must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4147,7 +4158,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     "argument: Required field 'bucket' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4168,7 +4180,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     "argument: Required field 'value' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4188,7 +4201,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/std::nullopt,
         /*filtering_id=*/0);
   }
@@ -4209,7 +4223,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/std::nullopt,
         /*filtering_id=*/255);
   }
@@ -4231,7 +4246,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                             "TypeError: BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4252,7 +4268,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                             "TypeError: Filtering ID is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4273,7 +4290,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                             "TypeError: Cannot convert 1 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4289,7 +4307,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 }
@@ -4354,7 +4373,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/nullptr);
   }
 
@@ -4377,7 +4397,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45,
         /*debug_key=*/blink::mojom::DebugKey::New(1234u));
   }
@@ -4401,7 +4422,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/
         blink::mojom::DebugKey::New(std::numeric_limits<uint64_t>::max()));
   }
@@ -4419,7 +4441,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4435,7 +4458,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                             "TypeError: BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4450,7 +4474,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                             "TypeError: Cannot convert 1234 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4470,7 +4495,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
             "passed as dictionary is neither object, null, nor undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4500,7 +4526,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45,
         /*debug_key=*/blink::mojom::DebugKey::New(1234u));
   }
@@ -4525,7 +4552,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         /*bucket=*/123, /*value=*/45,
         /*debug_key=*/blink::mojom::DebugKey::New(1234u));
   }
@@ -4582,7 +4610,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     PrivateAggregationRequests pa_requests =
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false);
     ASSERT_EQ(pa_requests.size(), 2u);
     EXPECT_EQ(pa_requests[0], expected_request_1.Clone());
     EXPECT_EQ(pa_requests[1], expected_request_2.Clone());
@@ -4736,7 +4765,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     auto pa_requests = context_recycler.private_aggregation_bindings()
-                           ->TakePrivateAggregationRequests();
+                           ->TakePrivateAggregationRequests(
+                               /*did_uncaught_error_occur=*/false);
 
     ASSERT_EQ(pa_requests.size(), 5u);
     EXPECT_EQ(
@@ -4771,7 +4801,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                                     /*event_type=*/NonReserved("click")));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4794,7 +4825,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "least 2 argument(s) are required."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4815,7 +4847,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "least 2 argument(s) are required."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4838,7 +4871,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "neither object, null, nor undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4858,7 +4892,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -4887,7 +4922,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -4916,7 +4952,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -4945,7 +4982,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -4974,7 +5012,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -5004,7 +5043,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     PrivateAggregationRequests pa_requests =
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false);
     ASSERT_EQ(pa_requests.size(), 2u);
     EXPECT_EQ(
         pa_requests[0],
@@ -5037,7 +5077,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5079,7 +5120,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -5117,7 +5159,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -5146,7 +5189,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -5173,7 +5217,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             "argument: Required field 'baseValue' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5197,7 +5242,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Bucket's 'baseValue' is invalid."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5221,7 +5267,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_FALSE(context_recycler.private_aggregation_bindings()
-                     ->TakePrivateAggregationRequests()
+                     ->TakePrivateAggregationRequests(
+                         /*did_uncaught_error_occur=*/false)
                      .empty());
   }
 
@@ -5249,7 +5296,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Cannot convert a BigInt value to a number."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5277,7 +5325,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Number did not produce a finite double."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5305,7 +5354,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Number did not produce a finite double."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5330,7 +5380,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Bucket's 'offset' must be BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5371,7 +5422,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
+            ->TakePrivateAggregationRequests(
+                /*did_uncaught_error_occur=*/false),
         expected_contribution.Clone());
   }
 
@@ -5398,7 +5450,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             "argument: Required field 'baseValue' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5426,7 +5479,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Value's 'offset' must be a 32-bit signed integer."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5450,7 +5504,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Value's 'baseValue' is invalid."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5471,7 +5526,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Cannot convert 12.3 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5490,7 +5546,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_FALSE(context_recycler.private_aggregation_bindings()
-                     ->TakePrivateAggregationRequests()
+                     ->TakePrivateAggregationRequests(
+                         /*did_uncaught_error_occur=*/false)
                      .empty());
   }
 
@@ -5512,7 +5569,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Cannot convert a BigInt value to a number."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5533,7 +5591,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5554,7 +5613,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Value must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5576,7 +5636,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             "argument: Required field 'bucket' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5595,7 +5656,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Cannot convert 123 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5617,7 +5679,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             "argument: Required field 'value' is undefined."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5633,7 +5696,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5652,7 +5716,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     auto pa_requests = context_recycler.private_aggregation_bindings()
-                           ->TakePrivateAggregationRequests();
+                           ->TakePrivateAggregationRequests(
+                               /*did_uncaught_error_occur=*/false);
 
     ASSERT_EQ(pa_requests.size(), 1u);
     EXPECT_EQ(
@@ -5664,7 +5729,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             /*filtering_id=*/
             0));
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5683,7 +5749,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     auto pa_requests = context_recycler.private_aggregation_bindings()
-                           ->TakePrivateAggregationRequests();
+                           ->TakePrivateAggregationRequests(
+                               /*did_uncaught_error_occur=*/false);
 
     ASSERT_EQ(pa_requests.size(), 1u);
     EXPECT_EQ(pa_requests[0],
@@ -5694,7 +5761,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                                kReservedWin), /*filtering_id=*/
                   255));
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5715,7 +5783,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5736,7 +5805,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Filtering ID is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 
@@ -5757,7 +5827,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Cannot convert 1 to a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 }
@@ -5831,7 +5902,8 @@ TEST_F(ContextRecyclerPrivateAggregationAdditionalExtensionsDisabledTest,
       EXPECT_THAT(error_msgs, ElementsAre());
 
       auto pa_requests = context_recycler.private_aggregation_bindings()
-                             ->TakePrivateAggregationRequests();
+                             ->TakePrivateAggregationRequests(
+                                 /*did_uncaught_error_occur=*/false);
 
       ASSERT_EQ(pa_requests.size(), 4u);
       EXPECT_EQ(
@@ -5863,7 +5935,8 @@ TEST_F(ContextRecyclerPrivateAggregationAdditionalExtensionsDisabledTest,
                                       /*event_type=*/NonReserved("click")));
 
       EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                      ->TakePrivateAggregationRequests()
+                      ->TakePrivateAggregationRequests(
+                          /*did_uncaught_error_occur=*/false)
                       .empty());
     }
   }
@@ -5922,7 +5995,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
                     "privateAggregation is not defined."));
 
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 }
@@ -5969,7 +6043,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "reserved.once is not available in reporting methods."));
 
     auto pa_requests = context_recycler.private_aggregation_bindings()
-                           ->TakePrivateAggregationRequests();
+                           ->TakePrivateAggregationRequests(
+                               /*did_uncaught_error_occur=*/false);
 
     EXPECT_EQ(pa_requests.size(), 0u);
   }
@@ -6029,7 +6104,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
                     "privateAggregation is not defined."));
 
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
+                    ->TakePrivateAggregationRequests(
+                        /*did_uncaught_error_occur=*/false)
                     .empty());
   }
 }

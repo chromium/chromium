@@ -39,8 +39,10 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
+  // Callers must pass a boolean indicating whether the script runner was
+  // terminated due to an uncaught exception or if another error occurred.
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
-  TakePrivateAggregationRequests();
+  TakePrivateAggregationRequests(bool did_uncaught_error_occur);
 
  private:
   static void ContributeToHistogram(

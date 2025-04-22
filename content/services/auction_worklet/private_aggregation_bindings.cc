@@ -458,7 +458,11 @@ void PrivateAggregationBindings::Reset() {
 }
 
 std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
-PrivateAggregationBindings::TakePrivateAggregationRequests() {
+PrivateAggregationBindings::TakePrivateAggregationRequests(
+    bool did_uncaught_error_occur) {
+  // TODO(crbug.com/381788013): Use `did_uncaught_error_occur` to trigger
+  // contributions conditional on an uncaught exception.
+
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests;
 
   requests.reserve(private_aggregation_contributions_.size());
