@@ -182,7 +182,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (base::Contains(origin.host(), 'b')) {
               ASSERT_TRUE(params);
 
@@ -219,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (base::Contains(origin.host(), "b")) {
               ASSERT_TRUE(params);
 
@@ -257,7 +259,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (base::Contains(origin.host(), "b")) {
               ASSERT_TRUE(params);
 
@@ -300,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (base::Contains(origin.host(), 'b')) {
               ASSERT_TRUE(params);
 
@@ -344,7 +348,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (base::Contains(origin.host(), "b")) {
               ASSERT_TRUE(params);
 
@@ -390,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (base::Contains(origin.host(), "b")) {
               ASSERT_TRUE(params);
 
@@ -461,7 +467,8 @@ IN_PROC_BROWSER_TEST_P(TrustTokenPermissionsPolicyFencedFrameTest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (origin.host() != "b.com")
               return;
             EXPECT_TRUE(params);
@@ -498,7 +505,8 @@ IN_PROC_BROWSER_TEST_P(TrustTokenPermissionsPolicyFencedFrameTest,
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
-              const url::Origin& origin, bool unused_is_for_isolated_world) {
+              const url::Origin& origin, bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             if (origin.host() != "b.com") {
               return;
             }

@@ -472,7 +472,8 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           mojo::Clone(worker_client_security_state_),
           /*debug_tag=*/
           "SharedWorkerHost::CreateNetworkFactoryForSubresource",
-          instance_.DoesRequireCrossSiteRequestForCookies());
+          instance_.DoesRequireCrossSiteRequestForCookies(),
+          /*is_for_service_worker=*/false);
   return factory_params;
 }
 
