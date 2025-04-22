@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
+#include "services/webnn/public/mojom/features.mojom.h"
 
 namespace webnn {
 
@@ -17,12 +18,15 @@ namespace {
 // Domains
 constexpr char kOrtDomainName[] = "";
 constexpr char kMSDomainName[] = "com.microsoft";
+// DML fused operators.
+constexpr char kMSDmlDomainName[] = "com.microsoft.dml";
 
 // Opsets
 constexpr int32_t kOrtOpsetVersion = 21;
 // EPContext op is used for exporting the EP context cache model.
 // https://onnxruntime.ai/docs/execution-providers/EP-Context-Design.html#onnxruntime-ep-context-cache-feature-design
 constexpr int32_t kEPContextOpsetVersion = 1;
+constexpr int32_t kMSDmlDomainOpsetVersion = 1;
 
 // Define the minimum size(in bytes) to use external data.
 constexpr size_t kMinExternalDataSize = 128;
@@ -236,9 +240,13 @@ OrtModelEditor::BuildAndTakeModelInfo() {
   CHECK(IsSuccess(GetOrtModelEditorApi()->SetGraphOutputs(
       graph_.get(), graph_outputs.data(), graph_outputs.size())));
 
-  std::array<const char*, 2> domain_names = {kOrtDomainName, kMSDomainName};
-  std::array<int32_t, 2> opset_versions = {kOrtOpsetVersion,
-                                           kEPContextOpsetVersion};
+  std::vector<const char*> domain_names = {kOrtDomainName, kMSDomainName};
+  std::vector<int32_t> opset_versions = {kOrtOpsetVersion,
+                                         kEPContextOpsetVersion};
+  if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtDml)) {
+    domain_names.push_back(kMSDmlDomainName);
+    opset_versions.push_back(kMSDmlDomainOpsetVersion);
+  }
 
   CHECK(IsSuccess(GetOrtModelEditorApi()->CreateModel(
       domain_names.data(), opset_versions.data(), domain_names.size(),

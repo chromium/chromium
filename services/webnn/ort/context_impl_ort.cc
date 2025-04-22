@@ -181,8 +181,11 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
 #if BUILDFLAG(IS_WIN)
   } else if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtDml) &&
              device_type == mojom::CreateContextOptions::Device::kGpu) {
+    // DML specific operator fusion is enabled when optimization level >= level
+    // 2 (extended optimization).
+    // https://github.com/microsoft/onnxruntime/blob/89f8206ba4f1c22c39e0297fb55272e8ce8cd7d0/onnxruntime/core/session/inference_session.cc#L2003
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
-        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
+        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_ALL));
     const OrtDmlApi* ort_dml_api = GetOrtDmlApi();
     CHECK(ort_dml_api);
     // Currently use the default device_id=0, which is typically the primary
@@ -195,8 +198,15 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
     CALL_ORT_FUNC(ort_api->DisableMemPattern(session_options.get()));
     CALL_ORT_FUNC(ort_api->SetSessionExecutionMode(
         session_options.get(), ExecutionMode::ORT_SEQUENTIAL));
+    // DML EP graph fusion (DmlGraphFusionTransformer) is an important runtime
+    // optimization that should be enabled by default. When saving optimized
+    // model to disk ("--webnn-ort-dump-model" applied), it will be disabled.
+    // https://github.com/microsoft/onnxruntime/blob/89f8206ba4f1c22c39e0297fb55272e8ce8cd7d0/onnxruntime/core/session/inference_session.cc#L1976
     CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
-        session_options.get(), "ep.dml.disable_graph_fusion", "1"));
+        session_options.get(), "ep.dml.disable_graph_fusion", "0"));
+    // Test shows DML runtime graph fusion (DmlRuntimeGraphFusionTransformer) is
+    // slower than DmlGraphFusionTransformer, disable it for using DML EP graph
+    // fusion.
     CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
         session_options.get(), "ep.dml.enable_graph_capture", "0"));
 #endif  // BUILDFLAG(IS_WIN)
