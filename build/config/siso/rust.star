@@ -49,6 +49,7 @@ def __filegroups(ctx):
                 "bin/clang++",
                 "lib/clang/*/share/cfi_ignorelist.txt",
                 "libclang*.a",
+                "*.lib",
             ],
         },
     }
