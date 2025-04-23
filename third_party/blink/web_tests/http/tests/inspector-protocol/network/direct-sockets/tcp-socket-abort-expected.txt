@@ -1,0 +1,6 @@
+TCP DirectSockets abort
+socket created
+   remoteAddr: 127.0.0.1
+socket aborted
+   errorMessage: NameNotResolved
+

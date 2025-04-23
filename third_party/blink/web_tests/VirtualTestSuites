@@ -629,6 +629,15 @@
     "args": ["--isolated-context-origins=https://web-platform.test"],
     "expires": "never"
   },
+  {
+    "prefix": "inspector-protocol-direct-sockets",
+    "owners": ["vkrot@google.com"],
+    "platforms": ["Linux"],
+    "bases": ["http/tests/inspector-protocol/network/direct-sockets"],
+    "exclusive_tests": "ALL",
+    "args": ["--isolated-context-origins=https://devtools.oopif.test"],
+    "expires": "never"
+  },
 
   "The Wasm code cache test requires access to V8 internals, so only the",
   "virtual test should be run. Additionally the tiering budget is reduced to",
