@@ -26,7 +26,7 @@ bool AXTreeUpdatesCanBeMerged(const AXTreeUpdate& u1, const AXTreeUpdate& u2) {
   return true;
 }
 
-bool MergeAXTreeUpdates(const std::vector<AXTreeUpdate>& src,
+bool MergeAXTreeUpdates(std::vector<AXTreeUpdate>& src,
                         std::vector<AXTreeUpdate>* dst) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.MergeAXTreeUpdates");
@@ -45,17 +45,16 @@ bool MergeAXTreeUpdates(const std::vector<AXTreeUpdate>& src,
     return false;
 
   dst->resize(src.size() - merge_count);
-  (*dst)[0] = std::move(const_cast<AXTreeUpdate&>(src[0]));
+  (*dst)[0] = std::move(src[0]);
   size_t dst_index = 0;
   for (size_t i = 1; i < src.size(); i++) {
     // Use (*dst)[dst_index] over src[i-1] for the merge because src[i-1] may
     // be in an undetermined state after being merged.
     if (AXTreeUpdatesCanBeMerged((*dst)[dst_index], src[i])) {
       std::vector<AXNodeData>& dst_nodes = (*dst)[dst_index].nodes;
-      std::vector<AXNodeData>& src_nodes =
-          const_cast<std::vector<AXNodeData>&>(src[i].nodes);
+      std::vector<AXNodeData>& src_nodes = src[i].nodes;
       for (auto& src_node : src_nodes) {
-        dst_nodes.emplace_back(std::move(src_node));
+        dst_nodes.emplace_back(src_node);
       }
     } else {
       dst_index++;
