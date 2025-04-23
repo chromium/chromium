@@ -30,9 +30,37 @@ export function getRunnerImageSprite(): CanvasImageSource|null {
   return null;
 }
 
+export function getRunnerAltGameImageSprite(): CanvasImageSource|null {
+  if ('altGameImageSprite' in Runner) {
+    return Runner.altGameImageSprite as CanvasImageSource;
+  }
+  return null;
+}
+
+export function getRunnerAltCommonImageSprite(): CanvasImageSource|null {
+  if ('altCommonImageSprite' in Runner) {
+    return Runner.altCommonImageSprite as CanvasImageSource;
+  }
+  return null;
+}
+
 export function getRunnerOrigImageSprite(): CanvasImageSource|null {
   if ('origImageSprite' in Runner) {
     return Runner.origImageSprite as CanvasImageSource;
+  }
+  return null;
+}
+
+export function getRunnerSlowdown(): boolean|null {
+  if ('slowDown' in Runner && typeof Runner.slowDown === 'boolean') {
+    return Runner.slowDown;
+  }
+  return null;
+}
+
+export function getRunnerAudioCues(): boolean|null {
+  if ('audioCues' in Runner && typeof Runner.audioCues === 'boolean') {
+    return Runner.audioCues;
   }
   return null;
 }

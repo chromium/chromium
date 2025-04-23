@@ -7,6 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {HIDDEN_CLASS} from '../constants.js';
 
 import {FPS, IS_HIDPI, IS_IOS, IS_MOBILE, IS_RTL} from './constants.js';
+import {Dimensions} from './dimensions.js';
 import {DistanceMeter} from './distance_meter.js';
 import {GameOverPanel} from './game_over_panel.js';
 import {GeneratedSoundFx} from './generated_sound_fx.js';
@@ -39,6 +40,7 @@ export function Runner(outerContainerId, opt_config) {
 
   this.config = opt_config || Object.assign(Runner.config, Runner.normalConfig);
   // Logical dimensions of the container.
+  /** @type{Dimensions} */
   this.dimensions = Runner.defaultDimensions;
 
   this.gameType = null;
@@ -191,10 +193,11 @@ Runner.slowConfig = {
 
 /**
  * Default dimensions.
+ * @type{Dimensions}
  */
 Runner.defaultDimensions = {
-  WIDTH: DEFAULT_WIDTH,
-  HEIGHT: 150,
+  width: DEFAULT_WIDTH,
+  height: 150,
 };
 
 
@@ -412,9 +415,9 @@ Runner.prototype = {
     const speed = opt_speed || this.currentSpeed;
 
     // Reduce the speed on smaller mobile screens.
-    if (this.dimensions.WIDTH < DEFAULT_WIDTH) {
+    if (this.dimensions.width < DEFAULT_WIDTH) {
       const mobileSpeed = Runner.slowDown ? speed :
-                                            speed * this.dimensions.WIDTH /
+                                            speed * this.dimensions.width /
               DEFAULT_WIDTH * this.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (opt_speed) {
@@ -450,7 +453,7 @@ Runner.prototype = {
 
     // Player canvas container.
     this.canvas = createCanvas(
-        this.containerEl, this.dimensions.WIDTH, this.dimensions.HEIGHT);
+        this.containerEl, this.dimensions.width, this.dimensions.height);
 
     // Live region for game status updates.
     this.a11yStatusEl = document.createElement('span');
@@ -497,7 +500,7 @@ Runner.prototype = {
 
     // Distance meter
     this.distanceMeter = new DistanceMeter(
-        this.canvas, this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
+        this.canvas, this.spriteDef.TEXT_SPRITE, this.dimensions.width);
 
     // Draw t-rex
     this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
@@ -551,9 +554,9 @@ Runner.prototype = {
     const padding = Number(
         boxStyles.paddingLeft.substr(0, boxStyles.paddingLeft.length - 2));
 
-    this.dimensions.WIDTH = this.outerContainerEl.offsetWidth - padding * 2;
+    this.dimensions.width = this.outerContainerEl.offsetWidth - padding * 2;
     if (this.isArcadeMode()) {
-      this.dimensions.WIDTH = Math.min(DEFAULT_WIDTH, this.dimensions.WIDTH);
+      this.dimensions.width = Math.min(DEFAULT_WIDTH, this.dimensions.width);
       if (this.activated) {
         this.setArcadeModeContainerScale();
       }
@@ -561,20 +564,20 @@ Runner.prototype = {
 
     // Redraw the elements back onto the canvas.
     if (this.canvas) {
-      this.canvas.width = this.dimensions.WIDTH;
-      this.canvas.height = this.dimensions.HEIGHT;
+      this.canvas.width = this.dimensions.width;
+      this.canvas.height = this.dimensions.height;
 
       Runner.updateCanvasScaling(this.canvas);
 
-      this.distanceMeter.calcXPos(this.dimensions.WIDTH);
+      this.distanceMeter.calcXPos(this.dimensions.width);
       this.clearCanvas();
       this.horizon.update(0, 0, true);
       this.tRex.update(0);
 
       // Outer container and distance meter.
       if (this.playing || this.crashed || this.paused) {
-        this.containerEl.style.width = this.dimensions.WIDTH + 'px';
-        this.containerEl.style.height = this.dimensions.HEIGHT + 'px';
+        this.containerEl.style.width = this.dimensions.width + 'px';
+        this.containerEl.style.height = this.dimensions.height + 'px';
         this.distanceMeter.update(0, Math.ceil(this.distanceRan));
         this.stop();
       } else {
@@ -583,7 +586,7 @@ Runner.prototype = {
 
       // Game over panel.
       if (this.crashed && this.gameOverPanel) {
-        this.gameOverPanel.updateDimensions(this.dimensions.WIDTH);
+        this.gameOverPanel.updateDimensions(this.dimensions.width);
         this.gameOverPanel.draw(this.altGameModeActive, this.tRex);
       }
     }
@@ -601,7 +604,7 @@ Runner.prototype = {
       // CSS animation definition.
       const keyframes = '@-webkit-keyframes intro { ' +
           'from { width:' + Trex.config.WIDTH + 'px }' +
-          'to { width: ' + this.dimensions.WIDTH + 'px }' +
+          'to { width: ' + this.dimensions.width + 'px }' +
           '}';
       document.styleSheets[0].insertRule(keyframes, 0);
 
@@ -609,7 +612,7 @@ Runner.prototype = {
           Runner.events.ANIM_END, this.startGame.bind(this));
 
       this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
-      this.containerEl.style.width = this.dimensions.WIDTH + 'px';
+      this.containerEl.style.width = this.dimensions.width + 'px';
 
       this.setPlayStatus(true);
       this.activated = true;
@@ -651,7 +654,7 @@ Runner.prototype = {
 
   clearCanvas() {
     this.canvasCtx.clearRect(
-        0, 0, this.dimensions.WIDTH, this.dimensions.HEIGHT);
+        0, 0, this.dimensions.width, this.dimensions.height);
   },
 
   /**
@@ -1405,10 +1408,10 @@ Runner.prototype = {
    */
   setArcadeModeContainerScale() {
     const windowHeight = window.innerHeight;
-    const scaleHeight = windowHeight / this.dimensions.HEIGHT;
-    const scaleWidth = window.innerWidth / this.dimensions.WIDTH;
+    const scaleHeight = windowHeight / this.dimensions.height;
+    const scaleWidth = window.innerWidth / this.dimensions.width;
     const scale = Math.max(1, Math.min(scaleHeight, scaleWidth));
-    const scaledCanvasHeight = this.dimensions.HEIGHT * scale;
+    const scaledCanvasHeight = this.dimensions.height * scale;
     // Positions the game container at 10% of the available vertical window
     // height minus the game container height.
     const translateY =

@@ -53,7 +53,7 @@ export class Trex {
    * Sets the t-rex to blink at random intervals.
    */
   init() {
-    this.groundYPos = Runner.defaultDimensions.HEIGHT - this.config.HEIGHT -
+    this.groundYPos = Runner.defaultDimensions.height - this.config.HEIGHT -
         Runner.config.BOTTOM_PAD;
     this.yPos = this.groundYPos;
     this.minJumpHeight = this.groundYPos - this.config.MIN_JUMP_HEIGHT;
@@ -111,7 +111,7 @@ export class Trex {
     this.config = Trex.config;
 
     // Adjust bottom horizon placement.
-    this.groundYPos = Runner.defaultDimensions.HEIGHT - this.config.HEIGHT -
+    this.groundYPos = Runner.defaultDimensions.height - this.config.HEIGHT -
         Runner.spriteDefinition['BOTTOM_PAD'];
     this.yPos = this.groundYPos;
     this.reset();

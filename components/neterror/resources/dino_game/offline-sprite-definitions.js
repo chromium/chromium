@@ -35,14 +35,18 @@ export function CollisionBox(x, y, w, h) {
  *   type: string,
  *   width: number,
  *   height: number,
- *   yPos: number,
+ *   yPos: number | Array<number>,
+ *   yPosMobile: number | Array<number>,
  *   multipleSpeed: number,
  *   minGap: number,
  *   minSpeed: number,
+ *   speedOffset: number,
+ *   numFrames: number,
+ *   frameRate: number,
  *   collisionBoxes: Array<CollisionBox>,
  * }}
  */
-let ObstacleType;
+export let ObstacleType;
 
 /**
  * T-Rex runner sprite definitions.

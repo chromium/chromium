@@ -2,48 +2,77 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {FPS, IS_HIDPI, IS_MOBILE} from './constants.js';
+import type {Dimensions} from './dimensions.js';
+import type {ObstacleType} from './offline-sprite-definitions.js';
 import {CollisionBox} from './offline-sprite-definitions.js';
-import {Runner} from './offline.js';
-import {getRandomNum} from './utils.js';
+import type {SpritePosition} from './sprite_position.js';
+import {getRandomNum, getRunnerAltCommonImageSprite, getRunnerAltGameImageSprite, getRunnerAudioCues, getRunnerImageSprite, getRunnerSlowdown} from './utils.js';
+
+/**
+ * Coefficient for calculating the maximum gap.
+ */
+let maxGapCoefficient: number = 1.5;
+
+/**
+ * Maximum obstacle grouping count.
+ */
+let maxObstacleLength: number = 3;
+
+export function setMaxGapCoefficient(coefficient: number) {
+  maxGapCoefficient = coefficient;
+}
+
+export function setMaxObstacleLength(length: number) {
+  maxObstacleLength = length;
+}
 
 export class Obstacle {
+  collisionBoxes: CollisionBox[] = [];
+  followingObstacleCreated: boolean = false;
+  gap: number = 0;
+  jumpAlerted: boolean = false;
+  remove: boolean = false;
+  size: number;
+  width: number = 0;
+  xPos: number;
+  yPos: number = 0;
+
+  private canvasCtx: CanvasRenderingContext2D;
+  private typeConfig: ObstacleType;
+  private spritePos: SpritePosition;
+  private gapCoefficient: number;
+  private speedOffset: number = 0;
+  private altGameModeActive: boolean;
+  private imageSprite: CanvasImageSource;
+  // For animated obstacles.
+  private currentFrame: number = 0;
+  private timer: number = 0;
+
   /**
    * Obstacle.
-   * @param {CanvasRenderingContext2D} canvasCtx
-   * @param {ObstacleType} type
-   * @param {Object} spriteImgPos Obstacle position in sprite.
-   * @param {Object} dimensions
-   * @param {number} gapCoefficient Mutipler in determining the gap.
-   * @param {number} speed
-   * @param {number=} opt_xOffset
-   * @param {boolean=} opt_isAltGameMode
    */
   constructor(
-      canvasCtx, type, spriteImgPos, dimensions, gapCoefficient, speed,
-      opt_xOffset, opt_isAltGameMode) {
+      canvasCtx: CanvasRenderingContext2D, type: ObstacleType,
+      spriteImgPos: SpritePosition, dimensions: Dimensions,
+      gapCoefficient: number, speed: number, xOffset: number = 0,
+      isAltGameMode: boolean = false) {
     this.canvasCtx = canvasCtx;
     this.spritePos = spriteImgPos;
     this.typeConfig = type;
-    this.gapCoefficient = Runner.slowDown ? gapCoefficient * 2 : gapCoefficient;
-    this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
-    this.dimensions = dimensions;
-    this.remove = false;
-    this.xPos = dimensions.WIDTH + (opt_xOffset || 0);
-    this.yPos = 0;
-    this.width = 0;
-    this.collisionBoxes = [];
-    this.gap = 0;
-    this.speedOffset = 0;
-    this.altGameModeActive = opt_isAltGameMode;
-    this.imageSprite = this.typeConfig.type === 'COLLECTABLE' ?
-        Runner.altCommonImageSprite :
-        this.altGameModeActive ? Runner.altGameImageSprite :
-                                 Runner.imageSprite;
-
-    // For animated obstacles.
-    this.currentFrame = 0;
-    this.timer = 0;
+    this.gapCoefficient =
+        getRunnerSlowdown() ? gapCoefficient * 2 : gapCoefficient;
+    this.size = getRandomNum(1, maxObstacleLength);
+    this.xPos = dimensions.width + xOffset;
+    this.altGameModeActive = isAltGameMode;
+    const imageSprite = this.typeConfig.type === 'COLLECTABLE' ?
+        getRunnerAltCommonImageSprite() :
+        this.altGameModeActive ? getRunnerAltGameImageSprite() :
+                                 getRunnerImageSprite();
+    assert(imageSprite);
+    this.imageSprite = imageSprite;
 
     this.init(speed);
   }
@@ -51,9 +80,8 @@ export class Obstacle {
 
   /**
    * Initialise the DOM for the obstacle.
-   * @param {number} speed
    */
-  init(speed) {
+  private init(speed: number) {
     this.cloneCollisionBoxes();
 
     // Only allow sizing if we're at the right speed.
@@ -65,9 +93,12 @@ export class Obstacle {
 
     // Check if obstacle can be positioned at various heights.
     if (Array.isArray(this.typeConfig.yPos)) {
+      assert(Array.isArray(this.typeConfig.yPosMobile));
       const yPosConfig =
           IS_MOBILE ? this.typeConfig.yPosMobile : this.typeConfig.yPos;
-      this.yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
+      const randomYPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
+      assert(randomYPos);
+      this.yPos = randomYPos;
     } else {
       this.yPos = this.typeConfig.yPos;
     }
@@ -83,9 +114,10 @@ export class Obstacle {
     //   |_|___|_|   |_|_____|_|   |_|_______|_|
     //
     if (this.size > 1) {
-      this.collisionBoxes[1].width = this.width - this.collisionBoxes[0].width -
-          this.collisionBoxes[2].width;
-      this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
+      assert(this.collisionBoxes.length >= 3);
+      this.collisionBoxes[1]!.width = this.width -
+          this.collisionBoxes[0]!.width - this.collisionBoxes[2]!.width;
+      this.collisionBoxes[2]!.x = this.width - this.collisionBoxes[2]!.width;
     }
 
     // For obstacles that go at a different speed from the horizon.
@@ -97,7 +129,7 @@ export class Obstacle {
     this.gap = this.getGap(this.gapCoefficient, speed);
 
     // Increase gap for audio cues enabled.
-    if (Runner.audioCues) {
+    if (getRunnerAudioCues()) {
       this.gap *= 2;
     }
   }
@@ -105,7 +137,7 @@ export class Obstacle {
   /**
    * Draw and crop based on size.
    */
-  draw() {
+  private draw() {
     let sourceWidth = this.typeConfig.width;
     let sourceHeight = this.typeConfig.height;
 
@@ -131,10 +163,8 @@ export class Obstacle {
 
   /**
    * Obstacle frame update.
-   * @param {number} deltaTime
-   * @param {number} speed
    */
-  update(deltaTime, speed) {
+  update(deltaTime: number, speed: number) {
     if (!this.remove) {
       if (this.typeConfig.speedOffset) {
         speed += this.speedOffset;
@@ -163,20 +193,16 @@ export class Obstacle {
   /**
    * Calculate a random gap size.
    * - Minimum gap gets wider as speed increases
-   * @param {number} gapCoefficient
-   * @param {number} speed
-   * @return {number} The gap size.
    */
-  getGap(gapCoefficient, speed) {
+  getGap(gapCoefficient: number, speed: number): number {
     const minGap = Math.round(
         this.width * speed + this.typeConfig.minGap * gapCoefficient);
-    const maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
+    const maxGap = Math.round(minGap * maxGapCoefficient);
     return getRandomNum(minGap, maxGap);
   }
 
   /**
    * Check if obstacle is visible.
-   * @return {boolean} Whether the obstacle is in the game area.
    */
   isVisible() {
     return this.xPos + this.width > 0;
@@ -191,19 +217,8 @@ export class Obstacle {
 
     for (let i = collisionBoxes.length - 1; i >= 0; i--) {
       this.collisionBoxes[i] = new CollisionBox(
-          collisionBoxes[i].x, collisionBoxes[i].y, collisionBoxes[i].width,
-          collisionBoxes[i].height);
+          collisionBoxes[i]!.x, collisionBoxes[i]!.y, collisionBoxes[i]!.width,
+          collisionBoxes[i]!.height);
     }
   }
 }
-
-
-/**
- * Coefficient for calculating the maximum gap.
- */
-Obstacle.MAX_GAP_COEFFICIENT = 1.5;
-
-/**
- * Maximum obstacle grouping count.
- */
-Obstacle.MAX_OBSTACLE_LENGTH = 3;

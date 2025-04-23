@@ -6,10 +6,15 @@ import {BackgroundEl, getGlobalConfig as getBackgroundElGlobalConfig, setGlobalC
 import {Cloud} from './cloud.js';
 import {HorizonLine} from './horizon_line.js';
 import {NightMode} from './night_mode.js';
-import {Obstacle} from './obstacle.js';
-import {spriteDefinitionByType} from './offline-sprite-definitions.js';
+import {Obstacle, setMaxGapCoefficient as setMaxObstacleGapCoefficient, setMaxObstacleLength} from './obstacle.js';
+import {ObstacleType, spriteDefinitionByType} from './offline-sprite-definitions.js';
 import {Runner} from './offline.js';
 import {getRandomNum} from './utils.js';
+
+/**
+ * @type{ObstacleType[]}
+ */
+let obstacleTypes = [];
 
 /**
  * Horizon background class.
@@ -57,7 +62,7 @@ export class Horizon {
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
   init() {
-    Obstacle.types = spriteDefinitionByType.original.OBSTACLES;
+    obstacleTypes = spriteDefinitionByType.original.OBSTACLES;
     this.addCloud();
 
     // Multiple Horizon lines
@@ -74,16 +79,16 @@ export class Horizon {
    * Update obstacle definitions based on the speed of the game.
    */
   adjustObstacleSpeed() {
-    for (let i = 0; i < Obstacle.types.length; i++) {
+    for (let i = 0; i < obstacleTypes.length; i++) {
       if (Runner.slowDown) {
-        Obstacle.types[i].multipleSpeed = Obstacle.types[i].multipleSpeed / 2;
-        Obstacle.types[i].minGap *= 1.5;
-        Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
+        obstacleTypes[i].multipleSpeed = obstacleTypes[i].multipleSpeed / 2;
+        obstacleTypes[i].minGap *= 1.5;
+        obstacleTypes[i].minSpeed = obstacleTypes[i].minSpeed / 2;
 
         // Convert variable y position obstacles to fixed.
-        if (typeof (Obstacle.types[i].yPos) === 'object') {
-          Obstacle.types[i].yPos = Obstacle.types[i].yPos[0];
-          Obstacle.types[i].yPosMobile = Obstacle.types[i].yPos[0];
+        if (typeof (obstacleTypes[i].yPos) === 'object') {
+          obstacleTypes[i].yPos = obstacleTypes[i].yPos[0];
+          obstacleTypes[i].yPosMobile = obstacleTypes[i].yPos[0];
         }
       }
     }
@@ -101,11 +106,11 @@ export class Horizon {
     this.altGameModeActive = true;
     this.spritePos = spritePos;
 
-    Obstacle.types = Runner.spriteDefinition.OBSTACLES;
+    obstacleTypes = Runner.spriteDefinition.OBSTACLES;
     this.adjustObstacleSpeed();
 
-    Obstacle.MAX_GAP_COEFFICIENT = Runner.spriteDefinition.MAX_GAP_COEFFICIENT;
-    Obstacle.MAX_OBSTACLE_LENGTH = Runner.spriteDefinition.MAX_OBSTACLE_LENGTH;
+    setMaxObstacleGapCoefficient(Runner.spriteDefinition.MAX_GAP_COEFFICIENT);
+    setMaxObstacleLength(Runner.spriteDefinition.MAX_OBSTACLE_LENGTH);
 
     setBackgroundElGlobalConfig(Runner.spriteDefinition.BACKGROUND_EL_CONFIG);
 
@@ -249,14 +254,14 @@ export class Horizon {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-        Obstacle.types[Obstacle.types.length - 1].type !== 'COLLECTABLE' ||
+        obstacleTypes[obstacleTypes.length - 1].type !== 'COLLECTABLE' ||
             (Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
              this.altGameModeActive) ?
-        Obstacle.types.length - 1 :
-        Obstacle.types.length - 2;
+        obstacleTypes.length - 1 :
+        obstacleTypes.length - 2;
     const obstacleTypeIndex =
         obstacleCount > 0 ? getRandomNum(0, obstacleCount) : 0;
-    const obstacleType = Obstacle.types[obstacleTypeIndex];
+    const obstacleType = obstacleTypes[obstacleTypeIndex];
 
     // Check for multiples of the same type of obstacle.
     // Also check obstacle is available at current speed.
