@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -46,6 +47,8 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -504,6 +507,10 @@ class ShowIdentityNameStateProvider : public StateProvider,
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const void* const kHistorySyncOptinShownKey = &kHistorySyncOptinShownKey;
+
+struct HistorySyncOptinShown : public base::SupportsUserData::Data {};
+
 class HistorySyncOptinStateProvider : public StateProvider,
                                       public StateManagerObserver {
  public:
@@ -528,6 +535,23 @@ class HistorySyncOptinStateProvider : public StateProvider,
     return IsAllowedToSync();
   }
 
+  void Init() override {
+    UserEducationService* user_education_service =
+        UserEducationServiceFactory::GetForBrowserContext(&profile_.get());
+    CHECK(user_education_service);
+    new_session_callback_subscription_ =
+        user_education_service->user_education_session_manager()
+            .AddNewSessionCallback(base::BindRepeating(
+                &HistorySyncOptinStateProvider::OnNewSession,
+                // This is safe because `HistorySyncOptinStateProvider`
+                // owns `CallbackListSubscription`.
+                base::Unretained(this)));
+    if (user_education_service->user_education_session_manager()
+            .GetNewSessionSinceStartup()) {
+      OnNewSession();
+    }
+  }
+
   std::optional<base::RepeatingClosure> GetButtonAction() {
     return base::BindRepeating(&HistorySyncOptinStateProvider::OnButtonClick,
                                // This is safe because `AvatarToolbarButton`
@@ -540,6 +564,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
                             ButtonState new_state) override {
     switch (new_state) {
       case ButtonState::kHistorySyncOptin:
+        Shown();
         // If the new button state is `HistorySyncOptin`, make sure it collapses
         // after a given delay.
         clear_timer_.Start(FROM_HERE,
@@ -575,7 +600,8 @@ class HistorySyncOptinStateProvider : public StateProvider,
       case ButtonState::kShowIdentityName:
         // `ShowIdentityName` state should be followed by `HistorySyncOptin`
         // state.
-        Trigger();
+        Trigger(signin_metrics::AccessPoint::
+                    kHistorySyncOptinExpansionPillOnStartup);
         break;
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
@@ -608,15 +634,12 @@ class HistorySyncOptinStateProvider : public StateProvider,
             &profile_.get(),
             identity_manager_->GetPrimaryAccountInfo(
                 signin::ConsentLevel::kSignin),
-            signin_metrics::AccessPoint::
-                kHistorySyncOptinExpansionPillOnStartup);
+            access_point_);
         break;
       case switches::HistorySyncOptinExpansionPillOption::
           kSyncHistoryProfileMenu:
         ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
-            ->Show(/*is_source_accelerator=*/false,
-                   signin_metrics::AccessPoint::
-                       kHistorySyncOptinExpansionPillOnStartup);
+            ->Show(/*is_source_accelerator=*/false, access_point_);
         break;
     }
     Clear();
@@ -628,7 +651,35 @@ class HistorySyncOptinStateProvider : public StateProvider,
                signin_util::SignedInState::kSignedIn;
   }
 
-  void Trigger() {
+  void OnNewSession() {
+    if (!HasBeenShownSinceStartup()) {
+      // If the history sync opt-in has not been shown since startup,
+      // do NOT trigger it. This avoids a subtle race condition on startup
+      // when the greetings are about to show roughly at the same time as the
+      // new session is detected (greetings are followed by the history sync
+      // opt-in anyway).
+      //
+      // NOTE: We assume that we are notified about the new session before the
+      // first history sync opt-in collapses (~60 seconds).
+      return;
+    }
+    Trigger(signin_metrics::AccessPoint::
+                kHistorySyncOptinExpansionPillOnInactivity);
+  }
+
+  void Shown() {
+    if (HasBeenShownSinceStartup()) {
+      return;
+    }
+    profile_->SetUserData(kHistorySyncOptinShownKey,
+                          std::make_unique<HistorySyncOptinShown>());
+  }
+
+  bool HasBeenShownSinceStartup() {
+    return profile_->GetUserData(kHistorySyncOptinShownKey);
+  }
+
+  void Trigger(signin_metrics::AccessPoint access_point) {
     if (triggered_) {
       return;
     }
@@ -637,6 +688,7 @@ class HistorySyncOptinStateProvider : public StateProvider,
       return;
     }
     triggered_ = true;
+    access_point_ = access_point;
     RequestUpdate();
   }
 
@@ -652,14 +704,21 @@ class HistorySyncOptinStateProvider : public StateProvider,
     RequestUpdate();
   }
 
-  // TODO(crbug.com/407708165): Add triggering the pill on inactivity.
   bool triggered_ = false;
+  signin_metrics::AccessPoint access_point_ =
+      signin_metrics::AccessPoint::kUnknown;
 
   raw_ref<Profile> profile_;
   raw_ref<signin::IdentityManager> identity_manager_;
 
   // This is needed to delay the creation of `ProfileMenuCoordinator`.
   raw_ref<Browser> browser_;
+
+  // New (user education) session callback subscription. The callback is
+  // triggered whenever a new user education session starts (i.e. after a
+  // 'certain' period of inactivity, see
+  // `user_education::features::GetIdleTimeBetweenSessions()`).
+  base::CallbackListSubscription new_session_callback_subscription_;
 
   base::OneShotTimer clear_timer_;
 };
