@@ -5016,13 +5016,6 @@
       name: "WebAuthenticationChallengeUrl",
       status: "experimental",
     },
-    // Enables the PublicKeyCredential.getClientCapabilities() static method.
-    // https://w3c.github.io/webauthn/#sctn-getClientCapabilities
-    // Enabled by default on M133. Remove flag on or after M136.
-    {
-      name: "WebAuthenticationClientCapabilities",
-      status: "stable",
-    },
     // https://w3c.github.io/webauthn/#dom-clientcapability-conditionalcreate
     {
       name: "WebAuthenticationConditionalCreate",
