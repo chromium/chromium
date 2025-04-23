@@ -26,14 +26,19 @@ class PrivacySandboxDialogView : public views::View {
   METADATA_HEADER(PrivacySandboxDialogView, views::View)
 
  public:
-  PrivacySandboxDialogView(BrowserWindowInterface* browser,
-                           PrivacySandboxService::PromptType dialog_type);
+  static std::unique_ptr<PrivacySandboxDialogView>
+  CreateDialogViewForPromptType(BrowserWindowInterface* browser,
+                                PrivacySandboxService::PromptType prompt_type);
+  // TODO(chrstne): Create initialization method for PSNotice, v2.
 
   void Close();
 
  private:
   friend class PrivacySandboxQueueTestNotice;
 
+  explicit PrivacySandboxDialogView(BrowserWindowInterface* browser);
+  void InitializeDialogUIForPromptType(
+      PrivacySandboxService::PromptType prompt_type);
   void AdsDialogNoArgsCallback(
       PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
   void ResizeNativeView(int height);

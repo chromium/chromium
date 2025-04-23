@@ -33,6 +33,7 @@ namespace {
 
 using enum PrivacySandboxService::AdsDialogCallbackNoArgsEvents;
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using views::WebView;
 
 constexpr int kM1DialogWidth = 600;
 constexpr int kDefaultDialogHeight = 494;
@@ -97,8 +98,10 @@ void PrivacySandboxDialog::Show(Browser* browser,
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
-  delegate->SetContentsView(
-      std::make_unique<PrivacySandboxDialogView>(browser, prompt_type));
+  auto dialog_view = PrivacySandboxDialogView::CreateDialogViewForPromptType(
+      browser, prompt_type);
+  delegate->SetContentsView(std::move(dialog_view));
+
   auto* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(delegate), browser->window()->GetNativeWindow());
 
@@ -116,18 +119,10 @@ void PrivacySandboxDialog::Show(BrowserWindowInterface* browser,
   // TODO(crbug.com/408016824): Add VM observer once a PSDialogView is created.
 }
 
-// TODO(crbug.com/408016824): Change browser to use browser_window_interface
-// instead, separate the prompt_type related code to a separate initializer.
 PrivacySandboxDialogView::PrivacySandboxDialogView(
-    BrowserWindowInterface* browser,
-    PrivacySandboxService::PromptType prompt_type)
-    : browser_(browser) {
-  CHECK_NE(PrivacySandboxService::PromptType::kNone, prompt_type);
-  // Create the web view in the native bubble.
-  web_view_ =
-      AddChildView(std::make_unique<views::WebView>(browser->GetProfile()));
-  web_view_->LoadInitialURL(GetDialogURL(prompt_type));
-
+    BrowserWindowInterface* browser)
+    : web_view_(AddChildView(std::make_unique<WebView>(browser->GetProfile()))),
+      browser_(browser) {
   // Override the default zoom level for the Privacy Sandbox dialog. Its size
   // should align with native UI elements, rather than web content.
   auto* web_contents = web_view_->GetWebContents();
@@ -143,7 +138,25 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
       views::LayoutProvider::Get()->GetSnappedDialogWidth(kM1DialogWidth);
   web_view_->SetPreferredSize(
       gfx::Size(std::min(width, max_width), kDefaultDialogHeight));
+}
 
+// static
+std::unique_ptr<PrivacySandboxDialogView>
+PrivacySandboxDialogView::CreateDialogViewForPromptType(
+    BrowserWindowInterface* browser,
+    PrivacySandboxService::PromptType prompt_type) {
+  CHECK_NE(PrivacySandboxService::PromptType::kNone, prompt_type);
+
+  // Sets content view.
+  // Using `new` to access a non-public constructor.
+  auto dialog_view = base::WrapUnique(new PrivacySandboxDialogView(browser));
+  dialog_view->InitializeDialogUIForPromptType(prompt_type);
+  return dialog_view;
+}
+
+void PrivacySandboxDialogView::InitializeDialogUIForPromptType(
+    PrivacySandboxService::PromptType prompt_type) {
+  web_view_->LoadInitialURL(GetDialogURL(prompt_type));
   PrivacySandboxDialogUI* web_ui = web_view_->GetWebContents()
                                        ->GetWebUI()
                                        ->GetController()
@@ -151,7 +164,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   DCHECK(web_ui);
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(
-      browser->GetProfile(),
+      browser_->GetProfile(),
       base::BindRepeating(&PrivacySandboxDialogView::AdsDialogNoArgsCallback,
                           base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::ResizeNativeView,
