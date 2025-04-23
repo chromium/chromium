@@ -171,10 +171,6 @@ BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
              "EnterpriseRealTimeUrlCheckOnAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEsbAiStringUpdate,
-             "EsbAiStringUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEsbAsASyncedSetting,
              "EsbAsASyncedSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -358,7 +358,6 @@ public abstract class ChromeFeatureList {
             "EnableClipboardDataControlsAndroid";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
-    public static final String ESB_AI_STRING_UPDATE = "EsbAiStringUpdate";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
     public static final String FEED_HEADER_REMOVAL = "FeedHeaderRemoval";
@@ -735,11 +734,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false, true);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
-    public static final CachedFlag sEsbAiStringUpdate =
-            newCachedFlag(
-                    ESB_AI_STRING_UPDATE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, false);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
@@ -903,7 +897,6 @@ public abstract class ChromeFeatureList {
                     sEducationalTipModule,
                     sEnableDiscountInfoApi,
                     sEnableXAxisActivityTransition,
-                    sEsbAiStringUpdate,
                     sFloatingSnackbar,
                     sForceListTabSwitcher,
                     sForceTranslucentNotificationTrampoline,
