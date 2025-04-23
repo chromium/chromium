@@ -38,15 +38,6 @@ public interface DesktopWindowStateManager {
     @Nullable AppHeaderState getAppHeaderState();
 
     /**
-     * @return {@code true} if the activity is in a desktop window irrespective of focus state,
-     *     {@code false} otherwise.
-     * @deprecated Use {@link AppHeaderUtils#isAppInDesktopWindow(DesktopWindowStateManager)}.
-     */
-    // TODO(crbug.com/337086192): Remove this method from the interface.
-    @Deprecated
-    boolean isInDesktopWindow();
-
-    /**
      * @return {@code true} if the activity is in an unfocused desktop window, {@code false}
      *     otherwise.
      */

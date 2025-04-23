@@ -493,7 +493,7 @@ public class AppHeaderCoordinatorUnitTest {
         notifyInsetsRectObserver();
 
         // Simulate overlapping keyboard and nav bar bottom insets.
-        var insets = applyWindowInsets(KEYBOARD_INSET, NAV_BAR_INSET);
+        applyWindowInsets(KEYBOARD_INSET, NAV_BAR_INSET);
         assertEquals(
                 "Root view bottom padding should be updated.",
                 KEYBOARD_INSET,
@@ -663,14 +663,19 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     private void verifyDesktopWindowingEnabled() {
-        assertTrue("Desktop windowing not enabled.", mAppHeaderCoordinator.isInDesktopWindow());
+        assertTrue(
+                "Desktop windowing not enabled.",
+                mAppHeaderCoordinator.getAppHeaderState().isInDesktopWindow());
         verify(mBrowserControlsVisDelegate, atLeastOnce())
                 .showControlsPersistentAndClearOldToken(anyInt());
         assertTrue("Edge to edge should be active.", mEdgeToEdgeStateProvider.get());
     }
 
     private void verifyDesktopWindowingDisabled(String error) {
-        assertFalse(error, mAppHeaderCoordinator.isInDesktopWindow());
+        assertFalse(
+                error,
+                mAppHeaderCoordinator.getAppHeaderState() != null
+                        && mAppHeaderCoordinator.getAppHeaderState().isInDesktopWindow());
         assertFalse("Edge to edge should not be active.", mEdgeToEdgeStateProvider.get());
     }
 

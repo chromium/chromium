@@ -159,12 +159,6 @@ public class AppHeaderCoordinator
         return mAppHeaderState;
     }
 
-    // TODO(crbug.com/337086192): Read from mAppHeaderState.
-    @Override
-    public boolean isInDesktopWindow() {
-        return mIsInDesktopWindow;
-    }
-
     @Override
     public boolean isInUnfocusedDesktopWindow() {
         return mIsInUnfocusedDesktopWindow;
