@@ -2451,11 +2451,8 @@ FindFormAndFieldForFormControlElement(
   // base::Contains(GetOwnedFormControls(element.GetOwningFormForAutofill()),
   //                element)
   // ```
-  // This does not hold if `element` is an unowned element in a
-  // shadow DOM and kAutofillIncludeShadowDomInUnassociatedListedElements is
-  // disabled. Then `element.GetOwningFormForAutofill()` returns the unowned
-  // form, but `GetOwnedFormControls()` does not include the field.
-  // See crbug.com/347059988 for more details.
+  // It's not clear if that condition is true. See crbug.com/347059988 for the
+  // ongoing debugging.
   GURL url;
   if (WebDocument doc = element.GetDocument()) {
     url = doc.Url();
@@ -2486,10 +2483,16 @@ FindFormAndFieldForFormControlElement(
                ? static_cast<int>(GetOwnedFormControls(document, form).size())
                : -1;
   };
+  auto is_connected = [](const WebNode& node) {
+    return node.IsConnected();  // nocheck
+  };
+  auto get_form_control_elements = [](const WebFormElement& form) {
+    return form.GetFormControlElements();  // nocheck
+  };
   WebFormElement assoc_form_element = element.Form();  // nocheck
 
   // clang-format off
-  SCOPED_CRASH_KEY_STRING64("Autofill", "url", url.spec());
+  SCOPED_CRASH_KEY_STRING256("Autofill", "url", url.spec());
   SCOPED_CRASH_KEY_BOOL("Autofill", "ExtractFormData_succeeded", extract_form_data_succeeded);
   SCOPED_CRASH_KEY_NUMBER("Autofill", "extracted_form_size", form->fields().size());
 
@@ -2500,23 +2503,28 @@ FindFormAndFieldForFormControlElement(
 
   SCOPED_CRASH_KEY_BOOL("Autofill", "elem_autofillable", IsAutofillableElement(element));
   SCOPED_CRASH_KEY_BOOL("Autofill", "elem_document", !!document);
-  SCOPED_CRASH_KEY_BOOL("Autofill", "elem_connected", element.IsConnected());
+  SCOPED_CRASH_KEY_BOOL("Autofill", "elem_connected", is_connected(element));
   SCOPED_CRASH_KEY_BOOL("Autofill", "elem_in_shadow_dom", !!element.OwnerShadowHost());
 
-#define SCOPED_CRASH_KEYS_FOR_FORM(prefix, f)                                                                              \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_non_null", !!f);                                                                \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_connected", f && f.IsConnected());                                    \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_shadow_dom", f && !!f.OwnerShadowHost());                          \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_same_dom", f && element.OwnerShadowHost() == f.OwnerShadowHost()); \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_is_top_level", is_top_level(f));                                      \
-  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_has_nested_form", has_nested_form(f, element));                       \
-  SCOPED_CRASH_KEY_NUMBER("Autofill", #prefix "_form_size", get_form_size(f));                                           \
+#define SCOPED_CRASH_KEYS_FOR_FORM(prefix, f)                                                                                  \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_non_null", !!f);                                                            \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_connected", f && is_connected(f));                                          \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_owns_element", f && base::Contains(get_form_control_elements(f), element)); \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_shadow_dom", f && !!f.OwnerShadowHost());                                \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_same_dom", f && element.OwnerShadowHost() == f.OwnerShadowHost());       \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_is_top_level", is_top_level(f));                                            \
+  SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_has_nested_form", has_nested_form(f, element));                             \
+  SCOPED_CRASH_KEY_NUMBER("Autofill", #prefix "_form_size", get_form_size(f));                                                 \
   SCOPED_CRASH_KEY_STRING64("Autofill", #prefix "_form_id", get_id(f));
   SCOPED_CRASH_KEYS_FOR_FORM(assoc, assoc_form_element);
   SCOPED_CRASH_KEYS_FOR_FORM(owng, owning_form);
 #undef FORM_CRASH_KEYS
   // clang-format on
-  NOTREACHED(base::NotFatalUntil::M139);
+  CHECK(base::Contains(GetOwnedFormControls(element.GetDocument(),
+                                            element.GetOwningFormForAutofill()),
+                       element),
+        base::NotFatalUntil::M140);
+  NOTREACHED(base::NotFatalUntil::M140);
   return std::nullopt;
 }
 
