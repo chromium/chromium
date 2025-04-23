@@ -2744,6 +2744,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation"
+    enum="OnAcceptCHFrameReceivedReturnLocation" expires_after="2025-09-27">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Record the code location where the Accept-CH receiver function in
+    NavigationURLLoader executed calback (i.e. returning from the mojo IPC). We
+    aim to migrate some functionality in the OnAcceptCHFrameReceived to the
+    caller, and want to estimate benefits of the migration. Refer to
+    NavigationURLLoaderImpl::OnAcceptCHFrameReceived() for details.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.URLLoader.ParseHeaders.{Case}" units="microseconds"
     expires_after="2025-09-25">
   <owner>yyanagisawa@chromium.org</owner>
