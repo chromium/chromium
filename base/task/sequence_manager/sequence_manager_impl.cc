@@ -301,11 +301,6 @@ void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
   if (settings_.message_loop_type == MessagePumpType::UI) {
     controller_->AttachToMessagePump();
   }
-#if BUILDFLAG(USE_BLINK)
-  if (settings_.message_loop_type == MessagePumpType::IO) {
-    controller_->AttachToMessagePump();
-  }
-#endif
 #endif
 }
 

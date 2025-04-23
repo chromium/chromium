@@ -2259,16 +2259,14 @@ component("base") {
         "message_loop/message_pump_io_ios.cc",
         "message_loop/message_pump_io_ios.h",
       ]
-    } else if (use_blink) {
-      sources += [
-        "message_loop/message_pump_io_ios_libdispatch.cc",
-        "message_loop/message_pump_io_ios_libdispatch.h",
-      ]
     } else {
       sources += [
         "message_loop/message_pump_kqueue.cc",
         "message_loop/message_pump_kqueue.h",
       ]
+      if (use_blink) {
+        frameworks += [ "BrowserEngineCore.framework" ]
+      }
     }
 
     if (ios_stack_profiler_enabled) {
@@ -4093,8 +4091,6 @@ test("base_unittests") {
     }
     if (is_cronet_build || target_platform == "tvos") {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
-    } else if (use_blink) {
-      sources += [ "message_loop/message_pump_io_ios_libdispatch_unittest.cc" ]
     } else {
       sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
     }
