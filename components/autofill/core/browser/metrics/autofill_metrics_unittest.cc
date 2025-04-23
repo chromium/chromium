@@ -161,7 +161,7 @@ class AutofillMetricsTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 };
 
-// Parametrized test class to test
+// Parameterized test class to test
 // kAutofillEnableLogFormEventsToAllParsedFormTypes and ensure form event
 // logging still works in the appropriate histograms when logging to parsed form
 // types on a webpage.

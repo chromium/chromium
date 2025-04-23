@@ -177,7 +177,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 }
 #endif  // #BUILDFLAG(IS_ANDROID)
 
-// Test class for testing the upload save card prompts. Parametrized tests are
+// Test class for testing the upload save card prompts. Parameterized tests are
 // run with GPay branding enabled/disabled.
 class AutofillSaveCardUiInfoTestForUploadSave
     : public testing::Test,

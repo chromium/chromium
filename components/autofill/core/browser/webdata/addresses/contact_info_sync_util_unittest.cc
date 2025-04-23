@@ -690,7 +690,7 @@ enum class I18nCountryModel {
   kMX = 5
 };
 
-// The tests are parametrized with a country to assert that all custom address
+// The tests are parameterized with a country to assert that all custom address
 // models are supported.
 class ContactInfoSyncUtilTest
     : public testing::Test,
