@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/splitview/split_view_controller.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -61,6 +57,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -103,9 +100,13 @@ using chromeos::WindowStateType;
 
 // Five fixed position ratios of the divider, which means the divider can
 // always be moved to these five positions.
-constexpr float kFixedPositionRatios[] = {0.f, chromeos::kOneThirdSnapRatio,
-                                          chromeos::kDefaultSnapRatio,
-                                          chromeos::kTwoThirdSnapRatio, 1.0f};
+constexpr std::array<float, 5> kFixedPositionRatios = {
+    0.f,
+    chromeos::kOneThirdSnapRatio,
+    chromeos::kDefaultSnapRatio,
+    chromeos::kTwoThirdSnapRatio,
+    1.0f,
+};
 
 // The black scrim starts to fade in when the divider is moved past the two
 // optional positions (`chromeos::kOneThirdSnapRatio`,
@@ -2352,9 +2353,8 @@ void SplitViewController::ModifyPositionRatios(
 
 float SplitViewController::FindClosestPositionRatio(float current_ratio) {
   float closest_ratio = 0.f;
-  std::vector<float> position_ratios(
-      kFixedPositionRatios,
-      kFixedPositionRatios + std::size(kFixedPositionRatios));
+  base::span<const float> ratio_span = kFixedPositionRatios;
+  std::vector<float> position_ratios(ratio_span.begin(), ratio_span.end());
   ModifyPositionRatios(position_ratios);
   float min_ratio_diff = std::numeric_limits<float>::max();
   for (const float ratio : position_ratios) {
