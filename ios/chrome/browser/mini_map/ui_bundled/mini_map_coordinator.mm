@@ -282,9 +282,9 @@
   _showingMap = NO;
   if (url) {
     [self.mediator userOpenedURLFromMiniMap];
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.profile->IsOffTheRecord()];
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:net::GURLWithNSURL(url)
+                                        inIncognito:self.isOffTheRecord];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
@@ -303,9 +303,9 @@
     GURL url = templateURLService->GenerateSearchURLForDefaultSearchProvider(
         base::SysNSStringToUTF16(query));
 
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:url
-                     inIncognito:self.profile->IsOffTheRecord()];
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:url
+                                        inIncognito:self.isOffTheRecord];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];

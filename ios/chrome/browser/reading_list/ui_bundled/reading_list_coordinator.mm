@@ -380,7 +380,7 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   bool is_ntp = activeWebState->GetVisibleURL() == kChromeUINewTabURL;
   new_tab_page_uma::RecordNTPAction(
-      self.profile->IsOffTheRecord(), is_ntp,
+      self.isOffTheRecord, is_ntp,
       new_tab_page_uma::ACTION_OPENED_READING_LIST_ENTRY);
 
   // Prepare the table for dismissal.
@@ -420,7 +420,7 @@
     return;
   }
 
-  BOOL offTheRecord = self.profile->IsOffTheRecord();
+  BOOL offTheRecord = self.isOffTheRecord;
 
   if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
     const GURL entryURL = entry->URL();
