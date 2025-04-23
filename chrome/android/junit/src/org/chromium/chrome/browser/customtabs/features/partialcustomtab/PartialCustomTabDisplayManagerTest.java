@@ -446,7 +446,10 @@ public class PartialCustomTabDisplayManagerTest {
                 createPcctDisplayManager(
                         850, 2000, 1850, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
         displayManager.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         assertEquals(
                 "Side-Sheet should be the active strategy",
                 PartialCustomTabType.SIDE_SHEET,

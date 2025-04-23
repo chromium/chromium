@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -144,6 +145,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @NonNull Runnable mOpenInBrowserRunnable;
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
+
+    // TODO(crbug.com/402213312): This can be NonNull once the flag is enabled by default.
+    private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -401,12 +405,22 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     mIntentDataProvider.get(),
                     mFeatureOverridesManagerSupplier.get(),
                     mMinimizeDelegateSupplier.get(),
-                    omniboxParams,
-                    params -> mToolbarCoordinator.get().onCustomButtonClick(params));
+                    omniboxParams);
+            mToolbarButtonsCoordinator =
+                    new CustomTabToolbarButtonsCoordinator(
+                            toolbar,
+                            mIntentDataProvider.get(),
+                            params -> mToolbarCoordinator.get().onCustomButtonClick(params));
 
             super.initializeToolbar();
 
             mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
+            View coordinator = mActivity.findViewById(R.id.coordinator);
+            mCustomTabHeightStrategy.onToolbarInitialized(
+                    coordinator,
+                    toolbar,
+                    mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
+                    mToolbarButtonsCoordinator);
 
             return;
         }
@@ -424,7 +438,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(
-                coordinator, toolbar, mIntentDataProvider.get().getPartialTabToolbarCornerRadius());
+                coordinator,
+                toolbar,
+                mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
+                null);
         if (mBrandingController != null) {
             mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
         }

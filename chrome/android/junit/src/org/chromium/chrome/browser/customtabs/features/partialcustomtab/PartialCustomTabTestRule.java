@@ -58,6 +58,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -135,6 +136,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock ViewGroup mCompositorViewHolder;
     @Mock PackageManager mPackageManager;
     @Mock ActivityManager mActivityManager;
+    @Mock CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     @Captor ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
 
     Context mContext;
