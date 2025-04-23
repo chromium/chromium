@@ -527,10 +527,15 @@ void ReadAnythingAppController::AccessibilityEventReceived(
       read_aloud_model_.speech_playing());
   // From this point onward, `updates` and `events` should not be accessed.
 
-  if (tree_id != model_.active_tree_id()) {
+  if (tree_id != model_.active_tree_id() ||
+      read_aloud_model_.speech_playing()) {
     return;
   }
 
+  SendEventUpdates();
+}
+
+void ReadAnythingAppController::SendEventUpdates() {
   if (model_.requires_distillation()) {
     Distill(/*for_training_data=*/false);
   }
@@ -1879,11 +1884,8 @@ void ReadAnythingAppController::ShouldShowUI() {
 void ReadAnythingAppController::OnSpeechPlayingStateChanged(
     bool is_speech_active) {
   read_aloud_model_.set_speech_playing(is_speech_active);
-  if (!is_speech_active && model_.requires_distillation()) {
-    // TODO: b/40927698 - Do something smarter than completely re-distilling
-    // when the update is small. Right now this resets the speech position to
-    // the beginning which is annoying if the page is mostly the same.
-    Distill(/*for_training_data=*/false);
+  if (!is_speech_active) {
+    SendEventUpdates();
   }
 }
 

@@ -806,12 +806,12 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTooltipClosed:
       case ax::mojom::Event::kTooltipOpened:
       case ax::mojom::Event::kTreeChanged:
-        if (!features::IsReadAnythingReadAloudEnabled()) {
           break;
-        }
-        [[fallthrough]];
       case ax::mojom::Event::kValueChanged:
-        if (!features::IsReadAnythingReadAloudEnabled()) {
+        // After the user finishes typing something we wait for a timer and
+        // redraw to capture the input.
+        if (event.event_from == ax::mojom::EventFrom::kUser &&
+            event.event_intents.size() > 0) {
           reset_draw_timer_ = true;
         }
         break;
@@ -895,20 +895,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
           }
         }
         break;
-      // After the user finishes typing something we wait for a timer and redraw
-      // to capture the input. For some reason, scrolling pdfs sends editable
-      // text changed events, which is not what we want, so only redraw if it's
-      // not a pdf.
-      // TODO(crbug.com//40927698): Determine why these events are generated
-      // for PDF scrolling, and if there's a need to differentiate actual pdf
-      // edits.
-      case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-        if (features::IsReadAnythingReadAloudEnabled() && !is_pdf_) {
-          reset_draw_timer_ = true;
-          break;
-        }
-        [[fallthrough]];
       // Audit these events e.g. to trigger distillation.
+      case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
       case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:

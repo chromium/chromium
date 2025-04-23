@@ -362,6 +362,10 @@ class ReadAnythingAppController
   // the UI to avoid loading artifacts.
   void ShouldShowUI();
 
+  // Helper for forwarding various updates to the webui based on the latest
+  // processed accessibility events.
+  void SendEventUpdates();
+
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
   void RecordNumSelections();

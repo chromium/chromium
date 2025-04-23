@@ -1698,6 +1698,29 @@ TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
   ASSERT_FALSE(model().ContainsTree(tree_ids[1]));
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       AccessiblityEvent_DuringSpeech_DoesNothing) {
+  EnableReadAloud();
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  static constexpr int kInitialId = 2;
+  ui::AXNodeData initial_node = test::GenericContainerNode(kInitialId);
+  initial_update.nodes = {std::move(initial_node)};
+  AccessibilityEventReceived({std::move(initial_update)});
+  model().Reset({kInitialId});
+
+  EXPECT_FALSE(model().requires_distillation());
+  EXPECT_FALSE(model().redraw_required());
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  static constexpr int kExpandedId = 4;
+  ui::AXNodeData updated_node = test::GenericContainerNode(kExpandedId);
+  updated_node.AddState(ax::mojom::State::kExpanded);
+  update.nodes = {std::move(updated_node)};
+  AccessibilityEventReceived({std::move(update)});
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
   std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
   std::vector<ui::AXTreeUpdate> updates =

@@ -73,8 +73,8 @@ suite('UpdateContent', () => {
     assertFalse(app.$.toolbar.isReadAloudPlayable);
   });
 
-  test('logs speech stop if called while audio playing', async () => {
-    app.speechPlayingState.isAudioCurrentlyPlaying = true;
+  test('logs speech stop if called while speech active', async () => {
+    app.speechPlayingState.isSpeechActive = true;
     app.updateContent();
     await microtasksFinished();
 

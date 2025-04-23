@@ -753,9 +753,9 @@ export class AppElement extends AppElementBase {
 
     // This shouldn't happen. If it does, there is likely a bug, so log it so
     // we can monitor it.
-    if (this.speechPlayingState.isAudioCurrentlyPlaying) {
+    if (this.speechPlayingState.isSpeechActive) {
       console.error(
-          'updateContent called while audio is currently playing. ',
+          'updateContent called while speech is active. ',
           'There may be a bug.');
       this.logger_.logSpeechStopSource(
           chrome.readingMode.unexpectedUpdateContentStopSource);
