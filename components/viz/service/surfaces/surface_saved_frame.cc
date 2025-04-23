@@ -98,11 +98,20 @@ SurfaceSavedFrame::~SurfaceSavedFrame() {
 }
 
 base::flat_set<ViewTransitionElementResourceId>
-SurfaceSavedFrame::GetEmptyResourceIds() const {
+SurfaceSavedFrame::GetEmptyResourceIds(
+    const CompositorRenderPassList& render_pass_list) const {
   base::flat_set<ViewTransitionElementResourceId> result;
-  for (auto& shared_element : directive_.shared_elements())
-    if (shared_element.render_pass_id.is_null())
+  for (auto& shared_element : directive_.shared_elements()) {
+    if (shared_element.render_pass_id.is_null()) {
       result.insert(shared_element.view_transition_element_resource_id);
+    }
+  }
+  for (auto& render_pass : render_pass_list) {
+    if (render_pass->output_rect.IsEmpty() &&
+        render_pass->view_transition_element_resource_id.IsValid()) {
+      result.insert(render_pass->view_transition_element_resource_id);
+    }
+  }
   return result;
 }
 
@@ -134,10 +143,12 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
     }
   }
 
-  DCHECK_EQ(copy_request_count_, ExpectedResultCount());
+  DCHECK_EQ(copy_request_count_,
+            ExpectedResultCount(active_frame.render_pass_list));
 
   frame_result_.emplace();
-  frame_result_->empty_resource_ids = GetEmptyResourceIds();
+  frame_result_->empty_resource_ids =
+      GetEmptyResourceIds(active_frame.render_pass_list);
   frame_result_->shared_results.resize(directive_.shared_elements().size());
 
   // If we're using BlitRequests, then we need to create the result bundle
@@ -173,10 +184,15 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
     const CompositorRenderPass& render_pass,
     bool is_software,
     gfx::ContentColorUsage content_color_usage) {
+  if (render_pass.output_rect.IsEmpty()) {
+    return nullptr;
+  }
+
   size_t shared_pass_index =
       GetSharedPassIndex(directive_.shared_elements(), render_pass.id);
-  if (shared_pass_index >= directive_.shared_elements().size())
+  if (shared_pass_index >= directive_.shared_elements().size()) {
     return nullptr;
+  }
 
   RenderPassDrawData draw_data(render_pass);
   draw_data_[shared_pass_index] = draw_data;
@@ -228,11 +244,18 @@ bool SurfaceSavedFrame::IsSharedElementRenderPass(
   return GetSharedPassIndex(shared_elements, pass_id) < shared_elements.size();
 }
 
-size_t SurfaceSavedFrame::ExpectedResultCount() const {
+size_t SurfaceSavedFrame::ExpectedResultCount(
+    const CompositorRenderPassList& render_pass_list) const {
   base::flat_set<CompositorRenderPassId> ids;
   for (auto& shared_element : directive_.shared_elements()) {
-    if (!shared_element.render_pass_id.is_null())
+    if (!shared_element.render_pass_id.is_null()) {
       ids.insert(shared_element.render_pass_id);
+    }
+  }
+  for (auto& render_pass : render_pass_list) {
+    if (render_pass->output_rect.IsEmpty()) {
+      ids.erase(render_pass->id);
+    }
   }
   return ids.size();
 }
@@ -281,7 +304,19 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
   }
 
   copy_request_count_ = 0;
-  valid_result_count_ = ExpectedResultCount();
+  // TODO(vmpstr): Note that we also count passes that have an empty
+  // `output_rect` here, but in testing situations this is not currently the
+  // case. If we need to unittest empty render pass cases, then this value needs
+  // to be changed.
+  valid_result_count_ = [this]() {
+    base::flat_set<CompositorRenderPassId> ids;
+    for (auto& shared_element : directive_.shared_elements()) {
+      if (!shared_element.render_pass_id.is_null()) {
+        ids.insert(shared_element.render_pass_id);
+      }
+    }
+    return ids.size();
+  }();
   weak_factory_.InvalidateWeakPtrs();
   DCHECK(IsValid());
 }

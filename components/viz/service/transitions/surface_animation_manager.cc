@@ -158,7 +158,8 @@ SurfaceAnimationManager::SurfaceAnimationManager(
                      weak_factory_.GetMutableWeakPtr(),
                      std::move(sequence_id_finished_callback));
   saved_frame_.RequestCopyOfOutput(surface, std::move(copy_finished_callback));
-  empty_resource_ids_ = saved_frame_.GetEmptyResourceIds();
+  empty_resource_ids_ = saved_frame_.GetEmptyResourceIds(
+      surface->GetActiveFrame().render_pass_list);
   if (saved_frame_.IsValid() && !directive.maybe_cross_frame_sink()) {
     ImportTextures();
   }

@@ -103,7 +103,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting();
 
-  base::flat_set<ViewTransitionElementResourceId> GetEmptyResourceIds() const;
+  base::flat_set<ViewTransitionElementResourceId> GetEmptyResourceIds(
+      const CompositorRenderPassList& render_pass_list) const;
 
  private:
   explicit SurfaceSavedFrame(base::PassKey<SurfaceSavedFrame>,
@@ -122,7 +123,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // callback can access *and* delete this object.
   void DispatchCopyDoneCallback();
 
-  size_t ExpectedResultCount() const;
+  size_t ExpectedResultCount(
+      const CompositorRenderPassList& render_pass_list) const;
 
   // Collects metadata to create a copy of the source CompositorFrame for shared
   // element snapshots.
