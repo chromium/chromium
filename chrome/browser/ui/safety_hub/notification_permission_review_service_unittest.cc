@@ -468,3 +468,44 @@ TEST_F(NotificationPermissionReviewServiceTest,
                                    ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 }
+
+TEST_F(NotificationPermissionReviewServiceTest,
+       DisruptiveNotificationRevocationShadowRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
+      {
+          {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
+               .name,
+           "true"},
+      });
+
+  CreateMockNotificationPermissionsForReview();
+
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+  const auto& notification_permissions =
+      service->PopulateNotificationPermissionReviewData();
+  // Check if the results are returned.
+  EXPECT_EQ(2UL, notification_permissions.size());
+}
+
+TEST_F(NotificationPermissionReviewServiceTest,
+       DisruptiveNotificationRevocation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
+      {
+          {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
+               .name,
+           "false"},
+      });
+
+  CreateMockNotificationPermissionsForReview();
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+  const auto& notification_permissions =
+      service->PopulateNotificationPermissionReviewData();
+  // Check that no permissions are returned.
+  EXPECT_EQ(0UL, notification_permissions.size());
+}

@@ -121,19 +121,28 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         SafetyHubModuleMediator safeBrowsingModuleMediator =
                 new SafetyHubSafeBrowsingModuleMediator(
                         findPreference(PREF_SAFE_BROWSING), this, getProfile());
-        SafetyHubModuleMediator notificationsModuleMediator =
-                new SafetyHubNotificationsModuleMediator(
-                        findPreference(PREF_NOTIFICATIONS_REVIEW),
-                        this,
-                        NotificationPermissionReviewBridge.getForProfile(getProfile()));
 
         mModuleMediators =
                 new ArrayList<SafetyHubModuleMediator>(
                         Arrays.asList(
                                 updateCheckModuleMediator,
                                 permissionsRevocationModuleMediator,
-                                safeBrowsingModuleMediator,
-                                notificationsModuleMediator));
+                                safeBrowsingModuleMediator));
+        boolean shouldShowNotificationModule =
+                !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
+                        || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION,
+                                "shadow_run",
+                                true);
+        if (shouldShowNotificationModule) {
+            SafetyHubModuleMediator notificationsModuleMediator =
+                    new SafetyHubNotificationsModuleMediator(
+                            findPreference(PREF_NOTIFICATIONS_REVIEW),
+                            this,
+                            NotificationPermissionReviewBridge.getForProfile(getProfile()));
+            mModuleMediators.add(notificationsModuleMediator);
+        }
 
         SafetyHubAccountPasswordsDataSource accountPasswordsDataSource =
                 new SafetyHubAccountPasswordsDataSource(

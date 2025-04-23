@@ -159,6 +159,10 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   bool ShouldAddToNotificationPermissionReviewList(GURL url,
                                                    int notification_count);
 
+  // Whether notifications from disruptive sites are revoked. In that case, the
+  // notification permission module should be hidden.
+  bool IsDisruptiveNotificationRevocationEnabled();
+
   // Used to determine how often the user engaged with websites.
   raw_ptr<site_engagement::SiteEngagementService> engagement_service_;
 
