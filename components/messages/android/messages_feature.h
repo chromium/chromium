@@ -16,6 +16,9 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
 // Feature that enables extra histogram recordings.
 BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
 
+// Feature that enables a close button when mouses hovers over.
+BASE_DECLARE_FEATURE(kMessagesCloseButton);
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGES_FEATURE_H_

@@ -17,6 +17,7 @@ public abstract class MessageFeatureList {
     public static final String MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK =
             "MessagesForAndroidFullyVisibleCallback";
     public static final String MESSAGES_ANDROID_EXTRA_HISTOGRAMS = "MessagesAndroidExtraHistograms";
+    public static final String MESSAGES_CLOSE_BUTTON = "MessagesCloseButton";
 
     public static boolean isFullyVisibleCallbackEnabled() {
         return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK);
@@ -24,5 +25,9 @@ public abstract class MessageFeatureList {
 
     public static boolean areExtraHistogramsEnabled() {
         return MessageFeatureMap.isEnabled(MESSAGES_ANDROID_EXTRA_HISTOGRAMS);
+    }
+
+    public static boolean isCloseButtonEnabled() {
+        return MessageFeatureMap.isEnabled(MESSAGES_CLOSE_BUTTON);
     }
 }
