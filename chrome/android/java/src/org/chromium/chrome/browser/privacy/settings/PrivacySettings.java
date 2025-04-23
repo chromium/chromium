@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionStatusManagerAndroidBridge;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -200,13 +200,13 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             // Advanced Protection automatically enables HTTPS-Only Mode so
                             // lock the setting.
                             return isPreferenceControlledByPolicy(preference)
-                                    || new SafeBrowsingBridge(getProfile())
+                                    || AdvancedProtectionStatusManagerAndroidBridge
                                             .isUnderAdvancedProtection();
                         }
                     });
             httpsFirstModeLegacySwitchPref.setChecked(
                     UserPrefs.get(getProfile()).getBoolean(Pref.HTTPS_ONLY_MODE_ENABLED));
-            if (new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection()) {
+            if (AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection()) {
                 httpsFirstModeLegacySwitchPref.setSummary(
                         getContext()
                                 .getString(

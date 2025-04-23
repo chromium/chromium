@@ -121,6 +121,7 @@ android_library("java") {
   srcjar_deps = [
     ":jni_headers",
     ":safe_browsing_enums",
+    "//components/safe_browsing/android:switches_srcjar",
   ]
   resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
 }

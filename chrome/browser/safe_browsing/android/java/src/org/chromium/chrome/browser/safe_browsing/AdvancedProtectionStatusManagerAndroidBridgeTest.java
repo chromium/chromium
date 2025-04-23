@@ -57,30 +57,26 @@ public class AdvancedProtectionStatusManagerAndroidBridgeTest {
     public void testKillSwitch() {
         setPermissionProvider(
                 new TestPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true));
-        assertFalse(
-                AdvancedProtectionStatusManagerAndroidBridge.isAdvancedProtectionRequestedByOs());
+        assertFalse(AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection());
     }
 
     @Test
     public void testNoServiceProvider() {
         setPermissionProvider(null);
-        assertFalse(
-                AdvancedProtectionStatusManagerAndroidBridge.isAdvancedProtectionRequestedByOs());
+        assertFalse(AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection());
     }
 
     @Test
     public void testServiceProviderDoesNotRequestAdvancedProtection() {
         setPermissionProvider(
                 new TestPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false));
-        assertFalse(
-                AdvancedProtectionStatusManagerAndroidBridge.isAdvancedProtectionRequestedByOs());
+        assertFalse(AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection());
     }
 
     @Test
     public void testServiceProviderRequestsAdvancedProtection() {
         setPermissionProvider(
                 new TestPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true));
-        assertTrue(
-                AdvancedProtectionStatusManagerAndroidBridge.isAdvancedProtectionRequestedByOs());
+        assertTrue(AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection());
     }
 }

@@ -29,7 +29,7 @@ AdvancedProtectionStatusManagerAndroid::
 // static
 bool AdvancedProtectionStatusManagerAndroid::QueryIsUnderAdvancedProtection() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AdvancedProtectionStatusManagerAndroidBridge_isAdvancedProtectionRequestedByOs(
+  return Java_AdvancedProtectionStatusManagerAndroidBridge_isUnderAdvancedProtection(
       env);
 }
 
@@ -60,6 +60,8 @@ void AdvancedProtectionStatusManagerAndroid::
 }
 
 void AdvancedProtectionStatusManagerAndroid::UpdateState() {
+  // TODO(crbug.com/412761437) Command line switch presence is tested in both
+  // C++ and Java. Remove duplicate switch presence switch.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceTreatUserAsAdvancedProtection)) {
     is_under_advanced_protection_ = true;

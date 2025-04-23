@@ -52,4 +52,20 @@ public abstract class OsAdditionalSecurityPermissionProvider {
             Context context, @Nullable Runnable primaryButtonAction) {
         return null;
     }
+
+    /**
+     * Returns resource id for icon to use for operating-system-provided advanced protection
+     * branding.
+     */
+    public int getAdvancedProtectionIconResourceId() {
+        return 0;
+    }
+
+    /**
+     * Returns resource id for string to display to inform that strict-https-first-mode is enforced
+     * by the operating-system-provided advanced protection setting.
+     */
+    public int getHttpsFirstModeEnforcedByAndroidAdvancedProtectionWarningResourceId() {
+        return 0;
+    }
 }
