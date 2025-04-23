@@ -13,7 +13,10 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace network {
 class SimpleURLLoader;
