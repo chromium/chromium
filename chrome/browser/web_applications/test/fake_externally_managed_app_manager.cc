@@ -36,18 +36,6 @@ void FakeExternallyManagedAppManager::Install(
   ExternallyManagedAppManager::Install(install_options, std::move(callback));
 }
 
-void FakeExternallyManagedAppManager::InstallApps(
-    std::vector<ExternalInstallOptions> install_options_list,
-    const RepeatingInstallCallback& callback) {
-  if (handle_install_request_callback_) {
-    for (auto& install_options : install_options_list)
-      Install(std::move(install_options), callback);
-    return;
-  }
-
-  ExternallyManagedAppManager::InstallApps(install_options_list, callback);
-}
-
 void FakeExternallyManagedAppManager::SetHandleInstallRequestCallback(
     HandleInstallRequestCallback callback) {
   handle_install_request_callback_ = std::move(callback);

@@ -21,8 +21,6 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManager {
                   OnceInstallCallback callback) override;
   void Install(ExternalInstallOptions install_options,
                OnceInstallCallback callback) override;
-  void InstallApps(std::vector<ExternalInstallOptions> install_options_list,
-                   const RepeatingInstallCallback& callback) override;
 
   using HandleInstallRequestCallback =
       base::RepeatingCallback<ExternallyManagedAppManager::InstallResult(
