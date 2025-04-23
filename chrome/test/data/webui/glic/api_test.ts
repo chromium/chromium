@@ -495,10 +495,13 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.getOsHotkeyState);
     const osHotkeyState = observeSequence(this.host.getOsHotkeyState());
     const initialHotkeyState = await osHotkeyState.next();
-    assertEquals('<Ctrl>-<G>', initialHotkeyState.hotkey);
+    const isMac = /Mac/.test(navigator.platform);
+    let expectedHotkey = isMac ? '<⌃>-<G>' : '<Ctrl>-<G>';
+    assertEquals(expectedHotkey, initialHotkeyState.hotkey);
     await this.advanceToNextStep();
     const changedState = await osHotkeyState.next();
-    assertEquals('<Ctrl>-<Shift>-<1>', changedState.hotkey);
+    expectedHotkey = isMac ? '<⌃>-<⇧>-<1>' : '<Ctrl>-<Shift>-<1>';
+    assertEquals(expectedHotkey, changedState.hotkey);
   }
 
   async testGetUserProfileInfo() {
