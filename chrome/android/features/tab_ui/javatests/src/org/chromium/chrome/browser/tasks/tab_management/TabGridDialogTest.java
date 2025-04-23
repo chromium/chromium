@@ -144,6 +144,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -521,7 +522,7 @@ public class TabGridDialogTest {
         Rect sourceRect = new Rect();
         recyclerView.getChildAt(0).getGlobalVisibleRect(sourceRect);
         // TODO(yuezhanggg): Figure out why the sourceRect.left is wrong after setting the margin.
-        float expectedTop = sourceRect.top - parentRect.top + tabGridCardPadding;
+        float expectedTop = sourceRect.top - parentRect.top + tabGridCardPadding + deltaTopMargin;
         float expectedWidth = sourceRect.width() - 2 * tabGridCardPadding;
         float expectedHeight = sourceRect.height() - 2 * tabGridCardPadding;
 
@@ -529,9 +530,9 @@ public class TabGridDialogTest {
         TabGridDialogView.setSourceRectCallbackForTesting(
                 result -> {
                     mHasReceivedSourceRect = true;
-                    assertEquals(expectedTop, result.top, 0.0);
-                    assertEquals(expectedHeight, result.height(), 0.0);
-                    assertEquals(expectedWidth, result.width(), 0.0);
+                    assertEquals("Top mismatch", expectedTop, result.top, 0.0);
+                    assertEquals("Height mismatch", expectedHeight, result.height(), 0.0);
+                    assertEquals("Width mismatch", expectedWidth, result.width(), 0.0);
                 });
 
         TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
@@ -1436,6 +1437,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("Finishes the activity which can have cascading effects.")
     @DisabledTest(message = "https://crbug.com/1124336")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1664,7 +1666,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "TODO(crbug.com/40148943): Fix flakiness.")
+    @DisabledTest(message = "crbug.com/40148943")
     public void testAccessibilityString() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 3);
@@ -1676,14 +1678,24 @@ public class TabGridDialogTest {
         // Verify the initial group card content description.
         RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
         View firstItem = recyclerView.findViewHolderForAdapterPosition(0).itemView;
-        String expandTargetString = "Expand tab group with 3 tabs.";
+        String expandTargetString = "Expand tab group with 3 tabs, color Grey.";
         assertEquals(expandTargetString, firstItem.getContentDescription());
 
         // Back button content description should update with group title.
         String collapseTargetString = "Collapse tab group with 3 tabs.";
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
-        editDialogTitle(cta, CUSTOMIZED_TITLE1);
+
+        // Set title programmatically as doing this through the UI is flaky due to the keyboard
+        // state not being particularly reliable.
+        TabModelSelector selector = cta.getTabModelSelector();
+        TabGroupModelFilter filter =
+                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int rootId = filter.getTabModel().getTabAt(0).getRootId();
+                    filter.setTabGroupTitle(rootId, CUSTOMIZED_TITLE1);
+                });
         collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
 
@@ -1691,14 +1703,17 @@ public class TabGridDialogTest {
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
-        expandTargetString = "Expand " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
+        expandTargetString = "Expand " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs, color Grey.";
         assertEquals(expandTargetString, firstItem.getContentDescription());
 
-        // Verify the TabSwitcher group card close button content description should update with
+        // Verify the TabSwitcher group card action button content description should update with
         // group title.
-        View closeButton = firstItem.findViewById(R.id.action_button);
-        String closeButtonTargetString = "Close " + CUSTOMIZED_TITLE1 + " group with 3 tabs";
-        assertEquals(closeButtonTargetString, closeButton.getContentDescription());
+        View actionButton = firstItem.findViewById(R.id.action_button);
+        String actionButtonTargetString =
+                "Open the tab group action menu for tab group "
+                        + CUSTOMIZED_TITLE1
+                        + ", color Grey.";
+        assertEquals(actionButtonTargetString, actionButton.getContentDescription());
 
         // Back button content description should update with group count change.
         openDialogFromTabSwitcherAndVerify(cta, 3, CUSTOMIZED_TITLE1);
@@ -1710,17 +1725,16 @@ public class TabGridDialogTest {
         // Group card content description should update with group count change.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
-        expandTargetString = "Expand " + CUSTOMIZED_TITLE1 + " tab group with 2 tabs.";
+        expandTargetString = "Expand " + CUSTOMIZED_TITLE1 + " tab group with 2 tabs, color Grey.";
         assertEquals(expandTargetString, firstItem.getContentDescription());
-
-        // TabSwitcher group card Close button content description should update with group count
-        // change.
-        closeButtonTargetString = "Close " + CUSTOMIZED_TITLE1 + " group with 2 tabs";
-        assertEquals(closeButtonTargetString, closeButton.getContentDescription());
 
         // Back button content description should restore when the group loses customized title.
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
-        editDialogTitle(cta, "");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int rootId = filter.getTabModel().getTabAt(0).getRootId();
+                    filter.deleteTabGroupTitle(rootId);
+                });
         verifyShowingDialog(cta, 2, null);
         collapseTargetString = "Collapse tab group with 2 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
@@ -1734,12 +1748,22 @@ public class TabGridDialogTest {
         // Group card content description should restore when the group becomes a single tab.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
+        assertEquals("Expand tab group with 1 tab, color Grey.", firstItem.getContentDescription());
+
+        // Programmatically ungroup.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = filter.getTabModel().getTabAt(0);
+                    filter.getTabUngrouper()
+                            .ungroupTabs(
+                                    List.of(tab), /* trailing= */ true, /* allowDialog= */ false);
+                });
         assertEquals(null, firstItem.getContentDescription());
 
         // TabSwitcher Group card Close button content description should restore when the group
         // becomes a single tab.
-        closeButtonTargetString = "Close New tab tab";
-        assertEquals(closeButtonTargetString, closeButton.getContentDescription());
+        actionButtonTargetString = "Close New tab tab";
+        assertEquals(actionButtonTargetString, actionButton.getContentDescription());
     }
 
     @Test
