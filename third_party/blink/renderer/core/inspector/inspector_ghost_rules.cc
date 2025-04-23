@@ -143,8 +143,12 @@ wtf_size_t NumItems(CSSRule& rule) {
 }
 
 CSSRule* ItemAt(CSSRule& rule, wtf_size_t index) {
-  if (IsA<CSSStyleRule>(rule)) {
-    return To<CSSStyleRule>(rule).ItemInternal(index);
+  if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
+    // These checks are for investigating https://crbug.com/389011795.
+    CHECK_EQ(style_rule->length(), style_rule->WrapperCountForDebugging());
+    CHECK_LE(index, style_rule->length());
+    CHECK_LE(index, style_rule->WrapperCountForDebugging());
+    return style_rule->ItemInternal(index);
   }
   return To<CSSGroupingRule>(rule).ItemInternal(index);
 }
