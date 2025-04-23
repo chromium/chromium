@@ -9095,22 +9095,6 @@ crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations
 crbug.com/409149439 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Failure Pass ]
 crbug.com/409032332 http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js [ Crash Pass Timeout ]
 
-# Temporarily disable wasm tests that use type reflection while we update an
-# incorrect flag implication in V8:
-# https://chromium-review.googlesource.com/c/v8/v8/+/6458419
-crbug.com/42202153 external/wpt/wasm/jsapi/function/call.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/call.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/constructor.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/constructor.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/table.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/table.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/function/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.worker.html [ Failure Pass ]
-
 crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass Timeout ]
 crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Failure Pass Timeout ]
 
