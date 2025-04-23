@@ -1062,6 +1062,14 @@ void MessagingBackendServiceImpl::OnTabLastSeenTimeChanged(
   store_->ClearDirtyMessageForTab(
       *collaboration_group_id, tab->saved_tab_guid(), DirtyType::kDotAndChip);
 
+  // Hide any existing persistent dot or chip messages already showing.
+  PersistentMessage persistent_message =
+      CreatePersistentMessageFromTabGroupAndTab(*collaboration_group_id, *tab,
+                                                CollaborationEvent::UNDEFINED);
+  NotifyHidePersistentMessagesForTypes(persistent_message,
+                                       {PersistentNotificationType::CHIP,
+                                        PersistentNotificationType::DIRTY_TAB});
+
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            tab->saved_group_guid());
 }

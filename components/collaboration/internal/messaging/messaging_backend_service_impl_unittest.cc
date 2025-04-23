@@ -2566,13 +2566,16 @@ TEST_F(MessagingBackendServiceImplTest,
 
 TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_Remote) {
   CreateAndInitializeService();
+  AddPersistentMessageObserver();
 
   // Create a group in the service with a local tab.
   data_sharing::GroupId test_group("test_collab");
-  tab_groups::SavedTabGroup test_group_obj = CreateSharedTabGroup(test_group);
-  auto expected_tab_guid = test_group_obj.saved_tabs().front().saved_tab_guid();
-  auto expected_group_guid = test_group_obj.saved_guid();
-  std::vector<tab_groups::SavedTabGroup> all_groups = {test_group_obj};
+  tab_groups::SavedTabGroup tab_group = CreateSharedTabGroup(test_group);
+  auto expected_tab_guid = tab_group.saved_tabs().front().saved_tab_guid();
+  auto expected_group_guid = tab_group.saved_guid();
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(expected_group_guid))
+      .WillRepeatedly(Return(tab_group));
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
   EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(all_groups));
 
@@ -2587,6 +2590,15 @@ TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_Remote) {
   AddMessage(message);
 
   ASSERT_TRUE(HasDirtyMessages());
+
+  PersistentMessage message1, message2, message3;
+  testing::InSequence sequence;
+  EXPECT_CALL(mock_persistent_message_observer_, HidePersistentMessage(_))
+      .WillOnce(SaveArg<0>(&message1));  // Capture the first message
+  EXPECT_CALL(mock_persistent_message_observer_, HidePersistentMessage(_))
+      .WillOnce(SaveArg<0>(&message2));  // Capture the second message
+  EXPECT_CALL(mock_persistent_message_observer_, HidePersistentMessage(_))
+      .WillOnce(SaveArg<0>(&message3));  // Capture the third message
 
   // Perform a change notification
   service_->OnTabLastSeenTimeChanged(expected_tab_guid,
@@ -2596,10 +2608,36 @@ TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_Remote) {
   auto dirty_message = GetDirtyMessageForTab(test_group, expected_tab_guid,
                                              DirtyType::kDotAndChip);
   EXPECT_FALSE(dirty_message.has_value());
+
+  // Verify the messages that were hidden.
+  // Chip message of tab.
+  EXPECT_TRUE(message1.attribution.tab_metadata.has_value());
+  EXPECT_TRUE(message1.attribution.tab_group_metadata.has_value());
+  EXPECT_EQ(CollaborationEvent::UNDEFINED, message1.collaboration_event);
+  EXPECT_EQ(tab_group.saved_guid(),
+            message1.attribution.tab_group_metadata->sync_tab_group_id.value());
+  EXPECT_EQ(PersistentNotificationType::CHIP, message1.type);
+
+  // Dirty dot of tab.
+  EXPECT_TRUE(message2.attribution.tab_metadata.has_value());
+  EXPECT_TRUE(message2.attribution.tab_group_metadata.has_value());
+  EXPECT_EQ(CollaborationEvent::UNDEFINED, message2.collaboration_event);
+  EXPECT_EQ(tab_group.saved_guid(),
+            message2.attribution.tab_group_metadata->sync_tab_group_id.value());
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, message2.type);
+
+  // Dirty dot of tab group.
+  EXPECT_FALSE(message3.attribution.tab_metadata.has_value());
+  EXPECT_TRUE(message3.attribution.tab_group_metadata.has_value());
+  EXPECT_EQ(CollaborationEvent::UNDEFINED, message3.collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP, message3.type);
+  EXPECT_EQ(tab_group.saved_guid(),
+            message3.attribution.tab_group_metadata->sync_tab_group_id.value());
 }
 
 TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_NonRemote) {
   CreateAndInitializeService();
+  AddPersistentMessageObserver();
 
   // Create a group in the service with a local tab.
   data_sharing::GroupId test_group("test_collab");
@@ -2622,7 +2660,9 @@ TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_NonRemote) {
 
   ASSERT_TRUE(HasDirtyMessages());
 
-  // Perform a change notification
+  // Perform a change notification.
+  EXPECT_CALL(mock_persistent_message_observer_, HidePersistentMessage)
+      .Times(0);
   service_->OnTabLastSeenTimeChanged(expected_tab_guid,
                                      tab_groups::TriggerSource::LOCAL);
 
