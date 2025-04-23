@@ -68,13 +68,11 @@ bool IsHelperAppLaunchedBySafeExamBrowser() {
     return false;
   }
 
-  std::string bundle_identifier;
-  if (base::Environment::Create()->GetVar("__CFBundleIdentifier",
-                                          &bundle_identifier)) {
-    return bundle_identifier == "org.safeexambrowser.SafeExamBrowser";
-  }
+  std::string bundle_identifier = base::Environment::Create()
+                                      ->GetVar("__CFBundleIdentifier")
+                                      .value_or(std::string());
 
-  return false;
+  return bundle_identifier == "org.safeexambrowser.SafeExamBrowser";
 }
 
 }  // namespace
