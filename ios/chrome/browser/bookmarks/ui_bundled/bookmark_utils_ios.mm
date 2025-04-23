@@ -18,6 +18,7 @@
 #import "base/hash/hash.h"
 #import "base/i18n/message_formatter.h"
 #import "base/i18n/string_compare.h"
+#import "base/i18n/string_search.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -569,9 +570,11 @@ void SortFolders(NodeVector* vector) {
             FolderNodeComparator(collator.get()));
 }
 
-NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
-                                     const bookmarks::BookmarkModel* model,
-                                     BookmarkStorageType type) {
+NodeVector VisibleNonDescendantNodes(
+    const NodeSet& obstructions,
+    const bookmarks::BookmarkModel* model,
+    BookmarkStorageType type,
+    const std::vector<std::u16string>& search_terms) {
   NodeVector primary_nodes = PrimaryPermanentNodes(model, type);
   NodeVector filtered_primary_nodes;
   for (auto* node : primary_nodes) {
@@ -583,12 +586,22 @@ NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
   }
 
   // Copy the results over.
-  NodeVector results = filtered_primary_nodes;
+  NodeVector inner_results = filtered_primary_nodes;
 
   // Iterate over a static copy of the filtered, root folders.
   for (auto* node : filtered_primary_nodes) {
-    UpdateFoldersFromNode(node, &results, obstructions);
+    UpdateFoldersFromNode(node, &inner_results, obstructions);
   }
+
+  if (search_terms.empty()) {
+    return inner_results;
+  }
+  NodeVector results;
+  std::copy_if(inner_results.begin(), inner_results.end(),
+               std::back_inserter(results), [search_terms](auto node) {
+                 return bookmarks::DoesBookmarkContainWords(
+                     node->GetTitle(), GURL(), search_terms);
+               });
 
   return results;
 }

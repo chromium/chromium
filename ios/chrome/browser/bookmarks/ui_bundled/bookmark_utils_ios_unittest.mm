@@ -267,6 +267,37 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   EXPECT_EQ(result[12]->GetTitle(), u"buildings");
 }
 
+TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodesSearch) {
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
+  const BookmarkNode* music = AddFolder(mobileNode, u"music");
+
+  const BookmarkNode* pop = AddFolder(music, u"pop");
+  AddBookmark(pop, u"katy perry");
+  const BookmarkNode* gaga = AddFolder(pop, u"lady gaga");
+  AddBookmark(gaga, u"gaga song 1");
+  AddFolder(gaga, u"gaga folder 1");
+  AddFolder(gaga, u"gaga songs");
+
+  const BookmarkNode* metal = AddFolder(music, u"metal");
+  AddFolder(metal, u"opeth");
+  AddFolder(metal, u"F12");
+  AddFolder(metal, u"f31");
+
+  NodeVector result = VisibleNonDescendantNodes(
+      {}, bookmark_model_, BookmarkStorageType::kLocalOrSyncable, {u"op"});
+  ASSERT_EQ(2u, result.size());
+
+  EXPECT_EQ(result[0]->GetTitle(), u"opeth");
+  EXPECT_EQ(result[1]->GetTitle(), u"pop");
+
+  result = VisibleNonDescendantNodes({}, bookmark_model_,
+                                     BookmarkStorageType::kLocalOrSyncable,
+                                     {u"gaga folder"});
+  ASSERT_EQ(1u, result.size());
+
+  EXPECT_EQ(result[0]->GetTitle(), u"gaga folder 1");
+}
+
 TEST_F(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   // Empty vectors: [] - [].
   NodeVector vector1;

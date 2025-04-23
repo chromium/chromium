@@ -1491,4 +1491,120 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
 }
 
+// Verify Move functionality on search.
+- (void)testSearchBookmarksSignedOut {
+  [self util_searchBookmarks:KindOfTest::kSignedOut];
+}
+- (void)testSearchBookmarksLocal {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_searchBookmarks:KindOfTest::kLocal];
+}
+- (void)testSearchBookmarksAccount {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_searchBookmarks:KindOfTest::kAccount];
+}
+- (void)util_searchBookmarks:(KindOfTest)kindOfTest {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
+
+  // Change to edit mode, using context menu.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kBookmarksHomeTrailingButtonIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeTrailingButtonIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1.1")]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:ContextBarCenterButtonWithLabel(
+                                   [BookmarkEarlGreyUI contextBarMoreString])]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the search bar and check that the scrim is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksFolderPickerSearchBarIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksFolderPickerSearchScrimIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Search for "Folder 2" and check the others disappeared.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksFolderPickerSearchBarIdentifier)]
+      performAction:grey_replaceText(@"Folder 2")];
+
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
+      assertWithMatcher:grey_notVisible()];
+
+  // Move it to folder 2
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      performAction:grey_tap()];
+
+  [BookmarkEarlGreyUI verifyFolderFlowIsClosed];
+
+  [BookmarkEarlGreyUI closeUndoSnackbarAndWait];
+
+  // Verify edit mode is closed (context bar back to default state).
+  [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
+                                                     newFolderEnabled:YES];
+
+  // Verify "Folder 2" has two bookmark folders (Folder 3 and Folder 1.1).
+  [BookmarkEarlGrey verifyChildCount:2
+                    inFolderWithName:@"Folder 2"
+                           inStorage:kindOfTestToStorageType(kindOfTest)];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TappableBookmarkNodeWithLabel(
+                                              @"Folder 1.1")];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1.1")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
+}
+
 @end

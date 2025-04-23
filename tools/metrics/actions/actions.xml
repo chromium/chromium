@@ -22734,11 +22734,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarksFolderChooserCancelSearch">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user cancelled a search on the bookmark folder view. iOS-only.
+  </description>
+</action>
+
 <action name="MobileBookmarksFolderChooserDone">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
     The user confirmed the bookmark folder chooser view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderChooserDoneSearch">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user confirmed the bookmark folder chooser view after a search.
+    iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderChooserSearch">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user started a search on the bookmark folder view. iOS-only.
   </description>
 </action>
 
