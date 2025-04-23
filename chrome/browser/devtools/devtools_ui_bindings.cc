@@ -1710,6 +1710,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                         features::kDevToolsFreestylerPatching.Get());
     freestyler_dict.Set("multimodal",
                         features::kDevToolsFreestylerMultimodal.Get());
+    freestyler_dict.Set("multimodalUploadInput",
+                        features::kDevToolsFreestylerMultimodalUploadInput.Get());
     freestyler_dict.Set("functionCalling",
                         features::kDevToolsFreestylerFunctionCalling.Get());
     response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));

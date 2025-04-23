@@ -58,6 +58,8 @@ const base::FeatureParam<bool> kDevToolsFreestylerPatching{
     &kDevToolsFreestyler, "patching", /*default_value=*/true};
 const base::FeatureParam<bool> kDevToolsFreestylerMultimodal{
     &kDevToolsFreestyler, "multimodal", /*default_value=*/true};
+const base::FeatureParam<bool> kDevToolsFreestylerMultimodalUploadInput{
+    &kDevToolsFreestyler, "multimodal_upload_input", /*default_value=*/false};
 const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling{
     &kDevToolsFreestyler, "function_calling", /*default_value=*/false};
 
