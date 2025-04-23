@@ -20,10 +20,30 @@ from test_helpers import execute_command, get_origin, goto_url
 SOME_LATITUDE = 1.234
 SOME_LONGITUDE = 5.678
 SOME_ACCURACY = 9.1011
+SOME_ALTITUDE = 12.1314
+SOME_ALTITUDE_ACCURACY = 15.1617
+SOME_HEADING = 18.192
+SOME_SPEED = 21.2223
 
 ANOTHER_LATITUDE = 10.1112
 ANOTHER_LONGITUDE = 13.1415
 ANOTHER_ACCURACY = 16.1718
+
+SOME_COORDINATES = {
+    'latitude': SOME_LATITUDE,
+    'longitude': SOME_LONGITUDE,
+    'accuracy': SOME_ACCURACY,
+    'altitude': SOME_ALTITUDE,
+    'altitudeAccuracy': SOME_ALTITUDE_ACCURACY,
+    'heading': SOME_HEADING,
+    'speed': SOME_SPEED
+}
+
+ANOTHER_COORDINATES = {
+    'latitude': ANOTHER_LATITUDE,
+    'longitude': ANOTHER_LONGITUDE,
+    'accuracy': ANOTHER_ACCURACY,
+}
 
 
 async def get_geolocation(websocket, context_id):
@@ -67,17 +87,25 @@ async def test_geolocation_set_and_clear(websocket, context_id, url_example,
             'method': 'emulation.setGeolocationOverride',
             'params': {
                 'contexts': [context_id],
-                'coordinates': {
-                    'latitude': SOME_LATITUDE,
-                    'longitude': SOME_LONGITUDE,
-                    'accuracy': SOME_ACCURACY
-                }
+                'coordinates': SOME_COORDINATES
             }
         })
 
     emulated_geolocation = await get_geolocation(websocket, context_id)
 
     assert initial_geolocation != emulated_geolocation, "Geolocation should have changed"
+    assert emulated_geolocation == snapshot(
+    ), "New geolocation should match snapshot"
+
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setGeolocationOverride',
+            'params': {
+                'contexts': [context_id],
+                'coordinates': ANOTHER_COORDINATES
+            }
+        })
+    emulated_geolocation = await get_geolocation(websocket, context_id)
     assert emulated_geolocation == snapshot(
     ), "New geolocation should match snapshot"
 
@@ -114,11 +142,7 @@ async def test_geolocation_per_user_context(websocket, url_example,
             'method': 'emulation.setGeolocationOverride',
             'params': {
                 'userContexts': ["default"],
-                'coordinates': {
-                    'latitude': SOME_LATITUDE,
-                    'longitude': SOME_LONGITUDE,
-                    'accuracy': SOME_ACCURACY
-                }
+                'coordinates': SOME_COORDINATES
             }
         })
     await execute_command(
@@ -126,11 +150,7 @@ async def test_geolocation_per_user_context(websocket, url_example,
             'method': 'emulation.setGeolocationOverride',
             'params': {
                 'userContexts': [user_context_id],
-                'coordinates': {
-                    'latitude': ANOTHER_LATITUDE,
-                    'longitude': ANOTHER_LONGITUDE,
-                    'accuracy': ANOTHER_ACCURACY
-                }
+                'coordinates': ANOTHER_COORDINATES
             }
         })
 

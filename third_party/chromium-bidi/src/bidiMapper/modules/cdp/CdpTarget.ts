@@ -681,6 +681,11 @@ export class CdpTarget {
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         accuracy: coordinates.accuracy ?? 1,
+        // `null` value is treated as "missing".
+        altitude: coordinates.altitude ?? undefined,
+        altitudeAccuracy: coordinates.altitudeAccuracy ?? undefined,
+        heading: coordinates.heading ?? undefined,
+        speed: coordinates.speed ?? undefined,
       });
     }
   }

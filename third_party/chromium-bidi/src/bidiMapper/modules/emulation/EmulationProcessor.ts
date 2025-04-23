@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-import {
-  InvalidArgumentException,
-  UnsupportedOperationException,
-} from '../../../protocol/ErrorResponse';
+import {InvalidArgumentException} from '../../../protocol/ErrorResponse';
 import type {
   EmptyResult,
   Emulation,
@@ -42,24 +39,12 @@ export class EmulationProcessor {
   async setGeolocationOverride(
     params: Emulation.SetGeolocationOverrideParameters,
   ): Promise<EmptyResult> {
-    if ((params.coordinates?.altitude ?? null) !== null) {
-      throw new UnsupportedOperationException(
-        'Geolocation altitude emulation is not supported',
-      );
-    }
-    if ((params.coordinates?.heading ?? null) !== null) {
-      throw new UnsupportedOperationException(
-        'Geolocation heading emulation is not supported',
-      );
-    }
-    if ((params.coordinates?.altitudeAccuracy ?? null) !== null) {
-      throw new UnsupportedOperationException(
-        'Geolocation altitudeAccuracy emulation is not supported',
-      );
-    }
-    if ((params.coordinates?.speed ?? null) !== null) {
-      throw new UnsupportedOperationException(
-        'Geolocation speed emulation is not supported',
+    if (
+      (params.coordinates?.altitude ?? null) === null &&
+      (params.coordinates?.altitudeAccuracy ?? null) !== null
+    ) {
+      throw new InvalidArgumentException(
+        'Geolocation altitudeAccuracy can be set only with altitude',
       );
     }
 
