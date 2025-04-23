@@ -10,6 +10,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <string>
@@ -266,8 +267,9 @@ int RunExecutable(const base::FilePath& existence_checker_path,
 
     VLOG(1) << "Output from " << executable << ": " << output;
 
-    if (!proc.WaitForExitWithTimeout(deadline - base::Time::Now(),
-                                     &exit_code)) {
+    if (!proc.WaitForExitWithTimeout(
+            std::max(deadline - base::Time::Now(), base::TimeDelta()),
+            &exit_code)) {
       return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
     }
     if (exit_code != 0) {
