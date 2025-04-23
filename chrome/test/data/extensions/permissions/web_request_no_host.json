@@ -1,6 +1,0 @@
-{
-  "name": "Extension without host permissions but with full (D)WR permissions.",
-  "manifest_version": 2,
-  "version": "1.0",
-  "permissions": ["declarativeWebRequest", "webRequest", "webRequestBlocking" ]
-}

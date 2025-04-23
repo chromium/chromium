@@ -1,9 +1,0 @@
-{
-  "name": "Test that permissionless management APIs work without permission",
-  "version": "0.1",
-  "manifest_version": 2,
-  "background": {
-    "scripts": ["test.js"],
-    "persistent": true
-  }
-}

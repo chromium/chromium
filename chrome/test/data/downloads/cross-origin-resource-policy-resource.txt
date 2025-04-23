@@ -1,1 +1,0 @@
-Resource served with `Cross-Origin-Resource-Protected: same-origin`.

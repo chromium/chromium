@@ -1,9 +1,0 @@
-specific_include_rules = {
-  "isolated_web_app_.*\.(h|cc)": [
-    "+components/web_package",
-  ],
-  "system_web_app_interactive_uitest\.cc": [
-    "+ash/shell.h",
-    "+ash/wm/window_util.h",
-  ],
-}

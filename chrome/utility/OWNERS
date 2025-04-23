@@ -1,5 +1,0 @@
-file://services/OWNERS
-
-# For security review.
-per-file services.*=set noparent
-per-file services.*=file://ipc/SECURITY_OWNERS

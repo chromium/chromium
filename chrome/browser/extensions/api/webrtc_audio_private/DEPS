@@ -1,4 +1,0 @@
-include_rules = [
-  "+media/audio"
-  "services/audio/public/cpp"
-]

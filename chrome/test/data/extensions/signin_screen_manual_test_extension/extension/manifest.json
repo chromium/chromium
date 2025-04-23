@@ -1,9 +1,0 @@
-{
-  "name": "Sign-in Screen Test Extension",
-  "version": "3.0",
-  "manifest_version": 3,
-  "description": "The extension for manual testing of the extensions installation in the Chrome OS sign-in profile",
-  "background": {
-    "service_worker": "background.js"
-  }
-}

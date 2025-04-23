@@ -1,9 +1,0 @@
-{
-  "name": "Extension tests which issue XHRs from the background page.",
-  "version": "1.0",
-  "manifest_version": 2,
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "permissions": ["webRequest", "<all_urls>"]
-}

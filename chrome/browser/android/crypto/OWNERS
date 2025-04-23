@@ -1,3 +1,0 @@
-# For changes to the cryptosystem only. For Java changes, refer to the parent
-# directory OWNERS.
-file://crypto/OWNERS

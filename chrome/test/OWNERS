@@ -1,3 +1,0 @@
-# If you're doing structural changes get a review from one of the OWNERS.
-per-file BUILD.gn=*
-per-file include_js_tests.gni=file://ui/webui/PLATFORM_OWNERS

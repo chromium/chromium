@@ -1,8 +1,0 @@
-{
-  "name": "my extension",
-  "manifest_version": 3,
-  "permissions": [
-    24
-  ],
-  "version": "1.0.0.0"
-}

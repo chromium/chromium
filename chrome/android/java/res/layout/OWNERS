@@ -1,6 +1,0 @@
-per-file new_tab_page*=file://chrome/android/java/src/org/chromium/chrome/browser/ntp/OWNERS
-per-file *feed_*=file://components/feed/OWNERS
-per-file *incognito_*=file://chrome/browser/incognito/OWNERS
-per-file tab_switcher_module_container.xml=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
-per-file tab_switcher_module_container.xml=hanxi@chromium.org
-per-file tab_strip_group_menu_layout.xml=file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS

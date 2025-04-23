@@ -1,5 +1,0 @@
-file://ui/base/cocoa/OWNERS
-ccameron@chromium.org
-ellyjones@chromium.org
-
-per-file hung_renderer*=file://chrome/browser/ui/hung_renderer/OWNERS

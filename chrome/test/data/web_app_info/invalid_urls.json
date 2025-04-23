@@ -1,9 +1,0 @@
-{
-  "name": "hello",
-  "launch_url": "launch_url",
-  "urls": [
-    "relative",
-    "http://example.com/valid_absolute",
-    "http://someotherdomain.com/invalid_absolute"
-  ]
-}

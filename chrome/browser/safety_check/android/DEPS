@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/safety_check",
-  "+components/prefs",
-  "+content/public/android",
-]

@@ -1,9 +1,0 @@
-{
-  "name": "Shared worker",
-  "version": "1.0",
-  "manifest_version": 2,
-  "background": {
-    "page": "background.html",
-    "persistent": false
-  }
-}

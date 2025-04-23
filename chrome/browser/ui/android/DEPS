@@ -1,6 +1,0 @@
-include_rules = {
-  "+chrome/android/features/keyboard_accessory/internal/jni",
-  "+chrome/browser/keyboard_accessory/android/jni",
-  "+components/resources/android",
-  "+third_party/jni_zero",
-}

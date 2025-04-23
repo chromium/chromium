@@ -1,8 +1,0 @@
-file://components/history_clusters/OWNERS
-
-# The top-level directly includes a lot of Android specific code.
-pnoland@chromium.org
-
-# This is for the common case of adding or renaming files. If you're doing
-# structural changes, use usual OWNERS rules.
-per-file BUILD.gn=*

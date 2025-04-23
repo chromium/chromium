@@ -1,6 +1,0 @@
-{
-  "extends": "../../../../../tools/typescript/tsconfig_base.json",
-  "compilerOptions": {
-    "useDefineForClassFields": false
-  }
-}

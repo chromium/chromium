@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Sharing"
-}
-team_email: "chrome-connect-eng@google.com"
-buganizer_public: {
-  component_id: 1457306
-}

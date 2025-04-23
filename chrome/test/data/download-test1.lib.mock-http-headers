@@ -1,7 +1,0 @@
-HTTP/1.1 200 OK
-Content-Type: application/octet-stream; charset=utf-8
-Content-Length: 271920
-Date: Mon, 13 Nov 2006 21:38:09 GMT
-Expires: Tue, 14 Nov 2006 19:23:58 GMT
-ETag: abracadabra
-Last-Modified: Mon, 13 Nov 2006 20:31:09 GMT

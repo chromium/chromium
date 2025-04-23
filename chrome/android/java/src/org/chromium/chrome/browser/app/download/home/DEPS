@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/browser/download",
-  "+chrome/browser/offline_pages/android",
-]

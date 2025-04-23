@@ -1,7 +1,0 @@
-<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/">
-<ShortName>Example</ShortName>
-<Description>Example Search</Description>
-<InputEncoding>UTF-8</InputEncoding>
-<Url type="text/html" method="get" template="https://www.example.com/search?q={searchTerms}"/>
-<Alias/>
-</SearchPlugin>

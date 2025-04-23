@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile>TrustedWebActivities"
-}
-buganizer_public: {
-  component_id: 1457354
-}

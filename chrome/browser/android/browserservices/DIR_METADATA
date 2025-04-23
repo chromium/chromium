@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile>TrustedWebActivities"
-}
-team_email: "mwi-team-core@google.com"
-buganizer_public: {
-  component_id: 1457354
-}

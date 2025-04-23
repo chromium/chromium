@@ -1,6 +1,0 @@
-{
-   "name": "permission test",
-   "manifest_version": 2,
-   "version": "1",
-   "permissions": [ "tabs", "chrome://*/" ]
-}

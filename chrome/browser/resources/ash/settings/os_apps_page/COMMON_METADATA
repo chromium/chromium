@@ -1,5 +1,0 @@
-team_email: "cros-web-apps-team@google.com"
-os: CHROME_OS
-buganizer: {
-  component_id: 1389907
-}

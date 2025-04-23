@@ -1,8 +1,0 @@
-{
-  "name": "test",
-  "manifest_version": 2,
-  "version": "1",
-  "background": {
-    "page": "foo.html"
-  }
-}

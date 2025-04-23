@@ -1,8 +1,0 @@
-monorail: {
-  component: "UI>Accessibility"
-}
-team_email: "chrome-a11y-core@google.com"
-os: ANDROID
-buganizer_public: {
-  component_id: 1457135
-}

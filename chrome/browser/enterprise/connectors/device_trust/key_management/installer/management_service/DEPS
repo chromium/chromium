@@ -1,4 +1,0 @@
-include_rules = [
-  "+mojo/core/embedder/embedder.h",
-  "+mojo/core/embedder/scoped_ipc_support.h",
-]

@@ -1,4 +1,0 @@
-{
-  "web_app_manifest_url": "https://www.chromestatus.com/static/manifest.json",
-  "web_app_start_url": "https://www.chromestatus.com/features"
-}

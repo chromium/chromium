@@ -1,7 +1,0 @@
-monorail: {
-  component: "Internals>PlatformIntegration"
-}
-team_email: "windows-third-party@chromium.org"
-buganizer_public: {
-  component_id: 1457029
-}

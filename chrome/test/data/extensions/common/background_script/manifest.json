@@ -1,9 +1,0 @@
-{
-  "description": "Extension which has just a background script",
-  "name": "background_script",
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "manifest_version": 2,
-  "version": "0.1"
-}

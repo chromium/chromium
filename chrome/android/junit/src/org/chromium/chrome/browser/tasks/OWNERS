@@ -1,4 +1,0 @@
-file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
-
-per-file ReturnToChromeUtilUnitTest.java=hanxi@chromium.org
-per-file ReturnToChromeUtilUmaUnitTest.java=hanxi@chromium.org

@@ -1,9 +1,0 @@
-carlosk@chromium.org
-dewittj@chromium.org
-iwells@chromium.org
-vollick@chromium.org
-
-per-file *policy*=bokan@chromium.org
-per-file *profile_manager*=perrier@chromium.org
-per-file *settings*=bokan@chromium.org
-per-file *test*=dfried@chromium.org

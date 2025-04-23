@@ -1,3 +1,0 @@
-file://components/autofill/OWNERS
-
-per-file *password*=file://components/password_manager/OWNERS

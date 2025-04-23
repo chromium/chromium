@@ -1,8 +1,0 @@
-{
-  "name": "OAuth 2 extension",
-  "manifest_version": 3,
-  "version": "1",
-  "background": {
-    "service_worker": "test.js"
-  }
-}

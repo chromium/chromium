@@ -1,7 +1,0 @@
-mixins: "//chrome/android/java/src/org/chromium/chrome/browser/gesturenav/COMMON_METADATA"
-monorail: {
-  component: "UI>Browser>Mobile"
-}
-buganizer_public: {
-  component_id: 1457074
-}

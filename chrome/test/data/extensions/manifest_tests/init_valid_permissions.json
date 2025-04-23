@@ -1,6 +1,0 @@
-{
-   "name": "my extension",
-   "manifest_version": 2,
-   "permissions": [ "file:///C:/foo.txt" ],
-   "version": "1.0.0.0"
-}

@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>WebAppInstalls>Isolated"
-}
-buganizer_public: {
-  component_id: 1457610
-}

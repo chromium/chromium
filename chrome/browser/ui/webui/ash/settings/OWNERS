@@ -1,4 +1,0 @@
-# For changes to specific OS Settings pages in subfolders, prefer having
-# subfolder OWNERS review.
-
-file://chrome/browser/resources/ash/settings/OWNERS

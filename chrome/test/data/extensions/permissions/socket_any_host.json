@@ -1,9 +1,0 @@
-{
-  "name": "Socket permission",
-  "version": "1.0.1",
-  "manifest_version": 2,
-  "permissions": [{"socket": ["tcp-connect:foo.example.com",
-                              "udp-send-to",
-                              "tcp-connect:*.example.org"]}],
-  "app": {"background": {"scripts": ["doesnt_exist.js"]}}
-}

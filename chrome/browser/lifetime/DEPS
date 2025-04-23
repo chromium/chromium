@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "application_lifetime_aura\.cc": [
-    "+ash/shell.h",
-  ],
-}

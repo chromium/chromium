@@ -1,8 +1,0 @@
-monorail: {
-  component: "Privacy>Incognito"
-}
-team_email: "chrome-incognito@google.com"
-os: ANDROID
-buganizer_public: {
-  component_id: 1456687
-}

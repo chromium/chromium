@@ -1,9 +1,0 @@
-{
-  "name": "Bad options_ui page URL test",
-  "description": "Tests if an error is thrown when given an invalid options_ui.page value",
-  "version": "1",
-  "manifest_version": 3,
-  "options_ui": {
-    "page": null
-  }
-}

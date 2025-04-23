@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/visited_url_ranking",
-  "+components/url_deduplication"
-]

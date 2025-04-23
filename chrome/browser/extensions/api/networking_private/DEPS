@@ -1,9 +1,0 @@
-include_rules = [
-  "+dbus",
-]
-
-specific_include_rules = {
-  "networking_private_service_client_apitest\.cc" : [
-    "+components/wifi/fake_wifi_service.h",
-  ]
-}

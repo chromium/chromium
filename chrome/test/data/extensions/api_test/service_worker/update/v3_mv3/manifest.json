@@ -1,8 +1,0 @@
-{
-  "name": "Updated extension that uses service worker",
-  "version": "3.0",
-  "manifest_version": 3,
-  "background": {
-    "service_worker": "sw.js"
-  }
-}

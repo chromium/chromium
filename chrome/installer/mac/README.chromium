@@ -1,5 +1,0 @@
-pkg-dmg is tri-licensed under the MPL/GPL/LGPL.  It was originally written
-for the Mozilla project.  It can be checked out with:
-
-cvs -d :pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot checkout \
-   mozilla/build/package/mac_osx/pkg-dmg

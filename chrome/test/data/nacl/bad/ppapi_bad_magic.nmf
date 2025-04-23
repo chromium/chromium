@@ -1,8 +1,0 @@
-{
-  "program": {
-    "x86-32": {"url": "ppapi_bad.html"},
-    "x86-64": {"url": "ppapi_bad.html"},
-    "arm": {"url": "ppapi_bad.html"},
-    "mips32": {"url": "ppapi_bad.html"}
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "default_locale": "sr",
-  "manifest_version": 3,
-  "description": "__MSG_description__",
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHWgEsMgJlIp7Jl4ZxuCsdxusR131dG382PWvzF85t13YSUElkFdbbIWp5jFWzfiubvKeqb7HrHQ1btLu531bmZpRWJjNSwlum2cNVX9D2SFgKA/rs74EyUQFF+ZXvgQUyAtIrEgR95oW7RlA8KlzHSlXIOFaMtF3OybtZEvvYqQIDAQAB",
-  "name": "__MSG_name__",
-  "version": "1.0"
-}

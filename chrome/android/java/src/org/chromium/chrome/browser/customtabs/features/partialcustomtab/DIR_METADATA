@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile>CustomTabs"
-}
-team_email: "chrome-connective-tissue@google.com"
-buganizer_public: {
-  component_id: 1457300
-}

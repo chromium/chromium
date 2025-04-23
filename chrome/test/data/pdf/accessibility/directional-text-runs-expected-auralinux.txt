@@ -1,6 +1,0 @@
-[document frame] name='PDF document containing 1 page'
-++[landmark] name='Page 1'
-++++[paragraph]
-++++++[static] name='Hello,<newline> world!<newline><newline>Goodbye,<newline> world!<newline>'
-++++[paragraph]
-++++++[static] name='This is some text abc<newline>def'

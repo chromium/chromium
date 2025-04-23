@@ -1,9 +1,0 @@
-Information about has_default_resource.crx:
-
-A test extension downloaded from webstore.
-extension_id: bbmokfifpjdhnmacojglcoihoagfmcll
-It has background.js as background script. On ExtensionLoad, the extension will
-trigger this resource load.
-There are two other resources inside the extension:
-  - page.html
-  - script.js

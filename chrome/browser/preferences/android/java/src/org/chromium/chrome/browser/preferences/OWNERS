@@ -1,3 +1,0 @@
-# For simple additions and deprecations.
-per-file ChromePreferenceKeys.java=*
-per-file DeprecatedChromePreferenceKeys.java=*

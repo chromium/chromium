@@ -1,5 +1,0 @@
-{
-  "name": "Tests that extension API bindings are restricted to registered sw scripts.",
-  "version": "1.0",
-  "manifest_version": 3
-}

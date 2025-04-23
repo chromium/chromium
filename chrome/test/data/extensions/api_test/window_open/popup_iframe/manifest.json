@@ -1,9 +1,0 @@
-{
-  "name": "window.open from iframe Test",
-  "version": "1",
-  "manifest_version": 2,
-  "description": "Test window.open() from a iframe within an extension page",
-  "background": {
-    "scripts": ["background.js"]
-  }
-}

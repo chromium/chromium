@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/leveldb_proto",
-  "+components/session_proto_db",
-]

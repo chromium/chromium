@@ -1,4 +1,0 @@
-HTTP/1.0 200 OK
-Content-Type: video/ogg
-Content-Length: 0
-X-Comment: The presence of video/ogg activates rendering as a media document.

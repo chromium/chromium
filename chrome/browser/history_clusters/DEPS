@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/favicon/android",
-  "+content/public/android",
-]

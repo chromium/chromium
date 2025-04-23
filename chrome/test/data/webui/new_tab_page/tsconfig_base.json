@@ -1,6 +1,0 @@
-{
-  "extends": "../tsconfig_base.json",
-  "compilerOptions": {
-    "types": ["chai", "mocha", "trusted-types", "dom-speech-recognition"]
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "name": "test",
-  "manifest_version": 3,
-  "version": "1",
-  "devtools_page": "data:text/html,hello"
-}

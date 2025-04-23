@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/android",
-  "+components/plus_addresses",
-]

@@ -1,7 +1,0 @@
-monorail: {
-  component: "UI>Browser>Mobile>PreviewTab"
-}
-team_email: "preview-tab@google.com"
-buganizer_public: {
-  component_id: 1457302
-}

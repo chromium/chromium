@@ -1,6 +1,0 @@
-{
-  "name": "Service worker - push messaging test",
-  "description": "Tests self.onpush() from a Service Worker",
-  "version": "1",
-  "manifest_version": 3
-}

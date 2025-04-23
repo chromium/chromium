@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>ReadAloud"
-}
-buganizer_public: {
-  component_id: 1457412
-}

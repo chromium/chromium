@@ -1,5 +1,0 @@
-file://components/download/OWNERS
-file://chrome/browser/download/bubble/OWNERS
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

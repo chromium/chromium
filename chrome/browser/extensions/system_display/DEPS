@@ -1,8 +1,0 @@
-specific_include_rules = {
-  "display_info_provider_chromeos_unittest\.cc": [
-    "+ash/display",
-    "+ash/shell.h",
-    "+ash/test",
-    "+ash/wm/tablet_mode/tablet_mode_controller.h",
-  ],
-}

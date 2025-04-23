@@ -1,9 +1,0 @@
-{
-  "name": "Extension: web_accessible_resources and ServiceWorker",
-  "description": "Extension to test web_accessible_resources that is served by a ServiceWorker",
-  "web_accessible_resources": [
-    "data_for_extension"
-  ],
-  "version": "1",
-  "manifest_version": 2
-}

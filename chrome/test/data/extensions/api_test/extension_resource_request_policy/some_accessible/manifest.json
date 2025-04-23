@@ -1,9 +1,0 @@
-{
-  "name": "Extension with some accessible pages",
-  "version": "0.1",
-  "manifest_version": 2,
-   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzhxJvA02X/SxUSjnN3TchJ7GXiE21kyPwCnldsxaw7+0iTocB2NC/YSnHyYX0R0gkoxzUjhui2DsNZPcw9MGMXlGRXe5p5pL4i6ml55rhKNOiYtQ4N1ftIRa7TR3xTST8iCU+k+bpl8XfNL04c6MvQtfAn5hZ9jVLRMNLPpHUapuxct5dWokyNXlbH9SiSMT6ZQvkstq1/TQSJxZDzsHOHcuhwGwh5rug7AA0B3rgjkmAIqJHlhJWQlg4L54a7YL1Xn8iSYOj34I7uAaCKxk/tJ3jFMt+DDtZpTLCraH4doINZo8WBpqWpfs9dl4dGLDmcjHLpeQmUnrWYmGo2MOOQIDAQAB",
-  "web_accessible_resources": [
-    "public.html"
-  ]
-}

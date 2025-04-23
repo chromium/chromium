@@ -1,9 +1,0 @@
-{
-  "name": "Popup with form",
-  "version": "0.1",
-  "manifest_version": 3,
-  "description": "Test for navigating a browser action popup via POST",
-  "action": {
-    "default_popup": "popup.html"
-  }
-}

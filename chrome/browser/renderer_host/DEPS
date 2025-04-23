@@ -1,9 +1,0 @@
-include_rules = [
-  # renderer_host is intended to support the content layer's renderers. No
-  # reference to the tab contents is allowed.
-  "-chrome/browser/tab_contents",
-  "+components/page_load_metrics/browser",
-  "+third_party/ocmock/OCMock/OCMock.h",
-  "+third_party/ocmock/ocmock_extensions.h",
-]
-

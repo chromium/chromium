@@ -1,6 +1,0 @@
-{
-  "name": "extension_without_options_page",
-  "version": "0.1",
-  "manifest_version": 3,
-  "description": "An extension that does not have an options page."
-}

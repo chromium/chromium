@@ -1,7 +1,0 @@
-AXGroup AXDescription='PDF document containing 2 pages'
-++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
-++++AXGroup
-++++++AXStaticText AXValue='Page 1'
-++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 2'
-++++AXGroup
-++++++AXStaticText AXValue='Page 2'

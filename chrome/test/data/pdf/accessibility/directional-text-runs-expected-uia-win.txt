@@ -1,6 +1,0 @@
-Document Name='PDF document containing 1 page'
-++Group Name='Page 1'
-++++Group IsControlElement=false
-++++++Text Name='Hello,<newline> world!<newline><newline>Goodbye,<newline> world!<newline>'
-++++Group IsControlElement=false
-++++++Text Name='This is some text abc<newline>def'

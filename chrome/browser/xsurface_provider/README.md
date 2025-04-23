@@ -1,1 +1,0 @@
-This library holds and provides access to an instance of XSurface's ProcessScope.

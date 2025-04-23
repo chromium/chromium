@@ -1,3 +1,0 @@
-file://content/browser/bluetooth/OWNERS
-
-per-file *chooser_context*=file://components/permissions/PERMISSIONS_OWNERS

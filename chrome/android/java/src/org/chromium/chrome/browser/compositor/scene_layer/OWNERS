@@ -1,6 +1,0 @@
-dtrainor@chromium.org
-mdjones@chromium.org
-
-per-file ContextualSearchSceneLayer.java=file://chrome/browser/android/contextualsearch/OWNERS
-per-file TabStripSceneLayer.java=nemco@google.com
-per-file TabStripSceneLayer.java=skavuluru@google.com

@@ -1,9 +1,0 @@
-{
-  "name": "Basic options_ui page test",
-  "description": "Tests if the options page can be retrieved from the options_ui field",
-  "version": "1",
-  "manifest_version": 3,
-  "options_ui": {
-    "page": "options.html"
-  }
-}

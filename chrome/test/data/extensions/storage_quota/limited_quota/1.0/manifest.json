@@ -1,6 +1,0 @@
-{
-  "name": "Storage_LimitedQuota",
-  "version": "1.0",
-  "manifest_version": 3,
-  "description": "An extension that does not ask for unlimited storage space."
-}

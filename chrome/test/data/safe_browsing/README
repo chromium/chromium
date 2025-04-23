@@ -1,2 +1,0 @@
-signed_binary.dll is a signed version of chrome_elf.dll used by
-binary_integrity_service_win_unittest.cc.

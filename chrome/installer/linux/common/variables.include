@@ -1,2 +1,0 @@
-# System-wide package configuration.
-DEFAULTS_FILE="/etc/default/@@PACKAGE@@"

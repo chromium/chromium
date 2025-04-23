@@ -1,9 +1,0 @@
-{
-  "google/android/user": {
-    "mandatory": {
-      "PasswordManagerEnabled": false
-    }
-  },
-  "policy_user": "user@managedchrome.com",
-  "managed_users": [ "*" ]
-}

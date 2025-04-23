@@ -1,8 +1,0 @@
-# Mac files
-per-file *.mm=file://ui/base/cocoa/OWNERS
-per-file *.mm=ccameron@chromium.org
-per-file *.mm=erikchen@chromium.org
-
-per-file *_mac.h=file://ui/base/cocoa/OWNERS
-per-file *_mac.h=ccameron@chromium.org
-per-file *_mac.h=erikchen@chromium.org

@@ -1,3 +1,0 @@
-file://chrome/browser/web_applications/OWNERS
-
-per-file sub_apps_*=giovax@chromium.org

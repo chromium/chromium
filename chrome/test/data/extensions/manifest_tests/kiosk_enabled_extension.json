@@ -1,6 +1,0 @@
-{
-  "name": "kiosk enabled extension",
-  "manifest_version": 2,
-  "version": "1",
-  "kiosk_enabled": true
-}

@@ -1,9 +1,0 @@
-{
-  "name": "chrome.printingMetrics",
-  "version": "0.1",
-  "manifest_version": 3,
-  "description": "Browser tests for chrome.printingMetrics API",
-  "permissions": [
-    "printingMetrics"
-  ]
-}

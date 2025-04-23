@@ -1,6 +1,0 @@
-# This directory inherits its parents which allows any committer to approve
-# changes. Please review and approve changes related to your own team's code.
-# If you are not sure, or the changes would affect a different team from your
-# own, please select a Settings owner from file below.
-
-file://chrome/browser/resources/ash/settings/OWNERS

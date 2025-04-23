@@ -1,7 +1,0 @@
-{
-  "name": "__MSG_application_title__",
-  "description": "Tests if loading an unpacked extension tests all of its locales",
-  "version": "0.2",
-  "default_locale": "en",
-  "manifest_version": 3
-}

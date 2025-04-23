@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Settings"
-}
-buganizer_public: {
-  component_id: 1457080
-}

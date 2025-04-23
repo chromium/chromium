@@ -1,8 +1,0 @@
-{
-  "name": "Extension With Options Page",
-  "description": "A spanning mode extension with an options page",
-  "options_page": "options.html",
-  "incognito": "spanning",
-  "version": "0.1.1",
-  "manifest_version": 3
-}

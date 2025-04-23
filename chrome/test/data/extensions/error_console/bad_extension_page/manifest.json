@@ -1,9 +1,0 @@
-{
-  "name": "Broken new tab page",
-  "description": "An extension which throws an error when visiting the new tab page",
-  "version": "0.1",
-  "chrome_url_overrides": {
-    "newtab": "blank.html"
-  },
-  "manifest_version": 3
-}

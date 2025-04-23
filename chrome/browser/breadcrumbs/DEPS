@@ -1,6 +1,0 @@
-include_rules = [
-  "+base",
-  "+chrome/browser/profiles",
-  "+components/breadcrumbs/core",
-  "+content/test",
-]

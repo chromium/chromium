@@ -1,5 +1,0 @@
-include_rules = [
-  "-chrome/browser",
-  "-content/public/android",
-  "+content/public/android/java/src/org/chromium/content_public",
-]

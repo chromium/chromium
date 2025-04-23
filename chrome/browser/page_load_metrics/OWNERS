@@ -1,4 +1,0 @@
-file://components/page_load_metrics/OWNERS
-
-# For QUIC version changes in ConnectionInfo switch statmenets.
-per-file protocol_util.cc=file://net/quic/OWNERS

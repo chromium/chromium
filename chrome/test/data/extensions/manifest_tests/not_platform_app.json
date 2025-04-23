@@ -1,7 +1,0 @@
-{
-  "name": "not_platform_app.json",
-  "manifest_version": 3,
-  "version": "0.1",
-  "description": "I am not a platform app.",
-  "permissions": []
-}

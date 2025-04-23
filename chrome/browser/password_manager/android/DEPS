@@ -1,8 +1,0 @@
-include_rules = [
-    "-content/public/android/java",
-    "+content/public/android/java/src/org/chromium/content_public",
-    "+components/device_reauth",
-    "+components/password_manager/core/browser",
-    "+components/browser_ui/device_lock/android",
-    "+components/browser_ui/test/android",
-]

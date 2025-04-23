@@ -1,8 +1,0 @@
-{
-  "name": "Tests that activating an existing SW based extension does not trigger a SW re-registration.",
-  "description": "Extension id: gnchfmandajfaiajniicagenfmhdjila",
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApA/uy1jmpFi89H9xJlXF1hR/BEv8L4KfUvmApSsVqWSKgax35xLxrWQOrdVE6iKITSIGIpOyLTFfIST8kw0P6asFA2aAB6WaBA5ZgV2Xpww6nlRQR+yMGvqSswisDyz4WTNeHYQKuSIyNo89NGPTiUOCQRXjLbFKlzmDvErU69HLT1uxcHnv1YSdglt+ALi3Jz1xBafbU/z7mhvHlFtawZ7gGS/xIJIo5tGJOMqUFFUh2UKd8obuRzJQulGp+11L1JzZO54WAiJuie/pcojiF/NIHRng9dbrCc6yNGp1foO/LlOu7VOX+w6H1r+cmxAogifv/MtSDewX49SYA2xNwQIDAQAB",
-  "version": "0.1",
-  "manifest_version": 2,
-  "background": {"service_worker": "service_worker_background.js"}
-}

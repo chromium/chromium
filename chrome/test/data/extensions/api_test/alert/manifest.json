@@ -1,9 +1,0 @@
-{
-  "name": "background page alert crash",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "Pops up an alert dialog from the bg page",
-  "background": {
-    "scripts": ["test.js"]
-  }
-}

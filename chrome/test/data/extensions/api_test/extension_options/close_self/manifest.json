@@ -1,7 +1,0 @@
-{
-  "name": "close_self_test",
-  "version": "0.1",
-  "manifest_version": 3,
-  "options_page": "options.html",
-  "description": "Tests if close event is propagated to the embedder"
-}

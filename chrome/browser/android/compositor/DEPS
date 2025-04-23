@@ -1,5 +1,0 @@
-include_rules = [
-  "+cc/slim",
-  "+cc/layers",
-  "+cc/resources",
-]

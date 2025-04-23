@@ -1,9 +1,0 @@
-{
-   "name": "my extension",
-   "manifest_version": 2,
-   "version": "1.0.0.0",
-   "content_scripts": [ {
-      "js": 42,
-      "matches": [ "file://*", "http://*.google.com/*", "https://*.google.com/*" ]
-   } ]
-}

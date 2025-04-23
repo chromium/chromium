@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/autofill/core/common",  # For PasswordForm.
-  "+components/compression", # For edge database reader unittests.
-  "+components/favicon_base",
-  "+components/search_engines",
-  "+components/strings/grit",
-]

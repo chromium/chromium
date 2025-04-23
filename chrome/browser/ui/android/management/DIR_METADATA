@@ -1,5 +1,0 @@
-monorail {
-  component: "UI>Browser>Management"
-}
-team_email: "cbe-magic@chromium.org"
-os: ANDROID

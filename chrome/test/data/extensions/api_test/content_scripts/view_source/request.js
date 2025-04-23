@@ -1,1 +1,0 @@
-chrome.runtime.sendMessage({});

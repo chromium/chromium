@@ -1,7 +1,0 @@
-{
-  "name": "bar",
-  "description": "bar",
-  "version": "0.1",
-  "manifest_version": 2,
-  "permissions": ["https://google.com/*"]
-}

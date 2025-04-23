@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Browser>Desktop Shortcuts"
-}
-buganizer_public: {
-  component_id: 1554055
-}

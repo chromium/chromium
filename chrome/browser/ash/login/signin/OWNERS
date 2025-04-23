@@ -1,4 +1,0 @@
-file://chromeos/ash/components/account_manager/OWNERS
-
-per-file offline_signin_limiter*=file://ash/login/SAML_INTEGRATION_OWNERS
-per-file authentication_flow_auto_reload_manager*=file://ash/login/SAML_INTEGRATION_OWNERS

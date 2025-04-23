@@ -1,6 +1,0 @@
-gab@chromium.org
-grt@chromium.org
-robertshield@chromium.org
-
-# FILES.cfg OWNERS as in parent owner file.
-per-file FILES.cfg=kerz@chromium.org

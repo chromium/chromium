@@ -1,6 +1,0 @@
-{
-  "name": "Service worker - sync test",
-  "description": "Tests ServiceWorkerRegistration.sync.register() from an extension",
-  "version": "1",
-  "manifest_version": 3
-}

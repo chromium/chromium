@@ -1,6 +1,0 @@
-{
-  "Condition": "'$BRAND' == 'Google Chrome'",
-  "Processes": {
-    "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\chrome.exe": {"running": true}
-  }
-}

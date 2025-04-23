@@ -1,7 +1,0 @@
-file://base/metrics/OWNERS
-
-# Prefer sending CLs to below.
-lucnguyen@google.com
-rkaplow@chromium.org
-
-per-file field_trials_test.ts=harringtond@chromium.org

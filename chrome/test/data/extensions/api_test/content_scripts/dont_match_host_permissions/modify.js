@@ -1,1 +1,0 @@
-window.title = "Hello";

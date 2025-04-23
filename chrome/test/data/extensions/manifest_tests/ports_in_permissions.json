@@ -1,9 +1,0 @@
-{
-  "name": "test",
-  "manifest_version": 2,
-  "version": "1",
-  "permissions": [
-    "http://*.no.port.okay/path/*",
-    "http://*.has.port.error:12345/path/*"
-  ]
-}

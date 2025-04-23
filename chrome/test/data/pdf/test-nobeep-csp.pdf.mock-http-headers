@@ -1,3 +1,0 @@
-HTTP/1.1 200 OK
-content-security-policy: script-src 'none'
-content-type: application/pdf

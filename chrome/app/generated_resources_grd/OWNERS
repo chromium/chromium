@@ -1,6 +1,0 @@
-#
-# Any Chromium committer can approve changes to generated_resources.grd,
-# so they are also allowed to approve the corresponding sha1 hashes
-# for string translation.
-
-per-file *.png.sha1=*

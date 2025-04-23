@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/account_manager_core",
-  "+components/device_reauth",
-]

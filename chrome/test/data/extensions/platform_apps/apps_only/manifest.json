@@ -1,8 +1,0 @@
-{
-  "name": "Extension for testing that apps-only things are blocked",
-  "version": "0.5",
-  "manifest_version": 2,
-  "background": {
-    "scripts": ["background.js"]
-  }
-}

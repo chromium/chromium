@@ -1,5 +1,0 @@
-include_rules = [
-  "+media/video",
-  "+content/public/android/java/src/org/chromium/content_public",
-  "+components/download/internal/common",
-]

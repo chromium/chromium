@@ -1,6 +1,0 @@
-{
-  "name": "disabled_extension",
-  "version": "0.1",
-  "manifest_version": 3,
-  "options_page": "pages/options.html"
-}

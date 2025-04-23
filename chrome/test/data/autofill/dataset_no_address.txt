@@ -1,7 +1,0 @@
-# first_name, middle_name, last_name, email, company_name, address_line_1, address_line_2, city, state, zipcode, country, phone
-john|Jacob||john.doe@gmail.com|||#2|Mountain View|CA|14888|USA|4155551234
-john|Jacob||john.doe@gmail.com||1950 Amphitheatre #2|||CA|14888|USA|4155551234
-John|Jacob|Doe|john.doe@gmail.com||1950 Amphitheatre #2||Mountain View||14888|USA|4155551234
-John||Doe|jdoe@gmail.com||1950 Amphitheatre #2|Cube 10|Mountain View|California||USA|4085551234
-Jane|||jane@gmail.com|||Cube 20|Mountain View||91228|US|4085551234
-Jane|DeCruz|Doe|jdd@gmail.com||1950 Amphitheatre #2|||CA||United States|4085551234

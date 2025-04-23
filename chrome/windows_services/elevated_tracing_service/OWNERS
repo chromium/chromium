@@ -1,4 +1,0 @@
-etiennep@chromium.org
-grt@chromium.org
-per-file *.idl=set noparent
-per-file *.idl=file://ipc/SECURITY_OWNERS

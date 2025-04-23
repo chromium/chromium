@@ -1,3 +1,0 @@
-file://chrome/android/java/src/org/chromium/chrome/browser/gesturenav/OWNERS
-
-per-file NavigationTransitionsTest.java=file://content/browser/navigation_transitions/OWNERS

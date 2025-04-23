@@ -1,8 +1,0 @@
-{
-  "name": "bindings/about_blank_iframe",
-  "manifest_version": 2,
-  "version": "1",
-  "background": {
-    "scripts": ["background.js"]
-  }
-}

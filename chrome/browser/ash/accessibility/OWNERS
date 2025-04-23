@@ -1,5 +1,0 @@
-file://ash/accessibility/OWNERS
-
-# For updates related to the launcher.
-per-file spoken_feedback_app_list_browsertest.cc=file://chrome/browser/ash/app_list/search/OWNERS
-per-file spoken_feedback_app_list_browsertest.cc=file://ash/app_list/OWNERS

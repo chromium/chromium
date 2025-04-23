@@ -1,9 +1,0 @@
-{
-  "name": "Test for symlinked content in unpacked extension",
-  "description": "This is an extension used to test that file symlinks are allowed within unpacked extensions",
-  "version": "1",
-  "manifest_version": 3,
-  "browser_action": {
-    "default_icon": "icon.png"
-  }
-}

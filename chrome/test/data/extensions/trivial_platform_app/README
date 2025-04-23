@@ -1,5 +1,0 @@
-A minimal platform app that requests no additional permissions and has only a
-trivial event page.
-
-The app ID that corresponds to the ./app.pem private key is
-"mockapnacjbcdncmpkjngjalkhphojek".

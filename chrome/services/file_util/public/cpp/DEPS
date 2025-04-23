@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/safe_browsing/buildflags.h",
-  "+components/safe_browsing/content/common",
-  "+content/public/browser",
-]

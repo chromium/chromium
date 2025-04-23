@@ -1,5 +1,0 @@
-
-file://components/payments/OWNERS
-
-per-file *TypeConverter*.*=set noparent
-per-file *TypeConverter*.*=file://ipc/SECURITY_OWNERS

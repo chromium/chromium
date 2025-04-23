@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<title></title>
-<script>
-const script_url = 'worker_import_module_worker.js';
-const worker = new Worker(script_url, { type: 'module' });
-worker.onmessage = (event) => {
-  document.title = event.data;
-};
-</script>

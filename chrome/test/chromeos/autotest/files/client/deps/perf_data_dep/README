@@ -1,6 +1,0 @@
-# Copyright 2013 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-This dep brings Perf Data files into an image. Tests that depend on
-perf_data_dep should add this as a dep in their setup() method.

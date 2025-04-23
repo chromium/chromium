@@ -1,6 +1,0 @@
-monorail: {
-  component: "Blink>Forms>Color"
-}
-buganizer_public: {
-  component_id: 1456485
-}

@@ -1,2 +1,0 @@
-per-file chrome_payments_autofill_client*=file://components/autofill/core/browser/payments/OWNERS
-per-file desktop_payments_window_manager*=vinnypersky@google.com

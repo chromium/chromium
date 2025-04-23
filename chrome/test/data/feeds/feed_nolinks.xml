@@ -1,9 +1,0 @@
-<rss version="2.0"> 
-<channel> 
-  <title>MyFeedTitle</title> 
-  <item> 
-    <title>Title with no link</title> 
-    <description>Desc</description> 
-  </item> 
-</channel> 
-</rss>

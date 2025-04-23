@@ -1,7 +1,0 @@
-initial_response {
-  [search.now.wire.feed.FeedResponse.feed_response] {
-    data_operation {
-      operation: CLEAR_ALL
-    }
-  }
-}

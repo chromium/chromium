@@ -1,6 +1,0 @@
-monorail: {
-  component: "UI>Shell>Notifications"
-}
-buganizer_public: {
-  component_id: 1457308
-}

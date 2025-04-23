@@ -1,7 +1,0 @@
-{
-  "name": "Pass large messages",
-  "description": "Pass obscenely large messages",
-  "background": {"scripts": ["background.js"]},
-  "manifest_version": 2,
-  "version": "0.1"
-}

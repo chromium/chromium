@@ -1,5 +1,0 @@
-{
-  "name": "unit_tests --gtest_filter=NativelyConnectableManifestTest.Unset",
-  "version": "1",
-  "manifest_version": 3
-}

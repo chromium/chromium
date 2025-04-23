@@ -1,7 +1,0 @@
-Document Name='PDF document containing 2 pages'
-++Group Name='Page 1'
-++++Group IsControlElement=false
-++++++Text Name='Page 1'
-++Group Name='Page 2'
-++++Group IsControlElement=false
-++++++Text Name='Page 2'

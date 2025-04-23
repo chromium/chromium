@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/browser/android/browserservices",
-  "+components/content_relationship_verification/android/java/src/org/chromium/components/content_relationship_verification",
-]

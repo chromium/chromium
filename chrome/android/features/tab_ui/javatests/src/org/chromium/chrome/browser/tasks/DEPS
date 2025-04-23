@@ -1,5 +1,0 @@
-include_rules = [
-  "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  "+components/browser_ui/styles/android",
-  "+content/public/android/java/src/org/chromium/content_public/browser"
-]

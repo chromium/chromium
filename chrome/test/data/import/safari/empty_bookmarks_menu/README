@@ -1,6 +1,0 @@
-This directory contains test data for the Safari importer.  The files in
-this directory were written by Safari v7.0.1 on OS X 10.9.0.  In the
-future we may want to version this directory if the data formats change.
-
-This directory is passed in to the test code as if it were ~/Library,
-so the directory structure mimics that of the Library directory.

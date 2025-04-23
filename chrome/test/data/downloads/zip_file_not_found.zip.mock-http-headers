@@ -1,3 +1,0 @@
-HTTP/1.0 400 Bad Request
-Content-Type: application/octet-stream
-X-Content-Type-Options: nosniff

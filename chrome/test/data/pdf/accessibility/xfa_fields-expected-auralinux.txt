@@ -1,2 +1,0 @@
-[document frame] name='PDF document containing 1 page'
-++[landmark] name='Page 1'

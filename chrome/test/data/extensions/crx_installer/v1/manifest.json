@@ -1,8 +1,0 @@
-{
-  "name": "CRX Installer Test",
-  "version": "1",
-  "manifest_version": 3,
-  "permissions": [
-    "tabs"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "name": "Home Page Overrider",
-  "version": "2.1",
-  "manifest_version": 2,
-  "description": "Overrides your home page",
-  "chrome_settings_overrides": {
-    "homepage": "https://example.com"
-  }
-}

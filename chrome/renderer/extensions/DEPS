@@ -1,6 +1,0 @@
-include_rules = [
-  "+media/audio",
-  "+services/metrics/public/cpp",
-  "+services/network/public/cpp",
-  "+services/network/public/mojom",
-]

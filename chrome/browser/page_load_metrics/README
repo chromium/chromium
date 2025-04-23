@@ -1,4 +1,0 @@
-This directory contains page_load_metrics initialization and observers for
-Chrome.
-
-For page_load_metrics, please refer to components/page_load_metrics/README

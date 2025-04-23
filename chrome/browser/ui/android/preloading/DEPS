@@ -1,4 +1,0 @@
-include_rules = [
-  "+base/android/java/src/org/chromium/base",
-  "+content/public/android",
-]

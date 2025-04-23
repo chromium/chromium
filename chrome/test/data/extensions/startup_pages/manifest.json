@@ -1,9 +1,0 @@
-{
-  "name": "chrome.extension.settings_override",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "end-to-end browser test for chrome.settings_override API",
-  "chrome_settings_overrides": {
-    "startup_pages": ["http://www.example.com/?param=__PARAM__"]
-   }
-}

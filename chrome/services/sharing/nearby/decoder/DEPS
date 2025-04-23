@@ -1,5 +1,0 @@
-specific_include_rules = {
-  ".*_fuzzer\.cc": [
-    "+mojo/core/embedder/embedder.h",
-  ]
-}

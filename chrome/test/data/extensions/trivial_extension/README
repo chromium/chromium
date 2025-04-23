@@ -1,9 +1,0 @@
-A minimal extension that requests no additional permissions and has only a
-trivial event page.
-
-The extension must be packed to ./extension.crx using the private key
-./extension.pem. For the instructions, refer to:
-<https://developer.chrome.com/extensions/packaging#creating>.
-
-The extension ID that corresponds to the ./extension.pem private key is
-"mockepjebcnmhmhcahfddgfcdgkdifnc".

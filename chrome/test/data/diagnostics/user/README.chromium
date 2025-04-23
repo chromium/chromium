@@ -1,3 +1,0 @@
-This directory contains a dummy user home that can be used to run unit
-tests for the Chromium diagnostics mode.  (Some of the directories
-under here are '.' directories, so it may look empty)

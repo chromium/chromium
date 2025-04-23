@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/error_page/renderer",
-  "+components/offline_pages/core",
-  "+components/security_interstitials/core",
-  "+components/security_interstitials/core/common/mojom",
-  "+gin",
-]

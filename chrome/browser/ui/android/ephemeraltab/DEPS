@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/favicon/android/java",
-  "+components/thin_webview/java",
-]

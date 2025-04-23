@@ -1,2 +1,0 @@
-HTTP/1.1 301 Moved permanently
-Location: http://www.redirected_from_header_adder.com:{{PORT}}/simple.html

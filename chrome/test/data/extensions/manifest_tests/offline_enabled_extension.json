@@ -1,6 +1,0 @@
-{
-  "name": "offline enabled extension",
-  "manifest_version": 3,
-  "version": "1",
-  "offline_enabled": true
-}

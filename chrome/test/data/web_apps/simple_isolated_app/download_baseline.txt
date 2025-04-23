@@ -1,1 +1,0 @@
-This file acts as a baseline in Controlled Frame download permission test.

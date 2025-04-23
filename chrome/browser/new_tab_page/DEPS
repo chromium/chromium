@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "new_tab_page_interactive_uitest\.cc": [
-    "+chrome/browser/ui/views",
-  ]
-}

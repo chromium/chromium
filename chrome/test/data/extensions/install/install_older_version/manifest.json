@@ -1,8 +1,0 @@
-{
-  "name": "Extension v0.9",
-  "manifest_version": 2,
-  "version": "0.9",
-  "background": {
-    "scripts": ["bg.js"]
-  }
-}

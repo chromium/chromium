@@ -1,6 +1,0 @@
-{
-  "name": "foo",
-  "version": "1",
-  "manifest_version": 3,
-  "description": "Test that an extension with a directory with a trailing underscore is still allowed to load (it's a warning, not an error). Note the directory here is incorrectly named `_locale` instead of `_locales`."
-}

@@ -1,8 +1,0 @@
-include_rules = [
-  "-chrome",
-
-  "+chrome/browser/ash/external_metrics",
-
-  "+chrome/browser/metrics",
-  "+chrome/test/base/chromeos/crosier",
-]
