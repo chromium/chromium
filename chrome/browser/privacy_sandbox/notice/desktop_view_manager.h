@@ -25,6 +25,10 @@ class PrivacySandboxNoticeServiceInterface;
 // 3. Manage sticky behavior of notices across tabs
 class DesktopViewManager {
  public:
+  using ShowViewCallback =
+      base::OnceCallback<void(BrowserWindowInterface*,
+                              notice::mojom::PrivacySandboxNotice)>;
+
   explicit DesktopViewManager(
       PrivacySandboxNoticeServiceInterface* notice_service);
   virtual ~DesktopViewManager();
@@ -51,15 +55,13 @@ class DesktopViewManager {
   void HandleChromeOwnedPageNavigation();
 
  private:
-  // TODO(chrstne): Remove this and modify tests once MaybeCreateView is called
-  // from EventHandlers.
-  friend class DesktopViewManagerTest;
+  friend class DesktopViewManagerTestPeer;
 
   // Performs necessary checks to determine if a new view should be created.
-  void MaybeCreateView(
-      BrowserWindowInterface* browser,
-      base::OnceCallback<void(BrowserWindowInterface*,
-                              notice::mojom::PrivacySandboxNotice)> show);
+  void MaybeCreateView(BrowserWindowInterface* browser, ShowViewCallback show);
+
+  void SetPendingNoticesToShow(
+      std::vector<notice::mojom::PrivacySandboxNotice> notices);
 
   // Notifies open views to close.
   void CloseAllOpenViews();
