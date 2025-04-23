@@ -101,6 +101,7 @@ void CreateTriggeringField(TriggeringField* data) {
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->typed_username = u"username";
   data->show_webauthn_credentials = true;
+  data->show_identity_credentials = true;
 }
 
 void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
@@ -143,6 +144,8 @@ void CheckEqualTriggeringField(const TriggeringField& expected,
   EXPECT_EQ(expected.typed_username, actual.typed_username);
   EXPECT_EQ(expected.show_webauthn_credentials,
             actual.show_webauthn_credentials);
+  EXPECT_EQ(expected.show_identity_credentials,
+            actual.show_identity_credentials);
   EXPECT_EQ(expected.bounds, actual.bounds);
 }
 
