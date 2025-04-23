@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/vector_icons/vector_icons.h"
@@ -114,18 +115,17 @@ void BnplTosDialog::AddedToWidget() {
 }
 
 TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
-  const std::string& issuer_id = controller_->GetIssuerId();
-
-  if (issuer_id == kBnplAffirmIssuerId) {
-    return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
+  switch (controller_->GetIssuerId()) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
+    case BnplIssuer::IssuerId::kBnplZip:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP;
+    // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
+    // Afterpay to the BNPL flow.
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
   }
-  if (issuer_id == kBnplZipIssuerId) {
-    return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP;
-  }
-
-  // TODO: crbug.com/401282730 - Return Google Pay Icon as a graceful failure
-  // case until the BNPL issuer ID is converted into an enum.
-  return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
+  NOTREACHED();
 }
 
 bool BnplTosDialog::OnAccepted() {

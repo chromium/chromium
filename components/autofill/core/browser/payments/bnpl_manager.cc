@@ -65,8 +65,13 @@ BnplManager::~BnplManager() = default;
 // static
 const std::array<std::string_view, 2>&
 BnplManager::GetSupportedBnplIssuerIds() {
+  // Calling `ConvertToBnplIssuerIdString` serves as a validation step,
+  // verifying that each supported Bnpl IssuerId enum value has a corresponding
+  // string representation. This helps maintain the invariant with
+  // `ConvertToBnplIssuerIdEnum`.
   static const std::array<std::string_view, 2> kBnplIssuers = {
-      kBnplAffirmIssuerId, kBnplZipIssuerId};
+      autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm),
+      autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplZip)};
   return kBnplIssuers;
 }
 
@@ -146,7 +151,8 @@ void BnplManager::FetchVcnDetails(GURL url) {
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = std::move(url);
-  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
 
   payments_autofill_client().ShowAutofillProgressDialog(
       AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
@@ -199,7 +205,8 @@ void BnplManager::OnVcnDetailsFetched(
     credit_card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
                            base::UTF8ToUTF16(response_details.expiration_year));
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
-    credit_card.set_issuer_id(ongoing_flow_state_->issuer.issuer_id());
+    credit_card.set_issuer_id(autofill::ConvertToBnplIssuerIdString(
+        ongoing_flow_state_->issuer.issuer_id()));
     credit_card.set_is_bnpl_card(true);
     credit_card.SetNickname(ongoing_flow_state_->issuer.GetDisplayName());
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
@@ -230,7 +237,8 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
   request_details.app_locale = ongoing_flow_state_->app_locale;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
-  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
 
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
@@ -487,7 +495,8 @@ void BnplManager::CreateBnplPaymentInstrument() {
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
   request_details.context_token = ongoing_flow_state_->context_token;
-  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
   request_details.risk_data = ongoing_flow_state_->risk_data;
   payments_autofill_client()
       .GetPaymentsNetworkInterface()

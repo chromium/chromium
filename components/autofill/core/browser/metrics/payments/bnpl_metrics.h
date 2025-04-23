@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 
 namespace autofill::autofill_metrics {
@@ -28,20 +29,6 @@ enum class BnplSuggestionNotShownReason {
 
   kMaxValue = kCheckoutAmountNotSupported,
 };
-
-// Enum for all supported BNPL issuers.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(SupportedBnplIssuer)
-enum class SupportedBnplIssuer {
-  kAffirm = 0,
-  kAfterpay = 1,
-  kZip = 2,
-  kMaxValue = kZip,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SupportedBnplIssuer)
 
 // Enum to track the result of a corresponding BnplTosDialog that was shown.
 //
@@ -68,11 +55,9 @@ enum class SelectBnplIssuerDialogResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SelectBnplIssuerDialogResult)
 
-// Returns the enum for logging corresponding to the given issuer_id.
-SupportedBnplIssuer GetEnumForIssuerId(std::string_view issuer_id);
-
 // Returns the histogram suffix corresponding to the given issuer_id.
-std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
+std::string GetHistogramSuffixFromIssuerId(
+    autofill::BnplIssuer::IssuerId issuer_id);
 
 // Converts a BnplFlowResult enum to its string representation.
 std::string ConvertBnplFlowResultToString(BnplFlowResult result);
@@ -127,33 +112,33 @@ void LogBnplPrefToggled(bool enabled);
 void LogBnplIssuersSyncedCountAtStartup(int count);
 
 // Logs that the BNPL ToS dialog was shown.
-void LogBnplTosDialogShown(std::string_view issuer_id);
+void LogBnplTosDialogShown(autofill::BnplIssuer::IssuerId issuer_id);
 
 // Logs that the BNPL ToS dialog closed reason.
 void LogBnplTosDialogResult(BnplTosDialogResult result,
-                            std::string_view issuer_id);
+                            autofill::BnplIssuer::IssuerId issuer_id);
 
 // Logs the select BNPL issuer dialog result.
 void LogSelectBnplIssuerDialogResult(SelectBnplIssuerDialogResult result);
 
 // Logs the selection of BNPL issuer from the select BNPL issuer dialog.
-void LogBnplIssuerSelection(std::string_view issuer_id);
+void LogBnplIssuerSelection(autofill::BnplIssuer::IssuerId issuer_id);
 
 // Logs that the BNPL suggestion was not shown and the reason why.
 void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);
 
 // Logs that the BNPL popup window was shown.
-void LogBnplPopupWindowShown(std::string_view issuer_id);
+void LogBnplPopupWindowShown(autofill::BnplIssuer::IssuerId issuer_id);
 
 // Logs the result of the BNPL popup window.
-void LogBnplPopupWindowResult(std::string_view issuer_id,
+void LogBnplPopupWindowResult(autofill::BnplIssuer::IssuerId issuer_id,
                               BnplFlowResult result);
 
 // Logs the duration a user took to go through the BNPL flow inside of the
 // pop-up window. Broken down by issuer and result, because each issuer and
 // each result should be looked at separately.
 void LogBnplPopupWindowLatency(base::TimeDelta duration,
-                               std::string_view issuer_id,
+                               autofill::BnplIssuer::IssuerId issuer_id,
                                BnplFlowResult result);
 
 // Logs BNPL form events. Please refer to `BnplFormEvent` for the possible
@@ -161,10 +146,10 @@ void LogBnplPopupWindowLatency(base::TimeDelta duration,
 void LogBnplFormEvent(BnplFormEvent event);
 
 // Logs that a form was filled with the BNPL issuer VCN.
-void LogFormFilledWithBnplVcn(std::string_view issuer_id);
+void LogFormFilledWithBnplVcn(autofill::BnplIssuer::IssuerId issuer_id);
 
 // Logs that a form was submitted with the BNPL issuer VCN.
-void LogFormSubmittedWithBnplVcn(std::string_view issuer_id);
+void LogFormSubmittedWithBnplVcn(autofill::BnplIssuer::IssuerId issuer_id);
 
 // Logs that the BNPL issuer selection dialog was shown.
 void LogBnplSelectionDialogShown();

@@ -504,7 +504,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         // flows.
         if (credit_card.is_bnpl_card()) {
           if (!has_logged_form_filled_with_bnpl_vcn_) {
-            LogFormFilledWithBnplVcn(credit_card.issuer_id());
+            LogFormFilledWithBnplVcn(
+                autofill::ConvertToBnplIssuerIdEnum(credit_card.issuer_id()));
             has_logged_form_filled_with_bnpl_vcn_ = true;
           }
         } else {
@@ -686,7 +687,8 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     // influencing other VCN metrics, as these represent distinct user flows.
     if (filled_credit_card_->is_bnpl_card()) {
       if (!has_logged_form_submitted_with_bnpl_vcn_) {
-        LogFormSubmittedWithBnplVcn(filled_credit_card_->issuer_id());
+        LogFormSubmittedWithBnplVcn(autofill::ConvertToBnplIssuerIdEnum(
+            filled_credit_card_->issuer_id()));
         has_logged_form_submitted_with_bnpl_vcn_ = true;
       }
     } else {

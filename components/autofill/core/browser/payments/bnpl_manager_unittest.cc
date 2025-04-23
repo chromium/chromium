@@ -63,12 +63,14 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 
 namespace autofill::payments {
 
+using IssuerId = autofill::BnplIssuer::IssuerId;
 using testing::_;
 using testing::AnyOf;
 using testing::Eq;
 using testing::Field;
 using testing::FieldsAre;
 using testing::InSequence;
+using testing::Matcher;
 using ::testing::NiceMock;
 using testing::Property;
 using testing::ReturnRef;
@@ -146,8 +148,8 @@ class BnplManagerTest : public Test {
   const GURL kDomain = GURL("https://dummytest.com/somepathforurl");
   const uint64_t kAmount = 1'000'000;
 
-  testing::Matcher<BnplIssuerContext> EqualsBnplIssuerContext(
-      const std::string issuer_id,
+  Matcher<BnplIssuerContext> EqualsBnplIssuerContext(
+      IssuerId issuer_id,
       BnplIssuerEligibilityForPage eligibility) {
     return AllOf(Field(&BnplIssuerContext::issuer,
                        Property(&BnplIssuer::issuer_id, Eq(issuer_id))),
@@ -207,7 +209,7 @@ class BnplManagerTest : public Test {
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
   void SetUpUnlinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
                                uint64_t price_higher_bound_in_micros,
-                               const std::string& issuer_id) {
+                               IssuerId issuer_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
     eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
                                        price_higher_bound_in_micros);
@@ -219,7 +221,7 @@ class BnplManagerTest : public Test {
   // Sets up the PersonalDataManager with a linked bnpl issuer.
   void SetUpLinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
                              uint64_t price_higher_bound_in_micros,
-                             const std::string& issuer_id,
+                             IssuerId issuer_id,
                              const int64_t instrument_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
     eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
@@ -352,7 +354,8 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataNotLoaded) {
                                           autofill_client_
                                               ->GetPaymentsAutofillClient()
                                               ->GetPaymentsDataManager()),
-                                      test_issuer.issuer_id(),
+                                      autofill::ConvertToBnplIssuerIdString(
+                                          test_issuer.issuer_id()),
                                       test_context_token,
                                       /*risk_data=*/_),
                                   /*callback=*/_));
@@ -386,7 +389,8 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
                                           autofill_client_
                                               ->GetPaymentsAutofillClient()
                                               ->GetPaymentsDataManager()),
-                                      test_issuer.issuer_id(),
+                                      autofill::ConvertToBnplIssuerIdString(
+                                          test_issuer.issuer_id()),
                                       test_context_token, risk_data),
                                   /*callback=*/_));
   test_api(*bnpl_manager_).OnTosDialogAccepted();
@@ -424,7 +428,8 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
           FieldsAre(kBillingCustomerNumber,
                     base::NumberToString(
                         issuer.payment_instrument()->instrument_id()),
-                    kRiskData, kContextToken, kPopupUrl, issuer.issuer_id()),
+                    kRiskData, kContextToken, kPopupUrl,
+                    autofill::ConvertToBnplIssuerIdString(issuer.issuer_id())),
           /*callback=*/_));
 
   BnplFetchVcnResponseDetails response_details;
@@ -451,7 +456,8 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   EXPECT_EQ(fetched_vcn.number(), base::UTF8ToUTF16(response_details.pan));
   EXPECT_EQ(fetched_vcn.record_type(), CreditCard::RecordType::kVirtualCard);
   EXPECT_EQ(fetched_vcn.cvc(), base::UTF8ToUTF16(response_details.cvv));
-  EXPECT_EQ(fetched_vcn.issuer_id(), issuer.issuer_id());
+  EXPECT_EQ(fetched_vcn.issuer_id(),
+            autofill::ConvertToBnplIssuerIdString(issuer.issuer_id()));
   EXPECT_EQ(fetched_vcn.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
             base::UTF8ToUTF16(response_details.cardholder_name));
   EXPECT_EQ(fetched_vcn.Expiration2DigitMonthAsString(),
@@ -696,7 +702,8 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_WithSuccess) {
   OnIssuerSelected(linked_issuer);
 
   EXPECT_EQ(request_details.billing_customer_number, kBillingCustomerNumber);
-  EXPECT_EQ(request_details.issuer_id, linked_issuer.issuer_id());
+  EXPECT_EQ(request_details.issuer_id,
+            autofill::ConvertToBnplIssuerIdString(linked_issuer.issuer_id()));
   EXPECT_EQ(request_details.redirect_url, kPopupUrl);
   EXPECT_EQ(request_details.risk_data, "some risk data");
 }
@@ -834,7 +841,8 @@ TEST_F(
               GetDetailsForCreateBnplPaymentInstrument(
                   /*request_details=*/
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            unlinked_issuer.issuer_id()),
+                            autofill::ConvertToBnplIssuerIdString(
+                                unlinked_issuer.issuer_id())),
                   /*callback=*/_))
       .Times(1);
 
@@ -1039,11 +1047,11 @@ TEST_F(BnplManagerTest,
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1064,11 +1072,11 @@ TEST_F(BnplManagerTest,
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
@@ -1081,11 +1089,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_NoAmountPassedIn) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
                                    /*extracted_amount=*/std::nullopt);
@@ -1099,8 +1107,8 @@ TEST_F(BnplManagerTest,
 
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
-      /*price_lower_bound=*/40,
-      /*price_higher_bound=*/1000, std::string(kBnplAffirmIssuerId),
+      /*price_lower_bound_in_micros=*/40,
+      /*price_higher_bound_in_micros=*/1000, IssuerId::kBnplAffirm,
       /*instrument_id=*/1234);
 
   TriggerBnplUpdateSuggestionsFlow(/*expect_suggestions_are_updated=*/false,
@@ -1126,11 +1134,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountNotSupported) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1145,8 +1153,8 @@ TEST_F(BnplManagerTest,
 
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
-      /*price_lower_bound=*/40,
-      /*price_higher_bound=*/1000, std::string(kBnplAffirmIssuerId),
+      /*price_lower_bound_in_micros=*/40,
+      /*price_higher_bound_in_micros=*/1000, IssuerId::kBnplAffirm,
       /*instrument_id=*/1234);
 
   TriggerBnplUpdateSuggestionsFlow(
@@ -1178,8 +1186,8 @@ TEST_F(BnplManagerTest,
 
   // Add one linked issuer to payments data manager.
   SetUpLinkedBnplIssuer(
-      /*price_lower_bound=*/40,
-      /*price_higher_bound=*/1000, std::string(kBnplAffirmIssuerId),
+      /*price_lower_bound_in_micros=*/40,
+      /*price_higher_bound_in_micros=*/1000, IssuerId::kBnplAffirm,
       /*instrument_id=*/1234);
 
   TriggerBnplUpdateSuggestionsFlow(
@@ -1214,11 +1222,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplFeatureDisabled) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1236,11 +1244,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplSyncFeatureDisabled) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1255,11 +1263,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplPrefDisabled) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/false,
@@ -1273,11 +1281,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByAffirm) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
@@ -1290,11 +1298,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_AmountSupportedByZip) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   TriggerBnplUpdateSuggestionsFlow(
       /*expect_suggestions_are_updated=*/true,
@@ -1307,11 +1315,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_SuggestionShownWithBnplEntry) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1332,11 +1340,11 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          IssuerId::kBnplZip);
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1363,7 +1371,8 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Success) {
   EXPECT_CALL(*payments_network_interface_,
               CreateBnplPaymentInstrument(
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            ongoing_flow_state->issuer.issuer_id(),
+                            autofill::ConvertToBnplIssuerIdString(
+                                ongoing_flow_state->issuer.issuer_id()),
                             kContextToken, kRiskData),
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
@@ -1396,7 +1405,8 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
   EXPECT_CALL(*payments_network_interface_,
               CreateBnplPaymentInstrument(
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            ongoing_flow_state->issuer.issuer_id(),
+                            autofill::ConvertToBnplIssuerIdString(
+                                ongoing_flow_state->issuer.issuer_id()),
                             kContextToken, kRiskData),
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
@@ -1411,62 +1421,46 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Test that `GetSortedBnplIssuerContext` returns BNPL Issuers and their
-// eligibility in the order of:
-// linked & eligible > unlinked & eligible > linked & uneligible >
-// unlinked & uneligible.
-TEST_F(BnplManagerTest, GetSortedBnplIssuerContext) {
+// Tests the sorting logic of `GetSortedBnplIssuerContext` for BNPL Issuers
+// based on their linked status and eligibility. The expected order is:
+// 1. Linked & Eligible
+// 2. Unlinked & Eligible
+// 3. Linked & Ineligible
+// 4. Unlinked & Ineligible
+//
+// Two test cases verify this ordering:
+// - Test 1(current test): Checks the order of linked eligible, unlinked
+// eligible, and linked ineligible.
+// - Test 2: Checks the order of unlinked eligible, linked ineligible, and
+// unlinked ineligible.
+TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersEligibleFirst) {
   // Unlinked issuer + eligibility: kIsEligible.
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                           /*price_higher_bound_in_micros=*/1'000'000'000,
-                          /*issuer_id=*/"merchant_supported_unlinked_issuer_1");
-  // Unlinked issuer + eligibility: kNotEligibleIssuerDoesNotSupportMerchant.
-  // Checkout amount is lower than supported range, but merchant not supported
-  // should take priority.
-  SetUpUnlinkedBnplIssuer(
-      /*price_lower_bound_in_micros=*/20'000'000,
-      /*price_higher_bound_in_micros=*/2'000'000'000,
-      /*issuer_id=*/"merchant_not_supported_unlinked_issuer_2");
-  // Unlinked issuer + eligibility: kIsEligible.
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/2'000'000,
-                          /*price_higher_bound_in_micros=*/30'000'000,
-                          /*issuer_id=*/"merchant_supported_unlinked_issuer_3");
-  // Unlinked issuer + eligibility: kNotEligibleCheckoutAmountTooLow.
-  SetUpUnlinkedBnplIssuer(
-      /*price_lower_bound_in_micros=*/200'000'000,
-      /*price_higher_bound_in_micros=*/2'000'000'000,
-      /*issuer_id=*/"merchant_supported_unlinked_issuer_4");
+                          IssuerId::kBnplZip);
   // Linked issuer + eligibility: kIsEligible.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                         /*price_higher_bound_in_micros=*/3'000'000'000,
-                        /*issuer_id=*/"merchant_supported_linked_issuer_1",
+                        IssuerId::kBnplAffirm,
                         /*instrument_id=*/1);
-  // Linked issuer + eligibility: kNotEligibleCheckoutAmountTooHigh.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000,
-                        /*price_higher_bound_in_micros=*/10'000'000,
-                        /*issuer_id=*/"merchant_supported_linked_issuer_2",
-                        /*instrument_id=*/2);
-  // Linked issuer + eligibility: kIsEligible.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/5'000'000,
-                        /*price_higher_bound_in_micros=*/2'000'000'000,
-                        /*issuer_id=*/"merchant_supported_linked_issuer_3",
-                        /*instrument_id=*/3);
   // Linked issuer + eligibility: kNotEligibleIssuerDoesNotSupportMerchant.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
                         /*price_higher_bound_in_micros=*/200'000'000,
-                        /*issuer_id=*/"merchant_not_supported_linked_issuer_4",
+                        IssuerId::kBnplAfterpay,
                         /*instrument_id=*/4);
 
   // Mock merchant eligibility for issuers based on issuer id.
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client_->GetAutofillOptimizationGuide()),
           IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-              testing::StartsWith("merchant_not_supported"), _))
+              IssuerId::kBnplAfterpay, _))
       .WillByDefault(testing::Return(false));
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-              testing::StartsWith("merchant_supported"), _))
+  ON_CALL(
+      *static_cast<MockAutofillOptimizationGuide*>(
+          autofill_client_->GetAutofillOptimizationGuide()),
+      IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+          Matcher<IssuerId>(AnyOf(IssuerId::kBnplAffirm, IssuerId::kBnplZip)),
+          _))
       .WillByDefault(testing::Return(true));
 
   std::vector<BnplIssuerContext> issuer_context;
@@ -1478,38 +1472,89 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext) {
   EXPECT_THAT(
       issuer_context,
       ElementsAre(
-          // Eligible linked issuers.
-          EqualsBnplIssuerContext("merchant_supported_linked_issuer_1",
+          // Linked eligible issuers.
+          EqualsBnplIssuerContext(IssuerId::kBnplAffirm,
                                   BnplIssuerEligibilityForPage::kIsEligible),
-          EqualsBnplIssuerContext("merchant_supported_linked_issuer_3",
+          // Unlinked eligible issuers.
+          EqualsBnplIssuerContext(IssuerId::kBnplZip,
                                   BnplIssuerEligibilityForPage::kIsEligible),
-          // Eligible unlinked issuers.
-          EqualsBnplIssuerContext("merchant_supported_unlinked_issuer_1",
-                                  BnplIssuerEligibilityForPage::kIsEligible),
-          EqualsBnplIssuerContext("merchant_supported_unlinked_issuer_3",
-                                  BnplIssuerEligibilityForPage::kIsEligible),
-          // Uneligible linked issuers.
+          // Linked uneligible issuers.
           EqualsBnplIssuerContext(
-              "merchant_supported_linked_issuer_2",
-              BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh),
-          EqualsBnplIssuerContext("merchant_not_supported_linked_issuer_4",
+              IssuerId::kBnplAfterpay,
+              BnplIssuerEligibilityForPage::
+                  kNotEligibleIssuerDoesNotSupportMerchant)));
+}
+
+// Tests the sorting logic of `GetSortedBnplIssuerContext` for BNPL Issuers
+// based on their linked status and eligibility. The expected order is:
+// 1. Linked & Eligible
+// 2. Unlinked & Eligible
+// 3. Linked & Ineligible
+// 4. Unlinked & Ineligible
+//
+// Two test cases verify this ordering:
+// - Test 1: Checks the order of linked eligible, unlinked eligible, and linked
+// ineligible.
+// - Test 2(current test): Checks the order of unlinked eligible, linked
+// ineligible, and unlinked ineligible.
+TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersUneligibleLast) {
+  // Unlinked issuer + eligibility: kIsEligible.
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                          /*price_higher_bound_in_micros=*/1'000'000'000,
+                          IssuerId::kBnplZip);
+  // Linked issuer + eligibility: kNotEligibleIssuerDoesNotSupportMerchant.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                        /*price_higher_bound_in_micros=*/200'000'000,
+                        IssuerId::kBnplAfterpay,
+                        /*instrument_id=*/4);
+  // Unlinked issuer + eligibility: kIsEligible.
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
+                          /*price_higher_bound_in_micros=*/1'000'000'000,
+                          IssuerId::kBnplAffirm);
+
+  // Mock merchant eligibility for issuers based on issuer id.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client_->GetAutofillOptimizationGuide()),
+          IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+              Matcher<IssuerId>(
+                  AnyOf(IssuerId::kBnplAffirm, IssuerId::kBnplAfterpay)),
+              _))
+      .WillByDefault(testing::Return(false));
+  ON_CALL(
+      *static_cast<MockAutofillOptimizationGuide*>(
+          autofill_client_->GetAutofillOptimizationGuide()),
+      IsUrlEligibleForCheckoutAmountSearchForIssuerId(IssuerId::kBnplZip, _))
+      .WillByDefault(testing::Return(true));
+
+  std::vector<BnplIssuerContext> issuer_context;
+  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+      .WillOnce(MoveArg<0>(&issuer_context));
+
+  bnpl_manager_->InitBnplFlow(15'000'000, base::DoNothing());
+
+  EXPECT_THAT(
+      issuer_context,
+      ElementsAre(
+          // Unlinked eligible issuers.
+          EqualsBnplIssuerContext(IssuerId::kBnplZip,
+                                  BnplIssuerEligibilityForPage::kIsEligible),
+          // Linked uneligible issuers.
+          EqualsBnplIssuerContext(IssuerId::kBnplAfterpay,
                                   BnplIssuerEligibilityForPage::
                                       kNotEligibleIssuerDoesNotSupportMerchant),
-          // Uneligible unlinked issuers.
-          EqualsBnplIssuerContext("merchant_not_supported_unlinked_issuer_2",
-                                  BnplIssuerEligibilityForPage::
-                                      kNotEligibleIssuerDoesNotSupportMerchant),
+          // Unlinked uneligible issuers.
           EqualsBnplIssuerContext(
-              "merchant_supported_unlinked_issuer_4",
-              BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
+              IssuerId::kBnplAffirm,
+              BnplIssuerEligibilityForPage::
+                  kNotEligibleIssuerDoesNotSupportMerchant)));
 }
 
 // Test that `GetSortedBnplIssuerContext` returns eligible BNPL Issuer with
 // eligibility `BnplIssuerEligibilityForPage::kIsEligible`.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
-                          /*price_higher_bound_in_micros=*/1'000'000'000,
-                          /*issuer_id=*/"unlinked");
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/10'000'000,
+      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client_->GetAutofillOptimizationGuide()),
           IsUrlEligibleForCheckoutAmountSearchForIssuerId)
@@ -1521,9 +1566,9 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
 
   bnpl_manager_->InitBnplFlow(15'000'000, base::DoNothing());
 
-  EXPECT_THAT(issuer_context,
-              ElementsAre(EqualsBnplIssuerContext(
-                  "unlinked", BnplIssuerEligibilityForPage::kIsEligible)));
+  EXPECT_THAT(issuer_context, ElementsAre(EqualsBnplIssuerContext(
+                                  IssuerId::kBnplAfterpay,
+                                  BnplIssuerEligibilityForPage::kIsEligible)));
 }
 
 // Test that when the BNPL Issuer does not support the current merchant,
@@ -1531,9 +1576,9 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
 // Issuer and
 // `BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant`.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
-                          /*price_higher_bound_in_micros=*/1'000'000'000,
-                          /*issuer_id=*/"unlinked");
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/10'000'000,
+      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client_->GetAutofillOptimizationGuide()),
@@ -1548,17 +1593,18 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
 
   EXPECT_THAT(issuer_context,
               ElementsAre(EqualsBnplIssuerContext(
-                  "unlinked", BnplIssuerEligibilityForPage::
-                                  kNotEligibleIssuerDoesNotSupportMerchant)));
+                  IssuerId::kBnplAfterpay,
+                  BnplIssuerEligibilityForPage::
+                      kNotEligibleIssuerDoesNotSupportMerchant)));
 }
 
 // Test that when checkout amount is too high for the issuer,
 // `GetSortedBnplIssuerContext` will returns BnplIssuerContext contains the
 // Issuer and `BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh`.
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/10'000'000,
-                          /*price_higher_bound_in_micros=*/1'000'000'000,
-                          /*issuer_id=*/"unlinked");
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/10'000'000,
+      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client_->GetAutofillOptimizationGuide()),
@@ -1574,7 +1620,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
   EXPECT_THAT(
       issuer_context,
       ElementsAre(EqualsBnplIssuerContext(
-          "unlinked",
+          IssuerId::kBnplAfterpay,
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)));
 }
 
@@ -1582,9 +1628,9 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
 // `GetSortedBnplIssuerContext` will returns BnplIssuerContext contains the
 // Issuer and `BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow`
 TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'002'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          /*issuer_id=*/"unlinked");
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/1'002'000'000,
+      /*price_higher_bound_in_micros=*/2'000'000'000, IssuerId::kBnplAfterpay);
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_client_->GetAutofillOptimizationGuide()),
@@ -1600,7 +1646,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
   EXPECT_THAT(
       issuer_context,
       ElementsAre(EqualsBnplIssuerContext(
-          "unlinked",
+          IssuerId::kBnplAfterpay,
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
 }
 
@@ -1629,11 +1675,11 @@ TEST_F(BnplManagerTest,
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
+                        BnplIssuer::IssuerId::kBnplAffirm,
                         /*instrument_id=*/1234);
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
+                          BnplIssuer::IssuerId::kBnplZip);
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
   std::vector<Suggestion> suggestions = {
@@ -1652,8 +1698,8 @@ TEST_F(BnplManagerTest,
 TEST_F(
     BnplManagerTest,
     AddBnplSuggestion_SuggestionNotUpdatedAndOnBnplSuggestionShownNotCalled) {
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+  SetUpLinkedBnplIssuer(40, 1000, BnplIssuer::IssuerId::kBnplAffirm, 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, BnplIssuer::IssuerId::kBnplZip);
 
   base::MockCallback<UpdateSuggestionsCallback> callback;
 

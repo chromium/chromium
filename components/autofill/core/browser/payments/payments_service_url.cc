@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -58,6 +59,8 @@ constexpr char kBnplZipTermsUrl[] =
 
 namespace payments {
 
+using IssuerId = autofill::BnplIssuer::IssuerId;
+
 bool IsPaymentsProductionEnabled() {
   // If the command line flag exists, it takes precedence.
   const base::CommandLine* command_line =
@@ -101,13 +104,18 @@ GURL GetVirtualCardEnrollmentSupportUrl() {
   return GURL(kVirtualCardEnrollmentSupportUrl);
 }
 
-GURL GetBnplTermsUrl(std::string_view issuer_id) {
-  if (issuer_id == kBnplAffirmIssuerId) {
-    return GURL(kBnplAffirmTermsUrl);
-  } else if (issuer_id == kBnplZipIssuerId) {
-    return GURL(kBnplZipTermsUrl);
+GURL GetBnplTermsUrl(IssuerId issuer_id) {
+  switch (issuer_id) {
+    case IssuerId::kBnplAffirm:
+      return GURL(kBnplAffirmTermsUrl);
+    case IssuerId::kBnplZip:
+      return GURL(kBnplZipTermsUrl);
+    // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
+    // Afterpay to the BNPL flow.
+    case IssuerId::kBnplAfterpay:
+      NOTREACHED();
   }
-  NOTREACHED() << "Unknown issuer_id " << issuer_id;
+  NOTREACHED();
 }
 
 }  // namespace payments

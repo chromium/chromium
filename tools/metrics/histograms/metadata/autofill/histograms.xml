@@ -1651,7 +1651,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Bnpl.SelectionDialogIssuerSelected"
-    enum="SupportedBnplIssuer" expires_after="2025-07-01">
+    enum="BnplIssuerId" expires_after="2025-07-01">
   <owner>yishuil@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

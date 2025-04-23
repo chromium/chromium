@@ -2465,7 +2465,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
 
   ASSERT_EQ(linked_bnpl_issuers.size(), 1U);
   EXPECT_EQ(linked_bnpl_issuers[0],
-            BnplIssuer(instrument_id, issuer_id,
+            BnplIssuer(instrument_id, ConvertToBnplIssuerIdEnum(issuer_id),
                        /*eligible_price_ranges=*/
                        {BnplIssuer::EligiblePriceRange(
                            currency, /*price_lower_bound=*/min_price_in_micros,
@@ -3548,7 +3548,7 @@ TEST_F(PaymentsDataManagerTest,
   // Must match the BnplCreationOption in the payment instrument creation
   // option.
   std::vector<BnplIssuer> want_bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
+      /*instrument_id=*/std::nullopt, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
                                       /*price_lower_bound=*/50,
                                       /*price_upper_bound=*/200)})};

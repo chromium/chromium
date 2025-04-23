@@ -55,7 +55,7 @@ class BnplTosController {
   // Returns the account info of the signed-in user.
   virtual AccountInfo GetAccountInfo() const = 0;
   // Return the BNPL issuer id.
-  virtual const std::string& GetIssuerId() const = 0;
+  virtual BnplIssuer::IssuerId GetIssuerId() const = 0;
 
   virtual base::WeakPtr<BnplTosController> GetWeakPtr() = 0;
 

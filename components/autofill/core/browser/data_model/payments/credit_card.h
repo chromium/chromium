@@ -631,6 +631,7 @@ class CreditCard : public FormGroup {
 
   // The issuer id of the card. This is set for server cards only (both actual
   // cards and virtual cards).
+  // TODO(crbug.com/412749171): Change issuer_id_ to use an enum.
   std::string issuer_id_;
 
   // For masked server cards, this is the ID assigned by the server to uniquely

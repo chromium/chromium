@@ -103,7 +103,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
       window_manager().InitVcn3dsAuthentication(std::move(context));
     } else if (name.find("Bnpl") != std::string::npos) {
       PaymentsWindowManager::BnplContext context;
-      context.issuer_id = kBnplAffirmIssuerId;
+      context.issuer_id = BnplIssuer::IssuerId::kBnplAffirm;
       context.success_url_prefix = GURL(kBnplSuccessUrlPrefix);
       context.failure_url_prefix = GURL(kBnplFailureUrlPrefix);
       context.initial_url = GURL(kBnplInitialUrl);

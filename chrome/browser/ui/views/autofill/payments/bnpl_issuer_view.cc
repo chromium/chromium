@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -50,6 +51,8 @@
 
 namespace autofill::payments {
 
+using IssuerId = autofill::BnplIssuer::IssuerId;
+
 BnplIssuerView::BnplIssuerView(
     base::WeakPtr<SelectBnplIssuerDialogController> controller,
     SelectBnplIssuerDialog* issuer_dialog)
@@ -73,28 +76,27 @@ void BnplIssuerView::AddedToWidget() {
     const bool issuer_linked = issuer.payment_instrument().has_value();
     const auto image_ids = [&]() -> std::pair<int, int> {
       if (issuer_linked) {
-        // TODO(crbug.com/412378244): Convert `issuer_id` logic to use switch
-        // statement instead of if/else.
-        if (issuer.issuer_id() == kBnplZipIssuerId) {
-          return {IDR_AUTOFILL_ZIP_LINKED, IDR_AUTOFILL_ZIP_LINKED_DARK};
-        } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
-          return {IDR_AUTOFILL_AFFIRM_LINKED, IDR_AUTOFILL_AFFIRM_LINKED_DARK};
-        } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
-          return {IDR_AUTOFILL_AFTERPAY_LINKED,
-                  IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
+        switch (issuer.issuer_id()) {
+          case IssuerId::kBnplAffirm:
+            return {IDR_AUTOFILL_AFFIRM_LINKED,
+                    IDR_AUTOFILL_AFFIRM_LINKED_DARK};
+          case IssuerId::kBnplZip:
+            return {IDR_AUTOFILL_ZIP_LINKED, IDR_AUTOFILL_ZIP_LINKED_DARK};
+          case IssuerId::kBnplAfterpay:
+            return {IDR_AUTOFILL_AFTERPAY_LINKED,
+                    IDR_AUTOFILL_AFTERPAY_LINKED_DARK};
         }
         NOTREACHED();
       }
-      // TODO(crbug.com/412378244): Convert `issuer_id` logic to use switch
-      // statement instead of if/else.
-      if (issuer.issuer_id() == kBnplZipIssuerId) {
-        return {IDR_AUTOFILL_ZIP_UNLINKED, IDR_AUTOFILL_ZIP_UNLINKED_DARK};
-      } else if (issuer.issuer_id() == kBnplAffirmIssuerId) {
-        return {IDR_AUTOFILL_AFFIRM_UNLINKED,
-                IDR_AUTOFILL_AFFIRM_UNLINKED_DARK};
-      } else if (issuer.issuer_id() == kBnplAfterpayIssuerId) {
-        return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
-                IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
+      switch (issuer.issuer_id()) {
+        case IssuerId::kBnplAffirm:
+          return {IDR_AUTOFILL_AFFIRM_UNLINKED,
+                  IDR_AUTOFILL_AFFIRM_UNLINKED_DARK};
+        case IssuerId::kBnplZip:
+          return {IDR_AUTOFILL_ZIP_UNLINKED, IDR_AUTOFILL_ZIP_UNLINKED_DARK};
+        case IssuerId::kBnplAfterpay:
+          return {IDR_AUTOFILL_AFTERPAY_UNLINKED,
+                  IDR_AUTOFILL_AFTERPAY_UNLINKED_DARK};
       }
       NOTREACHED();
     }();

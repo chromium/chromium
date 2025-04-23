@@ -66,7 +66,7 @@ class SelectBnplIssuerDialogController {
   virtual TextWithLink GetLinkText() const = 0;
   virtual std::u16string GetTitle() const = 0;
   virtual std::u16string GetSelectionOptionText(
-      std::string_view issuer_id) const = 0;
+      autofill::BnplIssuer::IssuerId issuer_id) const = 0;
   // List of issuers with their corresponding contexts to be displayed on the
   // Select BNPL issuer dialog.
   virtual const std::vector<BnplIssuerContext>& GetIssuerContexts() const = 0;

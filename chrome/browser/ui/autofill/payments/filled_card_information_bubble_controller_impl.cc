@@ -260,7 +260,8 @@ std::u16string
 FilledCardInformationBubbleControllerImpl::GetMaskedCardNameForDescriptionView()
     const {
   if (IsBnplFlow()) {
-    return BnplIssuerIdToDisplayName(options_.filled_card.issuer_id());
+    return BnplIssuerIdToDisplayName(
+        ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id()));
   }
 
   return options_.masked_card_name;
@@ -269,18 +270,22 @@ FilledCardInformationBubbleControllerImpl::GetMaskedCardNameForDescriptionView()
 gfx::Image
 FilledCardInformationBubbleControllerImpl::GetCardImageForDescriptionView()
     const {
-  if (IsBnplFlow()) {
-    if (options_.filled_card.issuer_id() == kBnplAffirmIssuerId) {
+  if (!IsBnplFlow()) {
+    return options_.card_image;
+  }
+  switch (ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id())) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
       return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           IDR_AUTOFILL_AFFIRM_LINKED);
-    }
-
-    if (options_.filled_card.issuer_id() == kBnplZipIssuerId) {
+    case BnplIssuer::IssuerId::kBnplZip:
       return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           IDR_AUTOFILL_ZIP_LINKED);
-    }
+    // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
+    // Afterpay to the BNPL flow.
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      return options_.card_image;
   }
-  return options_.card_image;
+  NOTREACHED();
 }
 
 bool FilledCardInformationBubbleControllerImpl::
@@ -398,7 +403,7 @@ void FilledCardInformationBubbleControllerImpl::SetEventObserverForTesting(
 GURL FilledCardInformationBubbleControllerImpl::GetLearnMoreUrl() const {
   return IsBnplFlow()
              ? autofill::payments::GetBnplTermsUrl(
-                   options_.filled_card.issuer_id())
+                   ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id()))
              : autofill::payments::GetVirtualCardEnrollmentSupportUrl();
 }
 

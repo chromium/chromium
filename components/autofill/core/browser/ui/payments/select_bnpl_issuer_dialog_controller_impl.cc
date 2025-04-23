@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
@@ -14,6 +15,7 @@
 
 namespace autofill::payments {
 
+using IssuerId = autofill::BnplIssuer::IssuerId;
 using ::autofill::autofill_metrics::LogBnplIssuerSelection;
 using ::autofill::autofill_metrics::LogSelectBnplIssuerDialogResult;
 using ::autofill::autofill_metrics::SelectBnplIssuerDialogResult;
@@ -78,7 +80,7 @@ u16string SelectBnplIssuerDialogControllerImpl::GetTitle() const {
 }
 
 u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
-    std::string_view issuer_id) const {
+    IssuerId issuer_id) const {
   // TODO(crbug.com/403361321): Add a util function that returns all supported
   // locales.
   CHECK_EQ(GetAppLocale(), "en-US");
@@ -105,11 +107,16 @@ u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
     case BnplIssuerEligibilityForPage::kUndefined:
       NOTREACHED();
     case BnplIssuerEligibilityForPage::kIsEligible:
-      return issuer_id == kBnplZipIssuerId
-                 ? GetStringUTF16(
-                       IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP)
-                 : GetStringUTF16(
-                       IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+      switch (issuer_id) {
+        case IssuerId::kBnplAffirm:
+        case IssuerId::kBnplAfterpay:
+          return GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+        case IssuerId::kBnplZip:
+          return GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP);
+      }
+      NOTREACHED();
     case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:
       return GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT);

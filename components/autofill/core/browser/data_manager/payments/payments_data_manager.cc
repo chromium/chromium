@@ -2208,9 +2208,15 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     return;
   }
 
-  linked_bnpl_issuers_.emplace_back(payment_instrument.instrument_id(),
-                                    bnpl_issuer_details.issuer_id(),
-                                    std::move(eligible_price_ranges));
+  // `GetSupportedBnplIssuerIds` is already called to filter out any unknown
+  // issuer IDs that might be returned by the payment server. This ensures that
+  // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
+  // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
+  // encounter an unknown value and hit the NOTREACHED().
+  linked_bnpl_issuers_.emplace_back(
+      payment_instrument.instrument_id(),
+      ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id()),
+      std::move(eligible_price_ranges));
 }
 
 void PaymentsDataManager::CacheIfEwalletPaymentInstrument(
@@ -2282,8 +2288,14 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
     return;
   }
 
-  unlinked_bnpl_issuers_.emplace_back(std::nullopt, bnpl_issuer.issuer_id(),
-                                      std::move(eligible_price_ranges));
+  // `GetSupportedBnplIssuerIds` is already called to filter out any unknown
+  // issuer IDs that might be returned by the payment server. This ensures that
+  // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
+  // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
+  // encounter an unknown value and hit the NOTREACHED().
+  unlinked_bnpl_issuers_.emplace_back(
+      std::nullopt, ConvertToBnplIssuerIdEnum(bnpl_issuer.issuer_id()),
+      std::move(eligible_price_ranges));
 }
 
 bool PaymentsDataManager::HasEligibleCurrencyPriceRangeForBnplIssuer(

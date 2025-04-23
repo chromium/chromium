@@ -19,8 +19,8 @@ namespace autofill {
 // Test for getting and setting the issuer id for the BNPL issuer data model.
 TEST(BnplIssuerTest, GetAndSetIssuerId) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
-  issuer.set_issuer_id("new_issuer");
-  EXPECT_EQ(issuer.issuer_id(), "new_issuer");
+  issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
+  EXPECT_EQ(issuer.issuer_id(), BnplIssuer::IssuerId::kBnplAffirm);
 }
 
 // Test for getting and setting the payment instrument for the BNPL issuer data
@@ -126,15 +126,12 @@ TEST(BnplIssuerTest, IsEligibleAmount) {
 
 TEST(BnplIssuerTest, GetDisplayName) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
-  issuer.set_issuer_id(std::string{kBnplAffirmIssuerId});
+  issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
   EXPECT_EQ(issuer.GetDisplayName(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
-  issuer.set_issuer_id(std::string{kBnplZipIssuerId});
+  issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
   EXPECT_EQ(issuer.GetDisplayName(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
-  issuer.set_issuer_id("unknown_issuer");
-  EXPECT_CHECK_DEATH_WITH(issuer.GetDisplayName(),
-                          "Unknown issuer_id unknown_issuer");
 }
 
 // Test for the equality operator for the BNPL issuer data model.
@@ -144,7 +141,7 @@ TEST(BnplIssuerTest, EqualityOperator) {
 
   EXPECT_TRUE(issuer1 == issuer2);
 
-  issuer2.set_issuer_id("different_issuer");
+  issuer2.set_issuer_id(BnplIssuer::IssuerId::kBnplAfterpay);
   EXPECT_FALSE(issuer1 == issuer2);
 
   issuer2 = test::GetTestLinkedBnplIssuer();
@@ -173,14 +170,30 @@ TEST(BnplIssuerTest, EqualityOperator) {
 }
 
 TEST(BnplIssuerTest, BnplIssuerIdToDisplayName) {
-  EXPECT_EQ(BnplIssuerIdToDisplayName(kBnplAffirmIssuerId),
+  EXPECT_EQ(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplAffirm),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
-  EXPECT_EQ(BnplIssuerIdToDisplayName(kBnplZipIssuerId),
+  EXPECT_EQ(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplZip),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
-  EXPECT_EQ(BnplIssuerIdToDisplayName(kBnplAfterpayIssuerId),
+  EXPECT_EQ(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplAfterpay),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY));
-  EXPECT_CHECK_DEATH_WITH(BnplIssuerIdToDisplayName("unknown_issuer"),
-                          "Unknown issuer_id unknown_issuer");
+}
+
+TEST(BnplIssuerTest, ConvertToBnplIssuerIdEnum) {
+  EXPECT_EQ(ConvertToBnplIssuerIdEnum(kBnplAffirmIssuerId),
+            BnplIssuer::IssuerId::kBnplAffirm);
+  EXPECT_EQ(ConvertToBnplIssuerIdEnum(kBnplZipIssuerId),
+            BnplIssuer::IssuerId::kBnplZip);
+  EXPECT_EQ(ConvertToBnplIssuerIdEnum(kBnplAfterpayIssuerId),
+            BnplIssuer::IssuerId::kBnplAfterpay);
+}
+
+TEST(BnplIssuerTest, ConvertToBnplIssuerIdString) {
+  EXPECT_EQ(ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm),
+            kBnplAffirmIssuerId);
+  EXPECT_EQ(ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplZip),
+            kBnplZipIssuerId);
+  EXPECT_EQ(ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAfterpay),
+            kBnplAfterpayIssuerId);
 }
 
 }  // namespace autofill

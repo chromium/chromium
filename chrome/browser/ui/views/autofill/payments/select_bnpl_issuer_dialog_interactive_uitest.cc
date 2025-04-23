@@ -20,8 +20,8 @@
 
 namespace autofill::payments {
 
+using IssuerId = autofill::BnplIssuer::IssuerId;
 using ::autofill::autofill_metrics::SelectBnplIssuerDialogResult;
-using ::autofill::autofill_metrics::SupportedBnplIssuer;
 
 namespace {
 constexpr char kSuppressedScreenshotError[] =
@@ -62,7 +62,7 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   BnplIssuerContext GetTestBnplIssuerContext(
-      std::string_view issuer_id,
+      IssuerId issuer_id,
       BnplIssuerEligibilityForPage eligibility) {
     return BnplIssuerContext(test::GetTestLinkedBnplIssuer(issuer_id),
                              eligibility);
@@ -81,10 +81,10 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest, InvokeUi) {
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InAnyContext(
@@ -101,10 +101,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
 
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InSameContext(Steps(Check([&histogram_tester]() {
@@ -122,10 +122,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
   EXPECT_CALL(accept_callback_, Run);
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {{GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {{GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                      BnplIssuerEligibilityForPage::kIsEligible),
             GetTestBnplIssuerContext(
-                kBnplZipIssuerId,
+                IssuerId::kBnplZip,
                 BnplIssuerEligibilityForPage::
                     kNotEligibleIssuerDoesNotSupportMerchant)}}),
       InAnyContext(
@@ -145,10 +145,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
   EXPECT_CALL(accept_callback_, Run).Times(0);
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InAnyContext(
@@ -169,10 +169,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
   EXPECT_CALL(cancel_callback_, Run);
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InAnyContext(PressButton(views::DialogClientView::kCancelButtonElementId),
@@ -187,10 +187,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
   EXPECT_CALL(cancel_callback_, Run);
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InAnyContext(
@@ -209,10 +209,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest, EscKeyPress) {
   EXPECT_CALL(cancel_callback_, Run);
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InAnyContext(
@@ -239,10 +239,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
 
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InSameContext(Steps(
@@ -259,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
       SelectBnplIssuerDialogResult::kIssuerSelected,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SelectionDialogIssuerSelected",
-      SupportedBnplIssuer::kAffirm, /*expected_bucket_count=*/1);
+      "Autofill.Bnpl.SelectionDialogIssuerSelected", IssuerId::kBnplAffirm,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
@@ -269,10 +269,10 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
 
   RunTestSequence(
       InvokeUiAndWaitForShow(
-          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
                                     BnplIssuerEligibilityForPage::kIsEligible),
            GetTestBnplIssuerContext(
-               kBnplZipIssuerId,
+               IssuerId::kBnplZip,
                BnplIssuerEligibilityForPage::
                    kNotEligibleIssuerDoesNotSupportMerchant)}),
       InSameContext(
