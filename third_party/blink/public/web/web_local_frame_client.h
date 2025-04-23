@@ -222,16 +222,13 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
-  // Returns a new WebWorkerFetchContext for a dedicated worker (in the
-  // non-PlzDedicatedWorker case) or worklet.
-  virtual scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() {
+  // Returns a new WebWorkerFetchContext for worklet.
+  virtual scoped_refptr<WebWorkerFetchContext> CreateWorkletFetchContext() {
     return nullptr;
   }
 
-  // Returns a new WebWorkerFetchContext for PlzDedicatedWorker.
-  // (https://crbug.com/906991)
-  virtual scoped_refptr<WebWorkerFetchContext>
-  CreateWorkerFetchContextForPlzDedicatedWorker(
+  // Returns a new WebWorkerFetchContext for dedicated workers.
+  virtual scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext(
       WebDedicatedWorkerHostFactoryClient*) {
     return nullptr;
   }

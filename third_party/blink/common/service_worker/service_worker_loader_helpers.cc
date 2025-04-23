@@ -192,11 +192,10 @@ int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
 // static
 bool ServiceWorkerLoaderHelpers::IsMainRequestDestination(
     network::mojom::RequestDestination destination) {
-  // A dedicated worker script is considered to be a main resource.
-  if (destination == network::mojom::RequestDestination::kWorker) {
-    return true;
-  }
   return IsRequestDestinationFrame(destination) ||
+         // A dedicated worker or shared worker script is considered to be a
+         // main resource.
+         destination == network::mojom::RequestDestination::kWorker ||
          destination == network::mojom::RequestDestination::kSharedWorker;
 }
 

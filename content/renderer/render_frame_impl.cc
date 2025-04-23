@@ -3566,7 +3566,7 @@ RenderFrameImpl::CreateSpeechRecognitionClient() {
 #endif
 
 scoped_refptr<blink::WebWorkerFetchContext>
-RenderFrameImpl::CreateWorkerFetchContext() {
+RenderFrameImpl::CreateWorkletFetchContext() {
   ServiceWorkerNetworkProviderForFrame* provider =
       static_cast<ServiceWorkerNetworkProviderForFrame*>(
           frame_->GetDocumentLoader()->GetServiceWorkerNetworkProvider());
@@ -3619,7 +3619,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
 }
 
 scoped_refptr<blink::WebWorkerFetchContext>
-RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
+RenderFrameImpl::CreateWorkerFetchContext(
     blink::WebDedicatedWorkerHostFactoryClient* factory_client) {
   DCHECK(factory_client);
 

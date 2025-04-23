@@ -138,7 +138,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
       std::make_unique<GlobalScopeCreationParams>(
           window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
           frame_client->UserAgent(), frame_client->UserAgentMetadata(),
-          frame_client->CreateWorkerFetchContext(),
+          frame_client->CreateWorkletFetchContext(),
           mojo::Clone(csp->GetParsedPolicies()),
           Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),

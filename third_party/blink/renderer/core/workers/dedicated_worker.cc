@@ -615,8 +615,7 @@ DedicatedWorker::CreateWebWorkerFetchContext() {
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context;
     LocalFrame* frame = window->GetFrame();
     web_worker_fetch_context =
-        frame->Client()->CreateWorkerFetchContextForPlzDedicatedWorker(
-            factory_client_.get());
+        frame->Client()->CreateWorkerFetchContext(factory_client_.get());
     web_worker_fetch_context->SetIsOnSubframe(!frame->IsOutermostMainFrame());
     return web_worker_fetch_context;
   }

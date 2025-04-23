@@ -1179,17 +1179,16 @@ v8::Local<v8::Object> LocalFrameClientImpl::GetScriptableObject(
 }
 
 scoped_refptr<WebWorkerFetchContext>
-LocalFrameClientImpl::CreateWorkerFetchContext() {
+LocalFrameClientImpl::CreateWorkletFetchContext() {
   DCHECK(web_frame_->Client());
-  return web_frame_->Client()->CreateWorkerFetchContext();
+  return web_frame_->Client()->CreateWorkletFetchContext();
 }
 
 scoped_refptr<WebWorkerFetchContext>
-LocalFrameClientImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
+LocalFrameClientImpl::CreateWorkerFetchContext(
     WebDedicatedWorkerHostFactoryClient* factory_client) {
   DCHECK(web_frame_->Client());
-  return web_frame_->Client()->CreateWorkerFetchContextForPlzDedicatedWorker(
-      factory_client);
+  return web_frame_->Client()->CreateWorkerFetchContext(factory_client);
 }
 
 std::unique_ptr<WebContentSettingsClient>

@@ -466,12 +466,11 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
 
   Frame* FindFrame(const AtomicString& name) const override;
 
-  scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() override {
+  scoped_refptr<WebWorkerFetchContext> CreateWorkletFetchContext() override {
     return base::MakeRefCounted<EmptyWebWorkerFetchContext>();
   }
 
-  scoped_refptr<WebWorkerFetchContext>
-  CreateWorkerFetchContextForPlzDedicatedWorker(
+  scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext(
       WebDedicatedWorkerHostFactoryClient*) override {
     return base::MakeRefCounted<EmptyWebWorkerFetchContext>();
   }

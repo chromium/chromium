@@ -538,10 +538,9 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<media::SpeechRecognitionClient>
   CreateSpeechRecognitionClient() override;
 #endif
-  scoped_refptr<blink::WebWorkerFetchContext> CreateWorkerFetchContext()
+  scoped_refptr<blink::WebWorkerFetchContext> CreateWorkletFetchContext()
       override;
-  scoped_refptr<blink::WebWorkerFetchContext>
-  CreateWorkerFetchContextForPlzDedicatedWorker(
+  scoped_refptr<blink::WebWorkerFetchContext> CreateWorkerFetchContext(
       blink::WebDedicatedWorkerHostFactoryClient* factory_client) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking()
       override;
