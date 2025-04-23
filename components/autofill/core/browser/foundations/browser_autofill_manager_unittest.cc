@@ -8119,9 +8119,6 @@ class BrowserAutofillManagerIdentityCredentialTest
 // Tests that verified fields are shown above unverified fields.
 TEST_F(BrowserAutofillManagerIdentityCredentialTest,
        CreateVerifiedEmailSuggestionShownBeforeAddressSuggestions) {
-  using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum PasswordFormClassification::Type;
-
   EXPECT_CALL(identity_credential_delegate(), GetVerifiedAutofillSuggestions)
       .WillOnce(testing::WithArg<0>([](const FieldType& field_type) {
         std::vector<Suggestion> suggestions = {
@@ -8129,15 +8126,12 @@ TEST_F(BrowserAutofillManagerIdentityCredentialTest,
         return suggestions;
       }));
 
-  // Set up our form data. Notably, the first field is an email address.
+  // Set up our form data. Notably, the first field is an email address
+  // with webidentity.
   FormData form = test::GetFormData(
-      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-
+      {.fields = {{.role = EMAIL_ADDRESS,
+                   .autocomplete_attribute = "email webidentity"}}});
   FormsSeen({form});
-
   // Check that the plus address suggestion is offered together with address
   // suggestions.
   OnAskForValuesToFill(form, form.fields()[0]);
@@ -8148,6 +8142,20 @@ TEST_F(BrowserAutofillManagerIdentityCredentialTest,
                           EqualsSuggestion(SuggestionType::kAddressEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
+// Tests that verified fields are not shown with the email field alone.
+TEST_F(BrowserAutofillManagerIdentityCredentialTest,
+       EmailFieldAloneDoesNotTriggerIdentityCredentialSuggestion) {
+  EXPECT_CALL(identity_credential_delegate(), GetVerifiedAutofillSuggestions)
+      .Times(0);
+
+  // Set up our form data. Notably, the first field is an email address
+  // without webidentity.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
 }
 
 // Tests that plus address suggestions are queried and shown for email fields

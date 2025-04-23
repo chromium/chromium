@@ -3015,11 +3015,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
 
   if (const IdentityCredentialDelegate* identity_credential_delegate =
           client().GetIdentityCredentialDelegate()) {
-    // Only <input autocomplete="email"> fields are considered.
+    // Only <input autocomplete="email webidentity"> fields are considered.
     if (std::optional<AutocompleteParsingResult> autocomplete =
             ParseAutocompleteAttribute(
                 autofill_field->autocomplete_attribute());
-        autocomplete && autocomplete->field_type == HtmlFieldType::kEmail) {
+        autocomplete && autocomplete->field_type == HtmlFieldType::kEmail &&
+        autocomplete->webidentity) {
       std::vector<Suggestion> verified_suggestions =
           identity_credential_delegate->GetVerifiedAutofillSuggestions(
               FieldType::EMAIL_ADDRESS);
