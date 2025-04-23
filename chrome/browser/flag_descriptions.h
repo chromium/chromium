@@ -93,6 +93,9 @@ extern const char kAndroidAppIntegrationV2Description[];
 extern const char kAndroidAppIntegrationWithFaviconName[];
 extern const char kAndroidAppIntegrationWithFaviconDescription[];
 
+extern const char kAccessibilityOnScreenModeName[];
+extern const char kAccessibilityOnScreenModeDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidAppearanceSettingsName[];
 extern const char kAndroidAppearanceSettingsDescription[];
@@ -2580,8 +2583,6 @@ extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
 extern const char kAccessibilityTextFormattingName[];
 extern const char kAccessibilityTextFormattingDescription[];
-extern const char kAccessibilityOnScreenModeName[];
-extern const char kAccessibilityOnScreenModeDescription[];
 extern const char kAccessibilityUnifiedSnapshotsName[];
 extern const char kAccessibilityUnifiedSnapshotsDescription[];
 extern const char kAccessibilityManageBroadcastReceiverOnBackgroundName[];

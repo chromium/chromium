@@ -508,6 +508,9 @@ void BrowserAccessibilityStateImpl::OnInputEvent(
 
 std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
+  if (::features::IsAccessibilityOnScreenAXModeEnabled()) {
+    mode = ui::kAXModeOnScreen;
+  }
   return scoped_modes_for_process_.Add(mode);
 }
 

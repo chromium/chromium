@@ -149,6 +149,14 @@ bool IsAXRandomizedStressTestsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAXRandomizedStressTests);
 }
 
+BASE_FEATURE(kAccessibilityOnScreenMode,
+             "AccessibilityOnScreenAXMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityOnScreenAXModeEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityOnScreenMode);
+}
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",
@@ -325,14 +333,6 @@ bool IsAccessibilityManifestV3EnabledForSwitchAccess() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-BASE_FEATURE(kAccessibilityOnScreenMode,
-             "AccessibilityOnScreenAXMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAccessibilityOnScreenAXModeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityOnScreenMode);
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAXTreeFixing, "AXTreeFixing", base::FEATURE_DISABLED_BY_DEFAULT);

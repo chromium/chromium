@@ -3715,6 +3715,13 @@ const char kShowOverdrawFeedbackDescription[] =
     "Visualize overdraw by color-coding elements based on if they have other "
     "elements drawn underneath.";
 
+const char kAccessibilityOnScreenModeName[] =
+    "On-Screen Only Accessibility Nodes";
+const char kAccessibilityOnScreenModeDescription[] =
+    "Enable experimental accessibility mode to improve performance which "
+    "allows assistive technologies to access only accessibility nodes that are "
+    "on-screen";
+
 #if !BUILDFLAG(IS_CHROMEOS)
 const char kFeedbackIncludeVariationsName[] = "Feedback include variations";
 const char kFeedbackIncludeVariationsDescription[] =
@@ -4420,12 +4427,6 @@ const char kAccessibilityIncludeLongClickActionName[] =
 const char kAccessibilityIncludeLongClickActionDescription[] =
     "When enabled, the accessibility tree for the web contents will include "
     "the ACTION_LONG_CLICK action on all relevant nodes.";
-const char kAccessibilityOnScreenModeName[] =
-    "Experimental Accessibility Mode for On Screen only";
-const char kAccessibilityOnScreenModeDescription[] =
-    "Enable experimental accessibility mode to improve performance when "
-    "running TalkBack.";
-
 const char kAccessibilityTextFormattingName[] = "Accessibility Text Formatting";
 const char kAccessibilityTextFormattingDescription[] =
     "When enabled, text formatting information will be included in the "

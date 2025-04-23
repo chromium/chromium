@@ -126,6 +126,15 @@ AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXRandomizedStressTests);
 AX_BASE_EXPORT bool IsAXRandomizedStressTestsEnabled();
 
+// Enable the experimental on-screen AXMode .
+// TODO(accessibility): Only turn on the experimental On-Screen mode for when
+// screen readers are not running. This is an experimental mode for now, so this
+// is fine for now.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOnScreenMode);
+
+// Returns true if the on screen AXMode is enabled.
+AX_BASE_EXPORT bool IsAccessibilityOnScreenAXModeEnabled();
+
 #if BUILDFLAG(IS_WIN)
 // Use Chrome-specific accessibility COM API.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);
@@ -227,15 +236,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3SwitchAccess);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForSwitchAccess();
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-// Enable on screen AXMode based on running services. If disabled,
-// then on screen AXMode will not be available to be set.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOnScreenMode);
-
-// Returns true if the on screen AXMode is enabled.
-AX_BASE_EXPORT bool IsAccessibilityOnScreenAXModeEnabled();
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Use the AXTree fixing code, which may be an assortment of different
