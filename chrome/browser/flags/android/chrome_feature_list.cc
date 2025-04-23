@@ -213,7 +213,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
     &kAuxiliarySearchDonation,
-    &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackgroundThreadPool,
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
@@ -467,10 +466,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
 
 BASE_FEATURE(kAllowNewIncognitoTabIntents,
              "AllowNewIncognitoTabIntents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing,
-             "AvoidSelectedTabFocusOnLayoutDoneShowing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableCompositedProgressBar,
