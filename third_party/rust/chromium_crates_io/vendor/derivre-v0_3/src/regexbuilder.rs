@@ -96,13 +96,19 @@ pub enum RegexAst {
     EmptyString,
     /// Matches nothing. Same as Or([]).
     NoMatch,
-    /// Compile the regex using the regex_syntax crate
+    /// Compile the regex using the regex_syntax crate.
+    /// This assumes the regex is implicitly anchored.
+    /// It allows ^$ only at the beginning and end of the regex.
     Regex(String),
+    /// Compile the regex using the regex_syntax crate, but do not assume it's anchored.
+    /// This will add (.*) to the beginning and end of the regex if it doesn't already have
+    /// anchors.
+    SearchRegex(String),
     /// Matches this string only
     Literal(String),
     /// Matches this string of bytes only. Can lead to invalid utf8.
     ByteLiteral(Vec<u8>),
-    /// Matches this byte only. If byte is not in 0..127, it may lead to invalid utf8
+    /// Matches this byte only. If byte is not in 0..127, it may lead to invalid utf8.
     Byte(u8),
     /// Matches any byte in the set, expressed as bitset.
     /// Can lead to invalid utf8 if the set is not a subset of 0..127
@@ -132,6 +138,7 @@ impl RegexAst {
             | RegexAst::MultipleOf(_, _)
             | RegexAst::NoMatch
             | RegexAst::Regex(_)
+            | RegexAst::SearchRegex(_)
             | RegexAst::Literal(_)
             | RegexAst::ByteLiteral(_)
             | RegexAst::ExprRef(_)
@@ -150,6 +157,7 @@ impl RegexAst {
             RegexAst::EmptyString => "EmptyString",
             RegexAst::NoMatch => "NoMatch",
             RegexAst::Regex(_) => "Regex",
+            RegexAst::SearchRegex(_) => "SearchRegex",
             RegexAst::Literal(_) => "Literal",
             RegexAst::ByteLiteral(_) => "ByteLiteral",
             RegexAst::ExprRef(_) => "ExprRef",
@@ -194,7 +202,11 @@ impl RegexAst {
                         dst.push_str(&format!("invalid byteset len: {}", bs.len()))
                     }
                 }
-                RegexAst::Regex(s) | RegexAst::Literal(s) => {
+                RegexAst::SearchRegex(s) | RegexAst::Regex(s) => {
+                    dst.push(' ');
+                    write_regex(dst, s);
+                }
+                RegexAst::Literal(s) => {
                     dst.push_str(&format!(" {:?}", s));
                 }
                 RegexAst::ByteLiteral(s) => {
@@ -228,6 +240,47 @@ impl RegexAst {
             }
         }
     }
+}
+
+pub(crate) fn write_regex(dst: &mut String, regex: &str) {
+    dst.push('/');
+    let mut escaped = false;
+    for c in regex.chars() {
+        match c {
+            '\\' if !escaped => {
+                escaped = true;
+                continue;
+            }
+            '/' => {
+                dst.push('\\');
+                dst.push(c);
+            }
+            '\n' => {
+                dst.push_str("\\n");
+            }
+            '\r' => {
+                dst.push_str("\\r");
+            }
+            '\t' => {
+                dst.push_str("\\t");
+            }
+            _ => {
+                if c < ' ' {
+                    dst.push_str(&format!("\\x{:02X}", c as u32));
+                } else {
+                    if escaped {
+                        dst.push('\\');
+                    }
+                    dst.push(c);
+                }
+            }
+        }
+        escaped = false;
+    }
+    if escaped {
+        dst.push_str("\\\\");
+    }
+    dst.push('/');
 }
 
 impl Debug for RegexAst {
@@ -514,7 +567,12 @@ impl RegexBuilder {
 
     pub fn mk_regex(&mut self, s: &str) -> Result<ExprRef> {
         let parser = self.parser_builder.build();
-        self.exprset.parse_expr(parser, s)
+        self.exprset.parse_expr(parser, s, false)
+    }
+
+    pub fn mk_regex_for_serach(&mut self, s: &str) -> Result<ExprRef> {
+        let parser = self.parser_builder.build();
+        self.exprset.parse_expr(parser, s, true)
     }
 
     pub fn mk_regex_and(&mut self, s: &[&str]) -> Result<ExprRef> {
@@ -553,6 +611,7 @@ impl RegexBuilder {
             |ast, new_args| {
                 let r = match ast {
                     RegexAst::Regex(s) => self.mk_regex(s)?,
+                    RegexAst::SearchRegex(s) => self.mk_regex_for_serach(s)?,
                     RegexAst::JsonQuote(_, opts) => self.json_quote(new_args[0], opts)?,
                     RegexAst::ExprRef(r) => {
                         ensure!(self.exprset.is_valid(*r), "invalid ref");

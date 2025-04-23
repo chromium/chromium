@@ -70,7 +70,7 @@ impl ByteCompressor {
             self.compress_bytesets(|_| 0u64, |v, idx| *v |= 1 << idx);
         } else {
             self.compress_bytesets(
-                |size| vec![0u32; (size + 31) / 32],
+                |size| vec![0u32; size.div_ceil(32)],
                 |v, idx| v[idx / 32] |= 1 << (idx % 32),
             );
         }

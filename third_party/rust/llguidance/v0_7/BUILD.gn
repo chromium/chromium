@@ -52,6 +52,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/matcher.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/output.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/panic_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/regex_rewrite.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/stop_controller.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/substring.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/tokenizer_json.rs",
@@ -64,7 +65,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.7.13"
+  cargo_pkg_version = "0.7.14"
   cargo_pkg_name = "llguidance"
   cargo_pkg_description = "Super-fast Structured Outputs"
   library_configs -= [ "//build/config/coverage:default_coverage" ]

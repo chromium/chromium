@@ -443,3 +443,60 @@ fn test_json_and() {
     );
     match_many(&mut rx, &["foo", "fooo\\n", "baar"]);
 }
+
+fn mk_search_regex(rx: &str) -> Regex {
+    let mut b = RegexBuilder::new();
+    let e0 = b.mk_regex_for_serach(rx).unwrap();
+    b.to_regex(e0)
+}
+
+fn assert_search(search_rx: &str, match_rx: &str) {
+    let mut b = RegexBuilder::new();
+    let e0 = b.mk_regex_for_serach(search_rx).unwrap();
+    let e1 = b.mk_regex(&format!("(?s:{})", match_rx)).unwrap();
+    if e0 != e1 {
+        panic!(
+            "search regex {:?} != match regex {:?} (based on {:?} != {:?})",
+            b.exprset().expr_to_string(e0),
+            b.exprset().expr_to_string(e1),
+            search_rx,
+            match_rx
+        );
+    }
+}
+
+#[test]
+fn test_search() {
+    let mut rx = mk_search_regex("foo");
+    match_many(&mut rx, &["foo", "fooa", "afoo", "afooa"]);
+    no_match_many(&mut rx, &["fo", "foO", ""]);
+
+    let mut rx = mk_search_regex("^foo");
+    match_many(&mut rx, &["foo", "fooa"]);
+    no_match_many(&mut rx, &["fo", "foO", "afoo", "afooa"]);
+
+    assert_search("foo", ".*foo.*");
+    assert_search("^foo", "foo.*");
+    assert_search("foo$", ".*foo");
+    assert_search("[ab]$", ".*[ab]");
+    assert_search("^$|foo", "|.*foo.*");
+    assert_search("^$|foo$", "|.*foo");
+    assert_search("^$|^foo$", "|foo");
+    assert_search("^$|^foo", "|foo.*");
+    assert_search("(^$)|(foo$)", "|.*foo");
+    assert_search("(?s:a.*b)", ".*a.*b.*");
+    assert_search("(abc)", ".*(abc).*");
+    assert_search("baz|qux", ".*(baz|qux).*");
+    assert_search("^hello", "hello.*");
+    assert_search("world$", ".*world");
+    assert_search("^hello$", "hello");
+    assert_search("\\d+", ".*\\d+.*");
+    assert_search("(?:abc)+", ".*(?:abc)+.*");
+    assert_search("^[a-z]*$", "[a-z]*");
+    assert_search("^(a|b)$", "a|b");
+    assert_search("^(foo)*$", "(foo)*");
+    assert_search("colou?r", ".*colou?r.*");
+    assert_search("[0-9]{2,4}", ".*[0-9]{2,4}.*");
+    assert_search("^[^a-z]+$", "[^a-z]+");
+    assert_search("file\\.txt", ".*file\\.txt.*");
+}

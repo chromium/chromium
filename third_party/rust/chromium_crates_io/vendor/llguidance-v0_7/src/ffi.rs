@@ -935,7 +935,7 @@ impl LlgMatcher {
     }
 
     fn mask_elts(&self) -> usize {
-        (self.tok_env.tok_trie().vocab_size() + 31) / 32
+        self.tok_env.tok_trie().vocab_size().div_ceil(32)
     }
 }
 

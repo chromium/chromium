@@ -3,7 +3,7 @@ use crate::api::RegexExt;
 use super::lexer::Location;
 
 /// Represents an item in the grammar (rule, token, or statement).
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 pub enum Item {
     Rule(Rule),
@@ -22,7 +22,7 @@ impl Item {
 }
 
 /// Represents a grammar rule.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Rule {
     pub name: String,
     #[allow(dead_code)]
@@ -42,7 +42,7 @@ pub struct Rule {
 }
 
 /// Represents a token definition.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TokenDef {
     pub name: String,
     pub params: Option<TokenParams>,
@@ -51,7 +51,7 @@ pub struct TokenDef {
 }
 
 /// Represents different types of statements.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Statement {
     Ignore(Expansions),
     Import {
@@ -80,7 +80,7 @@ pub struct RuleParams(pub Vec<String>);
 pub struct TokenParams(pub Vec<String>);
 
 /// Represents a list of expansions.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Expansions(pub Location, pub Vec<Alias>);
 
 impl Expansions {
@@ -94,7 +94,7 @@ impl Expansions {
 }
 
 /// Represents an alias in the grammar.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Alias {
     pub expansion: Expansion,
     #[allow(dead_code)]
@@ -102,11 +102,11 @@ pub struct Alias {
 }
 
 /// Represents an expansion consisting of expressions.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Expansion(pub Vec<Expr>);
 
 /// Represents an expression.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Expr {
     pub atom: Atom,
     pub op: Option<Op>,
@@ -114,7 +114,7 @@ pub struct Expr {
 }
 
 /// Represents an atom in the grammar.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Atom {
     Group(Expansions),
     Maybe(Expansions),
@@ -122,7 +122,7 @@ pub enum Atom {
 }
 
 /// Represents different values in the grammar.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Value {
     LiteralRange(String, String),
     Name(String),
@@ -131,6 +131,7 @@ pub enum Value {
     GrammarRef(String),
     SpecialToken(String),
     Json(serde_json::Value),
+    NestedLark(Vec<Item>),
     RegexExt(RegexExt),
     #[allow(dead_code)]
     TemplateUsage {
@@ -146,6 +147,9 @@ pub struct Op(pub String);
 impl Rule {
     pub fn stop_like(&self) -> Option<&Value> {
         self.stop.as_ref().or(self.suffix.as_ref())
+    }
+    pub fn take_stop_like(&mut self) -> Option<Value> {
+        self.stop.take().or_else(|| self.suffix.take())
     }
     // follow guidance: "lazy": node.stop_regex != "",
     pub fn is_lazy(&self) -> bool {

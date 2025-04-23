@@ -6,7 +6,6 @@ use super::lexerspec::LexerSpec;
 use super::{CGrammar, Grammar};
 use crate::api::{GrammarId, GrammarInit, GrammarWithLexer, ParserLimits, TopLevelGrammar};
 use crate::earley::lexerspec::LexemeClass;
-use crate::lark::lark_to_llguidance;
 use crate::Instant;
 use crate::{loginfo, JsonCompileOptions, Logger};
 use crate::{GrammarBuilder, HashMap};
@@ -24,11 +23,20 @@ impl CompileCtx {
         let builder = std::mem::take(&mut self.builder).unwrap();
 
         let res = if let Some(lark) = input.lark_grammar {
-            ensure!(
-                input.json_schema.is_none(),
-                "cannot have both lark_grammar and json_schema"
-            );
-            lark_to_llguidance(builder, &lark)?
+            #[cfg(feature = "lark")]
+            {
+                use crate::lark::lark_to_llguidance;
+                ensure!(
+                    input.json_schema.is_none(),
+                    "cannot have both lark_grammar and json_schema"
+                );
+                lark_to_llguidance(builder, &lark)?
+            }
+            #[cfg(not(feature = "lark"))]
+            {
+                let _ = lark;
+                bail!("lark_grammar is not supported in this build")
+            }
         } else if let Some(mut json_schema) = input.json_schema {
             let mut opts = JsonCompileOptions::default();
             if let Some(x_guidance) = json_schema.get("x-guidance") {

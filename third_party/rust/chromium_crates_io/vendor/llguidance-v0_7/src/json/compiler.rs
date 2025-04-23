@@ -852,6 +852,7 @@ fn always_non_empty(ast: &RegexAst) -> bool {
         | RegexAst::Not(_)
         | RegexAst::NoMatch
         | RegexAst::Regex(_)
+        | RegexAst::SearchRegex(_)
         | RegexAst::ExprRef(_) => false,
     }
 }

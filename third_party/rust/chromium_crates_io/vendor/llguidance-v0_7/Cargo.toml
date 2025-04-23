@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "llguidance"
-version = "0.7.13"
+version = "0.7.14"
 build = "build.rs"
 autolib = false
 autobins = false
@@ -55,7 +55,7 @@ path = "src/lib.rs"
 version = "1.0.95"
 
 [dependencies.derivre]
-version = "=0.3.5"
+version = "=0.3.7"
 features = ["compress"]
 default-features = false
 
@@ -95,7 +95,7 @@ version = "1.0.138"
 features = ["preserve_order"]
 
 [dependencies.toktrie]
-version = "0.7.13"
+version = "0.7.14"
 
 [dev-dependencies.regex]
 version = "1.11.1"

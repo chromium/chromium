@@ -486,29 +486,31 @@ impl Grammar {
     ) -> Result<()> {
         let mut rules = vec![];
         let mut temperatures: HashMap<LexemeClass, f32> = HashMap::default();
-        for sym in &mut self.symbols {
+        for sym in &self.symbols {
             if let Some(opts) = &sym.gen_grammar {
-                if sym.rules.len() == 1 {
-                    // ignore already-resolved grammars
-                    continue;
-                }
-                if let Some((idx, cls)) = ctx.get(&opts.grammar).cloned() {
+                let cls = if sym.rules.len() == 1 {
+                    // fetch the class of already-resolved grammar
+                    let rhs = sym.rules[0].rhs[0];
+                    self.sym_data(rhs).props.grammar_id
+                } else if let Some((idx, cls)) = ctx.get(&opts.grammar).cloned() {
                     rules.push((sym.idx, idx));
-                    let temp = opts.temperature.unwrap_or(0.0);
-                    if let Some(&existing) = temperatures.get(&cls) {
-                        if existing != temp {
-                            bail!(
-                                "temperature mismatch for nested grammar {:?}: {} vs {}",
-                                opts.grammar,
-                                existing,
-                                temp
-                            );
-                        }
-                    }
-                    temperatures.insert(cls, temp);
+                    cls
                 } else {
                     bail!("unknown grammar {}", opts.grammar);
+                };
+
+                let temp = opts.temperature.unwrap_or(0.0);
+                if let Some(&existing) = temperatures.get(&cls) {
+                    if existing != temp {
+                        bail!(
+                            "temperature mismatch for nested grammar {:?}: {} vs {}",
+                            opts.grammar,
+                            existing,
+                            temp
+                        );
+                    }
                 }
+                temperatures.insert(cls, temp);
             }
         }
         for (lhs, rhs) in rules {

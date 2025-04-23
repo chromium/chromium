@@ -56,7 +56,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "derivre"
-version = "0.3.5"
+version = "0.3.7"
 dependencies = [
  "ahash",
  "anyhow",

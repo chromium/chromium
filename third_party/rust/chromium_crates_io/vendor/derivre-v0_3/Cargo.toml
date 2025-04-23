@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "derivre"
-version = "0.3.5"
+version = "0.3.7"
 authors = ["Michal Moskal <michal@moskal.me>"]
 build = false
 exclude = ["scripts/*"]

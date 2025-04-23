@@ -7,16 +7,18 @@ use regex_syntax::{
 
 use crate::{
     ast::{byteset_256, byteset_from_range, byteset_set, ExprSet},
+    regexbuilder::write_regex,
     ExprRef,
 };
 
 struct StackEntry<'a> {
     ast: &'a Hir,
     args: Vec<ExprRef>,
+    anchored: Vec<(bool, bool)>,
     result_stack_idx: usize,
     result_vec_offset: usize,
-    allow_start: bool,
-    allow_end: bool,
+    at_start: bool,
+    at_end: bool,
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -137,37 +139,55 @@ impl ExprSet {
         r
     }
 
-    fn mk_from_ast(&mut self, ast: &Hir) -> Result<ExprRef> {
+    fn mk_any_unicode_star(&mut self) -> ExprRef {
+        if self.any_unicode_star.is_valid() {
+            return self.any_unicode_star;
+        }
+        let mut all = ClassUnicode::empty();
+        all.negate();
+        let any_unicode = self.handle_unicode_ranges(&all);
+        assert_eq!(any_unicode, self.any_unicode);
+        self.any_unicode_star = self.mk_repeat(any_unicode, 0, u32::MAX);
+        self.any_unicode_star
+    }
+
+    fn mk_from_ast(&mut self, ast: &Hir, for_search: bool) -> Result<ExprRef> {
         let mut todo = vec![StackEntry {
             ast,
             args: Vec::new(),
+            anchored: Vec::new(),
             result_stack_idx: 0,
             result_vec_offset: 0,
-            allow_start: true,
-            allow_end: true,
+            at_start: true,
+            at_end: true,
         }];
         while let Some(mut node) = todo.pop() {
             let subs = node.ast.kind().subs();
             if subs.len() != node.args.len() {
                 assert!(node.args.is_empty());
-                node.args = subs.iter().map(|_| ExprRef::INVALID).collect();
+                let n_args = subs.len();
+                node.args = vec![ExprRef::INVALID; n_args];
+                if for_search {
+                    node.anchored = vec![(false, false); n_args];
+                }
                 let result_stack_idx = todo.len();
                 let is_concat = matches!(node.ast.kind(), HirKind::Concat(_));
                 let derives_start = matches!(
                     node.ast.kind(),
                     HirKind::Alternation(_) | HirKind::Capture(_)
                 );
-                let allow_start = (derives_start || is_concat) && node.allow_start;
-                let allow_end = (derives_start || is_concat) && node.allow_end;
+                let at_start = (derives_start || is_concat) && node.at_start;
+                let at_end = (derives_start || is_concat) && node.at_end;
                 todo.push(node);
                 for (idx, sub) in subs.iter().enumerate() {
                     todo.push(StackEntry {
                         ast: sub,
                         args: Vec::new(),
+                        anchored: Vec::new(),
                         result_stack_idx,
                         result_vec_offset: idx,
-                        allow_start: (!is_concat || idx == 0) && allow_start,
-                        allow_end: (!is_concat || idx == subs.len() - 1) && allow_end,
+                        at_start: (!is_concat || idx == 0) && at_start,
+                        at_end: (!is_concat || idx == subs.len() - 1) && at_end,
                     });
                 }
                 continue;
@@ -175,7 +195,10 @@ impl ExprSet {
                 assert!(node.args.iter().all(|&x| x != ExprRef::INVALID));
             }
 
-            let r = match node.ast.kind() {
+            let mut anchored_start = false;
+            let mut anchored_end = false;
+
+            let mut r = match node.ast.kind() {
                 HirKind::Empty => ExprRef::EMPTY_STRING,
                 HirKind::Literal(bytes) => self.mk_byte_literal(&bytes.0),
                 HirKind::Class(hir::Class::Bytes(ranges)) => {
@@ -189,8 +212,14 @@ impl ExprSet {
                 }
                 HirKind::Class(hir::Class::Unicode(u)) => self.handle_unicode_ranges(u),
                 // ignore ^ and $ anchors:
-                HirKind::Look(Look::Start) if node.allow_start => ExprRef::EMPTY_STRING,
-                HirKind::Look(Look::End) if node.allow_end => ExprRef::EMPTY_STRING,
+                HirKind::Look(Look::Start) if node.at_start => {
+                    anchored_start = true;
+                    ExprRef::EMPTY_STRING
+                }
+                HirKind::Look(Look::End) if node.at_end => {
+                    anchored_end = true;
+                    ExprRef::EMPTY_STRING
+                }
                 HirKind::Look(l) => {
                     bail!("lookarounds not supported yet; {:?}", l)
                 }
@@ -201,6 +230,9 @@ impl ExprSet {
                 }
                 HirKind::Capture(c) => {
                     assert!(node.args.len() == 1);
+                    if for_search {
+                        (anchored_start, anchored_end) = node.anchored[0];
+                    }
                     // use (?P<stop>R) as syntax for lookahead
                     if c.name.as_deref() == Some("stop") {
                         self.mk_lookahead(node.args[0], 0)
@@ -211,26 +243,82 @@ impl ExprSet {
                 }
                 HirKind::Concat(args) => {
                     assert!(args.len() == node.args.len());
+                    if for_search {
+                        anchored_start = node.anchored[0].0;
+                        anchored_end = node.anchored[node.args.len() - 1].1;
+                    }
                     self.mk_concat_vec(&node.args)
                 }
                 HirKind::Alternation(args) => {
                     assert!(args.len() == node.args.len());
+                    if for_search && (node.at_start || node.at_end) {
+                        let mut all_start = true;
+                        let mut all_end = true;
+                        let mut some_start = false;
+                        let mut some_end = false;
+                        for (st, en) in node.anchored.iter() {
+                            all_start &= st;
+                            all_end &= en;
+                            some_start |= st;
+                            some_end |= en;
+                        }
+                        if some_start || some_end {
+                            anchored_start = some_start;
+                            anchored_end = some_end;
+                            if !all_start || !all_end {
+                                let dot_star = self.mk_any_unicode_star();
+                                for ((st, en), arg) in
+                                    node.anchored.iter().zip(node.args.iter_mut())
+                                {
+                                    let needs_st = !*st && anchored_start;
+                                    let needs_en = !*en && anchored_end;
+                                    if needs_en {
+                                        *arg = self.mk_concat(*arg, dot_star);
+                                    }
+                                    if needs_st {
+                                        *arg = self.mk_concat(dot_star, *arg);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     self.mk_or(&mut node.args)
                 }
             };
 
             if todo.is_empty() {
+                if for_search {
+                    let dot_star = self.mk_any_unicode_star();
+                    if !anchored_end {
+                        r = self.mk_concat(r, dot_star);
+                    }
+                    if !anchored_start {
+                        r = self.mk_concat(dot_star, r);
+                    }
+                }
                 return Ok(r);
             }
 
             todo[node.result_stack_idx].args[node.result_vec_offset] = r;
+            if for_search {
+                todo[node.result_stack_idx].anchored[node.result_vec_offset] =
+                    (anchored_start, anchored_end);
+            }
         }
         unreachable!()
     }
 
-    pub fn parse_expr(&mut self, mut parser: Parser, rx: &str) -> Result<ExprRef> {
+    pub fn parse_expr(
+        &mut self,
+        mut parser: Parser,
+        rx: &str,
+        for_search: bool,
+    ) -> Result<ExprRef> {
         let hir = parser.parse(rx)?;
-        self.mk_from_ast(&hir)
-            .map_err(|e| anyhow::anyhow!("{} in regex {:?}", e, rx))
+        self.mk_from_ast(&hir, for_search).map_err(|e| {
+            let mut err = format!("{e} in regex ");
+            write_regex(&mut err, rx);
+            anyhow::anyhow!(err)
+        })
     }
 }

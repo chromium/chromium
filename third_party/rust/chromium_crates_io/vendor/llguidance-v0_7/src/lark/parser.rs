@@ -4,20 +4,49 @@ use super::{
 };
 use anyhow::{anyhow, bail, ensure, Result};
 
+const MAX_NESTING: usize = 30;
+
 /// The parser struct that holds the tokens and current position.
 pub struct Parser {
     tokens: Vec<Lexeme>,
     pos: usize,
+    nesting_level: usize,
 }
 
 impl Parser {
     /// Creates a new parser instance.
-    pub fn new(tokens: Vec<Lexeme>) -> Self {
-        Parser { tokens, pos: 0 }
+    pub fn new(tokens: Vec<Lexeme>, nesting: usize) -> Self {
+        Parser {
+            tokens,
+            pos: 0,
+            nesting_level: nesting,
+        }
     }
 
     /// Parses the start symbol of the grammar.
     pub fn parse_start(&mut self) -> Result<ParsedLark> {
+        ensure!(
+            self.nesting_level < MAX_NESTING,
+            "lark grammar too deeply nested"
+        );
+        self.parse_start_inner().map_err(|e| {
+            if let Some(tok) = self.peek_token() {
+                anyhow!(
+                    "{}({}): {} (at {} ({:?}))",
+                    tok.line,
+                    tok.column,
+                    e,
+                    tok.value,
+                    tok.token
+                )
+            } else {
+                anyhow!("at EOF: {}", e)
+            }
+        })
+    }
+
+    /// Parses the start symbol of the grammar.
+    fn parse_start_inner(&mut self) -> Result<ParsedLark> {
         let mut items = Vec::new();
         while !self.is_at_end() {
             self.consume_newlines();
@@ -293,6 +322,18 @@ impl Parser {
 
     /// Parses expansions.
     fn parse_expansions(&mut self) -> Result<Expansions> {
+        ensure!(
+            self.nesting_level + 1 < MAX_NESTING,
+            "lark grammar too deeply nested"
+        );
+        self.nesting_level += 1;
+        let expansions = self.parse_expansions_inner();
+        self.nesting_level -= 1;
+        expansions
+    }
+
+    /// Parses expansions.
+    fn parse_expansions_inner(&mut self) -> Result<Expansions> {
         let loc = self.location();
         let mut aliases = Vec::new();
         aliases.push(self.parse_alias()?);
@@ -448,6 +489,35 @@ impl Parser {
                 LexemeValue::Regex(v) => Ok(Value::RegexExt(v)),
                 v => bail!("expected regex JSON value, got {}", v),
             }
+        } else if self.match_token(Token::KwLark) {
+            if !self.match_token(Token::LBrace) {
+                bail!("Expected '{{' after %lark")
+            }
+            let mut nesting_level = 1;
+            let mut endp = self.pos;
+            while endp < self.tokens.len() {
+                let t = self.tokens[endp].token;
+                if t == Token::LBrace {
+                    nesting_level += 1;
+                } else if t == Token::RBrace {
+                    nesting_level -= 1;
+                }
+                if nesting_level == 0 {
+                    break;
+                }
+                endp += 1;
+            }
+            if nesting_level > 0 {
+                bail!("Unmatched %lark {{ ... }}");
+            }
+            let mut inner = Vec::with_capacity(endp - self.pos);
+            for t in self.tokens[self.pos..endp].iter_mut() {
+                inner.push(t.take());
+            }
+            self.pos = endp + 1;
+
+            let inner = Parser::new(inner, self.nesting_level + 1).parse_start()?;
+            Ok(Value::NestedLark(inner.items))
         } else if let Some(name_token) = self
             .match_token_with_value(Token::Rule)
             .or_else(|| self.match_token_with_value(Token::Token))
@@ -629,19 +699,5 @@ pub struct ParsedLark {
 
 pub fn parse_lark(input: &str) -> Result<ParsedLark> {
     let tokens = lex_lark(input)?;
-    let mut parser = Parser::new(tokens);
-    parser.parse_start().map_err(|e| {
-        if let Some(tok) = parser.peek_token() {
-            anyhow!(
-                "{}({}): {} (at {} ({:?}))",
-                tok.line,
-                tok.column,
-                e,
-                tok.value,
-                tok.token
-            )
-        } else {
-            anyhow!("at EOF: {}", e)
-        }
-    })
+    Parser::new(tokens, 0).parse_start()
 }
