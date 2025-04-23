@@ -255,6 +255,7 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateProvisionalAllowed();
+  forced_type_ = ForcedTipsNotificationType();
   if (user_type_ == TipsNotificationUserType::kUnknown &&
       !CanSendReactivation()) {
     ClassifyUser();
@@ -345,6 +346,11 @@ void TipsNotificationClient::MaybeRequestNotification(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if ((!permitted_ && !CanSendReactivation()) || DismissLimitReached()) {
     std::move(completion).Run();
+    return;
+  }
+
+  if (forced_type_.has_value()) {
+    RequestNotification(forced_type_.value(), std::move(completion));
     return;
   }
 
@@ -780,7 +786,9 @@ bool TipsNotificationClient::CanSendReactivation() {
     return false;
   }
 
-  return local_state_->GetInteger(kReactivationNotificationsCanceledCount) < 2;
+  return local_state_->GetInteger(kReactivationNotificationsCanceledCount) <
+             2 ||
+         forced_type_.has_value();
 }
 
 void TipsNotificationClient::UpdateProvisionalAllowed() {

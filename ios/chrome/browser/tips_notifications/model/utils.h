@@ -115,4 +115,8 @@ int TipsNotificationsDismissLimit();
 NotificationType NotificationTypeForTipsNotificationType(
     TipsNotificationType type);
 
+// Returns the type of Tips Notification that is forced to be sent, via
+// experimental settings.
+std::optional<TipsNotificationType> ForcedTipsNotificationType();
+
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

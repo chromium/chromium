@@ -129,6 +129,10 @@ const char kTipsNotificationsDismissCount[] =
 const char kReactivationNotificationsCanceledCount[] =
     "reactivation_notifications.canceled_count";
 
+// User defaults key for the experimental setting to force a particular
+// notification type.
+NSString* const kForcedTipsNotificationType = @"ForcedTipsNotificationType";
+
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];
 }
@@ -298,4 +302,14 @@ NotificationType NotificationTypeForTipsNotificationType(
     default:
       NOTREACHED();
   }
+}
+
+std::optional<TipsNotificationType> ForcedTipsNotificationType() {
+  int int_value = [[NSUserDefaults standardUserDefaults]
+                      integerForKey:kForcedTipsNotificationType] -
+                  1;
+  if (int_value < 0 || int_value > int(TipsNotificationType::kMaxValue)) {
+    return std::nullopt;
+  }
+  return static_cast<TipsNotificationType>(int_value);
 }

@@ -179,6 +179,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // be handled when there is a foreground scene.
   std::optional<TipsNotificationType> interacted_type_;
 
+  // Stores the type of notification that is forced to be sent by experimental
+  // settings.
+  std::optional<TipsNotificationType> forced_type_;
+
   // Observes changes to permitted pref.
   PrefChangeRegistrar pref_change_registrar_;
 
