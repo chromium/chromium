@@ -37,6 +37,9 @@
 // (fakeIdentity3).
 + (void)addSharedTabToGroupAtIndex:(unsigned int)index;
 
+// Returns the URL of the activity logs.
++ (NSString*)activityLogsURL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUP_APP_INTERFACE_H_

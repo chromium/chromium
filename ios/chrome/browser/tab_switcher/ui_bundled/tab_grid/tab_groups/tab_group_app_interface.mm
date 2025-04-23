@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
@@ -196,6 +198,11 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
   chrome_test_util::AddSharedTabToFakeServer(
       tab, group.collaboration_id().value().value());
   chrome_test_util::TriggerSyncCycle(syncer::SHARED_TAB_GROUP_DATA);
+}
+
++ (NSString*)activityLogsURL {
+  return base::SysUTF8ToNSString(
+      data_sharing::features::kActivityLogsURL.Get());
 }
 
 @end

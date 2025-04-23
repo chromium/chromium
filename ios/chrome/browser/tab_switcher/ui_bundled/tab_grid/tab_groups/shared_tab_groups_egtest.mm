@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
@@ -30,12 +31,15 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::AddTabToGroupSubMenuButton;
 using chrome_test_util::BlueDotOnShowTabsButton;
 using chrome_test_util::BlueDotOnTabStripCellAtIndex;
@@ -110,8 +114,7 @@ void LongPressOn(id<GREYMatcher> matcher) {
     return error == nil;
   };
 
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForUIElementTimeout, condition),
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Long press failed.");
 }
 
@@ -996,6 +999,58 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(2)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the recent activity menu has a link to all activity logs.
+- (void)testRecentActivityMenu {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:RecentActivityButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kRecentActivityLogMenuButtonIdentifier)]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> menuElement =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_SHARE_KIT_MANAGE_ACTIVITY_LOG_TITLE);
+  [[EarlGrey selectElementWithMatcher:menuElement]
+      assertWithMatcher:grey_notNil()];
+  // Scope for the synchronization disabled.
+  {
+    // Disable synchronization to avoid network synchronization.
+    ScopedSynchronizationDisabler syncDisabler;
+
+    [[EarlGrey selectElementWithMatcher:menuElement] performAction:grey_tap()];
+
+    ConditionBlock condition = ^{
+      return
+          [ChromeEarlGrey webStateVisibleURL] ==
+          GURL(base::SysNSStringToUTF8([TabGroupAppInterface activityLogsURL]));
+    };
+    GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+               @"Wrong activity URL: %s instead of %@",
+               [ChromeEarlGrey webStateVisibleURL].spec().c_str(),
+               [TabGroupAppInterface activityLogsURL]);
+
+    GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
+                    @"Logs should be in new tab");
+    [ChromeEarlGrey closeCurrentTab];
+  }
+  // End of the sync disabler scope.
 }
 
 // Tests that tapping items on Recent Activity takes an action corresponded to

@@ -5,12 +5,16 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_view_controller.h"
 
 #import "base/check.h"
+#import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_mutator.h"
@@ -23,7 +27,8 @@
 namespace {
 
 // The size of the close button.
-const CGFloat kCloseButtonSize = 28;
+const CGFloat kButtonImageSize = 28;
+const CGFloat kButtonSize = 44;
 
 typedef NSDiffableDataSourceSnapshot<NSString*, RecentActivityLogItem*>
     ActivityLogSnapshot;
@@ -64,18 +69,61 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
 
   self.view.accessibilityIdentifier = kTabGroupRecentActivityIdentifier;
 
+  __weak __typeof(self) weakSelf = self;
+
   // Configure a close button.
-  UIImage* buttonImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize), @[
+  UIImage* closeImage = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kButtonImageSize), @[
         [UIColor colorNamed:kCloseButtonColor],
         [UIColor colorNamed:kSecondaryBackgroundColor]
       ]);
-  UIBarButtonItem* closeButton =
-      [[UIBarButtonItem alloc] initWithImage:buttonImage
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(didTapCloseButton)];
-  self.navigationItem.rightBarButtonItem = closeButton;
+  UIButtonConfiguration* closeButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  closeButtonConfiguration.image = closeImage;
+  UIButton* closeButton = [UIButton
+      buttonWithConfiguration:closeButtonConfiguration
+                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
+                  [weakSelf didTapCloseButton];
+                }]];
+  closeButton.accessibilityIdentifier = kRecentActivityLogCloseButtonIdentifier;
+  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [closeButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
+
+  // Configure the menu button.
+  UIImage* menuImage = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol, kButtonImageSize),
+      @[
+        [UIColor colorNamed:kCloseButtonColor],
+        [UIColor colorNamed:kSecondaryBackgroundColor]
+      ]);
+  UIAction* showAllActivity =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_SHARE_KIT_MANAGE_ACTIVITY_LOG_TITLE)
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf showFullActivity];
+                        }];
+  UIMenu* menu = [UIMenu menuWithChildren:@[ showAllActivity ]];
+
+  UIButtonConfiguration* menuButtonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  menuButtonConfiguration.image = menuImage;
+  UIButton* menuButton =
+      [UIButton buttonWithConfiguration:menuButtonConfiguration
+                          primaryAction:nil];
+  menuButton.menu = menu;
+  menuButton.showsMenuAsPrimaryAction = YES;
+  menuButton.accessibilityIdentifier = kRecentActivityLogMenuButtonIdentifier;
+  menuButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [menuButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
+
+  UIStackView* stackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ menuButton, closeButton ]];
+  stackView.axis = UILayoutConstraintAxisHorizontal;
+
+  self.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:stackView];
 
   // Configure a table view.
   UITableView* tableView = self.tableView;
@@ -155,6 +203,16 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
 - (void)didTapCloseButton {
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:nil];
+}
+
+// This is called when the user wants to see the activity log.
+- (void)showFullActivity {
+  [self.presentingViewController dismissViewControllerAnimated:YES
+                                                    completion:nil];
+  GURL activityLogsURL = GURL(data_sharing::features::kActivityLogsURL.Get());
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:activityLogsURL];
+  [self.applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 // Configures and returns a cell.
