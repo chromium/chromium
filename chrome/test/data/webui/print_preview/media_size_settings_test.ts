@@ -6,7 +6,6 @@ import 'chrome://print/print_preview.js';
 
 import type {MediaSizeCapability, PrintPreviewMediaSizeSettingsElement} from 'chrome://print/print_preview.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
@@ -23,16 +22,14 @@ suite('MediaSizeSettingsTest', function() {
 
     mediaSizeSection =
         document.createElement('print-preview-media-size-settings');
-    mediaSizeSection.settings = model.settings;
     mediaSizeSection.capability = mediaSizeCapability;
     mediaSizeSection.disabled = false;
     model.set('settings.mediaSize.available', true);
-    fakeDataBind(model, mediaSizeSection, 'settings');
     document.body.appendChild(mediaSizeSection);
   });
 
   test('settings select', function() {
-    const settingsSelect = mediaSizeSection.shadowRoot!.querySelector(
+    const settingsSelect = mediaSizeSection.shadowRoot.querySelector(
         'print-preview-settings-select')!;
     assertFalse(settingsSelect.disabled);
     assertEquals(mediaSizeCapability, settingsSelect.capability);
@@ -44,7 +41,7 @@ suite('MediaSizeSettingsTest', function() {
     const squareOption = mediaSizeCapability.option[1]!;
 
     // Default is letter
-    const settingsSelect = mediaSizeSection.shadowRoot!.querySelector(
+    const settingsSelect = mediaSizeSection.shadowRoot.querySelector(
         'print-preview-settings-select')!;
     assertDeepEquals(letterOption, JSON.parse(settingsSelect.selectedValue));
     assertDeepEquals(

@@ -1,14 +1,9 @@
-<style include="print-preview-shared">
-  :host print-preview-settings-select {
-    margin: 0 calc(var(--print-preview-sidebar-margin) - 2px);
-  }
-</style>
 <print-preview-settings-section>
   <span id="media-size-label" slot="title">$i18n{mediaSizeLabel}</span>
   <div slot="controls">
     <print-preview-settings-select aria-label="$i18n{mediaSizeLabel}"
-        capability="[[capability]]" setting-name="mediaSize"
-        disabled="[[disabled]]">
+        .capability="${this.capability}" setting-name="mediaSize"
+        ?disabled="${this.disabled}">
     </print-preview-settings-select>
   </div>
 </print-preview-settings-section>

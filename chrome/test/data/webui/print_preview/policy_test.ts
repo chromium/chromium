@@ -246,7 +246,7 @@ suite('PolicyTest', function() {
       toggleMoreSettings();
       const mediaSettingsSelect =
           page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
-              .querySelector('print-preview-media-size-settings')!.shadowRoot!
+              .querySelector('print-preview-media-size-settings')!.shadowRoot
               .querySelector('print-preview-settings-select')!.shadowRoot
               .querySelector('select')!;
       assertEquals(
