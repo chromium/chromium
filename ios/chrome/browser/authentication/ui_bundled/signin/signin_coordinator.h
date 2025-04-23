@@ -256,7 +256,7 @@ class PrefRegistrySyncable;
                                          (AccountMenuAccessPoint)accessPoint;
 
 // Returns a coordinator to show the history sync.
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     historySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser

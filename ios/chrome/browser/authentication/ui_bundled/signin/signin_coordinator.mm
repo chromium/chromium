@@ -290,7 +290,7 @@ using signin_metrics::PromoAction;
                                                      accessPoint:accessPoint];
 }
 
-+ (SigninCoordinator<InterruptibleChromeCoordinator>*)
++ (SigninCoordinator<StopAnimatedChromeCoordinator>*)
     historySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser
