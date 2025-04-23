@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "base/token.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace visited_url_ranking {
 
@@ -41,6 +42,9 @@ struct TabMetadata {
   // The group ID that the tab belongs to, as tracked by TabGroupSyncService.
   // Nullopt if its not part of a group.
   std::optional<base::Token> local_tab_group_id;
+
+  // The UKM source ID of the current WebContents of the tab.
+  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
 
   // Android only: the int value TabLaunchType of the tab.
   int tab_android_launch_type = -1;
