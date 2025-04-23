@@ -75,10 +75,10 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusMenu {
 
     // The MenuModel corresponding to this MenuItem, or null if this MenuItem is
     // not a submenu.  This can happen for leaf items or an empty root item.
-    const raw_ptr<ui::MenuModel, DanglingUntriaged> menu;
+    const raw_ptr<ui::MenuModel> menu;
     // |containing_menu| will be null for the root item.  If it's null, then
     // |containing_menu_index| is meaningless.
-    const raw_ptr<ui::MenuModel, DanglingUntriaged> containing_menu;
+    const raw_ptr<ui::MenuModel> containing_menu;
     const size_t containing_menu_index;
   };
 
@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusMenu {
 
   void SendLayoutChangedSignal(int32_t id);
 
-  raw_ptr<dbus::ExportedObject, DanglingUntriaged> menu_ = nullptr;
+  raw_ptr<dbus::ExportedObject> menu_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 
