@@ -563,14 +563,13 @@ static_library("common") {
 
   if (is_linux) {
     sources += [
-      "host_utmp_logger.cc",
-      "host_utmp_logger.h",
+      "host_wtmpdb_logger.cc",
+      "host_wtmpdb_logger.h",
     ]
 
-    libs += [
-      "utempter",
-      "util",
-    ]
+    libs += [ "util" ]
+
+    deps += [ "//sql" ]
   }
 
   if (is_linux) {

@@ -85,7 +85,7 @@ const char kUsageMessage[] =
     "  --type                   - Specifies process type.\n"
     "  --version                - Prints the host version and exits.\n"
     "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
-    "  --enable-utempter        - Enables recording to utmp/wtmp on Linux.\n"
+    "  --enable-wtmpdb          - Enables recording to wtmpdb on Linux.\n"
     "  --webrtc-trace-event-file=<path> - Enables logging webrtc trace events "
     "to a file.\n";
 

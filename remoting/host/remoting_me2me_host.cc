@@ -166,7 +166,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-#include "remoting/host/host_utmp_logger.h"
+#include "remoting/host/host_wtmpdb_logger.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_MULTI_PROCESS)
@@ -513,7 +513,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   std::unique_ptr<HostEventLogger> host_event_logger_;
 #if BUILDFLAG(IS_LINUX)
-  std::unique_ptr<HostUTMPLogger> host_utmp_logger_;
+  std::unique_ptr<HostWtmpdbLogger> host_wtmpdb_logger_;
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
 
@@ -1930,9 +1930,9 @@ void HostProcess::StartHost() {
 
 #if BUILDFLAG(IS_LINUX)
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(kEnableUtempter)) {
-    host_utmp_logger_ =
-        std::make_unique<HostUTMPLogger>(host_->status_monitor());
+  if (cmd_line->HasSwitch(kEnableWtmpdb)) {
+    host_wtmpdb_logger_ =
+        std::make_unique<HostWtmpdbLogger>(host_->status_monitor());
   }
 #endif
 
