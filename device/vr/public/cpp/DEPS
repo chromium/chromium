@@ -1,3 +1,0 @@
-include_rules = [
-  "+services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h",
-  ]

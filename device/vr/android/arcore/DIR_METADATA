@@ -1,7 +1,0 @@
-monorail: {
-  component: "Blink>WebXR>AR"
-}
-os: ANDROID
-buganizer_public: {
-  component_id: 1456285
-}
