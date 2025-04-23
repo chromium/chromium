@@ -2633,8 +2633,6 @@ crbug.com/411574366 external/wpt/css/css-values/urls/referrer-policy/strict-orig
 crbug.com/411574366 external/wpt/css/css-values/urls/referrer-policy/strict-origin/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 crbug.com/411574366 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
 crbug.com/411574366 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/411623170 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-2-crash.html [ Crash ]
-crbug.com/411623170 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-requestclose-3-crash.html [ Crash ]
 crbug.com/411723253 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/411723254 [ Win10.20h2 ] external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Crash Timeout ]
 crbug.com/411723254 [ Linux ] external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Crash Timeout ]
