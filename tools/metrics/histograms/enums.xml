@@ -5056,26 +5056,26 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Ash"/>
   <int value="2" label="Browser Command"/>
   <int value="3" label="MD Settings About Page"/>
-  <int value="4" label="Old Settings About Page"/>
+  <int value="4" label="DEPRECATED: Old Settings About Page"/>
   <int value="5" label="Profile Error Dialog"/>
   <int value="6" label="SadTab Page"/>
-  <int value="7" label="Supervised User Interstitial"/>
+  <int value="7" label="DEPRECATED: Supervised User Interstitial"/>
   <int value="8" label="Assistant"/>
   <int value="9" label="Desktop Tab Groups"/>
   <int value="10" label="Media App"/>
   <int value="11" label="Help App"/>
-  <int value="12" label="Kaleidoscope"/>
+  <int value="12" label="DEPRECATED: Kaleidoscope"/>
   <int value="13" label="Network Health Page"/>
-  <int value="14" label="Tab Search"/>
+  <int value="14" label="DEPRECATED: Tab Search"/>
   <int value="15" label="Camera App"/>
-  <int value="16" label="Capture Mode"/>
+  <int value="16" label="DEPRECATED: Capture Mode"/>
   <int value="17" label="Chrome Labs"/>
   <int value="18" label="DEPRECATED: Bento Bar"/>
   <int value="19" label="Quick Answers"/>
-  <int value="20" label="What's New"/>
+  <int value="20" label="DEPRECATED: What's New"/>
   <int value="21" label="Connectivity Diagnostics"/>
   <int value="22" label="Projector App"/>
-  <int value="23" label="Desks Templates"/>
+  <int value="23" label="DEPRECATED: Desks Templates"/>
   <int value="24" label="Files App"/>
   <int value="25" label="Channel Indicator"/>
   <int value="26" label="Launcher"/>
@@ -5088,15 +5088,16 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="33" label="Price Insights"/>
   <int value="34" label="Cookie Controls"/>
   <int value="35" label="Game Dashboard"/>
-  <int value="36" label="OOBE or Login screen"/>
-  <int value="37" label="AI"/>
-  <int value="38" label="DEPRECATED: Focus Mode"/>
-  <int value="39" label="Overview Grid"/>
-  <int value="40" label="DEPRECATED: Snap Groups"/>
-  <int value="41" label="DEPRECATED: Birch"/>
-  <int value="42" label="Borealis"/>
-  <int value="43" label="Sunfish"/>
-  <int value="44" label="Boca App"/>
+  <int value="36" label="Lens Overlay"/>
+  <int value="37" label="OOBE or Login screen"/>
+  <int value="38" label="AI"/>
+  <int value="39" label="DEPRECATED: Focus Mode"/>
+  <int value="40" label="Overview Grid"/>
+  <int value="41" label="DEPRECATED: Snap Groups"/>
+  <int value="42" label="DEPRECATED: Birch"/>
+  <int value="43" label="Borealis"/>
+  <int value="44" label="Sunfish"/>
+  <int value="45" label="Boca App"/>
 </enum>
 
 <enum name="FetchKeepAliveRequestMetricType">
